@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/search" android:title="@string/search" android:icon="@drawable/ic_menu_search"></item>
+	<item android:id="@+id/favorites" android:icon="@drawable/ic_menu_star" android:title="@string/favorites"></item>
+	<item android:id="@+id/recent" android:title="@string/recent" android:icon="@drawable/ic_menu_recent_history"></item>
+	<item android:id="@+id/download" android:title="@string/downloads" android:icon="@drawable/ic_menu_download"></item>
+	<item android:title="@string/settings" android:id="@+id/settings" android:icon="@drawable/ic_menu_preferences"></item>
+</menu>
