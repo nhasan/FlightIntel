@@ -7,8 +7,9 @@
 	<string name="search">Search</string>
 	<string name="recent">Recent</string>
 	<string name="search_hint">Search airports</string>
-<string name="download_installed">Currently Installed Data</string>
+<string name="download_installed">Installed Data</string>
 <string name="download_available">Available Data</string>
 <string name="download_noinstall">No installed data</string>
 <string name="download_noupdate">No update available</string>
+<string name="update_all">Update All</string>
 </resources>

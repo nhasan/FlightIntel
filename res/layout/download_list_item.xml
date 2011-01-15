@@ -5,18 +5,21 @@
      android:orientation="vertical">
 
      <TextView android:id="@+id/download_desc"
-         android:textSize="14sp"
+         android:textSize="12sp"
          android:textStyle="bold"
+         android:paddingLeft="4sp"
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"/>
 
      <TextView android:id="@+id/download_dates"
          android:textSize="12sp"
+         android:paddingLeft="4sp"
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"/>
 
      <TextView android:id="@+id/download_size"
          android:textSize="12sp"
+         android:paddingLeft="4sp"
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"/>
  </LinearLayout>

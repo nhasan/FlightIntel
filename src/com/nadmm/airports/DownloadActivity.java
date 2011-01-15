@@ -44,6 +44,8 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.sax.Element;
@@ -58,8 +60,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.ArrayAdapter;
+import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public final class DownloadActivity extends ListActivity {
@@ -82,7 +86,7 @@ public final class DownloadActivity extends ListActivity {
         public DataFileInfo() {
         }
 
-        public DataFileInfo(DataFileInfo info) {
+        public DataFileInfo( DataFileInfo info ) {
             type = info.type;
             desc = info.desc;
             version = info.version;
@@ -103,19 +107,48 @@ public final class DownloadActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new DownloadListAdapter(this);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        mAdapter = new DownloadListAdapter( this );
+        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
     	setTitle( "Airports - "+getTitle() );
-        checkData();
+
+    	LayoutInflater inflater = getLayoutInflater();
+    	View header = inflater.inflate( R.layout.download_header, null );
+    	ListView lv = getListView();
+    	lv.addHeaderView( header, null, false );
+    	Button btnUpdate = (Button) findViewById( R.id.btnUpdate );
+    	btnUpdate.setOnClickListener( 
+    			new OnClickListener() {
+    				@Override
+    				public void onClick(View v) {
+    					download();
+    				}
+    			}
+    	);
+
+    	checkData();
     }
 
     private void checkData() {
-        CheckDataTask task = new CheckDataTask(this);
+        CheckDataTask task = new CheckDataTask( this );
         task.execute();
     }
 
     private void download() {
-        DownloadTask task = new DownloadTask(this);
+    	ConnectivityManager connMan = (ConnectivityManager) getSystemService( 
+    			Context.CONNECTIVITY_SERVICE );
+    	NetworkInfo network = connMan.getActiveNetworkInfo();
+    	if ( !network.isConnected() ) {
+    		showMessage( "Download Error", "Network connectivity is not available" );
+    		return;
+    	}
+    	else {
+    		if ( network.getType() != ConnectivityManager.TYPE_WIFI ) {
+    			showMessage( "Download", "You are not connected to a wifi network.\n"
+    					+"Continure download?" );
+    			return;
+    		}
+    	}
+        DownloadTask task = new DownloadTask( this );
         task.execute();
     }
 
@@ -126,8 +159,8 @@ public final class DownloadActivity extends ListActivity {
     	private final int VIEW_TYPE_SECTION_HEADER = 0;
     	private final int VIEW_TYPE_DATA_FILE = 1;
 
-		public DownloadListAdapter(Context context) {
-			mInflater = LayoutInflater.from(context);
+		public DownloadListAdapter( Context context ) {
+			mInflater = LayoutInflater.from( context );
 			mContext = context;
 		}
 
@@ -162,14 +195,14 @@ public final class DownloadActivity extends ListActivity {
 		}
 
 		@Override
-		public Object getItem(int position) {
-			Log.v(TAG, "getItem("+position+")");
+		public Object getItem( int position ) {
+			Log.v( TAG, "getItem("+position+")" );
 			return position;
 		}
 
 		@Override
-		public long getItemId(int position) {
-			Log.v(TAG, "getItemId("+position+")");
+		public long getItemId( int position ) {
+			Log.v( TAG, "getItemId("+position+")" );
 			return position;
 		}
 
@@ -184,75 +217,75 @@ public final class DownloadActivity extends ListActivity {
         	return 2;
         }
 
-        @Override public int getItemViewType(int position) {
+        @Override public int getItemViewType( int position ) {
         	return ( position == getInstalledHeaderPos() || position == getAvailableHeaderPos() )?
         			VIEW_TYPE_SECTION_HEADER : VIEW_TYPE_DATA_FILE;
         }
 
 		@Override
 		public View getView( int position, View convertView, ViewGroup parent ) {
-			int viewType = getItemViewType(position);
-			Log.v(TAG, "position="+position+"; viewType="+viewType);
+			int viewType = getItemViewType( position );
+			Log.v( TAG, "position="+position+"; viewType="+viewType );
 
-			if (viewType == VIEW_TYPE_SECTION_HEADER) {
+			if ( viewType == VIEW_TYPE_SECTION_HEADER ) {
 				if ( convertView == null ) {
 					convertView = mInflater.inflate( R.layout.download_list_section, null );
 				}
 
-				TextView section = (TextView) convertView.findViewById(R.id.download_section);
+				TextView section = (TextView) convertView.findViewById( R.id.download_section );
 				if (position == 0) {
-					section.setText(R.string.download_installed);
+					section.setText( R.string.download_installed );
 				}
 				else {
-					section.setText(R.string.download_available);
+					section.setText( R.string.download_available );
 				}
 			}
 			else {
-				if (position>=getInstalledHeaderPos() && position<getAvailableHeaderPos()) {
-					if (mInstalledData.isEmpty()) {
+				if ( position>=getInstalledHeaderPos() && position<getAvailableHeaderPos() ) {
+					if ( mInstalledData.isEmpty() ) {
 						if ( convertView == null ) {
 							convertView = mInflater.inflate( R.layout.download_list_nodata, null );
 						}
-						TextView msg = (TextView) convertView.findViewById(R.id.download_msg);
-						msg.setText(R.string.download_noinstall);
+						TextView msg = (TextView) convertView.findViewById( R.id.download_msg );
+						msg.setText( R.string.download_noinstall );
 					}
 					else {
 						if ( convertView == null ) {
 							convertView = mInflater.inflate( R.layout.download_list_item, null );
 						}
-						DataFileInfo info = mInstalledData.get(position-getInstalledItemOffset());
+						DataFileInfo info = mInstalledData.get( position-getInstalledItemOffset() );
 						TextView desc = (TextView) convertView.findViewById( R.id.download_desc );
 						desc.setText( info.desc );
-						TextView dates = (TextView) convertView.findViewById(R.id.download_dates);
-						dates.setText( "Effective from "+mDateFormat.format(info.start)+" to "
-								+mDateFormat.format(info.end));
-						TextView size = (TextView) convertView.findViewById(R.id.download_size);
-						size.setText("Current");
+						TextView dates = (TextView) convertView.findViewById( R.id.download_dates );
+						dates.setText( "Effective from "+mDateFormat.format( info.start )
+								+" to "+mDateFormat.format( info.end ) );
+						TextView size = (TextView) convertView.findViewById( R.id.download_size );
+						size.setText( "Current" );
 					}
 				}
 				else {
-					if (mAvailableData.isEmpty()) {
+					if ( mAvailableData.isEmpty() ) {
 						if ( convertView == null ) {
-							convertView = mInflater.inflate(R.layout.download_list_nodata, null);
+							convertView = mInflater.inflate( R.layout.download_list_nodata, null );
 						}
-						TextView msg = (TextView) convertView.findViewById(R.id.download_msg);
-						msg.setText(R.string.download_noupdate);
+						TextView msg = (TextView) convertView.findViewById( R.id.download_msg );
+						msg.setText( R.string.download_noupdate );
 					}
 					else {
 						if ( convertView == null ) {
 							convertView = mInflater.inflate( R.layout.download_list_item, null );
 						}						
-						DataFileInfo info = mAvailableData.get(position-getAvailableItemOffset());
+						DataFileInfo info = mAvailableData.get( position-getAvailableItemOffset() );
 						TextView desc = (TextView) convertView.findViewById( R.id.download_desc );
 						desc.setText( info.desc );
-						TextView dates = (TextView) convertView.findViewById(R.id.download_dates);
-						dates.setText("Effective "+DateUtils.formatDateRange(mContext, 
+						TextView dates = (TextView) convertView.findViewById( R.id.download_dates );
+						dates.setText("Effective "+DateUtils.formatDateRange( mContext, 
 								info.start.getTime(), info.end.getTime(), 
-								DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL));
-						TextView size = (TextView) convertView.findViewById(R.id.download_size);
-						size.setText(Formatter.formatShortFileSize(mContext, info.size)
-								+"   ("+DateUtils.formatElapsedTime(info.size/(500*1024/8))
-								+" @ 500kbps)");
+								DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) );
+						TextView size = (TextView) convertView.findViewById( R.id.download_size );
+						size.setText( Formatter.formatShortFileSize( mContext, info.size )
+								+"   ("+DateUtils.formatElapsedTime( info.size/(500*1024/8) )
+								+" @ 500kbps)" );
 					}
 				}
 			}
@@ -313,13 +346,13 @@ public final class DownloadActivity extends ListActivity {
 
         @Override
         protected void onPreExecute() {
-        	setProgressBarIndeterminateVisibility(true);
+        	setProgressBarIndeterminateVisibility( true );
         }
 
         @Override
         protected void onPostExecute( Integer result ) {
             if ( result != 0 ) {
-            	setProgressBarIndeterminateVisibility(false);
+            	setProgressBarIndeterminateVisibility( false );
                 showMessage( "Download", "There was an error while cheking for updates" );
                 return;
             }
@@ -329,15 +362,15 @@ public final class DownloadActivity extends ListActivity {
                 in = mActivity.openFileInput( MANIFEST );
             } catch ( FileNotFoundException e ) {
                 Log.v( TAG, e.getMessage() );
-            	setProgressBarIndeterminateVisibility(false);
+            	setProgressBarIndeterminateVisibility( false );
                 showMessage( "Download", "Unable to read manifest file" );
                 return;
             }
 
             parseManifest( in );
-        	setProgressBarIndeterminateVisibility(false);
+        	setProgressBarIndeterminateVisibility( false );
 
-        	mActivity.setListAdapter(mAdapter);
+        	mActivity.setListAdapter( mAdapter );
         }
 
         private void parseManifest( InputStream in ) {
@@ -351,56 +384,70 @@ public final class DownloadActivity extends ListActivity {
                     mAvailableData.add( new DataFileInfo( info ) );
                 }
             } );
-            datafile.getChild( "type" ).setEndTextElementListener( new EndTextElementListener() {
-                @Override
-                public void end( String body ) {
-                    info.type = body;
-                }
-            } );
-            datafile.getChild( "desc" ).setEndTextElementListener( new EndTextElementListener() {
-                @Override
-                public void end( String body ) {
-                    info.desc = body;
-                }
-            } );
-            datafile.getChild( "version" ).setEndTextElementListener( new EndTextElementListener() {
-                @Override
-                public void end( String body ) {
-                    info.version = Integer.parseInt( body );
-                }
-            } );
-            datafile.getChild( "filename" ).setEndTextElementListener( new EndTextElementListener() {
-                @Override
-                public void end( String body ) {
-                    info.fileName = body;
-                }
-            } );
-            datafile.getChild( "size" ).setEndTextElementListener( new EndTextElementListener() {
-                @Override
-                public void end( String body ) {
-                    info.size = Integer.parseInt( body );
-                }
-            } );
-            datafile.getChild( "start" ).setEndTextElementListener( new EndTextElementListener() {
-                @Override
-                public void end( String body ) {
-                    try {
-                        info.start = dateFormat.parse( body );
-                    } catch ( ParseException e ) {
-                        Log.v( TAG, "Error parsing start date: "+e.getMessage() );
-                    }
-                }
-            } );
-            datafile.getChild( "end" ).setEndTextElementListener( new EndTextElementListener() {
-                @Override
-                public void end(String body) {
-                    try {
-                        info.end = dateFormat.parse( body );
-                    } catch ( ParseException e ) {
-                        Log.v( TAG, "Error parsing end date: "+e.getMessage() );
-                    }
-                }
-            } );
+            datafile.getChild( "type" ).setEndTextElementListener( 
+            		new EndTextElementListener() {
+		                @Override
+		                public void end( String body ) {
+		                    info.type = body;
+		                }
+		            }
+            );
+            datafile.getChild( "desc" ).setEndTextElementListener( 
+            		new EndTextElementListener() {
+            			@Override
+            			public void end( String body ) {
+            				info.desc = body;
+            			}
+            		}
+            );
+            datafile.getChild( "version" ).setEndTextElementListener(
+            		new EndTextElementListener() {
+            			@Override
+            			public void end( String body ) {
+            				info.version = Integer.parseInt( body );
+            			}
+            		}
+            );
+            datafile.getChild( "filename" ).setEndTextElementListener(
+            		new EndTextElementListener() {
+            			@Override
+            			public void end( String body ) {
+            				info.fileName = body;
+            			}
+            		}
+            );
+            datafile.getChild( "size" ).setEndTextElementListener( 
+            		new EndTextElementListener() {
+            			@Override
+            			public void end( String body ) {
+            				info.size = Integer.parseInt( body );
+            			}
+            		}
+            );
+            datafile.getChild( "start" ).setEndTextElementListener(
+            		new EndTextElementListener() {
+            			@Override
+            			public void end( String body ) {
+            				try {
+            					info.start = dateFormat.parse( body );
+            				} catch ( ParseException e ) {
+            					Log.v( TAG, "Error parsing start date: "+e.getMessage() );
+            				}
+            			}
+            		}
+            );
+            datafile.getChild( "end" ).setEndTextElementListener(
+            		new EndTextElementListener() {
+		                @Override
+		                public void end(String body) {
+		                    try {
+		                        info.end = dateFormat.parse( body );
+		                    } catch ( ParseException e ) {
+		                        Log.v( TAG, "Error parsing end date: "+e.getMessage() );
+		                    }
+		                }
+            		}
+            );
 
             try {
                 Xml.parse( in, Xml.Encoding.UTF_8, root.getContentHandler() );
@@ -516,7 +563,7 @@ public final class DownloadActivity extends ListActivity {
         builder.setMessage( msg )
                .setTitle( title )
                .setPositiveButton( "Close", new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int id) {
+                   public void onClick( DialogInterface dialog, int id ) {
                    }
                } );
         AlertDialog alert = builder.create();

@@ -7,6 +7,7 @@
      <TextView android:id="@+id/download_msg"
          android:textSize="12sp"
          android:textStyle="italic"
+         android:paddingLeft="4sp"
          android:height="26sp"
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"/>
