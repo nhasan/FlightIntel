@@ -43,6 +43,14 @@ public class AirportsDatabase {
         mDbOpenHelper = new DbOpenHelper( mContext );
     }
 
+    public SQLiteDatabase getWritableDatabase() {
+    	return mDbOpenHelper.getWritableDatabase();
+    }
+
+    public SQLiteDatabase getReadableDatabase() {
+    	return mDbOpenHelper.getReadableDatabase();
+    }
+
     public static final class Airports implements BaseColumns {
         public static final String TABLE_NAME = "airport";
         // Fields for airport table
@@ -219,13 +227,13 @@ public class AirportsDatabase {
         public void onCreate( SQLiteDatabase db ) {
         	db.execSQL( "DROP TABLE IF EXISTS "+Airports.TABLE_NAME );
             db.execSQL( Airports.CREATE_TABLE );
-            db.execSQL( "CREATE INDEX faacodeidx ON "+Airports.TABLE_NAME+" ("
+            db.execSQL( "CREATE INDEX faacode_idx ON "+Airports.TABLE_NAME+" ("
             		+Airports.FAA_CODE+")" );
-            db.execSQL( "CREATE INDEX icaocodeidx ON "+Airports.TABLE_NAME+" ("
+            db.execSQL( "CREATE INDEX icaocode_idx ON "+Airports.TABLE_NAME+" ("
             		+Airports.ICAO_CODE+")" );
-            db.execSQL( "CREATE INDEX nameidx ON "+Airports.TABLE_NAME+" ("
+            db.execSQL( "CREATE INDEX name_idx ON "+Airports.TABLE_NAME+" ("
             		+Airports.FACILITY_NAME+")" );
-            db.execSQL( "CREATE INDEX cityidx ON "+Airports.TABLE_NAME+" ("
+            db.execSQL( "CREATE INDEX city_idx ON "+Airports.TABLE_NAME+" ("
             		+Airports.ASSOC_CITY+")" );
         }
 

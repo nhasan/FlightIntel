@@ -48,6 +48,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.sax.Element;
 import android.sax.EndElementListener;
 import android.sax.EndTextElementListener;
@@ -65,6 +66,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public final class DownloadActivity extends ListActivity {
     static final String TAG = DownloadActivity.class.getName();
@@ -74,7 +76,7 @@ public final class DownloadActivity extends ListActivity {
     static final String FILE = "fadds_20101118.bz2";
     static final String MANIFEST = "manifest.xml";
 
-    private final class DataFileInfo {
+    private final class DataInfo {
         public String type;
         public String desc;
         public int version;
@@ -83,10 +85,10 @@ public final class DownloadActivity extends ListActivity {
         public Date start;
         public Date end;
 
-        public DataFileInfo() {
+        public DataInfo() {
         }
 
-        public DataFileInfo( DataFileInfo info ) {
+        public DataInfo( DataInfo info ) {
             type = info.type;
             desc = info.desc;
             version = info.version;
@@ -97,14 +99,15 @@ public final class DownloadActivity extends ListActivity {
         }
     }
 
-    private final ArrayList<DataFileInfo> mInstalledData = new ArrayList<DataFileInfo>();
-    private final ArrayList<DataFileInfo> mAvailableData = new ArrayList<DataFileInfo>();
+    private final ArrayList<DataInfo> mInstalledData = new ArrayList<DataInfo>();
+    private final ArrayList<DataInfo> mAvailableData = new ArrayList<DataInfo>();
 
     private DownloadListAdapter mAdapter;
+    private AirportsDatabase mDb;
 
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
 
         mAdapter = new DownloadListAdapter( this );
@@ -116,11 +119,11 @@ public final class DownloadActivity extends ListActivity {
     	ListView lv = getListView();
     	lv.addHeaderView( header, null, false );
     	Button btnUpdate = (Button) findViewById( R.id.btnUpdate );
-    	btnUpdate.setOnClickListener( 
+    	btnUpdate.setOnClickListener(
     			new OnClickListener() {
     				@Override
     				public void onClick(View v) {
-    					download();
+    					checkNetwork();
     				}
     			}
     	);
@@ -133,7 +136,7 @@ public final class DownloadActivity extends ListActivity {
         task.execute();
     }
 
-    private void download() {
+    private void checkNetwork() {
     	ConnectivityManager connMan = (ConnectivityManager) getSystemService( 
     			Context.CONNECTIVITY_SERVICE );
     	NetworkInfo network = connMan.getActiveNetworkInfo();
@@ -143,11 +146,29 @@ public final class DownloadActivity extends ListActivity {
     	}
     	else {
     		if ( network.getType() != ConnectivityManager.TYPE_WIFI ) {
-    			showMessage( "Download", "You are not connected to a wifi network.\n"
-    					+"Continure download?" );
+    			AlertDialog.Builder builder = new AlertDialog.Builder( this );
+    			builder.setMessage( "You are not connected to a wifi network.\n"
+    					+"Continue download?" )
+    				   .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick( DialogInterface dialog, int id ) {
+								download();
+							}
+    				   } )
+    				   .setNegativeButton( "No", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick( DialogInterface dialog, int id ) {
+								finish();
+							}
+    				   } );
+    			AlertDialog alert = builder.create();
+    			alert.show();
     			return;
     		}
     	}
+    }
+
+    private void download() {
         DownloadTask task = new DownloadTask( this );
         task.execute();
     }
@@ -196,13 +217,11 @@ public final class DownloadActivity extends ListActivity {
 
 		@Override
 		public Object getItem( int position ) {
-			Log.v( TAG, "getItem("+position+")" );
 			return position;
 		}
 
 		@Override
 		public long getItemId( int position ) {
-			Log.v( TAG, "getItemId("+position+")" );
 			return position;
 		}
 
@@ -225,7 +244,6 @@ public final class DownloadActivity extends ListActivity {
 		@Override
 		public View getView( int position, View convertView, ViewGroup parent ) {
 			int viewType = getItemViewType( position );
-			Log.v( TAG, "position="+position+"; viewType="+viewType );
 
 			if ( viewType == VIEW_TYPE_SECTION_HEADER ) {
 				if ( convertView == null ) {
@@ -253,7 +271,7 @@ public final class DownloadActivity extends ListActivity {
 						if ( convertView == null ) {
 							convertView = mInflater.inflate( R.layout.download_list_item, null );
 						}
-						DataFileInfo info = mInstalledData.get( position-getInstalledItemOffset() );
+						DataInfo info = mInstalledData.get( position-getInstalledItemOffset() );
 						TextView desc = (TextView) convertView.findViewById( R.id.download_desc );
 						desc.setText( info.desc );
 						TextView dates = (TextView) convertView.findViewById( R.id.download_dates );
@@ -275,7 +293,7 @@ public final class DownloadActivity extends ListActivity {
 						if ( convertView == null ) {
 							convertView = mInflater.inflate( R.layout.download_list_item, null );
 						}						
-						DataFileInfo info = mAvailableData.get( position-getAvailableItemOffset() );
+						DataInfo info = mAvailableData.get( position-getAvailableItemOffset() );
 						TextView desc = (TextView) convertView.findViewById( R.id.download_desc );
 						desc.setText( info.desc );
 						TextView dates = (TextView) convertView.findViewById( R.id.download_dates );
@@ -302,7 +320,57 @@ public final class DownloadActivity extends ListActivity {
         }
 
         @Override
+        protected void onPreExecute() {
+        	setProgressBarIndeterminateVisibility( true );
+        	Button btnUpdate = (Button) findViewById( R.id.btnUpdate );
+        	btnUpdate.setEnabled( false );
+        	mActivity.getListView().setVisibility( View.INVISIBLE );
+        	mInstalledData.clear();
+        	mAvailableData.clear();
+        }
+
+        @Override
         protected Integer doInBackground( Void... params ) {
+        	int result;
+
+        	result = downloadManifest();
+        	if ( result != 0 )
+        	{
+        		return result;
+        	}
+
+            result = parseManifest();
+        	if ( result != 0 )
+        	{
+        		return result;
+        	}
+
+        	processManifest();
+
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute( Integer result ) {
+            if ( result != 0 ) {
+            	setProgressBarIndeterminateVisibility( false );
+                showMessage( "Download", "There was an error while checking for updates" );
+                return;
+            }
+
+        	setProgressBarIndeterminateVisibility( false );
+
+        	ListView lv = mActivity.getListView();
+        	lv.setVisibility( View.VISIBLE );
+
+        	Button btnUpdate = (Button)lv.findViewById( R.id.btnUpdate );
+        	btnUpdate.setEnabled( !mAvailableData.isEmpty() );
+
+        	mActivity.setListAdapter( mAdapter );
+        	mAdapter.notifyDataSetInvalidated();
+        }
+
+        private int downloadManifest() {
             try {
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 HttpHost target = new HttpHost( HOST, PORT );
@@ -310,17 +378,16 @@ public final class DownloadActivity extends ListActivity {
                 HttpGet get = new HttpGet( uri );
 
                 HttpResponse response = httpClient.execute( target, get );
-
                 if ( response.getStatusLine().getStatusCode() != 200 ) {
-                    Log.v( TAG, response.getStatusLine().getReasonPhrase() );
-                    return -2;
+                    Log.e( TAG, response.getStatusLine().getReasonPhrase() );
+                    return -1;
                 }
 
                 HttpEntity entity = response.getEntity();
                 InputStream in = entity.getContent();
                 FileOutputStream out = mActivity.openFileOutput( MANIFEST, MODE_PRIVATE );
 
-                byte[] buffer = new byte[ 16384 ];
+                byte[] buffer = new byte[ 8*1024 ];
                 int len = buffer.length;
                 int count = 0;
 
@@ -332,56 +399,36 @@ public final class DownloadActivity extends ListActivity {
                 out.close();
             }
             catch ( IOException e ) {
-                Log.v( TAG, "IOException: "+e.getMessage() );
+                Log.e( TAG, "IOException: "+e.getMessage() );
                 return -1;
             }
             catch ( URISyntaxException e ) {
-                Log.v( TAG, "URISyntaxException: "+e.getMessage() );
+                Log.e( TAG, "URISyntaxException: "+e.getMessage() );
                 return -1;
             }
-
-            Log.v( TAG, "Got manifest XML file" );
+        	
             return 0;
         }
 
-        @Override
-        protected void onPreExecute() {
-        	setProgressBarIndeterminateVisibility( true );
-        }
-
-        @Override
-        protected void onPostExecute( Integer result ) {
-            if ( result != 0 ) {
-            	setProgressBarIndeterminateVisibility( false );
-                showMessage( "Download", "There was an error while cheking for updates" );
-                return;
-            }
-
+        private int parseManifest() {
             FileInputStream in;
             try {
                 in = mActivity.openFileInput( MANIFEST );
             } catch ( FileNotFoundException e ) {
-                Log.v( TAG, e.getMessage() );
+                Log.e( TAG, e.getMessage() );
             	setProgressBarIndeterminateVisibility( false );
                 showMessage( "Download", "Unable to read manifest file" );
-                return;
+                return -1;
             }
 
-            parseManifest( in );
-        	setProgressBarIndeterminateVisibility( false );
-
-        	mActivity.setListAdapter( mAdapter );
-        }
-
-        private void parseManifest( InputStream in ) {
             final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
-            final DataFileInfo info = new DataFileInfo();
+            final DataInfo info = new DataInfo();
             RootElement root = new RootElement( "manifest" );
             Element datafile = root.getChild( "datafile" );
             datafile.setEndElementListener( new EndElementListener() {
                 @Override
                 public void end() {
-                    mAvailableData.add( new DataFileInfo( info ) );
+                    mAvailableData.add( new DataInfo( info ) );
                 }
             } );
             datafile.getChild( "type" ).setEndTextElementListener( 
@@ -392,7 +439,7 @@ public final class DownloadActivity extends ListActivity {
 		                }
 		            }
             );
-            datafile.getChild( "desc" ).setEndTextElementListener( 
+            datafile.getChild( "desc" ).setEndTextElementListener(
             		new EndTextElementListener() {
             			@Override
             			public void end( String body ) {
@@ -431,7 +478,7 @@ public final class DownloadActivity extends ListActivity {
             				try {
             					info.start = dateFormat.parse( body );
             				} catch ( ParseException e ) {
-            					Log.v( TAG, "Error parsing start date: "+e.getMessage() );
+            					Log.e( TAG, "Error parsing start date: "+e.getMessage() );
             				}
             			}
             		}
@@ -443,7 +490,7 @@ public final class DownloadActivity extends ListActivity {
 		                    try {
 		                        info.end = dateFormat.parse( body );
 		                    } catch ( ParseException e ) {
-		                        Log.v( TAG, "Error parsing end date: "+e.getMessage() );
+		                        Log.e( TAG, "Error parsing end date: "+e.getMessage() );
 		                    }
 		                }
             		}
@@ -453,32 +500,71 @@ public final class DownloadActivity extends ListActivity {
                 Xml.parse( in, Xml.Encoding.UTF_8, root.getContentHandler() );
             }
             catch ( Exception e ) {
-                Log.v( TAG, "Error parsing manifest: "+e.getMessage() );
+                Log.e( TAG, "Error parsing manifest: "+e.getMessage() );
+                return -1;
             }
 
-            Iterator<DataFileInfo> it = mAvailableData.iterator();
+            Iterator<DataInfo> it = mAvailableData.iterator();
             while ( it.hasNext() )
             {
-                DataFileInfo dataFile = it.next();
-                Log.v( TAG, "==== Data File Info ====" );
-                Log.v( TAG, "type="+dataFile.type );
-                Log.v( TAG, "desc="+dataFile.desc );
-                Log.v( TAG, "version="+dataFile.version );
-                Log.v( TAG, "filename="+dataFile.fileName );
-                Log.v( TAG, "size="+dataFile.size );
-                Log.v( TAG, "start="+dataFile.start.toLocaleString() );
-                Log.v( TAG, "end="+dataFile.end.toLocaleString() );
+                DataInfo dataFile = it.next();
+                Log.i( TAG, "==== Data File Info ====" );
+                Log.i( TAG, "type="+dataFile.type );
+                Log.i( TAG, "desc="+dataFile.desc );
+                Log.i( TAG, "version="+dataFile.version );
+                Log.i( TAG, "filename="+dataFile.fileName );
+                Log.i( TAG, "size="+dataFile.size );
+                Log.i( TAG, "start="+dataFile.start.toLocaleString() );
+                Log.i( TAG, "end="+dataFile.end.toLocaleString() );
+            }
+
+            try {
+				in.close();
+			} catch ( IOException e ) {
+                Log.e( TAG, "Error closing manifest file: "+e.getMessage() );
+                return -1;
+			}
+
+            return 0;
+        }
+
+        private void processManifest() {
+            Iterator<DataInfo> it = mAvailableData.iterator();
+            while ( it.hasNext() )
+            {
+            	// Find out which of these available entries are not installed
+                DataInfo available = it.next();
+                Iterator<DataInfo> it2 = mInstalledData.iterator();
+                while ( it2.hasNext() ) {
+                	DataInfo installed = it2.next();
+                	if ( available.type == installed.type
+                			&& available.version <= installed.version ) {
+                		// This update is already installed
+                		Log.i( TAG, "Removing "+available.type+" version "+available.version );
+                		it.remove();
+                	}
+                }
             }
         }
     }
 
     private final class DownloadTask extends AsyncTask<Void, Integer, Integer> {
         private ProgressDialog mProgressDialog;
-        private Context mContext;
+        private DownloadActivity mActivity;
+        private Handler mHandler;
 
-        public DownloadTask( Context context )
+        public DownloadTask( DownloadActivity activity )
         {
-            mContext = context;
+            mActivity = activity;
+            mHandler = new Handler();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            mProgressDialog = new ProgressDialog( mActivity );
+            mProgressDialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
+            mProgressDialog.setMessage( "..." );
+            mProgressDialog.show();
         }
 
         @Override
@@ -486,43 +572,59 @@ public final class DownloadActivity extends ListActivity {
             try {
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 HttpHost target = new HttpHost( HOST, PORT );
-                URI uri = new URI( PATH+"/"+FILE );
-                HttpGet get = new HttpGet( uri );
 
-                HttpResponse response = httpClient.execute( target, get );
+                Iterator<DataInfo> it = mAvailableData.iterator();
+                while ( it.hasNext() ) {
+                	final DataInfo available = it.next();
 
-                if ( response.getStatusLine().getStatusCode() != 200 ) {
-                    Log.v( TAG, response.getStatusLine().getReasonPhrase() );
-                    return -2;
+                    mProgressDialog.setMax( available.size );
+                    mHandler.postAtFrontOfQueue( new Runnable() {
+    					@Override
+    					public void run() {
+    			            mProgressDialog.setMessage( "Downloading "+available.type+" data\n"
+    			            		+"Please wait..." );
+    					}
+                    } );
+
+                    URI uri = new URI( PATH+"/"+FILE );
+                    HttpGet get = new HttpGet( uri );
+
+                    HttpResponse response = httpClient.execute( target, get );
+
+                    if ( response.getStatusLine().getStatusCode() != 200 ) {
+                        Log.e( TAG, response.getStatusLine().getReasonPhrase() );
+                        return -2;
+                    }
+
+                    HttpEntity entity = response.getEntity();
+                    InputStream input = entity.getContent();
+                    FileOutputStream output = mActivity.openFileOutput( FILE, MODE_PRIVATE );
+
+                    Log.i(TAG, "Opened file for writing" );
+
+                    int total = 0;
+                    publishProgress( total );
+
+                    byte[] buffer = new byte[ 64*1024 ];
+                    int len = buffer.length;
+                    int count = 0;
+
+                    while ( ( count = input.read( buffer, 0, len ) ) != -1 ) {
+                        output.write( buffer, 0, count );
+                        total += count;
+                        publishProgress( total );
+                    }
+
+                    input.close();
+                    output.close();                	
                 }
-
-                HttpEntity entity = response.getEntity();
-
-                mProgressDialog.setMax( (int) entity.getContentLength() );
-
-                InputStream input = entity.getContent();
-                FileOutputStream output = mContext.openFileOutput( FILE, MODE_PRIVATE );
-
-                Log.v(TAG, "Opened file for writing" );
-
-                byte[] buffer = new byte[ 16384 ];
-                int len = buffer.length;
-                int count = 0;
-
-                while ( ( count = input.read( buffer, 0, len ) ) != -1 ) {
-                    output.write( buffer, 0, count );
-                    publishProgress( count );
-                }
-
-                input.close();
-                output.close();
             }
             catch ( IOException e ) {
-                Log.v( TAG, "IOException: "+e.getMessage() );
+                Log.e( TAG, "IOException: "+e.getMessage() );
                 return -1;
             }
             catch ( URISyntaxException e ) {
-                Log.v( TAG, "URISyntaxException: "+e.getMessage() );
+                Log.e( TAG, "URISyntaxException: "+e.getMessage() );
                 return -1;
             }
 
@@ -530,17 +632,8 @@ public final class DownloadActivity extends ListActivity {
         }
 
         @Override
-        protected void onPreExecute() {
-            mProgressDialog = new ProgressDialog( mContext );
-            mProgressDialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
-            mProgressDialog.setMessage( "Downloading data..." );
-            mProgressDialog.setProgress( 0 );
-            mProgressDialog.show();
-        }
-
-        @Override
         protected void onProgressUpdate( Integer... progress ) {
-            mProgressDialog.incrementProgressBy( progress[ 0 ] );
+            mProgressDialog.setProgress( progress[ 0 ] );
         }
 
         @Override
@@ -555,18 +648,13 @@ public final class DownloadActivity extends ListActivity {
             else if ( result == -2 ) {
                 showMessage( "Download", "Data file was not found on the server" );
             }
+
+            // Re-check for data to reflect the current downloads
+            checkData();
         }
     }
 
     protected void showMessage( String title, String msg ) {
-        AlertDialog.Builder builder = new AlertDialog.Builder( this );
-        builder.setMessage( msg )
-               .setTitle( title )
-               .setPositiveButton( "Close", new DialogInterface.OnClickListener() {
-                   public void onClick( DialogInterface dialog, int id ) {
-                   }
-               } );
-        AlertDialog alert = builder.create();
-        alert.show();
+    	Toast.makeText( getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
     }
 }
