@@ -36,8 +36,10 @@ import java.util.Iterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.tools.bzip2.CBZip2InputStream;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -73,7 +75,6 @@ public final class DownloadActivity extends ListActivity {
     static final String HOST = "10.0.2.2";
     static final Integer PORT = 80;
     static final String PATH = "/~nhasan/fadds";
-    static final String FILE = "fadds_20101118.bz2";
     static final String MANIFEST = "manifest.xml";
 
     private final class DataInfo {
@@ -82,6 +83,7 @@ public final class DownloadActivity extends ListActivity {
         public int version;
         public String fileName;
         public int size;
+        public int records;
         public Date start;
         public Date end;
 
@@ -94,6 +96,7 @@ public final class DownloadActivity extends ListActivity {
             version = info.version;
             fileName = info.fileName;
             size = info.size;
+            records = info.records;
             start = info.start;
             end = info.end;
         }
@@ -471,6 +474,14 @@ public final class DownloadActivity extends ListActivity {
             			}
             		}
             );
+            datafile.getChild( "records" ).setEndTextElementListener( 
+            		new EndTextElementListener() {
+            			@Override
+            			public void end( String body ) {
+            				info.records = Integer.parseInt( body );
+            			}
+            		}
+            );
             datafile.getChild( "start" ).setEndTextElementListener(
             		new EndTextElementListener() {
             			@Override
@@ -514,6 +525,7 @@ public final class DownloadActivity extends ListActivity {
                 Log.i( TAG, "version="+dataFile.version );
                 Log.i( TAG, "filename="+dataFile.fileName );
                 Log.i( TAG, "size="+dataFile.size );
+                Log.i( TAG, "records="+dataFile.records );
                 Log.i( TAG, "start="+dataFile.start.toLocaleString() );
                 Log.i( TAG, "end="+dataFile.end.toLocaleString() );
             }
@@ -569,64 +581,20 @@ public final class DownloadActivity extends ListActivity {
 
         @Override
         protected Integer doInBackground( Void... params ) {
-            try {
-                DefaultHttpClient httpClient = new DefaultHttpClient();
-                HttpHost target = new HttpHost( HOST, PORT );
-
                 Iterator<DataInfo> it = mAvailableData.iterator();
                 while ( it.hasNext() ) {
-                	final DataInfo available = it.next();
+                	final DataInfo data = it.next();
 
-                    mProgressDialog.setMax( available.size );
-                    mHandler.postAtFrontOfQueue( new Runnable() {
-    					@Override
-    					public void run() {
-    			            mProgressDialog.setMessage( "Downloading "+available.type+" data\n"
-    			            		+"Please wait..." );
-    					}
-                    } );
+                	int result = downloadFile( data);
+                	if ( result != 0 ) {
+                		return result;
+                	}
 
-                    URI uri = new URI( PATH+"/"+FILE );
-                    HttpGet get = new HttpGet( uri );
-
-                    HttpResponse response = httpClient.execute( target, get );
-
-                    if ( response.getStatusLine().getStatusCode() != 200 ) {
-                        Log.e( TAG, response.getStatusLine().getReasonPhrase() );
-                        return -2;
-                    }
-
-                    HttpEntity entity = response.getEntity();
-                    InputStream input = entity.getContent();
-                    FileOutputStream output = mActivity.openFileOutput( FILE, MODE_PRIVATE );
-
-                    Log.i(TAG, "Opened file for writing" );
-
-                    int total = 0;
-                    publishProgress( total );
-
-                    byte[] buffer = new byte[ 64*1024 ];
-                    int len = buffer.length;
-                    int count = 0;
-
-                    while ( ( count = input.read( buffer, 0, len ) ) != -1 ) {
-                        output.write( buffer, 0, count );
-                        total += count;
-                        publishProgress( total );
-                    }
-
-                    input.close();
-                    output.close();                	
+                	result = populateDb( data );
+                	if ( result != 0 ) {
+                		return result;
+                	}
                 }
-            }
-            catch ( IOException e ) {
-                Log.e( TAG, "IOException: "+e.getMessage() );
-                return -1;
-            }
-            catch ( URISyntaxException e ) {
-                Log.e( TAG, "URISyntaxException: "+e.getMessage() );
-                return -1;
-            }
 
             return 0;
         }
@@ -651,6 +619,148 @@ public final class DownloadActivity extends ListActivity {
 
             // Re-check for data to reflect the current downloads
             checkData();
+        }
+
+        protected int downloadFile( final DataInfo data ) {
+            mHandler.postAtFrontOfQueue( new Runnable() {
+				@Override
+				public void run() {
+					mProgressDialog.setProgress( 0 );
+                    mProgressDialog.setMax( data.size );
+		            mProgressDialog.setMessage( "Downloading "+data.type+" data..." );
+				}
+            } );
+
+            try {
+	            DefaultHttpClient httpClient = new DefaultHttpClient();
+	            HttpHost target = new HttpHost( HOST, PORT );
+	            URI uri = new URI( PATH+"/"+data.fileName );
+	            HttpGet get = new HttpGet( uri );
+	
+	            HttpResponse response = httpClient.execute( target, get );
+	            if ( response.getStatusLine().getStatusCode() != 200 ) {
+	                Log.e( TAG, response.getStatusLine().getReasonPhrase() );
+	                return -2;
+	            }
+	
+	            HttpEntity entity = response.getEntity();
+	            InputStream input = entity.getContent();
+
+				FileOutputStream output = mActivity.openFileOutput( data.fileName, MODE_PRIVATE );
+	
+	            Log.i( TAG, "Opened file for writing" );
+		
+	            byte[] buffer = new byte[ 64*1024 ];
+	            int len = buffer.length;
+	            int count;
+	            int total = 0;
+	
+	            while ( ( count = input.read( buffer, 0, len ) ) != -1 ) {
+	                output.write( buffer, 0, count );
+	                total += count;
+	                publishProgress( total );
+	            }
+	
+	            input.close();
+	            output.close();
+	
+	            return 0;
+			} catch ( FileNotFoundException e ) {
+	            Log.e( TAG, "FileNotFoundException: "+e.getMessage() );
+	            return -1;
+			} catch ( URISyntaxException e ) {
+	            Log.e( TAG, "URISyntaxException: "+e.getMessage() );
+	            return -1;
+			} catch ( ClientProtocolException e ) {
+	            Log.e( TAG, "ClientProtocolException: "+e.getMessage() );
+	            return -1;
+			} catch ( IOException e ) {
+	            Log.e( TAG, "IOException: "+e.getMessage() );
+	            return -1;
+			} catch ( IllegalStateException e ) {
+	            Log.e( TAG, "IllegalStateException: "+e.getMessage() );
+	            return -1;
+			}
+        }
+
+        protected int populateDb( final DataInfo data ) {
+        	int result=0;
+
+        	if ( data.type.equals( "FADDS" ) ) {
+        		result = loadFADDS( data );
+        	}
+
+			return result;
+        }
+
+        protected int loadFADDS( final DataInfo data ) {
+        	try {
+                mHandler.postAtFrontOfQueue( new Runnable() {
+    				@Override
+    				public void run() {
+    					mProgressDialog.setProgress( 0 );
+                        mProgressDialog.setMax( data.records );
+    		            mProgressDialog.setMessage( "Loading "+data.type+" data..." );
+    				}
+                } );
+
+				InputStream zStream = mActivity.openFileInput( data.fileName );
+				
+				// We need to skip the 2 byte bzip2 file header before passing this stream
+				char magic1 = (char) zStream.read();
+				char magic2 = (char) zStream.read();
+				
+				if ( magic1 != 'B' && magic2 != 'Z' ) {
+					Log.e( TAG, "Invalid bzip2 file: "+data.fileName );
+					return -1;
+				}
+
+				// Now pass this to be read as a bzip2 compressed stream
+				CBZip2InputStream bzipStream = new CBZip2InputStream( zStream );
+
+	            Log.i( TAG, "Opened bzip2 file for reading" );
+	        	
+	            int total = 0;
+
+				byte[] record = new byte[2048];
+				final int len = 1261;
+
+				// Try to read the type of record first
+				while ( total < data.records )  {
+					int count = bzipStream.read( record, 0, len );
+					if ( count != len ) {
+						Log.e( TAG, "Unable to read FADDS record #"+total );
+						return -1;
+					}
+
+					if ( record[0]=='A' && record[1]=='P' && record[2]=='T' ) {
+						// This is an airport record
+					}
+					else if ( record[0]=='R' && record[1]=='W' && record[2]=='Y' ) {
+						// This is a runway record
+					}
+					else if ( record[0]=='A' && record[1]=='T' && record[2]=='T' ) {
+						// This is a attendance record
+					}
+					else if ( record[0]=='R' && record[1]=='M' && record[2]=='K' ) {
+						// This is a remarks record
+					}
+
+					++total;
+	                publishProgress( total );
+				}
+
+				bzipStream.close();
+				zStream.close();
+
+	        	return 0;
+			} catch ( FileNotFoundException e ) {
+	            Log.e( TAG, "FileNotFoundException: "+e.getMessage() );
+	            return -1;
+			} catch ( IOException e ) {
+	            Log.e( TAG, "IOException: "+e.getMessage() );
+	            return -1;
+			}
         }
     }
 
