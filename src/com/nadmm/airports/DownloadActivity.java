@@ -19,6 +19,7 @@
 
 package com.nadmm.airports;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -46,6 +47,8 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -70,12 +73,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nadmm.airports.DatabaseManager.Catalog;
+
 public final class DownloadActivity extends ListActivity {
-    static final String TAG = DownloadActivity.class.getName();
-    static final String HOST = "10.0.2.2";
-    static final Integer PORT = 80;
-    static final String PATH = "/~nhasan/fadds";
-    static final String MANIFEST = "manifest.xml";
+    private static final String TAG = DownloadActivity.class.getName();
+    //static final String HOST = "10.0.2.2";
+    private static final String HOST = "192.168.1.106";
+    private static final Integer PORT = 80;
+    private static final String PATH = "/~nhasan/fadds";
+    private static final String MANIFEST = "manifest.xml";
+
+    private DatabaseManager mDbManager;
 
     private final class DataInfo {
         public String type;
@@ -83,7 +91,7 @@ public final class DownloadActivity extends ListActivity {
         public int version;
         public String fileName;
         public int size;
-        public int records;
+        public int actualsize;
         public Date start;
         public Date end;
 
@@ -96,7 +104,7 @@ public final class DownloadActivity extends ListActivity {
             version = info.version;
             fileName = info.fileName;
             size = info.size;
-            records = info.records;
+            actualsize = info.actualsize;
             start = info.start;
             end = info.end;
         }
@@ -106,7 +114,6 @@ public final class DownloadActivity extends ListActivity {
     private final ArrayList<DataInfo> mAvailableData = new ArrayList<DataInfo>();
 
     private DownloadListAdapter mAdapter;
-    private AirportsDatabase mDb;
 
     /** Called when the activity is first created. */
     @Override
@@ -114,7 +121,9 @@ public final class DownloadActivity extends ListActivity {
         super.onCreate(savedInstanceState);
 
         mAdapter = new DownloadListAdapter( this );
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
+    	mDbManager = new DatabaseManager( this );
+
+    	requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
     	setTitle( "Airports - "+getTitle() );
 
     	LayoutInflater inflater = getLayoutInflater();
@@ -143,31 +152,33 @@ public final class DownloadActivity extends ListActivity {
     	ConnectivityManager connMan = (ConnectivityManager) getSystemService( 
     			Context.CONNECTIVITY_SERVICE );
     	NetworkInfo network = connMan.getActiveNetworkInfo();
-    	if ( !network.isConnected() ) {
-    		showMessage( "Download Error", "Network connectivity is not available" );
+    	if ( network == null || !network.isConnected() ) {
+    		showMessage( "Download Failed", "Network connectivity is not available" );
     		return;
     	}
+    		
+    	if ( network.getType() != ConnectivityManager.TYPE_WIFI ) {
+			AlertDialog.Builder builder = new AlertDialog.Builder( this );
+			builder.setMessage( "You are not connected to a wifi network.\n"
+					+"Continue download?" )
+				   .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick( DialogInterface dialog, int id ) {
+							download();
+						}
+				   } )
+				   .setNegativeButton( "No", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick( DialogInterface dialog, int id ) {
+							finish();
+						}
+				   } );
+			AlertDialog alert = builder.create();
+			alert.show();
+			return;
+		}
     	else {
-    		if ( network.getType() != ConnectivityManager.TYPE_WIFI ) {
-    			AlertDialog.Builder builder = new AlertDialog.Builder( this );
-    			builder.setMessage( "You are not connected to a wifi network.\n"
-    					+"Continue download?" )
-    				   .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick( DialogInterface dialog, int id ) {
-								download();
-							}
-    				   } )
-    				   .setNegativeButton( "No", new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick( DialogInterface dialog, int id ) {
-								finish();
-							}
-    				   } );
-    			AlertDialog alert = builder.create();
-    			alert.show();
-    			return;
-    		}
+    		download();
     	}
     }
 
@@ -231,6 +242,11 @@ public final class DownloadActivity extends ListActivity {
         @Override
         public boolean areAllItemsEnabled() {
             return false;
+        }
+
+        @Override
+        public boolean isEnabled( int position ) {
+        	return false;
         }
 
         @Override
@@ -336,6 +352,12 @@ public final class DownloadActivity extends ListActivity {
         protected Integer doInBackground( Void... params ) {
         	int result;
 
+        	result = getInstalled();
+        	if ( result != 0 )
+        	{
+        		return result;
+        	}
+
         	result = downloadManifest();
         	if ( result != 0 )
         	{
@@ -371,6 +393,36 @@ public final class DownloadActivity extends ListActivity {
 
         	mActivity.setListAdapter( mAdapter );
         	mAdapter.notifyDataSetInvalidated();
+        }
+
+        private int getInstalled() {
+        	int result = 0;
+            final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
+
+            SQLiteDatabase catalogDb = mDbManager.getCatalogDatabase();
+        	Cursor cursor = catalogDb.rawQuery( "SELECT * FROM "+Catalog.TABLE_NAME
+        			+" GROUP BY "+Catalog.TYPE
+        			+" HAVING MAX("+Catalog.VERSION+")", null );
+
+        	if ( cursor.moveToFirst() ) {
+        		do {
+        			DataInfo info = new DataInfo();
+        			info.type = cursor.getString( cursor.getColumnIndex( Catalog.TYPE ) );
+        			info.desc = cursor.getString( cursor.getColumnIndex( Catalog.DESCRIPTION ) );
+        			info.version = cursor.getInt( cursor.getColumnIndex( Catalog.VERSION ) );
+        			try {
+            			String start = cursor.getString( cursor.getColumnIndex( Catalog.START_DATE ) );
+	        			info.start = dateFormat.parse( start );
+	        			String end = cursor.getString( cursor.getColumnIndex( Catalog.END_DATE ) );
+	        			info.end = dateFormat.parse( end );
+        			} catch ( ParseException e ) {
+        				Log.e( TAG, "Error parsing dates: "+e.getMessage() );
+        				return -1;
+        			}
+        		} while ( cursor.moveToNext() );
+        	}
+
+        	return result;
         }
 
         private int downloadManifest() {
@@ -474,11 +526,11 @@ public final class DownloadActivity extends ListActivity {
             			}
             		}
             );
-            datafile.getChild( "records" ).setEndTextElementListener( 
+            datafile.getChild( "actualsize" ).setEndTextElementListener( 
             		new EndTextElementListener() {
             			@Override
             			public void end( String body ) {
-            				info.records = Integer.parseInt( body );
+            				info.actualsize = Integer.parseInt( body );
             			}
             		}
             );
@@ -525,7 +577,7 @@ public final class DownloadActivity extends ListActivity {
                 Log.i( TAG, "version="+dataFile.version );
                 Log.i( TAG, "filename="+dataFile.fileName );
                 Log.i( TAG, "size="+dataFile.size );
-                Log.i( TAG, "records="+dataFile.records );
+                Log.i( TAG, "actualsize="+dataFile.actualsize );
                 Log.i( TAG, "start="+dataFile.start.toLocaleString() );
                 Log.i( TAG, "end="+dataFile.end.toLocaleString() );
             }
@@ -590,7 +642,7 @@ public final class DownloadActivity extends ListActivity {
                 		return result;
                 	}
 
-                	result = populateDb( data );
+                	result = installData( data );
                 	if ( result != 0 ) {
                 		return result;
                 	}
@@ -622,16 +674,16 @@ public final class DownloadActivity extends ListActivity {
         }
 
         protected int downloadFile( final DataInfo data ) {
-            mHandler.postAtFrontOfQueue( new Runnable() {
-				@Override
-				public void run() {
-					mProgressDialog.setProgress( 0 );
-                    mProgressDialog.setMax( data.size );
-		            mProgressDialog.setMessage( "Downloading "+data.type+" data..." );
-				}
-            } );
-
             try {
+                mHandler.post( new Runnable() {
+    				@Override
+    				public void run() {
+    					mProgressDialog.setProgress( 0 );
+                        mProgressDialog.setMax( data.size );
+    		            mProgressDialog.setMessage( "Downloading "+data.type+" data..." );
+    				}
+                } );
+
 	            DefaultHttpClient httpClient = new DefaultHttpClient();
 	            HttpHost target = new HttpHost( HOST, PORT );
 	            URI uri = new URI( PATH+"/"+data.fileName );
@@ -660,10 +712,10 @@ public final class DownloadActivity extends ListActivity {
 	                total += count;
 	                publishProgress( total );
 	            }
-	
+
 	            input.close();
 	            output.close();
-	
+
 	            return 0;
 			} catch ( FileNotFoundException e ) {
 	            Log.e( TAG, "FileNotFoundException: "+e.getMessage() );
@@ -683,29 +735,39 @@ public final class DownloadActivity extends ListActivity {
 			}
         }
 
-        protected int populateDb( final DataInfo data ) {
+        protected int installData( final DataInfo data ) {
         	int result=0;
 
-        	if ( data.type.equals( "FADDS" ) ) {
-        		result = loadFADDS( data );
+            mHandler.post( new Runnable() {
+				@Override
+				public void run() {
+					// Set the new progress details
+                    mProgressDialog.setMax( data.actualsize );
+		            mProgressDialog.setMessage( "Installing "+data.type+" data..." );
+				}
+            } );
+
+            // Reset the progress
+			publishProgress( 0 );
+
+			if ( data.type.equals( "FADDS" ) ) {
+        		result = installFaddsDb( data );
         	}
 
 			return result;
         }
 
-        protected int loadFADDS( final DataInfo data ) {
+        protected int installFaddsDb( final DataInfo data ) {
         	try {
-                mHandler.postAtFrontOfQueue( new Runnable() {
-    				@Override
-    				public void run() {
-    					mProgressDialog.setProgress( 0 );
-                        mProgressDialog.setMax( data.records );
-    		            mProgressDialog.setMessage( "Loading "+data.type+" data..." );
-    				}
-                } );
+                // Get the location of the FADDS db so we can overwrite it
+                DatabaseManager dbManager = new DatabaseManager( mActivity );
+                String path = dbManager.getFaddsDatabase().getPath();
+                // Close the db to prepare for the update
+                dbManager.closeFaddsDatabase();
 
-				InputStream zStream = mActivity.openFileInput( data.fileName );
-				
+				FileInputStream zStream = mActivity.openFileInput( data.fileName );
+				FileOutputStream out = new FileOutputStream( new File( path ) );
+
 				// We need to skip the 2 byte bzip2 file header before passing this stream
 				char magic1 = (char) zStream.read();
 				char magic2 = (char) zStream.read();
@@ -715,43 +777,25 @@ public final class DownloadActivity extends ListActivity {
 					return -1;
 				}
 
-				// Now pass this to be read as a bzip2 compressed stream
+				// Now pass data stream to be read as a bzip2 compressed stream
 				CBZip2InputStream bzipStream = new CBZip2InputStream( zStream );
 
-	            Log.i( TAG, "Opened bzip2 file for reading" );
-	        	
 	            int total = 0;
-
-				byte[] record = new byte[2048];
-				final int len = 1261;
+				byte[] buffer = new byte[64*1024];
+				int len = buffer.length;
 
 				// Try to read the type of record first
-				while ( total < data.records )  {
-					int count = bzipStream.read( record, 0, len );
-					if ( count != len ) {
-						Log.e( TAG, "Unable to read FADDS record #"+total );
-						return -1;
-					}
+				while ( total < data.actualsize )  {
+					int count = bzipStream.read( buffer, 0, len );
+					out.write( buffer, 0, count );
 
-					if ( record[0]=='A' && record[1]=='P' && record[2]=='T' ) {
-						// This is an airport record
-					}
-					else if ( record[0]=='R' && record[1]=='W' && record[2]=='Y' ) {
-						// This is a runway record
-					}
-					else if ( record[0]=='A' && record[1]=='T' && record[2]=='T' ) {
-						// This is a attendance record
-					}
-					else if ( record[0]=='R' && record[1]=='M' && record[2]=='K' ) {
-						// This is a remarks record
-					}
-
-					++total;
+					total += count;
 	                publishProgress( total );
 				}
 
 				bzipStream.close();
 				zStream.close();
+				out.close();
 
 	        	return 0;
 			} catch ( FileNotFoundException e ) {
@@ -765,6 +809,6 @@ public final class DownloadActivity extends ListActivity {
     }
 
     protected void showMessage( String title, String msg ) {
-    	Toast.makeText( getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
+    	Toast.makeText( getApplicationContext(), title+": "+msg, Toast.LENGTH_LONG ).show();
     }
 }

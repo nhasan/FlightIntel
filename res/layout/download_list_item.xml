@@ -5,7 +5,7 @@
      android:orientation="vertical">
 
      <TextView android:id="@+id/download_desc"
-         android:textSize="12sp"
+         android:textSize="14sp"
          android:textStyle="bold"
          android:paddingLeft="4sp"
          android:layout_width="fill_parent"

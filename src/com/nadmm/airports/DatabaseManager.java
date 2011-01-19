@@ -19,36 +19,37 @@
 
 package com.nadmm.airports;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-public class AirportsDatabase {
+public class DatabaseManager {
     public static final String TAG = "AirportsDatabase";
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "fadds.db";
 
-    private final DbOpenHelper mDbOpenHelper;
+    private final FaddsDbOpenHelper mFaddsDbHelper;
+    private final CatalogDbOpenHelper mCatalogDbHelper;
     private final Context mContext;
 
-    public AirportsDatabase( Context context ) {
+    public DatabaseManager( Context context ) {
         mContext = context;
-        mDbOpenHelper = new DbOpenHelper( mContext );
+        mFaddsDbHelper = new FaddsDbOpenHelper( mContext );
+        mCatalogDbHelper = new CatalogDbOpenHelper( mContext );
     }
 
-    public SQLiteDatabase getWritableDatabase() {
-    	return mDbOpenHelper.getWritableDatabase();
+    public SQLiteDatabase getFaddsDatabase() {
+    	return mFaddsDbHelper.getReadableDatabase();
     }
 
-    public SQLiteDatabase getReadableDatabase() {
-    	return mDbOpenHelper.getReadableDatabase();
+    public void closeFaddsDatabase() {
+    	mFaddsDbHelper.close();
+    }
+
+    public SQLiteDatabase getCatalogDatabase() {
+    	return mCatalogDbHelper.getWritableDatabase();
     }
 
     public static final class Airports implements BaseColumns {
@@ -134,10 +135,20 @@ public class AirportsDatabase {
         public static final String OTHER_SERVICES = "OTHER_SERVICES";
         public static final String WIND_INDICATOR = "IND_INDICATOR";
         public static final String ICAO_CODE = "ICAO_CODE";
+    }
 
-    public class DbOpenHelper extends SQLiteOpenHelper {
-        public DbOpenHelper( Context context ) {
-            super( context, DATABASE_NAME, null, DATABASE_VERSION );
+    public static final class Catalog implements BaseColumns {
+    	public static final String TABLE_NAME = "catalog";
+    	public static final String TYPE = "TYPE";
+    	public static final String DESCRIPTION = "DESCRIPTION";
+    	public static final String VERSION = "VERSION";
+    	public static final String START_DATE = "START_DATE";
+    	public static final String END_DATE = "END_DATE";
+    }
+
+    public class FaddsDbOpenHelper extends SQLiteOpenHelper {
+        public FaddsDbOpenHelper( Context context ) {
+            super( context, "fadds.db", null, 1 );
         }
 
         @Override
@@ -147,6 +158,27 @@ public class AirportsDatabase {
         @Override
         public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
         }
-    };
+    }
 
-};
+    public class CatalogDbOpenHelper extends SQLiteOpenHelper {
+        public CatalogDbOpenHelper( Context context ) {
+            super( context, "catalog.db", null, 1 );
+        }
+
+        @Override
+        public void onCreate( SQLiteDatabase db ) {
+        	Log.i( TAG, "Creating Catalog database" );
+        	db.execSQL( "CREATE TABLE "+Catalog.TABLE_NAME+" ("
+        			+Catalog._ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "
+        			+Catalog.TYPE+" TEXT not null, "
+        			+Catalog.DESCRIPTION+" TEXT not null, "
+        			+Catalog.VERSION+" INTEGER not null, "
+        			+Catalog.START_DATE+" TEXT not null, "
+        			+Catalog.END_DATE+" TEXT not null)" );
+        }
+
+        @Override
+        public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
+        }
+    }
+}

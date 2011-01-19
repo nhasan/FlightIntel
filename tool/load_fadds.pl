@@ -387,6 +387,7 @@ my $insert_remarks_record = "INSERT INTO remarks ("
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );
+$dbh->do( "PRAGMA synchronous=OFF" );
 
 $dbh->do( "DROP TABLE IF EXISTS airports" );
 $dbh->do( $create_airports_table );
@@ -425,6 +426,7 @@ while ( my $line = <APT_FILE> )
     if ( ($i % 100) == 0 )
     {
         print( "\rProcessed $i records..." );
+        $dbh->do( "PRAGMA synchronous=ON" );
     }
 
     my $type = substr( $line, 0, 3 );
@@ -514,87 +516,87 @@ while ( my $line = <APT_FILE> )
     }
     elsif ( $type eq "RWY" )
     {
-        $sth_att->bind_param(  1, substr( $line,    3, 11 ) );
-        $sth_att->bind_param(  2, substr( $line,   16,  7 ) );
-        $sth_att->bind_param(  3, substr( $line,   23,  5 ) );
-        $sth_att->bind_param(  4, substr( $line,   28,  4 ) );
-        $sth_att->bind_param(  5, substr( $line,   32, 12 ) );
-        $sth_att->bind_param(  6, substr( $line,   44,  5 ) );
-        $sth_att->bind_param(  7, substr( $line,   60,  5 ) );
-        $sth_att->bind_param(  8, substr( $line,   65,  3 ) );
-        $sth_att->bind_param(  9, substr( $line,   68,  3 ) );
-        $sth_att->bind_param( 10, substr( $line,   71, 10 ) );
-        $sth_att->bind_param( 11, substr( $line,   81,  1 ) );
-        $sth_att->bind_param( 12, substr( $line,   82,  5 ) );
-        $sth_att->bind_param( 13, substr( $line,   87,  1 ) );
-        $sth_att->bind_param( 14, substr( $line,   88,  6 ) );
-        $sth_att->bind_param( 15, substr( $line,  109, 12 ) );
-        $sth_att->bind_param( 16, substr( $line,  136, 12 ) );
-        $sth_att->bind_param( 17, substr( $line,  148,  7 ) );
-        $sth_att->bind_param( 18, substr( $line,  155,  3 ) );
-        $sth_att->bind_param( 19, substr( $line,  158,  4 ) );
-        $sth_att->bind_param( 20, substr( $line,  216,  7 ) );
-        $sth_att->bind_param( 21, substr( $line,  223,  4 ) );
-        $sth_att->bind_param( 22, substr( $line,  227,  7 ) );
-        $sth_att->bind_param( 23, substr( $line,  234,  5 ) );
-        $sth_att->bind_param( 24, substr( $line,  239,  3 ) );
-        $sth_att->bind_param( 25, substr( $line,  243,  8 ) );
-        $sth_att->bind_param( 26, substr( $line,  251,  1 ) );
-        $sth_att->bind_param( 27, substr( $line,  252,  1 ) );
-        $sth_att->bind_param( 28, substr( $line,  253,  1 ) );
-        $sth_att->bind_param( 29, substr( $line,  254, 11 ) );
-        $sth_att->bind_param( 30, substr( $line,  265,  4 ) );
-        $sth_att->bind_param( 31, substr( $line,  274,  2 ) );
-        $sth_att->bind_param( 32, substr( $line,  276,  5 ) );
-        $sth_att->bind_param( 33, substr( $line,  281,  5 ) );
-        $sth_att->bind_param( 34, substr( $line,  286,  7 ) );
-        $sth_att->bind_param( 35, substr( $line,  293,  3 ) );
-        $sth_att->bind_param( 36, substr( $line,  296,  3 ) );
-        $sth_att->bind_param( 37, substr( $line,  299, 10 ) );
-        $sth_att->bind_param( 38, substr( $line,  309,  1 ) );
-        $sth_att->bind_param( 39, substr( $line,  310,  5 ) );
-        $sth_att->bind_param( 40, substr( $line,  315,  1 ) );
-        $sth_att->bind_param( 41, substr( $line,  316,  6 ) );
-        $sth_att->bind_param( 42, substr( $line,  337, 12 ) );
-        $sth_att->bind_param( 43, substr( $line,  364, 12 ) );
-        $sth_att->bind_param( 44, substr( $line,  376,  7 ) );
-        $sth_att->bind_param( 45, substr( $line,  383,  3 ) );
-        $sth_att->bind_param( 46, substr( $line,  386,  4 ) );
-        $sth_att->bind_param( 47, substr( $line,  444,  7 ) );
-        $sth_att->bind_param( 48, substr( $line,  451,  4 ) );
-        $sth_att->bind_param( 49, substr( $line,  455,  7 ) );
-        $sth_att->bind_param( 50, substr( $line,  462,  5 ) );
-        $sth_att->bind_param( 51, substr( $line,  467,  3 ) );
-        $sth_att->bind_param( 52, substr( $line,  471,  8 ) );
-        $sth_att->bind_param( 53, substr( $line,  479,  1 ) );
-        $sth_att->bind_param( 54, substr( $line,  480,  1 ) );
-        $sth_att->bind_param( 55, substr( $line,  481,  1 ) );
-        $sth_att->bind_param( 56, substr( $line,  482, 11 ) );
-        $sth_att->bind_param( 57, substr( $line,  493,  4 ) );
-        $sth_att->bind_param( 58, substr( $line,  502,  2 ) );
-        $sth_att->bind_param( 59, substr( $line,  504,  5 ) );
-        $sth_att->bind_param( 60, substr( $line,  509,  5 ) );
-        $sth_att->bind_param( 61, substr( $line,  514,  7 ) );
-        $sth_att->bind_param( 62, substr( $line,  571,  5 ) );
-        $sth_att->bind_param( 63, substr( $line,  576,  4 ) );
-        $sth_att->bind_param( 64, substr( $line,  710,  5 ) );
-        $sth_att->bind_param( 65, substr( $line,  715,  5 ) );
-        $sth_att->bind_param( 66, substr( $line,  720,  5 ) );
-        $sth_att->bind_param( 67, substr( $line,  725,  5 ) );
-        $sth_att->bind_param( 68, substr( $line,  730,  5 ) );
-        $sth_att->bind_param( 69, substr( $line,  735,  7 ) );
-        $sth_att->bind_param( 70, substr( $line,  742, 40 ) );
-        $sth_att->bind_param( 71, substr( $line,  862,  5  ) );
-        $sth_att->bind_param( 72, substr( $line,  867,  4  ) );
-        $sth_att->bind_param( 73, substr( $line, 1001,  5  ) );
-        $sth_att->bind_param( 74, substr( $line, 1006,  5  ) );
-        $sth_att->bind_param( 75, substr( $line, 1011,  5  ) );
-        $sth_att->bind_param( 76, substr( $line, 1016,  5  ) );
-        $sth_att->bind_param( 77, substr( $line, 1021,  5  ) );
-        $sth_att->bind_param( 78, substr( $line, 1026,  7  ) );
-        $sth_att->bind_param( 79, substr( $line, 1033, 40  ) );
+        $sth_rwy->bind_param(  1, substr( $line,    3, 11 ) );
+        $sth_rwy->bind_param(  2, substr( $line,   16,  7 ) );
+        $sth_rwy->bind_param(  3, substr( $line,   23,  5 ) );
+        $sth_rwy->bind_param(  4, substr( $line,   28,  4 ) );
+        $sth_rwy->bind_param(  5, substr( $line,   32, 12 ) );
+        $sth_rwy->bind_param(  6, substr( $line,   44,  5 ) );
+        $sth_rwy->bind_param(  7, substr( $line,   60,  5 ) );
+        $sth_rwy->bind_param(  8, substr( $line,   65,  3 ) );
+        $sth_rwy->bind_param(  9, substr( $line,   68,  3 ) );
+        $sth_rwy->bind_param( 10, substr( $line,   71, 10 ) );
+        $sth_rwy->bind_param( 11, substr( $line,   81,  1 ) );
+        $sth_rwy->bind_param( 12, substr( $line,   82,  5 ) );
+        $sth_rwy->bind_param( 13, substr( $line,   87,  1 ) );
+        $sth_rwy->bind_param( 14, substr( $line,   88,  6 ) );
+        $sth_rwy->bind_param( 15, substr( $line,  109, 12 ) );
+        $sth_rwy->bind_param( 16, substr( $line,  136, 12 ) );
+        $sth_rwy->bind_param( 17, substr( $line,  148,  7 ) );
+        $sth_rwy->bind_param( 18, substr( $line,  155,  3 ) );
+        $sth_rwy->bind_param( 19, substr( $line,  158,  4 ) );
+        $sth_rwy->bind_param( 20, substr( $line,  216,  7 ) );
+        $sth_rwy->bind_param( 21, substr( $line,  223,  4 ) );
+        $sth_rwy->bind_param( 22, substr( $line,  227,  7 ) );
+        $sth_rwy->bind_param( 23, substr( $line,  234,  5 ) );
+        $sth_rwy->bind_param( 24, substr( $line,  239,  3 ) );
+        $sth_rwy->bind_param( 25, substr( $line,  243,  8 ) );
+        $sth_rwy->bind_param( 26, substr( $line,  251,  1 ) );
+        $sth_rwy->bind_param( 27, substr( $line,  252,  1 ) );
+        $sth_rwy->bind_param( 28, substr( $line,  253,  1 ) );
+        $sth_rwy->bind_param( 29, substr( $line,  254, 11 ) );
+        $sth_rwy->bind_param( 30, substr( $line,  265,  4 ) );
+        $sth_rwy->bind_param( 31, substr( $line,  274,  2 ) );
+        $sth_rwy->bind_param( 32, substr( $line,  276,  5 ) );
+        $sth_rwy->bind_param( 33, substr( $line,  281,  5 ) );
+        $sth_rwy->bind_param( 34, substr( $line,  286,  7 ) );
+        $sth_rwy->bind_param( 35, substr( $line,  293,  3 ) );
+        $sth_rwy->bind_param( 36, substr( $line,  296,  3 ) );
+        $sth_rwy->bind_param( 37, substr( $line,  299, 10 ) );
+        $sth_rwy->bind_param( 38, substr( $line,  309,  1 ) );
+        $sth_rwy->bind_param( 39, substr( $line,  310,  5 ) );
+        $sth_rwy->bind_param( 40, substr( $line,  315,  1 ) );
+        $sth_rwy->bind_param( 41, substr( $line,  316,  6 ) );
+        $sth_rwy->bind_param( 42, substr( $line,  337, 12 ) );
+        $sth_rwy->bind_param( 43, substr( $line,  364, 12 ) );
+        $sth_rwy->bind_param( 44, substr( $line,  376,  7 ) );
+        $sth_rwy->bind_param( 45, substr( $line,  383,  3 ) );
+        $sth_rwy->bind_param( 46, substr( $line,  386,  4 ) );
+        $sth_rwy->bind_param( 47, substr( $line,  444,  7 ) );
+        $sth_rwy->bind_param( 48, substr( $line,  451,  4 ) );
+        $sth_rwy->bind_param( 49, substr( $line,  455,  7 ) );
+        $sth_rwy->bind_param( 50, substr( $line,  462,  5 ) );
+        $sth_rwy->bind_param( 51, substr( $line,  467,  3 ) );
+        $sth_rwy->bind_param( 52, substr( $line,  471,  8 ) );
+        $sth_rwy->bind_param( 53, substr( $line,  479,  1 ) );
+        $sth_rwy->bind_param( 54, substr( $line,  480,  1 ) );
+        $sth_rwy->bind_param( 55, substr( $line,  481,  1 ) );
+        $sth_rwy->bind_param( 56, substr( $line,  482, 11 ) );
+        $sth_rwy->bind_param( 57, substr( $line,  493,  4 ) );
+        $sth_rwy->bind_param( 58, substr( $line,  502,  2 ) );
+        $sth_rwy->bind_param( 59, substr( $line,  504,  5 ) );
+        $sth_rwy->bind_param( 60, substr( $line,  509,  5 ) );
+        $sth_rwy->bind_param( 61, substr( $line,  514,  7 ) );
+        $sth_rwy->bind_param( 62, substr( $line,  571,  5 ) );
+        $sth_rwy->bind_param( 63, substr( $line,  576,  4 ) );
+        $sth_rwy->bind_param( 64, substr( $line,  710,  5 ) );
+        $sth_rwy->bind_param( 65, substr( $line,  715,  5 ) );
+        $sth_rwy->bind_param( 66, substr( $line,  720,  5 ) );
+        $sth_rwy->bind_param( 67, substr( $line,  725,  5 ) );
+        $sth_rwy->bind_param( 68, substr( $line,  730,  5 ) );
+        $sth_rwy->bind_param( 69, substr( $line,  735,  7 ) );
+        $sth_rwy->bind_param( 70, substr( $line,  742, 40 ) );
+        $sth_rwy->bind_param( 71, substr( $line,  862,  5  ) );
+        $sth_rwy->bind_param( 72, substr( $line,  867,  4  ) );
+        $sth_rwy->bind_param( 73, substr( $line, 1001,  5  ) );
+        $sth_rwy->bind_param( 74, substr( $line, 1006,  5  ) );
+        $sth_rwy->bind_param( 75, substr( $line, 1011,  5  ) );
+        $sth_rwy->bind_param( 76, substr( $line, 1016,  5  ) );
+        $sth_rwy->bind_param( 77, substr( $line, 1021,  5  ) );
+        $sth_rwy->bind_param( 78, substr( $line, 1026,  7  ) );
+        $sth_rwy->bind_param( 79, substr( $line, 1033, 40  ) );
  
-        $sth_att->execute();
+        $sth_rwy->execute();
     }
     elsif ( $type eq "ATT" )
     {
@@ -606,11 +608,16 @@ while ( my $line = <APT_FILE> )
     }
     elsif ( $type eq "RMK" )
     {
-        $sth_att->bind_param( 1, substr( $line,  3,  11 ) );
-        $sth_att->bind_param( 2, substr( $line, 16,  11 ) );
-        $sth_att->bind_param( 3, substr( $line, 18, 700 ) );
+        $sth_rmk->bind_param( 1, substr( $line,  3,  11 ) );
+        $sth_rmk->bind_param( 2, substr( $line, 16,  11 ) );
+        $sth_rmk->bind_param( 3, substr( $line, 18, 700 ) );
  
-        $sth_att->execute();
+        $sth_rmk->execute();
+    }
+
+    if ( ($i % 100) == 0 )
+    {
+        $dbh->do( "PRAGMA synchronous=OFF" );
     }
 }
 
