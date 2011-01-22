@@ -41,15 +41,15 @@ public class DatabaseManager {
     }
 
     public SQLiteDatabase getFaddsDatabase() {
-    	return mFaddsDbHelper.getReadableDatabase();
+        return mFaddsDbHelper.getReadableDatabase();
     }
 
     public void closeFaddsDatabase() {
-    	mFaddsDbHelper.close();
+        mFaddsDbHelper.close();
     }
 
     public SQLiteDatabase getCatalogDatabase() {
-    	return mCatalogDbHelper.getWritableDatabase();
+        return mCatalogDbHelper.getWritableDatabase();
     }
 
     public static final class Airports implements BaseColumns {
@@ -138,12 +138,12 @@ public class DatabaseManager {
     }
 
     public static final class Catalog implements BaseColumns {
-    	public static final String TABLE_NAME = "catalog";
-    	public static final String TYPE = "TYPE";
-    	public static final String DESCRIPTION = "DESCRIPTION";
-    	public static final String VERSION = "VERSION";
-    	public static final String START_DATE = "START_DATE";
-    	public static final String END_DATE = "END_DATE";
+        public static final String TABLE_NAME = "catalog";
+        public static final String TYPE = "TYPE";
+        public static final String DESCRIPTION = "DESCRIPTION";
+        public static final String VERSION = "VERSION";
+        public static final String START_DATE = "START_DATE";
+        public static final String END_DATE = "END_DATE";
     }
 
     public class FaddsDbOpenHelper extends SQLiteOpenHelper {
