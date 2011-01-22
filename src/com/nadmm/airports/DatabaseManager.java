@@ -167,14 +167,14 @@ public class DatabaseManager {
 
         @Override
         public void onCreate( SQLiteDatabase db ) {
-        	Log.i( TAG, "Creating Catalog database" );
-        	db.execSQL( "CREATE TABLE "+Catalog.TABLE_NAME+" ("
-        			+Catalog._ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "
-        			+Catalog.TYPE+" TEXT not null, "
-        			+Catalog.DESCRIPTION+" TEXT not null, "
-        			+Catalog.VERSION+" INTEGER not null, "
-        			+Catalog.START_DATE+" TEXT not null, "
-        			+Catalog.END_DATE+" TEXT not null)" );
+            Log.i( TAG, "Creating Catalog database" );
+            db.execSQL( "CREATE TABLE "+Catalog.TABLE_NAME+" ("
+                    +Catalog._ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    +Catalog.TYPE+" TEXT not null, "
+                    +Catalog.DESCRIPTION+" TEXT not null, "
+                    +Catalog.VERSION+" INTEGER not null, "
+                    +Catalog.START_DATE+" TEXT not null, "
+                    +Catalog.END_DATE+" TEXT not null)" );
         }
 
         @Override

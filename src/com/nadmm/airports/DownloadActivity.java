@@ -760,53 +760,53 @@ public final class DownloadActivity extends ListActivity {
         }
 
         protected int installFaddsDb( final DataInfo data ) {
-        	try {
+            try {
                 // Get the location of the FADDS db so we can overwrite it
                 DatabaseManager dbManager = new DatabaseManager( mActivity );
                 String path = dbManager.getFaddsDatabase().getPath();
                 // Close the db to prepare for the update
                 dbManager.closeFaddsDatabase();
 
-				FileInputStream zStream = mActivity.openFileInput( data.fileName );
-				FileOutputStream out = new FileOutputStream( new File( path ) );
+                FileInputStream zStream = mActivity.openFileInput( data.fileName );
+                FileOutputStream out = new FileOutputStream( new File( path ) );
 
-				// We need to skip the 2 byte bzip2 file header before passing this stream
-				char magic1 = (char) zStream.read();
-				char magic2 = (char) zStream.read();
-				
-				if ( magic1 != 'B' && magic2 != 'Z' ) {
-					Log.e( TAG, "Invalid bzip2 file: "+data.fileName );
-					return -1;
-				}
+                // We need to skip the 2 byte bzip2 file header before passing this stream
+                char magic1 = (char) zStream.read();
+                char magic2 = (char) zStream.read();
+                
+                if ( magic1 != 'B' && magic2 != 'Z' ) {
+                    Log.e( TAG, "Invalid bzip2 file: "+data.fileName );
+                    return -1;
+                }
 
-				// Now pass data stream to be read as a bzip2 compressed stream
-				CBZip2InputStream bzipStream = new CBZip2InputStream( zStream );
+                // Now pass data stream to be read as a bzip2 compressed stream
+                CBZip2InputStream bzipStream = new CBZip2InputStream( zStream );
 
-	            int total = 0;
-				byte[] buffer = new byte[64*1024];
-				int len = buffer.length;
+                int total = 0;
+                byte[] buffer = new byte[64*1024];
+                int len = buffer.length;
 
-				// Try to read the type of record first
-				while ( total < data.actualsize )  {
-					int count = bzipStream.read( buffer, 0, len );
-					out.write( buffer, 0, count );
+                // Try to read the type of record first
+                while ( total < data.actualsize )  {
+                    int count = bzipStream.read( buffer, 0, len );
+                    out.write( buffer, 0, count );
 
-					total += count;
-	                publishProgress( total );
-				}
+                    total += count;
+                    publishProgress( total );
+                }
 
-				bzipStream.close();
-				zStream.close();
-				out.close();
+                bzipStream.close();
+                zStream.close();
+                out.close();
 
-	        	return 0;
-			} catch ( FileNotFoundException e ) {
-	            Log.e( TAG, "FileNotFoundException: "+e.getMessage() );
-	            return -1;
-			} catch ( IOException e ) {
-	            Log.e( TAG, "IOException: "+e.getMessage() );
-	            return -1;
-			}
+                return 0;
+            } catch ( FileNotFoundException e ) {
+                Log.e( TAG, "FileNotFoundException: "+e.getMessage() );
+                return -1;
+            } catch ( IOException e ) {
+                Log.e( TAG, "IOException: "+e.getMessage() );
+                return -1;
+            }
         }
     }
 

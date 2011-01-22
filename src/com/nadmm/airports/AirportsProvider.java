@@ -123,13 +123,13 @@ public class AirportsProvider extends ContentProvider {
 		throw new UnsupportedOperationException();
 	}
 
-	/* (non-Javadoc)
-	 * @see android.content.ContentProvider#delete(android.net.Uri, java.lang.String, java.lang.String[])
-	 */
-	@Override
-	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		throw new UnsupportedOperationException();
-	}
+    /* (non-Javadoc)
+     * @see android.content.ContentProvider#delete(android.net.Uri, java.lang.String, java.lang.String[])
+     */
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        throw new UnsupportedOperationException();
+    }
 
 	/* (non-Javadoc)
 	 * @see android.content.ContentProvider#update(android.net.Uri, android.content.ContentValues, java.lang.String, java.lang.String[])

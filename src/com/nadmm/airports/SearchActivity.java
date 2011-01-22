@@ -33,26 +33,26 @@ public class SearchActivity extends ListActivity {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-	    Intent intent = getIntent();
-	    
-	    if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
-	        String query = intent.getStringExtra( SearchManager.QUERY );
-	        String result = "Result: "+query;
-	        //doMySearch(query);
+        Intent intent = getIntent();
+        
+        if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
+            String query = intent.getStringExtra( SearchManager.QUERY );
+            String result = "Result: "+query;
+            //doMySearch(query);
 
-	        ArrayList<HashMap<String, String>> rows = new ArrayList<HashMap<String, String>>();
+            ArrayList<HashMap<String, String>> rows = new ArrayList<HashMap<String, String>>();
 
-	        HashMap<String, String> row = new HashMap<String, String>();
-	        row.put( "query", query );
-	        row.put( "result", result );
-	        rows.add( row );
+            HashMap<String, String> row = new HashMap<String, String>();
+            row.put( "query", query );
+            row.put( "result", result );
+            rows.add( row );
 
-	        SimpleAdapter adapter = new SimpleAdapter( this, rows, 
-	        		android.R.layout.two_line_list_item,
-	        		new String[] { "query", "result" },
-	        		new int[] {android.R.id.text1, android.R.id.text2} );
+            SimpleAdapter adapter = new SimpleAdapter( this, rows, 
+                    android.R.layout.two_line_list_item,
+                    new String[] { "query", "result" },
+                    new int[] {android.R.id.text1, android.R.id.text2} );
 
-	        setListAdapter( adapter );
-	    }
+            setListAdapter( adapter );
+        }
     }
 }
