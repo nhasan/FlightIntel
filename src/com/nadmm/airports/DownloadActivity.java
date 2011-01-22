@@ -294,8 +294,9 @@ public final class DownloadActivity extends ListActivity {
 						TextView desc = (TextView) convertView.findViewById( R.id.download_desc );
 						desc.setText( info.desc );
 						TextView dates = (TextView) convertView.findViewById( R.id.download_dates );
-						dates.setText( "Effective from "+mDateFormat.format( info.start )
-								+" to "+mDateFormat.format( info.end ) );
+						dates.setText("Effective "+DateUtils.formatDateRange( mContext, 
+								info.start.getTime(), info.end.getTime(), 
+								DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) );
 						TextView size = (TextView) convertView.findViewById( R.id.download_size );
 						size.setText( "Current" );
 					}
@@ -401,8 +402,8 @@ public final class DownloadActivity extends ListActivity {
 
             SQLiteDatabase catalogDb = mDbManager.getCatalogDatabase();
         	Cursor cursor = catalogDb.rawQuery( "SELECT * FROM "+Catalog.TABLE_NAME
-        			+" GROUP BY "+Catalog.TYPE
-        			+" HAVING MAX("+Catalog.VERSION+")", null );
+        			+" GROUP BY "+Catalog.TYPE, null );
+        			//+" HAVING MAX("+Catalog.VERSION+")", null );
 
         	if ( cursor.moveToFirst() ) {
         		do {
@@ -415,6 +416,7 @@ public final class DownloadActivity extends ListActivity {
 	        			info.start = dateFormat.parse( start );
 	        			String end = cursor.getString( cursor.getColumnIndex( Catalog.END_DATE ) );
 	        			info.end = dateFormat.parse( end );
+	        			mInstalledData.add( info );
         			} catch ( ParseException e ) {
         				Log.e( TAG, "Error parsing dates: "+e.getMessage() );
         				return -1;
