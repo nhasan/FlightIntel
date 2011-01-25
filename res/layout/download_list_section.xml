@@ -6,8 +6,9 @@
 
      <TextView android:id="@+id/download_section"
          android:textSize="14sp"
+         android:textColor="#FFFFFFFF"
          android:textStyle="bold"
-         android:background="#004040"
+         android:background="@drawable/title_bar_portrait"
          android:paddingTop="2sp"
          android:paddingBottom="3sp"
          android:paddingLeft="4sp"
