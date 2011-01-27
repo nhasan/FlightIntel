@@ -19,7 +19,6 @@
 
 package com.nadmm.airports;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,11 +44,11 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.tools.bzip2.CBZip2InputStream;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -65,6 +63,7 @@ import android.sax.Element;
 import android.sax.EndElementListener;
 import android.sax.EndTextElementListener;
 import android.sax.RootElement;
+import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -95,11 +94,12 @@ public final class DownloadActivity extends ListActivity {
 
     private DatabaseManager mDbManager;
 
-    private final class DataInfo {
+    final class DataInfo {
         public String type;
         public String desc;
         public int version;
         public String fileName;
+        public String dbName;
         public int size;
         public Date start;
         public Date end;
@@ -206,7 +206,6 @@ public final class DownloadActivity extends ListActivity {
 
     private final class DownloadListAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
-        private final DateFormat mDateFormat = DateFormat.getDateInstance();
         private Context mContext;
         private final int VIEW_TYPE_SECTION_HEADER = 0;
         private final int VIEW_TYPE_DATA_FILE = 1;
@@ -776,9 +775,10 @@ public final class DownloadActivity extends ListActivity {
         protected int installData( final DataInfo data ) {
             int result=0;
 
+            File cacheFile = new File( mCacheDir, data.fileName );
             ZipFile zipFile;
             try {
-                zipFile = new ZipFile( new File( mCacheDir, data.fileName ) );
+                zipFile = new ZipFile( cacheFile );
             } catch ( ZipException e ) {
                 Log.e( TAG, "ZipException: "+e.getMessage() );
                 return -1;
@@ -787,7 +787,7 @@ public final class DownloadActivity extends ListActivity {
                 return -1;
             }
 
-            final ZipEntry entry = (ZipEntry)zipFile.entries().nextElement();
+            final ZipEntry entry = (ZipEntry) zipFile.entries().nextElement();
 
             mHandler.post( new Runnable() {
                 @Override
@@ -801,19 +801,6 @@ public final class DownloadActivity extends ListActivity {
             // Reset the progress
             publishProgress( 0 );
 
-            if ( data.type.equals( "FADDS" ) ) {
-                result = installFaddsDb( zipFile );
-            }
-
-            try {
-                zipFile.close();
-            } catch ( IOException e ) {
-            }
- 
-            return result;
-        }
-
-        protected int installFaddsDb( ZipFile zipFile ) {
             if ( !mDatabaseDir.exists() ) {
                 if ( !mDatabaseDir.mkdirs() ) {
                     Log.e( TAG, "Unable to create database dir on external storage" );
@@ -821,14 +808,14 @@ public final class DownloadActivity extends ListActivity {
                 }
             }
 
+            data.dbName = entry.getName();
+
             InputStream in = null;
             BufferedOutputStream out = null;
 
             try {
-                final ZipEntry entry = (ZipEntry)zipFile.entries().nextElement();
                 in = zipFile.getInputStream( entry );
-
-                File dbFile = new File( mDatabaseDir, entry.getName() );
+                File dbFile = new File( mDatabaseDir, data.dbName );
                 out = new BufferedOutputStream( new FileOutputStream( dbFile ) );
 
                 byte[] buffer = new byte[ 64*1024 ];
@@ -843,6 +830,11 @@ public final class DownloadActivity extends ListActivity {
                     publishProgress( total );
                 }
 
+                result = (int) insertCatalogEntry( data );
+                if ( result != 0 ) {
+                    return result;
+                }
+     
                 return 0;
             } catch ( FileNotFoundException e ) {
                 Log.e( TAG, "FileNotFoundException: "+e.getMessage() );
@@ -851,6 +843,8 @@ public final class DownloadActivity extends ListActivity {
                 Log.e( TAG, "IOException: "+e.getMessage() );
                 return -1;
             } finally {
+                cacheFile.delete();
+
                 try {
                     if ( in != null ) {
                         in.close();
@@ -863,7 +857,25 @@ public final class DownloadActivity extends ListActivity {
                     }
                 } catch ( IOException e ) {
                 }
+                try {
+                    zipFile.close();
+                } catch ( IOException e ) {
+                }
             }
+        }
+
+        long insertCatalogEntry( DataInfo data ) {
+            ContentValues values = new ContentValues();
+            values.put( Catalog.TYPE, data.type );
+            values.put( Catalog.DESCRIPTION, data.desc );
+            values.put( Catalog.VERSION, data.version );
+            values.put( Catalog.START_DATE, DateFormat.format( "YYYY-MM-dd", data.start ).toString() );
+            values.put( Catalog.END_DATE, DateFormat.format( "YYYY-MM-dd", data.end ).toString() );
+            values.put( Catalog.DB_NAME, data.dbName );
+
+            Log.i( TAG, "Inserting catalog: type="+data.type
+                    +", version="+data.version+", db="+data.dbName );
+            return mDbManager.insertCatalogEntry( values );
         }
     }
 

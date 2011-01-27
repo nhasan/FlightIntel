@@ -19,6 +19,7 @@
 
 package com.nadmm.airports;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -144,6 +145,20 @@ public class DatabaseManager {
         public static final String VERSION = "VERSION";
         public static final String START_DATE = "START_DATE";
         public static final String END_DATE = "END_DATE";
+        public static final String DB_NAME = "DB_NAME";
+    }
+
+    public int insertCatalogEntry( ContentValues values ) {
+        SQLiteDatabase db = mCatalogDbHelper.getWritableDatabase();
+        long id = db.insert( Catalog.TABLE_NAME, null, values );
+
+        if ( id >= 0 ) {
+            Log.i( TAG, "Inserted catalog: _id="+id );
+        } else {
+            Log.i( TAG, "Failed to insert into catalog" );
+        }
+
+        return (int) id;
     }
 
     public class FaddsDbOpenHelper extends SQLiteOpenHelper {
@@ -174,7 +189,8 @@ public class DatabaseManager {
                     +Catalog.DESCRIPTION+" TEXT not null, "
                     +Catalog.VERSION+" INTEGER not null, "
                     +Catalog.START_DATE+" TEXT not null, "
-                    +Catalog.END_DATE+" TEXT not null)" );
+                    +Catalog.END_DATE+" TEXT not null, "
+                    +Catalog.DB_NAME+" TEXT not null)" );
         }
 
         @Override
