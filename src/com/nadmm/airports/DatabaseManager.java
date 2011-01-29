@@ -21,6 +21,7 @@ package com.nadmm.airports;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
@@ -45,8 +46,9 @@ public class DatabaseManager {
         return mFaddsDbHelper.getReadableDatabase();
     }
 
-    public void closeFaddsDatabase() {
+    public void closeDatabases() {
         mFaddsDbHelper.close();
+        mCatalogDbHelper.close();
     }
 
     public SQLiteDatabase getCatalogDatabase() {
@@ -150,15 +152,26 @@ public class DatabaseManager {
 
     public int insertCatalogEntry( ContentValues values ) {
         SQLiteDatabase db = mCatalogDbHelper.getWritableDatabase();
-        long id = db.insert( Catalog.TABLE_NAME, null, values );
 
+        long id = db.insert( Catalog.TABLE_NAME, null, values );
         if ( id >= 0 ) {
             Log.i( TAG, "Inserted catalog: _id="+id );
         } else {
             Log.i( TAG, "Failed to insert into catalog" );
         }
 
+        db.close();
+
         return (int) id;
+    }
+
+    public Cursor queryCatalog( String query ) {
+        SQLiteDatabase db = mCatalogDbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery( "SELECT * FROM "+Catalog.TABLE_NAME
+                +" GROUP BY "+Catalog.TYPE, null );
+                //+ GROUP BY "+Catalog.TYPE+" HAVING MAX("+Catalog.VERSION+")", null );
+        db.close();
+        return cursor;
     }
 
     public class FaddsDbOpenHelper extends SQLiteOpenHelper {

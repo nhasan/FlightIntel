@@ -19,7 +19,6 @@
 
 package com.nadmm.airports;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -47,7 +47,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -76,6 +75,7 @@ import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,8 +91,6 @@ public final class DownloadActivity extends ListActivity {
 
     private static final File EXTERNAL_STORAGE_ANDROID_DATA_DIRECTORY
         = new File ( new File( Environment.getExternalStorageDirectory(), "Android" ), "data" );
-
-    private DatabaseManager mDbManager;
 
     final class DataInfo {
         public String type;
@@ -122,6 +120,9 @@ public final class DownloadActivity extends ListActivity {
     private final ArrayList<DataInfo> mAvailableData = new ArrayList<DataInfo>();
 
     private DownloadListAdapter mAdapter;
+    private DatabaseManager mDbManager;
+    private DownloadTask mDownloadTask;
+    private AtomicBoolean mStop;
 
     /** Called when the activity is first created. */
     @Override
@@ -130,6 +131,8 @@ public final class DownloadActivity extends ListActivity {
 
         mAdapter = new DownloadListAdapter( this );
         mDbManager = new DatabaseManager( this );
+        mDownloadTask = null;
+        mStop = new AtomicBoolean( false );
 
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         setTitle( "Airports - "+getTitle() );
@@ -200,8 +203,33 @@ public final class DownloadActivity extends ListActivity {
             return;
         }
 
-        DownloadTask task = new DownloadTask( this );
-        task.execute();
+        mDownloadTask = new DownloadTask( this );
+        mDownloadTask.execute();
+    }
+
+    private final class ItemData {
+        public String type;
+        public TextView statusText;
+        public ProgressBar progressBar;
+
+        public ItemData( String t, TextView s, ProgressBar p ) {
+            type = t;
+            statusText = s;
+            progressBar = p;
+        }
+
+        public void setMaxSize( int max ) {
+            progressBar.setMax( max );
+            setProgress( 0 );
+            progressBar.setVisibility( View.VISIBLE );
+        }
+
+        public void setProgress( int progress ) {
+            progressBar.setProgress( progress );
+            statusText.setText( Formatter.formatShortFileSize( DownloadActivity.this, progress )
+                    +" of "
+                    +Formatter.formatShortFileSize( DownloadActivity.this, progressBar.getMax() ) );
+        }
     }
 
     private final class DownloadListAdapter extends BaseAdapter {
@@ -313,7 +341,7 @@ public final class DownloadActivity extends ListActivity {
                         dates.setText("Effective "+DateUtils.formatDateRange( mContext, 
                                 info.start.getTime(), info.end.getTime(), 
                                 DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) );
-                        TextView size = (TextView) convertView.findViewById( R.id.download_size );
+                        TextView size = (TextView) convertView.findViewById( R.id.download_status );
                         size.setText( "Current" );
                     }
                 }
@@ -328,17 +356,21 @@ public final class DownloadActivity extends ListActivity {
                         if ( convertView == null ) {
                             convertView = mInflater.inflate( R.layout.download_list_item, null );
                         }                        
-                        DataInfo info = mAvailableData.get( position-getAvailableItemOffset() );
+                        DataInfo data = mAvailableData.get( position-getAvailableItemOffset() );
                         TextView desc = (TextView) convertView.findViewById( R.id.download_desc );
-                        desc.setText( info.desc );
+                        desc.setText( data.desc );
                         TextView dates = (TextView) convertView.findViewById( R.id.download_dates );
                         dates.setText("Effective "+DateUtils.formatDateRange( mContext, 
-                                info.start.getTime(), info.end.getTime(), 
+                                data.start.getTime(), data.end.getTime(), 
                                 DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) );
-                        TextView size = (TextView) convertView.findViewById( R.id.download_size );
-                        size.setText( Formatter.formatShortFileSize( mContext, info.size )
-                                +"   ("+DateUtils.formatElapsedTime( info.size/(500*1024/8) )
-                                +" @ 500kbps)" );
+                        TextView status = (TextView) convertView.findViewById( 
+                                R.id.download_status );
+                        status.setText( Formatter.formatShortFileSize( mContext, data.size )
+                                +"   ("+DateUtils.formatElapsedTime( data.size/(200*1024/8) )
+                                +" @ 200kbps)" );
+                        ProgressBar progress = (ProgressBar) convertView.findViewById( 
+                                R.id.download_progress );
+                        convertView.setTag( new ItemData( data.type, status, progress ) );
                     }
                 }
             }
@@ -440,6 +472,7 @@ public final class DownloadActivity extends ListActivity {
             }
 
             cursor.close();
+            catalogDb.close();
 
             return result;
         }
@@ -611,7 +644,7 @@ public final class DownloadActivity extends ListActivity {
                 Iterator<DataInfo> it2 = mInstalledData.iterator();
                 while ( it2.hasNext() ) {
                     DataInfo installed = it2.next();
-                    if ( available.type == installed.type
+                    if ( available.type.equals( installed.type )
                             && available.version <= installed.version ) {
                         // This update is already installed
                         Log.i( TAG, "Removing "+available.type+" version "+available.version );
@@ -623,15 +656,13 @@ public final class DownloadActivity extends ListActivity {
     }
 
     private final class DownloadTask extends AsyncTask<Void, Integer, Integer> {
-        private ProgressDialog mProgressDialog;
-        private DownloadActivity mActivity;
         private Handler mHandler;
         private File mCacheDir;
         private File mDatabaseDir;
+        private ItemData mCurrentItem;
 
         public DownloadTask( DownloadActivity activity )
         {
-            mActivity = activity;
             mHandler = new Handler();
             mCacheDir = new File( EXTERNAL_STORAGE_ANDROID_DATA_DIRECTORY, 
                     getClass().getPackage().getName()+"/cache" );
@@ -641,10 +672,6 @@ public final class DownloadActivity extends ListActivity {
 
         @Override
         protected void onPreExecute() {
-            mProgressDialog = new ProgressDialog( mActivity );
-            mProgressDialog.setProgressStyle( ProgressDialog.STYLE_HORIZONTAL );
-            mProgressDialog.setMessage( "..." );
-            mProgressDialog.show();
         }
 
         @Override
@@ -652,6 +679,8 @@ public final class DownloadActivity extends ListActivity {
                 Iterator<DataInfo> it = mAvailableData.iterator();
                 while ( it.hasNext() ) {
                     final DataInfo data = it.next();
+
+                    mCurrentItem = getItemForType( data.type );
 
                     int result = downloadFile( data);
                     if ( result != 0 ) {
@@ -669,12 +698,13 @@ public final class DownloadActivity extends ListActivity {
 
         @Override
         protected void onProgressUpdate( Integer... progress ) {
-            mProgressDialog.setProgress( progress[ 0 ] );
+            if ( mCurrentItem != null ) {
+                mCurrentItem.setProgress( progress[ 0 ] );
+            }
         }
 
         @Override
         protected void onPostExecute( Integer result ) {
-            mProgressDialog.dismiss();
             if ( result == 0 ) {
                 showMessage( "Download", "The data was downloaded and installed successfully" );
             }
@@ -684,23 +714,42 @@ public final class DownloadActivity extends ListActivity {
             else if ( result == -2 ) {
                 showError( "Data file was not found on the server" );
             }
+            else if ( result == -3 ) {
+                showError( "Airports data download was interrupted" );
+            }
+
+            mStop.set( false );
 
             // Re-check for data to reflect the current downloads
             checkData();
+        }
+
+        protected ItemData getItemForType( String type ) {
+            ListView lv = getListView();
+            int count = lv.getChildCount();
+            for ( int i=0; i<count; ++i) {
+                ItemData data = (ItemData) lv.getChildAt( i ).getTag();
+                if ( data != null && type.equals( data.type ) ) {
+                    return data;
+                }
+            }
+
+            return null;
         }
 
         protected int downloadFile( final DataInfo data ) {
             mHandler.post( new Runnable() {
                 @Override
                 public void run() {
-                    mProgressDialog.setProgress( 0 );
-                    mProgressDialog.setMax( data.size );
-                    mProgressDialog.setMessage( "Downloading "+data.type+" data..." );
+                    if ( mCurrentItem != null ) {
+                        mCurrentItem.setMaxSize( data.size );
+                    }
                 }
             } );
 
             InputStream in = null;
-            BufferedOutputStream out = null;
+            FileOutputStream out = null;
+
             try {
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 HttpHost target = new HttpHost( HOST, PORT );
@@ -721,7 +770,7 @@ public final class DownloadActivity extends ListActivity {
                 }
 
                 File zipFile = new File( mCacheDir, data.fileName );
-                out = new BufferedOutputStream( new FileOutputStream( zipFile ) );
+                out = new FileOutputStream( zipFile );
 
                 HttpEntity entity = response.getEntity();
                 in = entity.getContent();
@@ -733,13 +782,17 @@ public final class DownloadActivity extends ListActivity {
                 int count;
                 int total = 0;
 
-                while ( ( count = in.read( buffer, 0, len ) ) != -1 ) {
+                while ( mStop.get() == false && ( count = in.read( buffer, 0, len ) ) != -1 ) {
                     out.write( buffer, 0, count );
                     total += count;
                     publishProgress( total );
                 }
 
-                out.flush();
+                if ( mStop.get() == true ) {
+                    // The download was stopped by the user
+                    return -3;
+                }
+
                 return 0;
             } catch ( URISyntaxException e ) {
                 Log.e( TAG, "URISyntaxException: "+e.getMessage() );
@@ -793,8 +846,9 @@ public final class DownloadActivity extends ListActivity {
                 @Override
                 public void run() {
                     // Set the new progress details
-                    mProgressDialog.setMax( (int) entry.getSize() );
-                    mProgressDialog.setMessage( "Installing "+data.type+" data..." );
+                    if ( mCurrentItem != null ) {
+                        mCurrentItem.setMaxSize( (int) entry.getSize() );
+                    }
                 }
             } );
 
@@ -811,12 +865,12 @@ public final class DownloadActivity extends ListActivity {
             data.dbName = entry.getName();
 
             InputStream in = null;
-            BufferedOutputStream out = null;
+            FileOutputStream out = null;
 
             try {
                 in = zipFile.getInputStream( entry );
                 File dbFile = new File( mDatabaseDir, data.dbName );
-                out = new BufferedOutputStream( new FileOutputStream( dbFile ) );
+                out = new FileOutputStream( dbFile );
 
                 byte[] buffer = new byte[ 64*1024 ];
                 int len = buffer.length;
@@ -824,10 +878,15 @@ public final class DownloadActivity extends ListActivity {
                 int total = 0;
 
                 // Try to read the type of record first
-                while ( ( count = in.read( buffer, 0, len ) ) != -1 )  {
+                while ( mStop.get() == false && ( count = in.read( buffer, 0, len ) ) != -1 )  {
                     out.write( buffer, 0, count );
                     total += count;
                     publishProgress( total );
+                }
+
+                if ( mStop.get() == true ) {
+                    // The download was stopped by the user
+                    return -3;
                 }
 
                 result = (int) insertCatalogEntry( data );
@@ -869,8 +928,8 @@ public final class DownloadActivity extends ListActivity {
             values.put( Catalog.TYPE, data.type );
             values.put( Catalog.DESCRIPTION, data.desc );
             values.put( Catalog.VERSION, data.version );
-            values.put( Catalog.START_DATE, DateFormat.format( "YYYY-MM-dd", data.start ).toString() );
-            values.put( Catalog.END_DATE, DateFormat.format( "YYYY-MM-dd", data.end ).toString() );
+            values.put( Catalog.START_DATE, DateFormat.format( "yyyy-MM-dd", data.start ).toString() );
+            values.put( Catalog.END_DATE, DateFormat.format( "yyyy-MM-dd", data.end ).toString() );
             values.put( Catalog.DB_NAME, data.dbName );
 
             Log.i( TAG, "Inserting catalog: type="+data.type
@@ -886,5 +945,26 @@ public final class DownloadActivity extends ListActivity {
     protected void showError( String msg ) {
         Toast.makeText( getApplicationContext(), "Download Failed: "+msg, 
                 Toast.LENGTH_LONG ).show();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i( TAG, "onPause() called" );
+    }
+
+    public void onResume() {
+        super.onResume();
+        Log.i( TAG, "onResume called" );
+    }
+
+    public void onStop() {
+        super.onStop();
+        Log.i( TAG, "onStop called" );
+
+        if ( mDownloadTask != null ) {
+            Log.i( TAG, "Stopping download thread" );
+            mStop.set( true );
+        }
     }
 }

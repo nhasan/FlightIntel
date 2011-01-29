@@ -30,12 +30,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 public class AirportsMain extends Activity {
-    private DatabaseManager mDb;
     /** Called when the activity is first created. */
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        mDb = new DatabaseManager( this );
     }
 
     @Override
