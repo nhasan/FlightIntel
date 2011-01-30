@@ -137,9 +137,13 @@ public final class DownloadActivity extends ListActivity {
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         setTitle( "Airports - "+getTitle() );
 
+        ListView lv = getListView();
+
+        lv.setDivider( getResources().getDrawable( R.drawable.list_divider ) );
+        lv.setDividerHeight( 1 );
+        
         LayoutInflater inflater = getLayoutInflater();
         View header = inflater.inflate( R.layout.download_header, null );
-        ListView lv = getListView();
         lv.addHeaderView( header, null, false );
         Button btnUpdate = (Button) findViewById( R.id.btnUpdate );
         btnUpdate.setOnClickListener(
@@ -207,28 +211,38 @@ public final class DownloadActivity extends ListActivity {
         mDownloadTask.execute();
     }
 
-    private final class ItemData {
+    private final class Tracker {
         public String type;
+        public TextView msgText;
         public TextView statusText;
         public ProgressBar progressBar;
 
-        public ItemData( String t, TextView s, ProgressBar p ) {
+        public Tracker( String t, TextView m, TextView s, ProgressBar p ) {
             type = t;
+            msgText = m;
             statusText = s;
             progressBar = p;
         }
 
-        public void setMaxSize( int max ) {
+        public void initProgress( int resid, int max ) {
             progressBar.setMax( max );
+            msgText.setText( resid );
             setProgress( 0 );
             progressBar.setVisibility( View.VISIBLE );
+            statusText.setVisibility( View.VISIBLE );
+            msgText.setVisibility( View.VISIBLE );
         }
 
         public void setProgress( int progress ) {
             progressBar.setProgress( progress );
-            statusText.setText( Formatter.formatShortFileSize( DownloadActivity.this, progress )
+            if ( progress < progressBar.getMax() ) {
+                statusText.setText( Formatter.formatShortFileSize( DownloadActivity.this, progress )
                     +" of "
                     +Formatter.formatShortFileSize( DownloadActivity.this, progressBar.getMax() ) );
+            } else {
+                msgText.setText( R.string.install_done );
+                statusText.setVisibility( View.GONE );
+            }
         }
     }
 
@@ -341,8 +355,6 @@ public final class DownloadActivity extends ListActivity {
                         dates.setText("Effective "+DateUtils.formatDateRange( mContext, 
                                 info.start.getTime(), info.end.getTime(), 
                                 DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) );
-                        TextView size = (TextView) convertView.findViewById( R.id.download_status );
-                        size.setText( "Current" );
                     }
                 }
                 else {
@@ -363,14 +375,17 @@ public final class DownloadActivity extends ListActivity {
                         dates.setText("Effective "+DateUtils.formatDateRange( mContext, 
                                 data.start.getTime(), data.end.getTime(), 
                                 DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) );
-                        TextView status = (TextView) convertView.findViewById( 
-                                R.id.download_status );
-                        status.setText( Formatter.formatShortFileSize( mContext, data.size )
+                        TextView msg = (TextView) convertView.findViewById( R.id.download_msg );
+                        msg.setVisibility( View.VISIBLE );
+                        msg.setText( Formatter.formatShortFileSize( mContext, data.size )
                                 +"   ("+DateUtils.formatElapsedTime( data.size/(200*1024/8) )
                                 +" @ 200kbps)" );
+                        TextView status = (TextView) convertView.findViewById( 
+                                R.id.download_status );
+                        status.setVisibility( View.VISIBLE );
                         ProgressBar progress = (ProgressBar) convertView.findViewById( 
                                 R.id.download_progress );
-                        convertView.setTag( new ItemData( data.type, status, progress ) );
+                        convertView.setTag( new Tracker( data.type, msg, status, progress ) );
                     }
                 }
             }
@@ -659,7 +674,7 @@ public final class DownloadActivity extends ListActivity {
         private Handler mHandler;
         private File mCacheDir;
         private File mDatabaseDir;
-        private ItemData mCurrentItem;
+        private Tracker mTracker;
 
         public DownloadTask( DownloadActivity activity )
         {
@@ -680,17 +695,28 @@ public final class DownloadActivity extends ListActivity {
                 while ( it.hasNext() ) {
                     final DataInfo data = it.next();
 
-                    mCurrentItem = getItemForType( data.type );
+                    mTracker = getTrackerForType( data.type );
 
-                    int result = downloadFile( data);
-                    if ( result != 0 ) {
+                    int result = downloadData( data );
+                    if ( result < 0 ) {
                         return result;
                     }
+
+                    Log.i( TAG, "Download done" );
 
                     result = installData( data );
-                    if ( result != 0 ) {
+                    if ( result < 0 ) {
                         return result;
                     }
+
+                    Log.i( TAG, "Install done" );
+
+                    result = updateCatalog( data );
+                    if ( result < 0 ) {
+                        return result;
+                    }
+         
+                    Log.i( TAG, "Catalog updated" );
                 }
 
             return 0;
@@ -698,15 +724,13 @@ public final class DownloadActivity extends ListActivity {
 
         @Override
         protected void onProgressUpdate( Integer... progress ) {
-            if ( mCurrentItem != null ) {
-                mCurrentItem.setProgress( progress[ 0 ] );
-            }
+             mTracker.setProgress( progress[ 0 ] );
         }
 
         @Override
         protected void onPostExecute( Integer result ) {
             if ( result == 0 ) {
-                showMessage( "Download", "The data was downloaded and installed successfully" );
+                showMessage( "The data was downloaded and installed successfully" );
             }
             else if ( result == -1 ) {
                 showError( "There was an error while downloading data" );
@@ -724,26 +748,24 @@ public final class DownloadActivity extends ListActivity {
             checkData();
         }
 
-        protected ItemData getItemForType( String type ) {
+        protected Tracker getTrackerForType( String type ) {
             ListView lv = getListView();
             int count = lv.getChildCount();
             for ( int i=0; i<count; ++i) {
-                ItemData data = (ItemData) lv.getChildAt( i ).getTag();
-                if ( data != null && type.equals( data.type ) ) {
-                    return data;
+                Tracker tracker = (Tracker) lv.getChildAt( i ).getTag();
+                if ( tracker != null && type.equals( tracker.type ) ) {
+                    return tracker;
                 }
             }
 
             return null;
         }
 
-        protected int downloadFile( final DataInfo data ) {
+        protected int downloadData( final DataInfo data ) {
             mHandler.post( new Runnable() {
                 @Override
                 public void run() {
-                    if ( mCurrentItem != null ) {
-                        mCurrentItem.setMaxSize( data.size );
-                    }
+                    mTracker.initProgress( R.string.downloading, data.size );
                 }
             } );
 
@@ -789,7 +811,7 @@ public final class DownloadActivity extends ListActivity {
                 }
 
                 if ( mStop.get() == true ) {
-                    // The download was stopped by the user
+                    // Process was stopped by the user
                     return -3;
                 }
 
@@ -826,8 +848,6 @@ public final class DownloadActivity extends ListActivity {
         }
 
         protected int installData( final DataInfo data ) {
-            int result=0;
-
             File cacheFile = new File( mCacheDir, data.fileName );
             ZipFile zipFile;
             try {
@@ -845,15 +865,9 @@ public final class DownloadActivity extends ListActivity {
             mHandler.post( new Runnable() {
                 @Override
                 public void run() {
-                    // Set the new progress details
-                    if ( mCurrentItem != null ) {
-                        mCurrentItem.setMaxSize( (int) entry.getSize() );
-                    }
+                    mTracker.initProgress( R.string.installing, (int) entry.getSize() );
                 }
             } );
-
-            // Reset the progress
-            publishProgress( 0 );
 
             if ( !mDatabaseDir.exists() ) {
                 if ( !mDatabaseDir.mkdirs() ) {
@@ -872,7 +886,7 @@ public final class DownloadActivity extends ListActivity {
                 File dbFile = new File( mDatabaseDir, data.dbName );
                 out = new FileOutputStream( dbFile );
 
-                byte[] buffer = new byte[ 64*1024 ];
+                byte[] buffer = new byte[ 4*1024 ];
                 int len = buffer.length;
                 int count;
                 int total = 0;
@@ -885,15 +899,10 @@ public final class DownloadActivity extends ListActivity {
                 }
 
                 if ( mStop.get() == true ) {
-                    // The download was stopped by the user
+                    // Process was stopped by the user
                     return -3;
                 }
 
-                result = (int) insertCatalogEntry( data );
-                if ( result != 0 ) {
-                    return result;
-                }
-     
                 return 0;
             } catch ( FileNotFoundException e ) {
                 Log.e( TAG, "FileNotFoundException: "+e.getMessage() );
@@ -923,7 +932,7 @@ public final class DownloadActivity extends ListActivity {
             }
         }
 
-        long insertCatalogEntry( DataInfo data ) {
+        protected int updateCatalog( DataInfo data ) {
             ContentValues values = new ContentValues();
             values.put( Catalog.TYPE, data.type );
             values.put( Catalog.DESCRIPTION, data.desc );
@@ -938,8 +947,8 @@ public final class DownloadActivity extends ListActivity {
         }
     }
 
-    protected void showMessage( String title, String msg ) {
-        Toast.makeText( getApplicationContext(), title+": "+msg, Toast.LENGTH_LONG ).show();
+    protected void showMessage( String msg ) {
+        Toast.makeText( getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
     }
 
     protected void showError( String msg ) {

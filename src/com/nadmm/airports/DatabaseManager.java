@@ -155,9 +155,9 @@ public class DatabaseManager {
 
         long id = db.insert( Catalog.TABLE_NAME, null, values );
         if ( id >= 0 ) {
-            Log.i( TAG, "Inserted catalog: _id="+id );
+            Log.i( TAG, "Inserted catalog entry: _id="+id );
         } else {
-            Log.i( TAG, "Failed to insert into catalog" );
+            Log.i( TAG, "Failed to insert into catalog entry" );
         }
 
         db.close();

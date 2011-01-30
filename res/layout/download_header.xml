@@ -4,8 +4,11 @@
     android:layout_height="fill_parent"
     >
     <Button android:layout_height="wrap_content" 
-        android:id="@+id/btnUpdate" 
+        android:id="@+id/btnUpdate"
         android:text="@string/update_all" 
+        android:background="@drawable/flat_button"
+        android:padding="4sp"
+        android:layout_margin="4sp"
         android:layout_width="wrap_content" 
         android:layout_gravity="center_vertical|center_horizontal" />
 </LinearLayout>

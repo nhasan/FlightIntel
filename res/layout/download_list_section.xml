@@ -3,15 +3,16 @@
      android:layout_width="fill_parent"
      android:layout_height="wrap_content"
      android:orientation="vertical">
-
      <TextView android:id="@+id/download_section"
-         android:textSize="14sp"
-         android:textColor="#FFFFFFFF"
+         android:textAppearance="?android:attr/textAppearanceSmall"
          android:textStyle="bold"
-         android:background="@drawable/title_bar_portrait"
-         android:paddingTop="2sp"
-         android:paddingBottom="3sp"
+         android:background="@*android:color/dim_foreground_dark"
+         android:textColor="@android:color/primary_text_dark"
+         android:paddingTop="1sp"
+         android:paddingBottom="2sp"
          android:paddingLeft="4sp"
+         style="?android:attr/listSeparatorTextViewStyle"
+         android:gravity="left|center_vertical"
          android:layout_width="fill_parent"
          android:layout_height="wrap_content"/>
  </LinearLayout>
