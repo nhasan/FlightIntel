@@ -7,12 +7,17 @@
 	<string name="search">Search</string>
 	<string name="recent">Recent</string>
 	<string name="search_hint">Search airports</string>
-<string name="download_installed">Installed Data</string>
-<string name="download_available">Available Data</string>
+<string name="download_installed">Currently installed</string>
+<string name="download_available">Available for download</string>
 <string name="download_noinstall">No installed data</string>
-<string name="download_noupdate">No update available</string>
-<string name="update_all">Update All</string>
-<string name="downloading">Downloading...</string>
+<string name="download_noupdate">None available</string>
+<string name="download_all">Download all</string>
+<string name="download_delete_all">Delete all downloaded data</string><string name="download_expired">Expired</string><string name="downloading">Downloading...</string>
 <string name="installing">Installing...</string>
 <string name="install_done">Installation done.</string>
+
+<string name="please_wait">Please wait...</string>
+<string name="data_in_use">In use</string>
+
+
 </resources>

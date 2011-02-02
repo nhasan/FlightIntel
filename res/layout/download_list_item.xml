@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
      android:layout_width="fill_parent"
      android:layout_height="wrap_content"
+     android:paddingBottom="8sp"
      android:orientation="vertical">
      <TextView android:id="@+id/download_desc"
         android:textColor="@android:color/primary_text_dark"
@@ -13,7 +14,7 @@
      <TextView android:id="@+id/download_dates"
         android:textSize="12sp"
         android:paddingLeft="4sp"
-        android:textColor="#ff40e0e8"
+        android:textColor="#ff00f0ff"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
     <ProgressBar android:id="@+id/download_progress"

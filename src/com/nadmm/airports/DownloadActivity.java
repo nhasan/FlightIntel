@@ -27,10 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
@@ -62,10 +59,11 @@ import android.sax.Element;
 import android.sax.EndElementListener;
 import android.sax.EndTextElementListener;
 import android.sax.RootElement;
-import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
+import android.text.format.Time;
 import android.util.Log;
+import android.util.TimeFormatException;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,8 +81,8 @@ import com.nadmm.airports.DatabaseManager.Catalog;
 
 public final class DownloadActivity extends ListActivity {
     private static final String TAG = DownloadActivity.class.getName();
-    private static final String HOST = "10.0.2.2";
-    //private static final String HOST = "192.168.1.116";
+    //private static final String HOST = "10.0.2.2";
+    private static final String HOST = "192.168.1.116";
     private static final Integer PORT = 80;
     private static final String PATH = "/~nhasan/fadds";
     private static final String MANIFEST = "manifest.xml";
@@ -99,8 +97,8 @@ public final class DownloadActivity extends ListActivity {
         public String fileName;
         public String dbName;
         public int size;
-        public Date start;
-        public Date end;
+        public Time start;
+        public Time end;
 
         public DataInfo() {
         }
@@ -137,16 +135,10 @@ public final class DownloadActivity extends ListActivity {
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         setTitle( "Airports - "+getTitle() );
 
-        ListView lv = getListView();
-
-        lv.setDivider( getResources().getDrawable( R.drawable.list_divider ) );
-        lv.setDividerHeight( 1 );
+        setContentView( R.layout.download_list_view );
         
-        LayoutInflater inflater = getLayoutInflater();
-        View header = inflater.inflate( R.layout.download_header, null );
-        lv.addHeaderView( header, null, false );
-        Button btnUpdate = (Button) findViewById( R.id.btnUpdate );
-        btnUpdate.setOnClickListener(
+        Button btnDownload = (Button) findViewById( R.id.btnDownload );
+        btnDownload.setOnClickListener(
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -185,7 +177,6 @@ public final class DownloadActivity extends ListActivity {
                    .setNegativeButton( "No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick( DialogInterface dialog, int id ) {
-                            finish();
                         }
                    } );
             AlertDialog alert = builder.create();
@@ -299,7 +290,7 @@ public final class DownloadActivity extends ListActivity {
 
         @Override
         public boolean areAllItemsEnabled() {
-            return false;
+            return true;
         }
 
         @Override
@@ -353,8 +344,17 @@ public final class DownloadActivity extends ListActivity {
                         desc.setText( info.desc );
                         TextView dates = (TextView) convertView.findViewById( R.id.download_dates );
                         dates.setText("Effective "+DateUtils.formatDateRange( mContext, 
-                                info.start.getTime(), info.end.getTime(), 
+                                info.start.toMillis( false ), info.end.toMillis( false )+1000, 
                                 DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) );
+                        Time now = new Time();
+                        now.setToNow();
+                        if ( now.toMillis( false ) > info.end.toMillis( false ) ) {
+                            // Data has expired
+                            TextView msg = (TextView) convertView.findViewById( R.id.download_msg );
+                            msg.setVisibility( View.VISIBLE );
+                            msg.setTextAppearance( mContext, R.style.RedBoldText );
+                            msg.setText( R.string.download_expired );
+                        }
                     }
                 }
                 else {
@@ -373,7 +373,7 @@ public final class DownloadActivity extends ListActivity {
                         desc.setText( data.desc );
                         TextView dates = (TextView) convertView.findViewById( R.id.download_dates );
                         dates.setText("Effective "+DateUtils.formatDateRange( mContext, 
-                                data.start.getTime(), data.end.getTime(), 
+                                data.start.toMillis( false ), data.end.toMillis( false )+1000, 
                                 DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) );
                         TextView msg = (TextView) convertView.findViewById( R.id.download_msg );
                         msg.setVisibility( View.VISIBLE );
@@ -404,9 +404,8 @@ public final class DownloadActivity extends ListActivity {
         @Override
         protected void onPreExecute() {
             setProgressBarIndeterminateVisibility( true );
-            Button btnUpdate = (Button) findViewById( R.id.btnUpdate );
-            btnUpdate.setEnabled( false );
-            mActivity.getListView().setVisibility( View.INVISIBLE );
+            Button btnDownload = (Button) findViewById( R.id.btnDownload );
+            btnDownload.setEnabled( false );
             mInstalledData.clear();
             mAvailableData.clear();
         }
@@ -448,19 +447,18 @@ public final class DownloadActivity extends ListActivity {
 
             setProgressBarIndeterminateVisibility( false );
 
-            ListView lv = mActivity.getListView();
-            lv.setVisibility( View.VISIBLE );
-
-            Button btnUpdate = (Button)lv.findViewById( R.id.btnUpdate );
-            btnUpdate.setEnabled( !mAvailableData.isEmpty() );
-
             mActivity.setListAdapter( mAdapter );
             mAdapter.notifyDataSetInvalidated();
+
+            if ( !mAvailableData.isEmpty() ) {
+                Button btnDownload = (Button) findViewById( R.id.btnDownload );
+                btnDownload.setVisibility( View.VISIBLE );
+                btnDownload.setEnabled( true );
+            }
         }
 
         private int getInstalled() {
             int result = 0;
-            final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
 
             SQLiteDatabase catalogDb = mDbManager.getCatalogDatabase();
             Cursor cursor = catalogDb.rawQuery( "SELECT * FROM "+Catalog.TABLE_NAME
@@ -473,13 +471,17 @@ public final class DownloadActivity extends ListActivity {
                     info.type = cursor.getString( cursor.getColumnIndex( Catalog.TYPE ) );
                     info.desc = cursor.getString( cursor.getColumnIndex( Catalog.DESCRIPTION ) );
                     info.version = cursor.getInt( cursor.getColumnIndex( Catalog.VERSION ) );
+                    String start = cursor.getString( cursor.getColumnIndex( Catalog.START_DATE ) );
+                    String end = cursor.getString( cursor.getColumnIndex( Catalog.END_DATE ) );
                     try {
-                        String start = cursor.getString( cursor.getColumnIndex( Catalog.START_DATE ) );
-                        info.start = dateFormat.parse( start );
-                        String end = cursor.getString( cursor.getColumnIndex( Catalog.END_DATE ) );
-                        info.end = dateFormat.parse( end );
+                        info.start = new Time();
+                        info.start.parse3339( start );
+                        info.start.normalize( false );
+                        info.end = new Time();
+                        info.end.parse3339( end );
+                        info.end.normalize( false );
                         mInstalledData.add( info );
-                    } catch ( ParseException e ) {
+                    } catch ( TimeFormatException e ) {
                         Log.e( TAG, "Error parsing dates: "+e.getMessage() );
                         return -1;
                     }
@@ -543,7 +545,6 @@ public final class DownloadActivity extends ListActivity {
                 return -1;
             }
 
-            final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
             final DataInfo info = new DataInfo();
             RootElement root = new RootElement( "manifest" );
             Element datafile = root.getChild( "datafile" );
@@ -598,8 +599,10 @@ public final class DownloadActivity extends ListActivity {
                         @Override
                         public void end( String body ) {
                             try {
-                                info.start = dateFormat.parse( body );
-                            } catch ( ParseException e ) {
+                                info.start = new Time();
+                                info.start.parse3339( body );
+                                info.start.normalize( false );
+                            } catch ( TimeFormatException e ) {
                                 Log.e( TAG, "Error parsing start date: "+e.getMessage() );
                             }
                         }
@@ -610,8 +613,10 @@ public final class DownloadActivity extends ListActivity {
                         @Override
                         public void end(String body) {
                             try {
-                                info.end = dateFormat.parse( body );
-                            } catch ( ParseException e ) {
+                                info.end = new Time();
+                                info.end.parse3339( body );
+                                info.end.normalize( false );
+                            } catch ( TimeFormatException e ) {
                                 Log.e( TAG, "Error parsing end date: "+e.getMessage() );
                             }
                         }
@@ -636,8 +641,8 @@ public final class DownloadActivity extends ListActivity {
                 Log.i( TAG, "version="+dataFile.version );
                 Log.i( TAG, "filename="+dataFile.fileName );
                 Log.i( TAG, "size="+dataFile.size );
-                Log.i( TAG, "start="+dataFile.start.toLocaleString() );
-                Log.i( TAG, "end="+dataFile.end.toLocaleString() );
+                Log.i( TAG, "start="+dataFile.start.format3339( true ) );
+                Log.i( TAG, "end="+dataFile.end.format3339( true ) );
             }
 
             try {
@@ -786,7 +791,7 @@ public final class DownloadActivity extends ListActivity {
 
                 if ( !mCacheDir.exists() ) {
                     if ( !mCacheDir.mkdirs() ) {
-                        Log.e( TAG, "Unable to create cache dir on external storage" );
+                        showMessage( "Unable to create cache dir on external storage" );
                         return -3;
                     }
                 }
@@ -817,19 +822,19 @@ public final class DownloadActivity extends ListActivity {
 
                 return 0;
             } catch ( URISyntaxException e ) {
-                Log.e( TAG, "URISyntaxException: "+e.getMessage() );
+                showMessage( e.getMessage() );
                 return -1;
             } catch ( ClientProtocolException e ) {
-                Log.e( TAG, "ClientProtocolException: "+e.getMessage() );
+                showMessage( e.getMessage() );
                 return -1;
             } catch ( FileNotFoundException e ) {
-                Log.e( TAG, "FileNotFoundException: "+e.getMessage() );
+                showMessage( e.getMessage() );
                 return -1;
             } catch ( IOException e ) {
-                Log.e( TAG, "IOException: "+e.getMessage() );
+                showMessage( e.getMessage() );
                 return -1;
             } catch ( IllegalStateException e ) {
-                Log.e( TAG, "IllegalStateException: "+e.getMessage() );
+                showMessage( e.getMessage() );
                 return -1;
             } finally {
                 if ( in != null ) {
@@ -853,10 +858,10 @@ public final class DownloadActivity extends ListActivity {
             try {
                 zipFile = new ZipFile( cacheFile );
             } catch ( ZipException e ) {
-                Log.e( TAG, "ZipException: "+e.getMessage() );
+                showMessage( e.getMessage() );
                 return -1;
             } catch ( IOException e ) {
-                Log.e( TAG, "IOException: "+e.getMessage() );
+                showMessage( e.getMessage() );
                 return -1;
             }
 
@@ -871,7 +876,7 @@ public final class DownloadActivity extends ListActivity {
 
             if ( !mDatabaseDir.exists() ) {
                 if ( !mDatabaseDir.mkdirs() ) {
-                    Log.e( TAG, "Unable to create database dir on external storage" );
+                    showMessage( "Unable to create database dir on external storage" );
                     return -3;
                 }
             }
@@ -905,11 +910,11 @@ public final class DownloadActivity extends ListActivity {
 
                 return 0;
             } catch ( FileNotFoundException e ) {
-                Log.e( TAG, "FileNotFoundException: "+e.getMessage() );
+                showMessage( e.getMessage() );
                 return -1;
             } catch ( IOException e ) {
-                Log.e( TAG, "IOException: "+e.getMessage() );
-                return -1;
+                showMessage( e.getMessage() );
+               return -1;
             } finally {
                 cacheFile.delete();
 
@@ -937,17 +942,33 @@ public final class DownloadActivity extends ListActivity {
             values.put( Catalog.TYPE, data.type );
             values.put( Catalog.DESCRIPTION, data.desc );
             values.put( Catalog.VERSION, data.version );
-            values.put( Catalog.START_DATE, DateFormat.format( "yyyy-MM-dd", data.start ).toString() );
-            values.put( Catalog.END_DATE, DateFormat.format( "yyyy-MM-dd", data.end ).toString() );
+            values.put( Catalog.START_DATE, data.start.format3339( true ) );
+            values.put( Catalog.END_DATE, data.end.format3339( true ) );
             values.put( Catalog.DB_NAME, data.dbName );
 
             Log.i( TAG, "Inserting catalog: type="+data.type
                     +", version="+data.version+", db="+data.dbName );
-            return mDbManager.insertCatalogEntry( values );
+            int rc = mDbManager.insertCatalogEntry( values );
+            if ( rc < 0 )
+            {
+                showMessage( "Failed to update catalog database" );
+            }
+
+            return rc;
+        }
+
+        protected void showMessage( final String msg ) {
+            Log.e( TAG, msg );
+            mHandler.post( new Runnable () {
+                @Override
+                public void run() {
+                    Toast.makeText( getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
+                }
+            } );
         }
     }
 
-    protected void showMessage( String msg ) {
+    protected void showMessage1( String msg ) {
         Toast.makeText( getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
     }
 

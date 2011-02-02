@@ -190,7 +190,7 @@ public class DatabaseManager {
 
     public class CatalogDbOpenHelper extends SQLiteOpenHelper {
         public CatalogDbOpenHelper( Context context ) {
-            super( context, "catalog.db", null, 1 );
+            super( context, "catalog.db", null, 2 );
         }
 
         @Override
@@ -208,6 +208,9 @@ public class DatabaseManager {
 
         @Override
         public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
+            Log.i( TAG, "Ugrading catalog db "+oldVersion+" -> "+newVersion );
+            db.execSQL( "DROP TABLE Catalog" );
+            onCreate( db );
         }
     }
 }
