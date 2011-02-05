@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Airports for Android
+ *
+ * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+ -->
 <resources>
     <string name="app_name">Airports for Android</string>
 	<string name="downloads">Downloads</string>
@@ -12,12 +32,12 @@
 <string name="download_noinstall">No installed data</string>
 <string name="download_noupdate">None available</string>
 <string name="download_all">Download all</string>
-<string name="download_delete_all">Delete all downloaded data</string><string name="download_expired">Expired</string><string name="downloading">Downloading...</string>
+<string name="download_delete_all">Delete all installed data</string><string name="download_expired">Expired</string><string name="downloading">Downloading...</string>
 <string name="installing">Installing...</string>
-<string name="install_done">Installation done.</string>
+<string name="install_done">Installation done</string>
 
 <string name="please_wait">Please wait...</string>
-<string name="data_in_use">In use</string>
+
 
 
 </resources>
