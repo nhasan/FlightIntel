@@ -146,7 +146,7 @@ public final class DownloadActivity extends ListActivity {
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        checkNetwork();
+                        warnIfNoWifi();
                     }
                 }
         );
@@ -169,15 +169,26 @@ public final class DownloadActivity extends ListActivity {
         task.execute();
     }
 
-    private void checkNetwork() {
+    private boolean isNetworkAvailable() {
         ConnectivityManager connMan = (ConnectivityManager) getSystemService( 
                 Context.CONNECTIVITY_SERVICE );
         NetworkInfo network = connMan.getActiveNetworkInfo();
         if ( network == null || !network.isConnected() ) {
             showMessage( "Network connectivity is not available" );
+            return false;
+        }
+
+        return true;
+    }
+
+    private void warnIfNoWifi() {
+        if ( isNetworkAvailable() == false ) {
             return;
         }
-            
+
+        ConnectivityManager connMan = (ConnectivityManager) getSystemService( 
+                Context.CONNECTIVITY_SERVICE );
+        NetworkInfo network = connMan.getActiveNetworkInfo();
         if ( network.getType() != ConnectivityManager.TYPE_WIFI ) {
             AlertDialog.Builder builder = new AlertDialog.Builder( this );
             builder.setMessage( "You are not connected to a wifi network.\n"
@@ -452,6 +463,8 @@ public final class DownloadActivity extends ListActivity {
         protected void onPostExecute( Integer result ) {
             if ( result != 0 ) {
                 setProgressBarIndeterminateVisibility( false );
+                TextView empty = (TextView) findViewById( android.R.id.empty );
+                empty.setText( R.string.download_error );
                 return;
             }
 
@@ -508,6 +521,10 @@ public final class DownloadActivity extends ListActivity {
 
         private int downloadManifest() {
             try {
+                if ( isNetworkAvailable() == false ) {
+                    return -1;
+                }
+
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 HttpHost target = new HttpHost( HOST, PORT );
                 URI uri = new URI( PATH+"/"+MANIFEST );

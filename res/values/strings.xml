@@ -27,17 +27,16 @@
 	<string name="search">Search</string>
 	<string name="recent">Recent</string>
 	<string name="search_hint">Search airports</string>
-<string name="download_installed">Currently installed</string>
-<string name="download_available">Available for download</string>
-<string name="download_noinstall">No installed data</string>
-<string name="download_noupdate">None available</string>
-<string name="download_all">Download all</string>
-<string name="download_delete_all">Delete all installed data</string><string name="download_expired">Expired</string><string name="downloading">Downloading...</string>
-<string name="installing">Installing...</string>
-<string name="install_done">Installation done</string>
-
-<string name="please_wait">Please wait...</string>
-
-
-
+	<string name="download_installed">Currently installed</string>
+	<string name="download_available">Available for download</string>
+	<string name="download_noinstall">No installed data</string>
+	<string name="download_noupdate">None available</string>
+	<string name="download_all">Download all</string>
+	<string name="download_delete_all">Delete all installed data</string>
+	<string name="download_expired">Expired</string>
+    <string name="download_error">Unable to contact update server</string>
+	<string name="downloading">Downloading...</string>
+	<string name="installing">Installing...</string>
+	<string name="install_done">Installation done</string>
+	<string name="please_wait">Please wait...</string>
 </resources>
