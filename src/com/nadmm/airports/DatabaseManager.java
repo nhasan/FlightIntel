@@ -19,40 +19,48 @@
 
 package com.nadmm.airports;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
 import android.provider.BaseColumns;
 import android.util.Log;
 
 public class DatabaseManager {
-    public static final String TAG = "AirportsDatabase";
-    public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "fadds.db";
+    public static final String TAG = DatabaseManager.class.getSimpleName();
 
-    private final FaddsDbOpenHelper mFaddsDbHelper;
     private final CatalogDbOpenHelper mCatalogDbHelper;
     private final Context mContext;
+    private final HashMap<String, SQLiteDatabase> mDatabases;
+    
+    private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
+            = new File( Environment.getExternalStorageDirectory(), 
+                    "Android/data/"+DownloadActivity.class.getPackage().getName() );
+    public static File CACHE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/cache" );
+    public static File DATABASE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/databases" );
 
     public DatabaseManager( Context context ) {
         mContext = context;
-        mFaddsDbHelper = new FaddsDbOpenHelper( mContext );
         mCatalogDbHelper = new CatalogDbOpenHelper( mContext );
-    }
+        mDatabases = new HashMap<String, SQLiteDatabase>();
 
-    public SQLiteDatabase getFaddsDatabase() {
-        return mFaddsDbHelper.getReadableDatabase();
-    }
-
-    public void closeDatabases() {
-        mFaddsDbHelper.close();
-        mCatalogDbHelper.close();
+        openDatabases();
     }
 
     public SQLiteDatabase getCatalogDatabase() {
         return mCatalogDbHelper.getWritableDatabase();
+    }
+
+    public void close() {
+        Log.i( TAG, "Closing databases..." );
+        mCatalogDbHelper.close();
+        closeDatabases();
     }
 
     public static final class Airports implements BaseColumns {
@@ -150,6 +158,48 @@ public class DatabaseManager {
         public static final String DB_NAME = "DB_NAME";
     }
 
+    public Cursor getLatestFromCatalog() {
+        SQLiteDatabase catalogDb = getCatalogDatabase();
+        String query = "SELECT * FROM "+Catalog.TABLE_NAME+" c1"
+        +" WHERE "+Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
+        +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
+        +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE+")";
+        Log.i( TAG, query );
+        return catalogDb.rawQuery( query, null );
+    }
+
+    private synchronized void openDatabases() {
+        Cursor cursor = getLatestFromCatalog();
+        if ( cursor.moveToFirst() ) {
+            do {
+                String type = cursor.getString( cursor.getColumnIndex( Catalog.TYPE ) );
+                File dbName = new File( DATABASE_DIR, 
+                        cursor.getString( cursor.getColumnIndex( Catalog.DB_NAME ) ) );
+                Log.i( TAG, "Opening db type="+type+", path="+dbName.getPath() );
+                SQLiteDatabase db = SQLiteDatabase.openDatabase( dbName.getPath(), null,
+                        SQLiteDatabase.OPEN_READONLY );
+                if ( db == null ) {
+                    Log.i( TAG, "Unable to open db type="+type );
+                } else {
+                    mDatabases.put( type, db );                    
+                }
+            } while ( cursor.moveToNext() );
+        } else {
+            Log.e( TAG, "No databases listed in the catalog" );
+        }
+
+        cursor.close();
+    }
+
+    private synchronized void closeDatabases() {
+        Iterator<String> types  = mDatabases.keySet().iterator();
+        while ( types.hasNext() ) {
+            String type = types.next();
+            Log.i( TAG, "Closing db for type="+type );
+            mDatabases.get( type ).close();
+        }
+    }
+
     public int insertCatalogEntry( ContentValues values ) {
         SQLiteDatabase db = mCatalogDbHelper.getWritableDatabase();
 
@@ -163,29 +213,6 @@ public class DatabaseManager {
         db.close();
 
         return (int) id;
-    }
-
-    public Cursor queryCatalog( String query ) {
-        SQLiteDatabase db = mCatalogDbHelper.getReadableDatabase();
-        Cursor cursor = db.rawQuery( "SELECT * FROM "+Catalog.TABLE_NAME
-                +" GROUP BY "+Catalog.TYPE, null );
-                //+ GROUP BY "+Catalog.TYPE+" HAVING MAX("+Catalog.VERSION+")", null );
-        db.close();
-        return cursor;
-    }
-
-    public class FaddsDbOpenHelper extends SQLiteOpenHelper {
-        public FaddsDbOpenHelper( Context context ) {
-            super( context, "fadds.db", null, 1 );
-        }
-
-        @Override
-        public void onCreate( SQLiteDatabase db ) {
-        }
-
-        @Override
-        public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
-        }
     }
 
     public class CatalogDbOpenHelper extends SQLiteOpenHelper {

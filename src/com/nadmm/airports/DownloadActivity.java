@@ -44,6 +44,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -81,14 +82,11 @@ import com.nadmm.airports.DatabaseManager.Catalog;
 
 public final class DownloadActivity extends ListActivity {
     private static final String TAG = DownloadActivity.class.getName();
-    //private static final String HOST = "10.0.2.2";
-    private static final String HOST = "192.168.1.116";
+    private static final String HOST = "10.0.2.2";
+    //private static final String HOST = "192.168.1.116";
     private static final Integer PORT = 80;
     private static final String PATH = "/~nhasan/fadds";
     private static final String MANIFEST = "manifest.xml";
-
-    private static final File EXTERNAL_STORAGE_ANDROID_DATA_DIRECTORY
-        = new File ( new File( Environment.getExternalStorageDirectory(), "Android" ), "data" );
 
     final class DataInfo {
         public String type;
@@ -121,6 +119,7 @@ public final class DownloadActivity extends ListActivity {
     private DatabaseManager mDbManager;
     private DownloadTask mDownloadTask;
     private AtomicBoolean mStop;
+    private Handler mHandler;
 
     /** Called when the activity is first created. */
     @Override
@@ -131,18 +130,33 @@ public final class DownloadActivity extends ListActivity {
         mDbManager = new DatabaseManager( this );
         mDownloadTask = null;
         mStop = new AtomicBoolean( false );
+        mHandler = new Handler();
 
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         setTitle( "Airports - "+getTitle() );
 
         setContentView( R.layout.download_list_view );
         
+        // Add the footer view
+        View footer = getLayoutInflater().inflate( R.layout.download_footer, null );
+        getListView().addFooterView( footer );
+
         Button btnDownload = (Button) findViewById( R.id.btnDownload );
         btnDownload.setOnClickListener(
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         checkNetwork();
+                    }
+                }
+        );
+
+        Button btnDelete = (Button) findViewById( R.id.btnDelete );
+        btnDelete.setOnClickListener( 
+                new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        checkDelete();
                     }
                 }
         );
@@ -160,7 +174,7 @@ public final class DownloadActivity extends ListActivity {
                 Context.CONNECTIVITY_SERVICE );
         NetworkInfo network = connMan.getActiveNetworkInfo();
         if ( network == null || !network.isConnected() ) {
-            showError( "Network connectivity is not available" );
+            showMessage( "Network connectivity is not available" );
             return;
         }
             
@@ -191,10 +205,10 @@ public final class DownloadActivity extends ListActivity {
     private void download() {
         String state = Environment.getExternalStorageState();
         if ( Environment.MEDIA_MOUNTED_READ_ONLY.equals( state ) ) {
-            showError( "External storage is not writable" );
+            showMessage( "External storage is not writable" );
             return;
-        } else if ( !Environment.MEDIA_MOUNTED.equals( state ) ) { 
-            showError( "External storage is not available" );
+        } else if ( !Environment.MEDIA_MOUNTED.equals( state ) ) {
+            showMessage( "External storage is not available" );
             return;
         }
 
@@ -202,17 +216,18 @@ public final class DownloadActivity extends ListActivity {
         mDownloadTask.execute();
     }
 
-    private final class Tracker {
+    private final class ProgressTracker {
         public String type;
         public TextView msgText;
         public TextView statusText;
         public ProgressBar progressBar;
 
-        public Tracker( String t, TextView m, TextView s, ProgressBar p ) {
+        public ProgressTracker( String t, View convertView ) {
             type = t;
-            msgText = m;
-            statusText = s;
-            progressBar = p;
+            msgText = (TextView) convertView.findViewById( R.id.download_msg );
+            statusText = (TextView) convertView.findViewById( R.id.download_status );
+            progressBar = (ProgressBar) convertView.findViewById( R.id.download_progress );
+            statusText.setVisibility( View.VISIBLE );
         }
 
         public void initProgress( int resid, int max ) {
@@ -350,10 +365,8 @@ public final class DownloadActivity extends ListActivity {
                         now.setToNow();
                         if ( now.toMillis( false ) > info.end.toMillis( false ) ) {
                             // Data has expired
-                            TextView msg = (TextView) convertView.findViewById( R.id.download_msg );
-                            msg.setVisibility( View.VISIBLE );
-                            msg.setTextAppearance( mContext, R.style.RedBoldText );
-                            msg.setText( R.string.download_expired );
+                            dates.setTextAppearance( mContext, R.style.RedBoldText );
+                            dates.setText( dates.getText()+" (Expired)" );
                         }
                     }
                 }
@@ -380,12 +393,7 @@ public final class DownloadActivity extends ListActivity {
                         msg.setText( Formatter.formatShortFileSize( mContext, data.size )
                                 +"   ("+DateUtils.formatElapsedTime( data.size/(200*1024/8) )
                                 +" @ 200kbps)" );
-                        TextView status = (TextView) convertView.findViewById( 
-                                R.id.download_status );
-                        status.setVisibility( View.VISIBLE );
-                        ProgressBar progress = (ProgressBar) convertView.findViewById( 
-                                R.id.download_progress );
-                        convertView.setTag( new Tracker( data.type, msg, status, progress ) );
+                        convertView.setTag( new ProgressTracker( data.type, convertView ) );
                     }
                 }
             }
@@ -417,18 +425,21 @@ public final class DownloadActivity extends ListActivity {
             result = getInstalled();
             if ( result != 0 )
             {
+                showMessage( "There was an error while reading catalog" );
                 return result;
             }
 
             result = downloadManifest();
             if ( result != 0 )
             {
+                showMessage( "There was an error while downloading manifest" );
                 return result;
             }
 
             result = parseManifest();
             if ( result != 0 )
             {
+                showMessage( "There was an error while processing manifest" );
                 return result;
             }
 
@@ -441,7 +452,6 @@ public final class DownloadActivity extends ListActivity {
         protected void onPostExecute( Integer result ) {
             if ( result != 0 ) {
                 setProgressBarIndeterminateVisibility( false );
-                showError( "There was an error while checking for updates" );
                 return;
             }
 
@@ -449,6 +459,12 @@ public final class DownloadActivity extends ListActivity {
 
             mActivity.setListAdapter( mAdapter );
             mAdapter.notifyDataSetInvalidated();
+
+            if ( !mInstalledData.isEmpty() ) {
+                Button btnDelete = (Button) findViewById( R.id.btnDelete );
+                btnDelete.setVisibility( View.VISIBLE );
+                btnDelete.setEnabled( true );
+            }
 
             if ( !mAvailableData.isEmpty() ) {
                 Button btnDownload = (Button) findViewById( R.id.btnDownload );
@@ -460,11 +476,7 @@ public final class DownloadActivity extends ListActivity {
         private int getInstalled() {
             int result = 0;
 
-            SQLiteDatabase catalogDb = mDbManager.getCatalogDatabase();
-            Cursor cursor = catalogDb.rawQuery( "SELECT * FROM "+Catalog.TABLE_NAME
-                    +" GROUP BY "+Catalog.TYPE, null );
-                    //+" HAVING MAX("+Catalog.VERSION+")", null );
-
+            Cursor cursor = mDbManager.getLatestFromCatalog();
             if ( cursor.moveToFirst() ) {
                 do {
                     DataInfo info = new DataInfo();
@@ -473,6 +485,7 @@ public final class DownloadActivity extends ListActivity {
                     info.version = cursor.getInt( cursor.getColumnIndex( Catalog.VERSION ) );
                     String start = cursor.getString( cursor.getColumnIndex( Catalog.START_DATE ) );
                     String end = cursor.getString( cursor.getColumnIndex( Catalog.END_DATE ) );
+                    Log.i( TAG, info.type+","+start+","+end );
                     try {
                         info.start = new Time();
                         info.start.parse3339( start );
@@ -489,7 +502,6 @@ public final class DownloadActivity extends ListActivity {
             }
 
             cursor.close();
-            catalogDb.close();
 
             return result;
         }
@@ -541,7 +553,7 @@ public final class DownloadActivity extends ListActivity {
             } catch ( FileNotFoundException e ) {
                 Log.e( TAG, e.getMessage() );
                 setProgressBarIndeterminateVisibility( false );
-                showError( "Unable to read manifest file" );
+                showMessage( "Unable to read manifest file" );
                 return -1;
             }
 
@@ -676,18 +688,10 @@ public final class DownloadActivity extends ListActivity {
     }
 
     private final class DownloadTask extends AsyncTask<Void, Integer, Integer> {
-        private Handler mHandler;
-        private File mCacheDir;
-        private File mDatabaseDir;
-        private Tracker mTracker;
+        private ProgressTracker mTracker;
 
         public DownloadTask( DownloadActivity activity )
         {
-            mHandler = new Handler();
-            mCacheDir = new File( EXTERNAL_STORAGE_ANDROID_DATA_DIRECTORY, 
-                    getClass().getPackage().getName()+"/cache" );
-            mDatabaseDir = new File( EXTERNAL_STORAGE_ANDROID_DATA_DIRECTORY, 
-                    getClass().getPackage().getName()+"/databases" );
         }
 
         @Override
@@ -696,33 +700,32 @@ public final class DownloadActivity extends ListActivity {
 
         @Override
         protected Integer doInBackground( Void... params ) {
-                Iterator<DataInfo> it = mAvailableData.iterator();
-                while ( it.hasNext() ) {
-                    final DataInfo data = it.next();
-
-                    mTracker = getTrackerForType( data.type );
-
-                    int result = downloadData( data );
-                    if ( result < 0 ) {
-                        return result;
-                    }
-
-                    Log.i( TAG, "Download done" );
-
-                    result = installData( data );
-                    if ( result < 0 ) {
-                        return result;
-                    }
-
-                    Log.i( TAG, "Install done" );
-
-                    result = updateCatalog( data );
-                    if ( result < 0 ) {
-                        return result;
-                    }
-         
-                    Log.i( TAG, "Catalog updated" );
+            Iterator<DataInfo> it = mAvailableData.iterator();
+            while ( it.hasNext() ) {
+                final DataInfo data = it.next();
+    
+                mTracker = getTrackerForType( data.type );
+    
+                int result = downloadData( data );
+                if ( result < 0 ) {
+                    return result;
                 }
+                Log.i( TAG, "Download done" );
+    
+                result = installData( data );
+                if ( result < 0 ) {
+                    return result;
+                }
+                Log.i( TAG, "Install done" );
+    
+                result = updateCatalog( data );
+                if ( result < 0 ) {
+                    return result;
+                }         
+                Log.i( TAG, "Catalog updated" );
+            }
+    
+            cleanupExpiredData();
 
             return 0;
         }
@@ -737,14 +740,8 @@ public final class DownloadActivity extends ListActivity {
             if ( result == 0 ) {
                 showMessage( "The data was downloaded and installed successfully" );
             }
-            else if ( result == -1 ) {
-                showError( "There was an error while downloading data" );
-            }
-            else if ( result == -2 ) {
-                showError( "Data file was not found on the server" );
-            }
-            else if ( result == -3 ) {
-                showError( "Airports data download was interrupted" );
+            else {
+                showMessage( "There was an error while downloading data" );
             }
 
             mStop.set( false );
@@ -753,11 +750,11 @@ public final class DownloadActivity extends ListActivity {
             checkData();
         }
 
-        protected Tracker getTrackerForType( String type ) {
+        protected ProgressTracker getTrackerForType( String type ) {
             ListView lv = getListView();
             int count = lv.getChildCount();
             for ( int i=0; i<count; ++i) {
-                Tracker tracker = (Tracker) lv.getChildAt( i ).getTag();
+                ProgressTracker tracker = (ProgressTracker) lv.getChildAt( i ).getTag();
                 if ( tracker != null && type.equals( tracker.type ) ) {
                     return tracker;
                 }
@@ -789,14 +786,14 @@ public final class DownloadActivity extends ListActivity {
                     return -2;
                 }
 
-                if ( !mCacheDir.exists() ) {
-                    if ( !mCacheDir.mkdirs() ) {
+                if ( !DatabaseManager.CACHE_DIR.exists() ) {
+                    if ( !DatabaseManager.CACHE_DIR.mkdirs() ) {
                         showMessage( "Unable to create cache dir on external storage" );
                         return -3;
                     }
                 }
 
-                File zipFile = new File( mCacheDir, data.fileName );
+                File zipFile = new File( DatabaseManager.CACHE_DIR, data.fileName );
                 out = new FileOutputStream( zipFile );
 
                 HttpEntity entity = response.getEntity();
@@ -853,7 +850,7 @@ public final class DownloadActivity extends ListActivity {
         }
 
         protected int installData( final DataInfo data ) {
-            File cacheFile = new File( mCacheDir, data.fileName );
+            File cacheFile = new File( DatabaseManager.CACHE_DIR, data.fileName );
             ZipFile zipFile;
             try {
                 zipFile = new ZipFile( cacheFile );
@@ -874,8 +871,8 @@ public final class DownloadActivity extends ListActivity {
                 }
             } );
 
-            if ( !mDatabaseDir.exists() ) {
-                if ( !mDatabaseDir.mkdirs() ) {
+            if ( !DatabaseManager.DATABASE_DIR.exists() ) {
+                if ( !DatabaseManager.DATABASE_DIR.mkdirs() ) {
                     showMessage( "Unable to create database dir on external storage" );
                     return -3;
                 }
@@ -888,7 +885,7 @@ public final class DownloadActivity extends ListActivity {
 
             try {
                 in = zipFile.getInputStream( entry );
-                File dbFile = new File( mDatabaseDir, data.dbName );
+                File dbFile = new File( DatabaseManager.DATABASE_DIR, data.dbName );
                 out = new FileOutputStream( dbFile );
 
                 byte[] buffer = new byte[ 4*1024 ];
@@ -956,30 +953,149 @@ public final class DownloadActivity extends ListActivity {
 
             return rc;
         }
+    }
 
-        protected void showMessage( final String msg ) {
-            Log.e( TAG, msg );
-            mHandler.post( new Runnable () {
-                @Override
-                public void run() {
-                    Toast.makeText( getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
-                }
-            } );
+    private void checkDelete() {
+        AlertDialog.Builder builder = new AlertDialog.Builder( this );
+        builder.setMessage( "Are you sure you want to delete all installed data?" )
+               .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick( DialogInterface dialog, int id ) {
+                        DeleteDataTask deleteTask = new DeleteDataTask();
+                        deleteTask.execute( (Void)null );
+                    }
+               } )
+               .setNegativeButton( "No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick( DialogInterface dialog, int id ) {
+                    }
+               } );
+        AlertDialog alert = builder.create();
+        alert.show();
+        return;
+        
+    }
+
+    private final class DeleteDataTask extends AsyncTask<Void, Void, Integer> {
+        private ProgressDialog mProgressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            mProgressDialog = ProgressDialog.show( DownloadActivity.this, 
+                    "", "Delete installed data. Please wait...", true );
+        }
+
+        @Override
+        protected Integer doInBackground( Void... params ) {
+            int result = 0;
+
+            // Get all the catalog entries
+            SQLiteDatabase catalogDb = mDbManager.getCatalogDatabase();
+            Cursor cursor = catalogDb.query( Catalog.TABLE_NAME, null, null, null, 
+                    null, null, null );
+            if ( cursor.moveToFirst() ) {
+                do {
+                    int _id = cursor.getInt( cursor.getColumnIndex( Catalog._ID ) );
+                    String type = cursor.getString( cursor.getColumnIndex( Catalog.TYPE ) );
+                    String dbName = cursor.getString( cursor.getColumnIndex( Catalog.DB_NAME ) );
+
+                    // Delete the db file on the external device
+                    Log.i( TAG, "Deleting _id="+_id+" type="+type+" dbName="+dbName );
+                    File file = new File( DatabaseManager.DATABASE_DIR, dbName );
+                    if ( file.delete() ) {
+                        // Now delete the catalog entry for the file
+                        int rows = catalogDb.delete( Catalog.TABLE_NAME, "_id=?", 
+                                new String[] { Integer.toString( _id ) } );
+                        if ( rows != 1 ) {
+                            // If we could not delete the row, remember the error
+                            result = -1;
+                        }
+                    } else {
+                        result = -1;
+                    }
+                } while ( cursor.moveToNext() );
+            }
+
+            cursor.close();
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute( Integer result )
+        {
+            mProgressDialog.dismiss();
+            if ( result != 0 )
+            {
+                // Some or all data files were not deleted
+                Toast.makeText( getApplicationContext(), 
+                        "There was an error while deleting installed data", 
+                        Toast.LENGTH_LONG ).show();                
+            }
+
+            // Refresh the download list view
+            checkData();
         }
     }
 
-    protected void showMessage1( String msg ) {
-        Toast.makeText( getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
+    protected void cleanupExpiredData() {
+        SQLiteDatabase catalogDb = mDbManager.getCatalogDatabase();
+
+        Time now = new Time();
+        now.setToNow();
+        String today = now.format3339( true );
+
+        Cursor cursor = mDbManager.getLatestFromCatalog();
+        if ( cursor.moveToFirst() ) {
+            do {
+                // For each type that we have valid data, delete the expired data
+                String end = cursor.getString( cursor.getColumnIndex( Catalog.END_DATE ) );
+                if ( end.compareTo( today ) >= 0 ) {
+                    // This data is valid today, cleanup any previous expired data
+                    String type = cursor.getString( cursor.getColumnIndex( Catalog.TYPE ) );
+                    int version = cursor.getInt( cursor.getColumnIndex( Catalog.VERSION ) );
+                    Cursor expired = catalogDb.query( Catalog.TABLE_NAME, 
+                            new String[] { Catalog._ID, Catalog.DB_NAME },
+                            Catalog.TYPE+"=? and "+Catalog.VERSION+"<?",
+                            new String[] { type, Integer.toString( version ) },
+                            null, null, null );
+                    if ( expired.moveToFirst() ) {
+                        do {
+                            Integer _id = expired.getInt( cursor.getColumnIndex( Catalog._ID ) );
+                            String dbName = expired.getString( 
+                                    expired.getColumnIndex( Catalog.DB_NAME ) );
+                            Log.i( TAG, "Deleting _id="+_id+" type="+type+" dbName="+dbName );
+                            File file = new File( DatabaseManager.DATABASE_DIR, dbName );
+                            if ( file.delete() ) {
+                                // Now delete the catalog entry for the file
+                                catalogDb.delete( Catalog.TABLE_NAME, Catalog._ID+"=?", 
+                                        new String[] { Integer.toString( _id ) } );
+                            }
+                        } while ( expired.moveToNext() );
+                    }
+
+                    expired.close();
+                }
+            } while ( cursor.moveToNext() );
+        }
+
+        cursor.close();
     }
 
-    protected void showError( String msg ) {
-        Toast.makeText( getApplicationContext(), "Download Failed: "+msg, 
-                Toast.LENGTH_LONG ).show();
+    protected void showMessage( final String msg ) {
+        Log.i( TAG, msg );
+        mHandler.post( new Runnable () {
+            @Override
+            public void run() {
+                Toast.makeText( getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
+            }
+        } );
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        mDbManager.close();
         Log.i( TAG, "onPause() called" );
     }
 
