@@ -191,6 +191,15 @@ public class DatabaseManager {
         cursor.close();
     }
 
+    public SQLiteDatabase getDatabase( String type ) {
+        if ( mDatabases.isEmpty() ) {
+            // Open databases if not open already
+            openDatabases();
+        }
+
+        return mDatabases.get( type );
+    }
+
     private synchronized void closeDatabases() {
         Iterator<String> types  = mDatabases.keySet().iterator();
         while ( types.hasNext() ) {
@@ -198,6 +207,7 @@ public class DatabaseManager {
             Log.i( TAG, "Closing db for type="+type );
             mDatabases.get( type ).close();
         }
+        mDatabases.clear();
     }
 
     public int insertCatalogEntry( ContentValues values ) {
