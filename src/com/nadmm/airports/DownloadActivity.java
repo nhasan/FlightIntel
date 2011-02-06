@@ -267,7 +267,6 @@ public final class DownloadActivity extends ListActivity {
         private LayoutInflater mInflater;
         private Context mContext;
         private final int VIEW_TYPE_SECTION_HEADER = 0;
-        private final int VIEW_TYPE_DATA_FILE = 1;
 
         public DownloadListAdapter( Context context ) {
             mInflater = LayoutInflater.from( context );
@@ -332,7 +331,7 @@ public final class DownloadActivity extends ListActivity {
 
         @Override public int getItemViewType( int position ) {
             return ( position == getInstalledHeaderPos() || position == getAvailableHeaderPos() )?
-                    VIEW_TYPE_SECTION_HEADER : VIEW_TYPE_DATA_FILE;
+                    VIEW_TYPE_SECTION_HEADER : IGNORE_ITEM_VIEW_TYPE;
         }
 
         @Override
