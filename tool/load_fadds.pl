@@ -37,6 +37,10 @@ my $APT = shift @ARGV;
 
 open( APT_FILE, "<$APT" ) or die "Could not open data file\n";
 
+my $create_metadata_table = "CREATE TABLE  android_metadata ( locale TEXT );";
+
+my $insert_metadata_record = "INSERT INTO android_metadata VALUES ('en_US');";
+
 my $create_airports_table = "CREATE TABLE airports ("
         ."_ID INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."SITE_NUMBER TEXT, "
@@ -373,12 +377,16 @@ my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 $dbh->do( "PRAGMA page_size=4096" );
 $dbh->do( "PRAGMA synchronous=OFF" );
 
+$dbh->do( "DROP TABLE IF EXISTS android_metadata" );
+$dbh->do( $create_metadata_table );
+$dbh->do( $insert_metadata_record );
+
 $dbh->do( "DROP TABLE IF EXISTS airports" );
 $dbh->do( $create_airports_table );
-$dbh->do( "CREATE INDEX idx_faa_code on airports ( FAA_CODE );" );
-$dbh->do( "CREATE INDEX idx_icao_code on airports ( ICAO_CODE );" );
-$dbh->do( "CREATE INDEX idx_name on airports ( FACILITY_NAME );" );
-$dbh->do( "CREATE INDEX idx_city on airports ( ASSOC_CITY );" );
+#$dbh->do( "CREATE INDEX idx_faa_code on airports ( FAA_CODE );" );
+#$dbh->do( "CREATE INDEX idx_icao_code on airports ( ICAO_CODE );" );
+#$dbh->do( "CREATE INDEX idx_name on airports ( FACILITY_NAME );" );
+#$dbh->do( "CREATE INDEX idx_city on airports ( ASSOC_CITY );" );
 
 $dbh->do( "DROP TABLE IF EXISTS runways" );
 $dbh->do( $create_runways_table );
