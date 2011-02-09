@@ -21,6 +21,8 @@
 
 use strict;
 use DBI;
+use Clone qw(clone);
+use Text::Autoformat;
 
 my $reTrim = qr/^\s+|\s+$/;
 
@@ -32,14 +34,23 @@ sub substrim($$$)
     return $string;
 }
 
+sub capitalize($$$)
+{
+    my ( $string, $offset, $len ) = @_;
+    $string = autoformat( substr( $string, $offset, $len ), { case => 'highlight' } );
+    $string =~ s/$reTrim//g;
+    $string =~ s/(Ny|Nj)/\U$1\E/g;
+    return $string;
+}
+
 my $dbfile = "fadds.db";
 my $APT = shift @ARGV;
 
 open( APT_FILE, "<$APT" ) or die "Could not open data file\n";
 
-my $create_metadata_table = "CREATE TABLE  android_metadata ( locale TEXT );";
+my $create_metadata_table = "CREATE TABLE android_metadata ( locale TEXT );";
 
-my $insert_metadata_record = "INSERT INTO android_metadata VALUES ('en_US');";
+my $insert_metadata_record = "INSERT INTO android_metadata VALUES ( 'en_US' );";
 
 my $create_airports_table = "CREATE TABLE airports ("
         ."_ID INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -440,29 +451,29 @@ while ( my $line = <APT_FILE> )
         #ASSOC_STATE
         $sth_apt->bind_param(  7, substrim( $line,   48,  2 ) );
         #ASSOC_COUNTY
-        $sth_apt->bind_param(  8, substrim( $line,   70, 21 ) );
+        $sth_apt->bind_param(  8, capitalize( $line,   70, 21 ) );
         #ASSOC_CITY
-        $sth_apt->bind_param(  9, substrim( $line,   93, 40 ) );
+        $sth_apt->bind_param(  9, capitalize( $line,   93, 40 ) );
         #FACILITY_NAME
-        $sth_apt->bind_param( 10, substrim( $line,  133, 42 ) );
+        $sth_apt->bind_param( 10, capitalize( $line,  133, 42 ) );
         #OWNERSHIP_TYPE
         $sth_apt->bind_param( 11, substrim( $line,  175,  2 ) );
         #FACILITY_USE
         $sth_apt->bind_param( 12, substrim( $line,  177,  2 ) );
         #OWNER_NAME
-        $sth_apt->bind_param( 13, substrim( $line,  179, 35 ) );
+        $sth_apt->bind_param( 13, capitalize( $line,  179, 35 ) );
         #OWNER_ADDRESS
-        $sth_apt->bind_param( 14, substrim( $line,  214, 72 ) );
+        $sth_apt->bind_param( 14, capitalize( $line,  214, 72 ) );
         #OWNER_CITY_STATE_ZIP
-        $sth_apt->bind_param( 15, substrim( $line,  286, 45 ) );
+        $sth_apt->bind_param( 15, capitalize( $line,  286, 45 ) );
         #OWNER_PHONE
         $sth_apt->bind_param( 16, substrim( $line,  331, 16 ) );
         #MANAGER_NAME
-        $sth_apt->bind_param( 17, substrim( $line,  347, 35 ) );
+        $sth_apt->bind_param( 17, capitalize( $line,  347, 35 ) );
         #MANAGER_ADDRESS
-        $sth_apt->bind_param( 18, substrim( $line,  382, 72 ) );
+        $sth_apt->bind_param( 18, capitalize( $line,  382, 72 ) );
         #MANAGER_CITY_STATE_ZIP
-        $sth_apt->bind_param( 19, substrim( $line,  454, 45 ) );
+        $sth_apt->bind_param( 19, capitalize( $line,  454, 45 ) );
         #MANAGER_PHONE
         $sth_apt->bind_param( 20, substrim( $line,  499, 16 ) );
         #REF_LATTITUDE_SECONDS
@@ -731,6 +742,9 @@ while ( my $line = <APT_FILE> )
         $dbh->do( "PRAGMA synchronous=OFF" );
     }
 }
+
+# We need to do this to fallback to faa code if icao code is not assigned
+$dbh->do( "update airports set icao_code=null where length(icao_code)=0;" );
 
 print( " Done!\n" );
 
