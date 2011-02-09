@@ -472,16 +472,20 @@ public final class DownloadActivity extends ListActivity {
             mActivity.setListAdapter( mAdapter );
             mAdapter.notifyDataSetInvalidated();
 
+            Button btnDelete = (Button) findViewById( R.id.btnDelete );
             if ( !mInstalledData.isEmpty() ) {
-                Button btnDelete = (Button) findViewById( R.id.btnDelete );
                 btnDelete.setVisibility( View.VISIBLE );
                 btnDelete.setEnabled( true );
+            } else {
+                btnDelete.setVisibility( View.GONE );
             }
 
+            Button btnDownload = (Button) findViewById( R.id.btnDownload );
             if ( !mAvailableData.isEmpty() ) {
-                Button btnDownload = (Button) findViewById( R.id.btnDownload );
                 btnDownload.setVisibility( View.VISIBLE );
                 btnDownload.setEnabled( true );
+            } else {
+                btnDownload.setVisibility( View.GONE );
             }
         }
 
