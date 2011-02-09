@@ -14,7 +14,7 @@
 	    <activity android:label="@string/downloads" 
 	              android:name="DownloadActivity" />
 
-    	<activity android:name=".SearchActivity">
+    	<activity android:name=".SearchActivity" android:launchMode="singleTop">
         	<intent-filter>
             	<action android:name="android.intent.action.SEARCH" />
 	        </intent-filter>
@@ -22,15 +22,18 @@
                     android:resource="@xml/searchable" />
     	</activity>
 
+        <!-- declare the default searchable Activity for the whole app -->
 	    <meta-data android:name="android.app.default_searchable"
     	        android:value=".SearchActivity" />
 
-		<provider android:authorities="com.nadmm.airports.airportsprovider"
-		          android:name=".AirportsProvider" />
+		<provider android:name=".AirportsProvider"
+		          android:authorities="com.nadmm.airports.AirportsProvider"
+		          android:syncable="false" />
 	</application>
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-sdk android:minSdkVersion="7" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
 </manifest>

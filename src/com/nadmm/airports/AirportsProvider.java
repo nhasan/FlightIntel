@@ -19,15 +19,19 @@
 
 package com.nadmm.airports;
 
+import java.util.HashMap;
+
 import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.net.Uri;
+import android.provider.BaseColumns;
 import android.util.Log;
+
+import com.nadmm.airports.DatabaseManager.Airports;
 
 /**
  * Provides access to FAA airports database
@@ -36,7 +40,7 @@ import android.util.Log;
 public class AirportsProvider extends ContentProvider {
     public static final String TAG = "ContentProvider";
 
-    public static final String AUTHORITY = "com.nadmm.airports.ContentProvider";
+    public static final String AUTHORITY = "com.nadmm.airports.AirportsProvider";
     public static final Uri CONTENT_URI = Uri.parse( "content://" + AUTHORITY + "/airport" );
 
     // MIME types used for searching airports or looking up a single airport
@@ -45,21 +49,27 @@ public class AirportsProvider extends ContentProvider {
     public static final String ITEM_MIME_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
                                                 + "/vnd.nadmm.airports";
 
-    public static final int SEARCH_AIRPORTS = 0;
-    public static final int GET_AIRPORT = 1;
-    public static final int SEARCH_SUGGEST = 2;
+    private static final int SEARCH_AIRPORTS = 0;
+    private static final int GET_AIRPORT = 1;
+    private static final int SEARCH_SUGGEST = 2;
 
-    public static final UriMatcher sUriMatcher = buildUriMatcher();
+    private static final UriMatcher mUriMatcher = buildUriMatcher();
+    private static final HashMap<String, String> mColumnMap = buildProjectionMap();
 
-    public static final String[] projection = new String[] {
-        "_ID", SearchManager.SUGGEST_COLUMN_TEXT_1, SearchManager.SUGGEST_COLUMN_TEXT_2
+    private DatabaseManager mDbManager;
+
+    private static final String[] mSuggestionColumns = new String[] {
+        BaseColumns._ID,
+        SearchManager.SUGGEST_COLUMN_TEXT_1,
+        SearchManager.SUGGEST_COLUMN_TEXT_2,
+        SearchManager.SUGGEST_COLUMN_INTENT_DATA
     };
 
-    public static final Object[][] data = {
-        { 1, "KTTN", "Trenton Mercer Airport" },
-        { 2, "39N", "Princeton Airport" },
-        { 3, "KEWR", "Newark Airport" }
-    };
+    @Override
+    public boolean onCreate() {
+        mDbManager = new DatabaseManager( getContext() );
+        return true;
+    }
 
     private static UriMatcher buildUriMatcher() {
         UriMatcher matcher = new UriMatcher( UriMatcher.NO_MATCH );
@@ -75,65 +85,69 @@ public class AirportsProvider extends ContentProvider {
         return matcher;
     }
 
-    /* (non-Javadoc)
-     * @see android.content.ContentProvider#onCreate()
-     */
-    @Override
-    public boolean onCreate() {
-        return true;
+    private static HashMap<String, String> buildProjectionMap() {
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put( BaseColumns._ID, BaseColumns._ID );
+        map.put( SearchManager.SUGGEST_COLUMN_TEXT_1,
+                "IFNULL("+Airports.ICAO_CODE+", "+Airports.FAA_CODE+")"
+                +" AS "+SearchManager.SUGGEST_COLUMN_TEXT_1 );
+        map.put( SearchManager.SUGGEST_COLUMN_TEXT_2,
+                Airports.FACILITY_NAME+"||', '||"+Airports.ASSOC_CITY
+                +"||' '||"+Airports.ASSOC_STATE
+                +" AS "+SearchManager.SUGGEST_COLUMN_TEXT_2 );
+        map.put( SearchManager.SUGGEST_COLUMN_INTENT_DATA, 
+                Airports.SITE_NUMBER+" AS "+SearchManager.SUGGEST_COLUMN_INTENT_DATA);
+
+        return map;
     }
 
-    /* (non-Javadoc)
-     * @see android.content.ContentProvider#getType(android.net.Uri)
-     */
     @Override
-    public String getType(Uri uri) {
-        switch ( sUriMatcher.match( uri ) ) {
-        case SEARCH_AIRPORTS:
-            return DIR_MIME_TYPE;
-        case GET_AIRPORT:
-            return ITEM_MIME_TYPE;
-        case SEARCH_SUGGEST:
-            return SearchManager.SUGGEST_MIME_TYPE;
-        default:
-            throw new IllegalArgumentException( "Unknown URL " + uri );
+    public String getType( Uri uri ) {
+        switch ( mUriMatcher.match( uri ) ) {
+            case SEARCH_AIRPORTS:
+                return DIR_MIME_TYPE;
+            case GET_AIRPORT:
+                return ITEM_MIME_TYPE;
+            case SEARCH_SUGGEST:
+                return SearchManager.SUGGEST_MIME_TYPE;
+            default:
+                throw new IllegalArgumentException( "Unknown Uri " + uri );
         }
     }
 
-    /* (non-Javadoc)
-     * @see android.content.ContentProvider#query(android.net.Uri, java.lang.String[], java.lang.String, java.lang.String[], java.lang.String)
-     */
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, 
-            String sortOrder) {
-        Log.v( TAG, uri.toString() );
-        MatrixCursor cursor = new MatrixCursor( AirportsProvider.projection, data.length );
-        for ( int i=0; i<data.length; ++i )
-        {
-            cursor.addRow( data[ i ] );
+    public Cursor query(Uri uri, String[] projection, String selection, 
+            String[] selectionArgs, String sortOrder) {
+        Log.v( TAG, "Search="+uri.toString() );
+
+        switch ( mUriMatcher.match( uri ) ) {
+            case SEARCH_AIRPORTS:
+            case SEARCH_SUGGEST:
+                return searchAirports( uri );
+            default:
+                throw new IllegalArgumentException( "Unknown Uri " + uri );
         }
-        return cursor;
     }
 
-    /* (non-Javadoc)
-     * @see android.content.ContentProvider#insert(android.net.Uri, android.content.ContentValues)
-     */
+    private Cursor searchAirports( Uri uri ) {
+        String query = uri.getLastPathSegment();
+        if ( query == null || SearchManager.SUGGEST_URI_PATH_QUERY.equals( query ) ) {
+            throw new IllegalArgumentException(
+                    "query must be provided for the Uri: "+uri );
+        }
+        return mDbManager.searchAirports( query.toUpperCase(), mColumnMap, mSuggestionColumns );
+    }
+
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
-     * @see android.content.ContentProvider#delete(android.net.Uri, java.lang.String, java.lang.String[])
-     */
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         throw new UnsupportedOperationException();
     }
 
-    /* (non-Javadoc)
-     * @see android.content.ContentProvider#update(android.net.Uri, android.content.ContentValues, java.lang.String, java.lang.String[])
-     */
     @Override
     public int update(Uri uri, ContentValues values, String selection,
             String[] selectionArgs) {

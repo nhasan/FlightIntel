@@ -29,11 +29,16 @@ import android.os.Bundle;
 import android.widget.SimpleAdapter;
 
 public class SearchActivity extends ListActivity {
+    private DatabaseManager mDbManager;
+
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        mDbManager = new DatabaseManager( this );
+
         Intent intent = getIntent();
+        handleIntent( intent );
         
         if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
             String query = intent.getStringExtra( SearchManager.QUERY );
@@ -53,6 +58,18 @@ public class SearchActivity extends ListActivity {
                     new int[] {android.R.id.text1, android.R.id.text2} );
 
             setListAdapter( adapter );
+        }
+    }
+
+    @Override
+    protected void onNewIntent( Intent intent ) {
+        setIntent( intent );
+        handleIntent( intent );
+    }
+
+    private void handleIntent( Intent intent ) {
+        if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
+          String query = intent.getStringExtra( SearchManager.QUERY );
         }
     }
 }

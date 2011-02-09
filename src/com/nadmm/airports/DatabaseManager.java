@@ -28,6 +28,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Environment;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -38,33 +39,17 @@ public class DatabaseManager {
     private final CatalogDbOpenHelper mCatalogDbHelper;
     private final Context mContext;
     private final HashMap<String, SQLiteDatabase> mDatabases;
-    
+
     private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
             = new File( Environment.getExternalStorageDirectory(), 
                     "Android/data/"+DownloadActivity.class.getPackage().getName() );
     public static File CACHE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/cache" );
     public static File DATABASE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/databases" );
 
-    public DatabaseManager( Context context ) {
-        mContext = context;
-        mCatalogDbHelper = new CatalogDbOpenHelper( mContext );
-        mDatabases = new HashMap<String, SQLiteDatabase>();
-
-        openDatabases();
-    }
-
-    public SQLiteDatabase getCatalogDatabase() {
-        return mCatalogDbHelper.getWritableDatabase();
-    }
-
-    public void close() {
-        Log.i( TAG, "Closing databases..." );
-        mCatalogDbHelper.close();
-        closeDatabases();
-    }
+    public static final String DATA_TYPE_FADDS = "FADDS";
 
     public static final class Airports implements BaseColumns {
-        public static final String TABLE_NAME = "airport";
+        public static final String TABLE_NAME = "airports";
         // Fields for airport table
         public static final String SITE_NUMBER = "SITE_NUMBER";
         public static final String FACILITY_TYPE = "FACILITY_TYPE";
@@ -158,6 +143,27 @@ public class DatabaseManager {
         public static final String DB_NAME = "DB_NAME";
     }
 
+    private static final String mSearchSelection = Airports.FAA_CODE+"=? or "
+        +Airports.ICAO_CODE+"=? or "+Airports.FACILITY_NAME+" LIKE ?";
+
+    public DatabaseManager( Context context ) {
+        mContext = context;
+        mCatalogDbHelper = new CatalogDbOpenHelper( mContext );
+        mDatabases = new HashMap<String, SQLiteDatabase>();
+
+        openDatabases();
+    }
+
+    public SQLiteDatabase getCatalogDatabase() {
+        return mCatalogDbHelper.getWritableDatabase();
+    }
+
+    public void close() {
+        Log.i( TAG, "Closing databases..." );
+        mCatalogDbHelper.close();
+        closeDatabases();
+    }
+
     public Cursor getLatestFromCatalog() {
         SQLiteDatabase catalogDb = getCatalogDatabase();
         String query = "SELECT * FROM "+Catalog.TABLE_NAME+" c1"
@@ -208,6 +214,24 @@ public class DatabaseManager {
             mDatabases.get( type ).close();
         }
         mDatabases.clear();
+    }
+
+    public Cursor searchAirports( String query, HashMap<String, String> columnMap,
+            String[] columns ) {
+        Log.i( TAG, "query="+query );
+        SQLiteDatabase db = getDatabase( DATA_TYPE_FADDS );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Airports.TABLE_NAME );
+        builder.setProjectionMap( columnMap );
+        Cursor cursor = builder.query( db, columns, mSearchSelection,
+                new String[] { query, query, query+"%" },
+                null, null, null, null );
+
+        if ( cursor != null && !cursor.moveToFirst() ) {
+            cursor.close();
+            return null;
+        }
+        return cursor;
     }
 
     public int insertCatalogEntry( ContentValues values ) {
