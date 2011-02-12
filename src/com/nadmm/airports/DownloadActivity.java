@@ -49,6 +49,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -56,6 +57,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.BaseColumns;
 import android.sax.Element;
 import android.sax.EndElementListener;
 import android.sax.EndTextElementListener;
@@ -66,12 +68,10 @@ import android.text.format.Time;
 import android.util.Log;
 import android.util.TimeFormatException;
 import android.util.Xml;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.View.OnClickListener;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -115,7 +115,6 @@ public final class DownloadActivity extends ListActivity {
     private final ArrayList<DataInfo> mInstalledData = new ArrayList<DataInfo>();
     private final ArrayList<DataInfo> mAvailableData = new ArrayList<DataInfo>();
 
-    private DownloadListAdapter mAdapter;
     private DatabaseManager mDbManager;
     private DownloadTask mDownloadTask;
     private AtomicBoolean mStop;
@@ -126,7 +125,6 @@ public final class DownloadActivity extends ListActivity {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new DownloadListAdapter( this );
         mDbManager = new DatabaseManager( this );
         mDownloadTask = null;
         mStop = new AtomicBoolean( false );
@@ -263,54 +261,67 @@ public final class DownloadActivity extends ListActivity {
         }
     }
 
-    private final class DownloadListAdapter extends BaseAdapter {
-        private LayoutInflater mInflater;
-        private Context mContext;
-        private final int VIEW_TYPE_SECTION_HEADER = 0;
+    private final class DownloadCursor extends MatrixCursor {
+        private static final String SECTION = "SECTION";
+        private static final String TYPE = "TYPE";
+        private static final String DESC = "DESC";
+        private static final String DATES = "DATES";
+        private static final String MSG = "MSG";
 
-        public DownloadListAdapter( Context context ) {
-            mInflater = LayoutInflater.from( context );
-            mContext = context;
+        private int mId = 0;
+
+        public DownloadCursor() {
+            super( new String[] { BaseColumns._ID, SECTION, TYPE, DESC, DATES, MSG } );
         }
 
-        private int getInstalledCount() {
-            return mInstalledData.isEmpty()? 1: mInstalledData.size();
+        public void addRow( int section, DataInfo info ) {
+            RowBuilder builder = newRow();
+            builder.add( mId++ );
+            builder.add( section );
+            builder.add( info.type );
+            builder.add( info.desc );
+            builder.add( "Effective "+DateUtils.formatDateRange( DownloadActivity.this, 
+                    info.start.toMillis( false ), info.end.toMillis( false )+1000, 
+                    DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) );
+            builder.add( Formatter.formatShortFileSize( DownloadActivity.this, info.size )
+                    +"   ("+DateUtils.formatElapsedTime( info.size/(200*1024/8) )
+                    +" @ 200kbps)" );
         }
+    }
 
-        private int getAvailableCount() {
-            return mAvailableData.isEmpty()? 1: mAvailableData.size();
-        }
+    private final class DownloadListAdapter extends SectionedCursorAdapter {
 
-        private int getInstalledHeaderPos() {
-            return 0;
-        }
-
-        private int getAvailableHeaderPos() {
-            return getInstalledCount()+1;
-        }
-
-        private int getInstalledItemOffset() {
-            return getInstalledHeaderPos()+1;
-        }
-
-        private int getAvailableItemOffset() {
-            return getAvailableHeaderPos()+1;
-        }
-
-        @Override
-        public int getCount() {
-            // Account for 2 section headers
-            return 2+getInstalledCount()+getAvailableCount();
-        }
-
-        @Override
-        public Object getItem( int position ) {
-            return position;
+        public DownloadListAdapter( Context context, Cursor c ) {
+            super( context, R.layout.download_list_item, c, 
+                    new String[] { DownloadCursor.DESC,
+                                   DownloadCursor.DATES,
+                                   DownloadCursor.MSG },
+                    new int[] { R.id.download_desc,
+                                R.id.download_dates,
+                                R.id.download_msg },
+                    R.id.download_section );
         }
 
         @Override
-        public long getItemId( int position ) {
-            return position;
+        public String getSectionName() {
+            Cursor c = getCursor();
+            int section = c.getInt( c.getColumnIndex( DownloadCursor.SECTION ) );
+            return getResources().getString( section );
+        }
+
+        @Override
+        public View newView( Context context, Cursor c, ViewGroup parent ) {
+            View view = super.newView( context, c, parent );
+            int section = c.getInt( c.getColumnIndex( DownloadCursor.SECTION ) );
+            if ( section == R.string.download_available ) {
+                String type = c.getString( c.getColumnIndex( DownloadCursor.TYPE ) );
+                view.setTag( new ProgressTracker( type, view ) );
+                View msg = view.findViewById( R.id.download_msg );
+                msg.setVisibility( View.GONE );
+                View status = view.findViewById( R.id.download_status );
+                status.setVisibility( View.GONE );
+            }
+            return view;
         }
 
         @Override
@@ -323,93 +334,17 @@ public final class DownloadActivity extends ListActivity {
             return false;
         }
 
-        @Override
-        public int getViewTypeCount() {
-            // We have 2 view types: section and data
-            return 2;
+     }
+
+    private Cursor getCursor() {
+        DownloadCursor c = new DownloadCursor();
+        for ( DataInfo info : mInstalledData ) {
+            c.addRow( R.string.download_installed, info );
         }
-
-        @Override public int getItemViewType( int position ) {
-            return ( position == getInstalledHeaderPos() || position == getAvailableHeaderPos() )?
-                    VIEW_TYPE_SECTION_HEADER : IGNORE_ITEM_VIEW_TYPE;
+        for ( DataInfo info : mAvailableData ) {
+            c.addRow( R.string.download_available, info );
         }
-
-        @Override
-        public View getView( int position, View convertView, ViewGroup parent ) {
-            int viewType = getItemViewType( position );
-
-            if ( viewType == VIEW_TYPE_SECTION_HEADER ) {
-                if ( convertView == null ) {
-                    convertView = mInflater.inflate( R.layout.download_list_section, null );
-                }
-
-                TextView section = (TextView) convertView.findViewById( R.id.download_section );
-                if (position == 0) {
-                    section.setText( R.string.download_installed );
-                }
-                else {
-                    section.setText( R.string.download_available );
-                }
-            }
-            else {
-                if ( position>=getInstalledHeaderPos() && position<getAvailableHeaderPos() ) {
-                    if ( mInstalledData.isEmpty() ) {
-                        if ( convertView == null ) {
-                            convertView = mInflater.inflate( R.layout.download_list_nodata, null );
-                        }
-                        TextView msg = (TextView) convertView.findViewById( R.id.download_msg );
-                        msg.setText( R.string.download_noinstall );
-                    }
-                    else {
-                        if ( convertView == null ) {
-                            convertView = mInflater.inflate( R.layout.download_list_item, null );
-                        }
-                        DataInfo info = mInstalledData.get( position-getInstalledItemOffset() );
-                        TextView desc = (TextView) convertView.findViewById( R.id.download_desc );
-                        desc.setText( info.desc );
-                        TextView dates = (TextView) convertView.findViewById( R.id.download_dates );
-                        dates.setText("Effective "+DateUtils.formatDateRange( mContext, 
-                                info.start.toMillis( false ), info.end.toMillis( false )+1000, 
-                                DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) );
-                        Time now = new Time();
-                        now.setToNow();
-                        if ( now.toMillis( false ) > info.end.toMillis( false ) ) {
-                            // Data has expired
-                            dates.setTextAppearance( mContext, R.style.RedBoldText );
-                            dates.setText( dates.getText()+" (Expired)" );
-                        }
-                    }
-                }
-                else {
-                    if ( mAvailableData.isEmpty() ) {
-                        if ( convertView == null ) {
-                            convertView = mInflater.inflate( R.layout.download_list_nodata, null );
-                        }
-                        TextView msg = (TextView) convertView.findViewById( R.id.download_msg );
-                        msg.setText( R.string.download_noupdate );
-                    } else {
-                        if ( convertView == null ) {
-                            convertView = mInflater.inflate( R.layout.download_list_item, null );
-                        }                        
-                        DataInfo data = mAvailableData.get( position-getAvailableItemOffset() );
-                        TextView desc = (TextView) convertView.findViewById( R.id.download_desc );
-                        desc.setText( data.desc );
-                        TextView dates = (TextView) convertView.findViewById( R.id.download_dates );
-                        dates.setText("Effective "+DateUtils.formatDateRange( mContext, 
-                                data.start.toMillis( false ), data.end.toMillis( false )+1000, 
-                                DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) );
-                        TextView msg = (TextView) convertView.findViewById( R.id.download_msg );
-                        msg.setVisibility( View.VISIBLE );
-                        msg.setText( Formatter.formatShortFileSize( mContext, data.size )
-                                +"   ("+DateUtils.formatElapsedTime( data.size/(200*1024/8) )
-                                +" @ 200kbps)" );
-                        convertView.setTag( new ProgressTracker( data.type, convertView ) );
-                    }
-                }
-            }
-
-            return convertView;
-        }        
+        return c;
     }
 
     private final class CheckDataTask extends AsyncTask<Void, Void, Integer> {
@@ -469,8 +404,10 @@ public final class DownloadActivity extends ListActivity {
 
             setProgressBarIndeterminateVisibility( false );
 
-            mActivity.setListAdapter( mAdapter );
-            mAdapter.notifyDataSetInvalidated();
+            Cursor c = getCursor();
+            DownloadListAdapter adapter = new DownloadListAdapter( DownloadActivity.this, c );
+            mActivity.setListAdapter( adapter );
+            adapter.notifyDataSetInvalidated();
 
             Button btnDelete = (Button) findViewById( R.id.btnDelete );
             if ( !mInstalledData.isEmpty() ) {
