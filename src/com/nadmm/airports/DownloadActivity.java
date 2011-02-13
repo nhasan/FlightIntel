@@ -316,6 +316,7 @@ public final class DownloadActivity extends ListActivity {
             if ( section == R.string.download_available ) {
                 String type = c.getString( c.getColumnIndex( DownloadCursor.TYPE ) );
                 view.setTag( new ProgressTracker( type, view ) );
+            } else {
                 View msg = view.findViewById( R.id.download_msg );
                 msg.setVisibility( View.GONE );
                 View status = view.findViewById( R.id.download_status );
