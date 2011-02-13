@@ -53,7 +53,7 @@ my $create_metadata_table = "CREATE TABLE android_metadata ( locale TEXT );";
 my $insert_metadata_record = "INSERT INTO android_metadata VALUES ( 'en_US' );";
 
 my $create_airports_table = "CREATE TABLE airports ("
-        ."_ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."SITE_NUMBER TEXT, "
         ."FACILITY_TYPE TEXT, "
         ."FAA_CODE TEXT, "
@@ -194,7 +194,7 @@ my $insert_airports_record = "INSERT INTO airports ("
         ."? ,?, ?, ?, ?, ?, ?, ?, ?)";
 
 my $create_runways_table = "CREATE TABLE runways ("
-        ."_ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."SITE_NUMBER TEXT, "
         ."RUNWAY_ID TEXT, "
         ."RUNWAY_LENGTH INTEGER, "
@@ -354,7 +354,7 @@ my $insert_runways_record = "INSERT INTO runways ("
         ."?, ?, ?, ?, ?, ?, ?)";
  
 my $create_attendance_table = "CREATE TABLE attendance ("
-        ."_ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."SITE_NUMBER TEXT, "
         ."SEQUENCE_NUMBER INTEGER, "
         ."ATTENDANCE_SCHEDULE TEXT"
@@ -369,7 +369,7 @@ my $insert_attendance_record = "INSERT INTO attendance ("
         .")";
 
 my $create_remarks_table = "CREATE TABLE remarks ("
-        ."_ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."SITE_NUMBER TEXT, "
         ."REMARK_NAME TEXT, "
         ."REMARK_TEXT TEXT"
