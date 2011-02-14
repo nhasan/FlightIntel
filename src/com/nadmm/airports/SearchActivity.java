@@ -44,12 +44,7 @@ public class SearchActivity extends Activity {
         mListView = (ListView) findViewById( R.id.search_list );
 
         Intent intent = getIntent();
-        
-        if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
-            String query = intent.getStringExtra( SearchManager.QUERY );
-            Log.i( TAG, "query="+query );
-            showResults( query );
-        }
+        handleIntent( intent );
     }
 
     @Override
@@ -61,6 +56,8 @@ public class SearchActivity extends Activity {
     private void handleIntent( Intent intent ) {
         if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
           String query = intent.getStringExtra( SearchManager.QUERY );
+          Log.i( TAG, "query="+query );
+          showResults( query );
         }
     }
 
@@ -70,6 +67,7 @@ public class SearchActivity extends Activity {
 
         if ( cursor == null ) {
             mTextView.setText( R.string.search_not_found );
+            mListView.setAdapter( null );
         } else {
             int count = cursor.getCount();
             startManagingCursor( cursor );
