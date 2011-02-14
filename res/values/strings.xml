@@ -39,4 +39,9 @@
 	<string name="installing">Installing...</string>
 	<string name="install_done">Installation done</string>
 	<string name="please_wait">Please wait...</string>
+    <string name="search_not_found">No matching airports found</string>
+    <plurals name="search_entry_found">
+        <item quantity="one">1 airport found</item>
+        <item quantity="other">%1$d airports found</item>
+    </plurals>
 </resources>

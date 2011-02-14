@@ -25,5 +25,6 @@
     android:searchSuggestAuthority="com.nadmm.airports.AirportsProvider"
     android:searchSuggestIntentAction="android.intent.action.VIEW"
     android:searchSuggestThreshold="3"
+    android:searchSuggestSelection=" ?"
     android:includeInGlobalSearch="true">
 </searchable>

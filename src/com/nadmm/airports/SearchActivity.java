@@ -19,45 +19,36 @@
 
 package com.nadmm.airports;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import android.app.ListActivity;
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.widget.SimpleAdapter;
+import android.util.Log;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
-public class SearchActivity extends ListActivity {
-    private DatabaseManager mDbManager;
+public class SearchActivity extends Activity {
+
+    private static final String TAG = SearchActivity.class.getSimpleName();
+    private TextView mTextView;
+    private ListView mListView;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mDbManager = new DatabaseManager( this );
+        setContentView( R.layout.search_list_view );
+        mTextView = (TextView) findViewById( R.id.search_msg );
+        mListView = (ListView) findViewById( R.id.search_list );
 
         Intent intent = getIntent();
-        handleIntent( intent );
         
         if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
             String query = intent.getStringExtra( SearchManager.QUERY );
-            String result = "Result: "+query;
-            //doMySearch(query);
-
-            ArrayList<HashMap<String, String>> rows = new ArrayList<HashMap<String, String>>();
-
-            HashMap<String, String> row = new HashMap<String, String>();
-            row.put( "query", query );
-            row.put( "result", result );
-            rows.add( row );
-
-            SimpleAdapter adapter = new SimpleAdapter( this, rows, 
-                    android.R.layout.two_line_list_item,
-                    new String[] { "query", "result" },
-                    new int[] {android.R.id.text1, android.R.id.text2} );
-
-            setListAdapter( adapter );
+            Log.i( TAG, "query="+query );
+            showResults( query );
         }
     }
 
@@ -70,6 +61,28 @@ public class SearchActivity extends ListActivity {
     private void handleIntent( Intent intent ) {
         if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
           String query = intent.getStringExtra( SearchManager.QUERY );
+        }
+    }
+
+    private void showResults( String query ) {
+        Cursor cursor = managedQuery( AirportsProvider.CONTENT_URI, null, null, 
+                new String[] { query }, null );
+
+        if ( cursor == null ) {
+            mTextView.setText( R.string.search_not_found );
+        } else {
+            int count = cursor.getCount();
+            startManagingCursor( cursor );
+            mTextView.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
+                    count, new Object[] { count } ) );
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter( this,
+                    android.R.layout.two_line_list_item,
+                    cursor,
+                    new String[] { SearchManager.SUGGEST_COLUMN_TEXT_1, 
+                                   SearchManager.SUGGEST_COLUMN_TEXT_2 },
+                    new int[] {android.R.id.text1, android.R.id.text2} );
+    
+            mListView.setAdapter( adapter );
         }
     }
 }

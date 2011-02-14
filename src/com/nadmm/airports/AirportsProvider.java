@@ -38,7 +38,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
  *
  */
 public class AirportsProvider extends ContentProvider {
-    public static final String TAG = "ContentProvider";
+    public static final String TAG = AirportsProvider.class.getSimpleName();
 
     public static final String AUTHORITY = "com.nadmm.airports.AirportsProvider";
     public static final Uri CONTENT_URI = Uri.parse( "content://" + AUTHORITY + "/airport" );
@@ -53,7 +53,7 @@ public class AirportsProvider extends ContentProvider {
     private static final int GET_AIRPORT = 1;
     private static final int SEARCH_SUGGEST = 2;
 
-    private static final UriMatcher mUriMatcher = buildUriMatcher();
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
     private static final HashMap<String, String> mColumnMap = buildProjectionMap();
 
     private DatabaseManager mDbManager;
@@ -75,8 +75,8 @@ public class AirportsProvider extends ContentProvider {
         UriMatcher matcher = new UriMatcher( UriMatcher.NO_MATCH );
 
         // URIs to get the airport information
-        matcher.addURI( AUTHORITY, "airports", SEARCH_AIRPORTS );
-        matcher.addURI( AUTHORITY, "airports/#", GET_AIRPORT );
+        matcher.addURI( AUTHORITY, "airport", SEARCH_AIRPORTS );
+        matcher.addURI( AUTHORITY, "airport/*", GET_AIRPORT );
 
         // URIs to get the search suggestions
         matcher.addURI( AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY, SEARCH_SUGGEST );
@@ -103,7 +103,7 @@ public class AirportsProvider extends ContentProvider {
 
     @Override
     public String getType( Uri uri ) {
-        switch ( mUriMatcher.match( uri ) ) {
+        switch ( sUriMatcher.match( uri ) ) {
             case SEARCH_AIRPORTS:
                 return DIR_MIME_TYPE;
             case GET_AIRPORT:
@@ -118,23 +118,23 @@ public class AirportsProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, 
             String[] selectionArgs, String sortOrder) {
-        Log.v( TAG, "Search="+uri.toString() );
 
-        switch ( mUriMatcher.match( uri ) ) {
+        switch ( sUriMatcher.match( uri ) ) {
             case SEARCH_AIRPORTS:
             case SEARCH_SUGGEST:
-                return searchAirports( uri );
+                if ( selectionArgs == null ) {
+                    throw new IllegalArgumentException(
+                        "selectionArgs must be provided for the Uri: " + uri);
+                }
+                String query = selectionArgs[ 0 ];
+                Log.v( TAG, "Search="+uri.toString()+":"+query );
+                return searchAirports( query );
             default:
                 throw new IllegalArgumentException( "Unknown Uri " + uri );
         }
     }
 
-    private Cursor searchAirports( Uri uri ) {
-        String query = uri.getLastPathSegment();
-        if ( query == null || SearchManager.SUGGEST_URI_PATH_QUERY.equals( query ) ) {
-            throw new IllegalArgumentException(
-                    "query must be provided for the Uri: "+uri );
-        }
+    private Cursor searchAirports( String query ) {
         return mDbManager.searchAirports( query.toUpperCase(), mColumnMap, mSuggestionColumns );
     }
 

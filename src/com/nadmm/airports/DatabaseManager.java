@@ -143,9 +143,6 @@ public class DatabaseManager {
         public static final String DB_NAME = "DB_NAME";
     }
 
-    private static final String mSearchSelection = Airports.FAA_CODE+"=? or "
-        +Airports.ICAO_CODE+"=? or "+Airports.FACILITY_NAME+" LIKE ?";
-
     public DatabaseManager( Context context ) {
         mContext = context;
         mCatalogDbHelper = new CatalogDbOpenHelper( mContext );
@@ -223,10 +220,12 @@ public class DatabaseManager {
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );
         builder.setProjectionMap( columnMap );
-        Cursor cursor = builder.query( db, columns, mSearchSelection,
-                new String[] { query, query, query+"%" },
-                null, null, null, null );
+        String selection = Airports.FAA_CODE+"=? or "+Airports.ICAO_CODE+"=? or "
+                +Airports.FACILITY_NAME+" LIKE ?";
+        String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
 
+        Cursor cursor = builder.query( db, columns, selection, selectionArgs, 
+                null, null, null, null );
         if ( cursor != null && !cursor.moveToFirst() ) {
             cursor.close();
             return null;
