@@ -428,7 +428,6 @@ while ( my $line = <APT_FILE> )
 
     if ( ($i % 100) == 0 )
     {
-        print( "\rProcessed $i records..." );
         $dbh->do( "PRAGMA synchronous=ON" );
     }
 
@@ -439,7 +438,7 @@ while ( my $line = <APT_FILE> )
         #SITE_NUMBER
         $sth_apt->bind_param(  1, substrim( $line,    3, 11 ) );
         #FACILITY_TYPE
-        $sth_apt->bind_param(  2, substrim( $line,   14, 13 ) );
+        $sth_apt->bind_param(  2, capitalize( $line, 14, 13 ) );
         #FAA_CODE
         $sth_apt->bind_param(  3, substrim( $line,   27,  4 ) );
         #EFFECTIVE_DATE
@@ -451,29 +450,29 @@ while ( my $line = <APT_FILE> )
         #ASSOC_STATE
         $sth_apt->bind_param(  7, substrim( $line,   48,  2 ) );
         #ASSOC_COUNTY
-        $sth_apt->bind_param(  8, capitalize( $line,   70, 21 ) );
+        $sth_apt->bind_param(  8, capitalize( $line, 70, 21 ) );
         #ASSOC_CITY
-        $sth_apt->bind_param(  9, capitalize( $line,   93, 40 ) );
+        $sth_apt->bind_param(  9, capitalize( $line, 93, 40 ) );
         #FACILITY_NAME
-        $sth_apt->bind_param( 10, capitalize( $line,  133, 42 ) );
+        $sth_apt->bind_param( 10, capitalize( $line, 133, 42 ) );
         #OWNERSHIP_TYPE
         $sth_apt->bind_param( 11, substrim( $line,  175,  2 ) );
         #FACILITY_USE
         $sth_apt->bind_param( 12, substrim( $line,  177,  2 ) );
         #OWNER_NAME
-        $sth_apt->bind_param( 13, capitalize( $line,  179, 35 ) );
+        $sth_apt->bind_param( 13, capitalize( $line, 179, 35 ) );
         #OWNER_ADDRESS
-        $sth_apt->bind_param( 14, capitalize( $line,  214, 72 ) );
+        $sth_apt->bind_param( 14, capitalize( $line, 214, 72 ) );
         #OWNER_CITY_STATE_ZIP
-        $sth_apt->bind_param( 15, capitalize( $line,  286, 45 ) );
+        $sth_apt->bind_param( 15, capitalize( $line, 286, 45 ) );
         #OWNER_PHONE
         $sth_apt->bind_param( 16, substrim( $line,  331, 16 ) );
         #MANAGER_NAME
-        $sth_apt->bind_param( 17, capitalize( $line,  347, 35 ) );
+        $sth_apt->bind_param( 17, capitalize( $line, 347, 35 ) );
         #MANAGER_ADDRESS
-        $sth_apt->bind_param( 18, capitalize( $line,  382, 72 ) );
+        $sth_apt->bind_param( 18, capitalize( $line, 382, 72 ) );
         #MANAGER_CITY_STATE_ZIP
-        $sth_apt->bind_param( 19, capitalize( $line,  454, 45 ) );
+        $sth_apt->bind_param( 19, capitalize( $line, 454, 45 ) );
         #MANAGER_PHONE
         $sth_apt->bind_param( 20, substrim( $line,  499, 16 ) );
         #REF_LATTITUDE_SECONDS
@@ -739,6 +738,7 @@ while ( my $line = <APT_FILE> )
 
     if ( ($i % 100) == 0 )
     {
+        print( "\rProcessed $i records..." );
         $dbh->do( "PRAGMA synchronous=OFF" );
     }
 }
@@ -746,7 +746,7 @@ while ( my $line = <APT_FILE> )
 # We need to do this to fallback to faa code if icao code is not assigned
 $dbh->do( "update airports set icao_code=null where length(icao_code)=0;" );
 
-print( " Done!\n" );
+print( "\rFinished processing $i records.\n" );
 
 close APT_FILE;
 $dbh->disconnect();
