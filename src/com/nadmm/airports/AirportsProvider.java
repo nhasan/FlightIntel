@@ -27,6 +27,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -54,7 +56,7 @@ public class AirportsProvider extends ContentProvider {
     private static final int SEARCH_SUGGEST = 2;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
-    private static final HashMap<String, String> mColumnMap = buildProjectionMap();
+    private static final HashMap<String, String> mSuggestionColumnMap = buildSuggestionMap();
 
     private DatabaseManager mDbManager;
 
@@ -63,6 +65,19 @@ public class AirportsProvider extends ContentProvider {
         SearchManager.SUGGEST_COLUMN_TEXT_1,
         SearchManager.SUGGEST_COLUMN_TEXT_2,
         SearchManager.SUGGEST_COLUMN_INTENT_DATA
+    };
+
+    private static final String[] mSearchColumns = new String[] {
+        BaseColumns._ID,
+        Airports.SITE_NUMBER,
+        Airports.ICAO_CODE,
+        Airports.FAA_CODE,
+        Airports.FACILITY_NAME,
+        Airports.ASSOC_CITY,
+        Airports.ASSOC_STATE,
+        Airports.FACILITY_TYPE,
+        Airports.FACILITY_USE,
+        Airports.OWNERSHIP_TYPE
     };
 
     @Override
@@ -85,7 +100,7 @@ public class AirportsProvider extends ContentProvider {
         return matcher;
     }
 
-    private static HashMap<String, String> buildProjectionMap() {
+    private static HashMap<String, String> buildSuggestionMap() {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put( BaseColumns._ID, BaseColumns._ID );
         map.put( SearchManager.SUGGEST_COLUMN_TEXT_1,
@@ -119,23 +134,56 @@ public class AirportsProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, 
             String[] selectionArgs, String sortOrder) {
 
+        if ( selectionArgs == null ) {
+            throw new IllegalArgumentException(
+                "selectionArgs must be provided for the Uri: " + uri);
+        }
+        String query = selectionArgs[ 0 ].toUpperCase();
+        Log.v( TAG, "Search="+uri.toString()+":"+query );
+
         switch ( sUriMatcher.match( uri ) ) {
-            case SEARCH_AIRPORTS:
             case SEARCH_SUGGEST:
-                if ( selectionArgs == null ) {
-                    throw new IllegalArgumentException(
-                        "selectionArgs must be provided for the Uri: " + uri);
-                }
-                String query = selectionArgs[ 0 ];
-                Log.v( TAG, "Search="+uri.toString()+":"+query );
+                return suggestAirports( query );
+            case SEARCH_AIRPORTS:
                 return searchAirports( query );
             default:
                 throw new IllegalArgumentException( "Unknown Uri " + uri );
         }
     }
 
+    private Cursor suggestAirports( String query ) {
+        SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+        String selection = Airports.FAA_CODE+"=? or "+Airports.ICAO_CODE+"=? or "
+                +Airports.FACILITY_NAME+" LIKE ?";
+        String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
+
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Airports.TABLE_NAME );
+        builder.setProjectionMap( mSuggestionColumnMap );
+        Cursor cursor = builder.query( db, mSuggestionColumns, selection, selectionArgs, 
+                null, null, null, null );
+        if ( cursor != null && !cursor.moveToFirst() ) {
+            cursor.close();
+            return null;
+        }
+        return cursor;
+    }
+
     private Cursor searchAirports( String query ) {
-        return mDbManager.searchAirports( query.toUpperCase(), mColumnMap, mSuggestionColumns );
+        SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+        String selection = Airports.FAA_CODE+"=? or "+Airports.ICAO_CODE+"=? or "
+                +Airports.FACILITY_NAME+" LIKE ?";
+        String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
+
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Airports.TABLE_NAME );
+        Cursor cursor = builder.query( db, mSearchColumns, selection, selectionArgs, 
+                null, null, Airports.FACILITY_NAME+" ASC", null );
+        if ( cursor != null && !cursor.moveToFirst() ) {
+            cursor.close();
+            return null;
+        }
+        return cursor;
     }
 
     @Override

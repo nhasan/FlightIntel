@@ -947,6 +947,9 @@ public final class DownloadActivity extends ListActivity {
         protected Integer doInBackground( Void... params ) {
             int result = 0;
 
+            // Make sure all the databases we want to delete are closed
+            mDbManager.closeDatabases();
+
             // Get all the catalog entries
             SQLiteDatabase catalogDb = mDbManager.getCatalogDatabase();
             Cursor cursor = catalogDb.query( Catalog.TABLE_NAME, null, null, null, 

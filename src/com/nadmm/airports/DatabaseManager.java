@@ -28,7 +28,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Environment;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -46,7 +45,7 @@ public class DatabaseManager {
     public static File CACHE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/cache" );
     public static File DATABASE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/databases" );
 
-    public static final String DATA_TYPE_FADDS = "FADDS";
+    public static final String DB_FADDS = "FADDS";
 
     public static final class Airports implements BaseColumns {
         public static final String TABLE_NAME = "airports";
@@ -131,6 +130,32 @@ public class DatabaseManager {
         public static final String OTHER_SERVICES = "OTHER_SERVICES";
         public static final String WIND_INDICATOR = "IND_INDICATOR";
         public static final String ICAO_CODE = "ICAO_CODE";
+
+        public static String decodeOwnershipType( String ownership ) {
+            if ( ownership.equals( "PU" ) ) {
+                return "Publicly Owned";
+            } else if ( ownership.equals( "PR" ) ) {
+                return "Privately Owned";
+            } else if ( ownership.equals( "MA" ) ) {
+                return "Airforce Owned";
+            } else if ( ownership.equals( "MN" ) ) {
+                return "Navy Owned";
+            } else if ( ownership.equals( "MA" ) ) {
+                return "Army Owned";
+            } else {
+                return "Unknown Ownership";
+            }
+        }
+
+        public static String decodeFacilityUse( String use ) {
+            if ( use.equals( "PU" ) ) {
+                return "Open to Public";
+            } else if ( use.equals( "PR" ) ) {
+                return "Private Use";
+            } else {
+                return "Unknown use";
+            }
+        }
     }
 
     public static final class Catalog implements BaseColumns {
@@ -203,7 +228,7 @@ public class DatabaseManager {
         return mDatabases.get( type );
     }
 
-    private synchronized void closeDatabases() {
+    public synchronized void closeDatabases() {
         Iterator<String> types  = mDatabases.keySet().iterator();
         while ( types.hasNext() ) {
             String type = types.next();
@@ -211,26 +236,6 @@ public class DatabaseManager {
             mDatabases.get( type ).close();
         }
         mDatabases.clear();
-    }
-
-    public Cursor searchAirports( String query, HashMap<String, String> columnMap,
-            String[] columns ) {
-        Log.i( TAG, "query="+query );
-        SQLiteDatabase db = getDatabase( DATA_TYPE_FADDS );
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( Airports.TABLE_NAME );
-        builder.setProjectionMap( columnMap );
-        String selection = Airports.FAA_CODE+"=? or "+Airports.ICAO_CODE+"=? or "
-                +Airports.FACILITY_NAME+" LIKE ?";
-        String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
-
-        Cursor cursor = builder.query( db, columns, selection, selectionArgs, 
-                null, null, null, null );
-        if ( cursor != null && !cursor.moveToFirst() ) {
-            cursor.close();
-            return null;
-        }
-        return cursor;
     }
 
     public int insertCatalogEntry( ContentValues values ) {
