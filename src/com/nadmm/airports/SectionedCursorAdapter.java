@@ -30,7 +30,14 @@ import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
 public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
+
+    /**
+     * Id of the view that represents the section header in list item layout
+     */
     private int mSectionId;
+    /**
+     * Map to cache the section names for each row in the cursor
+     */
     private HashMap<Integer, String> mSectionNames;
 
     public SectionedCursorAdapter( Context context, int layout, Cursor c, int sectionId ) {
@@ -40,9 +47,9 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
     }
 
     /**
-     * Called by newView() to get the section key. If the section key is different than
-     * previous section key, we need to show the section header. Cursor is already pointing
-     * to the correct row
+     * Called by newView() to get the section name. If the section name is different than
+     * previous section name, a new section has begun and the section header is made visible.
+     * Cursor is already pointing to the correct row
      * @return Key that uniquely identifies a section
      */
     public abstract String getSectionName();
@@ -51,6 +58,7 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
     public View newView( Context context, Cursor cursor, ViewGroup parent ) {
         View view = super.newView( context, cursor, parent );
 
+        // Get the view that represents the section header
         TextView section = (TextView) view.findViewById( mSectionId );
         section.setOnClickListener( new OnClickListener() {
             @Override
@@ -62,12 +70,18 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
         int position = cursor.getPosition();
         String curSectionName = mSectionNames.get( position );
         if ( curSectionName == null ) {
+            // Section name is not in the cache, ask the implementation for it
             curSectionName = getSectionName();
             mSectionNames.put( position, curSectionName );
         }
 
-        if ( position > 0 ) {
-            // Need to check if this position starts a new section
+        if ( position == 0 ) {
+            // First item always starts a new section
+            section.setVisibility( View.VISIBLE );
+            section.setText( curSectionName );
+        } else {
+            // Need to check if this position starts a new section by comparing the section
+            // name of this row with the section name of the previous row
             cursor.moveToPrevious();
             String prevSectionName = mSectionNames.get( position-1 );
             if ( prevSectionName == null ) {
@@ -79,16 +93,13 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
             cursor.moveToNext();
 
             if ( !curSectionName.equals( prevSectionName ) ) {
-                // A new section begins at this position
+                // A new section begins at this position, show the section header
                 section.setVisibility( View.VISIBLE );
                 section.setText( curSectionName );
             } else {
+                // Same section as previous row, hide the section header if visible
                 section.setVisibility( View.GONE );
             }
-        } else {
-            // First item always starts a new section
-            section.setVisibility( View.VISIBLE );
-            section.setText( curSectionName );
         }
 
         return view;
