@@ -102,7 +102,7 @@ public class SearchActivity extends Activity {
             String city = cursor.getString( cursor.getColumnIndex( Airports.ASSOC_CITY ) );
             String state = cursor.getString( cursor.getColumnIndex( Airports.ASSOC_STATE ) );
             tv = (TextView) view.findViewById( R.id.search_location );
-            tv.setText( city+", "+state );
+            tv.setText( city+", "+DataUtils.getStateName( state ) );
             tv = (TextView) view.findViewById( R.id.search_ownership_use );
             String type = cursor.getString( cursor.getColumnIndex( Airports.FACILITY_TYPE ) );
             String use = cursor.getString( cursor.getColumnIndex( Airports.FACILITY_USE ) );
