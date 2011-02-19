@@ -26,16 +26,15 @@ import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.SimpleCursorAdapter;
+import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
-public abstract class SectionedCursorAdapter extends SimpleCursorAdapter {
+public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
     private int mSectionId;
     private HashMap<Integer, String> mSectionNames;
 
-    public SectionedCursorAdapter( Context context, int layout, Cursor c,
-            String[] from, int[] to, int sectionId ) {
-        super( context, layout, c, from, to );
+    public SectionedCursorAdapter( Context context, int layout, Cursor c, int sectionId ) {
+        super( context, layout, c );
         mSectionId = sectionId;
         mSectionNames = new HashMap<Integer, String>( c.getCount() );
     }
@@ -66,6 +65,7 @@ public abstract class SectionedCursorAdapter extends SimpleCursorAdapter {
             curSectionName = getSectionName();
             mSectionNames.put( position, curSectionName );
         }
+
         if ( position > 0 ) {
             // Need to check if this position starts a new section
             cursor.moveToPrevious();
@@ -97,13 +97,6 @@ public abstract class SectionedCursorAdapter extends SimpleCursorAdapter {
     @Override
     public void changeCursor( Cursor c ) {
         super.changeCursor( c );
-        // Reset section name cache
-        mSectionNames.clear();
-    }
-
-    @Override
-    public void changeCursorAndColumns( Cursor c, String from[], int[] to ) {
-        super.changeCursorAndColumns( c, from, to );
         // Reset section name cache
         mSectionNames.clear();
     }

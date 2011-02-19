@@ -292,14 +292,7 @@ public final class DownloadActivity extends ListActivity {
     private final class DownloadListAdapter extends SectionedCursorAdapter {
 
         public DownloadListAdapter( Context context, Cursor c ) {
-            super( context, R.layout.download_list_item, c, 
-                    new String[] { DownloadCursor.DESC,
-                                   DownloadCursor.DATES,
-                                   DownloadCursor.MSG },
-                    new int[] { R.id.download_desc,
-                                R.id.download_dates,
-                                R.id.download_msg },
-                    R.id.download_section );
+            super( context, R.layout.download_list_item, c, R.id.download_section );
         }
 
         @Override
@@ -335,9 +328,20 @@ public final class DownloadActivity extends ListActivity {
             return false;
         }
 
-     }
+        @Override
+        public void bindView( View view, Context context, Cursor cursor ) {
+            TextView tv;
+            tv = (TextView) view.findViewById( R.id.download_desc );
+            tv.setText( cursor.getString( cursor.getColumnIndex( DownloadCursor.DESC ) ) );
+            tv = (TextView) view.findViewById( R.id.download_dates );
+            tv.setText( cursor.getString( cursor.getColumnIndex( DownloadCursor.DATES ) ) );
+            tv = (TextView) view.findViewById( R.id.download_msg );
+            tv.setText( cursor.getString( cursor.getColumnIndex( DownloadCursor.MSG ) ) );
+        }
 
-    private Cursor getCursor() {
+    }
+
+    private Cursor createCursor() {
         DownloadCursor c = new DownloadCursor();
         for ( DataInfo info : mInstalledData ) {
             c.addRow( R.string.download_installed, info );
@@ -405,7 +409,7 @@ public final class DownloadActivity extends ListActivity {
 
             setProgressBarIndeterminateVisibility( false );
 
-            Cursor c = getCursor();
+            Cursor c = createCursor();
             DownloadListAdapter adapter = new DownloadListAdapter( DownloadActivity.this, c );
             mActivity.setListAdapter( adapter );
             adapter.notifyDataSetInvalidated();
