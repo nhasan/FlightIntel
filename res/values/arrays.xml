@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Airports for Android
+ *
+ * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+ -->
+<resources>
+    <string-array name="nearby_radius_entries">
+        <item>10 Miles</item>
+        <item>20 Miles</item>
+        <item>30 Miles</item>
+        <item>50 Miles</item>
+    </string-array>
+    <string-array name="nearby_radius_values">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>50</item>
+    </string-array>
+    <string-array name="search_ownership_entries">
+        <item>Publicly Owned Airports</item>
+        <item>Privately Owned Airports</item>
+        <item>Military Airports</item>
+    </string-array>
+    <string-array name="search_ownership_values">
+        <item>PUBLIC</item>
+        <item>PRIVATE</item>
+        <item>MILITARY</item>
+    </string-array>
+</resources>

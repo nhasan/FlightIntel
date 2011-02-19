@@ -14,6 +14,9 @@
 	    <activity android:label="@string/downloads" 
 	              android:name="DownloadActivity" />
 
+        <activity android:label="@string/settings"
+                  android:name="PreferencesActivity" />
+
     	<activity android:name=".SearchActivity" android:launchMode="singleTop">
         	<intent-filter>
             	<action android:name="android.intent.action.SEARCH" />

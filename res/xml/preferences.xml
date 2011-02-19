@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Airports for Android
+ *
+ * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+ -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Search settings">
+        <CheckBoxPreference
+                android:key="search_limited_result"
+                android:title="Show limited results"
+                android:summaryOn="Show only first 20 results of a search"
+                android:summaryOff="Show all results of a search (slower)"
+                android:defaultValue="true" />
+        <ListPreference
+                android:key="search_airport_types"
+                android:title="Airport types"
+                android:summary="Airport types to include in search results"
+                android:entries="@array/search_ownership_entries"
+                android:entryValues="@array/search_ownership_values"
+                android:defaultValue="PUBLIC" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Location settings">
+        <CheckBoxPreference
+                android:key="location_use_gps"
+                android:title="Use GPS for location"
+                android:summaryOn="Use GPS-based accurate location"
+                android:summaryOff="Use carrier-based coarse location"
+                android:defaultValue="false" />
+        <ListPreference
+                android:key="location_nearby_radius"
+                android:title="Nearby radius"
+                android:summary="Radius in miles for listing nearby facilities"
+                android:entries="@array/nearby_radius_entries"
+                android:entryValues="@array/nearby_radius_values"
+                android:defaultValue="20" />
+    </PreferenceCategory>
+</PreferenceScreen>

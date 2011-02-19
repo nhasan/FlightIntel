@@ -52,15 +52,19 @@ public class AirportsMain extends Activity {
             return true;
         case R.id.download:
             try {
-                Intent download = new Intent( AirportsMain.this, DownloadActivity.class );
+                Intent download = new Intent( this, DownloadActivity.class );
                 startActivity( download );
-            }
-            catch ( ActivityNotFoundException e )
-            {
+            } catch ( ActivityNotFoundException e ) {
                 showErrorMessage( e.getMessage() );
             }
             return true;
         case R.id.settings:
+            try {
+                Intent settings = new Intent( this, PreferencesActivity.class  );
+                startActivity( settings );
+            } catch ( ActivityNotFoundException e ) {
+                showErrorMessage( e.getMessage() );
+            }
             return true;
         default:
             return super.onOptionsItemSelected( item );
