@@ -23,8 +23,12 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
+import android.net.Uri.Builder;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -38,6 +42,7 @@ public class SearchActivity extends Activity {
     private static final String TAG = SearchActivity.class.getSimpleName();
     private TextView mTextView;
     private ListView mListView;
+    private Uri mSearchUri;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -47,8 +52,19 @@ public class SearchActivity extends Activity {
         mTextView = (TextView) findViewById( R.id.search_msg );
         mListView = (ListView) findViewById( R.id.search_list );
 
-        Intent intent = getIntent();
-        handleIntent( intent );
+        Builder builder= AirportsProvider.CONTENT_URI.buildUpon();
+
+        // Get the row limit for the number of search result returned
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
+        if ( prefs.getBoolean( PreferencesActivity.KEY_SEARCH_LIMITED_RESULT, true ) ) {
+            // Search result limit is set
+            String limit = prefs.getString( PreferencesActivity.KEY_SEARCH_RESULT_LIMIT, "" );
+            builder.appendQueryParameter( "limit", limit );
+        }
+
+        mSearchUri = builder.build();
+
+        handleIntent( getIntent() );
     }
 
     @Override
@@ -66,18 +82,18 @@ public class SearchActivity extends Activity {
     }
 
     private void showResults( String query ) {
-        Cursor cursor = managedQuery( AirportsProvider.CONTENT_URI, null, null, 
+        Cursor cursor = managedQuery( mSearchUri, null, null, 
                 new String[] { query }, null );
-        if ( cursor == null ) {
-            mTextView.setText( R.string.search_not_found );
-            mListView.setAdapter( null );
-        } else {
-            int count = cursor.getCount();
+        if ( cursor != null ) {
             startManagingCursor( cursor );
+            int count = cursor.getCount();
             mTextView.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
                     count, new Object[] { count } ) );
             SearchCursorAdapter adapter = new SearchCursorAdapter( this, cursor );
             mListView.setAdapter( adapter );
+        } else {
+            mTextView.setText( R.string.search_not_found );
+            mListView.setAdapter( null );
         }
     }
 

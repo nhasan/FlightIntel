@@ -143,25 +143,26 @@ public class AirportsProvider extends ContentProvider {
 
         switch ( sUriMatcher.match( uri ) ) {
             case SEARCH_SUGGEST:
-                return suggestAirports( query );
+                return suggestAirports( uri, query );
             case SEARCH_AIRPORTS:
-                return searchAirports( query );
+                return searchAirports( uri, query );
             default:
                 throw new IllegalArgumentException( "Unknown Uri " + uri );
         }
     }
 
-    private Cursor suggestAirports( String query ) {
+    private Cursor suggestAirports( Uri uri, String query ) {
         SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
         String selection = Airports.FAA_CODE+"=? or "+Airports.ICAO_CODE+"=? or "
                 +Airports.FACILITY_NAME+" LIKE ?";
         String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
+        String limit = uri.getQueryParameter( "limit" );
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );
         builder.setProjectionMap( mSuggestionColumnMap );
         Cursor cursor = builder.query( db, mSuggestionColumns, selection, selectionArgs, 
-                null, null, null, null );
+                null, null, null, limit );
         if ( cursor != null && !cursor.moveToFirst() ) {
             cursor.close();
             return null;
@@ -169,16 +170,17 @@ public class AirportsProvider extends ContentProvider {
         return cursor;
     }
 
-    private Cursor searchAirports( String query ) {
+    private Cursor searchAirports( Uri uri, String query ) {
         SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
         String selection = Airports.FAA_CODE+"=? or "+Airports.ICAO_CODE+"=? or "
                 +Airports.FACILITY_NAME+" LIKE ?";
         String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
+        String limit = uri.getQueryParameter( "limit" );
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );
         Cursor cursor = builder.query( db, mSearchColumns, selection, selectionArgs, 
-                null, null, Airports.FACILITY_NAME+" ASC", null );
+                null, null, Airports.FACILITY_NAME+" ASC", limit );
         if ( cursor != null && !cursor.moveToFirst() ) {
             cursor.close();
             return null;
