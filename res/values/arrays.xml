@@ -32,12 +32,14 @@
         <item>30</item>
         <item>50</item>
     </string-array>
-    <string-array name="search_ownership_entries">
-        <item>Publicly Owned Airports</item>
-        <item>Privately Owned Airports</item>
-        <item>Military Airports</item>
+    <string-array name="search_airport_type_entries">
+        <item>All airports</item>
+        <item>Open to public</item>
+        <item>Private use</item>
+        <item>Military use</item>
     </string-array>
-    <string-array name="search_ownership_values">
+    <string-array name="search_airport_type_values">
+        <item>ALL</item>
         <item>PUBLIC</item>
         <item>PRIVATE</item>
         <item>MILITARY</item>

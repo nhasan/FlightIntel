@@ -22,6 +22,7 @@ package com.nadmm.airports;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
@@ -29,43 +30,67 @@ public class PreferencesActivity extends PreferenceActivity
             implements OnSharedPreferenceChangeListener {
 
     public static final String KEY_SEARCH_LIMITED_RESULT = "search_limited_result";
+    public static final String KEY_SEARCH_RESULT_LIMIT = "search_result_limit";
     public static final String KEY_SEARCH_AIRPORT_TYPES = "search_airport_types";
     public static final String KEY_LOCATION_USE_GPS = "location_use_gps";
     public static final String KEY_LOCATION_NEARBY_RADIUS = "location_nearby_radius";
+
+    private SharedPreferences mSharedPrefs;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource( R.xml.preferences );
-
-        // Initialize the preference screen
-        SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
-        onSharedPreferenceChanged( sharedPreferences, KEY_LOCATION_NEARBY_RADIUS );
+        mSharedPrefs = getPreferenceScreen().getSharedPreferences();
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
+        // Initialize the preference screen
+        onSharedPreferenceChanged( mSharedPrefs, KEY_SEARCH_AIRPORT_TYPES );
+        onSharedPreferenceChanged( mSharedPrefs, KEY_SEARCH_RESULT_LIMIT );
+        onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
+
         // Set up a listener whenever a key changes
-        SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         // Unregister the listener whenever a key changes
-        SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+        mSharedPrefs.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
+        Preference pref = findPreference( key );
         if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
-            String radius = sharedPreferences.getString( key, "20" );
-            Preference pref = findPreference( key );
+            String radius = mSharedPrefs.getString( key, "20" );
             pref.setSummary( "Show within a radius of "+radius+ " miles" );
+        } else if ( key.equals( KEY_SEARCH_AIRPORT_TYPES ) ) {
+            String type = mSharedPrefs.getString( key, "PUBLIC" );
+            if ( type.equals( "ALL" ) ) {
+                pref.setSummary( "Search within all airports" );
+            } else {
+                pref.setSummary( "Search within "+type.toLowerCase()+" use airports only" );
+            }
+        } else if ( key.equals( KEY_SEARCH_RESULT_LIMIT ) ) {
+            String value = mSharedPrefs.getString( key, "20" );
+            int limit;
+            try {
+                // Try to parse the user input as a number
+                limit = Integer.valueOf( value );
+            } catch ( NumberFormatException e ) {
+                // User entered an invalid number, reset to the default value
+                limit = 20;
+                EditTextPreference textPref = (EditTextPreference)pref;
+                textPref.setText( String.valueOf( limit ) );
+            }
+
+            pref.setSummary( "Limit results to "+limit+" entries" );
         }
     }
 

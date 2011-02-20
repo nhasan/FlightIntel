@@ -25,15 +25,21 @@
         <CheckBoxPreference
                 android:key="search_limited_result"
                 android:title="Show limited results"
-                android:summaryOn="Show only first 20 results of a search"
-                android:summaryOff="Show all results of a search (slower)"
+                android:summaryOn="Show only limited results for a search"
+                android:summaryOff="Show all results for a search (slower)"
                 android:defaultValue="true" />
+        <EditTextPreference
+                android:key="search_result_limit"
+                android:title="Search result limit"
+                android:dependency="search_limited_result"
+                android:numeric="integer"
+                android:maxLength="2"
+                android:defaultValue="20" />
         <ListPreference
                 android:key="search_airport_types"
                 android:title="Airport types"
-                android:summary="Airport types to include in search results"
-                android:entries="@array/search_ownership_entries"
-                android:entryValues="@array/search_ownership_values"
+                android:entries="@array/search_airport_type_entries"
+                android:entryValues="@array/search_airport_type_values"
                 android:defaultValue="PUBLIC" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Location settings">
@@ -46,7 +52,6 @@
         <ListPreference
                 android:key="location_nearby_radius"
                 android:title="Nearby radius"
-                android:summary="Radius in miles for listing nearby facilities"
                 android:entries="@array/nearby_radius_entries"
                 android:entryValues="@array/nearby_radius_values"
                 android:defaultValue="20" />
