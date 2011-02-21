@@ -25,11 +25,14 @@ import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.SharedPreferences;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.net.Uri.Builder;
+import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -133,13 +136,28 @@ public class AirportsProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, 
             String[] selectionArgs, String sortOrder) {
-
         if ( selectionArgs == null ) {
             throw new IllegalArgumentException(
                 "selectionArgs must be provided for the Uri: " + uri);
         }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( getContext() );
+        Builder builder= uri.buildUpon();
+
+        // Get the row limit for the number of search result returned
+        if ( prefs.getBoolean( PreferencesActivity.KEY_SEARCH_LIMITED_RESULT, true ) ) {
+            // Search result limit is set
+            String limit = prefs.getString( PreferencesActivity.KEY_SEARCH_RESULT_LIMIT, "20" );
+            builder.appendQueryParameter( "limit", limit );
+        }
+
+        String type = prefs.getString( PreferencesActivity.KEY_SEARCH_AIRPORT_TYPES, "ALL" );
+        builder.appendQueryParameter( "type", type );
+        
+        uri = builder.build();
+
         String query = selectionArgs[ 0 ].toUpperCase();
-        Log.v( TAG, "Search="+uri.toString()+":"+query );
+        Log.v( TAG, "Search="+uri.toString()+", query="+query );
 
         switch ( sUriMatcher.match( uri ) ) {
             case SEARCH_SUGGEST:
@@ -155,8 +173,16 @@ public class AirportsProvider extends ContentProvider {
         SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
         String selection = Airports.FAA_CODE+"=? or "+Airports.ICAO_CODE+"=? or "
                 +Airports.FACILITY_NAME+" LIKE ?";
-        String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
+        String[] selectionArgs;
         String limit = uri.getQueryParameter( "limit" );
+
+        String type = uri.getQueryParameter( "type" );
+        if ( !type.equals( "ALL" ) ) {
+            selection += " AND "+Airports.FACILITY_USE+"=?";
+            selectionArgs = new String[] { query, query, "%"+query+"%", type };
+        } else {
+            selectionArgs = new String[] { query, query, "%"+query+"%" };
+        }
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );
@@ -172,10 +198,19 @@ public class AirportsProvider extends ContentProvider {
 
     private Cursor searchAirports( Uri uri, String query ) {
         SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
-        String selection = Airports.FAA_CODE+"=? or "+Airports.ICAO_CODE+"=? or "
-                +Airports.FACILITY_NAME+" LIKE ?";
-        String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
+        String selection = "("+Airports.FAA_CODE+"=? OR "
+                +Airports.ICAO_CODE+"=? OR "
+                +Airports.FACILITY_NAME+" LIKE ? )";
+        String[] selectionArgs;
         String limit = uri.getQueryParameter( "limit" );
+
+        String type = uri.getQueryParameter( "type" );
+        if ( !type.equals( "ALL" ) ) {
+            selection += " AND "+Airports.FACILITY_USE+"=?";
+            selectionArgs = new String[] { query, query, "%"+query+"%", type };
+        } else {
+            selectionArgs = new String[] { query, query, "%"+query+"%" };
+        }
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );

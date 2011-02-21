@@ -34,14 +34,12 @@
     </string-array>
     <string-array name="search_airport_type_entries">
         <item>All airports</item>
-        <item>Open to public</item>
-        <item>Private use</item>
-        <item>Military use</item>
+        <item>Open to public only</item>
+        <item>Private use only</item>
     </string-array>
     <string-array name="search_airport_type_values">
         <item>ALL</item>
-        <item>PUBLIC</item>
-        <item>PRIVATE</item>
-        <item>MILITARY</item>
+        <item>PU</item>
+        <item>PR</item>
     </string-array>
 </resources>

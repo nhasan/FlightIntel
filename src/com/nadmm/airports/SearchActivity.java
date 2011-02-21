@@ -23,12 +23,8 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.Uri;
-import android.net.Uri.Builder;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -42,7 +38,6 @@ public class SearchActivity extends Activity {
     private static final String TAG = SearchActivity.class.getSimpleName();
     private TextView mTextView;
     private ListView mListView;
-    private Uri mSearchUri;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -51,18 +46,6 @@ public class SearchActivity extends Activity {
         setContentView( R.layout.search_list_view );
         mTextView = (TextView) findViewById( R.id.search_msg );
         mListView = (ListView) findViewById( R.id.search_list );
-
-        Builder builder= AirportsProvider.CONTENT_URI.buildUpon();
-
-        // Get the row limit for the number of search result returned
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-        if ( prefs.getBoolean( PreferencesActivity.KEY_SEARCH_LIMITED_RESULT, true ) ) {
-            // Search result limit is set
-            String limit = prefs.getString( PreferencesActivity.KEY_SEARCH_RESULT_LIMIT, "" );
-            builder.appendQueryParameter( "limit", limit );
-        }
-
-        mSearchUri = builder.build();
 
         handleIntent( getIntent() );
     }
@@ -78,11 +61,13 @@ public class SearchActivity extends Activity {
             String query = intent.getStringExtra( SearchManager.QUERY );
             Log.i( TAG, "query="+query );
             showResults( query );
+        } else if ( Intent.ACTION_VIEW.equals( intent.getAction() ) ) {
+            // User clicked on a suggestion
         }
     }
 
     private void showResults( String query ) {
-        Cursor cursor = managedQuery( mSearchUri, null, null, 
+        Cursor cursor = managedQuery( AirportsProvider.CONTENT_URI, null, null, 
                 new String[] { query }, null );
         if ( cursor != null ) {
             startManagingCursor( cursor );

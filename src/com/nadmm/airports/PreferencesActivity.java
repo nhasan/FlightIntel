@@ -75,7 +75,8 @@ public class PreferencesActivity extends PreferenceActivity
             if ( type.equals( "ALL" ) ) {
                 pref.setSummary( "Search within all airports" );
             } else {
-                pref.setSummary( "Search within "+type.toLowerCase()+" use airports only" );
+                String typeDesc = type.equals( "PU" )? "public" : "private";
+                pref.setSummary( "Search within "+typeDesc+" use airports only" );
             }
         } else if ( key.equals( KEY_SEARCH_RESULT_LIMIT ) ) {
             String value = mSharedPrefs.getString( key, "20" );
