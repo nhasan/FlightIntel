@@ -60,6 +60,15 @@ public class AirportsMain extends Activity {
                 showErrorMessage( e.getMessage() );
             }
             return true;
+        case R.id.browse:
+            try {
+                Intent browse = new Intent( this, BrowseActivity.class );
+                browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
+                startActivity( browse );
+            } catch ( ActivityNotFoundException e ) {
+                showErrorMessage( e.getMessage() );
+            }
+            return true;
         case R.id.settings:
             try {
                 Intent settings = new Intent( this, PreferencesActivity.class  );

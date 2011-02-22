@@ -17,6 +17,9 @@
         <activity android:label="@string/settings"
                   android:name="PreferencesActivity" />
 
+        <activity android:label="@string/browse"
+                  android:name="BrowseActivity" />
+
     	<activity android:name=".SearchActivity" android:launchMode="singleTop">
         	<intent-filter>
             	<action android:name="android.intent.action.SEARCH" />
