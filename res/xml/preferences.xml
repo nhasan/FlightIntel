@@ -40,7 +40,7 @@
                 android:title="Airport types"
                 android:entries="@array/search_airport_type_entries"
                 android:entryValues="@array/search_airport_type_values"
-                android:defaultValue="PUBLIC" />
+                android:defaultValue="PU" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Location settings">
         <CheckBoxPreference
