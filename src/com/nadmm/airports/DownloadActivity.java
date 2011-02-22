@@ -400,14 +400,13 @@ public final class DownloadActivity extends ListActivity {
 
         @Override
         protected void onPostExecute( Integer result ) {
+            setProgressBarIndeterminateVisibility( false );
+
             if ( result != 0 ) {
-                setProgressBarIndeterminateVisibility( false );
                 TextView empty = (TextView) findViewById( android.R.id.empty );
                 empty.setText( R.string.download_error );
                 return;
             }
-
-            setProgressBarIndeterminateVisibility( false );
 
             Cursor c = createCursor();
             DownloadListAdapter adapter = new DownloadListAdapter( DownloadActivity.this, c );
