@@ -43,6 +43,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 public class BrowseActivity extends ListActivity {
 
     static public final String EXTRA_BUNDLE = "bundle";
+
     static private final String BUNDLE_KEY_STATE = "state";
     static private final String BUNDLE_KEY_SITE_NUMBER = "site_number";
 
@@ -91,8 +92,6 @@ public class BrowseActivity extends ListActivity {
             }
             QueryBrowseTask task = new QueryBrowseTask();
             task.execute( extra );
-        } else {
-            // An airport was selected
         }
     }
 
@@ -107,7 +106,10 @@ public class BrowseActivity extends ListActivity {
             Bundle extra = new Bundle();
             extra.putString( BUNDLE_KEY_STATE, state );
             browse.putExtra( BrowseActivity.EXTRA_BUNDLE, extra );
+            // Start this activity again with state parameter
             startActivity( browse );
+        } else {
+            // An airport was selected - Launch the detail view activity
         }
     }
 
