@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -55,8 +56,8 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
     public abstract String getSectionName();
 
     @Override
-    public View newView( Context context, Cursor cursor, ViewGroup parent ) {
-        View view = super.newView( context, cursor, parent );
+    public View getView( int position, View convertView, ViewGroup parent ) {
+        View view = super.getView( position, convertView, parent );
 
         // Get the view that represents the section header
         TextView section = (TextView) view.findViewById( mSectionId );
@@ -67,33 +68,24 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
             }
         } );
 
-        int position = cursor.getPosition();
-        String curSectionName = mSectionNames.get( position );
-        if ( curSectionName == null ) {
-            // Section name is not in the cache, ask the implementation for it
-            curSectionName = getSectionName();
-            mSectionNames.put( position, curSectionName );
-        }
+        String curSectionName = getSectionName( position );
 
         if ( position == 0 ) {
             // First item always starts a new section
             section.setVisibility( View.VISIBLE );
             section.setText( curSectionName );
         } else {
+            Cursor c = getCursor();
             // Need to check if this position starts a new section by comparing the section
             // name of this row with the section name of the previous row
-            cursor.moveToPrevious();
-            String prevSectionName = mSectionNames.get( position-1 );
-            if ( prevSectionName == null ) {
-                prevSectionName = getSectionName();
-                mSectionNames.put( position-1, curSectionName );
-            }
-
+            c.moveToPrevious();
+            String prevSectionName = getSectionName( position-1 );
             // Restore cursor position
-            cursor.moveToNext();
+            c.moveToNext();
 
             if ( !curSectionName.equals( prevSectionName ) ) {
                 // A new section begins at this position, show the section header
+                Log.i( "SectionBegin", curSectionName );
                 section.setVisibility( View.VISIBLE );
                 section.setText( curSectionName );
             } else {
@@ -103,6 +95,16 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
         }
 
         return view;
+    }
+
+    private String getSectionName( int position ) {
+        String name = mSectionNames.get( position );
+        if ( name == null ) {
+            name = getSectionName();
+            mSectionNames.put( position, name );
+        }
+        Log.i( "SectionName", "name["+position+"]="+name );
+        return name;
     }
 
     @Override
