@@ -23,7 +23,6 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -85,7 +84,6 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
 
             if ( !curSectionName.equals( prevSectionName ) ) {
                 // A new section begins at this position, show the section header
-                Log.i( "SectionBegin", curSectionName );
                 section.setVisibility( View.VISIBLE );
                 section.setText( curSectionName );
             } else {
@@ -103,7 +101,6 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
             name = getSectionName();
             mSectionNames.put( position, name );
         }
-        Log.i( "SectionName", "name["+position+"]="+name );
         return name;
     }
 
