@@ -42,4 +42,14 @@
         <item>PU</item>
         <item>PR</item>
     </string-array>
+    <string-array name="startup_activity_entries">
+        <item>Browse airports</item>
+        <item>Favorite airports</item>
+        <item>Nearby airports</item>
+    </string-array>
+    <string-array name="startup_activity_values">
+        <item>browse</item>
+        <item>favorite</item>
+        <item>nearby</item>
+    </string-array>
 </resources>

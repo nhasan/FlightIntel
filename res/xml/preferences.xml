@@ -21,6 +21,20 @@
  -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Startup settings">
+        <CheckBoxPreference
+                android:key="startup_check_expired_data"
+                android:title="Check for expired data"
+                android:summaryOn="Check the installed data for expiry"
+                android:summaryOff="Do not check the installed data for expiry"
+                android:defaultValue="true" />
+        <ListPreference
+            android:key="startup_show_activity"
+            android:title="Show screen"
+            android:entries="@array/startup_activity_entries"
+            android:entryValues="@array/startup_activity_values"
+            android:defaultValue="browse" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="Search settings">
         <CheckBoxPreference
                 android:key="search_limited_result"

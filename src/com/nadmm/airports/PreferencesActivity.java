@@ -29,6 +29,8 @@ import android.preference.PreferenceActivity;
 public class PreferencesActivity extends PreferenceActivity 
             implements OnSharedPreferenceChangeListener {
 
+    public static final String KEY_STARTUP_CHECK_EXPIRED_DATA = "startup_check_expired_data";
+    public static final String KEY_STARTUP_SHOW_ACTIVITY = "startup_show_activity";
     public static final String KEY_SEARCH_LIMITED_RESULT = "search_limited_result";
     public static final String KEY_SEARCH_RESULT_LIMIT = "search_result_limit";
     public static final String KEY_SEARCH_AIRPORT_TYPES = "search_airport_types";
@@ -49,6 +51,7 @@ public class PreferencesActivity extends PreferenceActivity
     protected void onResume() {
         super.onResume();
         // Initialize the preference screen
+        onSharedPreferenceChanged( mSharedPrefs, KEY_STARTUP_SHOW_ACTIVITY );
         onSharedPreferenceChanged( mSharedPrefs, KEY_SEARCH_AIRPORT_TYPES );
         onSharedPreferenceChanged( mSharedPrefs, KEY_SEARCH_RESULT_LIMIT );
         onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
@@ -67,7 +70,16 @@ public class PreferencesActivity extends PreferenceActivity
     @Override
     public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
         Preference pref = findPreference( key );
-        if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
+        if ( key.equals( KEY_STARTUP_SHOW_ACTIVITY ) ) {
+            String value = mSharedPrefs.getString( KEY_STARTUP_SHOW_ACTIVITY, "browse" );
+            if ( value.equals( "browse" ) ) {
+                pref.setSummary( "Browse airports screen" );
+            } else if ( value.equals( "favorite" ) ) {
+                pref.setSummary( "Favorite airports screen" );
+            } else if ( value.equals( "nearby" ) ) {
+                pref.setSummary( "Nearby airports screen" );
+            }
+        } else if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
             String radius = mSharedPrefs.getString( key, "20" );
             pref.setSummary( "Show within a radius of "+radius+ " miles" );
         } else if ( key.equals( KEY_SEARCH_AIRPORT_TYPES ) ) {
@@ -90,7 +102,6 @@ public class PreferencesActivity extends PreferenceActivity
                 EditTextPreference textPref = (EditTextPreference)pref;
                 textPref.setText( String.valueOf( limit ) );
             }
-
             pref.setSummary( "Limit results to "+limit+" entries" );
         }
     }
