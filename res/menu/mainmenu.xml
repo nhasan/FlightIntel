@@ -20,19 +20,22 @@
  */
  -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/search"
+	<item android:id="@+id/menu_search"
 	      android:title="@string/search" 
 	      android:icon="@drawable/ic_menu_search" />
-	<item android:id="@+id/favorites" 
-	      android:icon="@drawable/ic_menu_star"
-	      android:title="@string/favorites" />
-	<item android:id="@+id/browse" 
+    <item android:id="@+id/menu_download"
+          android:title="@string/downloads" 
+          android:icon="@drawable/ic_menu_download" />
+    <item android:id="@+id/menu_settings" 
+          android:title="@string/settings"
+          android:icon="@drawable/ic_menu_preferences" />
+	<item android:id="@+id/menu_favorites" 
+	      android:title="@string/favorites"
+	      android:icon="@drawable/ic_menu_star" />
+	<item android:id="@+id/menu_browse" 
 	      android:title="@string/browse"
-	      android:icon="@drawable/ic_menu_recent_history" />
-	<item android:id="@+id/download"
-	      android:title="@string/downloads" 
-	      android:icon="@drawable/ic_menu_download" />
-	<item android:title="@string/settings" 
-	      android:id="@+id/settings" 
-	      android:icon="@drawable/ic_menu_preferences" />
+	      android:icon="@drawable/ic_menu_browse" />
+    <item android:id="@+id/menu_nearby" 
+          android:title="@string/nearby"
+          android:icon="@drawable/ic_menu_nearby" />
 </menu>
