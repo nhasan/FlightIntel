@@ -21,8 +21,11 @@ package com.nadmm.airports;
 
 import java.util.HashMap;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -32,6 +35,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.CursorAdapter;
@@ -50,8 +57,6 @@ public class BrowseActivity extends ListActivity {
     // Projection maps for queries
     static private final HashMap<String, String> sStateMap = buildStateMap();
     static private final HashMap<String, String> sCityMap = buildCityMap();
-
-    private DatabaseManager mDbManager;
 
     static HashMap<String, String> buildStateMap() {
         HashMap<String, String> map = new HashMap<String, String>();
@@ -76,7 +81,16 @@ public class BrowseActivity extends ListActivity {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mDbManager = new DatabaseManager( this );
+        DatabaseManager dbManager = DatabaseManager.instance();
+        Cursor c = dbManager.getLatestFromCatalog();
+        if ( !c.moveToFirst() ) {
+            c.close();
+            Intent download = new Intent( this, DownloadActivity.class );
+            download.putExtra( "MSG", "Please install data before using the application" );
+            startActivity( download );
+            finish();
+            return;
+        }
 
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
 
@@ -90,7 +104,7 @@ public class BrowseActivity extends ListActivity {
             } else {
                 setTitle( getTitle()+" - "+DataUtils.getStateName( state ) );
             }
-            QueryBrowseTask task = new QueryBrowseTask();
+            BrowseTask task = new BrowseTask();
             task.execute( extra );
         }
     }
@@ -113,7 +127,7 @@ public class BrowseActivity extends ListActivity {
         }
     }
 
-    private final class QueryBrowseTask extends AsyncTask<Bundle, Void, Cursor> {
+    private final class BrowseTask extends AsyncTask<Bundle, Void, Cursor> {
 
         @Override
         protected void onPreExecute() {
@@ -122,8 +136,9 @@ public class BrowseActivity extends ListActivity {
 
         @Override
         protected Cursor doInBackground( Bundle... params ) {
-            Cursor cursor;
-            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+            Cursor c;
+            DatabaseManager dbManager = DatabaseManager.instance();
+            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Airports.TABLE_NAME );
 
@@ -141,7 +156,7 @@ public class BrowseActivity extends ListActivity {
                     selection += " AND "+Airports.FACILITY_USE+"=?";
                     selectionArgs = new String[] { type };
                 }
-                cursor = builder.query( db,
+                c = builder.query( db,
                         // String[] projectionIn
                         new String[] { Airports._ID, Airports.ASSOC_STATE },
                         // String selection
@@ -166,7 +181,7 @@ public class BrowseActivity extends ListActivity {
                 } else {
                     selectionArgs = new String[] { state };
                 }
-                cursor = builder.query( db,
+                c = builder.query( db,
                         // String[] projectionIn
                         new String[] { Airports._ID,
                                        Airports.ASSOC_CITY,
@@ -184,7 +199,7 @@ public class BrowseActivity extends ListActivity {
                         // String sortOrder
                         Airports.ASSOC_CITY );
             }
-            return cursor;
+            return c;
         }
 
         @Override
@@ -240,4 +255,70 @@ public class BrowseActivity extends ListActivity {
             }
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu( Menu menu ) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate( R.menu.mainmenu, menu );
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu( Menu menu ) {
+        MenuItem browse = menu.findItem( R.id.menu_browse );
+        Log.i( "Browse", String.valueOf( browse.getItemId() ) );
+        browse.setEnabled( false );
+        return super.onPrepareOptionsMenu( menu );
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+        case R.id.menu_search:
+            onSearchRequested();
+            return true;
+        case R.id.menu_browse:
+            try {
+                Intent browse = new Intent( this, BrowseActivity.class );
+                browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
+                startActivity( browse );
+            } catch ( ActivityNotFoundException e ) {
+                showErrorMessage( e.getMessage() );
+            }
+            return true;
+        case R.id.menu_download:
+            try {
+                Intent download = new Intent( this, DownloadActivity.class );
+                startActivity( download );
+            } catch ( ActivityNotFoundException e ) {
+                showErrorMessage( e.getMessage() );
+            }
+            return true;
+        case R.id.menu_settings:
+            try {
+                Intent settings = new Intent( this, PreferencesActivity.class  );
+                startActivity( settings );
+            } catch ( ActivityNotFoundException e ) {
+                showErrorMessage( e.getMessage() );
+            }
+            return true;
+        default:
+            return super.onOptionsItemSelected( item );
+        }
+    }
+
+    protected void showErrorMessage( String msg )
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder( this );
+        builder.setMessage( msg )
+            .setTitle( "Download Error" )
+            .setPositiveButton( "Close", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                }
+            } );
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
 }

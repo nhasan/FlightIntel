@@ -61,8 +61,6 @@ public class AirportsProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private static final HashMap<String, String> mSuggestionColumnMap = buildSuggestionMap();
 
-    private DatabaseManager mDbManager;
-
     private static final String[] mSuggestionColumns = new String[] {
         BaseColumns._ID,
         SearchManager.SUGGEST_COLUMN_TEXT_1,
@@ -85,7 +83,6 @@ public class AirportsProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        mDbManager = new DatabaseManager( getContext() );
         return true;
     }
 
@@ -170,7 +167,12 @@ public class AirportsProvider extends ContentProvider {
     }
 
     private Cursor suggestAirports( Uri uri, String query ) {
-        SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+        DatabaseManager dbManager = DatabaseManager.instance();
+        SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+        if ( db == null ) {
+            return null;
+        }
+
         String selection = Airports.FAA_CODE+"=? or "+Airports.ICAO_CODE+"=? or "
                 +Airports.FACILITY_NAME+" LIKE ?";
         String[] selectionArgs;
@@ -189,7 +191,7 @@ public class AirportsProvider extends ContentProvider {
         builder.setProjectionMap( mSuggestionColumnMap );
         Cursor cursor = builder.query( db, mSuggestionColumns, selection, selectionArgs, 
                 null, null, null, limit );
-        if ( cursor != null && !cursor.moveToFirst() ) {
+        if ( !cursor.moveToFirst() ) {
             cursor.close();
             return null;
         }
@@ -197,7 +199,12 @@ public class AirportsProvider extends ContentProvider {
     }
 
     private Cursor searchAirports( Uri uri, String query ) {
-        SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+        DatabaseManager dbManager = DatabaseManager.instance();
+        SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+        if ( db == null ) {
+            return null;
+        }
+
         String selection = "("+Airports.FAA_CODE+"=? OR "
                 +Airports.ICAO_CODE+"=? OR "
                 +Airports.FACILITY_NAME+" LIKE ? )";
@@ -214,13 +221,13 @@ public class AirportsProvider extends ContentProvider {
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );
-        Cursor cursor = builder.query( db, mSearchColumns, selection, selectionArgs, 
+        Cursor c = builder.query( db, mSearchColumns, selection, selectionArgs, 
                 null, null, Airports.FACILITY_NAME+" ASC", limit );
-        if ( cursor != null && !cursor.moveToFirst() ) {
-            cursor.close();
+        if ( !c.moveToFirst() ) {
+            c.close();
             return null;
         }
-        return cursor;
+        return c;
     }
 
     @Override

@@ -20,78 +20,63 @@
 package com.nadmm.airports;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 public class AirportsMain extends Activity {
-    /** Called when the activity is first created. */
+
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
         PreferenceManager.setDefaultValues( this, R.xml.preferences, false );
-    }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
 
-    @Override
-    public boolean onCreateOptionsMenu( Menu menu ) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate( R.menu.mainmenu, menu );
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.search:
-            onSearchRequested();
-            return true;
-        case R.id.download:
-            try {
-                Intent download = new Intent( this, DownloadActivity.class );
-                startActivity( download );
-            } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
-            }
-            return true;
-        case R.id.browse:
-            try {
-                Intent browse = new Intent( this, BrowseActivity.class );
-                browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
-                startActivity( browse );
-            } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
-            }
-            return true;
-        case R.id.settings:
-            try {
-                Intent settings = new Intent( this, PreferencesActivity.class  );
-                startActivity( settings );
-            } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
-            }
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
+        // Check if we have any data installed. If not, then redirect to the download activity
+        DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
+        Cursor c = dbManager.getLatestFromCatalog();
+        if ( !c.moveToFirst() ) {
+            c.close();
+            Intent download = new Intent( this, DownloadActivity.class );
+            download.putExtra( "MSG", "Please install data before using the application" );
+            startActivity( download );
+            finish();
+            return;
         }
+
+        boolean checkData = prefs.getBoolean( PreferencesActivity.KEY_STARTUP_CHECK_EXPIRED_DATA, 
+                true );
+        if ( checkData ) {
+            // Check if we have any expired data. If yes, then redirect to download activity
+            do {
+                int age = c.getInt( c.getColumnIndex( "age" ) );
+                if ( age <= 0 ) {
+                    // We have some expired data
+                    Intent download = new Intent( this, DownloadActivity.class );
+                    download.putExtra( "MSG", "One or more data items have expired" );
+                    startActivity( download );
+                    finish();
+                    return;
+                }
+            } while ( c.moveToNext() );
+        }
+
+        String startupActivity = prefs.getString( 
+                PreferencesActivity.KEY_STARTUP_SHOW_ACTIVITY,  "browse" );
+        Intent intent = null;
+        if ( startupActivity.equals( "browse" ) ) {
+            intent = new Intent( this, BrowseActivity.class );
+            intent.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
+        } else if ( startupActivity.equals( "favorites" ) ) {
+            intent = new Intent( this, BrowseActivity.class );
+        } else if ( startupActivity.equals( "nearby" ) ) {
+            intent = new Intent( this, BrowseActivity.class );
+        }
+        startActivity( intent );
+        finish();
     }
 
-    protected void showErrorMessage( String msg )
-    {
-    AlertDialog.Builder builder = new AlertDialog.Builder( this );
-    builder.setMessage( msg )
-       .setTitle( "Download Error" )
-       .setPositiveButton( "Close", new DialogInterface.OnClickListener() {
-       public void onClick(DialogInterface dialog, int id) {
-       }
-       } );
-    AlertDialog alert = builder.create();
-    alert.show();
-    }
 }

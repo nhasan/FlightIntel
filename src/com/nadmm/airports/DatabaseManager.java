@@ -44,8 +44,9 @@ public class DatabaseManager {
                     "Android/data/"+DownloadActivity.class.getPackage().getName() );
     public static File CACHE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/cache" );
     public static File DATABASE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/databases" );
-
     public static final String DB_FADDS = "FADDS";
+
+    private static DatabaseManager sInstance = null;
 
     public static final class Airports implements BaseColumns {
         public static final String TABLE_NAME = "airports";
@@ -168,7 +169,18 @@ public class DatabaseManager {
         public static final String DB_NAME = "DB_NAME";
     }
 
-    public DatabaseManager( Context context ) {
+    public static DatabaseManager instance( Context context) {
+        if ( sInstance == null ) {
+            sInstance = new DatabaseManager( context );
+        }
+        return sInstance;
+    }
+
+    public static DatabaseManager instance() {
+        return sInstance;
+    }
+
+    private DatabaseManager( Context context ) {
         mContext = context;
         mCatalogDbHelper = new CatalogDbOpenHelper( mContext );
         mDatabases = new HashMap<String, SQLiteDatabase>();
@@ -188,21 +200,23 @@ public class DatabaseManager {
 
     public Cursor getLatestFromCatalog() {
         SQLiteDatabase catalogDb = getCatalogDatabase();
-        String query = "SELECT * FROM "+Catalog.TABLE_NAME+" c1"
-        +" WHERE "+Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
-        +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
-        +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE+")";
+        String query = "SELECT *,"
+            +" strftime('%s', end_date)-strftime('%s', 'now', 'localtime') as age"
+            +" FROM "+Catalog.TABLE_NAME+" c1"
+            +" WHERE "+Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
+                +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
+                +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE+")";
         Log.i( TAG, query );
         return catalogDb.rawQuery( query, null );
     }
 
     private synchronized void openDatabases() {
-        Cursor cursor = getLatestFromCatalog();
-        if ( cursor.moveToFirst() ) {
+        Cursor c = getLatestFromCatalog();
+        if ( c.moveToFirst() ) {
             do {
-                String type = cursor.getString( cursor.getColumnIndex( Catalog.TYPE ) );
+                String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
                 File dbName = new File( DATABASE_DIR, 
-                        cursor.getString( cursor.getColumnIndex( Catalog.DB_NAME ) ) );
+                        c.getString( c.getColumnIndex( Catalog.DB_NAME ) ) );
                 Log.i( TAG, "Opening db type="+type+", path="+dbName.getPath() );
                 SQLiteDatabase db = SQLiteDatabase.openDatabase( dbName.getPath(), null,
                         SQLiteDatabase.OPEN_READONLY );
@@ -211,12 +225,9 @@ public class DatabaseManager {
                 } else {
                     mDatabases.put( type, db );                    
                 }
-            } while ( cursor.moveToNext() );
-        } else {
-            Log.e( TAG, "No databases listed in the catalog" );
+            } while ( c.moveToNext() );
+            c.close();
         }
-
-        cursor.close();
     }
 
     public SQLiteDatabase getDatabase( String type ) {

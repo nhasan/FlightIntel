@@ -45,9 +45,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -68,6 +70,9 @@ import android.text.format.Time;
 import android.util.Log;
 import android.util.TimeFormatException;
 import android.util.Xml;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -125,7 +130,7 @@ public final class DownloadActivity extends ListActivity {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
 
-        mDbManager = new DatabaseManager( this );
+        mDbManager = DatabaseManager.instance();
         mDownloadTask = null;
         mStop = new AtomicBoolean( false );
         mHandler = new Handler();
@@ -158,6 +163,12 @@ public final class DownloadActivity extends ListActivity {
                     }
                 }
         );
+
+        Intent intent = getIntent();
+        if ( intent.hasExtra( "MSG" ) ) {
+            String msg = intent.getStringExtra( "MSG" );
+            Toast.makeText( this, msg, Toast.LENGTH_LONG ).show();
+        }
 
         checkData();
     }
@@ -433,15 +444,15 @@ public final class DownloadActivity extends ListActivity {
         private int getInstalled() {
             int result = 0;
 
-            Cursor cursor = mDbManager.getLatestFromCatalog();
-            if ( cursor.moveToFirst() ) {
+            Cursor c = mDbManager.getLatestFromCatalog();
+            if ( c.moveToFirst() ) {
                 do {
                     DataInfo info = new DataInfo();
-                    info.type = cursor.getString( cursor.getColumnIndex( Catalog.TYPE ) );
-                    info.desc = cursor.getString( cursor.getColumnIndex( Catalog.DESCRIPTION ) );
-                    info.version = cursor.getInt( cursor.getColumnIndex( Catalog.VERSION ) );
-                    String start = cursor.getString( cursor.getColumnIndex( Catalog.START_DATE ) );
-                    String end = cursor.getString( cursor.getColumnIndex( Catalog.END_DATE ) );
+                    info.type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
+                    info.desc = c.getString( c.getColumnIndex( Catalog.DESCRIPTION ) );
+                    info.version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
+                    String start = c.getString( c.getColumnIndex( Catalog.START_DATE ) );
+                    String end = c.getString( c.getColumnIndex( Catalog.END_DATE ) );
                     Log.i( TAG, info.type+","+start+","+end );
                     try {
                         info.start = new Time();
@@ -455,10 +466,9 @@ public final class DownloadActivity extends ListActivity {
                         Log.e( TAG, "Error parsing dates: "+e.getMessage() );
                         return -1;
                     }
-                } while ( cursor.moveToNext() );
+                } while ( c.moveToNext() );
+                c.close();
             }
-
-            cursor.close();
 
             return result;
         }
@@ -1009,15 +1019,15 @@ public final class DownloadActivity extends ListActivity {
         now.setToNow();
         String today = now.format3339( true );
 
-        Cursor cursor = mDbManager.getLatestFromCatalog();
-        if ( cursor.moveToFirst() ) {
+        Cursor c = mDbManager.getLatestFromCatalog();
+        if ( c != null ) {
             do {
                 // For each type that we have valid data, delete the expired data
-                String end = cursor.getString( cursor.getColumnIndex( Catalog.END_DATE ) );
+                String end = c.getString( c.getColumnIndex( Catalog.END_DATE ) );
                 if ( end.compareTo( today ) >= 0 ) {
                     // This data is valid today, cleanup any previous expired data
-                    String type = cursor.getString( cursor.getColumnIndex( Catalog.TYPE ) );
-                    int version = cursor.getInt( cursor.getColumnIndex( Catalog.VERSION ) );
+                    String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
+                    int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
                     Cursor expired = catalogDb.query( Catalog.TABLE_NAME, 
                             new String[] { Catalog._ID, Catalog.DB_NAME },
                             Catalog.TYPE+"=? and "+Catalog.VERSION+"<?",
@@ -1025,7 +1035,7 @@ public final class DownloadActivity extends ListActivity {
                             null, null, null );
                     if ( expired.moveToFirst() ) {
                         do {
-                            Integer _id = expired.getInt( cursor.getColumnIndex( Catalog._ID ) );
+                            Integer _id = expired.getInt( c.getColumnIndex( Catalog._ID ) );
                             String dbName = expired.getString( 
                                     expired.getColumnIndex( Catalog.DB_NAME ) );
                             Log.i( TAG, "Deleting _id="+_id+" type="+type+" dbName="+dbName );
@@ -1040,10 +1050,10 @@ public final class DownloadActivity extends ListActivity {
 
                     expired.close();
                 }
-            } while ( cursor.moveToNext() );
-        }
+            } while ( c.moveToNext() );
 
-        cursor.close();
+            c.close();
+        }
     }
 
     protected void showMessage( final String msg ) {
@@ -1077,4 +1087,71 @@ public final class DownloadActivity extends ListActivity {
             mStop.set( true );
         }
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu( Menu menu ) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate( R.menu.mainmenu, menu );
+        return true;
+    }
+
+
+    @Override
+    public boolean onPrepareOptionsMenu( Menu menu ) {
+        MenuItem settings = menu.findItem( R.id.menu_download );
+        settings.setEnabled( false );
+        return super.onPrepareOptionsMenu( menu );
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+        case R.id.menu_search:
+            onSearchRequested();
+            return true;
+        case R.id.menu_browse:
+            try {
+                Intent browse = new Intent( this, BrowseActivity.class );
+                browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
+                startActivity( browse );
+            } catch ( ActivityNotFoundException e ) {
+                showErrorMessage( e.getMessage() );
+            }
+            return true;
+        case R.id.menu_download:
+            try {
+                Intent download = new Intent( this, DownloadActivity.class );
+                startActivity( download );
+            } catch ( ActivityNotFoundException e ) {
+                showErrorMessage( e.getMessage() );
+            }
+            return true;
+        case R.id.menu_settings:
+            try {
+                Intent settings = new Intent( this, PreferencesActivity.class  );
+                startActivity( settings );
+            } catch ( ActivityNotFoundException e ) {
+                showErrorMessage( e.getMessage() );
+            }
+            return true;
+        default:
+            return super.onOptionsItemSelected( item );
+        }
+    }
+
+    protected void showErrorMessage( String msg )
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder( this );
+        builder.setMessage( msg )
+            .setTitle( "Download Error" )
+            .setPositiveButton( "Close", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                }
+            } );
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
 }
