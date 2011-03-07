@@ -85,16 +85,16 @@ public class SearchActivity extends Activity {
     private final class SearchCursorAdapter extends ResourceCursorAdapter {
 
         public SearchCursorAdapter( Context context, Cursor c ) {
-            super( context, R.layout.search_list_item, c );
+            super( context, R.layout.airport_list_item, c );
         }
 
         @Override
         public void bindView( View view, Context context, Cursor cursor ) {
             TextView tv;
             String name = cursor.getString( cursor.getColumnIndex( Airports.FACILITY_NAME ) );
-            tv = (TextView) view.findViewById( R.id.search_facility_name );
+            tv = (TextView) view.findViewById( R.id.facility_name );
             tv.setText( name );
-            tv = (TextView) view.findViewById( R.id.search_facility_id );
+            tv = (TextView) view.findViewById( R.id.facility_id );
             String code = cursor.getString( cursor.getColumnIndex( Airports.ICAO_CODE ) );
             if ( code == null || code.trim().length() == 0 ) {
                 code = cursor.getString( cursor.getColumnIndex( Airports.FAA_CODE ) );
@@ -102,9 +102,9 @@ public class SearchActivity extends Activity {
             tv.setText( code );
             String city = cursor.getString( cursor.getColumnIndex( Airports.ASSOC_CITY ) );
             String state = cursor.getString( cursor.getColumnIndex( Airports.ASSOC_STATE ) );
-            tv = (TextView) view.findViewById( R.id.search_location );
+            tv = (TextView) view.findViewById( R.id.location );
             tv.setText( city+", "+DataUtils.getStateName( state ) );
-            tv = (TextView) view.findViewById( R.id.search_ownership_use );
+            tv = (TextView) view.findViewById( R.id.other_info );
             String type = cursor.getString( cursor.getColumnIndex( Airports.FACILITY_TYPE ) );
             String use = cursor.getString( cursor.getColumnIndex( Airports.FACILITY_USE ) );
             String ownership = cursor.getString( cursor.getColumnIndex( Airports.OWNERSHIP_TYPE ) );

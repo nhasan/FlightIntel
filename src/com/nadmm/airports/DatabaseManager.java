@@ -70,10 +70,8 @@ public class DatabaseManager {
         public static final String MANAGER_ADDRESS = "MANAGER_ADDRESS";
         public static final String MANAGER_CITY_STATE_ZIP = "MANAGER_CITY_STATE_ZIP";
         public static final String MANAGER_PHONE = "MANAGER_PHONE";
-        public static final String REF_LATTITUDE_SECONDS = "REF_LATTITUDE_SECONDS";
-        public static final String REF_LATTITUDE_DECLINATION = "REF_LATTITUDE_DECLINATION";
-        public static final String REF_LONGITUDE_SECONDS = "REF_LONGITUDE_SECONDS";
-        public static final String REF_LONGITUDE_DECLINATION = "REF_LONGITUDE_DECLINATION";
+        public static final String REF_LATTITUDE_DEGREES = "REF_LATTITUDE_DEGREES";
+        public static final String REF_LONGITUDE_DEGREES = "REF_LONGITUDE_DEGREES";
         public static final String REF_METHOD = "REFERENCE_METHOD";
         public static final String ELEVATION_MSL = "ELEVATION_MSL";
         public static final String ELEVATION_METHOD = "ELEVATION_METHOD";
@@ -131,6 +129,19 @@ public class DatabaseManager {
         public static final String OTHER_SERVICES = "OTHER_SERVICES";
         public static final String WIND_INDICATOR = "IND_INDICATOR";
         public static final String ICAO_CODE = "ICAO_CODE";
+
+        public static final String[] SEARCH_COLUMNS = new String[] {
+            BaseColumns._ID,
+            Airports.SITE_NUMBER,
+            Airports.ICAO_CODE,
+            Airports.FAA_CODE,
+            Airports.FACILITY_NAME,
+            Airports.ASSOC_CITY,
+            Airports.ASSOC_STATE,
+            Airports.FACILITY_TYPE,
+            Airports.FACILITY_USE,
+            Airports.OWNERSHIP_TYPE
+        };
 
         public static String decodeOwnershipType( String ownership ) {
             if ( ownership.equals( "PU" ) ) {

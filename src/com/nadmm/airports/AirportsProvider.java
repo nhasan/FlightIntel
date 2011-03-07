@@ -68,19 +68,6 @@ public class AirportsProvider extends ContentProvider {
         SearchManager.SUGGEST_COLUMN_INTENT_DATA
     };
 
-    private static final String[] mSearchColumns = new String[] {
-        BaseColumns._ID,
-        Airports.SITE_NUMBER,
-        Airports.ICAO_CODE,
-        Airports.FAA_CODE,
-        Airports.FACILITY_NAME,
-        Airports.ASSOC_CITY,
-        Airports.ASSOC_STATE,
-        Airports.FACILITY_TYPE,
-        Airports.FACILITY_USE,
-        Airports.OWNERSHIP_TYPE
-    };
-
     @Override
     public boolean onCreate() {
         return true;
@@ -221,7 +208,7 @@ public class AirportsProvider extends ContentProvider {
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );
-        Cursor c = builder.query( db, mSearchColumns, selection, selectionArgs, 
+        Cursor c = builder.query( db, Airports.SEARCH_COLUMNS, selection, selectionArgs, 
                 null, null, Airports.FACILITY_NAME+" ASC", limit );
         if ( !c.moveToFirst() ) {
             c.close();

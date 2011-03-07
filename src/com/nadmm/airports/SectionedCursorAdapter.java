@@ -63,7 +63,7 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
         section.setOnClickListener( new OnClickListener() {
             @Override
             public void onClick( View v ) {
-                // Ignore clicks to the section title
+                // Ignore clicks on the section title
             }
         } );
 

@@ -73,7 +73,7 @@ public class AirportsMain extends Activity {
         } else if ( startupActivity.equals( "favorites" ) ) {
             intent = new Intent( this, BrowseActivity.class );
         } else if ( startupActivity.equals( "nearby" ) ) {
-            intent = new Intent( this, BrowseActivity.class );
+            intent = new Intent( this, NearbyActivity.class );
         }
         startActivity( intent );
         finish();

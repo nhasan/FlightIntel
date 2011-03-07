@@ -1020,7 +1020,7 @@ public final class DownloadActivity extends ListActivity {
         String today = now.format3339( true );
 
         Cursor c = mDbManager.getLatestFromCatalog();
-        if ( c != null ) {
+        if ( c.moveToFirst() ) {
             do {
                 // For each type that we have valid data, delete the expired data
                 String end = c.getString( c.getColumnIndex( Catalog.END_DATE ) );
@@ -1116,6 +1116,14 @@ public final class DownloadActivity extends ListActivity {
                 Intent browse = new Intent( this, BrowseActivity.class );
                 browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
                 startActivity( browse );
+            } catch ( ActivityNotFoundException e ) {
+                showErrorMessage( e.getMessage() );
+            }
+            return true;
+        case R.id.menu_nearby:
+            try {
+                Intent nearby = new Intent( this, NearbyActivity.class );
+                startActivity( nearby );
             } catch ( ActivityNotFoundException e ) {
                 showErrorMessage( e.getMessage() );
             }

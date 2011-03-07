@@ -35,7 +35,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -136,7 +135,7 @@ public class BrowseActivity extends ListActivity {
 
         @Override
         protected Cursor doInBackground( Bundle... params ) {
-            Cursor c;
+            Cursor c = null;
             DatabaseManager dbManager = DatabaseManager.instance();
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
@@ -148,7 +147,7 @@ public class BrowseActivity extends ListActivity {
 
             Bundle extra = params[ 0 ];
             if ( !extra.containsKey( BUNDLE_KEY_STATE ) ) {
-                // Show all the states with airports alphabetically
+                // Show all the states grouped by first letter
                 builder.setProjectionMap( sStateMap );
                 String selection = Airports.ASSOC_STATE+"<>''";
                 String[] selectionArgs = null;
@@ -170,7 +169,7 @@ public class BrowseActivity extends ListActivity {
                         // String sortOrder
                         Airports.ASSOC_STATE );
             } else {
-                // A state was selected, list all the airports in the state grouped by city
+                // Show all the airports in the selected state grouped by city
                 String state = extra.getString( BUNDLE_KEY_STATE );
                 builder.setProjectionMap( sCityMap );
                 String selection = Airports.ASSOC_STATE+"=?";
@@ -241,10 +240,12 @@ public class BrowseActivity extends ListActivity {
         @Override
         public void bindView( View view, Context context, Cursor c ) {
             if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
+                // Browsing all states
                 String state = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
                 TextView tv = (TextView) view.findViewById( R.id.browse_state_name );
                 tv.setText( DataUtils.getStateName( state ) );
             } else {
+                // Browsing a single state
                 TextView tv;
                 String icao = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
                 tv = (TextView) view.findViewById( R.id.browse_airport_code );
@@ -266,7 +267,6 @@ public class BrowseActivity extends ListActivity {
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
         MenuItem browse = menu.findItem( R.id.menu_browse );
-        Log.i( "Browse", String.valueOf( browse.getItemId() ) );
         browse.setEnabled( false );
         return super.onPrepareOptionsMenu( menu );
     }
@@ -283,6 +283,14 @@ public class BrowseActivity extends ListActivity {
                 Intent browse = new Intent( this, BrowseActivity.class );
                 browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
                 startActivity( browse );
+            } catch ( ActivityNotFoundException e ) {
+                showErrorMessage( e.getMessage() );
+            }
+            return true;
+        case R.id.menu_nearby:
+            try {
+                Intent nearby = new Intent( this, NearbyActivity.class );
+                startActivity( nearby );
             } catch ( ActivityNotFoundException e ) {
                 showErrorMessage( e.getMessage() );
             }

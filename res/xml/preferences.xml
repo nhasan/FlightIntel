@@ -61,7 +61,7 @@
                 android:key="location_use_gps"
                 android:title="Use GPS for location"
                 android:summaryOn="Use GPS-based accurate location"
-                android:summaryOff="Use carrier-based coarse location"
+                android:summaryOff="Use network-based coarse location"
                 android:defaultValue="false" />
         <ListPreference
                 android:key="location_nearby_radius"

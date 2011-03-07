@@ -24,11 +24,17 @@
         android:layout_height="wrap_content"
         android:paddingBottom="8sp"
         android:orientation="vertical">
+    <TextView android:id="@+id/list_section"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:gravity="left|center_vertical"
+        android:visibility="gone"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"/>
     <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-        <TextView android:id="@+id/search_facility_name"
+        <TextView android:id="@+id/facility_name"
                 android:textColor="@android:color/primary_text_dark"
                 android:textSize="15sp"
                 android:textStyle="bold"
@@ -37,7 +43,7 @@
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-        <TextView android:id="@+id/search_facility_id"
+        <TextView android:id="@+id/facility_id"
                 android:textColor="@android:color/primary_text_dark"
                 android:textSize="15sp"
                 android:textStyle="bold"
@@ -46,17 +52,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
     </LinearLayout>
-    <TextView android:id="@+id/search_location"
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">    
+	    <TextView android:id="@+id/location"
+	            android:textSize="13sp"
+	            android:paddingLeft="4sp"
+	            android:gravity="left"
+                android:layout_weight="1"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content" />
+        <TextView android:id="@+id/distance"
+                android:textSize="13sp"
+                android:paddingRight="6sp"
+                android:gravity="right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </LinearLayout>
+    <TextView android:id="@+id/other_info"
             android:textSize="13sp"
             android:paddingLeft="4sp"
             android:gravity="left"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
-    <TextView android:id="@+id/search_ownership_use"
-            android:textSize="13sp"
-            android:paddingLeft="4sp"
-            android:gravity="left"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 </LinearLayout>
  
