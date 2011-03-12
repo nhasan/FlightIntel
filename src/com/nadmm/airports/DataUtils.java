@@ -21,8 +21,6 @@ package com.nadmm.airports;
 
 import java.util.HashMap;
 
-import android.util.Log;
-
 public final class DataUtils {
 
     static final HashMap<String, String> mStates = new HashMap<String, String>();
