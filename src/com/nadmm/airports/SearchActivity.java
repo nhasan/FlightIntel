@@ -21,17 +21,12 @@ package com.nadmm.airports;
 
 import android.app.Activity;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ListView;
-import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
-
-import com.nadmm.airports.DatabaseManager.Airports;
 
 public class SearchActivity extends Activity {
 
@@ -67,49 +62,18 @@ public class SearchActivity extends Activity {
     }
 
     private void showResults( String query ) {
-        Cursor cursor = managedQuery( AirportsProvider.CONTENT_URI, null, null, 
+        Cursor c = managedQuery( AirportsProvider.CONTENT_URI, null, null, 
                 new String[] { query }, null );
-        if ( cursor != null ) {
-            startManagingCursor( cursor );
-            int count = cursor.getCount();
+        if ( c != null ) {
+            startManagingCursor( c );
+            int count = c.getCount();
             mTextView.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
                     count, new Object[] { count } ) );
-            SearchCursorAdapter adapter = new SearchCursorAdapter( this, cursor );
-            mListView.setAdapter( adapter );
+            mListView.setAdapter( new AirportsCursorAdapter( this, c ) );
         } else {
             mTextView.setText( R.string.search_not_found );
             mListView.setAdapter( null );
         }
     }
 
-    private final class SearchCursorAdapter extends ResourceCursorAdapter {
-
-        public SearchCursorAdapter( Context context, Cursor c ) {
-            super( context, R.layout.airport_list_item, c );
-        }
-
-        @Override
-        public void bindView( View view, Context context, Cursor cursor ) {
-            TextView tv;
-            String name = cursor.getString( cursor.getColumnIndex( Airports.FACILITY_NAME ) );
-            tv = (TextView) view.findViewById( R.id.facility_name );
-            tv.setText( name );
-            tv = (TextView) view.findViewById( R.id.facility_id );
-            String code = cursor.getString( cursor.getColumnIndex( Airports.ICAO_CODE ) );
-            if ( code == null || code.trim().length() == 0 ) {
-                code = cursor.getString( cursor.getColumnIndex( Airports.FAA_CODE ) );
-            }
-            tv.setText( code );
-            String city = cursor.getString( cursor.getColumnIndex( Airports.ASSOC_CITY ) );
-            String state = cursor.getString( cursor.getColumnIndex( Airports.ASSOC_STATE ) );
-            tv = (TextView) view.findViewById( R.id.location );
-            tv.setText( city+", "+DataUtils.getStateName( state ) );
-            tv = (TextView) view.findViewById( R.id.other_info );
-            String type = cursor.getString( cursor.getColumnIndex( Airports.FACILITY_TYPE ) );
-            String use = cursor.getString( cursor.getColumnIndex( Airports.FACILITY_USE ) );
-            String ownership = cursor.getString( cursor.getColumnIndex( Airports.OWNERSHIP_TYPE ) );
-            tv.setText( type+", "+Airports.decodeOwnershipType( ownership )
-                    +", "+Airports.decodeFacilityUse( use ) );
-        }
-    }
 }
