@@ -126,15 +126,11 @@ public final class DataUtils {
     public static String decodeFuelTypes( String fuelTypes ) {
         String decodedFuel = "";
 
-        Log.i( "TYPES", fuelTypes );
-
         int start = 0;
         while ( start < fuelTypes.length() ) {
             int end = Math.min( start+5, fuelTypes.length() );
             String type = fuelTypes.substring( start, end ).trim();
             
-            Log.i( "FUEL", type );
-
             if ( decodedFuel.length() > 0 ) {
                 decodedFuel += ", ";
             }
