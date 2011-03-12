@@ -21,6 +21,8 @@ package com.nadmm.airports;
 
 import java.util.HashMap;
 
+import android.util.Log;
+
 public final class DataUtils {
 
     static final HashMap<String, String> mStates = new HashMap<String, String>();
@@ -122,12 +124,16 @@ public final class DataUtils {
     }
 
     public static String decodeFuelTypes( String fuelTypes ) {
-        String decodedFuel = new String();
+        String decodedFuel = "";
+
+        Log.i( "TYPES", fuelTypes );
 
         int start = 0;
         while ( start < fuelTypes.length() ) {
             int end = Math.min( start+5, fuelTypes.length() );
             String type = fuelTypes.substring( start, end ).trim();
+            
+            Log.i( "FUEL", type );
 
             if ( decodedFuel.length() > 0 ) {
                 decodedFuel += ", ";
@@ -141,6 +147,8 @@ public final class DataUtils {
                 decodedFuel += "100LL";
             } else if ( type.equals( "A" ) ) {
                 decodedFuel += "JET A";
+            } else if ( type.equals( "A+" ) ) {
+                decodedFuel += "JET A+";
             } else if ( type.equals( "A1" ) ) {
                 decodedFuel += "JET A1";
             } else if ( type.equals( "A1+" ) ) {
@@ -152,10 +160,10 @@ public final class DataUtils {
             } else if ( type.equals( "MOGAS" ) ) {
                 decodedFuel += "MOGAS";
             } else {
-                decodedFuel = type;
+                decodedFuel += type;
             }
 
-            start += 5;
+            start = end;
         }
 
         return decodedFuel;
