@@ -60,6 +60,7 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
 
         // Get the view that represents the section header
         TextView section = (TextView) view.findViewById( mSectionId );
+        section.setVisibility( View.GONE );
         section.setOnClickListener( new OnClickListener() {
             @Override
             public void onClick( View v ) {
@@ -70,9 +71,11 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
         String curSectionName = getSectionName( position );
 
         if ( position == 0 ) {
-            // First item always starts a new section
-            section.setVisibility( View.VISIBLE );
-            section.setText( curSectionName );
+            if ( curSectionName != null ) {
+                // First item always starts a new section
+                section.setVisibility( View.VISIBLE );
+                section.setText( curSectionName );
+            }
         } else {
             Cursor c = getCursor();
             // Need to check if this position starts a new section by comparing the section
@@ -82,13 +85,10 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
             // Restore cursor position
             c.moveToNext();
 
-            if ( !curSectionName.equals( prevSectionName ) ) {
+            if ( curSectionName != null && !curSectionName.equals( prevSectionName ) ) {
                 // A new section begins at this position, show the section header
                 section.setVisibility( View.VISIBLE );
                 section.setText( curSectionName );
-            } else {
-                // Same section as previous row, hide the section header if visible
-                section.setVisibility( View.GONE );
             }
         }
 
