@@ -27,13 +27,11 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -141,27 +139,18 @@ public class BrowseActivity extends ListActivity {
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Airports.TABLE_NAME );
 
-            SharedPreferences prefs =
-                    PreferenceManager.getDefaultSharedPreferences( BrowseActivity.this );
-            String type = prefs.getString( PreferencesActivity.KEY_SEARCH_AIRPORT_TYPES, "ALL" );
-
             Bundle extra = params[ 0 ];
             if ( !extra.containsKey( BUNDLE_KEY_STATE ) ) {
                 // Show all the states grouped by first letter
                 builder.setProjectionMap( sStateMap );
                 String selection = Airports.ASSOC_STATE+"<>''";
-                String[] selectionArgs = null;
-                if ( !type.equals( "ALL" ) ) {
-                    selection += " AND "+Airports.FACILITY_USE+"=?";
-                    selectionArgs = new String[] { type };
-                }
                 c = builder.query( db,
                         // String[] projectionIn
                         new String[] { Airports._ID, Airports.ASSOC_STATE },
                         // String selection
                         selection,
                         // String[] selectionArgs
-                        selectionArgs,
+                        null,
                         // String groupBy
                         Airports.ASSOC_STATE,
                         // String having
@@ -173,13 +162,8 @@ public class BrowseActivity extends ListActivity {
                 String state = extra.getString( BUNDLE_KEY_STATE );
                 builder.setProjectionMap( sCityMap );
                 String selection = Airports.ASSOC_STATE+"=?";
-                String[] selectionArgs = null;
-                if ( !type.equals( "ALL" ) ) {
-                    selection += " AND "+Airports.FACILITY_USE+"=?";
-                    selectionArgs = new String[] { state, type };
-                } else {
-                    selectionArgs = new String[] { state };
-                }
+                String[] selectionArgs = new String[] { state };
+
                 c = builder.query( db,
                         // String[] projectionIn
                         new String[] { Airports._ID,

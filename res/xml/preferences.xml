@@ -49,12 +49,6 @@
                 android:numeric="integer"
                 android:maxLength="2"
                 android:defaultValue="20" />
-        <ListPreference
-                android:key="search_airport_types"
-                android:title="Airport types"
-                android:entries="@array/search_airport_type_entries"
-                android:entryValues="@array/search_airport_type_values"
-                android:defaultValue="PU" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Location settings">
         <CheckBoxPreference

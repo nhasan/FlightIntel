@@ -135,9 +135,6 @@ public class AirportsProvider extends ContentProvider {
             builder.appendQueryParameter( "limit", limit );
         }
 
-        String type = prefs.getString( PreferencesActivity.KEY_SEARCH_AIRPORT_TYPES, "ALL" );
-        builder.appendQueryParameter( "type", type );
-        
         uri = builder.build();
 
         String query = selectionArgs[ 0 ].toUpperCase();
@@ -162,16 +159,8 @@ public class AirportsProvider extends ContentProvider {
 
         String selection = Airports.FAA_CODE+"=? or "+Airports.ICAO_CODE+"=? or "
                 +Airports.FACILITY_NAME+" LIKE ?";
-        String[] selectionArgs;
+        String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
         String limit = uri.getQueryParameter( "limit" );
-
-        String type = uri.getQueryParameter( "type" );
-        if ( !type.equals( "ALL" ) ) {
-            selection += " AND "+Airports.FACILITY_USE+"=?";
-            selectionArgs = new String[] { query, query, "%"+query+"%", type };
-        } else {
-            selectionArgs = new String[] { query, query, "%"+query+"%" };
-        }
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );
@@ -195,16 +184,8 @@ public class AirportsProvider extends ContentProvider {
         String selection = "("+Airports.FAA_CODE+"=? OR "
                 +Airports.ICAO_CODE+"=? OR "
                 +Airports.FACILITY_NAME+" LIKE ? )";
-        String[] selectionArgs;
+        String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
         String limit = uri.getQueryParameter( "limit" );
-
-        String type = uri.getQueryParameter( "type" );
-        if ( !type.equals( "ALL" ) ) {
-            selection += " AND "+Airports.FACILITY_USE+"=?";
-            selectionArgs = new String[] { query, query, "%"+query+"%", type };
-        } else {
-            selectionArgs = new String[] { query, query, "%"+query+"%" };
-        }
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );

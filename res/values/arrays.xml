@@ -32,16 +32,6 @@
         <item>30</item>
         <item>50</item>
     </string-array>
-    <string-array name="search_airport_type_entries">
-        <item>All airports</item>
-        <item>Open to public only</item>
-        <item>Private use only</item>
-    </string-array>
-    <string-array name="search_airport_type_values">
-        <item>ALL</item>
-        <item>PU</item>
-        <item>PR</item>
-    </string-array>
     <string-array name="startup_activity_entries">
         <item>Browse airports</item>
         <item>Favorite airports</item>

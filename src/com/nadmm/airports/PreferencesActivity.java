@@ -33,7 +33,6 @@ public class PreferencesActivity extends PreferenceActivity
     public static final String KEY_STARTUP_SHOW_ACTIVITY = "startup_show_activity";
     public static final String KEY_SEARCH_LIMITED_RESULT = "search_limited_result";
     public static final String KEY_SEARCH_RESULT_LIMIT = "search_result_limit";
-    public static final String KEY_SEARCH_AIRPORT_TYPES = "search_airport_types";
     public static final String KEY_LOCATION_USE_GPS = "location_use_gps";
     public static final String KEY_LOCATION_NEARBY_RADIUS = "location_nearby_radius";
 
@@ -52,7 +51,6 @@ public class PreferencesActivity extends PreferenceActivity
         super.onResume();
         // Initialize the preference screen
         onSharedPreferenceChanged( mSharedPrefs, KEY_STARTUP_SHOW_ACTIVITY );
-        onSharedPreferenceChanged( mSharedPrefs, KEY_SEARCH_AIRPORT_TYPES );
         onSharedPreferenceChanged( mSharedPrefs, KEY_SEARCH_RESULT_LIMIT );
         onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
 
@@ -82,14 +80,6 @@ public class PreferencesActivity extends PreferenceActivity
         } else if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
             String radius = mSharedPrefs.getString( key, "20" );
             pref.setSummary( "Show within a radius of "+radius+ " miles" );
-        } else if ( key.equals( KEY_SEARCH_AIRPORT_TYPES ) ) {
-            String type = mSharedPrefs.getString( key, "PUBLIC" );
-            if ( type.equals( "ALL" ) ) {
-                pref.setSummary( "Search within all airports" );
-            } else {
-                String typeDesc = type.equals( "PU" )? "public" : "private";
-                pref.setSummary( "Search within "+typeDesc+" use airports only" );
-            }
         } else if ( key.equals( KEY_SEARCH_RESULT_LIMIT ) ) {
             String value = mSharedPrefs.getString( key, "20" );
             int limit;
