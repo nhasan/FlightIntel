@@ -46,6 +46,8 @@ sub capitalize($$$)
 my $dbfile = "fadds.db";
 my $APT = shift @ARGV;
 
+my %site_number;
+
 open( APT_FILE, "<$APT" ) or die "Could not open data file\n";
 
 my $create_metadata_table = "CREATE TABLE android_metadata ( locale TEXT );";
@@ -431,6 +433,12 @@ while ( my $line = <APT_FILE> )
 
     if ( $type eq "APT" )
     {
+        # Skip the private use airports
+        next if ( substrim( $line,  177,  2 ) eq "PR" );
+
+        # Store the site number for later use
+        $site_number{ substrim( $line,    3, 11 ) } = 1;
+
         #SITE_NUMBER
         $sth_apt->bind_param(  1, substrim( $line,    3, 11 ) );
         #FACILITY_TYPE
@@ -570,6 +578,8 @@ while ( my $line = <APT_FILE> )
     }
     elsif ( $type eq "RWY" )
     {
+        next if ( !exists( $site_number{ substrim( $line, 3, 11 ) } ) );
+
         #SITE_NUMBER
         $sth_rwy->bind_param(  1, substrim( $line,    3, 11 ) );
         #RUNWAY_ID
@@ -717,6 +727,8 @@ while ( my $line = <APT_FILE> )
     }
     elsif ( $type eq "ATT" )
     {
+        next if ( !exists( $site_number{ substrim( $line, 3, 11 ) } ) );
+
         #SITE_NUMBER
         $sth_att->bind_param( 1, substrim( $line,  3,  11 ) );
         #SEQUENCE_NUMBER
@@ -728,6 +740,8 @@ while ( my $line = <APT_FILE> )
     }
     elsif ( $type eq "RMK" )
     {
+        next if ( !exists( $site_number{ substrim( $line, 3, 11 ) } ) );
+
         #SITE_NUMBER
         $sth_rmk->bind_param( 1, substrim( $line,  3,  11 ) );
         #REMARK_NAME
