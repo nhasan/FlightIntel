@@ -130,7 +130,11 @@ public class DatabaseManager {
         public static final String WIND_INDICATOR = "IND_INDICATOR";
         public static final String ICAO_CODE = "ICAO_CODE";
 
-        public static final String[] SEARCH_COLUMNS = new String[] {
+        // These are not really columns in the table, but calculated
+        public static final String DISTANCE = "DISTANCE";
+        public static final String BEARING = "BEARING";
+
+        public static final String[] QUERY_COLUMNS = new String[] {
             BaseColumns._ID,
             Airports.SITE_NUMBER,
             Airports.ICAO_CODE,
@@ -139,35 +143,11 @@ public class DatabaseManager {
             Airports.ASSOC_CITY,
             Airports.ASSOC_STATE,
             Airports.FACILITY_TYPE,
-            Airports.FACILITY_USE,
-            Airports.OWNERSHIP_TYPE
+            Airports.FUEL_TYPES,
+            Airports.UNICOM_FREQS,
+            Airports.ELEVATION_MSL,
+            Airports.STATUS_CODE
         };
-
-        public static String decodeOwnershipType( String ownership ) {
-            if ( ownership.equals( "PU" ) ) {
-                return "Publicly Owned";
-            } else if ( ownership.equals( "PR" ) ) {
-                return "Privately Owned";
-            } else if ( ownership.equals( "MA" ) ) {
-                return "Airforce Owned";
-            } else if ( ownership.equals( "MN" ) ) {
-                return "Navy Owned";
-            } else if ( ownership.equals( "MA" ) ) {
-                return "Army Owned";
-            } else {
-                return "Unknown Ownership";
-            }
-        }
-
-        public static String decodeFacilityUse( String use ) {
-            if ( use.equals( "PU" ) ) {
-                return "Open to Public";
-            } else if ( use.equals( "PR" ) ) {
-                return "Private Use";
-            } else {
-                return "Unknown use";
-            }
-        }
     }
 
     public static final class Catalog implements BaseColumns {

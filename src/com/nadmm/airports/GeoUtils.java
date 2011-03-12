@@ -86,4 +86,43 @@ public class GeoUtils {
         return new double[] { radLatMin, radLatMax, radLonMin, radLonMax };
     }
 
+    public static String getCardinalDirection( float bearing ) {
+        if ( bearing >= 348.76 || bearing <= 11.25 ) {
+            return "N";
+        } else if ( bearing >= 11.26 && bearing <= 33.75 ) {
+            return "NNE";
+        } else if ( bearing >= 33.76 && bearing <= 56.25 ) {
+            return "NE";
+        } else if ( bearing >= 56.26 && bearing <= 78.75 ) {
+            return "ENE";
+        } else if ( bearing >= 78.76 && bearing <= 101.25 ) {
+            return "E";
+        } else if ( bearing >= 101.26 && bearing <= 123.75 ) {
+            return "ESE";
+        } else if ( bearing >= 123.76 && bearing <= 146.25 ) {
+            return "SE";
+        } else if ( bearing >= 146.26 && bearing <= 168.75 ) {
+            return "SSE";
+        } else if ( bearing >= 168.76 && bearing <= 191.25 ) {
+            return "S";
+        } else if ( bearing >= 191.26 && bearing <= 213.75 ) {
+            return "SSW";
+        } else if ( bearing >= 213.76 && bearing <= 236.25 ) {
+            return "SW";
+        } else if ( bearing >= 236.26 && bearing <= 258.75 ) {
+            return "WSW";
+        } else if ( bearing >= 258.76 && bearing <= 281.25 ) {
+            return "W";
+        } else if ( bearing >= 281.26 && bearing <= 303.75 ) {
+            return "WNW";
+        } else if ( bearing >= 303.76 && bearing <= 326.25 ) {
+            return "NW";
+        } else if ( bearing >= 326.26 && bearing <= 348.75 ) {
+            return "NNW";
+        }
+
+        // Just to satisfy the compiler
+        return "???";
+    }
+
 }

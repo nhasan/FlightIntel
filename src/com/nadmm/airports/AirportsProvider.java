@@ -208,7 +208,7 @@ public class AirportsProvider extends ContentProvider {
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );
-        Cursor c = builder.query( db, Airports.SEARCH_COLUMNS, selection, selectionArgs, 
+        Cursor c = builder.query( db, Airports.QUERY_COLUMNS, selection, selectionArgs, 
                 null, null, Airports.FACILITY_NAME+" ASC", limit );
         if ( !c.moveToFirst() ) {
             c.close();
