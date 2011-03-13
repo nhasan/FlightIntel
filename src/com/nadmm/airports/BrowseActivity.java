@@ -59,7 +59,7 @@ public class BrowseActivity extends ListActivity {
 
     static HashMap<String, String> buildStateMap() {
         HashMap<String, String> map = new HashMap<String, String>();
-        map.put( BaseColumns._ID, "max(a."+BaseColumns._ID+") AS "+BaseColumns._ID );
+        map.put( BaseColumns._ID, "max("+BaseColumns._ID+") AS "+BaseColumns._ID );
         map.put( Airports.ASSOC_STATE, Airports.ASSOC_STATE );
         map.put( States.STATE_NAME, States.STATE_NAME );
         return map;
@@ -147,7 +147,7 @@ public class BrowseActivity extends ListActivity {
             if ( !extra.containsKey( BUNDLE_KEY_STATE_CODE ) ) {
                 // Show all the states grouped by first letter
                 builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
-                        +" ON "+Airports.ASSOC_STATE+"="+States.STATE_CODE );
+                        +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
                 builder.setProjectionMap( sStateMap );
                 String selection = Airports.ASSOC_STATE+"<>''";
                 c = builder.query( db,

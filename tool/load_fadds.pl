@@ -129,8 +129,7 @@ $dbh->do( $create_metadata_table );
 $dbh->do( $insert_metadata_record );
 
 my $create_states_table = "CREATE TABLE states ("
-        ."_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-        ."STATE_CODE TEXT, "
+        ."STATE_CODE TEXT PRIMARY KEY, "
         ."STATE_NAME TEXT "
         .");";
 my $insert_states_record = "INSERT INTO states (STATE_CODE, STATE_NAME) VALUES ( ?, ? );";

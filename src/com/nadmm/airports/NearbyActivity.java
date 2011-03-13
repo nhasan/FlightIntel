@@ -198,6 +198,7 @@ public class NearbyActivity extends Activity {
             ELEVATION_MSL = c.getString( c.getColumnIndex( Airports.ELEVATION_MSL ) );
             UNICOM_FREQ = c.getString( c.getColumnIndex( Airports.UNICOM_FREQS ) );
             STATUS_CODE = c.getString( c.getColumnIndex( Airports.STATUS_CODE ) );
+            STATE_NAME = c.getString( c.getColumnIndex( States.STATE_NAME ) );
 
             // Now calculate the distance to this airport
             float[] results = new float[ 2 ];
@@ -255,7 +256,8 @@ public class NearbyActivity extends Activity {
             DatabaseManager dbManager = DatabaseManager.instance();
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Airports.TABLE_NAME );
+            builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
+                    +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
             String selection = "("
                 +Airports.REF_LATTITUDE_DEGREES+">=? AND "+Airports.REF_LONGITUDE_DEGREES+"<=?"
                 +") AND ("+Airports.REF_LONGITUDE_DEGREES+">=? "
@@ -305,6 +307,7 @@ public class NearbyActivity extends Activity {
                         .add( airport.UNICOM_FREQ )
                         .add( airport.ELEVATION_MSL )
                         .add( airport.STATUS_CODE )
+                        .add( airport.STATE_NAME )
                         .add( airport.DISTANCE )
                         .add( airport.BEARING );
                 }
