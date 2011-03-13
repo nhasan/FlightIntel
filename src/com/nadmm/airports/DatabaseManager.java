@@ -160,6 +160,12 @@ public class DatabaseManager {
         public static final String DB_NAME = "DB_NAME";
     }
 
+    public static final class States implements BaseColumns {
+        public static final String TABLE_NAME = "states";
+        public static final String STATE_CODE = "STATE_CODE";
+        public static final String STATE_NAME = "STATE_NAME";
+    }
+
     public static DatabaseManager instance( Context context) {
         if ( sInstance == null ) {
             sInstance = new DatabaseManager( context );
@@ -256,13 +262,14 @@ public class DatabaseManager {
     }
 
     public class CatalogDbOpenHelper extends SQLiteOpenHelper {
+
         public CatalogDbOpenHelper( Context context ) {
             super( context, "catalog.db", null, 2 );
         }
 
         @Override
         public void onCreate( SQLiteDatabase db ) {
-            Log.i( TAG, "Creating Catalog database" );
+            Log.i( TAG, "Creating 'catalog' table" );
             db.execSQL( "CREATE TABLE "+Catalog.TABLE_NAME+" ("
                     +Catalog._ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "
                     +Catalog.TYPE+" TEXT not null, "
@@ -279,5 +286,7 @@ public class DatabaseManager {
             db.execSQL( "DROP TABLE Catalog" );
             onCreate( db );
         }
+
     }
+
 }

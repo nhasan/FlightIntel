@@ -21,8 +21,8 @@ package com.nadmm.airports;
 
 import java.util.Arrays;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -43,15 +43,21 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.States;
 
-public class NearbyActivity extends ListActivity {
+public class NearbyActivity extends Activity {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
     private static final int MSEC_PER_SEC = 1000;
 
+    private TextView mTextView;
+    private ListView mListView;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
     private Location mLastLocation;
@@ -71,8 +77,9 @@ public class NearbyActivity extends ListActivity {
         Airports.UNICOM_FREQS,
         Airports.ELEVATION_MSL,
         Airports.STATUS_CODE,
+        States.STATE_NAME,
         Airports.REF_LATTITUDE_DEGREES,
-        Airports.REF_LONGITUDE_DEGREES,
+        Airports.REF_LONGITUDE_DEGREES
      };
 
     private final String[] mDisplayColumns = new String[] {
@@ -88,6 +95,7 @@ public class NearbyActivity extends ListActivity {
             Airports.UNICOM_FREQS,
             Airports.ELEVATION_MSL,
             Airports.STATUS_CODE,
+            States.STATE_NAME,
             Airports.DISTANCE,
             Airports.BEARING
          };
@@ -95,6 +103,14 @@ public class NearbyActivity extends ListActivity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        setTitle( "Nearby Airports" );
+        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
+
+        setContentView( R.layout.airport_list_view );
+        mTextView = (TextView) findViewById( R.id.message );
+        mListView = (ListView) findViewById( R.id.list_view );
+
         mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
         mLocationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
         mLocationListener = new LocationListener() {
@@ -132,13 +148,24 @@ public class NearbyActivity extends ListActivity {
 
         Cursor c = new MatrixCursor( mDisplayColumns );
         mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );
-        setListAdapter( mListAdapter );
+        mListView.setAdapter( mListAdapter );
 
         boolean useGps = mPrefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
         String provider = useGps? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
 
         mLocationManager.requestLocationUpdates( provider, 60*MSEC_PER_SEC,
                 GeoUtils.METERS_PER_STATUTE_MILE, mLocationListener );
+
+        Location location = mLocationManager.getLastKnownLocation( provider );
+        if ( System.currentTimeMillis()-location.getTime() <= 5*60*MSEC_PER_SEC ) {
+            // Use the last known location if it is no more than 5 minutes old
+            mLastLocation = location;
+            NearbyTask task = new NearbyTask();
+            task.execute( (Void[]) null );
+        } else {
+            setProgressBarIndeterminateVisibility( true );
+            mTextView.setText( "Acquiring location..." );
+        }
     }
 
     // This data class allows us to sort the airport list based in distance
@@ -155,6 +182,7 @@ public class NearbyActivity extends ListActivity {
         public String UNICOM_FREQ;
         public String ELEVATION_MSL;
         public String STATUS_CODE;
+        public String STATE_NAME;
         public float DISTANCE;
         public float BEARING;
 
@@ -198,13 +226,20 @@ public class NearbyActivity extends ListActivity {
 
     private final class NearbyTask extends AsyncTask<Void, Void, Cursor> {
 
+        private int mRadius;
+
+        @Override
+        protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility( true );
+        }
+
         @Override
         protected Cursor doInBackground( Void... params ) {
-            int r = Integer.valueOf( mPrefs.getString( 
+            mRadius = Integer.valueOf( mPrefs.getString( 
                     PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "20" ) );
 
             // Get the bounding box first to do a quick query as a first cut
-            double[] box = GeoUtils.getBoundingBox( mLastLocation, r );
+            double[] box = GeoUtils.getBoundingBox( mLastLocation, mRadius );
 
             double radLatMin = box[ 0 ];
             double radLatMax = box[ 1 ];
@@ -256,7 +291,7 @@ public class NearbyActivity extends ListActivity {
             // Build a cursor out of the sorted airport list
             MatrixCursor matrix = new MatrixCursor( mDisplayColumns );
             for ( AirportData airport : airports ) {
-                if ( airport.DISTANCE <= r ) {
+                if ( airport.DISTANCE <= mRadius ) {
                     MatrixCursor.RowBuilder row = matrix.newRow();
                     row.add( matrix.getPosition() )
                         .add( airport.SITE_NUMBER )
@@ -282,6 +317,9 @@ public class NearbyActivity extends ListActivity {
         protected void onPostExecute( Cursor c ) {
             mListAdapter.changeCursor( c );
             mListAdapter.notifyDataSetChanged();
+            mTextView.setText( String.valueOf( c.getCount() )+" found within "
+                    +String.valueOf( mRadius )+" NM radius" );
+            setProgressBarIndeterminateVisibility( false );
         }
     }
 

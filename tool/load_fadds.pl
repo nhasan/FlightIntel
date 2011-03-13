@@ -26,6 +26,72 @@ use Text::Autoformat;
 
 my $reTrim = qr/^\s+|\s+$/;
 
+my %states = (
+            "AK" => "Alaska",
+            "AL" => "Alabama",
+            "AS" => "American Samoa",
+            "AZ" => "Arizona",
+            "AR" => "Arkansas",
+            "CA" => "California",
+            "CN" => "Canada",
+            "CO" => "Colorado",
+            "CQ" => "N. Marinara Islands",
+            "CT" => "Connecticut",
+            "DE" => "Delaware",
+            "DC" => "District of Columbia",
+            "FM" => "Fed Sts of Micronesia",
+            "FL" => "Florida",
+            "GA" => "Georgia",
+            "GU" => "Guam",
+            "HI" => "Hawai",
+            "IA" => "Iowa",
+            "ID" => "Idaho",
+            "IL" => "Illinois",
+            "IN" => "Indiana",
+            "IQ" => "Pacific Islands",
+            "KS" => "Kansas",
+            "KY" => "Kentucky",
+            "LA" => "Louisiana",
+            "MA" => "Massachusetts",
+            "ME" => "Maine",
+            "MH" => "Marshall Islands",
+            "MD" => "Maryland",
+            "MI" => "Michigan",
+            "MN" => "Minnesota",
+            "MS" => "Mississippi",
+            "MO" => "Missouri",
+            "MP" => "N. Marinara Islands",
+            "MQ" => "Midway Islands",
+            "MT" => "Montana",
+            "NC" => "North Carolina",
+            "ND" => "North Dakota",
+            "NE" => "Nebraska",
+            "NH" => "New Hampshire",
+            "NJ" => "New Jersey",
+            "NM" => "New Mexico",
+            "NV" => "Nevada",
+            "NY" => "New York",
+            "OH" => "Ohio",
+            "OK" => "Oklahoma",
+            "OR" => "Oregon",
+            "PA" => "Pennsylvania",
+            "PR" => "Puerto Rico",
+            "PS" => "Palau",
+            "RI" => "Rhode Island",
+            "SC" => "South Carolina",
+            "SD" => "South Dakota",
+            "TN" => "Tennessee",
+            "TX" => "Texas",
+            "UT" => "Utah",
+            "VA" => "Virginia",
+            "VI" => "Virgin Islands",
+            "VT" => "Vermont",
+            "WA" => "Washington",
+            "WI" => "Wisconsin",
+            "WV" => "West Virginia",
+            "WY" => "Wyoming"
+        );
+
 sub substrim($$$)
 {
     my ( $string, $offset, $len ) = @_;
@@ -50,9 +116,36 @@ my %site_number;
 
 open( APT_FILE, "<$APT" ) or die "Could not open data file\n";
 
-my $create_metadata_table = "CREATE TABLE android_metadata ( locale TEXT );";
+my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
+$dbh->do( "PRAGMA page_size=4096" );
+$dbh->do( "PRAGMA synchronous=OFF" );
+
+my $create_metadata_table = "CREATE TABLE android_metadata ( locale TEXT );";
 my $insert_metadata_record = "INSERT INTO android_metadata VALUES ( 'en_US' );";
+
+$dbh->do( "DROP TABLE IF EXISTS android_metadata" );
+$dbh->do( $create_metadata_table );
+$dbh->do( $insert_metadata_record );
+
+my $create_states_table = "CREATE TABLE states ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        ."STATE_CODE TEXT, "
+        ."STATE_NAME TEXT "
+        .");";
+my $insert_states_record = "INSERT INTO states (STATE_CODE, STATE_NAME) VALUES ( ?, ? );";
+
+$dbh->do( "DROP TABLE IF EXISTS states" );
+$dbh->do( $create_states_table );
+
+my $sth_states = $dbh->prepare( $insert_states_record );
+
+foreach my $state_code ( keys %states )
+{
+    $sth_states->bind_param( 1, $state_code );
+    $sth_states->bind_param( 2, $states{$state_code} );
+    $sth_states->execute();
+}
 
 my $create_airports_table = "CREATE TABLE airports ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -381,15 +474,6 @@ my $insert_remarks_record = "INSERT INTO remarks ("
         ."?, ?, ?"
         .")";
 
-my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
-
-$dbh->do( "PRAGMA page_size=4096" );
-$dbh->do( "PRAGMA synchronous=OFF" );
-
-$dbh->do( "DROP TABLE IF EXISTS android_metadata" );
-$dbh->do( $create_metadata_table );
-$dbh->do( $insert_metadata_record );
-
 $dbh->do( "DROP TABLE IF EXISTS airports" );
 $dbh->do( $create_airports_table );
 #$dbh->do( "CREATE INDEX idx_faa_code on airports ( FAA_CODE );" );
@@ -399,15 +483,15 @@ $dbh->do( $create_airports_table );
 
 $dbh->do( "DROP TABLE IF EXISTS runways" );
 $dbh->do( $create_runways_table );
-$dbh->do( "CREATE INDEX idx_rwy_site_number on runways ( SITE_NUMBER );" );
+#$dbh->do( "CREATE INDEX idx_rwy_site_number on runways ( SITE_NUMBER );" );
 
 $dbh->do( "DROP TABLE IF EXISTS attendance" );
 $dbh->do( $create_attendance_table );
-$dbh->do( "CREATE INDEX idx_att_site_number on attendance ( SITE_NUMBER );" );
+#$dbh->do( "CREATE INDEX idx_att_site_number on attendance ( SITE_NUMBER );" );
 
 $dbh->do( "DROP TABLE IF EXISTS remarks" );
 $dbh->do( $create_remarks_table );
-$dbh->do( "CREATE INDEX idx_rmk_site_number on remarks ( SITE_NUMBER );" );
+#$dbh->do( "CREATE INDEX idx_rmk_site_number on remarks ( SITE_NUMBER );" );
 
 my $sth_apt = $dbh->prepare( $insert_airports_record );
 my $sth_rwy = $dbh->prepare( $insert_runways_record );

@@ -87,8 +87,8 @@ import com.nadmm.airports.DatabaseManager.Catalog;
 
 public final class DownloadActivity extends ListActivity {
     private static final String TAG = DownloadActivity.class.getName();
-    private static final String HOST = "10.0.2.2";
-    //private static final String HOST = "192.168.1.116";
+    //private static final String HOST = "10.0.2.2";
+    private static final String HOST = "192.168.1.116";
     private static final Integer PORT = 80;
     private static final String PATH = "/~nhasan/fadds";
     private static final String MANIFEST = "manifest.xml";

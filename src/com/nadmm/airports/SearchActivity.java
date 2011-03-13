@@ -38,9 +38,9 @@ public class SearchActivity extends Activity {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( R.layout.search_list_view );
-        mTextView = (TextView) findViewById( R.id.search_msg );
-        mListView = (ListView) findViewById( R.id.search_list );
+        setContentView( R.layout.airport_list_view );
+        mTextView = (TextView) findViewById( R.id.message );
+        mListView = (ListView) findViewById( R.id.list_view );
 
         handleIntent( getIntent() );
     }

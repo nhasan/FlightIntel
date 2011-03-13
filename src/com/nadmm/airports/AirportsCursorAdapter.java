@@ -22,6 +22,7 @@ package com.nadmm.airports;
 import java.util.Formatter;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.States;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -52,9 +53,9 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
         }
         tv.setText( code );
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
-        String state = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
+        String state_name = c.getString( c.getColumnIndex( States.STATE_NAME ) );
         tv = (TextView) view.findViewById( R.id.location );
-        tv.setText( city+", "+DataUtils.getStateName( state ) );
+        tv.setText( city+", "+state_name );
 
         if ( c.getColumnIndex( Airports.DISTANCE ) >= 0 ) {
             // Check if we have distance information
