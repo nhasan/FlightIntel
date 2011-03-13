@@ -467,8 +467,8 @@ public final class DownloadActivity extends ListActivity {
                         return -1;
                     }
                 } while ( c.moveToNext() );
-                c.close();
             }
+            c.close();
 
             return result;
         }
@@ -1051,9 +1051,8 @@ public final class DownloadActivity extends ListActivity {
                     expired.close();
                 }
             } while ( c.moveToNext() );
-
-            c.close();
         }
+        c.close();
     }
 
     protected void showMessage( final String msg ) {
