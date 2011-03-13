@@ -964,7 +964,7 @@ public final class DownloadActivity extends ListActivity {
             mDbManager.closeDatabases();
 
             // Get all the catalog entries
-            SQLiteDatabase catalogDb = mDbManager.getCatalogDatabase();
+            SQLiteDatabase catalogDb = mDbManager.getCatalogDb();
             Cursor cursor = catalogDb.query( Catalog.TABLE_NAME, null, null, null, 
                     null, null, null );
             if ( cursor.moveToFirst() ) {
@@ -1013,7 +1013,7 @@ public final class DownloadActivity extends ListActivity {
     }
 
     protected void cleanupExpiredData() {
-        SQLiteDatabase catalogDb = mDbManager.getCatalogDatabase();
+        SQLiteDatabase catalogDb = mDbManager.getCatalogDb();
 
         Time now = new Time();
         now.setToNow();
@@ -1098,8 +1098,15 @@ public final class DownloadActivity extends ListActivity {
 
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
-        MenuItem settings = menu.findItem( R.id.menu_download );
-        settings.setEnabled( false );
+        menu.findItem( R.id.menu_download ).setEnabled( false );
+        Cursor c = DatabaseManager.instance().getLatestFromCatalog();
+        boolean enabled = c.moveToFirst();
+        c.close();
+        menu.findItem( R.id.menu_browse ).setEnabled( enabled );
+        menu.findItem( R.id.menu_favorites ).setEnabled( enabled );
+        menu.findItem( R.id.menu_nearby ).setEnabled( enabled );
+        menu.findItem( R.id.menu_search ).setEnabled( enabled );
+
         return super.onPrepareOptionsMenu( menu );
     }
 
