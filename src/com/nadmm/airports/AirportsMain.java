@@ -46,6 +46,7 @@ public class AirportsMain extends Activity {
             finish();
             return;
         }
+        c.close();
 
         boolean checkData = prefs.getBoolean( PreferencesActivity.KEY_STARTUP_CHECK_EXPIRED_DATA, 
                 true );
