@@ -46,7 +46,6 @@ public class AirportsMain extends Activity {
             finish();
             return;
         }
-        c.close();
 
         boolean checkData = prefs.getBoolean( PreferencesActivity.KEY_STARTUP_CHECK_EXPIRED_DATA, 
                 true );
@@ -56,6 +55,7 @@ public class AirportsMain extends Activity {
                 int age = c.getInt( c.getColumnIndex( "age" ) );
                 if ( age <= 0 ) {
                     // We have some expired data
+                    c.close();
                     Intent download = new Intent( this, DownloadActivity.class );
                     download.putExtra( "MSG", "One or more data items have expired" );
                     startActivity( download );
@@ -64,6 +64,8 @@ public class AirportsMain extends Activity {
                 }
             } while ( c.moveToNext() );
         }
+
+        c.close();
 
         String startupActivity = prefs.getString( 
                 PreferencesActivity.KEY_STARTUP_SHOW_ACTIVITY,  "browse" );
