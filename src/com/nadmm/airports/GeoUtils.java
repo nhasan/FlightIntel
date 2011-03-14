@@ -76,13 +76,6 @@ public class GeoUtils {
             radLonMax = MAX_LON;
         }
 
-        Log.i( "LAT", String.valueOf( radLat ) );
-        Log.i( "LON", String.valueOf( radLon ) );
-        Log.i( "LATMIN", String.valueOf( radLatMin ) );
-        Log.i( "LATMAX", String.valueOf( radLatMax ) );
-        Log.i( "LONMIN", String.valueOf( radLonMin ) );
-        Log.i( "LONMAX", String.valueOf( radLonMax ) );
-
         return new double[] { radLatMin, radLatMax, radLonMin, radLonMax };
     }
 
