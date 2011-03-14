@@ -36,6 +36,7 @@ public class DatabaseManager {
     public static final String TAG = DatabaseManager.class.getSimpleName();
 
     private final CatalogDbOpenHelper mCatalogDbHelper;
+    private final UserDataDbOpenHelper mUserDataDbHelper;
     private final Context mContext;
     private final HashMap<String, SQLiteDatabase> mDatabases;
 
@@ -166,6 +167,11 @@ public class DatabaseManager {
         public static final String STATE_NAME = "STATE_NAME";
     }
 
+    public static final class Favorites implements BaseColumns {
+        public static final String TABLE_NAME = "favorites";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
+    }
+
     public static DatabaseManager instance( Context context) {
         if ( sInstance == null ) {
             sInstance = new DatabaseManager( context );
@@ -180,13 +186,18 @@ public class DatabaseManager {
     private DatabaseManager( Context context ) {
         mContext = context;
         mCatalogDbHelper = new CatalogDbOpenHelper( mContext );
+        mUserDataDbHelper = new UserDataDbOpenHelper( mContext );
         mDatabases = new HashMap<String, SQLiteDatabase>();
 
         openDatabases();
     }
 
-    public SQLiteDatabase getCatalogDatabase() {
+    public SQLiteDatabase getCatalogDb() {
         return mCatalogDbHelper.getWritableDatabase();
+    }
+
+    public SQLiteDatabase getUserDataDb() {
+        return mUserDataDbHelper.getWritableDatabase();
     }
 
     public void close() {
@@ -196,7 +207,7 @@ public class DatabaseManager {
     }
 
     public Cursor getLatestFromCatalog() {
-        SQLiteDatabase catalogDb = getCatalogDatabase();
+        SQLiteDatabase catalogDb = getCatalogDb();
         String query = "SELECT *,"
             +" strftime('%s', end_date)-strftime('%s', 'now', 'localtime') as age"
             +" FROM "+Catalog.TABLE_NAME+" c1"
@@ -205,6 +216,13 @@ public class DatabaseManager {
                 +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE+")";
         Log.i( TAG, query );
         return catalogDb.rawQuery( query, null );
+    }
+
+    public long addToFavorites( String siteNumber ) {
+        SQLiteDatabase userDataDb = getUserDataDb();
+        ContentValues values = new ContentValues();
+        values.put( Favorites.SITE_NUMBER, siteNumber );
+        return userDataDb.insert( Favorites.TABLE_NAME, null, values );
     }
 
     private synchronized void openDatabases() {
@@ -264,29 +282,57 @@ public class DatabaseManager {
     public class CatalogDbOpenHelper extends SQLiteOpenHelper {
 
         public CatalogDbOpenHelper( Context context ) {
-            super( context, "catalog.db", null, 2 );
+            super( context, "catalog.db", null, 1 );
         }
 
         @Override
         public void onCreate( SQLiteDatabase db ) {
             Log.i( TAG, "Creating 'catalog' table" );
-            db.execSQL( "CREATE TABLE "+Catalog.TABLE_NAME+" ("
+            db.execSQL( "CREATE TABLE "+Catalog.TABLE_NAME+" ( "
                     +Catalog._ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "
                     +Catalog.TYPE+" TEXT not null, "
                     +Catalog.DESCRIPTION+" TEXT not null, "
                     +Catalog.VERSION+" INTEGER not null, "
                     +Catalog.START_DATE+" TEXT not null, "
                     +Catalog.END_DATE+" TEXT not null, "
-                    +Catalog.DB_NAME+" TEXT not null)" );
+                    +Catalog.DB_NAME+" TEXT not null "
+                    +")" );
+
+            Log.i( TAG, "Creating 'favorites' table" );
+            db.execSQL( "CREATE TABLE "+Favorites.TABLE_NAME+" ( "
+                    +Favorites.SITE_NUMBER+" TEXT PRIMARY_KEY "
+                    +")" );
         }
 
         @Override
         public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
-            Log.i( TAG, "Ugrading catalog db "+oldVersion+" -> "+newVersion );
-            db.execSQL( "DROP TABLE Catalog" );
+            Log.i( TAG, "Ugrading "+Catalog.TABLE_NAME+" db "+oldVersion+" -> "+newVersion );
+            db.execSQL( "DROP TABLE "+Catalog.TABLE_NAME );
             onCreate( db );
         }
 
     }
 
+    public class UserDataDbOpenHelper extends SQLiteOpenHelper {
+
+        public UserDataDbOpenHelper( Context context ) {
+            super( context, "userdata.db", null, 1 );
+        }
+
+        @Override
+        public void onCreate( SQLiteDatabase db ) {
+            Log.i( TAG, "Creating 'favorites' table" );
+            db.execSQL( "CREATE TABLE "+Favorites.TABLE_NAME+" ( "
+                    +Favorites.SITE_NUMBER+" TEXT PRIMARY_KEY "
+                    +")" );
+        }
+
+        @Override
+        public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
+            Log.i( TAG, "Ugrading "+Favorites.TABLE_NAME+" db "+oldVersion+" -> "+newVersion );
+            db.execSQL( "DROP TABLE "+Favorites.TABLE_NAME );
+            onCreate( db );
+        }
+
+    }
 }

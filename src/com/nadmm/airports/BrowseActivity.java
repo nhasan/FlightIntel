@@ -300,6 +300,13 @@ public class BrowseActivity extends ListActivity {
                 showErrorMessage( e.getMessage() );
             }
             return true;
+        case R.id.menu_favorites:
+            try {
+                Intent favorites = new Intent( this, FavoritesActivity.class );
+                startActivity( favorites );
+            } catch ( ActivityNotFoundException e ) {
+            }
+            return true;
         case R.id.menu_download:
             try {
                 Intent download = new Intent( this, DownloadActivity.class );

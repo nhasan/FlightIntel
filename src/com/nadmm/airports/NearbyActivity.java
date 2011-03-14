@@ -22,10 +22,8 @@ package com.nadmm.airports;
 import java.util.Arrays;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -40,13 +38,17 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
@@ -166,6 +168,8 @@ public class NearbyActivity extends Activity {
             setProgressBarIndeterminateVisibility( true );
             mTextView.setText( "Acquiring location..." );
         }
+
+        registerForContextMenu( mListView );
     }
 
     // This data class allows us to sort the airport list based in distance
@@ -353,7 +357,6 @@ public class NearbyActivity extends Activity {
                 browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
                 startActivity( browse );
             } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
             }
             return true;
         case R.id.menu_nearby:
@@ -361,7 +364,13 @@ public class NearbyActivity extends Activity {
                 Intent nearby = new Intent( this, NearbyActivity.class );
                 startActivity( nearby );
             } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
+            }
+            return true;
+        case R.id.menu_favorites:
+            try {
+                Intent favorites = new Intent( this, FavoritesActivity.class );
+                startActivity( favorites );
+            } catch ( ActivityNotFoundException e ) {
             }
             return true;
         case R.id.menu_download:
@@ -369,7 +378,6 @@ public class NearbyActivity extends Activity {
                 Intent download = new Intent( this, DownloadActivity.class );
                 startActivity( download );
             } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
             }
             return true;
         case R.id.menu_settings:
@@ -377,7 +385,6 @@ public class NearbyActivity extends Activity {
                 Intent settings = new Intent( this, PreferencesActivity.class  );
                 startActivity( settings );
             } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
             }
             return true;
         default:
@@ -385,17 +392,37 @@ public class NearbyActivity extends Activity {
         }
     }
 
-    protected void showErrorMessage( String msg )
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder( this );
-        builder.setMessage( msg )
-            .setTitle( "Download Error" )
-            .setPositiveButton( "Close", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                }
-            } );
-        AlertDialog alert = builder.create();
-        alert.show();
+    @Override
+    public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
+        super.onCreateContextMenu( menu, v, menuInfo );
+
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        Cursor c = mListAdapter.getCursor();
+        int pos = c.getPosition();
+        c.moveToPosition( info.position );
+        String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
+        c.moveToPosition( pos );
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate( R.menu.airport_list_context_menu, menu );
+        menu.setHeaderTitle( name );
+    }
+
+    @Override
+    public boolean onContextItemSelected( MenuItem item ) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        Cursor c = mListAdapter.getCursor();
+        int pos = c.getPosition();
+        c.moveToPosition( info.position );
+        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+        c.moveToPosition( pos );
+
+        switch ( item.getItemId() ) {
+            case R.id.menu_add_favorites:
+                DatabaseManager.instance().addToFavorites( siteNumber );
+            default:
+                return super.onContextItemSelected( item );
+        }
     }
 
 }

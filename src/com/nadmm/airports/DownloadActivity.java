@@ -1123,7 +1123,6 @@ public final class DownloadActivity extends ListActivity {
                 browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
                 startActivity( browse );
             } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
             }
             return true;
         case R.id.menu_nearby:
@@ -1131,7 +1130,13 @@ public final class DownloadActivity extends ListActivity {
                 Intent nearby = new Intent( this, NearbyActivity.class );
                 startActivity( nearby );
             } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
+            }
+            return true;
+        case R.id.menu_favorites:
+            try {
+                Intent favorites = new Intent( this, FavoritesActivity.class );
+                startActivity( favorites );
+            } catch ( ActivityNotFoundException e ) {
             }
             return true;
         case R.id.menu_download:
@@ -1139,7 +1144,6 @@ public final class DownloadActivity extends ListActivity {
                 Intent download = new Intent( this, DownloadActivity.class );
                 startActivity( download );
             } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
             }
             return true;
         case R.id.menu_settings:
@@ -1147,7 +1151,6 @@ public final class DownloadActivity extends ListActivity {
                 Intent settings = new Intent( this, PreferencesActivity.class  );
                 startActivity( settings );
             } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
             }
             return true;
         default:
