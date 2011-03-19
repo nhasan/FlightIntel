@@ -136,21 +136,6 @@ public class DatabaseManager {
         // These are not really columns in the table, but calculated
         public static final String DISTANCE = "DISTANCE";
         public static final String BEARING = "BEARING";
-
-        public static final String[] QUERY_COLUMNS = new String[] {
-            BaseColumns._ID,
-            Airports.SITE_NUMBER,
-            Airports.ICAO_CODE,
-            Airports.FAA_CODE,
-            Airports.FACILITY_NAME,
-            Airports.ASSOC_CITY,
-            Airports.ASSOC_STATE,
-            Airports.FACILITY_TYPE,
-            Airports.FUEL_TYPES,
-            Airports.UNICOM_FREQS,
-            Airports.ELEVATION_MSL,
-            Airports.STATUS_CODE
-        };
     }
 
     public static final class Catalog implements BaseColumns {

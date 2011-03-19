@@ -259,7 +259,8 @@ public class NearbyActivity extends Activity {
                     String.valueOf( Math.toDegrees( radLonMin ) ),
                     String.valueOf( Math.toDegrees( radLonMax ) )
                     };
-            Cursor c = AirportsCursorHelper.query( selection, selectionArgs, null, null, null );
+            Cursor c = AirportsCursorHelper.query( selection, selectionArgs,
+                    null, null, null, null );
             if ( !c.moveToFirst() ) {
                 Log.i( TAG, "No airports found within the query radius" );
                 Toast.makeText( NearbyActivity.this, "No airports found within the query radius", 

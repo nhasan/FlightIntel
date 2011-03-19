@@ -84,7 +84,7 @@ public class FavoritesActivity extends ListActivity {
             // Query for the favorite airports
             selection = "a."+Airports.SITE_NUMBER+" in ("+selection+")";
             Cursor c = AirportsCursorHelper.query( selection, null, null, null, 
-                    Airports.FACILITY_NAME );
+                    Airports.FACILITY_NAME, null );
 
             return c;
         }

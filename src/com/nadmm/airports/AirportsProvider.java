@@ -175,21 +175,13 @@ public class AirportsProvider extends ContentProvider {
     }
 
     private Cursor searchAirports( Uri uri, String query ) {
-        DatabaseManager dbManager = DatabaseManager.instance();
-        SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-        if ( db == null ) {
-            return null;
-        }
-
         String selection = "("+Airports.FAA_CODE+"=? OR "
                 +Airports.ICAO_CODE+"=? OR "
                 +Airports.FACILITY_NAME+" LIKE ? )";
         String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
         String limit = uri.getQueryParameter( "limit" );
 
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( Airports.TABLE_NAME );
-        Cursor c = builder.query( db, Airports.QUERY_COLUMNS, selection, selectionArgs, 
+        Cursor c = AirportsCursorHelper.query( selection, selectionArgs, 
                 null, null, Airports.FACILITY_NAME+" ASC", limit );
         if ( !c.moveToFirst() ) {
             c.close();

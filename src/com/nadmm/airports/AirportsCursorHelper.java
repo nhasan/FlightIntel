@@ -48,14 +48,14 @@ public class AirportsCursorHelper {
          };
 
     public static Cursor query( String selection, String[] selectionArgs, 
-            String groupBy, String having, String sortOrder ) {
+            String groupBy, String having, String sortOrder, String limit ) {
         DatabaseManager dbManager = DatabaseManager.instance();
         SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
                 +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
         Cursor c = builder.query( db, mQueryColumns, selection, selectionArgs, 
-                groupBy, having, sortOrder );
+                groupBy, having, sortOrder, limit );
         return c;
     }
 
