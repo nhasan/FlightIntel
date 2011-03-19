@@ -31,7 +31,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -70,6 +69,7 @@ public class FavoritesActivity extends ListActivity {
         setTitle( "Favorite Airports" );
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         registerForContextMenu( getListView() );
+
         Cursor c = new MatrixCursor( mQueryColumns );
         mListAdapter = new AirportsCursorAdapter( FavoritesActivity.this, c );
         setListAdapter( mListAdapter );
@@ -83,7 +83,6 @@ public class FavoritesActivity extends ListActivity {
 
     protected void getFavorites() {
         // Get the favorites list
-        Log.i( "FAVORITES", "Starting query" );
         FavoritesTask task = new FavoritesTask();
         task.execute( (Void[]) null );
     }
