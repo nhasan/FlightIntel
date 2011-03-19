@@ -43,6 +43,7 @@
     <string name="search_not_found">No matching airports found</string>
     <string name="view_details">View details</string>
     <string name="add_favorites">Add to favorites</string>
+    <string name="remove_favorites">Remove from favorites</string>
     <plurals name="search_entry_found">
         <item quantity="one">1 airport found</item>
         <item quantity="other">%1$d airports found</item>

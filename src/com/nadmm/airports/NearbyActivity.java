@@ -19,6 +19,7 @@
 
 package com.nadmm.airports;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.app.Activity;
@@ -65,6 +66,7 @@ public class NearbyActivity extends Activity {
     private Location mLastLocation;
     private SharedPreferences mPrefs;
     private AirportsCursorAdapter mListAdapter;
+    private ArrayList<String> mFavorites;
 
     private final String[] mQueryColumns = new String[] {
         BaseColumns._ID,
@@ -148,6 +150,8 @@ public class NearbyActivity extends Activity {
             
         };
 
+        mFavorites = null;
+
         Cursor c = new MatrixCursor( mDisplayColumns );
         mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );
         mListView.setAdapter( mListAdapter );
@@ -170,6 +174,14 @@ public class NearbyActivity extends Activity {
         }
 
         registerForContextMenu( mListView );
+    }
+
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Get the new favorites list
+        mFavorites = DatabaseManager.instance().getFavorites();
     }
 
     // This data class allows us to sort the airport list based in distance
@@ -400,12 +412,20 @@ public class NearbyActivity extends Activity {
         Cursor c = mListAdapter.getCursor();
         int pos = c.getPosition();
         c.moveToPosition( info.position );
-        String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
+        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+        String facilityName = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
         c.moveToPosition( pos );
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate( R.menu.airport_list_context_menu, menu );
-        menu.setHeaderTitle( name );
+        menu.setHeaderTitle( facilityName );
+
+        // Show either "Add" or "Remove" entry depending on the context
+        if ( mFavorites.contains( siteNumber ) ) {
+            menu.removeItem( R.id.menu_add_favorites );
+        } else {
+            menu.removeItem( R.id.menu_remove_favorites );
+        }
     }
 
     @Override
@@ -420,9 +440,17 @@ public class NearbyActivity extends Activity {
         switch ( item.getItemId() ) {
             case R.id.menu_add_favorites:
                 DatabaseManager.instance().addToFavorites( siteNumber );
+                mFavorites.add( siteNumber );
+                break;
+            case R.id.menu_remove_favorites:
+                DatabaseManager.instance().removeFromFavorites( siteNumber );
+                mFavorites.remove( siteNumber );
+                break;
+            case R.id.menu_view_details:
+                break;
             default:
-                return super.onContextItemSelected( item );
         }
+        return super.onContextItemSelected( item );
     }
 
 }

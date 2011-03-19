@@ -20,6 +20,7 @@
 package com.nadmm.airports;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -28,6 +29,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Environment;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -218,11 +220,39 @@ public class DatabaseManager {
         return catalogDb.rawQuery( query, null );
     }
 
+    public ArrayList<String> getFavorites() {
+        ArrayList<String> favorites = new ArrayList<String>();
+        SQLiteDatabase db = getUserDataDb();
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Favorites.TABLE_NAME );
+        builder.setDistinct( true );
+        Cursor c = builder.query( db, new String[] { Favorites.SITE_NUMBER }, 
+                null, null, null, null, null );
+        if ( c.moveToFirst() ) {
+            // Build the list of favorites
+            do {
+                favorites.add( c.getString( c.getColumnIndex( Favorites.SITE_NUMBER ) ) );
+            } while ( c.moveToNext() );
+        }
+        c.close();
+
+        return favorites;
+    }
+
     public long addToFavorites( String siteNumber ) {
         SQLiteDatabase userDataDb = getUserDataDb();
         ContentValues values = new ContentValues();
         values.put( Favorites.SITE_NUMBER, siteNumber );
         return userDataDb.insert( Favorites.TABLE_NAME, null, values );
+    }
+
+    public int removeFromFavorites( String siteNumber ) {
+        SQLiteDatabase userDataDb = getUserDataDb();
+        ContentValues values = new ContentValues();
+        values.put( Favorites.SITE_NUMBER, siteNumber );
+        return userDataDb.delete( Favorites.TABLE_NAME, 
+                Airports.SITE_NUMBER+"=?",
+                new String[] { siteNumber } );
     }
 
     private synchronized void openDatabases() {

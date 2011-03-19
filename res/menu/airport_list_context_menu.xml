@@ -24,6 +24,8 @@
           android:title="@string/view_details"  />
     <item android:id="@+id/menu_add_favorites"
           android:title="@string/add_favorites"  />
+    <item android:id="@+id/menu_remove_favorites"
+          android:title="@string/remove_favorites"  />
 </menu>
 
     
