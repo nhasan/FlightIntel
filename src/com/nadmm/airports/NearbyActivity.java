@@ -156,6 +156,17 @@ public class NearbyActivity extends Activity {
         mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );
         mListView.setAdapter( mListAdapter );
 
+        registerForContextMenu( mListView );
+    }
+
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Get the new favorites list
+        mFavorites = DatabaseManager.instance().getFavorites();
+
         boolean useGps = mPrefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
         String provider = useGps? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
 
@@ -172,16 +183,12 @@ public class NearbyActivity extends Activity {
             setProgressBarIndeterminateVisibility( true );
             mTextView.setText( "Acquiring location..." );
         }
-
-        registerForContextMenu( mListView );
     }
 
-    
     @Override
-    protected void onResume() {
-        super.onResume();
-        // Get the new favorites list
-        mFavorites = DatabaseManager.instance().getFavorites();
+    protected void onPause() {
+        super.onPause();
+        mLocationManager.removeUpdates( mLocationListener );
     }
 
     // This data class allows us to sort the airport list based in distance
