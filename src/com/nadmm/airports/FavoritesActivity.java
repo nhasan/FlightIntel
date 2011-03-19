@@ -25,12 +25,8 @@ import android.app.ListActivity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.BaseColumns;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,27 +37,10 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.States;
 
 public class FavoritesActivity extends ListActivity {
 
-    AirportsCursorAdapter mListAdapter;
-
-    private final String[] mQueryColumns = new String[] {
-            BaseColumns._ID,
-            "a."+Airports.SITE_NUMBER,
-            Airports.ICAO_CODE,
-            Airports.FAA_CODE,
-            Airports.FACILITY_NAME,
-            Airports.ASSOC_CITY,
-            Airports.ASSOC_STATE,
-            Airports.FACILITY_TYPE,
-            Airports.FUEL_TYPES,
-            Airports.UNICOM_FREQS,
-            Airports.ELEVATION_MSL,
-            Airports.STATUS_CODE,
-            States.STATE_NAME,
-         };
+    AirportsCursorAdapter mListAdapter = null;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -69,10 +48,6 @@ public class FavoritesActivity extends ListActivity {
         setTitle( "Favorite Airports" );
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         registerForContextMenu( getListView() );
-
-        Cursor c = new MatrixCursor( mQueryColumns );
-        mListAdapter = new AirportsCursorAdapter( FavoritesActivity.this, c );
-        setListAdapter( mListAdapter );
    }
 
     @Override
@@ -107,12 +82,8 @@ public class FavoritesActivity extends ListActivity {
             };
 
             // Query for the favorite airports
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
-                    +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
             selection = "a."+Airports.SITE_NUMBER+" in ("+selection+")";
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor c = builder.query( db, mQueryColumns, selection, null, null, null, 
+            Cursor c = AirportsCursorHelper.query( selection, null, null, null, 
                     Airports.FACILITY_NAME );
 
             return c;
@@ -120,8 +91,13 @@ public class FavoritesActivity extends ListActivity {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            mListAdapter.changeCursor( c );
-            mListAdapter.notifyDataSetChanged();
+            if ( mListAdapter == null ) {
+                mListAdapter = new AirportsCursorAdapter( FavoritesActivity.this, c );
+            } else {
+                mListAdapter.changeCursor( c );
+                mListAdapter.notifyDataSetChanged();
+            }
+            setListAdapter( mListAdapter );
             setProgressBarIndeterminateVisibility( false );
         }
 

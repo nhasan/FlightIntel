@@ -29,8 +29,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -65,26 +63,9 @@ public class NearbyActivity extends Activity {
     private LocationListener mLocationListener;
     private Location mLastLocation;
     private SharedPreferences mPrefs;
-    private AirportsCursorAdapter mListAdapter;
     private ArrayList<String> mFavorites;
 
-    private final String[] mQueryColumns = new String[] {
-        BaseColumns._ID,
-        Airports.SITE_NUMBER,
-        Airports.ICAO_CODE,
-        Airports.FAA_CODE,
-        Airports.FACILITY_NAME,
-        Airports.ASSOC_CITY,
-        Airports.ASSOC_STATE,
-        Airports.FACILITY_TYPE,
-        Airports.FUEL_TYPES,
-        Airports.UNICOM_FREQS,
-        Airports.ELEVATION_MSL,
-        Airports.STATUS_CODE,
-        States.STATE_NAME,
-        Airports.REF_LATTITUDE_DEGREES,
-        Airports.REF_LONGITUDE_DEGREES
-     };
+    private AirportsCursorAdapter mListAdapter = null;
 
     private final String[] mDisplayColumns = new String[] {
             BaseColumns._ID,
@@ -151,10 +132,6 @@ public class NearbyActivity extends Activity {
         };
 
         mFavorites = null;
-
-        Cursor c = new MatrixCursor( mDisplayColumns );
-        mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );
-        mListView.setAdapter( mListAdapter );
 
         registerForContextMenu( mListView );
     }
@@ -272,15 +249,6 @@ public class NearbyActivity extends Activity {
 
             // Check if 180th Meridian lies within the bounding Box
             boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
-
-            String[] dbColumnNames = new String[ mQueryColumns.length-1 ];
-            System.arraycopy( mQueryColumns, 0, dbColumnNames, 0, dbColumnNames.length );
-
-            DatabaseManager dbManager = DatabaseManager.instance();
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
-                    +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
             String selection = "("
                 +Airports.REF_LATTITUDE_DEGREES+">=? AND "+Airports.REF_LONGITUDE_DEGREES+"<=?"
                 +") AND ("+Airports.REF_LONGITUDE_DEGREES+">=? "
@@ -291,8 +259,7 @@ public class NearbyActivity extends Activity {
                     String.valueOf( Math.toDegrees( radLonMin ) ),
                     String.valueOf( Math.toDegrees( radLonMax ) )
                     };
-            Cursor c = builder.query( db, mQueryColumns, selection, selectionArgs, 
-                    null, null, null );
+            Cursor c = AirportsCursorHelper.query( selection, selectionArgs, null, null, null );
             if ( !c.moveToFirst() ) {
                 Log.i( TAG, "No airports found within the query radius" );
                 Toast.makeText( NearbyActivity.this, "No airports found within the query radius", 
@@ -341,8 +308,13 @@ public class NearbyActivity extends Activity {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            mListAdapter.changeCursor( c );
-            mListAdapter.notifyDataSetChanged();
+            if ( mListAdapter == null ) {
+                mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );
+            } else {
+                mListAdapter.changeCursor( c );
+                mListAdapter.notifyDataSetChanged();
+            }
+            mListView.setAdapter( mListAdapter );
             mTextView.setText( String.valueOf( c.getCount() )+" found within "
                     +String.valueOf( mRadius )+" NM radius" );
             setProgressBarIndeterminateVisibility( false );
@@ -420,12 +392,13 @@ public class NearbyActivity extends Activity {
         int pos = c.getPosition();
         c.moveToPosition( info.position );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+        String icaoCode = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
         String facilityName = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
         c.moveToPosition( pos );
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate( R.menu.airport_list_context_menu, menu );
-        menu.setHeaderTitle( facilityName );
+        menu.setHeaderTitle( icaoCode+" - "+facilityName );
 
         // Show either "Add" or "Remove" entry depending on the context
         if ( mFavorites.contains( siteNumber ) ) {
