@@ -21,10 +21,14 @@ package com.nadmm.airports;
 
 import android.app.Activity;
 import android.app.SearchManager;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -73,6 +77,54 @@ public class SearchActivity extends Activity {
         } else {
             mTextView.setText( R.string.search_not_found );
             mListView.setAdapter( null );
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu( Menu menu ) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate( R.menu.mainmenu, menu );
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+        case R.id.menu_search:
+            onSearchRequested();
+            return true;
+        case R.id.menu_browse:
+            try {
+                Intent browse = new Intent( this, BrowseActivity.class );
+                browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
+                startActivity( browse );
+            } catch ( ActivityNotFoundException e ) {
+            }
+            return true;
+        case R.id.menu_nearby:
+            try {
+                Intent nearby = new Intent( this, NearbyActivity.class );
+                startActivity( nearby );
+            } catch ( ActivityNotFoundException e ) {
+            }
+            return true;
+        case R.id.menu_download:
+            try {
+                Intent download = new Intent( this, DownloadActivity.class );
+                startActivity( download );
+            } catch ( ActivityNotFoundException e ) {
+            }
+            return true;
+        case R.id.menu_settings:
+            try {
+                Intent settings = new Intent( this, PreferencesActivity.class  );
+                startActivity( settings );
+            } catch ( ActivityNotFoundException e ) {
+            }
+            return true;
+        default:
+            return super.onOptionsItemSelected( item );
         }
     }
 
