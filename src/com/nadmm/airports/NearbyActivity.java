@@ -393,13 +393,16 @@ public class NearbyActivity extends Activity {
         int pos = c.getPosition();
         c.moveToPosition( info.position );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-        String icaoCode = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
+        String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null || code.length() == 0 ) {
+            code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );            
+        }
         String facilityName = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
         c.moveToPosition( pos );
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate( R.menu.airport_list_context_menu, menu );
-        menu.setHeaderTitle( icaoCode+" - "+facilityName );
+        menu.setHeaderTitle( code+" - "+facilityName );
 
         // Show either "Add" or "Remove" entry depending on the context
         if ( mFavorites.contains( siteNumber ) ) {
