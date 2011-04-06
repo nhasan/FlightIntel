@@ -23,7 +23,6 @@ import java.util.HashMap;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -81,7 +80,6 @@ public class BrowseActivity extends ListActivity {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setTitle( "Nearby Airports" );
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
 
         Intent intent = getIntent();
@@ -93,16 +91,24 @@ public class BrowseActivity extends ListActivity {
 
         if ( !extra.containsKey( BUNDLE_KEY_SITE_NUMBER ) ) {
             // Show browse list
-            String state_code = extra.getString( BUNDLE_KEY_STATE_CODE );
-            if ( state_code == null ) {
+            String stateCode = extra.getString( BUNDLE_KEY_STATE_CODE );
+            if ( stateCode == null ) {
                 setTitle( "Browse Airports - All States" );
             } else {
-                String state_name = extra.getString( BUNDLE_KEY_STATE_NAME );
-                setTitle( "Browse Airports - "+state_name );
+                String stateName = extra.getString( BUNDLE_KEY_STATE_NAME );
+                setTitle( "Browse Airports - "+stateName );
             }
             BrowseTask task = new BrowseTask();
             task.execute( extra );
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        CursorAdapter adapter = (CursorAdapter) getListAdapter();
+        Cursor c = adapter.getCursor();
+        c.close();
     }
 
     @Override
@@ -137,10 +143,6 @@ public class BrowseActivity extends ListActivity {
             Cursor c = null;
             DatabaseManager dbManager = DatabaseManager.instance();
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            if ( db == null ) {
-                return null;
-            }
-
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 
             Bundle extra = params[ 0 ];
@@ -152,7 +154,9 @@ public class BrowseActivity extends ListActivity {
                 String selection = Airports.ASSOC_STATE+"<>''";
                 c = builder.query( db,
                         // String[] projectionIn
-                        new String[] { Airports._ID, Airports.ASSOC_STATE, States.STATE_NAME },
+                        new String[] { Airports._ID, 
+                                       Airports.ASSOC_STATE,
+                                       States.STATE_NAME },
                         // String selection
                         selection,
                         // String[] selectionArgs
@@ -177,8 +181,7 @@ public class BrowseActivity extends ListActivity {
                                        Airports.SITE_NUMBER,
                                        Airports.ASSOC_CITY,
                                        Airports.FACILITY_NAME,
-                                       Airports.ICAO_CODE
-                                        }, 
+                                       Airports.ICAO_CODE }, 
                         // String selection
                         selection,
                         // String[] selectionArgs
@@ -188,50 +191,48 @@ public class BrowseActivity extends ListActivity {
                         // String having
                         null,                        
                         // String sortOrder
-                        Airports.ASSOC_CITY );
+                        Airports.ASSOC_CITY+", "+Airports.FACILITY_NAME );
             }
             return c;
         }
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            setProgressBarIndeterminateVisibility( false );
-
-            if ( c == null || !c.moveToFirst() ) {
-                if ( c != null ) {
-                    c.close();
-                }
-                Intent download = new Intent( BrowseActivity.this, DownloadActivity.class );
-                download.putExtra( "MSG", "Please install data before using the application" );
-                startActivity( download );
-                finish();
-                return;
-            }
-
+            BrowseCursorAdapter adapter = null;
             if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
-                BrowseCursorAdapter adapter = new BrowseCursorAdapter( BrowseActivity.this,
-                        R.layout.browse_all_item, c, R.id.browse_all_section );
-                BrowseActivity.this.setListAdapter( adapter );
+                 adapter = new BrowseCursorAdapter( BrowseActivity.this,
+                        R.layout.browse_all_item, c, R.id.browse_all_section,
+                        BrowseCursorAdapter.STATE_MODE );
             } else {
-                BrowseCursorAdapter adapter = new BrowseCursorAdapter( BrowseActivity.this,
-                        R.layout.browse_state_item, c, R.id.browse_state_section );
-                BrowseActivity.this.setListAdapter( adapter );
+                adapter = new BrowseCursorAdapter( BrowseActivity.this,
+                        R.layout.browse_state_item, c, R.id.browse_state_section,
+                        BrowseCursorAdapter.CITY_MODE );
             }
+
+            BrowseActivity.this.setListAdapter( adapter );
+            setProgressBarIndeterminateVisibility( false );
         }
 
     }
 
     private final class BrowseCursorAdapter extends SectionedCursorAdapter {
 
-        public BrowseCursorAdapter( Context context, int layout, Cursor c, int section ) {
+        public static final int STATE_MODE = 0;
+        public static final int CITY_MODE = 1;
+
+        private int mMode;
+
+        public BrowseCursorAdapter( Context context, int layout, Cursor c, int section,
+                int mode ) {
             super( context, layout, c, section );
+            mMode = mode;
         }
 
         @Override
         public String getSectionName() {
             Cursor c = getCursor();
             String name;
-            if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
+            if ( mMode == STATE_MODE ) {
                 // Section name is the first character of the state postal code
                 name = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) ).substring( 0, 1 );
             } else {
@@ -244,13 +245,13 @@ public class BrowseActivity extends ListActivity {
 
         @Override
         public void bindView( View view, Context context, Cursor c ) {
-            if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
+            if ( mMode == STATE_MODE ) {
                 // Browsing all states
                 String state_name = c.getString( c.getColumnIndex( States.STATE_NAME ) );
                 TextView tv = (TextView) view.findViewById( R.id.browse_state_name );
                 tv.setText( state_name );
             } else {
-                // Browsing a single state
+                // Browsing all airports in a state
                 TextView tv;
                 String icao = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
                 tv = (TextView) view.findViewById( R.id.browse_airport_code );
@@ -260,6 +261,7 @@ public class BrowseActivity extends ListActivity {
                 tv.setText( name );
             }
         }
+
     }
 
     @Override
@@ -283,45 +285,21 @@ public class BrowseActivity extends ListActivity {
         case R.id.menu_search:
             onSearchRequested();
             return true;
-        case R.id.menu_browse:
-            try {
-                Intent browse = new Intent( this, BrowseActivity.class );
-                browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
-                startActivity( browse );
-            } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
-            }
-            return true;
-        case R.id.menu_nearby:
-            try {
-                Intent nearby = new Intent( this, NearbyActivity.class );
-                startActivity( nearby );
-            } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
-            }
+       case R.id.menu_nearby:
+            Intent nearby = new Intent( this, NearbyActivity.class );
+            startActivity( nearby );
             return true;
         case R.id.menu_favorites:
-            try {
-                Intent favorites = new Intent( this, FavoritesActivity.class );
-                startActivity( favorites );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent favorites = new Intent( this, FavoritesActivity.class );
+            startActivity( favorites );
             return true;
         case R.id.menu_download:
-            try {
-                Intent download = new Intent( this, DownloadActivity.class );
-                startActivity( download );
-            } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
-            }
+            Intent download = new Intent( this, DownloadActivity.class );
+            startActivity( download );
             return true;
         case R.id.menu_settings:
-            try {
-                Intent settings = new Intent( this, PreferencesActivity.class  );
-                startActivity( settings );
-            } catch ( ActivityNotFoundException e ) {
-                showErrorMessage( e.getMessage() );
-            }
+            Intent settings = new Intent( this, PreferencesActivity.class  );
+            startActivity( settings );
             return true;
         default:
             return super.onOptionsItemSelected( item );
