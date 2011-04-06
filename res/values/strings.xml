@@ -40,12 +40,14 @@
 	<string name="installing">Installing...</string>
 	<string name="install_done">Finished.</string>
 	<string name="please_wait">Please wait...</string>
-    <string name="search_not_found">No matching airports found</string>
     <string name="view_details">View details</string>
     <string name="add_favorites">Add to favorites</string>
     <string name="remove_favorites">Remove from favorites</string>
+    <string name="waiting_location">Waiting for location...</string>
+    <string name="frequencies">Frequencies</string>
+    <string name="runways">Runways</string>
     <plurals name="search_entry_found">
         <item quantity="one">1 airport found</item>
-        <item quantity="other">%1$d airports found</item>
+        <item quantity="other">%1$d airports found matching \'%2$s\'</item>
     </plurals>
 </resources>

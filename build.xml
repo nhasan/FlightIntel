@@ -41,10 +41,6 @@
         <pathelement path="${sdk.dir}/tools/lib/androidprefs.jar" />
     </path>
 
-    <taskdef name="setup"
-        classname="com.android.ant.SetupTask"
-        classpathref="android.antlibs" />
-
 <!-- extension targets. Uncomment the ones where you want to do custom work
      in between standard targets -->
 <!--

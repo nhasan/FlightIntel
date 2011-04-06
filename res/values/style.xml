@@ -33,4 +33,22 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center_vertical|center_horizontal</item>
     </style>
+    <style name="TextSmall">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+    <style name="TextSmall.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextMedium">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+    <style name="TextMedium.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextNormal">
+        <item name="android:textAppearance">?android:attr/textAppearance</item>
+    </style>
+    <style name="TextNormal.Bold">
+        <item name="android:textStyle">bold</item>
+    </style>    
 </resources>

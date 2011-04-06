@@ -19,34 +19,70 @@
 
 package com.nadmm.airports;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.SearchManager;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
+
+import com.nadmm.airports.DatabaseManager.Airports;
 
 public class SearchActivity extends Activity {
 
-    private static final String TAG = SearchActivity.class.getSimpleName();
-    private TextView mTextView;
+    private TextView mHeader;
+    private TextView mEmpty;
     private ListView mListView;
+    private CursorAdapter mListAdapter;
+    private ArrayList<String> mFavorites;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
         setContentView( R.layout.airport_list_view );
-        mTextView = (TextView) findViewById( R.id.message );
+        mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
+        mEmpty = (TextView) findViewById( android.R.id.empty );
+        mFavorites = null;
+
         mListView = (ListView) findViewById( R.id.list_view );
+        mListView.addHeaderView( mHeader );
+        registerForContextMenu( mListView );
+        mListView.setOnItemClickListener( new OnItemClickListener() {
+
+            @Override
+            public void onItemClick( AdapterView<?> parent, View view,
+                    int position, long id ) {
+                CursorAdapter adapter = (CursorAdapter) mListView.getAdapter();
+                Cursor c = adapter.getCursor();
+                c.moveToPosition( position );
+                String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+                Intent intent = new Intent( SearchActivity.this, AirportDetailsActivity.class );
+                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                startActivity( intent );
+            }
+        } );
 
         handleIntent( getIntent() );
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mFavorites = DatabaseManager.instance().getFavorites();
     }
 
     @Override
@@ -58,7 +94,6 @@ public class SearchActivity extends Activity {
     private void handleIntent( Intent intent ) {
         if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
             String query = intent.getStringExtra( SearchManager.QUERY );
-            Log.i( TAG, "query="+query );
             showResults( query );
         } else if ( Intent.ACTION_VIEW.equals( intent.getAction() ) ) {
             // User clicked on a suggestion
@@ -68,16 +103,14 @@ public class SearchActivity extends Activity {
     private void showResults( String query ) {
         Cursor c = managedQuery( AirportsProvider.CONTENT_URI, null, null, 
                 new String[] { query }, null );
-        if ( c != null ) {
-            startManagingCursor( c );
-            int count = c.getCount();
-            mTextView.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
-                    count, new Object[] { count } ) );
-            mListView.setAdapter( new AirportsCursorAdapter( this, c ) );
-        } else {
-            mTextView.setText( R.string.search_not_found );
-            mListView.setAdapter( null );
-        }
+        startManagingCursor( c );
+        int count = c.getCount();
+        mListAdapter = new AirportsCursorAdapter( this, c );
+        mListView.setAdapter( mListAdapter );
+        mEmpty.setVisibility( View.GONE );
+        mListView.setVisibility( View.VISIBLE );
+        mHeader.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
+                count, new Object[] { count, query } ) );
     }
 
     @Override
@@ -95,37 +128,82 @@ public class SearchActivity extends Activity {
             onSearchRequested();
             return true;
         case R.id.menu_browse:
-            try {
-                Intent browse = new Intent( this, BrowseActivity.class );
-                browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
-                startActivity( browse );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent browse = new Intent( this, BrowseActivity.class );
+            browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
+            startActivity( browse );
             return true;
         case R.id.menu_nearby:
-            try {
-                Intent nearby = new Intent( this, NearbyActivity.class );
-                startActivity( nearby );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent nearby = new Intent( this, NearbyActivity.class );
+            startActivity( nearby );
+            return true;
+        case R.id.menu_favorites:
+            Intent favorites = new Intent( this, FavoritesActivity.class );
+            startActivity( favorites );
             return true;
         case R.id.menu_download:
-            try {
-                Intent download = new Intent( this, DownloadActivity.class );
-                startActivity( download );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent download = new Intent( this, DownloadActivity.class );
+            startActivity( download );
             return true;
         case R.id.menu_settings:
-            try {
-                Intent settings = new Intent( this, PreferencesActivity.class  );
-                startActivity( settings );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent settings = new Intent( this, PreferencesActivity.class  );
+            startActivity( settings );
             return true;
         default:
             return super.onOptionsItemSelected( item );
         }
+    }
+
+    @Override
+    public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
+        super.onCreateContextMenu( menu, v, menuInfo );
+
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        Cursor c = mListAdapter.getCursor();
+        int pos = c.getPosition();
+        c.moveToPosition( info.position );
+        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+        String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null || code.length() == 0 ) {
+            code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );            
+        }
+        String facilityName = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
+        c.moveToPosition( pos );
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate( R.menu.airport_list_context_menu, menu );
+        menu.setHeaderTitle( code+" - "+facilityName );
+
+        // Show either "Add" or "Remove" entry depending on the context
+        if ( mFavorites.contains( siteNumber ) ) {
+            menu.removeItem( R.id.menu_add_favorites );
+        } else {
+            menu.removeItem( R.id.menu_remove_favorites );
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected( MenuItem item ) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        Cursor c = mListAdapter.getCursor();
+        int pos = c.getPosition();
+        c.moveToPosition( info.position );
+        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+        c.moveToPosition( pos );
+
+        switch ( item.getItemId() ) {
+            case R.id.menu_add_favorites:
+                DatabaseManager.instance().addToFavorites( siteNumber );
+                mFavorites.add( siteNumber );
+                break;
+            case R.id.menu_remove_favorites:
+                DatabaseManager.instance().removeFromFavorites( siteNumber );
+                mFavorites.remove( siteNumber );
+                break;
+            case R.id.menu_view_details:
+                break;
+            default:
+        }
+        return super.onContextItemSelected( item );
     }
 
 }

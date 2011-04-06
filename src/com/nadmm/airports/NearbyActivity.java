@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +35,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -44,10 +44,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
@@ -55,9 +57,9 @@ import com.nadmm.airports.DatabaseManager.States;
 public class NearbyActivity extends Activity {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
-    private static final int MSEC_PER_SEC = 1000;
 
-    private TextView mTextView;
+    private TextView mHeader;
+    private TextView mEmpty;
     private ListView mListView;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
@@ -93,73 +95,54 @@ public class NearbyActivity extends Activity {
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
 
         setContentView( R.layout.airport_list_view );
-        mTextView = (TextView) findViewById( R.id.message );
+        mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
+        mEmpty = (TextView) findViewById( android.R.id.empty );
+        mEmpty.setText( R.string.waiting_location );
+
         mListView = (ListView) findViewById( R.id.list_view );
+        mListView.addHeaderView( mHeader );
+        registerForContextMenu( mListView );
+        mListView.setOnItemClickListener( new OnItemClickListener() {
+
+            @Override
+            public void onItemClick( AdapterView<?> parent, View view,
+                    int position, long id ) {
+                Cursor c = mListAdapter.getCursor();
+                c.moveToPosition( position-1 );
+                String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+                Intent intent = new Intent( NearbyActivity.this, AirportDetailsActivity.class );
+                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                startActivity( intent );
+            }
+        } );
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
         mLocationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
-        mLocationListener = new LocationListener() {
-
-            @Override
-            public void onLocationChanged( Location location ) {
-                Log.i( "LOCATION", String.valueOf( location.getLatitude() ) );
-                if ( mLastLocation != null ) {
-                    float distance = location.distanceTo( mLastLocation );
-                    if ( distance < GeoUtils.METERS_PER_STATUTE_MILE ) {
-                        // We have not moved enough to recalculate nearby airports
-                        return;
-                    }
-                }
-
-                // We have moved atleast a mile from the location of last calculation
-                mLastLocation = location;
-                NearbyTask task = new NearbyTask();
-                task.execute( (Void[]) null );
-            }
-
-            @Override
-            public void onProviderDisabled( String provider ) {
-            }
-
-            @Override
-            public void onProviderEnabled( String provider ) {
-            }
-
-            @Override
-            public void onStatusChanged( String provider, int status, Bundle extras ) {
-            }
-            
-        };
-
+        mLocationListener = new AirportsLocationListener();
         mFavorites = null;
-
-        registerForContextMenu( mListView );
-    }
-
-    
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // Get the new favorites list
-        mFavorites = DatabaseManager.instance().getFavorites();
 
         boolean useGps = mPrefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
         String provider = useGps? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
 
-        mLocationManager.requestLocationUpdates( provider, 60*MSEC_PER_SEC,
-                GeoUtils.METERS_PER_STATUTE_MILE, mLocationListener );
-
         Location location = mLocationManager.getLastKnownLocation( provider );
-        if ( System.currentTimeMillis()-location.getTime() <= 5*60*MSEC_PER_SEC ) {
+        if ( location != null && 
+              System.currentTimeMillis()-location.getTime() <= 5*60*DateUtils.SECOND_IN_MILLIS ) {
             // Use the last known location if it is no more than 5 minutes old
             mLastLocation = location;
             NearbyTask task = new NearbyTask();
             task.execute( (Void[]) null );
         } else {
             setProgressBarIndeterminateVisibility( true );
-            mTextView.setText( "Acquiring location..." );
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        boolean useGps = mPrefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
+        String provider = useGps? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
+        mLocationManager.requestLocationUpdates( provider, 60*DateUtils.SECOND_IN_MILLIS,
+                GeoUtils.METERS_PER_STATUTE_MILE, mLocationListener );
     }
 
     @Override
@@ -167,6 +150,39 @@ public class NearbyActivity extends Activity {
         super.onPause();
         mLocationManager.removeUpdates( mLocationListener );
     }
+
+    private final class AirportsLocationListener implements LocationListener {
+
+        @Override
+        public void onLocationChanged( Location location ) {
+            Log.i( "LOCATION", String.valueOf( location.toString() ) );
+            if ( mLastLocation != null ) {
+                float distance = location.distanceTo( mLastLocation );
+                if ( distance < GeoUtils.METERS_PER_STATUTE_MILE ) {
+                    // We have not moved enough to recalculate nearby airports
+                    return;
+                }
+            }
+
+            // We have moved atleast a mile from the location of last calculation
+            mLastLocation = location;
+            NearbyTask task = new NearbyTask();
+            task.execute( (Void[]) null );
+        }
+
+        @Override
+        public void onProviderDisabled( String provider ) {
+        }
+
+        @Override
+        public void onProviderEnabled( String provider ) {
+        }
+
+        @Override
+        public void onStatusChanged( String provider, int status, Bundle extras ) {
+        }
+        
+    };
 
     // This data class allows us to sort the airport list based in distance
     class AirportData implements Comparable<AirportData> {
@@ -239,6 +255,9 @@ public class NearbyActivity extends Activity {
             mRadius = Integer.valueOf( mPrefs.getString( 
                     PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "20" ) );
 
+            // Favorites may have changed, get the new list
+            mFavorites = DatabaseManager.instance().getFavorites();
+
             // Get the bounding box first to do a quick query as a first cut
             double[] box = GeoUtils.getBoundingBox( mLastLocation, mRadius );
 
@@ -309,16 +328,13 @@ public class NearbyActivity extends Activity {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            if ( mListAdapter == null ) {
-                mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );
-            } else {
-                mListAdapter.changeCursor( c );
-                mListAdapter.notifyDataSetChanged();
-            }
+            mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );
             mListView.setAdapter( mListAdapter );
-            mTextView.setText( String.valueOf( c.getCount() )+" found within "
+            mHeader.setText( String.valueOf( c.getCount() )+" found within "
                     +String.valueOf( mRadius )+" NM radius" );
             setProgressBarIndeterminateVisibility( false );
+            mEmpty.setVisibility( View.GONE );
+            mListView.setVisibility( View.VISIBLE );
         }
     }
 
@@ -344,40 +360,21 @@ public class NearbyActivity extends Activity {
             onSearchRequested();
             return true;
         case R.id.menu_browse:
-            try {
-                Intent browse = new Intent( this, BrowseActivity.class );
-                browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
-                startActivity( browse );
-            } catch ( ActivityNotFoundException e ) {
-            }
-            return true;
-        case R.id.menu_nearby:
-            try {
-                Intent nearby = new Intent( this, NearbyActivity.class );
-                startActivity( nearby );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent browse = new Intent( this, BrowseActivity.class );
+            browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
+            startActivity( browse );
             return true;
         case R.id.menu_favorites:
-            try {
-                Intent favorites = new Intent( this, FavoritesActivity.class );
-                startActivity( favorites );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent favorites = new Intent( this, FavoritesActivity.class );
+            startActivity( favorites );
             return true;
         case R.id.menu_download:
-            try {
-                Intent download = new Intent( this, DownloadActivity.class );
-                startActivity( download );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent download = new Intent( this, DownloadActivity.class );
+            startActivity( download );
             return true;
         case R.id.menu_settings:
-            try {
-                Intent settings = new Intent( this, PreferencesActivity.class  );
-                startActivity( settings );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent settings = new Intent( this, PreferencesActivity.class  );
+            startActivity( settings );
             return true;
         default:
             return super.onOptionsItemSelected( item );
@@ -391,7 +388,8 @@ public class NearbyActivity extends Activity {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         Cursor c = mListAdapter.getCursor();
         int pos = c.getPosition();
-        c.moveToPosition( info.position );
+        // Subtract 1 to account for header item
+        c.moveToPosition( info.position-1 );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
         String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
         if ( code == null || code.length() == 0 ) {

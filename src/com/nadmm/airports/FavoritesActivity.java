@@ -22,7 +22,6 @@ package com.nadmm.airports;
 import java.util.ArrayList;
 
 import android.app.ListActivity;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -34,7 +33,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 
@@ -48,7 +49,33 @@ public class FavoritesActivity extends ListActivity {
         setTitle( "Favorite Airports" );
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         registerForContextMenu( getListView() );
+
+        mListAdapter = new AirportsCursorAdapter( FavoritesActivity.this, null );
+        setListAdapter( mListAdapter );
+
+        getListView().setOnItemClickListener( new OnItemClickListener() {
+
+            @Override
+            public void onItemClick( AdapterView<?> parent, View view,
+                    int position, long id ) {
+                Cursor c = mListAdapter.getCursor();
+                c.moveToPosition( position );
+                String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+                Intent intent = new Intent( FavoritesActivity.this, AirportDetailsActivity.class );
+                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                startActivity( intent );
+            }
+        } );
    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if ( mListAdapter != null ) {
+            Cursor c = mListAdapter.getCursor();
+            c.close();
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -91,13 +118,7 @@ public class FavoritesActivity extends ListActivity {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            if ( mListAdapter == null ) {
-                mListAdapter = new AirportsCursorAdapter( FavoritesActivity.this, c );
-            } else {
-                mListAdapter.changeCursor( c );
-                mListAdapter.notifyDataSetChanged();
-            }
-            setListAdapter( mListAdapter );
+            mListAdapter.changeCursor( c );
             setProgressBarIndeterminateVisibility( false );
         }
 
@@ -142,33 +163,21 @@ public class FavoritesActivity extends ListActivity {
             onSearchRequested();
             return true;
         case R.id.menu_browse:
-            try {
-                Intent browse = new Intent( this, BrowseActivity.class );
-                browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
-                startActivity( browse );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent browse = new Intent( this, BrowseActivity.class );
+            browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
+            startActivity( browse );
             return true;
         case R.id.menu_nearby:
-            try {
-                Intent nearby = new Intent( this, NearbyActivity.class );
-                startActivity( nearby );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent nearby = new Intent( this, NearbyActivity.class );
+            startActivity( nearby );
             return true;
         case R.id.menu_download:
-            try {
-                Intent download = new Intent( this, DownloadActivity.class );
-                startActivity( download );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent download = new Intent( this, DownloadActivity.class );
+            startActivity( download );
             return true;
         case R.id.menu_settings:
-            try {
-                Intent settings = new Intent( this, PreferencesActivity.class  );
-                startActivity( settings );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent settings = new Intent( this, PreferencesActivity.class  );
+            startActivity( settings );
             return true;
         default:
             return super.onOptionsItemSelected( item );
