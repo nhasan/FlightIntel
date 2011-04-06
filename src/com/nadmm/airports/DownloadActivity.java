@@ -45,7 +45,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -53,6 +52,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -142,7 +142,9 @@ public final class DownloadActivity extends ListActivity {
         
         // Add the footer view
         View footer = getLayoutInflater().inflate( R.layout.download_footer, null );
-        getListView().addFooterView( footer );
+        ListView listView = getListView();
+        listView.addFooterView( footer );
+        listView.setFooterDividersEnabled( true );
 
         Button btnDownload = (Button) findViewById( R.id.btnDownload );
         btnDownload.setOnClickListener(
@@ -278,11 +280,12 @@ public final class DownloadActivity extends ListActivity {
         private static final String DESC = "DESC";
         private static final String DATES = "DATES";
         private static final String MSG = "MSG";
+        private static final String EXPIRED = "EXPIRED";
 
         private int mId = 0;
 
         public DownloadCursor() {
-            super( new String[] { BaseColumns._ID, SECTION, TYPE, DESC, DATES, MSG } );
+            super( new String[] { BaseColumns._ID, SECTION, TYPE, DESC, DATES, MSG, EXPIRED } );
         }
 
         public void addRow( int section, DataInfo info ) {
@@ -297,6 +300,8 @@ public final class DownloadActivity extends ListActivity {
             builder.add( Formatter.formatShortFileSize( DownloadActivity.this, info.size )
                     +"   ("+DateUtils.formatElapsedTime( info.size/(200*1024/8) )
                     +" @ 200kbps)" );
+            long now = System.currentTimeMillis();
+            builder.add( ( now > info.end.toMillis( false ) )? "Y" : "N" );
         }
     }
 
@@ -345,7 +350,12 @@ public final class DownloadActivity extends ListActivity {
             tv = (TextView) view.findViewById( R.id.download_desc );
             tv.setText( cursor.getString( cursor.getColumnIndex( DownloadCursor.DESC ) ) );
             tv = (TextView) view.findViewById( R.id.download_dates );
+            String expired = cursor.getString( cursor.getColumnIndex( DownloadCursor.EXPIRED ) );
             tv.setText( cursor.getString( cursor.getColumnIndex( DownloadCursor.DATES ) ) );
+            if ( expired.equals( "Y" ) ) {
+                tv.setText( tv.getText()+" (Expired)" );
+                tv.setTextColor( Color.RED );
+            }
             tv = (TextView) view.findViewById( R.id.download_msg );
             tv.setText( cursor.getString( cursor.getColumnIndex( DownloadCursor.MSG ) ) );
         }
@@ -1118,40 +1128,21 @@ public final class DownloadActivity extends ListActivity {
             onSearchRequested();
             return true;
         case R.id.menu_browse:
-            try {
-                Intent browse = new Intent( this, BrowseActivity.class );
-                browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
-                startActivity( browse );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent browse = new Intent( this, BrowseActivity.class );
+            browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
+            startActivity( browse );
             return true;
         case R.id.menu_nearby:
-            try {
-                Intent nearby = new Intent( this, NearbyActivity.class );
-                startActivity( nearby );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent nearby = new Intent( this, NearbyActivity.class );
+            startActivity( nearby );
             return true;
         case R.id.menu_favorites:
-            try {
-                Intent favorites = new Intent( this, FavoritesActivity.class );
-                startActivity( favorites );
-            } catch ( ActivityNotFoundException e ) {
-            }
-            return true;
-        case R.id.menu_download:
-            try {
-                Intent download = new Intent( this, DownloadActivity.class );
-                startActivity( download );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent favorites = new Intent( this, FavoritesActivity.class );
+            startActivity( favorites );
             return true;
         case R.id.menu_settings:
-            try {
-                Intent settings = new Intent( this, PreferencesActivity.class  );
-                startActivity( settings );
-            } catch ( ActivityNotFoundException e ) {
-            }
+            Intent settings = new Intent( this, PreferencesActivity.class  );
+            startActivity( settings );
             return true;
         default:
             return super.onOptionsItemSelected( item );
