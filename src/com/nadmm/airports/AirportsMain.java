@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class AirportsMain extends Activity {
 
@@ -73,8 +74,8 @@ public class AirportsMain extends Activity {
         if ( startupActivity.equals( "browse" ) ) {
             intent = new Intent( this, BrowseActivity.class );
             intent.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
-        } else if ( startupActivity.equals( "favorites" ) ) {
-            intent = new Intent( this, BrowseActivity.class );
+        } else if ( startupActivity.equals( "favorite" ) ) {
+            intent = new Intent( this, FavoritesActivity.class );
         } else if ( startupActivity.equals( "nearby" ) ) {
             intent = new Intent( this, NearbyActivity.class );
         }
