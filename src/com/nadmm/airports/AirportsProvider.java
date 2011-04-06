@@ -157,36 +157,31 @@ public class AirportsProvider extends ContentProvider {
             return null;
         }
 
-        String selection = Airports.FAA_CODE+"=? or "+Airports.ICAO_CODE+"=? or "
-                +Airports.FACILITY_NAME+" LIKE ?";
-        String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
+        String selection = Airports.FAA_CODE+"=? OR "
+                +Airports.ICAO_CODE+"=? OR "
+                +Airports.FACILITY_NAME+" LIKE ? OR "
+                +Airports.ASSOC_CITY+" LIKE ?";
+        String[] selectionArgs = new String[] { query, query, "%"+query+"%", "%"+query+"%" };
         String limit = uri.getQueryParameter( "limit" );
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );
         builder.setProjectionMap( mSuggestionColumnMap );
-        Cursor cursor = builder.query( db, mSuggestionColumns, selection, selectionArgs, 
+        Cursor c = builder.query( db, mSuggestionColumns, selection, selectionArgs, 
                 null, null, null, limit );
-        if ( !cursor.moveToFirst() ) {
-            cursor.close();
-            return null;
-        }
-        return cursor;
+        return c;
     }
 
     private Cursor searchAirports( Uri uri, String query ) {
         String selection = "("+Airports.FAA_CODE+"=? OR "
                 +Airports.ICAO_CODE+"=? OR "
-                +Airports.FACILITY_NAME+" LIKE ? )";
-        String[] selectionArgs = new String[] { query, query, "%"+query+"%" };
+                +Airports.FACILITY_NAME+" LIKE ? ) OR "
+                +Airports.ASSOC_CITY+" LIKE ?";
+        String[] selectionArgs = new String[] { query, query, "%"+query+"%", "%"+query+"%" };
         String limit = uri.getQueryParameter( "limit" );
 
         Cursor c = AirportsCursorHelper.query( selection, selectionArgs, 
                 null, null, Airports.FACILITY_NAME+" ASC", limit );
-        if ( !c.moveToFirst() ) {
-            c.close();
-            return null;
-        }
         return c;
     }
 
