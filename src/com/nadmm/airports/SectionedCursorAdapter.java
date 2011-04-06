@@ -43,7 +43,8 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
     public SectionedCursorAdapter( Context context, int layout, Cursor c, int sectionId ) {
         super( context, layout, c );
         mSectionId = sectionId;
-        mSectionNames = new HashMap<Integer, String>( c.getCount() );
+        int count = ( c != null )? c.getCount() : 0;
+        mSectionNames = new HashMap<Integer, String>( count );
     }
 
     /**
