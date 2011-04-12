@@ -72,7 +72,7 @@ public class AirportsMain extends Activity {
         Intent intent = null;
         if ( startupActivity.equals( "browse" ) ) {
             intent = new Intent( this, BrowseActivity.class );
-            intent.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
+            intent.putExtras( new Bundle() );
         } else if ( startupActivity.equals( "favorite" ) ) {
             intent = new Intent( this, FavoritesActivity.class );
         } else if ( startupActivity.equals( "nearby" ) ) {

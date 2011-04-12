@@ -1129,7 +1129,7 @@ public final class DownloadActivity extends ListActivity {
             return true;
         case R.id.menu_browse:
             Intent browse = new Intent( this, BrowseActivity.class );
-            browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
+            browse.putExtras( new Bundle() );
             startActivity( browse );
             return true;
         case R.id.menu_nearby:
