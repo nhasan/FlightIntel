@@ -19,6 +19,7 @@
 
 package com.nadmm.airports;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -47,9 +48,9 @@ public class AirportsCursorHelper {
             States.STATE_NAME
          };
 
-    public static Cursor query( String selection, String[] selectionArgs, 
+    public static Cursor query( Context context, String selection, String[] selectionArgs, 
             String groupBy, String having, String sortOrder, String limit ) {
-        DatabaseManager dbManager = DatabaseManager.instance();
+        DatabaseManager dbManager = DatabaseManager.instance( context );
         SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"

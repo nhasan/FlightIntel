@@ -67,6 +67,7 @@ public class NearbyActivity extends Activity {
     private SharedPreferences mPrefs;
     private ArrayList<String> mFavorites;
 
+    private DatabaseManager mDbManager = null;
     private AirportsCursorAdapter mListAdapter = null;
 
     private final String[] mDisplayColumns = new String[] {
@@ -98,6 +99,8 @@ public class NearbyActivity extends Activity {
         mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
         mEmpty = (TextView) findViewById( android.R.id.empty );
         mEmpty.setText( R.string.waiting_location );
+
+        mDbManager = DatabaseManager.instance( this );
 
         mListView = (ListView) findViewById( R.id.list_view );
         mListView.addHeaderView( mHeader );
@@ -256,7 +259,7 @@ public class NearbyActivity extends Activity {
                     PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "20" ) );
 
             // Favorites may have changed, get the new list
-            mFavorites = DatabaseManager.instance().getFavorites();
+            mFavorites = mDbManager.getFavorites();
 
             // Get the bounding box first to do a quick query as a first cut
             double[] box = GeoUtils.getBoundingBox( mLastLocation, mRadius );
@@ -278,7 +281,7 @@ public class NearbyActivity extends Activity {
                     String.valueOf( Math.toDegrees( radLonMin ) ),
                     String.valueOf( Math.toDegrees( radLonMax ) )
                     };
-            Cursor c = AirportsCursorHelper.query( selection, selectionArgs,
+            Cursor c = AirportsCursorHelper.query( NearbyActivity.this, selection, selectionArgs,
                     null, null, null, null );
             if ( !c.moveToFirst() ) {
                 Log.i( TAG, "No airports found within the query radius" );
@@ -361,7 +364,7 @@ public class NearbyActivity extends Activity {
             return true;
         case R.id.menu_browse:
             Intent browse = new Intent( this, BrowseActivity.class );
-            browse.putExtra( BrowseActivity.EXTRA_BUNDLE, new Bundle() );
+            browse.putExtras( new Bundle() );
             startActivity( browse );
             return true;
         case R.id.menu_favorites:
@@ -421,11 +424,11 @@ public class NearbyActivity extends Activity {
 
         switch ( item.getItemId() ) {
             case R.id.menu_add_favorites:
-                DatabaseManager.instance().addToFavorites( siteNumber );
+                mDbManager.addToFavorites( siteNumber );
                 mFavorites.add( siteNumber );
                 break;
             case R.id.menu_remove_favorites:
-                DatabaseManager.instance().removeFromFavorites( siteNumber );
+                mDbManager.removeFromFavorites( siteNumber );
                 mFavorites.remove( siteNumber );
                 break;
             case R.id.menu_view_details:

@@ -46,8 +46,10 @@ public class SearchActivity extends Activity {
     private TextView mHeader;
     private TextView mEmpty;
     private ListView mListView;
-    private CursorAdapter mListAdapter;
     private ArrayList<String> mFavorites;
+
+    private DatabaseManager mDbManager = null;
+    private CursorAdapter mListAdapter = null;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -57,6 +59,8 @@ public class SearchActivity extends Activity {
         mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
         mEmpty = (TextView) findViewById( android.R.id.empty );
         mFavorites = null;
+
+        mDbManager = DatabaseManager.instance( this );
 
         mListView = (ListView) findViewById( R.id.list_view );
         mListView.addHeaderView( mHeader );
@@ -82,7 +86,7 @@ public class SearchActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        mFavorites = DatabaseManager.instance().getFavorites();
+        mFavorites = mDbManager.getFavorites();
     }
 
     @Override
@@ -192,11 +196,11 @@ public class SearchActivity extends Activity {
 
         switch ( item.getItemId() ) {
             case R.id.menu_add_favorites:
-                DatabaseManager.instance().addToFavorites( siteNumber );
+                mDbManager.addToFavorites( siteNumber );
                 mFavorites.add( siteNumber );
                 break;
             case R.id.menu_remove_favorites:
-                DatabaseManager.instance().removeFromFavorites( siteNumber );
+                mDbManager.removeFromFavorites( siteNumber );
                 mFavorites.remove( siteNumber );
                 break;
             case R.id.menu_view_details:

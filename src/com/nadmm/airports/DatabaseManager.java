@@ -130,7 +130,7 @@ public class DatabaseManager {
         public static final String OPS_ANNUAL_DATE = "OPS_ANNUAL_DATE";
         public static final String STORAGE_FACILITY = "STORAGE_FACILITY";
         public static final String OTHER_SERVICES = "OTHER_SERVICES";
-        public static final String WIND_INDICATOR = "IND_INDICATOR";
+        public static final String WIND_INDICATOR = "WIND_INDICATOR";
         public static final String ICAO_CODE = "ICAO_CODE";
 
         // These are not really columns in the table, but calculated
@@ -139,6 +139,8 @@ public class DatabaseManager {
     }
 
     public static final class Runways implements BaseColumns {
+        public static final String TABLE_NAME = "runways";
+        // Fields for runway table
         public static final String SITE_NUMBER = "SITE_NUMBER";
         public static final String RUNWAY_ID = "RUNWAY_ID";
         public static final String RUNWAY_LENGTH = "RUNWAY_LENGTH";
@@ -237,12 +239,8 @@ public class DatabaseManager {
 
     public static DatabaseManager instance( Context context) {
         if ( sInstance == null ) {
-            sInstance = new DatabaseManager( context );
+            sInstance = new DatabaseManager( context.getApplicationContext() );
         }
-        return sInstance;
-    }
-
-    public static DatabaseManager instance() {
         return sInstance;
     }
 

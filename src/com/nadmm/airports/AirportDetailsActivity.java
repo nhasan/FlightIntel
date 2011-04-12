@@ -27,16 +27,20 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils.TruncateAt;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.DatabaseManager.States;
 
 public class AirportDetailsActivity extends Activity {
@@ -70,19 +74,25 @@ public class AirportDetailsActivity extends Activity {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 1 ];
-            DatabaseManager dbManager = DatabaseManager.instance();
+            Cursor[] cursors = new Cursor[ 2 ];
+            DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
                     +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
-            Cursor c = builder.query( db, new String[] { "*"  }, Airports.SITE_NUMBER+"=?",
+            Cursor c = builder.query( db, new String[] { "*" }, Airports.SITE_NUMBER+"=?",
                     new String[] { siteNumber }, null, null, null, null );
             if ( !c.moveToFirst() ) {
                 return null;
             }
             cursors[ 0 ] = c;
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Runways.TABLE_NAME );
+            c = builder.query( db, new String[] { "*"  }, Airports.SITE_NUMBER+"=?",
+                    new String[] { siteNumber }, null, null, null, null );
+            cursors[ 1 ] = c;
 
             return cursors;
         }
@@ -101,6 +111,8 @@ public class AirportDetailsActivity extends Activity {
 
             Cursor apt = result[ 0 ];
             TextView tv;
+
+            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
 
             // Title
             tv = (TextView) mMainLayout.findViewById( R.id.airport_title );
@@ -135,15 +147,132 @@ public class AirportDetailsActivity extends Activity {
             info2 += String.valueOf( elev_msl+tpa_agl)+"' MSL TPA"+est;
             tv.setText( info2 );
 
-            // Frequency section
-            TableLayout freqLayout = (TableLayout) mMainLayout.findViewById( 
-                    R.id.detail_freq_layout );
+            // Airport Communications section
+            TableLayout commLayout = (TableLayout) mMainLayout.findViewById( 
+                    R.id.detail_comm_layout );
             String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
-            addRow( freqLayout, "CTAF", ctaf );
-            addSeparator( freqLayout );
             String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
-            addRow( freqLayout, "Unicom", unicom );
+            if ( ctaf.length() > 0 || unicom.length() > 0 ) {
+                if ( ctaf.length() > 0 ) {
+                    addRow( commLayout, "CTAF", ctaf );
+                }
+                if ( ctaf.length() > 0 && unicom.length() > 0 ) {
+                    addSeparator( commLayout );
+                }
+                if ( unicom.length() > 0 ) {
+                    addRow( commLayout, "Unicom", DataUtils.decodeUnicomFreq( unicom ) );
+                }
+            } else {
+                commLayout.setVisibility( View.GONE );
+            }
 
+            // Runway section
+            TableLayout rwyLayout = (TableLayout) mMainLayout.findViewById(
+                    R.id.detail_rwy_layout );
+            TableLayout heliLayout = (TableLayout) mMainLayout.findViewById(
+                    R.id.detail_heli_layout );
+            Cursor rwy = result[ 1 ];
+            if ( rwy.moveToFirst() ) {
+                int rwyNum = 0;
+                int heliNum = 0;
+                do {
+                    String rwyId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
+                    if ( rwyId.startsWith( "H" ) ) {
+                        // This is a helipad
+                        if ( heliNum > 0 ) {
+                            addSeparator( heliLayout );
+                        }
+                        addRunwayRow( heliLayout, rwy );
+                        ++heliNum;
+                    } else {
+                        // This is a runway
+                        if ( rwyNum > 0 ) {
+                            addSeparator( rwyLayout );
+                        }
+                        addRunwayRow( rwyLayout, rwy );
+                        ++rwyNum;
+                    }
+                } while ( rwy.moveToNext() );
+
+                if ( rwyNum == 0 ) {
+                    // No runways so remove the section
+                    tv = (TextView) mMainLayout.findViewById( R.id.detail_rwy_label );
+                    tv.setVisibility( View.GONE );
+                    rwyLayout.setVisibility( View.GONE );
+                }
+                if ( heliNum == 0 ) {
+                    // No helipads so remove the section
+                    tv = (TextView) mMainLayout.findViewById( R.id.detail_heli_label );
+                    tv.setVisibility( View.GONE );
+                    heliLayout.setVisibility( View.GONE );
+                }
+            } else {
+                // No runway records so remove the sections
+                tv = (TextView) mMainLayout.findViewById( R.id.detail_rwy_label );
+                tv.setVisibility( View.GONE );
+                rwyLayout.setVisibility( View.GONE );
+                tv = (TextView) mMainLayout.findViewById( R.id.detail_heli_label );
+                tv.setVisibility( View.GONE );
+                heliLayout.setVisibility( View.GONE );
+            }
+
+            // Airport Operations section
+            TableLayout opsLayout = (TableLayout) mMainLayout.findViewById(
+                    R.id.detail_operations_layout );
+            String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
+            addRow( opsLayout, "Airport use", DataUtils.decodeFacilityUse( use ) );
+            addSeparator( opsLayout );
+            String activation = apt.getString( apt.getColumnIndex( Airports.ACTIVATION_DATE ) );
+            addRow( opsLayout, "Activation date", activation );
+            addSeparator( opsLayout );
+            String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
+            addRow( opsLayout, "Wind indicator", DataUtils.decodeWindIndicator( windIndicator ) );
+            addSeparator( opsLayout );
+            String circle = apt.getString( apt.getColumnIndex( Airports.SEGMENTED_CIRCLE ) );
+            addRow( opsLayout, "Segmented circle", circle.equals( "Y" )? "Yes" : "No" );
+            addSeparator( opsLayout );
+            String beacon = apt.getString( apt.getColumnIndex( Airports.BEACON_COLOR ) );
+            addRow( opsLayout, "Beacon", DataUtils.decodeBeacon( beacon ) );
+            addSeparator( opsLayout );
+            String landingFee = apt.getString( apt.getColumnIndex( Airports.LANDING_FEE ) );
+            addRow( opsLayout, "Landing fee", landingFee.equals( "Y" )? "Yes" : "No" );
+
+            // Airport Services section
+            TableLayout servicesLayout = (TableLayout) mMainLayout.findViewById(
+                    R.id.detail_services_layout );
+            String fuelTypes = DataUtils.decodeFuelTypes( 
+                    apt.getString( apt.getColumnIndex( Airports.FUEL_TYPES ) ) );
+            if ( fuelTypes.length() == 0 ) {
+                fuelTypes = "No";
+            }
+            addRow( servicesLayout, "Fuel available", fuelTypes );
+            addSeparator( servicesLayout );
+            String repair;
+            repair = apt.getString( apt.getColumnIndex( Airports.AIRFRAME_REPAIR_SERVICE ) );
+            if ( repair.length() == 0 ) {
+                repair = "No";
+            }
+            addRow( servicesLayout, "Airframe repair", repair );
+            addSeparator( servicesLayout );
+            repair = apt.getString( apt.getColumnIndex( Airports.POWER_PLANT_REPAIR_SERVICE ) );
+            if ( repair.length() == 0 ) {
+                repair = "No";
+            }
+            addRow( servicesLayout, "Powerplant repair", repair );
+            String storage = DataUtils.decodeStorage( 
+                    apt.getString( apt.getColumnIndex( Airports.STORAGE_FACILITY ) ) );
+            if ( storage.length() > 0 ) {
+                addSeparator( servicesLayout );
+                addRow( servicesLayout, "Storage facility", storage );
+            }
+            String other = DataUtils.decodeServices(
+                    apt.getString( apt.getColumnIndex( Airports.OTHER_SERVICES ) ) );
+            if ( other.length() > 0 ) {
+                addSeparator( servicesLayout );
+                addRow( servicesLayout, "Other services", other );
+            }
+
+            // Cleanup cursors
             for ( Cursor c : result ) {
                 c.close();
             }
@@ -155,14 +284,71 @@ public class AirportDetailsActivity extends Activity {
         TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
         TextView tvLabel = new TextView( this );
         tvLabel.setText( label );
+        tvLabel.setSingleLine();
         tvLabel.setGravity( Gravity.LEFT );
-        row.addView( tvLabel );
+        tvLabel.setPadding( 4, 4, 4, 4 );
+        row.addView( tvLabel, new TableRow.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 4f ) );
         TextView tvValue = new TextView( this );
         tvValue.setText( value );
+        tvValue.setMarqueeRepeatLimit( -1 );
         tvValue.setGravity( Gravity.RIGHT );
-         tvValue.setBackgroundResource( R.drawable.rounded_rectangle );
-        row.addView( tvValue );
-        table.addView( row );        
+        tvLabel.setPadding( 4, 4, 4, 4 );
+        row.addView( tvValue, new TableRow.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
+        table.addView( row, new TableLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addRunwayRow( TableLayout table, Cursor c ) {
+        String siteNumber = c.getString( c.getColumnIndex( Runways.SITE_NUMBER ) );
+        String runwayId = c.getString( c.getColumnIndex( Runways.RUNWAY_ID ) );
+        String length = c.getString( c.getColumnIndex( Runways.RUNWAY_LENGTH ) );
+        String width = c.getString( c.getColumnIndex( Runways.RUNWAY_WIDTH ) );
+        String surfaceType = c.getString( c.getColumnIndex( Runways.SURFACE_TYPE ) );
+
+        TableRow.LayoutParams lp = new TableRow.LayoutParams( 
+                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1f );
+        TableRow row = new TableRow( this );
+        row.setPadding( 8, 8, 8, 8 );
+        row.setLayoutParams( lp );
+
+        TextView tv = new TextView( this );
+        tv.setText( runwayId );
+        tv.setGravity( Gravity.CENTER_VERTICAL );
+        tv.setPadding( 4, 4, 4, 4 );
+        row.addView( tv, new TableRow.LayoutParams( 
+                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT, 1f ) );
+
+        LinearLayout layout = new LinearLayout( this );
+        layout.setOrientation( LinearLayout.VERTICAL );
+        tv = new TextView( this );
+        tv.setText( length+"' x "+width+"'" );
+        tv.setGravity( Gravity.RIGHT );
+        tv.setPadding( 4, 4, 4, 0 );
+        layout.addView( tv, lp );
+        tv = new TextView( this );
+        tv.setText( DataUtils.decodeRunwaySurfaceType( surfaceType ) );
+        tv.setGravity( Gravity.RIGHT );
+        tv.setPadding( 4, 0, 4, 4 );
+        layout.addView( tv, lp );
+        row.addView( layout, lp );
+
+        Bundle bundle = new Bundle();
+        bundle.putString( Runways.SITE_NUMBER, siteNumber );
+        bundle.putString( Runways.RUNWAY_ID, runwayId );
+        row.setTag( bundle );
+
+        row.setOnClickListener( new OnClickListener() {
+            
+            @Override
+            public void onClick( View v ) {
+                // TODO Auto-generated method stub
+                
+            }
+        } );
+
+        table.addView( row );
     }
 
     protected void addSeparator( TableLayout layout ) {

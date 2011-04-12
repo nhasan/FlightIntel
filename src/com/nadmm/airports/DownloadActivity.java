@@ -130,7 +130,7 @@ public final class DownloadActivity extends ListActivity {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
 
-        mDbManager = DatabaseManager.instance();
+        mDbManager = DatabaseManager.instance( this );
         mDownloadTask = null;
         mStop = new AtomicBoolean( false );
         mHandler = new Handler();
@@ -1109,7 +1109,7 @@ public final class DownloadActivity extends ListActivity {
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
         menu.findItem( R.id.menu_download ).setEnabled( false );
-        Cursor c = DatabaseManager.instance().getLatestFromCatalog();
+        Cursor c = mDbManager.getLatestFromCatalog();
         boolean enabled = c.moveToFirst();
         c.close();
         menu.findItem( R.id.menu_browse ).setEnabled( enabled );

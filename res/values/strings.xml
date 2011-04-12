@@ -44,8 +44,11 @@
     <string name="add_favorites">Add to favorites</string>
     <string name="remove_favorites">Remove from favorites</string>
     <string name="waiting_location">Waiting for location...</string>
-    <string name="frequencies">Frequencies</string>
+    <string name="communucations">Airport Communications</string>
     <string name="runways">Runways</string>
+    <string name="helipads">Helipads</string>
+    <string name="services">Airport Services</string>
+    <string name="operations">Airport Operations</string>
     <plurals name="search_entry_found">
         <item quantity="one">1 airport found</item>
         <item quantity="other">%1$d airports found matching \'%2$s\'</item>

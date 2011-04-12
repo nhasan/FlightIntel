@@ -25,7 +25,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 public class AirportsMain extends Activity {
 
@@ -37,7 +36,7 @@ public class AirportsMain extends Activity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
 
         // Check if we have any data installed. If not, then redirect to the download activity
-        DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
+        DatabaseManager dbManager = DatabaseManager.instance( this );
         Cursor c = dbManager.getLatestFromCatalog();
         if ( !c.moveToFirst() ) {
             c.close();

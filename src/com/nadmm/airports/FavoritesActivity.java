@@ -41,7 +41,8 @@ import com.nadmm.airports.DatabaseManager.Airports;
 
 public class FavoritesActivity extends ListActivity {
 
-    AirportsCursorAdapter mListAdapter = null;
+    private DatabaseManager mDbManager = null;
+    private AirportsCursorAdapter mListAdapter = null;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -49,6 +50,8 @@ public class FavoritesActivity extends ListActivity {
         setTitle( "Favorite Airports" );
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         registerForContextMenu( getListView() );
+
+        mDbManager = DatabaseManager.instance( this );
 
         mListAdapter = new AirportsCursorAdapter( FavoritesActivity.this, null );
         setListAdapter( mListAdapter );
@@ -98,8 +101,7 @@ public class FavoritesActivity extends ListActivity {
 
         @Override
         protected Cursor doInBackground( Void... params ) {
-            DatabaseManager dbManager = DatabaseManager.instance();
-            ArrayList<String> favorites = dbManager.getFavorites();
+            ArrayList<String> favorites = mDbManager.getFavorites();
             String selection = "";
             for (String site_number : favorites ) {
                 if ( selection.length() > 0 ) {
@@ -110,8 +112,8 @@ public class FavoritesActivity extends ListActivity {
 
             // Query for the favorite airports
             selection = "a."+Airports.SITE_NUMBER+" in ("+selection+")";
-            Cursor c = AirportsCursorHelper.query( selection, null, null, null, 
-                    Airports.FACILITY_NAME, null );
+            Cursor c = AirportsCursorHelper.query( FavoritesActivity.this, selection, 
+                    null, null, null, Airports.FACILITY_NAME, null );
 
             return c;
         }
@@ -195,7 +197,7 @@ public class FavoritesActivity extends ListActivity {
 
         switch ( item.getItemId() ) {
             case R.id.menu_remove_favorites:
-                DatabaseManager.instance().removeFromFavorites( siteNumber );
+                mDbManager.removeFromFavorites( siteNumber );
                 getFavorites();
                 break;
             default:

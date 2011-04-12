@@ -46,8 +46,6 @@ import com.nadmm.airports.DatabaseManager.States;
 
 public class BrowseActivity extends ListActivity {
 
-    static public final String EXTRA_BUNDLE = "bundle";
-
     static private final String BUNDLE_KEY_STATE_CODE = "state_code";
     static private final String BUNDLE_KEY_STATE_NAME = "state_name";
     static private final String BUNDLE_KEY_SITE_NUMBER = "site_number";
@@ -83,7 +81,7 @@ public class BrowseActivity extends ListActivity {
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
 
         Intent intent = getIntent();
-        Bundle extra = intent.getBundleExtra( EXTRA_BUNDLE );
+        Bundle extra = intent.getExtras();
         if ( extra == null ) {
             // Activity was instantiated by system directly
             extra = new Bundle();
@@ -123,7 +121,7 @@ public class BrowseActivity extends ListActivity {
             String state_name = c.getString( c.getColumnIndex( States.STATE_NAME ) );
             extra.putString( BUNDLE_KEY_STATE_CODE, state_code );
             extra.putString( BUNDLE_KEY_STATE_NAME, state_name );
-            browse.putExtra( BrowseActivity.EXTRA_BUNDLE, extra );
+            browse.putExtras( extra );
             // Start this activity again with state parameter
             startActivity( browse );
         } else {
@@ -141,7 +139,7 @@ public class BrowseActivity extends ListActivity {
         @Override
         protected Cursor doInBackground( Bundle... params ) {
             Cursor c = null;
-            DatabaseManager dbManager = DatabaseManager.instance();
+            DatabaseManager dbManager = DatabaseManager.instance( BrowseActivity.this );
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 

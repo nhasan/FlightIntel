@@ -151,7 +151,7 @@ public class AirportsProvider extends ContentProvider {
     }
 
     private Cursor suggestAirports( Uri uri, String query ) {
-        DatabaseManager dbManager = DatabaseManager.instance();
+        DatabaseManager dbManager = DatabaseManager.instance( getContext() );
         SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
         if ( db == null ) {
             return null;
@@ -180,7 +180,7 @@ public class AirportsProvider extends ContentProvider {
         String[] selectionArgs = new String[] { query, query, "%"+query+"%", "%"+query+"%" };
         String limit = uri.getQueryParameter( "limit" );
 
-        Cursor c = AirportsCursorHelper.query( selection, selectionArgs, 
+        Cursor c = AirportsCursorHelper.query( getContext(), selection, selectionArgs, 
                 null, null, Airports.FACILITY_NAME+" ASC", limit );
         return c;
     }
