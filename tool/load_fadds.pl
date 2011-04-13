@@ -565,19 +565,19 @@ while ( my $line = <APT_FILE> )
         $sth_apt->bind_param( 19, capitalize( $line, 454, 45 ) );
         #MANAGER_PHONE
         $sth_apt->bind_param( 20, substrim( $line,  499, 16 ) );
+        #REF_LATTITUDE_DEGREES
         my $lattitude = substrim( $line,  530, 11 )/3600.0;
         if ( substrim( $line,  541,  1 ) eq "S" )
         {
             $lattitude *= -1;
         }
-        #REF_LATTITUDE_DEGREES
         $sth_apt->bind_param( 21, $lattitude );
+        #REF_LONGITUDE_DEGREES
         my $longitude = substrim( $line,  557, 11 )/3600.0;
         if ( substrim( $line,  568,  1 ) eq "W" )
         {
             $longitude *= -1;
         }
-        #REF_LONGITUDE_DEGREES
         $sth_apt->bind_param( 22, $longitude );
         #REF_METHOD
         $sth_apt->bind_param( 23, substrim( $line,  569,  1 ) );
@@ -694,10 +694,20 @@ while ( my $line = <APT_FILE> )
         $sth_rwy->bind_param( 13, substrim( $line,   87,  1 ) );
         #BASE_END_ARRESTING_DEVICE_TYPE
         $sth_rwy->bind_param( 14, substrim( $line,   88,  6 ) );
-        #BASE_END_LATTITUDE_SECONDS
-        $sth_rwy->bind_param( 15, substrim( $line,  109, 12 ) );
-        #BASE_END_LONGITUDE_SECONDS
-        $sth_rwy->bind_param( 16, substrim( $line,  136, 12 ) );
+        #BASE_END_LATTITUDE_DEGREES
+        my $lattitude = substrim( $line,  109, 12 )/3600.0;
+        if ( substrim( $line,  541,  1 ) eq "S" )
+        {
+            $lattitude *= -1;
+        }
+        $sth_rwy->bind_param( 15, $lattitude );
+        #BASE_END_LONGITUDE_DEGREES
+        my $longitude = substrim( $line,  136, 12 )/3600.0;
+        if ( substrim( $line,  541,  1 ) eq "W" )
+        {
+            $longitude *= -1;
+        }
+        $sth_rwy->bind_param( 16, $longitude );
         #BASE_END_RUNWAY_ELEVATION
         $sth_rwy->bind_param( 17, substrim( $line,  148,  7 ) );
         #BASE_END_THRESHOLD_CROSSING_HEIGHT
@@ -746,10 +756,20 @@ while ( my $line = <APT_FILE> )
         $sth_rwy->bind_param( 39, substrim( $line,  315,  1 ) );
         #RECIPROCAL_END_ARRESTING_DEVICE_TYPE
         $sth_rwy->bind_param( 40, substrim( $line,  316,  6 ) );
-        #RECIPROCAL_END_LATTITUDE_SECONDS
-        $sth_rwy->bind_param( 41, substrim( $line,  337, 12 ) );
-        #RECIPROCAL_END_LONGITUDE_SECONDS
-        $sth_rwy->bind_param( 42, substrim( $line,  364, 12 ) );
+        #RECIPROCAL_END_LATTITUDE_DEGREES
+        my $lattitude = substrim( $line,  337, 12 )/3600.0;
+        if ( substrim( $line,  541,  1 ) eq "S" )
+        {
+            $lattitude *= -1;
+        }
+        $sth_rwy->bind_param( 41, $lattitude );
+        #RECIPROCAL_END_LONGITUDE_DEGREES
+        my $longitude = substrim( $line,  364, 12 )/3600.0;
+        if ( substrim( $line,  541,  1 ) eq "W" )
+        {
+            $longitude *= -1;
+        }
+        $sth_rwy->bind_param( 42, $longitude );
         #RECIPROCAL_END_RUNWAY_ELEVATION
         $sth_rwy->bind_param( 43, substrim( $line,  376,  7 ) );
         #RECIPROCAL_END_THRESHOLD_CROSSING_HEIGHT
