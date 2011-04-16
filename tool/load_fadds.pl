@@ -775,7 +775,7 @@ while ( my $line = <APT_FILE> )
         #RECIPROCAL_END_THRESHOLD_CROSSING_HEIGHT
         $sth_rwy->bind_param( 44, substrim( $line,  383,  3 ) );
         #RECIPROCAL_END_GLIDE_ANGLE
-        $sth_rwy->bind_param( 45, substrim( $line,  444,  7 ) );
+        $sth_rwy->bind_param( 45, substrim( $line,  386,  4 ) );
         #RECIPROCAL_END_DISPLACED_THRESHOLD_LENGTH
         $sth_rwy->bind_param( 46, substrim( $line,  451,  4 ) );
         #RECIPROCAL_END_TDZ_ELEVATION
