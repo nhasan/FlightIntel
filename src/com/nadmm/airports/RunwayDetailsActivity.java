@@ -166,17 +166,14 @@ public class RunwayDetailsActivity extends Activity {
         String variation = apt.getString( apt.getColumnIndex(
                 Airports.MAGNETIC_VARIATION_DEGREES ) );
         int magneticHeading = heading+DataUtils.getMagneticVariation( variation );
-        addRow( baseEndLayout, "Magnetic heading", String.format( "%03d", magneticHeading ) );
-        addSeparator( baseEndLayout );
-        String elevation = rwy.getString( rwy.getColumnIndex(
-                Runways.BASE_END_RUNWAY_ELEVATION ) );
-        addRow( baseEndLayout, "Elevation", elevation+"'" );
+        addRow( baseEndLayout, "Magnetic heading", String.format( "%03d\u00B0",
+                magneticHeading ) );
         addSeparator( baseEndLayout );
         String rhPattern = rwy.getString( rwy.getColumnIndex(
                 Runways.BASE_END_RIGHT_TRAFFIC ) );
         addRow( baseEndLayout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
         String gradient = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_GRADIENT ) );
-        if ( Double.valueOf( gradient ) > 0 ) {
+        if ( gradient.length() > 0 ) {
             String gradientDir = rwy.getString( rwy.getColumnIndex(
                     Runways.BASE_END_GRADIENT_DIRECTION ) );
             gradient += "%";
@@ -193,7 +190,7 @@ public class RunwayDetailsActivity extends Activity {
         }
         String arrestingDevice = rwy.getString( rwy.getColumnIndex( 
                 Runways.BASE_END_ARRESTING_DEVICE_TYPE ) );
-        if ( arrestingDevice.length() > 0 ) {
+        if ( arrestingDevice != null && arrestingDevice.length() > 0 ) {
             addSeparator( baseEndLayout );
             addRow( baseEndLayout, "Arresting device", arrestingDevice );
         }
@@ -208,7 +205,24 @@ public class RunwayDetailsActivity extends Activity {
                 Runways.BASE_END_MARKING_CONDITION ) );
         addSeparator( baseEndLayout );
         addRow( baseEndLayout, "Runway marking", DataUtils.decodeRunwayMarking( marking )
-                +DataUtils.decodeRunwayMarkingCondition( condition ) );
+                +", "+DataUtils.decodeRunwayMarkingCondition( condition ) );
+        String glideSlope = rwy.getString( rwy.getColumnIndex(
+                Runways.BASE_END_VISUAL_GLIDE_SLOPE ) );
+        addSeparator( baseEndLayout );
+        addRow( baseEndLayout, "Glideslope", DataUtils.decodeGlideSlope( glideSlope ) );
+        String displacedThreshold = rwy.getString( rwy.getColumnIndex(
+                Runways.BASE_END_DISPLACED_THRESHOLD_LENGTH ) );
+        if ( displacedThreshold.length() > 0 ) {
+            addSeparator( baseEndLayout );
+            addRow( baseEndLayout, "Displaced threshold", displacedThreshold+"'" );
+        }
+        double glideAngle = rwy.getDouble( rwy.getColumnIndex(
+                Runways.BASE_END_GLIDE_ANGLE ) );
+        if ( glideAngle > 0 ) {
+            addSeparator( baseEndLayout );
+            addRow( baseEndLayout, "Glide angle",
+                    String.format( "%.02f\u00B0", glideAngle ) );
+        }
     }
 
     protected void showReciprocalEndInformation( Cursor apt, Cursor rwy ) {
@@ -222,17 +236,14 @@ public class RunwayDetailsActivity extends Activity {
         String variation = apt.getString( apt.getColumnIndex(
                 Airports.MAGNETIC_VARIATION_DEGREES ) );
         int magneticHeading = heading+DataUtils.getMagneticVariation( variation );
-        addRow( reciprocalEndLayout, "Magnetic heading", String.format( "%03d", magneticHeading ) );
-        addSeparator( reciprocalEndLayout );
-        String elevation = rwy.getString( rwy.getColumnIndex(
-                Runways.RECIPROCAL_END_RUNWAY_ELEVATION ) );
-        addRow( reciprocalEndLayout, "Elevation", elevation+"'" );
+        addRow( reciprocalEndLayout, "Magnetic heading", String.format( "%03d\u00B0",
+                magneticHeading ) );
         addSeparator( reciprocalEndLayout );
         String rhPattern = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_RIGHT_TRAFFIC ) );
         addRow( reciprocalEndLayout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
         String gradient = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_GRADIENT ) );
-        if ( Double.valueOf( gradient ) > 0 ) {
+        if ( gradient.length() > 0 ) {
             String gradientDir = rwy.getString( rwy.getColumnIndex(
                     Runways.RECIPROCAL_END_GRADIENT_DIRECTION ) );
             gradient += "%";
@@ -249,7 +260,7 @@ public class RunwayDetailsActivity extends Activity {
         }
         String arrestingDevice = rwy.getString( rwy.getColumnIndex( 
                 Runways.RECIPROCAL_END_ARRESTING_DEVICE_TYPE ) );
-        if ( arrestingDevice.length() > 0 ) {
+        if ( arrestingDevice != null && arrestingDevice.length() > 0 ) {
             addSeparator( reciprocalEndLayout );
             addRow( reciprocalEndLayout, "Arresting device", arrestingDevice );
         }
@@ -264,7 +275,24 @@ public class RunwayDetailsActivity extends Activity {
                 Runways.RECIPROCAL_END_MARKING_CONDITION ) );
         addSeparator( reciprocalEndLayout );
         addRow( reciprocalEndLayout, "Runway marking", DataUtils.decodeRunwayMarking( marking )
-                +DataUtils.decodeRunwayMarkingCondition( condition ) );
+                +", "+DataUtils.decodeRunwayMarkingCondition( condition ) );
+        String glideSlope = rwy.getString( rwy.getColumnIndex(
+                Runways.RECIPROCAL_END_VISUAL_GLIDE_SLOPE ) );
+        addSeparator( reciprocalEndLayout );
+        addRow( reciprocalEndLayout, "Glideslope", DataUtils.decodeGlideSlope( glideSlope ) );
+        String displacedThreshold = rwy.getString( rwy.getColumnIndex(
+                Runways.RECIPROCAL_END_DISPLACED_THRESHOLD_LENGTH ) );
+        if ( displacedThreshold.length() > 0 ) {
+            addSeparator( reciprocalEndLayout );
+            addRow( reciprocalEndLayout, "Displaced threshold", displacedThreshold+"'" );
+        }
+        double glideAngle = rwy.getDouble( rwy.getColumnIndex(
+                Runways.RECIPROCAL_END_GLIDE_ANGLE ) );
+        if ( glideAngle > 0 ) {
+            addSeparator( reciprocalEndLayout );
+            addRow( reciprocalEndLayout, "Glide angle",
+                    String.format( "%.02f\u00B0", glideAngle ) );
+        }
     }
 
     protected void addRow( TableLayout table, String label, String value ) {

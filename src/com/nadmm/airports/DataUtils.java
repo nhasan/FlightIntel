@@ -323,9 +323,9 @@ public final class DataUtils {
 
     public static String decodeRunwayMarking( String marking ) {
         if ( marking.equals( "PIR" ) ) {
-            return "Precision instrument";
-        } else if ( marking.equals( "NPR" ) ) {
-            return "Non-precision instrument";
+            return "Precision";
+        } else if ( marking.equals( "NPI" ) ) {
+            return "Non-precision";
         } else if ( marking.equals( "BSC" ) ) {
             return "Basic";
         } else if ( marking.equals( "NRS" ) ) {
@@ -352,4 +352,61 @@ public final class DataUtils {
             return "";
         }
     }
+
+    public static String decodeGlideSlope( String glideSlope ) {
+        if ( glideSlope.equals( "S2L" ) ) {
+            return "2-box SAVASI on left side";
+        } else if ( glideSlope.equals( "S2R" ) ) {
+            return "2-box SAVASI on right side";
+        } else if ( glideSlope.equals( "V2L" ) ) {
+            return "2-box VASI on left side";
+        } else if ( glideSlope.equals( "V2R" ) ) {
+            return "2-box VASI on right side";
+        } else if ( glideSlope.equals( "V4L" ) ) {
+            return "4-box VASI on left side";
+        } else if ( glideSlope.equals( "V4R" ) ) {
+            return "4-box VASI on right side";
+        } else if ( glideSlope.equals( "V6L" ) ) {
+            return "6-box VASI on left side";
+        } else if ( glideSlope.equals( "V6R" ) ) {
+            return "6-box VASI on right side";
+        } else if ( glideSlope.equals( "V12" ) ) {
+            return "12-box VASI on both sides";
+        } else if ( glideSlope.equals( "V16" ) ) {
+            return "16-box VASI on both sides";
+        } else if ( glideSlope.equals( "P2L" ) ) {
+            return "2-light PAPI on left side";
+        } else if ( glideSlope.equals( "P2R" ) ) {
+            return "2-light PAPI on right side";
+        } else if ( glideSlope.equals( "P4L" ) ) {
+            return "4-light PAPI on left side";
+        } else if ( glideSlope.equals( "P4R" ) ) {
+            return "4-light PAPI on right side";
+        } else if ( glideSlope.equals( "NSTD" ) ) {
+            return "Non-standars VASI";
+        } else if ( glideSlope.equals( "PVT" ) ) {
+            return "Private use only";
+        } else if ( glideSlope.equals( "VAS" ) ) {
+            return "Non-specific VASI";
+        } else if ( glideSlope.equals( "NONE" ) ) {
+            return "None";
+        } else if ( glideSlope.equals( "N" ) ) {
+            return "None";
+        } else if ( glideSlope.equals( "TRIL" ) ) {
+            return "Tri-color VASI on left side";
+        } else if ( glideSlope.equals( "TRIR" ) ) {
+            return "Tri-color VASI on right side";
+        } else if ( glideSlope.equals( "PSIL" ) ) {
+            return "Pulsating VASI on left side";
+        } else if ( glideSlope.equals( "PSIR" ) ) {
+            return "Pulsating VASI on right side";
+        } else if ( glideSlope.equals( "PNIL" ) ) {
+            return "Panel system on left side";
+        } else if ( glideSlope.equals( "PNIR" ) ) {
+            return "Panel system on right side";
+        } else {
+            return "Unknown";
+        }
+    }
+
 }
