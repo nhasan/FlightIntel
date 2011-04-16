@@ -27,7 +27,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.TextUtils.TruncateAt;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,9 +73,10 @@ public class AirportDetailsActivity extends Activity {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 2 ];
+
             DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+            Cursor[] cursors = new Cursor[ 2 ];
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
@@ -107,45 +107,13 @@ public class AirportDetailsActivity extends Activity {
 
             View view = mInflater.inflate( R.layout.airport_detail_view, null );
             setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.detail_view_layout );
+            mMainLayout = (LinearLayout) view.findViewById( R.id.airport_detail_layout );
 
             Cursor apt = result[ 0 ];
             TextView tv;
 
-            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-
             // Title
-            tv = (TextView) mMainLayout.findViewById( R.id.airport_title );
-            String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-            if ( code == null || code.length() == 0 ) {
-                code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            }
-            String name = apt.getString( apt.getColumnIndex( Airports.FACILITY_NAME ) );
-            String title = code + " - " + name;
-            tv.setText( title );
-            tv = (TextView) mMainLayout.findViewById( R.id.airport_info );
-            String type = apt.getString( apt.getColumnIndex( Airports.FACILITY_TYPE ) );
-            String city = apt.getString( apt.getColumnIndex( Airports.ASSOC_CITY ) );
-            String state = apt.getString( apt.getColumnIndex( States.STATE_NAME ) );
-            String info = type+", "+city+", "+state;
-            tv.setText( info );
-            tv = (TextView) mMainLayout.findViewById( R.id.airport_info2 );
-            int distance = apt.getInt( apt.getColumnIndex( Airports.DISTANCE_FROM_CITY_NM ) );
-            String dir = apt.getString( apt.getColumnIndex( Airports.DIRECTION_FROM_CITY ) );
-            String status = apt.getString( apt.getColumnIndex( Airports.STATUS_CODE ) );
-            tv.setText( DataUtils.decodeStatus( status )+", "
-                    +String.valueOf( distance )+" miles "+dir+" of city center" );
-            tv = (TextView) mMainLayout.findViewById( R.id.airport_info3 );
-            int elev_msl = apt.getInt( apt.getColumnIndex( Airports.ELEVATION_MSL ) );
-            String info2 = String.valueOf( elev_msl )+"' MSL elevation, ";
-            int tpa_agl = apt.getInt( apt.getColumnIndex( Airports.PATTERN_ALTITUDE_AGL ) );
-            String est = "";
-            if ( tpa_agl == 0 ) {
-                tpa_agl = 1000;
-                est = " (est.)";
-            }
-            info2 += String.valueOf( elev_msl+tpa_agl)+"' MSL TPA"+est;
-            tv.setText( info2 );
+            GuiUtils.showAirportTitle( mMainLayout, apt );
 
             // Airport Communications section
             TableLayout commLayout = (TableLayout) mMainLayout.findViewById( 
@@ -236,6 +204,12 @@ public class AirportDetailsActivity extends Activity {
             addSeparator( opsLayout );
             String landingFee = apt.getString( apt.getColumnIndex( Airports.LANDING_FEE ) );
             addRow( opsLayout, "Landing fee", landingFee.equals( "Y" )? "Yes" : "No" );
+            addSeparator( opsLayout );
+            String varDegrees = apt.getString( apt.getColumnIndex(
+                    Airports.MAGNETIC_VARIATION_DEGREES ) );
+            String varYear = apt.getString( apt.getColumnIndex(
+                    Airports.MAGNETIC_VARIATION_YEAR ) );
+            addRow( opsLayout, "Magnetic variation", varDegrees+" ("+varYear+")" );
 
             // Airport Services section
             TableLayout servicesLayout = (TableLayout) mMainLayout.findViewById(
@@ -286,14 +260,14 @@ public class AirportDetailsActivity extends Activity {
         tvLabel.setText( label );
         tvLabel.setSingleLine();
         tvLabel.setGravity( Gravity.LEFT );
-        tvLabel.setPadding( 4, 4, 4, 4 );
+        tvLabel.setPadding( 4, 4, 2, 4 );
         row.addView( tvLabel, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 4f ) );
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
         TextView tvValue = new TextView( this );
         tvValue.setText( value );
         tvValue.setMarqueeRepeatLimit( -1 );
         tvValue.setGravity( Gravity.RIGHT );
-        tvLabel.setPadding( 4, 4, 4, 4 );
+        tvLabel.setPadding( 4, 4, 2, 4 );
         row.addView( tvValue, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
         table.addView( row, new TableLayout.LayoutParams(
@@ -307,11 +281,10 @@ public class AirportDetailsActivity extends Activity {
         String width = c.getString( c.getColumnIndex( Runways.RUNWAY_WIDTH ) );
         String surfaceType = c.getString( c.getColumnIndex( Runways.SURFACE_TYPE ) );
 
-        TableRow.LayoutParams lp = new TableRow.LayoutParams( 
-                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1f );
         TableRow row = new TableRow( this );
         row.setPadding( 8, 8, 8, 8 );
-        row.setLayoutParams( lp );
+        row.setLayoutParams( new TableLayout.LayoutParams( 
+                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT ) );
 
         TextView tv = new TextView( this );
         tv.setText( runwayId );
@@ -326,25 +299,29 @@ public class AirportDetailsActivity extends Activity {
         tv.setText( length+"' x "+width+"'" );
         tv.setGravity( Gravity.RIGHT );
         tv.setPadding( 4, 4, 4, 0 );
-        layout.addView( tv, lp );
+        layout.addView( tv, new LinearLayout.LayoutParams( 
+                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT ) );
         tv = new TextView( this );
-        tv.setText( DataUtils.decodeRunwaySurfaceType( surfaceType ) );
+        tv.setText( DataUtils.decodeSurfaceType( surfaceType ) );
         tv.setGravity( Gravity.RIGHT );
         tv.setPadding( 4, 0, 4, 4 );
-        layout.addView( tv, lp );
-        row.addView( layout, lp );
+        layout.addView( tv, new LinearLayout.LayoutParams( 
+                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT ) );
+        row.addView( layout, new TableRow.LayoutParams( 
+                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
 
         Bundle bundle = new Bundle();
         bundle.putString( Runways.SITE_NUMBER, siteNumber );
         bundle.putString( Runways.RUNWAY_ID, runwayId );
         row.setTag( bundle );
-
         row.setOnClickListener( new OnClickListener() {
             
             @Override
             public void onClick( View v ) {
-                // TODO Auto-generated method stub
-                
+                Intent intent = new Intent( AirportDetailsActivity.this, 
+                        RunwayDetailsActivity.class );
+                intent.putExtras( (Bundle) v.getTag() );
+                startActivity( intent );
             }
         } );
 
@@ -357,4 +334,5 @@ public class AirportDetailsActivity extends Activity {
         layout.addView( separator, 
                 new TableLayout.LayoutParams( TableLayout.LayoutParams.FILL_PARENT, 1 ) );
     }
+
 }

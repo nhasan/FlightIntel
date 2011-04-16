@@ -21,6 +21,14 @@ package com.nadmm.airports;
 
 public final class DataUtils {
 
+    public static int getMagneticVariation( String variation ) {
+        int var = Integer.valueOf( variation.substring( 0, 2 ) );
+        if ( variation.substring( 2 ).equals( "E" ) ) {
+            var *= -1;
+        }
+        return var;
+    }
+
     public static String decodeOwnershipType( String ownership ) {
         if ( ownership.equals( "PU" ) ) {
             return "Publicly owned";
@@ -66,17 +74,17 @@ public final class DataUtils {
             } else if ( type.equals( "100LL" ) ) {
                 decodedFuel += "100LL";
             } else if ( type.equals( "A" ) ) {
-                decodedFuel += "JET A";
+                decodedFuel += "JET-A";
             } else if ( type.equals( "A+" ) ) {
-                decodedFuel += "JET A+";
+                decodedFuel += "JET-A+";
             } else if ( type.equals( "A1" ) ) {
-                decodedFuel += "JET A1";
+                decodedFuel += "JET-A1";
             } else if ( type.equals( "A1+" ) ) {
-                decodedFuel += "JET A1+";
+                decodedFuel += "JET-A1+";
             } else if ( type.equals( "B" ) ) {
-                decodedFuel += "JET B";
+                decodedFuel += "JET-B";
             } else if ( type.equals( "B+" ) ) {
-                decodedFuel += "JET B+";
+                decodedFuel += "JET-B+";
             } else if ( type.equals( "MOGAS" ) ) {
                 decodedFuel += "MOGAS";
             } else {
@@ -184,7 +192,7 @@ public final class DataUtils {
         return decodedServices;
     }
 
-    public static String decodeRunwaySurfaceType( String surfaceType ) {
+    public static String decodeSurfaceType( String surfaceType ) {
         String decodedSurfaceType = "";
 
         int start = 0;
@@ -220,21 +228,37 @@ public final class DataUtils {
             } else if ( type.equals( "WATER" ) ) {
                 decodedSurfaceType += "Water";
             } else if ( type.equals( "E" ) ) {
-                decodedSurfaceType += "Excellent condition";
+                decodedSurfaceType += "Excellent";
             } else if ( type.equals( "G" ) ) {
-                decodedSurfaceType += "Good condition";
+                decodedSurfaceType += "Good";
             } else if ( type.equals( "F" ) ) {
-                decodedSurfaceType += "Fair condition";
+                decodedSurfaceType += "Fair";
             } else if ( type.equals( "P" ) ) {
-                decodedSurfaceType += "Poor condition";
+                decodedSurfaceType += "Poor";
             } else if ( type.equals( "L" ) ) {
-                decodedSurfaceType += "Failed condition";
+                decodedSurfaceType += "Failed";
             }
 
             start = end+1;
         }
 
         return decodedSurfaceType;
+    }
+
+    public static String decodeSurfaceTreatment( String treatment ) {
+        if ( treatment.equals( "GRVD" ) ) {
+            return "Grooved";
+        } else if ( treatment.equals( "PFC" ) ) {
+            return "Porous friction course";
+        } else if ( treatment.equals( "AFSC" ) ) {
+            return "Aggregate friction seal coat";
+        } else if ( treatment.equals( "RFSC" ) ) {
+            return "Rubberized friction seal coat";
+        } else if ( treatment.equals( "WC" ) ) {
+            return "Wire comb";
+        } else {
+            return "None";
+        }
     }
 
     public static String decodeUnicomFreq( String unicom ) {
@@ -283,4 +307,49 @@ public final class DataUtils {
         }
     }
 
+    public static String decodeRunwayEdgeLights( String edgeLights ) {
+        if ( edgeLights.equals( "HIGH" ) ) {
+            return "High intensity";
+        } else if ( edgeLights.equals( "MED" ) ) {
+            return "Medium intensity";
+        } else if ( edgeLights.equals( "LOW" ) ) {
+            return "Low intensity";
+        } else if ( edgeLights.equals( "NSTD" ) ) {
+            return "Non-standard";
+        } else {
+            return "None";
+        }
+    }
+
+    public static String decodeRunwayMarking( String marking ) {
+        if ( marking.equals( "PIR" ) ) {
+            return "Precision instrument";
+        } else if ( marking.equals( "NPR" ) ) {
+            return "Non-precision instrument";
+        } else if ( marking.equals( "BSC" ) ) {
+            return "Basic";
+        } else if ( marking.equals( "NRS" ) ) {
+            return "Numbers only";
+        } else if ( marking.equals( "NSTD" ) ) {
+            return "Non-standard";
+        } else if ( marking.equals( "BUOY" ) ) {
+            return "Buoys";
+        } else if ( marking.equals( "STOL" ) ) {
+            return "STOL";
+        } else {
+            return "None";
+        }
+    }
+
+    public static String decodeRunwayMarkingCondition( String condition ) {
+        if ( condition.equals( "G" ) ) {
+            return "Good";
+        } else if ( condition.equals( "F" ) ) {
+            return "Fair";
+        } else if ( condition.equals( "P" ) ) {
+            return "Poor";
+        } else {
+            return "";
+        }
+    }
 }

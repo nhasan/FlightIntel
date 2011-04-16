@@ -35,6 +35,9 @@
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:name="AirportDetailsActivity" />
 
+        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+                  android:name="RunwayDetailsActivity" />
+
     	<activity android:name=".SearchActivity" android:launchMode="singleTop">
         	<intent-filter>
             	<action android:name="android.intent.action.SEARCH" />

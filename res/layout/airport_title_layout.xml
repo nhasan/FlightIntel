@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Airports for Android
+ *
+ * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+ -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/detail_header_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/top_bar"
+        android:padding="4dp"
+        android:orientation="vertical">
+    <TextView android:id="@+id/airport_title"
+            style="@style/TextMedium.Bold"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    <TextView android:id="@+id/airport_info"
+            style="@style/TextSmall.Bold"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    <TextView android:id="@+id/airport_info2"
+            style="@style/TextSmall"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:paddingBottom="2dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    <TextView android:id="@+id/airport_info3"
+            style="@style/TextSmall"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:paddingBottom="2dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+</LinearLayout>
