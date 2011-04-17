@@ -172,16 +172,16 @@ public class RunwayDetailsActivity extends Activity {
         String rhPattern = rwy.getString( rwy.getColumnIndex(
                 Runways.BASE_END_RIGHT_TRAFFIC ) );
         addRow( baseEndLayout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
-        String gradient = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_GRADIENT ) );
-        if ( gradient.length() > 0 ) {
+        double gradient = rwy.getDouble( rwy.getColumnIndex( Runways.BASE_END_GRADIENT ) );
+        if ( gradient > 0 ) {
+            String gradientString = String.format( "%.1f%%", gradient );
             String gradientDir = rwy.getString( rwy.getColumnIndex(
                     Runways.BASE_END_GRADIENT_DIRECTION ) );
-            gradient += "%";
             if ( gradientDir.length() > 0 ) {
-                gradient += " "+gradientDir;
+                gradientString += " "+gradientDir;
             }
             addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "Gradient", gradient );
+            addRow( baseEndLayout, "Gradient", gradientString );
         }
         String ilsType = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ILS_TYPE ) );
         if ( ilsType.length() > 0 ) {
@@ -190,7 +190,7 @@ public class RunwayDetailsActivity extends Activity {
         }
         String arrestingDevice = rwy.getString( rwy.getColumnIndex( 
                 Runways.BASE_END_ARRESTING_DEVICE_TYPE ) );
-        if ( arrestingDevice != null && arrestingDevice.length() > 0 ) {
+        if ( arrestingDevice.length() > 0 ) {
             addSeparator( baseEndLayout );
             addRow( baseEndLayout, "Arresting device", arrestingDevice );
         }
@@ -203,18 +203,16 @@ public class RunwayDetailsActivity extends Activity {
         String marking = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_MARKING_TYPE ) );
         String condition = rwy.getString( rwy.getColumnIndex(
                 Runways.BASE_END_MARKING_CONDITION ) );
-        addSeparator( baseEndLayout );
-        addRow( baseEndLayout, "Runway marking", DataUtils.decodeRunwayMarking( marking )
-                +", "+DataUtils.decodeRunwayMarkingCondition( condition ) );
+        if ( marking.length() > 0 ) {
+            addSeparator( baseEndLayout );
+            addRow( baseEndLayout, "Runway marking", DataUtils.decodeRunwayMarking( marking )
+                    +", "+DataUtils.decodeRunwayMarkingCondition( condition ) );
+        }
         String glideSlope = rwy.getString( rwy.getColumnIndex(
                 Runways.BASE_END_VISUAL_GLIDE_SLOPE ) );
-        addSeparator( baseEndLayout );
-        addRow( baseEndLayout, "Glideslope", DataUtils.decodeGlideSlope( glideSlope ) );
-        String displacedThreshold = rwy.getString( rwy.getColumnIndex(
-                Runways.BASE_END_DISPLACED_THRESHOLD_LENGTH ) );
-        if ( displacedThreshold.length() > 0 ) {
+        if ( glideSlope.length() > 0 ) {
             addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "Displaced threshold", displacedThreshold+"'" );
+            addRow( baseEndLayout, "Glideslope", DataUtils.decodeGlideSlope( glideSlope ) );
         }
         double glideAngle = rwy.getDouble( rwy.getColumnIndex(
                 Runways.BASE_END_GLIDE_ANGLE ) );
@@ -222,6 +220,37 @@ public class RunwayDetailsActivity extends Activity {
             addSeparator( baseEndLayout );
             addRow( baseEndLayout, "Glide angle",
                     String.format( "%.02f\u00B0", glideAngle ) );
+        }
+        int displacedThreshold = rwy.getInt( rwy.getColumnIndex(
+                Runways.BASE_END_DISPLACED_THRESHOLD_LENGTH ) );
+        if ( displacedThreshold > 0 ) {
+            addSeparator( baseEndLayout );
+            addRow( baseEndLayout, "Displaced threshold",
+                    String.format( "%d'", displacedThreshold ) );
+        }
+        int tora = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_TORA ) );
+        int toda = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_TODA ) );
+        if ( tora > 0 ) {
+            addSeparator( baseEndLayout );
+            addRow( baseEndLayout, "TORA/TODA", String.format( "%d'/%d'", tora, toda ) );
+        }
+        int lda = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_LDA ) );
+        int asda = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_ASDA ) );
+        if ( lda > 0 ) {
+            addSeparator( baseEndLayout );
+            addRow( baseEndLayout, "LDA/ASDA", String.format( "%d'/%d'", lda, asda ) );
+        }
+        int lahso = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_LAHSO_DISTANCE ) );
+        String lahsoRunway = rwy.getString( rwy.getColumnIndex(
+                Runways.BASE_END_LAHSO_RUNWAY ) );
+        if ( lahso > 0 ) {
+            addSeparator( baseEndLayout );
+            if ( lahsoRunway.length() > 0 ) {
+                addRow( baseEndLayout, "LAHSO distance",
+                        String.format( "%d' to %s", lahso, lahsoRunway ) );
+            } else {
+                addRow( baseEndLayout, "LAHSO distance", String.format( "%d'", lahso ) );
+            }
         }
     }
 
@@ -242,16 +271,16 @@ public class RunwayDetailsActivity extends Activity {
         String rhPattern = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_RIGHT_TRAFFIC ) );
         addRow( reciprocalEndLayout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
-        String gradient = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_GRADIENT ) );
-        if ( gradient.length() > 0 ) {
+        double gradient = rwy.getDouble( rwy.getColumnIndex( Runways.BASE_END_GRADIENT ) );
+        if ( gradient > 0 ) {
+            String gradientString = String.format( "%.1f%%", gradient );
             String gradientDir = rwy.getString( rwy.getColumnIndex(
-                    Runways.RECIPROCAL_END_GRADIENT_DIRECTION ) );
-            gradient += "%";
+                    Runways.BASE_END_GRADIENT_DIRECTION ) );
             if ( gradientDir.length() > 0 ) {
-                gradient += " "+gradientDir;
+                gradientString += " "+gradientDir;
             }
             addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "Gradient", gradient );
+            addRow( reciprocalEndLayout, "Gradient", gradientString );
         }
         String ilsType = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ILS_TYPE ) );
         if ( ilsType.length() > 0 ) {
@@ -260,7 +289,7 @@ public class RunwayDetailsActivity extends Activity {
         }
         String arrestingDevice = rwy.getString( rwy.getColumnIndex( 
                 Runways.RECIPROCAL_END_ARRESTING_DEVICE_TYPE ) );
-        if ( arrestingDevice != null && arrestingDevice.length() > 0 ) {
+        if ( arrestingDevice.length() > 0 ) {
             addSeparator( reciprocalEndLayout );
             addRow( reciprocalEndLayout, "Arresting device", arrestingDevice );
         }
@@ -273,18 +302,16 @@ public class RunwayDetailsActivity extends Activity {
         String marking = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_MARKING_TYPE ) );
         String condition = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_MARKING_CONDITION ) );
-        addSeparator( reciprocalEndLayout );
-        addRow( reciprocalEndLayout, "Runway marking", DataUtils.decodeRunwayMarking( marking )
-                +", "+DataUtils.decodeRunwayMarkingCondition( condition ) );
+        if ( marking.length() > 0 ) {
+            addSeparator( reciprocalEndLayout );
+            addRow( reciprocalEndLayout, "Runway marking", DataUtils.decodeRunwayMarking( marking )
+                    +", "+DataUtils.decodeRunwayMarkingCondition( condition ) );
+        }
         String glideSlope = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_VISUAL_GLIDE_SLOPE ) );
-        addSeparator( reciprocalEndLayout );
-        addRow( reciprocalEndLayout, "Glideslope", DataUtils.decodeGlideSlope( glideSlope ) );
-        String displacedThreshold = rwy.getString( rwy.getColumnIndex(
-                Runways.RECIPROCAL_END_DISPLACED_THRESHOLD_LENGTH ) );
-        if ( displacedThreshold.length() > 0 ) {
+        if ( glideSlope.length() > 0 ) {
             addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "Displaced threshold", displacedThreshold+"'" );
+            addRow( reciprocalEndLayout, "Glideslope", DataUtils.decodeGlideSlope( glideSlope ) );
         }
         double glideAngle = rwy.getDouble( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_GLIDE_ANGLE ) );
@@ -292,6 +319,37 @@ public class RunwayDetailsActivity extends Activity {
             addSeparator( reciprocalEndLayout );
             addRow( reciprocalEndLayout, "Glide angle",
                     String.format( "%.02f\u00B0", glideAngle ) );
+        }
+        int displacedThreshold = rwy.getInt( rwy.getColumnIndex(
+                Runways.RECIPROCAL_END_DISPLACED_THRESHOLD_LENGTH ) );
+        if ( displacedThreshold > 0 ) {
+            addSeparator( reciprocalEndLayout );
+            addRow( reciprocalEndLayout, "Displaced threshold",
+                    String.format( "%d'", displacedThreshold ) );
+        }
+        int tora = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_TORA ) );
+        int toda = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_TODA ) );
+        if ( tora > 0 ) {
+            addSeparator( reciprocalEndLayout );
+            addRow( reciprocalEndLayout, "TORA/TODA", String.format( "%d'/%d'", tora, toda ) );
+        }
+        int lda = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_LDA ) );
+        int asda = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_ASDA ) );
+        if ( lda > 0 ) {
+            addSeparator( reciprocalEndLayout );
+            addRow( reciprocalEndLayout, "LDA/ASDA", String.format( "%d'/%d'", lda, asda ) );
+        }
+        int lahso = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_LAHSO_DISTANCE ) );
+        String lahsoRunway = rwy.getString( rwy.getColumnIndex(
+                Runways.RECIPROCAL_END_LAHSO_RUNWAY ) );
+        if ( lahso > 0 ) {
+            addSeparator( reciprocalEndLayout );
+            if ( lahsoRunway.length() > 0 ) {
+                addRow( reciprocalEndLayout, "LAHSO distance",
+                        String.format( "%d' to %s", lahso, lahsoRunway ) );
+            } else {
+                addRow( reciprocalEndLayout, "LAHSO distance", String.format( "%d'", lahso ) );
+            }
         }
     }
 
