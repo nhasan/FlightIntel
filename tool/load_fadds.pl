@@ -351,13 +351,15 @@ my $create_runways_table = "CREATE TABLE runways ("
         ."BASE_END_ASDA INTEGER, "
         ."BASE_END_LDA INTEGER, "
         ."BASE_END_LAHSO_DISTANCE INTEGER, "
+        ."BASE_END_LAHSO_RUNWAY TEXT, "
         ."RECIPROCAL_END_GRADIENT REAL, "
         ."RECIPROCAL_END_GRADIENT_DIRECTION TEXT, "
         ."RECIPROCAL_END_TORA INTEGER, "
         ."RECIPROCAL_END_TODA INTEGER, "
         ."RECIPROCAL_END_ASDA INTEGER, "
         ."RECIPROCAL_END_LDA INTEGER, "
-        ."RECIPROCAL_END_LAHSO_DISTANCE INTEGER"
+        ."RECIPROCAL_END_LAHSO_DISTANCE INTEGER, "
+        ."RECIPROCAL_END_LAHSO_RUNWAY TEXT"
         .");";
 
 my $insert_runways_record = "INSERT INTO runways ("
@@ -427,13 +429,15 @@ my $insert_runways_record = "INSERT INTO runways ("
         ."BASE_END_ASDA, "
         ."BASE_END_LDA, "
         ."BASE_END_LAHSO_DISTANCE, "
+        ."BASE_END_LAHSO_RUNWAY, "
         ."RECIPROCAL_END_GRADIENT, "
         ."RECIPROCAL_END_GRADIENT_DIRECTION, "
         ."RECIPROCAL_END_TORA, "
         ."RECIPROCAL_END_TODA, "
         ."RECIPROCAL_END_ASDA, "
         ."RECIPROCAL_END_LDA, "
-        ."RECIPROCAL_END_LAHSO_DISTANCE"
+        ."RECIPROCAL_END_LAHSO_DISTANCE, "
+        ."RECIPROCAL_END_LAHSO_RUNWAY"
         .") VALUES ("
         ."?, ?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ?, ?, ?, ?, ?, ?, "
@@ -444,7 +448,7 @@ my $insert_runways_record = "INSERT INTO runways ("
         ."?, ?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?)";
+        ."?, ?, ?)";
  
 my $create_attendance_table = "CREATE TABLE attendance ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -818,20 +822,24 @@ while ( my $line = <APT_FILE> )
         $sth_rwy->bind_param( 65, substrim( $line,  725,  5 ) );
         #BASE_END_LAHSO_DISTANCE
         $sth_rwy->bind_param( 66, substrim( $line,  730,  5 ) );
+        #BASE_END_LAHSO_RUNWAY
+        $sth_rwy->bind_param( 67, substrim( $line,  735,  7 ) );
         #RECIPROCAL_END_GRADIENT
-        $sth_rwy->bind_param( 67, substrim( $line,  862,  5  ) );
+        $sth_rwy->bind_param( 68, substrim( $line,  862,  5  ) );
         #RECIPROCAL_END_GRADIENT_DIRECTION
-        $sth_rwy->bind_param( 68, substrim( $line,  867,  4  ) );
+        $sth_rwy->bind_param( 69, substrim( $line,  867,  4  ) );
         #RECIPROCAL_END_TORA
-        $sth_rwy->bind_param( 69, substrim( $line, 1001,  5  ) );
+        $sth_rwy->bind_param( 70, substrim( $line, 1001,  5  ) );
         #RECIPROCAL_END_TODA
-        $sth_rwy->bind_param( 70, substrim( $line, 1006,  5  ) );
+        $sth_rwy->bind_param( 71, substrim( $line, 1006,  5  ) );
         #RECIPROCAL_END_ASDA
-        $sth_rwy->bind_param( 71, substrim( $line, 1011,  5  ) );
+        $sth_rwy->bind_param( 72, substrim( $line, 1011,  5  ) );
         #RECIPROCAL_END_LDA
-        $sth_rwy->bind_param( 72, substrim( $line, 1016,  5  ) );
+        $sth_rwy->bind_param( 73, substrim( $line, 1016,  5  ) );
         #RECIPROCAL_END_LAHSO_DISTANCE
-        $sth_rwy->bind_param( 73, substrim( $line, 1021,  5  ) );
+        $sth_rwy->bind_param( 74, substrim( $line, 1021,  5  ) );
+        #RECIPROCAL_END_LAHSO_RUNWAY
+        $sth_rwy->bind_param( 75, substrim( $line, 1026,  7  ) );
  
         $sth_rwy->execute();
     }

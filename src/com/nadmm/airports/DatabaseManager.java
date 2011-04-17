@@ -207,13 +207,15 @@ public class DatabaseManager {
         public static final String BASE_END_ASDA = "BASE_END_ASDA";
         public static final String BASE_END_LDA = "BASE_END_LDA";
         public static final String BASE_END_LAHSO_DISTANCE = "BASE_END_LAHSO_DISTANCE";
+        public static final String BASE_END_LAHSO_RUNWAY = "BASE_END_LAHSO_RUNWAY";
         public static final String RECIPROCAL_END_GRADIENT = "RECIPROCAL_END_GRADIENT";
         public static final String RECIPROCAL_END_GRADIENT_DIRECTION = "RECIPROCAL_END_GRADIENT_DIRECTION";
         public static final String RECIPROCAL_END_TORA = "RECIPROCAL_END_TORA";
         public static final String RECIPROCAL_END_TODA = "RECIPROCAL_END_TODA";
         public static final String RECIPROCAL_END_ASDA = "RECIPROCAL_END_ASDA";
         public static final String RECIPROCAL_END_LDA = "RECIPROCAL_END_LDA";
-        public static final String RECIPROCAL_END_DISTANCE = "RECIPROCAL_END_LAHSO_DISTANCE";
+        public static final String RECIPROCAL_END_LAHSO_DISTANCE = "RECIPROCAL_END_LAHSO_DISTANCE";
+        public static final String RECIPROCAL_END_LAHSO_RUNWAY = "RECIPROCAL_END_LAHSO_RUNWAY";
     }
 
     public static final class Catalog implements BaseColumns {
