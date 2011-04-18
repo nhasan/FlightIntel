@@ -32,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -308,6 +309,11 @@ public class AirportDetailsActivity extends Activity {
         layout.addView( tv, new LinearLayout.LayoutParams( 
                 TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT ) );
         row.addView( layout, new TableRow.LayoutParams( 
+                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
+        ImageView iv = new ImageView( this );
+        iv.setImageResource( R.drawable.arrow );
+        iv.setPadding( 6, 0, 4, 0 );
+        row.addView( iv, new TableRow.LayoutParams( 
                 TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
 
         Bundle bundle = new Bundle();
