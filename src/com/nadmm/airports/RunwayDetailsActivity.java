@@ -116,14 +116,22 @@ public class RunwayDetailsActivity extends Activity {
             Cursor apt = result[ 0 ];
             Cursor rwy = result[ 1 ];
 
+            String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
+            boolean isHelipad = runwayId.startsWith( "H" );
+
             // Title
             GuiUtils.showAirportTitle( mMainLayout, apt );
-            // General information
-            showGeneralInformation( rwy );
-            // Base end information
-            showBaseEndInformation( apt, rwy );
-            // Reciprocal end information
-            showReciprocalEndInformation( apt, rwy );
+            if ( isHelipad ) {
+                // Helipad information
+                showHelipadInformation( rwy );
+            } else {
+                // General information
+                showGeneralInformation( rwy );
+                // Base end information
+                showBaseEndInformation( apt, rwy );
+                // Reciprocal end information
+                showReciprocalEndInformation( apt, rwy );
+            }
 
             // Cleanup cursors
             for ( Cursor c : result ) {
@@ -133,25 +141,25 @@ public class RunwayDetailsActivity extends Activity {
 
     }
 
-    protected void showGeneralInformation( Cursor c ) {
-        String runwayId = c.getString( c.getColumnIndex( Runways.RUNWAY_ID ) );
+    protected void showGeneralInformation( Cursor rwy ) {
+        String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
         TextView tv = (TextView) mMainLayout.findViewById( R.id.runway_general_label );
         tv.setText( "Runway "+runwayId );
 
         TableLayout generalLayout = (TableLayout) mMainLayout.findViewById(
                 R.id.runway_general_layout );
-        String length = c.getString( c.getColumnIndex( Runways.RUNWAY_LENGTH ) );
-        String width = c.getString( c.getColumnIndex( Runways.RUNWAY_WIDTH ) );
+        String length = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
+        String width = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_WIDTH ) );
         addRow( generalLayout, "Dimensions", length+"' x "+width+"'" );
         addSeparator( generalLayout );
-        String surfaceType = c.getString( c.getColumnIndex( Runways.SURFACE_TYPE ) );
+        String surfaceType = rwy.getString( rwy.getColumnIndex( Runways.SURFACE_TYPE ) );
         addRow( generalLayout, "Surface type", DataUtils.decodeSurfaceType( surfaceType ) );
         addSeparator( generalLayout );
-        String surfaceTreat = c.getString( c.getColumnIndex( Runways.SURFACE_TREATMENT ) );
+        String surfaceTreat = rwy.getString( rwy.getColumnIndex( Runways.SURFACE_TREATMENT ) );
         addRow( generalLayout, "Surface treatment",
                 DataUtils.decodeSurfaceTreatment( surfaceTreat ) );
         addSeparator( generalLayout );
-        String edgeLights = c.getString( c.getColumnIndex( Runways.EDGE_LIGHTS_INTENSITY ) );
+        String edgeLights = rwy.getString( rwy.getColumnIndex( Runways.EDGE_LIGHTS_INTENSITY ) );
         addRow( generalLayout, "Edge lights", DataUtils.decodeRunwayEdgeLights( edgeLights ) );
     }
 
@@ -200,12 +208,12 @@ public class RunwayDetailsActivity extends Activity {
             addSeparator( baseEndLayout );
             addRow( baseEndLayout, "Approach lights", apchLights );
         }
-        String marking = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_MARKING_TYPE ) );
+        String markings = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_MARKING_TYPE ) );
         String condition = rwy.getString( rwy.getColumnIndex(
                 Runways.BASE_END_MARKING_CONDITION ) );
-        if ( marking.length() > 0 ) {
+        if ( markings.length() > 0 ) {
             addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "Runway marking", DataUtils.decodeRunwayMarking( marking )
+            addRow( baseEndLayout, "Markings", DataUtils.decodeRunwayMarking( markings )
                     +", "+DataUtils.decodeRunwayMarkingCondition( condition ) );
         }
         String glideSlope = rwy.getString( rwy.getColumnIndex(
@@ -299,12 +307,12 @@ public class RunwayDetailsActivity extends Activity {
             addSeparator( reciprocalEndLayout );
             addRow( reciprocalEndLayout, "Approach lights", apchLights );
         }
-        String marking = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_MARKING_TYPE ) );
+        String markings = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_MARKING_TYPE ) );
         String condition = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_MARKING_CONDITION ) );
-        if ( marking.length() > 0 ) {
+        if ( markings.length() > 0 ) {
             addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "Runway marking", DataUtils.decodeRunwayMarking( marking )
+            addRow( reciprocalEndLayout, "Markings", DataUtils.decodeRunwayMarking( markings )
                     +", "+DataUtils.decodeRunwayMarkingCondition( condition ) );
         }
         String glideSlope = rwy.getString( rwy.getColumnIndex(
@@ -351,6 +359,52 @@ public class RunwayDetailsActivity extends Activity {
                 addRow( reciprocalEndLayout, "LAHSO distance", String.format( "%d'", lahso ) );
             }
         }
+    }
+
+    protected void showHelipadInformation( Cursor rwy ) {
+        // Hide the runway sections
+        TextView tv = (TextView) mMainLayout.findViewById( R.id.runway_base_end_label );
+        tv.setVisibility( View.GONE );
+        TableLayout baseEndLayout = (TableLayout) mMainLayout.findViewById(
+                R.id.runway_base_end_layout );
+        baseEndLayout.setVisibility( View.GONE );
+        tv = (TextView) mMainLayout.findViewById( R.id.runway_reciprocal_end_label );
+        tv.setVisibility( View.GONE );
+        TableLayout reciprocalEndLayout = (TableLayout) mMainLayout.findViewById(
+                R.id.runway_reciprocal_end_layout );
+        reciprocalEndLayout.setVisibility( View.GONE );
+
+        String helipadId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
+        tv = (TextView) mMainLayout.findViewById( R.id.runway_general_label );
+        tv.setText( "Helipad "+helipadId );
+
+        TableLayout generalLayout = (TableLayout) mMainLayout.findViewById(
+                R.id.runway_general_layout );
+        String length = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
+        String width = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_WIDTH ) );
+        addRow( generalLayout, "Dimensions", length+"' x "+width+"'" );
+        addSeparator( generalLayout );
+        String surfaceType = rwy.getString( rwy.getColumnIndex( Runways.SURFACE_TYPE ) );
+        addRow( generalLayout, "Surface type", DataUtils.decodeSurfaceType( surfaceType ) );
+        addSeparator( generalLayout );
+        String surfaceTreat = rwy.getString( rwy.getColumnIndex( Runways.SURFACE_TREATMENT ) );
+        addRow( generalLayout, "Surface treatment",
+                DataUtils.decodeSurfaceTreatment( surfaceTreat ) );
+        String markings = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_MARKING_TYPE ) );
+        String condition = rwy.getString( rwy.getColumnIndex(
+                Runways.BASE_END_MARKING_CONDITION ) );
+        if ( markings.length() > 0 ) {
+            addSeparator( baseEndLayout );
+            addRow( baseEndLayout, "Markings", DataUtils.decodeRunwayMarking( markings )
+                    +", "+DataUtils.decodeRunwayMarkingCondition( condition ) );
+        }
+        addSeparator( generalLayout );
+        String edgeLights = rwy.getString( rwy.getColumnIndex( Runways.EDGE_LIGHTS_INTENSITY ) );
+        addRow( generalLayout, "Edge lights", DataUtils.decodeRunwayEdgeLights( edgeLights ) );
+        addSeparator( generalLayout );
+        String rhPattern = rwy.getString( rwy.getColumnIndex(
+                Runways.BASE_END_RIGHT_TRAFFIC ) );
+        addRow( generalLayout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
     }
 
     protected void addRow( TableLayout table, String label, String value ) {

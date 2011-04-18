@@ -316,6 +316,12 @@ public final class DataUtils {
             return "Low intensity";
         } else if ( edgeLights.equals( "NSTD" ) ) {
             return "Non-standard";
+        } else if ( edgeLights.equals( "PERI" ) ) {
+            return "Perimeter";
+        } else if ( edgeLights.equals( "STRB" ) ) {
+            return "Strobe";
+        } else if ( edgeLights.equals( "FLD" ) ) {
+            return "Flood";
         } else {
             return "None";
         }
