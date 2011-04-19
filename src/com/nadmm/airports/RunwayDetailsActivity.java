@@ -38,6 +38,7 @@ import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.DatabaseManager.States;
 
@@ -76,7 +77,7 @@ public class RunwayDetailsActivity extends Activity {
             
             DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 2 ];
+            Cursor[] cursors = new Cursor[ 3 ];
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
@@ -94,9 +95,18 @@ public class RunwayDetailsActivity extends Activity {
                     Runways.SITE_NUMBER+"=? AND "+Runways.RUNWAY_ID+"=?",
                     new String[] { siteNumber, runwayId }, null, null, null, null );
             if ( !c.moveToFirst() ) {
+                cursors[ 0 ].close();
+                c.close();
                 return null;
             }
             cursors[ 1 ] = c;
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Remarks.TABLE_NAME );
+            c = builder.query( db, new String[] { Remarks.REMARK_NAME, Remarks.REMARK_TEXT },
+                    Runways.SITE_NUMBER+"=?",
+                    new String[] { siteNumber }, null, null, null, null );
+            cursors[ 2 ] = c;
 
             return cursors;
         }
@@ -111,7 +121,7 @@ public class RunwayDetailsActivity extends Activity {
 
             View view = mInflater.inflate( R.layout.runway_detail_view, null );
             setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.runway_detail_layout);
+            mMainLayout = (LinearLayout) view.findViewById( R.id.rwy_top_layout );
 
             Cursor apt = result[ 0 ];
             Cursor rwy = result[ 1 ];
@@ -123,14 +133,14 @@ public class RunwayDetailsActivity extends Activity {
             GuiUtils.showAirportTitle( mMainLayout, apt );
             if ( isHelipad ) {
                 // Helipad information
-                showHelipadInformation( rwy );
+                showHelipadInformation( result );
             } else {
-                // General information
-                showGeneralInformation( rwy );
+                // Common information
+                showCommonInformation( result );
                 // Base end information
-                showBaseEndInformation( apt, rwy );
+                showBaseEndInformation( result );
                 // Reciprocal end information
-                showReciprocalEndInformation( apt, rwy );
+                showReciprocalEndInformation( result );
             }
 
             // Cleanup cursors
@@ -141,45 +151,47 @@ public class RunwayDetailsActivity extends Activity {
 
     }
 
-    protected void showGeneralInformation( Cursor rwy ) {
+    protected void showCommonInformation( Cursor[] result ) {
+        // Common runway information
+        Cursor rwy = result[ 1 ];
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
-        TextView tv = (TextView) mMainLayout.findViewById( R.id.runway_general_label );
+        TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_common_label );
         tv.setText( "Runway "+runwayId );
-
-        TableLayout generalLayout = (TableLayout) mMainLayout.findViewById(
-                R.id.runway_general_layout );
+        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_common_details );
         String length = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
         String width = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_WIDTH ) );
-        addRow( generalLayout, "Dimensions", length+"' x "+width+"'" );
-        addSeparator( generalLayout );
+        addRow( layout, "Dimensions", length+"' x "+width+"'" );
+        addSeparator( layout );
         String surfaceType = rwy.getString( rwy.getColumnIndex( Runways.SURFACE_TYPE ) );
-        addRow( generalLayout, "Surface type", DataUtils.decodeSurfaceType( surfaceType ) );
-        addSeparator( generalLayout );
+        addRow( layout, "Surface type", DataUtils.decodeSurfaceType( surfaceType ) );
+        addSeparator( layout );
         String surfaceTreat = rwy.getString( rwy.getColumnIndex( Runways.SURFACE_TREATMENT ) );
-        addRow( generalLayout, "Surface treatment",
-                DataUtils.decodeSurfaceTreatment( surfaceTreat ) );
-        addSeparator( generalLayout );
+        addRow( layout, "Surface treatment", DataUtils.decodeSurfaceTreatment( surfaceTreat ) );
+        addSeparator( layout );
         String edgeLights = rwy.getString( rwy.getColumnIndex( Runways.EDGE_LIGHTS_INTENSITY ) );
-        addRow( generalLayout, "Edge lights", DataUtils.decodeRunwayEdgeLights( edgeLights ) );
+        addRow( layout, "Edge lights", DataUtils.decodeRunwayEdgeLights( edgeLights ) );
+
+        // Show remarks
+        showRemarks( R.id.rwy_common_remarks, result, runwayId );
     }
 
-    protected void showBaseEndInformation( Cursor apt, Cursor rwy ) {
+    protected void showBaseEndInformation( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        Cursor rwy = result[ 1 ];
+
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ID ) );
-        TextView tv = (TextView) mMainLayout.findViewById( R.id.runway_base_end_label );
+        TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_base_end_label );
         tv.setText( "Runway "+runwayId );
 
-        TableLayout baseEndLayout = (TableLayout) mMainLayout.findViewById(
-                R.id.runway_base_end_layout );
+        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_base_end_details );
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_HEADING ) );
         String variation = apt.getString( apt.getColumnIndex(
                 Airports.MAGNETIC_VARIATION_DEGREES ) );
         int magneticHeading = heading+DataUtils.getMagneticVariation( variation );
-        addRow( baseEndLayout, "Magnetic heading", String.format( "%03d\u00B0",
-                magneticHeading ) );
-        addSeparator( baseEndLayout );
-        String rhPattern = rwy.getString( rwy.getColumnIndex(
-                Runways.BASE_END_RIGHT_TRAFFIC ) );
-        addRow( baseEndLayout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
+        addRow( layout, "Magnetic heading", String.format( "%03d\u00B0", magneticHeading ) );
+        addSeparator( layout );
+        String rhPattern = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_RIGHT_TRAFFIC ) );
+        addRow( layout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
         double gradient = rwy.getDouble( rwy.getColumnIndex( Runways.BASE_END_GRADIENT ) );
         if ( gradient > 0 ) {
             String gradientString = String.format( "%.1f%%", gradient );
@@ -188,97 +200,103 @@ public class RunwayDetailsActivity extends Activity {
             if ( gradientDir.length() > 0 ) {
                 gradientString += " "+gradientDir;
             }
-            addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "Gradient", gradientString );
+            addSeparator( layout );
+            addRow( layout, "Gradient", gradientString );
         }
         String ilsType = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ILS_TYPE ) );
         if ( ilsType.length() > 0 ) {
-            addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "ILS type", ilsType );
+            addSeparator( layout );
+            addRow( layout, "ILS type", ilsType );
         }
         String arrestingDevice = rwy.getString( rwy.getColumnIndex( 
                 Runways.BASE_END_ARRESTING_DEVICE_TYPE ) );
         if ( arrestingDevice.length() > 0 ) {
-            addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "Arresting device", arrestingDevice );
+            addSeparator( layout );
+            addRow( layout, "Arresting device", arrestingDevice );
         }
         String apchLights = rwy.getString( rwy.getColumnIndex(
                 Runways.BASE_END_APCH_LIGHT_SYSTEM ) );
         if ( apchLights.length() > 0 ) {
-            addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "Approach lights", apchLights );
+            addSeparator( layout );
+            addRow( layout, "Approach lights", apchLights );
         }
         String markings = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_MARKING_TYPE ) );
         String condition = rwy.getString( rwy.getColumnIndex(
                 Runways.BASE_END_MARKING_CONDITION ) );
         if ( markings.length() > 0 ) {
-            addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "Markings", DataUtils.decodeRunwayMarking( markings )
+            addSeparator( layout );
+            addRow( layout, "Markings", DataUtils.decodeRunwayMarking( markings )
                     +", "+DataUtils.decodeRunwayMarkingCondition( condition ) );
         }
         String glideSlope = rwy.getString( rwy.getColumnIndex(
                 Runways.BASE_END_VISUAL_GLIDE_SLOPE ) );
         if ( glideSlope.length() > 0 ) {
-            addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "Glideslope", DataUtils.decodeGlideSlope( glideSlope ) );
+            addSeparator( layout );
+            addRow( layout, "Glideslope", DataUtils.decodeGlideSlope( glideSlope ) );
         }
         double glideAngle = rwy.getDouble( rwy.getColumnIndex(
                 Runways.BASE_END_GLIDE_ANGLE ) );
         if ( glideAngle > 0 ) {
-            addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "Glide angle",
+            addSeparator( layout );
+            addRow( layout, "Glide angle",
                     String.format( "%.02f\u00B0", glideAngle ) );
         }
         int displacedThreshold = rwy.getInt( rwy.getColumnIndex(
                 Runways.BASE_END_DISPLACED_THRESHOLD_LENGTH ) );
         if ( displacedThreshold > 0 ) {
-            addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "Displaced threshold",
+            addSeparator( layout );
+            addRow( layout, "Displaced threshold",
                     String.format( "%d'", displacedThreshold ) );
         }
         int tora = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_TORA ) );
         int toda = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_TODA ) );
         if ( tora > 0 ) {
-            addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "TORA/TODA", String.format( "%d'/%d'", tora, toda ) );
+            addSeparator( layout );
+            addRow( layout, "TORA/TODA", String.format( "%d'/%d'", tora, toda ) );
         }
         int lda = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_LDA ) );
         int asda = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_ASDA ) );
         if ( lda > 0 ) {
-            addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "LDA/ASDA", String.format( "%d'/%d'", lda, asda ) );
+            addSeparator( layout );
+            addRow( layout, "LDA/ASDA", String.format( "%d'/%d'", lda, asda ) );
         }
         int lahso = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_LAHSO_DISTANCE ) );
         String lahsoRunway = rwy.getString( rwy.getColumnIndex(
                 Runways.BASE_END_LAHSO_RUNWAY ) );
         if ( lahso > 0 ) {
-            addSeparator( baseEndLayout );
+            addSeparator( layout );
             if ( lahsoRunway.length() > 0 ) {
-                addRow( baseEndLayout, "LAHSO distance",
+                addRow( layout, "LAHSO distance",
                         String.format( "%d' to %s", lahso, lahsoRunway ) );
             } else {
-                addRow( baseEndLayout, "LAHSO distance", String.format( "%d'", lahso ) );
+                addRow( layout, "LAHSO distance", String.format( "%d'", lahso ) );
             }
         }
+
+        // Show remarks
+        showRemarks( R.id.rwy_base_end_remarks, result, runwayId );
     }
 
-    protected void showReciprocalEndInformation( Cursor apt, Cursor rwy ) {
+    protected void showReciprocalEndInformation( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        Cursor rwy = result[ 1 ];
+
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
-        TextView tv = (TextView) mMainLayout.findViewById( R.id.runway_reciprocal_end_label );
+        TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_reciprocal_end_label );
         tv.setText( "Runway "+runwayId );
 
-        TableLayout reciprocalEndLayout = (TableLayout) mMainLayout.findViewById(
-                R.id.runway_reciprocal_end_layout );
+        TableLayout layout = (TableLayout) mMainLayout.findViewById(
+                R.id.rwy_reciprocal_end_details );
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_HEADING ) );
         String variation = apt.getString( apt.getColumnIndex(
                 Airports.MAGNETIC_VARIATION_DEGREES ) );
         int magneticHeading = heading+DataUtils.getMagneticVariation( variation );
-        addRow( reciprocalEndLayout, "Magnetic heading", String.format( "%03d\u00B0",
+        addRow( layout, "Magnetic heading", String.format( "%03d\u00B0",
                 magneticHeading ) );
-        addSeparator( reciprocalEndLayout );
+        addSeparator( layout );
         String rhPattern = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_RIGHT_TRAFFIC ) );
-        addRow( reciprocalEndLayout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
+        addRow( layout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
         double gradient = rwy.getDouble( rwy.getColumnIndex( Runways.BASE_END_GRADIENT ) );
         if ( gradient > 0 ) {
             String gradientString = String.format( "%.1f%%", gradient );
@@ -287,127 +305,146 @@ public class RunwayDetailsActivity extends Activity {
             if ( gradientDir.length() > 0 ) {
                 gradientString += " "+gradientDir;
             }
-            addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "Gradient", gradientString );
+            addSeparator( layout );
+            addRow( layout, "Gradient", gradientString );
         }
         String ilsType = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ILS_TYPE ) );
         if ( ilsType.length() > 0 ) {
-            addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "ILS type", ilsType );
+            addSeparator( layout );
+            addRow( layout, "ILS type", ilsType );
         }
         String arrestingDevice = rwy.getString( rwy.getColumnIndex( 
                 Runways.RECIPROCAL_END_ARRESTING_DEVICE_TYPE ) );
         if ( arrestingDevice.length() > 0 ) {
-            addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "Arresting device", arrestingDevice );
+            addSeparator( layout );
+            addRow( layout, "Arresting device", arrestingDevice );
         }
         String apchLights = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_APCH_LIGHT_SYSTEM ) );
         if ( apchLights.length() > 0 ) {
-            addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "Approach lights", apchLights );
+            addSeparator( layout );
+            addRow( layout, "Approach lights", apchLights );
         }
         String markings = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_MARKING_TYPE ) );
         String condition = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_MARKING_CONDITION ) );
         if ( markings.length() > 0 ) {
-            addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "Markings", DataUtils.decodeRunwayMarking( markings )
+            addSeparator( layout );
+            addRow( layout, "Markings", DataUtils.decodeRunwayMarking( markings )
                     +", "+DataUtils.decodeRunwayMarkingCondition( condition ) );
         }
         String glideSlope = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_VISUAL_GLIDE_SLOPE ) );
         if ( glideSlope.length() > 0 ) {
-            addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "Glideslope", DataUtils.decodeGlideSlope( glideSlope ) );
+            addSeparator( layout );
+            addRow( layout, "Glideslope", DataUtils.decodeGlideSlope( glideSlope ) );
         }
         double glideAngle = rwy.getDouble( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_GLIDE_ANGLE ) );
         if ( glideAngle > 0 ) {
-            addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "Glide angle",
+            addSeparator( layout );
+            addRow( layout, "Glide angle",
                     String.format( "%.02f\u00B0", glideAngle ) );
         }
         int displacedThreshold = rwy.getInt( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_DISPLACED_THRESHOLD_LENGTH ) );
         if ( displacedThreshold > 0 ) {
-            addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "Displaced threshold",
+            addSeparator( layout );
+            addRow( layout, "Displaced threshold",
                     String.format( "%d'", displacedThreshold ) );
         }
         int tora = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_TORA ) );
         int toda = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_TODA ) );
         if ( tora > 0 ) {
-            addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "TORA/TODA", String.format( "%d'/%d'", tora, toda ) );
+            addSeparator( layout );
+            addRow( layout, "TORA/TODA", String.format( "%d'/%d'", tora, toda ) );
         }
         int lda = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_LDA ) );
         int asda = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_ASDA ) );
         if ( lda > 0 ) {
-            addSeparator( reciprocalEndLayout );
-            addRow( reciprocalEndLayout, "LDA/ASDA", String.format( "%d'/%d'", lda, asda ) );
+            addSeparator( layout );
+            addRow( layout, "LDA/ASDA", String.format( "%d'/%d'", lda, asda ) );
         }
         int lahso = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_LAHSO_DISTANCE ) );
         String lahsoRunway = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_LAHSO_RUNWAY ) );
         if ( lahso > 0 ) {
-            addSeparator( reciprocalEndLayout );
+            addSeparator( layout );
             if ( lahsoRunway.length() > 0 ) {
-                addRow( reciprocalEndLayout, "LAHSO distance",
+                addRow( layout, "LAHSO distance",
                         String.format( "%d' to %s", lahso, lahsoRunway ) );
             } else {
-                addRow( reciprocalEndLayout, "LAHSO distance", String.format( "%d'", lahso ) );
+                addRow( layout, "LAHSO distance", String.format( "%d'", lahso ) );
             }
         }
+
+        // Show remarks
+        showRemarks( R.id.rwy_reciprocal_end_remarks, result, runwayId );
     }
 
-    protected void showHelipadInformation( Cursor rwy ) {
+    protected void showHelipadInformation( Cursor[] result ) {
         // Hide the runway sections
-        TextView tv = (TextView) mMainLayout.findViewById( R.id.runway_base_end_label );
+        TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_base_end_label );
         tv.setVisibility( View.GONE );
-        TableLayout baseEndLayout = (TableLayout) mMainLayout.findViewById(
-                R.id.runway_base_end_layout );
-        baseEndLayout.setVisibility( View.GONE );
-        tv = (TextView) mMainLayout.findViewById( R.id.runway_reciprocal_end_label );
+        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_base_end_details );
+        layout.setVisibility( View.GONE );
+        tv = (TextView) mMainLayout.findViewById( R.id.rwy_reciprocal_end_label );
         tv.setVisibility( View.GONE );
-        TableLayout reciprocalEndLayout = (TableLayout) mMainLayout.findViewById(
-                R.id.runway_reciprocal_end_layout );
-        reciprocalEndLayout.setVisibility( View.GONE );
+        layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_reciprocal_end_details );
+        layout.setVisibility( View.GONE );
 
+        Cursor rwy = result[ 1 ];
         String helipadId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
-        tv = (TextView) mMainLayout.findViewById( R.id.runway_general_label );
+        tv = (TextView) mMainLayout.findViewById( R.id.rwy_common_label );
         tv.setText( "Helipad "+helipadId );
 
-        TableLayout generalLayout = (TableLayout) mMainLayout.findViewById(
-                R.id.runway_general_layout );
+        layout = (TableLayout) mMainLayout.findViewById(
+                R.id.rwy_common_details );
         String length = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
         String width = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_WIDTH ) );
-        addRow( generalLayout, "Dimensions", length+"' x "+width+"'" );
-        addSeparator( generalLayout );
+        addRow( layout, "Dimensions", length+"' x "+width+"'" );
+        addSeparator( layout );
         String surfaceType = rwy.getString( rwy.getColumnIndex( Runways.SURFACE_TYPE ) );
-        addRow( generalLayout, "Surface type", DataUtils.decodeSurfaceType( surfaceType ) );
-        addSeparator( generalLayout );
+        addRow( layout, "Surface type", DataUtils.decodeSurfaceType( surfaceType ) );
+        addSeparator( layout );
         String surfaceTreat = rwy.getString( rwy.getColumnIndex( Runways.SURFACE_TREATMENT ) );
-        addRow( generalLayout, "Surface treatment",
-                DataUtils.decodeSurfaceTreatment( surfaceTreat ) );
+        addRow( layout, "Surface treatment", DataUtils.decodeSurfaceTreatment( surfaceTreat ) );
         String markings = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_MARKING_TYPE ) );
         String condition = rwy.getString( rwy.getColumnIndex(
                 Runways.BASE_END_MARKING_CONDITION ) );
         if ( markings.length() > 0 ) {
-            addSeparator( baseEndLayout );
-            addRow( baseEndLayout, "Markings", DataUtils.decodeRunwayMarking( markings )
+            addSeparator( layout );
+            addRow( layout, "Markings", DataUtils.decodeRunwayMarking( markings )
                     +", "+DataUtils.decodeRunwayMarkingCondition( condition ) );
         }
-        addSeparator( generalLayout );
+        addSeparator( layout );
         String edgeLights = rwy.getString( rwy.getColumnIndex( Runways.EDGE_LIGHTS_INTENSITY ) );
-        addRow( generalLayout, "Edge lights", DataUtils.decodeRunwayEdgeLights( edgeLights ) );
-        addSeparator( generalLayout );
-        String rhPattern = rwy.getString( rwy.getColumnIndex(
-                Runways.BASE_END_RIGHT_TRAFFIC ) );
-        addRow( generalLayout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
+        addRow( layout, "Edge lights", DataUtils.decodeRunwayEdgeLights( edgeLights ) );
+        addSeparator( layout );
+        String rhPattern = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_RIGHT_TRAFFIC ) );
+        addRow( layout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
     }
 
-    protected void addRow( TableLayout table, String label, String value ) {
+    protected void showRemarks( int id, Cursor[] result, String runwayId ) {
+        Cursor rmk = result[ 2 ];
+        if ( rmk.moveToFirst() ) {
+            int rmkNum = 0;
+            LinearLayout layout = (LinearLayout) mMainLayout.findViewById( id );
+            do {
+                String rmkName = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_NAME ) );
+                if ( rmkName.endsWith( "-"+runwayId ) ) {
+                    ++rmkNum;
+                    String rmkText = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
+                    addRemarkRow( layout, rmkNum, rmkText );
+                }
+            } while ( rmk.moveToNext() );
+            if ( rmkNum > 0 ) {
+                layout.setVisibility( View.VISIBLE );
+            }
+        }
+    }
+
+    protected void addRow( TableLayout table, String label, String text ) {
         TableRow row = new TableRow( this );
         row.setPadding( 8, 8, 8, 8 );
         TextView tvLabel = new TextView( this );
@@ -418,13 +455,25 @@ public class RunwayDetailsActivity extends Activity {
         row.addView( tvLabel, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
         TextView tvValue = new TextView( this );
-        tvValue.setText( value );
-        tvValue.setMarqueeRepeatLimit( -1 );
+        tvValue.setText( text );
         tvValue.setGravity( Gravity.RIGHT );
-        tvLabel.setPadding( 4, 4, 2, 4 );
+        tvValue.setPadding( 4, 4, 2, 4 );
         row.addView( tvValue, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
         table.addView( row, new TableLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addRemarkRow( LinearLayout layout, int row, String remark ) {
+        TextView tv = new TextView( this );
+        int index = remark.indexOf( ' ' );
+        while ( remark.charAt( index ) == ' ' ) {
+            ++index;
+        }
+        tv.setText( "\u2022 "+remark.substring( index ) );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 12, 1, 12, 1 );
+        layout.addView( tv, row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 

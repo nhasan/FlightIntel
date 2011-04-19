@@ -218,6 +218,13 @@ public class DatabaseManager {
         public static final String RECIPROCAL_END_LAHSO_RUNWAY = "RECIPROCAL_END_LAHSO_RUNWAY";
     }
 
+    public static final class Remarks implements BaseColumns {
+        public static final String TABLE_NAME = "remarks";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
+        public static final String REMARK_NAME = "REMARK_NAME";
+        public static final String REMARK_TEXT = "REMARK_TEXT";
+    }
+
     public static final class Catalog implements BaseColumns {
         public static final String TABLE_NAME = "catalog";
         public static final String TYPE = "TYPE";
