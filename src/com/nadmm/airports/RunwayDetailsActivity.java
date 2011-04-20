@@ -537,15 +537,25 @@ public class RunwayDetailsActivity extends Activity {
     }
 
     protected void addRemarkRow( LinearLayout layout, int row, String remark ) {
-        TextView tv = new TextView( this );
         int index = remark.indexOf( ' ' );
         while ( remark.charAt( index ) == ' ' ) {
             ++index;
         }
-        tv.setText( "\u2022 "+remark.substring( index ) );
+        LinearLayout innerLayout = new LinearLayout( this );
+        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
+        TextView tv = new TextView( this );
         tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 12, 1, 12, 1 );
-        layout.addView( tv, row, new LinearLayout.LayoutParams(
+        tv.setPadding( 12, 1, 2, 1 );
+        tv.setText( "\u2022 " );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
+        tv = new TextView( this );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 2, 0, 12, 1 );
+        tv.setText( remark.substring( index ) );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
+        layout.addView( innerLayout, row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
