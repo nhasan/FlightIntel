@@ -411,7 +411,36 @@ public final class DataUtils {
         } else if ( glideSlope.equals( "PNIR" ) ) {
             return "Panel system on right side";
         } else {
-            return "Unknown";
+            return glideSlope;
+        }
+    }
+
+    public static String decodeControllingObjectLighted( String lighted ) {
+        if ( lighted.equals( "M" ) ) {
+            return "marked";
+        } else if ( lighted.equals( "L" ) ) {
+            return "lighted";
+        } else if ( lighted.equals( "ML" ) ) {
+            return "marked & lighted";
+        } else {
+            return lighted;
+        }
+    }
+
+    public static int decodeControllingObjectOffset( String offset ) {
+        return Integer.valueOf( offset.substring( 0, offset.length()-1 ) );
+    }
+
+    public static String decodeControllingObjectOffsetDirection( String offset ) {
+        String direction = offset.substring( offset.length()-1 );
+        if ( direction.equals( "R" ) ) {
+            return "right";
+        } else if ( direction.equals( "L" ) ) {
+            return "left";
+        } else if ( direction.equals( "B" ) ) {
+            return "both sides";
+        } else {
+            return direction;
         }
     }
 

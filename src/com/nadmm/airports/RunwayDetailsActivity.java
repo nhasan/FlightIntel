@@ -275,6 +275,7 @@ public class RunwayDetailsActivity extends Activity {
 
         // Show remarks
         showRemarks( R.id.rwy_base_end_remarks, result, runwayId );
+        showBaseEndObstructions( R.id.rwy_base_end_remarks, result );
     }
 
     protected void showReciprocalEndInformation( Cursor[] result ) {
@@ -380,6 +381,7 @@ public class RunwayDetailsActivity extends Activity {
 
         // Show remarks
         showRemarks( R.id.rwy_reciprocal_end_remarks, result, runwayId );
+        showReciprocalEndObstructions( R.id.rwy_reciprocal_end_remarks, result );
     }
 
     protected void showHelipadInformation( Cursor[] result ) {
@@ -423,13 +425,16 @@ public class RunwayDetailsActivity extends Activity {
         addSeparator( layout );
         String rhPattern = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_RIGHT_TRAFFIC ) );
         addRow( layout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
+
+        // Show remarks
+        showRemarks( R.id.rwy_base_end_remarks, result, helipadId );
     }
 
-    protected void showRemarks( int id, Cursor[] result, String runwayId ) {
+    protected void showRemarks( int resid, Cursor[] result, String runwayId ) {
         Cursor rmk = result[ 2 ];
         if ( rmk.moveToFirst() ) {
             int rmkNum = 0;
-            LinearLayout layout = (LinearLayout) mMainLayout.findViewById( id );
+            LinearLayout layout = (LinearLayout) mMainLayout.findViewById( resid );
             do {
                 String rmkName = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_NAME ) );
                 if ( rmkName.endsWith( "-"+runwayId ) ) {
@@ -441,6 +446,73 @@ public class RunwayDetailsActivity extends Activity {
             if ( rmkNum > 0 ) {
                 layout.setVisibility( View.VISIBLE );
             }
+        }
+    }
+
+    protected void showBaseEndObstructions( int resid, Cursor[] result ) {
+        Cursor rwy = result[ 1 ];
+        String object = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_CONTROLLING_OBJECT ) );
+        if ( object.length() > 0 ) {
+            String lighted = rwy.getString( rwy.getColumnIndex( 
+                    Runways.BASE_END_CONTROLLING_OBJECT_LIGHTED ) );
+            int height = rwy.getInt( rwy.getColumnIndex( 
+                    Runways.BASE_END_CONTROLLING_OBJECT_HEIGHT ) );
+            String distance = rwy.getString( rwy.getColumnIndex( 
+                    Runways.BASE_END_CONTROLLING_OBJECT_DISTANCE ) );
+            String offset = rwy.getString( rwy.getColumnIndex( 
+                    Runways.BASE_END_CONTROLLING_OBJECT_OFFSET ) );
+            int slope = rwy.getInt( rwy.getColumnIndex(
+                    Runways.BASE_END_CONTROLLING_OBJECT_SLOPE ) );
+
+            String text = String.format( " %d' %s, ", height, object );
+            if ( lighted.length() > 0 ) {
+                text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
+            }
+            text += String.format( "%s' from runway end, ", distance );
+            text += String.format( "%d' %s of centerline",
+                    DataUtils.decodeControllingObjectOffset( offset ),
+                    DataUtils.decodeControllingObjectOffsetDirection( offset ) );
+            if ( slope > 0 ) {
+                text += String.format( ", %d:1 slope to clear", slope );
+            }
+
+            LinearLayout layout = (LinearLayout) mMainLayout.findViewById( resid );
+            addRemarkRow( layout, 1, text );
+            layout.setVisibility( View.VISIBLE );
+        }
+    }
+
+    protected void showReciprocalEndObstructions( int resid, Cursor[] result ) {
+        Cursor rwy = result[ 1 ];
+        String object = rwy.getString( rwy.getColumnIndex(
+                Runways.RECIPROCAL_END_CONTROLLING_OBJECT ) );
+        if ( object.length() > 0 ) {
+            String lighted = rwy.getString( rwy.getColumnIndex( 
+                    Runways.RECIPROCAL_END_CONTROLLING_OBJECT_LIGHTED ) );
+            int height = rwy.getInt( rwy.getColumnIndex( 
+                    Runways.RECIPROCAL_END_CONTROLLING_OBJECT_HEIGHT ) );
+            int distance = rwy.getInt( rwy.getColumnIndex( 
+                    Runways.RECIPROCAL_END_CONTROLLING_OBJECT_DISTANCE ) );
+            String offset = rwy.getString( rwy.getColumnIndex( 
+                    Runways.RECIPROCAL_END_CONTROLLING_OBJECT_OFFSET ) );
+            int slope = rwy.getInt( rwy.getColumnIndex(
+                    Runways.RECIPROCAL_END_CONTROLLING_OBJECT_SLOPE ) );
+
+            String text = String.format( " %d' %s, ", height, object );
+            if ( lighted.length() > 0 ) {
+                text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
+            }
+            text += String.format( "%d' from runway end, ", distance );
+            text += String.format( "%d' %s of centerline",
+                    DataUtils.decodeControllingObjectOffset( offset ),
+                    DataUtils.decodeControllingObjectOffsetDirection( offset ) );
+            if ( slope > 0 ) {
+                text += String.format( ", %d:1 slope to clear", slope );
+            }
+
+            LinearLayout layout = (LinearLayout) mMainLayout.findViewById( resid );
+            addRemarkRow( layout, 1, text );
+            layout.setVisibility( View.VISIBLE );
         }
     }
 
