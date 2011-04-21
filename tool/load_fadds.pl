@@ -174,6 +174,7 @@ my $create_airports_table = "CREATE TABLE airports ("
         ."ELEVATION_MSL INTEGER, "
         ."ELEVATION_METHOD TEXT, "
         ."MAGNETIC_VARIATION_DEGREES INTEGER, "
+        ."MAGNETIC_VARIATION_DIRECTION TEXT, "
         ."MAGNETIC_VARIATION_YEAR TEXT, "
         ."PATTERN_ALTITUDE_AGL INTEGER, "
         ."SECTIONAL_CHART TEXT, "
@@ -239,6 +240,7 @@ my $insert_airports_record = "INSERT INTO airports ("
         ."ELEVATION_MSL, "
         ."ELEVATION_METHOD, "
         ."MAGNETIC_VARIATION_DEGREES, "
+        ."MAGNETIC_VARIATION_DIRECTION, "
         ."MAGNETIC_VARIATION_YEAR, "
         ."PATTERN_ALTITUDE_AGL, "
         ."SECTIONAL_CHART, "
@@ -276,12 +278,13 @@ my $insert_airports_record = "INSERT INTO airports ("
         ."WIND_INDICATOR, "
         ."ICAO_CODE"
         .") VALUES ("
-        ."?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
-        ."? ,?, ?, ?, ?, ?, ?)";
+        ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?)";
 
 my $create_runways_table = "CREATE TABLE runways ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -439,16 +442,14 @@ my $insert_runways_record = "INSERT INTO runways ("
         ."RECIPROCAL_END_LAHSO_DISTANCE, "
         ."RECIPROCAL_END_LAHSO_RUNWAY"
         .") VALUES ("
-        ."?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?)";
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?)";
  
 my $create_attendance_table = "CREATE TABLE attendance ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -590,79 +591,81 @@ while ( my $line = <APT_FILE> )
         #ELEVATION_METHOD
         $sth_apt->bind_param( 25, substrim( $line,  575,  1 ) );
         #MAGNETIC_VARIATION_DEGREES
-        $sth_apt->bind_param( 26, substrim( $line,  576,  3 ) );
+        $sth_apt->bind_param( 26, substrim( $line,  576,  2 ) );
+        #MAGNETIC_VARIATION_DIRECTION
+        $sth_apt->bind_param( 27, substrim( $line,  578,  1 ) );
         #MAGNETIC_VARIATION_YEAR
-        $sth_apt->bind_param( 27, substrim( $line,  579,  4 ) );
+        $sth_apt->bind_param( 28, substrim( $line,  579,  4 ) );
         #PATTERN_ALTITUDE_AGL
-        $sth_apt->bind_param( 28, substrim( $line,  583,  4 ) );
+        $sth_apt->bind_param( 29, substrim( $line,  583,  4 ) );
         #SECTIONAL_CHART
-        $sth_apt->bind_param( 29, substrim( $line,  587, 30 ) );
+        $sth_apt->bind_param( 30, substrim( $line,  587, 30 ) );
         #DISTANCE_FROM_CITY_NM
-        $sth_apt->bind_param( 30, substrim( $line,  617,  2 ) );
+        $sth_apt->bind_param( 31, substrim( $line,  617,  2 ) );
         #DIRECTION_FROM_CITY
-        $sth_apt->bind_param( 31, substrim( $line,  619,  3 ) );
+        $sth_apt->bind_param( 32, substrim( $line,  619,  3 ) );
         #BOUNDARY_ARTCC_ID
-        $sth_apt->bind_param( 32, substrim( $line,  627,  4 ) );
+        $sth_apt->bind_param( 33, substrim( $line,  627,  4 ) );
         #BOUNDARY_ARTCC_NAME
-        $sth_apt->bind_param( 33, substrim( $line,  634, 30 ) );
+        $sth_apt->bind_param( 34, substrim( $line,  634, 30 ) );
         #FSS_ON_SITE
-        $sth_apt->bind_param( 34, substrim( $line,  701,  1 ) );
+        $sth_apt->bind_param( 35, substrim( $line,  701,  1 ) );
         #FSS_ID
-        $sth_apt->bind_param( 35, substrim( $line,  702,  4 ) );
+        $sth_apt->bind_param( 36, substrim( $line,  702,  4 ) );
         #FSS_NAME
-        $sth_apt->bind_param( 36, substrim( $line,  706, 30 ) );
+        $sth_apt->bind_param( 37, substrim( $line,  706, 30 ) );
         #FSS_LOCAL_PHONE
-        $sth_apt->bind_param( 37, substrim( $line,  736, 16 ) );
+        $sth_apt->bind_param( 38, substrim( $line,  736, 16 ) );
         #FSS_TOLLFREE_PHONE
-        $sth_apt->bind_param( 38, substrim( $line,  752, 16 ) );
+        $sth_apt->bind_param( 39, substrim( $line,  752, 16 ) );
         #NOTAM_FACILITY_ID
-        $sth_apt->bind_param( 39, substrim( $line,  818,  4 ) );
+        $sth_apt->bind_param( 40, substrim( $line,  818,  4 ) );
         #NOTAM_D_AVAILABLE
-        $sth_apt->bind_param( 40, substrim( $line,  822,  1 ) );
+        $sth_apt->bind_param( 41, substrim( $line,  822,  1 ) );
         #ACTIVATION_DATE
-        $sth_apt->bind_param( 41, substrim( $line,  823,  7 ) );
+        $sth_apt->bind_param( 42, substrim( $line,  823,  7 ) );
         #STATUS_CODE
-        $sth_apt->bind_param( 42, substrim( $line,  830,  2 ) );
+        $sth_apt->bind_param( 43, substrim( $line,  830,  2 ) );
         #INTL_ENTRY_AIRPORT
-        $sth_apt->bind_param( 43, substrim( $line,  867,  1 ) );
+        $sth_apt->bind_param( 44, substrim( $line,  867,  1 ) );
         #CUSTOMS_LANDING_RIGHTS_AIRPORT
-        $sth_apt->bind_param( 44, substrim( $line,  868,  1 ) );
+        $sth_apt->bind_param( 45, substrim( $line,  868,  1 ) );
         #CIVIL_MILITARY_JOINT_USE
-        $sth_apt->bind_param( 45, substrim( $line,  869,  1 ) );
+        $sth_apt->bind_param( 46, substrim( $line,  869,  1 ) );
         #MILITARY_LANDING_RIGHTS
-        $sth_apt->bind_param( 46, substrim( $line,  870,  1 ) );
+        $sth_apt->bind_param( 47, substrim( $line,  870,  1 ) );
         #FUEL_TYPES
-        $sth_apt->bind_param( 47, substrim( $line,  914, 40 ) );
+        $sth_apt->bind_param( 48, substrim( $line,  914, 40 ) );
         #AIRFRAME_REPAIR_SERVICE
-        $sth_apt->bind_param( 48, substrim( $line,  954,  5 ) );
+        $sth_apt->bind_param( 49, substrim( $line,  954,  5 ) );
         #POWER_PLANT_REPAIR_SERVICE
-        $sth_apt->bind_param( 49, substrim( $line,  959,  5 ) );
+        $sth_apt->bind_param( 50, substrim( $line,  959,  5 ) );
         #BOTTLED_O2_AVAILABLE
-        $sth_apt->bind_param( 50, substrim( $line,  964,  8 ) );
+        $sth_apt->bind_param( 51, substrim( $line,  964,  8 ) );
         #BULK_O2_AVAILABLE
-        $sth_apt->bind_param( 51, substrim( $line,  972,  8 ) );
+        $sth_apt->bind_param( 52, substrim( $line,  972,  8 ) );
         #LIGHTING_SCHEDULE
-        $sth_apt->bind_param( 52, substrim( $line,  980,  9 ) );
+        $sth_apt->bind_param( 53, substrim( $line,  980,  9 ) );
         #TOWER_ON_SITE
-        $sth_apt->bind_param( 53, substrim( $line,  989,  1 ) );
+        $sth_apt->bind_param( 54, substrim( $line,  989,  1 ) );
         #UNICOM_FREQS
-        $sth_apt->bind_param( 54, substrim( $line,  990, 42 ) );
+        $sth_apt->bind_param( 55, substrim( $line,  990, 42 ) );
         #CTAF_FREQ
-        $sth_apt->bind_param( 55, substrim( $line, 1032,  7 ) );
+        $sth_apt->bind_param( 56, substrim( $line, 1032,  7 ) );
         #SEGMENTED_CIRCLE
-        $sth_apt->bind_param( 56, substrim( $line, 1039,  4 ) );
+        $sth_apt->bind_param( 57, substrim( $line, 1039,  4 ) );
         #BEACON_COLOR
-        $sth_apt->bind_param( 57, substrim( $line, 1043,  3 ) );
+        $sth_apt->bind_param( 58, substrim( $line, 1043,  3 ) );
         #LANDING_FEE
-        $sth_apt->bind_param( 58, substrim( $line, 1046,  1 ) );
+        $sth_apt->bind_param( 59, substrim( $line, 1046,  1 ) );
         #STORAGE_FACILITY
-        $sth_apt->bind_param( 59, substrim( $line, 1168, 12 ) );
+        $sth_apt->bind_param( 60, substrim( $line, 1168, 12 ) );
         #OTHER_SERVICES
-        $sth_apt->bind_param( 60, substrim( $line, 1180, 71 ) );
+        $sth_apt->bind_param( 61, substrim( $line, 1180, 71 ) );
         #WIND_INDICATOR
-        $sth_apt->bind_param( 61, substrim( $line, 1251,  3 ) );
+        $sth_apt->bind_param( 62, substrim( $line, 1251,  3 ) );
         #ICAO_CODE
-        $sth_apt->bind_param( 62, substrim( $line, 1254,  7 ) );
+        $sth_apt->bind_param( 63, substrim( $line, 1254,  7 ) );
 
         $sth_apt->execute();
     }
