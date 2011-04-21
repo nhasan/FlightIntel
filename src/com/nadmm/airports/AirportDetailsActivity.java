@@ -146,6 +146,12 @@ public class AirportDetailsActivity extends Activity {
                 int heliNum = 0;
                 do {
                     String rwyId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
+                    int length = rwy.getInt( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
+
+                    if ( length == 0 ) {
+                        continue;
+                    }
+
                     if ( rwyId.startsWith( "H" ) ) {
                         // This is a helipad
                         if ( heliNum > 0 ) {
@@ -278,8 +284,8 @@ public class AirportDetailsActivity extends Activity {
     protected void addRunwayRow( TableLayout table, Cursor c ) {
         String siteNumber = c.getString( c.getColumnIndex( Runways.SITE_NUMBER ) );
         String runwayId = c.getString( c.getColumnIndex( Runways.RUNWAY_ID ) );
-        String length = c.getString( c.getColumnIndex( Runways.RUNWAY_LENGTH ) );
-        String width = c.getString( c.getColumnIndex( Runways.RUNWAY_WIDTH ) );
+        int length = c.getInt( c.getColumnIndex( Runways.RUNWAY_LENGTH ) );
+        int width = c.getInt( c.getColumnIndex( Runways.RUNWAY_WIDTH ) );
         String surfaceType = c.getString( c.getColumnIndex( Runways.SURFACE_TYPE ) );
 
         TableRow row = new TableRow( this );
@@ -297,7 +303,7 @@ public class AirportDetailsActivity extends Activity {
         LinearLayout layout = new LinearLayout( this );
         layout.setOrientation( LinearLayout.VERTICAL );
         tv = new TextView( this );
-        tv.setText( length+"' x "+width+"'" );
+        tv.setText( String.valueOf( length )+"' x "+String.valueOf( width )+"'" );
         tv.setGravity( Gravity.RIGHT );
         tv.setPadding( 4, 4, 4, 0 );
         layout.addView( tv, new LinearLayout.LayoutParams( 
