@@ -19,6 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
  -->
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
@@ -28,12 +29,12 @@
             android:orientation="vertical">
         <include layout="@layout/airport_title_layout" />
         <LinearLayout android:id="@+id/detail_content_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="12dp"
-        android:paddingTop="5dp"
-        android:paddingRight="12dp"
-        android:paddingBottom="5dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="12dp"
+                android:paddingTop="5dp"
+                android:paddingRight="12dp"
+                android:paddingBottom="5dp"
         android:orientation="vertical">
 	        <TextView android:id="@+id/detail_comm_label"
 	                style="@style/TextSmall.Bold"
