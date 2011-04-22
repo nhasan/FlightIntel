@@ -21,12 +21,12 @@ package com.nadmm.airports;
 
 public final class DataUtils {
 
-    public static int getMagneticVariation( String variation ) {
-        int var = Integer.valueOf( variation.substring( 0, 2 ) );
-        if ( variation.substring( 2 ).equals( "E" ) ) {
-            var *= -1;
+    public static int calculateMagneticHeading( int trueHeading, int variation ) {
+        int magneticHeading = ( trueHeading+variation+360 ) % 360;
+        if ( magneticHeading == 0 ) {
+            magneticHeading = 360;
         }
-        return var;
+        return magneticHeading;
     }
 
     public static String decodeOwnershipType( String ownership ) {

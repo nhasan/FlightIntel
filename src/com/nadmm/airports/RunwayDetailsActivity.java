@@ -185,10 +185,13 @@ public class RunwayDetailsActivity extends Activity {
 
         TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_base_end_details );
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_HEADING ) );
-        String variation = apt.getString( apt.getColumnIndex(
-                Airports.MAGNETIC_VARIATION_DEGREES ) );
-        int magneticHeading = heading+DataUtils.getMagneticVariation( variation );
-        addRow( layout, "Magnetic heading", String.format( "%03d\u00B0", magneticHeading ) );
+        int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
+        String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
+        if ( dir.equals( "E" ) ) {
+            variation *= -1;
+        }
+        addRow( layout, "Magnetic heading", String.format( "%03d\u00B0",
+                DataUtils.calculateMagneticHeading( heading, variation ) ) );
         addSeparator( layout );
         String rhPattern = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_RIGHT_TRAFFIC ) );
         addRow( layout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
@@ -289,11 +292,13 @@ public class RunwayDetailsActivity extends Activity {
         TableLayout layout = (TableLayout) mMainLayout.findViewById(
                 R.id.rwy_reciprocal_end_details );
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_HEADING ) );
-        String variation = apt.getString( apt.getColumnIndex(
-                Airports.MAGNETIC_VARIATION_DEGREES ) );
-        int magneticHeading = heading+DataUtils.getMagneticVariation( variation );
+        int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
+        String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
+        if ( dir.equals( "E" ) ) {
+            variation *= -1;
+        }
         addRow( layout, "Magnetic heading", String.format( "%03d\u00B0",
-                magneticHeading ) );
+                DataUtils.calculateMagneticHeading( heading, variation ) ) );
         addSeparator( layout );
         String rhPattern = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_RIGHT_TRAFFIC ) );
