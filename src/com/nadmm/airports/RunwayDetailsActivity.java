@@ -303,11 +303,11 @@ public class RunwayDetailsActivity extends Activity {
         String rhPattern = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_RIGHT_TRAFFIC ) );
         addRow( layout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
-        double gradient = rwy.getDouble( rwy.getColumnIndex( Runways.BASE_END_GRADIENT ) );
+        double gradient = rwy.getDouble( rwy.getColumnIndex( Runways.RECIPROCAL_END_GRADIENT ) );
         if ( gradient > 0 ) {
             String gradientString = String.format( "%.1f%%", gradient );
             String gradientDir = rwy.getString( rwy.getColumnIndex(
-                    Runways.BASE_END_GRADIENT_DIRECTION ) );
+                    Runways.RECIPROCAL_END_GRADIENT_DIRECTION ) );
             if ( gradientDir.length() > 0 ) {
                 gradientString += " "+gradientDir;
             }
