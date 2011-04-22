@@ -232,7 +232,7 @@ public class AirportDetailsActivity extends Activity {
         String varYear = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_YEAR ) );
         addSeparator( layout );
         addRow( layout, "Magnetic variation", 
-                String.format( "%d%s (%s)", variation, dir, varYear ) );
+                String.format( "%d\u00B0 %s (%s)", variation, dir, varYear ) );
     }
 
     protected void showServicesDetails( Cursor[] result ) {
