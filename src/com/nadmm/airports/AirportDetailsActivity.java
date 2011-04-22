@@ -37,6 +37,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -294,22 +295,19 @@ public class AirportDetailsActivity extends Activity {
     }
 
     protected void addClickableRow( TableLayout table, String label ) {
-        TableRow row = new TableRow( this );
-        row.setPadding( 8, 8, 8, 8 );
-        row.setLayoutParams( new TableLayout.LayoutParams( 
-                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT ) );
-
+        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
         TextView tv = new TextView( this );
         tv.setText( label );
         tv.setGravity( Gravity.CENTER_VERTICAL );
-        tv.setPadding( 4, 4, 4, 4 );
+        tv.setPadding( 4, 4, 2, 4 );
         row.addView( tv, new TableRow.LayoutParams( 
-                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT, 1f ) );
+                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1f ) );
         ImageView iv = new ImageView( this );
         iv.setImageResource( R.drawable.arrow );
-        iv.setPadding( 6, 0, 4, 0 );
+        iv.setScaleType( ScaleType.CENTER );
+        iv.setPadding( 4, 10, 2, 4 );
         row.addView( iv, new TableRow.LayoutParams( 
-                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
+                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 0f ) );
         table.addView( row );
     }
 
@@ -331,7 +329,6 @@ public class AirportDetailsActivity extends Activity {
         tv.setPadding( 4, 4, 4, 4 );
         row.addView( tv, new TableRow.LayoutParams( 
                 TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT, 1f ) );
-
         LinearLayout layout = new LinearLayout( this );
         layout.setOrientation( LinearLayout.VERTICAL );
         tv = new TextView( this );
@@ -351,6 +348,7 @@ public class AirportDetailsActivity extends Activity {
         ImageView iv = new ImageView( this );
         iv.setImageResource( R.drawable.arrow );
         iv.setPadding( 6, 0, 4, 0 );
+        iv.setScaleType( ScaleType.CENTER );
         row.addView( iv, new TableRow.LayoutParams(
                 TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
 
@@ -367,6 +365,7 @@ public class AirportDetailsActivity extends Activity {
                 intent.putExtras( (Bundle) v.getTag() );
                 startActivity( intent );
             }
+
         } );
 
         table.addView( row );
