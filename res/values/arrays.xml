@@ -21,13 +21,11 @@
  -->
 <resources>
     <string-array name="nearby_radius_entries">
-        <item>10 Miles</item>
         <item>20 Miles</item>
         <item>30 Miles</item>
         <item>50 Miles</item>
     </string-array>
     <string-array name="nearby_radius_values">
-        <item>10</item>
         <item>20</item>
         <item>30</item>
         <item>50</item>

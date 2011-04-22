@@ -62,6 +62,6 @@
                 android:title="Nearby radius"
                 android:entries="@array/nearby_radius_entries"
                 android:entryValues="@array/nearby_radius_values"
-                android:defaultValue="20" />
+                android:defaultValue="30" />
     </PreferenceCategory>
 </PreferenceScreen>
