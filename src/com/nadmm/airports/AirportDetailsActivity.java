@@ -301,14 +301,15 @@ public class AirportDetailsActivity extends Activity {
         tv.setGravity( Gravity.CENTER_VERTICAL );
         tv.setPadding( 4, 4, 2, 4 );
         row.addView( tv, new TableRow.LayoutParams( 
-                TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 1f ) );
+                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT, 2f ) );
         ImageView iv = new ImageView( this );
         iv.setImageResource( R.drawable.arrow );
         iv.setScaleType( ScaleType.CENTER );
         iv.setPadding( 4, 10, 2, 4 );
         row.addView( iv, new TableRow.LayoutParams( 
                 TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
-        table.addView( row );
+        table.addView( row, new TableLayout.LayoutParams( 
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
     protected void addRunwayRow( TableLayout table, Cursor c ) {
@@ -318,13 +319,11 @@ public class AirportDetailsActivity extends Activity {
         int width = c.getInt( c.getColumnIndex( Runways.RUNWAY_WIDTH ) );
         String surfaceType = c.getString( c.getColumnIndex( Runways.SURFACE_TYPE ) );
 
-        TableRow row = new TableRow( this );
-        row.setPadding( 8, 8, 8, 8 );
-
+        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
         TextView tv = new TextView( this );
         tv.setText( runwayId );
         tv.setGravity( Gravity.CENTER_VERTICAL );
-        tv.setPadding( 4, 4, 4, 4 );
+        tv.setPadding( 4, 0, 4, 0 );
         row.addView( tv, new TableRow.LayoutParams( 
                 TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 1f ) );
         LinearLayout layout = new LinearLayout( this );
@@ -332,13 +331,13 @@ public class AirportDetailsActivity extends Activity {
         tv = new TextView( this );
         tv.setText( String.valueOf( length )+"' x "+String.valueOf( width )+"'" );
         tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 4, 4, 4, 0 );
+        tv.setPadding( 4, 0, 4, 0 );
         layout.addView( tv, new LinearLayout.LayoutParams( 
                 TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT ) );
         tv = new TextView( this );
         tv.setText( DataUtils.decodeSurfaceType( surfaceType ) );
         tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 4, 0, 4, 4 );
+        tv.setPadding( 4, 0, 4, 0 );
         layout.addView( tv, new LinearLayout.LayoutParams( 
                 TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT ) );
         row.addView( layout, new TableRow.LayoutParams( 
@@ -367,14 +366,13 @@ public class AirportDetailsActivity extends Activity {
         } );
 
         table.addView( row, new TableLayout.LayoutParams( 
-                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT ) );
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
     protected void addSeparator( TableLayout layout ) {
         View separator = new View( this );
         separator.setBackgroundColor( Color.LTGRAY );
-        layout.addView( separator, 
-                new TableLayout.LayoutParams( TableLayout.LayoutParams.FILL_PARENT, 1 ) );
+        layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
     }
 
 }
