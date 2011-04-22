@@ -30,7 +30,7 @@
                 android:defaultValue="true" />
         <ListPreference
             android:key="startup_show_activity"
-            android:title="Show screen"
+            android:title="Startup screen"
             android:entries="@array/startup_activity_entries"
             android:entryValues="@array/startup_activity_values"
             android:defaultValue="browse" />

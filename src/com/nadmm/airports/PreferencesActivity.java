@@ -71,15 +71,15 @@ public class PreferencesActivity extends PreferenceActivity
         if ( key.equals( KEY_STARTUP_SHOW_ACTIVITY ) ) {
             String value = mSharedPrefs.getString( KEY_STARTUP_SHOW_ACTIVITY, "browse" );
             if ( value.equals( "browse" ) ) {
-                pref.setSummary( "Browse airports screen" );
+                pref.setSummary( "Show 'Browse' screen at startup" );
             } else if ( value.equals( "favorite" ) ) {
-                pref.setSummary( "Favorite airports screen" );
+                pref.setSummary( "Show 'Favorites' screen at startup" );
             } else if ( value.equals( "nearby" ) ) {
-                pref.setSummary( "Nearby airports screen" );
+                pref.setSummary( "Show 'Nearby' screen at startup" );
             }
         } else if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
             String radius = mSharedPrefs.getString( key, "20" );
-            pref.setSummary( "Show within a radius of "+radius+ " miles" );
+            pref.setSummary( "Show airports within a radius of "+radius+ " miles" );
         } else if ( key.equals( KEY_SEARCH_RESULT_LIMIT ) ) {
             String value = mSharedPrefs.getString( key, "20" );
             int limit;
