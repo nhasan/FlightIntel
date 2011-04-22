@@ -301,12 +301,19 @@ public class AirportDetailsActivity extends Activity {
         tv.setGravity( Gravity.CENTER_VERTICAL );
         tv.setPadding( 4, 4, 2, 4 );
         row.addView( tv, new TableRow.LayoutParams( 
-                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT, 2f ) );
+                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT, 1f ) );
+        LinearLayout inner = new LinearLayout( this );
+        inner.setOrientation( LinearLayout.HORIZONTAL );
+        View filler = new View( this );
+        inner.addView( filler, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 1f ) );
         ImageView iv = new ImageView( this );
         iv.setImageResource( R.drawable.arrow );
+        iv.setPadding( 0, 0, 4, 0 );
         iv.setScaleType( ScaleType.CENTER );
-        iv.setPadding( 4, 10, 2, 4 );
-        row.addView( iv, new TableRow.LayoutParams( 
+        inner.addView( iv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 0f ) );
+        row.addView( inner, new TableRow.LayoutParams( 
                 TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
         table.addView( row, new TableLayout.LayoutParams( 
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
