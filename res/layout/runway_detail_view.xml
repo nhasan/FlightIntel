@@ -53,11 +53,11 @@
                     android:layout_marginTop="4dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
-                <TextView android:id="@+id/common_rmk_top_filler"
+                <TextView android:id="@+id/top_filler"
                         android:height="6dp"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content" />
-                <TextView android:id="@+id/common_rmk_bottom_filler"
+                <TextView android:id="@+id/bottom_filler"
                         android:height="6dp"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content" />
