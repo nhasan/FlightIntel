@@ -556,7 +556,7 @@ public class RunwayDetailsActivity extends Activity {
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
         tv = new TextView( this );
         tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 0, 12, 1 );
+        tv.setPadding( 2, 1, 12, 1 );
         tv.setText( remark.substring( index ) );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
