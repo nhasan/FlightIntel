@@ -111,9 +111,8 @@ public class AirportDetailsActivity extends Activity {
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.airport_detail_layout );
 
-            Cursor apt = result[ 0 ];
-
             // Title
+            Cursor apt = result[ 0 ];
             GuiUtils.showAirportTitle( mMainLayout, apt );
 
             // Airport Communications section
@@ -258,20 +257,11 @@ public class AirportDetailsActivity extends Activity {
         }
         addSeparator( layout );
         addRow( layout, "Powerplant repair", repair );
-        String storage = DataUtils.decodeStorage( 
-                apt.getString( apt.getColumnIndex( Airports.STORAGE_FACILITY ) ) );
-        if ( storage.length() > 0 ) {
-            addSeparator( layout );
-            addRow( layout, "Storage facility", storage );
-        }
-        String other = DataUtils.decodeServices(
-                apt.getString( apt.getColumnIndex( Airports.OTHER_SERVICES ) ) );
-        if ( other.length() > 0 ) {
-            addSeparator( layout );
-            addRow( layout, "Other services", other );
-        }
         addSeparator( layout );
-        addClickableRow( layout, "Other services" );
+        Intent intent = new Intent( AirportDetailsActivity.this, ServicesDetailsActivity.class );
+        intent.putExtra( Airports.SITE_NUMBER,
+                apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) ) );
+        addClickableRow( layout, "Other services", intent );
     }
 
     protected void addRow( TableLayout table, String label, String value ) {
@@ -294,7 +284,7 @@ public class AirportDetailsActivity extends Activity {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addClickableRow( TableLayout table, String label ) {
+    protected void addClickableRow( TableLayout table, String label, final Intent intent ) {
         TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
         TextView tv = new TextView( this );
         tv.setText( label );
@@ -315,6 +305,15 @@ public class AirportDetailsActivity extends Activity {
                 LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 0f ) );
         row.addView( inner, new TableRow.LayoutParams( 
                 TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
+        row.setOnClickListener( new OnClickListener() {
+            
+            @Override
+            public void onClick( View v ) {
+                startActivity( intent );
+            }
+
+        } );
+
         table.addView( row, new TableLayout.LayoutParams( 
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
@@ -356,17 +355,16 @@ public class AirportDetailsActivity extends Activity {
         row.addView( iv, new TableRow.LayoutParams(
                 TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
 
-        Bundle bundle = new Bundle();
+        final Bundle bundle = new Bundle();
         bundle.putString( Runways.SITE_NUMBER, siteNumber );
         bundle.putString( Runways.RUNWAY_ID, runwayId );
-        row.setTag( bundle );
         row.setOnClickListener( new OnClickListener() {
             
             @Override
             public void onClick( View v ) {
                 Intent intent = new Intent( AirportDetailsActivity.this, 
                         RunwayDetailsActivity.class );
-                intent.putExtras( (Bundle) v.getTag() );
+                intent.putExtras( bundle );
                 startActivity( intent );
             }
 
