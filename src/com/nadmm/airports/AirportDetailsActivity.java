@@ -30,15 +30,15 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
+import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.ImageView.ScaleType;
-import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Runways;
@@ -117,15 +117,14 @@ public class AirportDetailsActivity extends Activity {
 
             // Airport Communications section
             showCommunicationsDetails( result );
-
             // Runway section
             showRunwayDetails( result );
-
             // Airport Operations section
             showOperationsDetails( result );
-
             // Airport Services section
             showServicesDetails( result );
+            // Other details
+            showOtherDetails( result );
 
             // Cleanup cursors
             for ( Cursor c : result ) {
@@ -258,10 +257,19 @@ public class AirportDetailsActivity extends Activity {
         addSeparator( layout );
         addRow( layout, "Powerplant repair", repair );
         addSeparator( layout );
-        Intent intent = new Intent( AirportDetailsActivity.this, ServicesDetailsActivity.class );
+        Intent intent = new Intent( this, ServicesDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER,
                 apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) ) );
         addClickableRow( layout, "Other services", intent );
+    }
+
+    protected void showOtherDetails( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.detail_other_layout );
+        Intent intent = new Intent( this, OwnershipDetailsActivity.class );
+        intent.putExtra( Airports.SITE_NUMBER,
+                apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) ) );
+       addClickableRow( layout, "Ownership and contact", intent );
     }
 
     protected void addRow( TableLayout table, String label, String value ) {
@@ -285,26 +293,19 @@ public class AirportDetailsActivity extends Activity {
     }
 
     protected void addClickableRow( TableLayout table, String label, final Intent intent ) {
-        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
+        LinearLayout row = (LinearLayout) mInflater.inflate( R.layout.clickable_row, null );
         TextView tv = new TextView( this );
         tv.setText( label );
         tv.setGravity( Gravity.CENTER_VERTICAL );
         tv.setPadding( 4, 4, 2, 4 );
-        row.addView( tv, new TableRow.LayoutParams( 
-                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.FILL_PARENT, 1f ) );
-        LinearLayout inner = new LinearLayout( this );
-        inner.setOrientation( LinearLayout.HORIZONTAL );
-        View filler = new View( this );
-        inner.addView( filler, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 1f ) );
+        row.addView( tv, new LinearLayout.LayoutParams( 
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         ImageView iv = new ImageView( this );
         iv.setImageResource( R.drawable.arrow );
         iv.setPadding( 0, 0, 4, 0 );
         iv.setScaleType( ScaleType.CENTER );
-        inner.addView( iv, new LinearLayout.LayoutParams(
+        row.addView( iv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 0f ) );
-        row.addView( inner, new TableRow.LayoutParams( 
-                TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
         row.setOnClickListener( new OnClickListener() {
             
             @Override
