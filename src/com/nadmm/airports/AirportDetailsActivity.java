@@ -265,11 +265,13 @@ public class AirportDetailsActivity extends Activity {
 
     protected void showOtherDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
+        String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
         TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.detail_other_layout );
         Intent intent = new Intent( this, OwnershipDetailsActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER,
-                apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) ) );
-       addClickableRow( layout, "Ownership and contact", intent );
+        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+        addClickableRow( layout, "Ownership and contact", intent );
+        addSeparator( layout );
+        addClickableRow( layout, "Remarks", intent );
     }
 
     protected void addRow( TableLayout table, String label, String value ) {
@@ -293,7 +295,7 @@ public class AirportDetailsActivity extends Activity {
     }
 
     protected void addClickableRow( TableLayout table, String label, final Intent intent ) {
-        LinearLayout row = (LinearLayout) mInflater.inflate( R.layout.clickable_row, null );
+        LinearLayout row = (LinearLayout) mInflater.inflate( R.layout.simple_detail_item, null );
         TextView tv = new TextView( this );
         tv.setText( label );
         tv.setGravity( Gravity.CENTER_VERTICAL );

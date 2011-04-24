@@ -50,6 +50,10 @@
     <string name="services">Airport Services</string>
     <string name="operations">Airport Operations</string>
     <string name="general_info">General information</string>
+    <string name="other_details">Other Details</string>
+    <string name="airport_owner">Airport Owner</string>
+    <string name="airport_manager">Airport Manager</string>
+    <string name="phone">Phone</string>
     <plurals name="search_entry_found">
         <item quantity="one">1 airport found</item>
         <item quantity="other">%1$d airports found matching \'%2$s\'</item>
