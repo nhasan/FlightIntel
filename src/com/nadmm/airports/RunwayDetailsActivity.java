@@ -456,31 +456,38 @@ public class RunwayDetailsActivity extends Activity {
 
     protected void showBaseEndObstructions( int resid, Cursor[] result ) {
         Cursor rwy = result[ 1 ];
+        String text;
         String object = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_CONTROLLING_OBJECT ) );
         if ( object.length() > 0 ) {
-            String lighted = rwy.getString( rwy.getColumnIndex( 
-                    Runways.BASE_END_CONTROLLING_OBJECT_LIGHTED ) );
             int height = rwy.getInt( rwy.getColumnIndex( 
                     Runways.BASE_END_CONTROLLING_OBJECT_HEIGHT ) );
-            String distance = rwy.getString( rwy.getColumnIndex( 
-                    Runways.BASE_END_CONTROLLING_OBJECT_DISTANCE ) );
-            String offset = rwy.getString( rwy.getColumnIndex( 
-                    Runways.BASE_END_CONTROLLING_OBJECT_OFFSET ) );
-            int slope = rwy.getInt( rwy.getColumnIndex(
-                    Runways.BASE_END_CONTROLLING_OBJECT_SLOPE ) );
-
-            String text = String.format( " %d' %s, ", height, object );
-            if ( lighted.length() > 0 ) {
-                text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
+            if ( height > 0 ) {
+                int distance = rwy.getInt( rwy.getColumnIndex( 
+                        Runways.BASE_END_CONTROLLING_OBJECT_DISTANCE ) );
+                String lighted = rwy.getString( rwy.getColumnIndex( 
+                        Runways.BASE_END_CONTROLLING_OBJECT_LIGHTED ) );
+                String offset = rwy.getString( rwy.getColumnIndex( 
+                        Runways.BASE_END_CONTROLLING_OBJECT_OFFSET ) );
+                int slope = rwy.getInt( rwy.getColumnIndex(
+                        Runways.BASE_END_CONTROLLING_OBJECT_SLOPE ) );
+    
+                text = String.format( " %d' %s, ", height, object );
+                if ( lighted.length() > 0 ) {
+                    text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
+                }
+                text += String.format( "%d' from runway end", distance );
+                if ( offset.length() > 0 ) {
+                    text += String.format( ", %d' %s of centerline",
+                            DataUtils.decodeControllingObjectOffset( offset ),
+                            DataUtils.decodeControllingObjectOffsetDirection( offset ) );
+                }
+                if ( slope > 0 ) {
+                    text += String.format( ", %d:1 slope to clear", slope );
+                }
+            } else {
+                text = object;
             }
-            text += String.format( "%s' from runway end, ", distance );
-            text += String.format( "%d' %s of centerline",
-                    DataUtils.decodeControllingObjectOffset( offset ),
-                    DataUtils.decodeControllingObjectOffsetDirection( offset ) );
-            if ( slope > 0 ) {
-                text += String.format( ", %d:1 slope to clear", slope );
-            }
-
+    
             LinearLayout layout = (LinearLayout) mMainLayout.findViewById( resid );
             addRemarkRow( layout, 1, text );
             layout.setVisibility( View.VISIBLE );
@@ -503,7 +510,7 @@ public class RunwayDetailsActivity extends Activity {
             int slope = rwy.getInt( rwy.getColumnIndex(
                     Runways.RECIPROCAL_END_CONTROLLING_OBJECT_SLOPE ) );
 
-            String text = String.format( " %d' %s, ", height, object );
+            String text = String.format( "%d' %s, ", height, object );
             if ( lighted.length() > 0 ) {
                 text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
             }
@@ -543,8 +550,11 @@ public class RunwayDetailsActivity extends Activity {
 
     protected void addRemarkRow( LinearLayout layout, int row, String remark ) {
         int index = remark.indexOf( ' ' );
-        while ( remark.charAt( index ) == ' ' ) {
-            ++index;
+        if ( index != -1 ) {
+            while ( remark.charAt( index ) == ' ' ) {
+                ++index;
+            }
+            remark = remark.substring( index );
         }
         LinearLayout innerLayout = new LinearLayout( this );
         innerLayout.setOrientation( LinearLayout.HORIZONTAL );
@@ -557,7 +567,7 @@ public class RunwayDetailsActivity extends Activity {
         tv = new TextView( this );
         tv.setGravity( Gravity.LEFT );
         tv.setPadding( 2, 1, 12, 1 );
-        tv.setText( remark.substring( index ) );
+        tv.setText( remark );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         layout.addView( innerLayout, row, new LinearLayout.LayoutParams(
