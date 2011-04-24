@@ -139,7 +139,12 @@ public class OwnershipDetailsActivity extends Activity {
         addRow( layout, text );
         layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_owner_phone_layout );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_PHONE ) );
-        addPhoneRow( layout, text );
+        if ( text.length() > 0 ) {
+            addPhoneRow( layout, text );
+        } else {
+            layout.setVisibility( View.GONE );
+            mMainLayout.findViewById( R.id.detail_owner_phone_label ).setVisibility( View.GONE );
+        }
     }
 
     protected void showManagerInfo( Cursor[] result ) {
@@ -154,7 +159,12 @@ public class OwnershipDetailsActivity extends Activity {
         addRow( layout, text );
         layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_manager_phone_layout );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_PHONE ) );
-        addPhoneRow( layout, text );
+        if ( text.length() > 0 ) {
+            addPhoneRow( layout, text );
+        } else {
+            layout.setVisibility( View.GONE );
+            mMainLayout.findViewById( R.id.detail_manager_phone_label ).setVisibility( View.GONE );
+        }
     }
 
     protected void addRow( LinearLayout layout, String text ) {
