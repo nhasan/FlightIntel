@@ -42,7 +42,6 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Runways;
-import com.nadmm.airports.DatabaseManager.States;
 
 public class AirportDetailsActivity extends Activity {
 
@@ -80,20 +79,14 @@ public class AirportDetailsActivity extends Activity {
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 2 ];
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
-                    +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
-            Cursor c = builder.query( db, new String[] { "*" }, Airports.SITE_NUMBER+"=?",
-                    new String[] { siteNumber }, null, null, null, null );
-            if ( !c.moveToFirst() ) {
-                return null;
-            }
-            cursors[ 0 ] = c;
+            cursors[ 0 ] = dbManager.getAirportDetails( siteNumber );
 
-            builder = new SQLiteQueryBuilder();
+            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Runways.TABLE_NAME );
-            c = builder.query( db, new String[] { "*"  }, Airports.SITE_NUMBER+"=?",
-                    new String[] { siteNumber }, null, null, null, null );
+            Cursor c = builder.query( db, new String[] { Runways.SITE_NUMBER, Runways.RUNWAY_ID,
+                    Runways.RUNWAY_LENGTH, Runways.RUNWAY_WIDTH, Runways.SURFACE_TYPE },
+                    Airports.SITE_NUMBER+"=?", new String[] { siteNumber },
+                    null, null, null, null );
             cursors[ 1 ] = c;
 
             return cursors;
@@ -270,6 +263,8 @@ public class AirportDetailsActivity extends Activity {
         Intent intent = new Intent( this, OwnershipDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addClickableRow( layout, "Ownership and contact", intent );
+        intent = new Intent( this, AirportRemarksActivity.class );
+        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addSeparator( layout );
         addClickableRow( layout, "Remarks", intent );
     }

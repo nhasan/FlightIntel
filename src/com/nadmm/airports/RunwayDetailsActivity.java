@@ -33,14 +33,13 @@ import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
+import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
-import com.nadmm.airports.DatabaseManager.States;
 
 public class RunwayDetailsActivity extends Activity {
 
@@ -79,26 +78,13 @@ public class RunwayDetailsActivity extends Activity {
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 3 ];
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
-                    +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
-            Cursor c = builder.query( db, new String[] { "*" }, Airports.SITE_NUMBER+"=?",
-                    new String[] { siteNumber }, null, null, null, null );
-            if ( !c.moveToFirst() ) {
-                return null;
-            }
-            cursors[ 0 ] = c;
+            cursors[ 0 ] = dbManager.getAirportDetails( siteNumber );
 
-            builder = new SQLiteQueryBuilder();
+            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Runways.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
+            Cursor c = builder.query( db, new String[] { "*" },
                     Runways.SITE_NUMBER+"=? AND "+Runways.RUNWAY_ID+"=?",
                     new String[] { siteNumber, runwayId }, null, null, null, null );
-            if ( !c.moveToFirst() ) {
-                cursors[ 0 ].close();
-                c.close();
-                return null;
-            }
             cursors[ 1 ] = c;
 
             builder = new SQLiteQueryBuilder();
@@ -124,13 +110,17 @@ public class RunwayDetailsActivity extends Activity {
             mMainLayout = (LinearLayout) view.findViewById( R.id.rwy_top_layout );
 
             Cursor apt = result[ 0 ];
+            // Title
+            GuiUtils.showAirportTitle( mMainLayout, apt );
+
             Cursor rwy = result[ 1 ];
+            if ( !rwy.moveToFirst() ) {
+                return;
+            }
 
             String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
             boolean isHelipad = runwayId.startsWith( "H" );
 
-            // Title
-            GuiUtils.showAirportTitle( mMainLayout, apt );
             if ( isHelipad ) {
                 // Helipad information
                 showHelipadInformation( result );

@@ -22,8 +22,6 @@ package com.nadmm.airports;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.util.Linkify;
@@ -35,8 +33,6 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Runways;
-import com.nadmm.airports.DatabaseManager.States;
 
 public class OwnershipDetailsActivity extends Activity {
 
@@ -59,7 +55,7 @@ public class OwnershipDetailsActivity extends Activity {
         task.execute( siteNumber );
     }
 
-    private final class AirportDetailsTask extends AsyncTask<String, Void, Cursor[]> {
+    private final class AirportDetailsTask extends AsyncTask<String, Void, Cursor> {
 
         @Override
         protected void onPreExecute() {
@@ -67,34 +63,14 @@ public class OwnershipDetailsActivity extends Activity {
         }
 
         @Override
-        protected Cursor[] doInBackground( String... params ) {
+        protected Cursor doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-
             DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 2 ];
-
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
-                    +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
-            Cursor c = builder.query( db, new String[] { "*" }, Airports.SITE_NUMBER+"=?",
-                    new String[] { siteNumber }, null, null, null, null );
-            if ( !c.moveToFirst() ) {
-                return null;
-            }
-            cursors[ 0 ] = c;
-
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Runways.TABLE_NAME );
-            c = builder.query( db, new String[] { "*"  }, Airports.SITE_NUMBER+"=?",
-                    new String[] { siteNumber }, null, null, null, null );
-            cursors[ 1 ] = c;
-
-            return cursors;
+            return dbManager.getAirportDetails( siteNumber );
         }
 
         @Override
-        protected void onPostExecute( Cursor[] result ) {
+        protected void onPostExecute( Cursor result ) {
             setProgressBarIndeterminateVisibility( false );
             if ( result == null ) {
                 // TODO: Show an error here
@@ -106,8 +82,7 @@ public class OwnershipDetailsActivity extends Activity {
             mMainLayout = (LinearLayout) view.findViewById( R.id.airport_ownership_layout );
 
             // Title
-            Cursor apt = result[ 0 ];
-            GuiUtils.showAirportTitle( mMainLayout, apt );
+            GuiUtils.showAirportTitle( mMainLayout, result );
 
             showOwnershipType( result );
             showOwnerInfo( result );
@@ -116,8 +91,7 @@ public class OwnershipDetailsActivity extends Activity {
 
     }
 
-    protected void showOwnershipType( Cursor[] result ) {
-        Cursor apt = result[ 0 ];
+    protected void showOwnershipType( Cursor apt ) {
         LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
                 R.id.detail_ownership_type_layout );
         String ownership = DataUtils.decodeOwnershipType(
@@ -127,9 +101,8 @@ public class OwnershipDetailsActivity extends Activity {
         addRow( layout, ownership+" / "+use );
     }
 
-    protected void showOwnerInfo( Cursor[] result ) {
+    protected void showOwnerInfo( Cursor apt ) {
         String text;
-        Cursor apt = result[ 0 ];
         LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_owner_layout );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_NAME ) );
         addRow( layout, text );
@@ -147,9 +120,8 @@ public class OwnershipDetailsActivity extends Activity {
         }
     }
 
-    protected void showManagerInfo( Cursor[] result ) {
+    protected void showManagerInfo( Cursor apt ) {
         String text;
-        Cursor apt = result[ 0 ];
         LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_manager_layout );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_NAME ) );
         addRow( layout, text );
