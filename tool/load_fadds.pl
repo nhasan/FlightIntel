@@ -483,6 +483,7 @@ my $insert_remarks_record = "INSERT INTO remarks ("
 
 $dbh->do( "DROP TABLE IF EXISTS airports" );
 $dbh->do( $create_airports_table );
+$dbh->do( "CREATE INDEX idx_apt_site_number on airports ( SITE_NUMBER );" );
 #$dbh->do( "CREATE INDEX idx_faa_code on airports ( FAA_CODE );" );
 #$dbh->do( "CREATE INDEX idx_icao_code on airports ( ICAO_CODE );" );
 #$dbh->do( "CREATE INDEX idx_name on airports ( FACILITY_NAME );" );
@@ -490,15 +491,15 @@ $dbh->do( $create_airports_table );
 
 $dbh->do( "DROP TABLE IF EXISTS runways" );
 $dbh->do( $create_runways_table );
-#$dbh->do( "CREATE INDEX idx_rwy_site_number on runways ( SITE_NUMBER );" );
+$dbh->do( "CREATE INDEX idx_rwy_site_number on runways ( SITE_NUMBER );" );
 
 $dbh->do( "DROP TABLE IF EXISTS attendance" );
 $dbh->do( $create_attendance_table );
-#$dbh->do( "CREATE INDEX idx_att_site_number on attendance ( SITE_NUMBER );" );
+$dbh->do( "CREATE INDEX idx_att_site_number on attendance ( SITE_NUMBER );" );
 
 $dbh->do( "DROP TABLE IF EXISTS remarks" );
 $dbh->do( $create_remarks_table );
-#$dbh->do( "CREATE INDEX idx_rmk_site_number on remarks ( SITE_NUMBER );" );
+$dbh->do( "CREATE INDEX idx_rmk_site_number on remarks ( SITE_NUMBER );" );
 
 my $sth_apt = $dbh->prepare( $insert_airports_record );
 my $sth_rwy = $dbh->prepare( $insert_runways_record );
