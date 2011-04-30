@@ -45,7 +45,7 @@
                   android:name="OwnershipDetailsActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
-                  android:name="AirportRemarksActivity" />
+                  android:name="RemarksDetailActivity" />
 
     	<activity android:name=".SearchActivity" android:launchMode="singleTop">
         	<intent-filter>

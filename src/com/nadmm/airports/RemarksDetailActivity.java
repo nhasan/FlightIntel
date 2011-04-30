@@ -38,7 +38,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 
-public class AirportRemarksActivity extends Activity {
+public class RemarksDetailActivity extends Activity {
 
     private LinearLayout mMainLayout;
     private LayoutInflater mInflater;

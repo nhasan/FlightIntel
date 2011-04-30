@@ -263,7 +263,7 @@ public class AirportDetailsActivity extends Activity {
         Intent intent = new Intent( this, OwnershipDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addClickableRow( layout, "Ownership and contact", intent );
-        intent = new Intent( this, AirportRemarksActivity.class );
+        intent = new Intent( this, RemarksDetailActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addSeparator( layout );
         addClickableRow( layout, "Remarks", intent );
