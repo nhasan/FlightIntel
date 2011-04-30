@@ -30,12 +30,11 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
-import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
@@ -50,8 +49,6 @@ public class RunwayDetailsActivity extends Activity {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-
         mInflater = getLayoutInflater();
         setContentView( R.layout.wait_msg );
 
@@ -62,11 +59,6 @@ public class RunwayDetailsActivity extends Activity {
     }
 
     private final class RunwayDetailsTask extends AsyncTask<Bundle, Void, Cursor[]> {
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
 
         @Override
         protected Cursor[] doInBackground( Bundle... params ) {
@@ -99,7 +91,6 @@ public class RunwayDetailsActivity extends Activity {
 
         @Override
         protected void onPostExecute( Cursor[] result ) {
-            setProgressBarIndeterminateVisibility( false );
             if ( result == null ) {
                 // TODO: Show an error here
                 return;

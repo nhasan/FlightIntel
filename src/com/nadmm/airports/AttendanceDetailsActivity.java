@@ -29,7 +29,6 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
@@ -48,8 +47,6 @@ public class AttendanceDetailsActivity extends Activity {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-
         mInflater = getLayoutInflater();
         setContentView( R.layout.wait_msg );
 
@@ -61,11 +58,6 @@ public class AttendanceDetailsActivity extends Activity {
     }
 
     private final class AirportAttendanceTask extends AsyncTask<String, Void, Cursor[]> {
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -96,7 +88,6 @@ public class AttendanceDetailsActivity extends Activity {
 
         @Override
         protected void onPostExecute( Cursor[] result ) {
-            setProgressBarIndeterminateVisibility( false );
             if ( result == null ) {
                 // TODO: Show an error here
                 return;

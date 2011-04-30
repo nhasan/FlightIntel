@@ -27,10 +27,9 @@ import android.os.Bundle;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 
@@ -42,8 +41,6 @@ public class OwnershipDetailsActivity extends Activity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
 
         mInflater = getLayoutInflater();
         setContentView( R.layout.wait_msg );
@@ -58,11 +55,6 @@ public class OwnershipDetailsActivity extends Activity {
     private final class AirportDetailsTask extends AsyncTask<String, Void, Cursor> {
 
         @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
-
-        @Override
         protected Cursor doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
             DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
@@ -71,7 +63,6 @@ public class OwnershipDetailsActivity extends Activity {
 
         @Override
         protected void onPostExecute( Cursor result ) {
-            setProgressBarIndeterminateVisibility( false );
             if ( result == null ) {
                 // TODO: Show an error here
                 return;
