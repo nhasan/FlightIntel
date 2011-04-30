@@ -35,10 +35,11 @@ import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Attendance;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 
-public class RemarksDetailActivity extends Activity {
+public class AttendanceDetailsActivity extends Activity {
 
     private LinearLayout mMainLayout;
     private LayoutInflater mInflater;
@@ -55,11 +56,11 @@ public class RemarksDetailActivity extends Activity {
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
 
-        AirportRemarksTask task = new AirportRemarksTask();
+        AirportAttendanceTask task = new AirportAttendanceTask();
         task.execute( siteNumber );
     }
 
-    private final class AirportRemarksTask extends AsyncTask<String, Void, Cursor[]> {
+    private final class AirportAttendanceTask extends AsyncTask<String, Void, Cursor[]> {
 
         @Override
         protected void onPreExecute() {
@@ -69,19 +70,26 @@ public class RemarksDetailActivity extends Activity {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 2 ];
+            Cursor[] cursors = new Cursor[ 3 ];
             
             DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
             cursors[ 0 ] = dbManager.getAirportDetails( siteNumber );
 
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Remarks.TABLE_NAME );
+            builder.setTables( Attendance.TABLE_NAME );
             cursors[ 1 ] = builder.query( db,
-                    new String[] { Remarks.REMARK_NAME, Remarks.REMARK_TEXT },
+                    new String[] { Attendance.ATTENDANCE_SCHEDULE },
+                    Runways.SITE_NUMBER+"=? ", new String[] { siteNumber }, 
+                    null, null, Attendance.SEQUENCE_NUMBER, null );
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Remarks.TABLE_NAME );
+            cursors[ 2 ] = builder.query( db,
+                    new String[] { Remarks.REMARK_TEXT },
                     Runways.SITE_NUMBER+"=? "
-                    +"AND substr("+Remarks.REMARK_NAME+", 1, 2) not in ('A3', 'A4', 'A5', 'A6')",
-                    new String[] { siteNumber }, null, null, Remarks.REMARK_NAME, null );
+                    +"AND substr("+Remarks.REMARK_NAME+", 1, 3)='A17'",
+                    new String[] { siteNumber }, null, null, null, null );
 
             return cursors;
         }
@@ -94,29 +102,58 @@ public class RemarksDetailActivity extends Activity {
                 return;
             }
 
-            View view = mInflater.inflate( R.layout.remarks_detail_view, null );
+            View view = mInflater.inflate( R.layout.attendance_detail_view, null );
             setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.airport_remarks_layout );
+            mMainLayout = (LinearLayout) view.findViewById( R.id.attendance_top_layout );
 
             // Title
             Cursor apt = result[ 0 ];
             GuiUtils.showAirportTitle( mMainLayout, apt );
 
-            showRemarksDetails( result );
+            showAttendanceDetails( result );
         }
 
     }
 
-    protected void showRemarksDetails( Cursor[] result ) {
-        Cursor rmk = result[ 1 ];
-        if ( rmk.moveToFirst() ) {
-            LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
-                    R.id.detail_remarks_layout );
+    protected void showAttendanceDetails( Cursor[] result ) {
+        Cursor att = result[ 1 ];
+        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
+                R.id.detail_attendance_layout );
+        if ( att.moveToFirst() ) {
             do {
-                String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
-                addRemarkRow( layout, remark );
-            } while ( rmk.moveToNext() );
+                String schedule = att.getString(
+                        att.getColumnIndex( Attendance.ATTENDANCE_SCHEDULE ) );
+                addRow( layout, schedule );
+            } while ( att.moveToNext() );
         }
+
+        Cursor rmk = result[ 2 ];
+        if ( rmk.moveToFirst() ) {
+            do {
+                String remark = rmk.getString(
+                        rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
+                addRemarkRow( layout, remark );
+            } while ( att.moveToNext() );            
+        }
+    }
+
+    protected void addRow( LinearLayout layout, String remark ) {
+        LinearLayout innerLayout = new LinearLayout( this );
+        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
+        TextView tv = new TextView( this );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 12, 1, 2, 1 );
+        tv.setText( "\u2022 " );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
+        tv = new TextView( this );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 2, 1, 12, 1 );
+        tv.setText( remark );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
+        layout.addView( innerLayout, new LinearLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
     protected void addRemarkRow( LinearLayout layout, String remark ) {

@@ -225,6 +225,13 @@ public class DatabaseManager {
         public static final String REMARK_TEXT = "REMARK_TEXT";
     }
 
+    public static final class Attendance implements BaseColumns {
+        public static final String TABLE_NAME = "attendance";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
+        public static final String SEQUENCE_NUMBER = "SEQUENCE_NUMBER";
+        public static final String ATTENDANCE_SCHEDULE = "ATTENDANCE_SCHEDULE";
+    }
+
     public static final class Catalog implements BaseColumns {
         public static final String TABLE_NAME = "catalog";
         public static final String TYPE = "TYPE";

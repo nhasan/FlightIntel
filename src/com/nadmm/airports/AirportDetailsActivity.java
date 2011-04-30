@@ -263,10 +263,14 @@ public class AirportDetailsActivity extends Activity {
         Intent intent = new Intent( this, OwnershipDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addClickableRow( layout, "Ownership and contact", intent );
-        intent = new Intent( this, RemarksDetailActivity.class );
+        intent = new Intent( this, RemarkDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addSeparator( layout );
         addClickableRow( layout, "Remarks", intent );
+        intent = new Intent( this, AttendanceDetailsActivity.class );
+        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+        addSeparator( layout );
+        addClickableRow( layout, "Attendance", intent );
     }
 
     protected void addRow( TableLayout table, String label, String value ) {
