@@ -73,13 +73,12 @@ public class RunwayDetailsActivity extends Activity {
             Bundle args = params[ 0 ];
             String siteNumber = args.getString( Runways.SITE_NUMBER );
             String runwayId = args.getString( Runways.RUNWAY_ID );
+            Cursor[] cursors = new Cursor[ 3 ];
             
             DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 3 ];
-
             cursors[ 0 ] = dbManager.getAirportDetails( siteNumber );
 
+            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Runways.TABLE_NAME );
             Cursor c = builder.query( db, new String[] { "*" },
@@ -90,7 +89,8 @@ public class RunwayDetailsActivity extends Activity {
             builder = new SQLiteQueryBuilder();
             builder.setTables( Remarks.TABLE_NAME );
             c = builder.query( db, new String[] { Remarks.REMARK_NAME, Remarks.REMARK_TEXT },
-                    Runways.SITE_NUMBER+"=?",
+                    Runways.SITE_NUMBER+"=? "
+                    +"AND substr("+Remarks.REMARK_NAME+", 1, 2) in ('A3', 'A4', 'A5', 'A6')",
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 2 ] = c;
 
@@ -435,7 +435,7 @@ public class RunwayDetailsActivity extends Activity {
                 if ( rmkName.endsWith( "-"+runwayId ) ) {
                     ++rmkNum;
                     String rmkText = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
-                    addRemarkRow( layout, rmkNum, rmkText );
+                    addRemarkRow( layout, rmkText );
                 }
             } while ( rmk.moveToNext() );
             if ( rmkNum > 0 ) {
@@ -479,7 +479,7 @@ public class RunwayDetailsActivity extends Activity {
             }
     
             LinearLayout layout = (LinearLayout) mMainLayout.findViewById( resid );
-            addRemarkRow( layout, 1, text );
+            addRemarkRow( layout, text );
             layout.setVisibility( View.VISIBLE );
         }
     }
@@ -513,7 +513,7 @@ public class RunwayDetailsActivity extends Activity {
             }
 
             LinearLayout layout = (LinearLayout) mMainLayout.findViewById( resid );
-            addRemarkRow( layout, 1, text );
+            addRemarkRow( layout, text );
             layout.setVisibility( View.VISIBLE );
         }
     }
@@ -538,7 +538,7 @@ public class RunwayDetailsActivity extends Activity {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addRemarkRow( LinearLayout layout, int row, String remark ) {
+    protected void addRemarkRow( LinearLayout layout, String remark ) {
         int index = remark.indexOf( ' ' );
         if ( index != -1 ) {
             while ( remark.charAt( index ) == ' ' ) {
@@ -560,7 +560,7 @@ public class RunwayDetailsActivity extends Activity {
         tv.setText( remark );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, row, new LinearLayout.LayoutParams(
+        layout.addView( innerLayout, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 

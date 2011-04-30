@@ -102,7 +102,7 @@ public class ServicesDetailsActivity extends Activity {
                 return;
             }
 
-            View view = mInflater.inflate( R.layout.airport_services_view, null );
+            View view = mInflater.inflate( R.layout.services_detail_view, null );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.airport_services_layout );
 
@@ -157,14 +157,14 @@ public class ServicesDetailsActivity extends Activity {
         tv.setText( service );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, 1, new LinearLayout.LayoutParams(
+        layout.addView( innerLayout, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
     protected void addSeparator( LinearLayout layout ) {
         View separator = new View( this );
         separator.setBackgroundColor( Color.LTGRAY );
-        layout.addView( separator, 1, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
+        layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
     }
 
 }

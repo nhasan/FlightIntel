@@ -51,16 +51,10 @@
                     android:background="@drawable/rounded_rectangle"
                     android:visibility="gone"
                     android:layout_marginTop="4dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
-                <TextView android:id="@+id/top_filler"
-                        android:height="6dp"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content" />
-                <TextView android:id="@+id/bottom_filler"
-                        android:height="6dp"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content" />
             </LinearLayout>
             <TextView android:id="@+id/rwy_base_end_label"
                     style="@style/TextSmall.Bold"
@@ -79,16 +73,10 @@
                     android:background="@drawable/rounded_rectangle"
                     android:visibility="gone"
                     android:layout_marginTop="4dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
-                <TextView android:id="@+id/base_end_rmk_top_filler"
-                        android:height="6dp"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content" />
-                <TextView android:id="@+id/base_end_rmk_bottom_filler"
-                        android:height="6dp"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content" />
             </LinearLayout>
             <TextView android:id="@+id/rwy_reciprocal_end_label"
                     style="@style/TextSmall.Bold"
@@ -107,16 +95,10 @@
                     android:background="@drawable/rounded_rectangle"
                     android:visibility="gone"
                     android:layout_marginTop="4dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
-                <TextView android:id="@+id/reciprocal_end_rmk_top_filler"
-                        android:height="6dp"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content" />
-                <TextView android:id="@+id/reciprocal_end_rmk_bottom_filler"
-                        android:height="6dp"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
         <TextView android:id="@+id/rwy_detail_bottom_filler"
