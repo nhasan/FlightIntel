@@ -79,7 +79,7 @@ public class OwnershipDetailsActivity extends Activity {
 
             View view = mInflater.inflate( R.layout.ownership_detail_view, null );
             setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.airport_ownership_layout );
+            mMainLayout = (LinearLayout) view.findViewById( R.id.ownership_top_layout );
 
             // Title
             GuiUtils.showAirportTitle( mMainLayout, result );

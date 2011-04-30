@@ -104,7 +104,7 @@ public class ServicesDetailsActivity extends Activity {
 
             View view = mInflater.inflate( R.layout.services_detail_view, null );
             setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.airport_services_layout );
+            mMainLayout = (LinearLayout) view.findViewById( R.id.services_top_layout );
 
             Cursor apt = result[ 0 ];
 

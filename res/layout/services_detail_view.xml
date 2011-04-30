@@ -23,7 +23,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
-    <LinearLayout android:id="@+id/airport_services_layout"
+    <LinearLayout android:id="@+id/services_top_layout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
