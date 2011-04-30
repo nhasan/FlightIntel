@@ -53,6 +53,7 @@
     <string name="other_details">Other Details</string>
     <string name="airport_owner">Airport Owner</string>
     <string name="airport_manager">Airport Manager</string>
+    <string name="airport_remarks">Airport Remarks</string>
     <string name="phone">Phone</string>
     <plurals name="search_entry_found">
         <item quantity="one">1 airport found</item>
