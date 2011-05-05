@@ -37,6 +37,8 @@ import android.util.Log;
 public class DatabaseManager {
     public static final String TAG = DatabaseManager.class.getSimpleName();
 
+    private ArrayList<String> mFavorites;
+
     private final CatalogDbOpenHelper mCatalogDbHelper;
     private final UserDataDbOpenHelper mUserDataDbHelper;
     private final Context mContext;
@@ -267,6 +269,8 @@ public class DatabaseManager {
         mDatabases = new HashMap<String, SQLiteDatabase>();
 
         openDatabases();
+
+        mFavorites = getFavorites();
     }
 
     public SQLiteDatabase getCatalogDb() {
@@ -309,7 +313,7 @@ public class DatabaseManager {
         return catalogDb.rawQuery( query, null );
     }
 
-    public ArrayList<String> getFavorites() {
+    protected ArrayList<String> getFavorites() {
         ArrayList<String> favorites = new ArrayList<String>();
         SQLiteDatabase db = getUserDataDb();
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
@@ -328,20 +332,34 @@ public class DatabaseManager {
         return favorites;
     }
 
+    public boolean isFavoriteAirport( String siteNumber ) {
+        return mFavorites.contains( siteNumber );
+    }
+
     public long addToFavorites( String siteNumber ) {
-        SQLiteDatabase userDataDb = getUserDataDb();
-        ContentValues values = new ContentValues();
-        values.put( Favorites.SITE_NUMBER, siteNumber );
-        return userDataDb.insert( Favorites.TABLE_NAME, null, values );
+        if ( !mFavorites.contains( siteNumber ) ) {
+            SQLiteDatabase userDataDb = getUserDataDb();
+            ContentValues values = new ContentValues();
+            values.put( Favorites.SITE_NUMBER, siteNumber );
+            mFavorites.add( siteNumber );
+            return userDataDb.insert( Favorites.TABLE_NAME, null, values );
+        } else {
+            return 0;
+        }
     }
 
     public int removeFromFavorites( String siteNumber ) {
-        SQLiteDatabase userDataDb = getUserDataDb();
-        ContentValues values = new ContentValues();
-        values.put( Favorites.SITE_NUMBER, siteNumber );
-        return userDataDb.delete( Favorites.TABLE_NAME, 
-                Airports.SITE_NUMBER+"=?",
-                new String[] { siteNumber } );
+        if ( mFavorites.contains( siteNumber ) ) {
+            SQLiteDatabase userDataDb = getUserDataDb();
+            ContentValues values = new ContentValues();
+            values.put( Favorites.SITE_NUMBER, siteNumber );
+            mFavorites.remove( siteNumber );
+            return userDataDb.delete( Favorites.TABLE_NAME, 
+                    Airports.SITE_NUMBER+"=?",
+                    new String[] { siteNumber } );
+        } else {
+            return 0;
+        }
     }
 
     private synchronized void openDatabases() {
