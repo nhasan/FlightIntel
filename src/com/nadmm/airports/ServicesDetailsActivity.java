@@ -31,6 +31,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
@@ -97,54 +99,99 @@ public class ServicesDetailsActivity extends Activity {
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.services_top_layout );
 
-            Cursor apt = result[ 0 ];
-
             // Title
+            Cursor apt = result[ 0 ];
             GuiUtils.showAirportTitle( mMainLayout, apt );
 
-            LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
-                    R.id.detail_services_layout );
-            String otherServices = DataUtils.decodeServices(
-                    apt.getString( apt.getColumnIndex( Airports.OTHER_SERVICES ) ) );
-            otherServices += ","+DataUtils.decodeStorage( 
-                    apt.getString( apt.getColumnIndex( Airports.STORAGE_FACILITY ) ) );
-            String bottledOxygen = apt.getString( apt.getColumnIndex(
-                    Airports.BOTTLED_O2_AVAILABLE ) );
-            if ( bottledOxygen.equals( "Y" ) ) {
-                otherServices += ","+"Bottled Oxygen";
-            }
-            String bulkOxygen = apt.getString( apt.getColumnIndex(
-                    Airports.BULK_O2_AVAILABLE ) );
-            if ( bulkOxygen.equals( "Y" ) ) {
-                otherServices += ","+"Bulk Oxygen";
-            }
-            String[] services = otherServices.split( ",\\s*" );
-            int i = 0;
-            for ( String service : services ) {
-                if ( i > 0 ) {
-                    addSeparator( layout );
-                }
-                if ( service.length() > 0 ) {
-                    addRow( layout, service );
-                    ++i;
-                }
-            }
+            showAirportServices( result );
+            showFaaServices( result );
         }
 
     }
 
-    protected void addRow( LinearLayout layout, String service ) {
+    protected void showAirportServices( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
+                R.id.detail_airport_services_layout );
+        String otherServices = DataUtils.decodeServices(
+                apt.getString( apt.getColumnIndex( Airports.OTHER_SERVICES ) ) );
+        otherServices += ","+DataUtils.decodeStorage( 
+                apt.getString( apt.getColumnIndex( Airports.STORAGE_FACILITY ) ) );
+        String bottledOxygen = apt.getString( apt.getColumnIndex(
+                Airports.BOTTLED_O2_AVAILABLE ) );
+        if ( bottledOxygen.equals( "Y" ) ) {
+            otherServices += ","+"Bottled Oxygen";
+        }
+        String bulkOxygen = apt.getString( apt.getColumnIndex(
+                Airports.BULK_O2_AVAILABLE ) );
+        if ( bulkOxygen.equals( "Y" ) ) {
+            otherServices += ","+"Bulk Oxygen";
+        }
+        String[] services = otherServices.split( ",\\s*" );
+        for ( String service : services ) {
+            if ( service.length() > 0 ) {
+                addBulletRow( layout, service );
+            }
+        }
+    }
+
+    protected void showFaaServices( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        TableLayout layout = (TableLayout) mMainLayout.findViewById(
+                R.id.detail_faa_services_layout );
+        String artccId = apt.getString( apt.getColumnIndex( Airports.BOUNDARY_ARTCC_ID ) );
+        String artccName = apt.getString( apt.getColumnIndex( Airports.BOUNDARY_ARTCC_NAME ) );
+        addRow( layout, "ARTCC", artccId+" ("+artccName+")" );
+        addSeparator( layout );
+        String fssId = apt.getString( apt.getColumnIndex( Airports.FSS_ID ) );
+        String fssName = apt.getString( apt.getColumnIndex( Airports.FSS_NAME ) );
+        addRow( layout, "Flight Service", fssId+" ("+fssName+")" );
+        addSeparator( layout );
+        String fssPhone = apt.getString( apt.getColumnIndex( Airports.FSS_LOCAL_PHONE ) );
+        if ( fssPhone.length() == 0 ) {
+            fssPhone = apt.getString( apt.getColumnIndex( Airports.FSS_TOLLFREE_PHONE ) );
+        }
+        addRow( layout, "FSS Phone", fssPhone );
+        addSeparator( layout );
+        String notamFacility = apt.getString( apt.getColumnIndex( Airports.NOTAM_FACILITY_ID ) );
+        addRow( layout, "NOTAM Facility", notamFacility );
+        addSeparator( layout );
+        String notamD = apt.getString( apt.getColumnIndex( Airports.NOTAM_D_AVAILABLE ) );
+        addRow( layout, "NOTAM D Available", notamD.equals( "Y" )? "Yes" : "No" );
+    }
+
+    protected void addRow( TableLayout table, String label, String value ) {
+        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
+        TextView tvLabel = new TextView( this );
+        tvLabel.setText( label );
+        tvLabel.setSingleLine();
+        tvLabel.setGravity( Gravity.LEFT );
+        tvLabel.setPadding( 4, 2, 2, 4 );
+        row.addView( tvLabel, new TableRow.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
+        TextView tvValue = new TextView( this );
+        tvValue.setText( value );
+        tvValue.setMarqueeRepeatLimit( -1 );
+        tvValue.setGravity( Gravity.RIGHT );
+        tvLabel.setPadding( 4, 2, 2, 4 );
+        row.addView( tvValue, new TableRow.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
+        table.addView( row, new TableLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addBulletRow( LinearLayout layout, String service ) {
         LinearLayout innerLayout = new LinearLayout( this );
         innerLayout.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );
         tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 12, 8, 2, 8 );
+        tv.setPadding( 12, 4, 2, 4 );
         tv.setText( "\u2022 " );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
         tv = new TextView( this );
         tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 8, 12, 8 );
+        tv.setPadding( 4, 4, 12, 4 );
         tv.setText( service );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
