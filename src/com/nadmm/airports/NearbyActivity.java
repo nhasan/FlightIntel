@@ -432,6 +432,9 @@ public class NearbyActivity extends Activity {
                 mFavorites.remove( siteNumber );
                 break;
             case R.id.menu_view_details:
+                Intent intent = new Intent( this, AirportDetailsActivity.class );
+                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                startActivity( intent );
                 break;
             default:
         }
