@@ -153,7 +153,9 @@ public class RunwayDetailsActivity extends Activity {
         addRow( layout, "Edge lights", DataUtils.decodeRunwayEdgeLights( edgeLights ) );
 
         // Show remarks
-        showRemarks( R.id.rwy_common_remarks, result, runwayId );
+        LinearLayout rmkLayout = (LinearLayout) mMainLayout.findViewById(
+                R.id.rwy_common_remarks );
+        showRemarks( rmkLayout, result, runwayId );
     }
 
     protected void showBaseEndInformation( Cursor[] result ) {
@@ -258,8 +260,7 @@ public class RunwayDetailsActivity extends Activity {
         }
 
         // Show remarks
-        showRemarks( R.id.rwy_base_end_remarks, result, runwayId );
-        showBaseEndObstructions( R.id.rwy_base_end_remarks, result );
+        showBaseEndRemarks( result );
     }
 
     protected void showReciprocalEndInformation( Cursor[] result ) {
@@ -366,8 +367,7 @@ public class RunwayDetailsActivity extends Activity {
         }
 
         // Show remarks
-        showRemarks( R.id.rwy_reciprocal_end_remarks, result, runwayId );
-        showReciprocalEndObstructions( R.id.rwy_reciprocal_end_remarks, result );
+        showReciprocalEndRemarks( result );
     }
 
     protected void showHelipadInformation( Cursor[] result ) {
@@ -413,29 +413,79 @@ public class RunwayDetailsActivity extends Activity {
         addRow( layout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
 
         // Show remarks
-        showRemarks( R.id.rwy_base_end_remarks, result, helipadId );
+        LinearLayout rmkLayout = (LinearLayout) mMainLayout.findViewById(
+                R.id.rwy_base_end_remarks );
+        showRemarks( rmkLayout, result, helipadId );
     }
 
-    protected void showRemarks( int resid, Cursor[] result, String runwayId ) {
+    protected void showBaseEndRemarks( Cursor[] result ) {
+        int count = 0;
+        Cursor rwy = result[ 1 ];
+        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(R.id.rwy_base_end_remarks );
+        String als = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_APCH_LIGHT_SYSTEM ) );
+        if ( als.length() > 0 ) {
+            String apchLights = DataUtils.getApproachLightSystemDescription( als );
+            if ( apchLights.length() > 0 ) {
+                addRemarkRow( layout, apchLights );
+                ++count;
+            }
+        }
+
+        // Show obstructions
+        count += showBaseEndObstructions( layout, result );
+
+        String runwayId = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ID ) );
+        count += showRemarks( layout, result, runwayId );
+
+        if ( count > 0 ) {
+            layout.setVisibility( View.VISIBLE );
+        }
+    }
+
+    protected void showReciprocalEndRemarks( Cursor[] result ) {
+        int count = 0;
+        Cursor rwy = result[ 1 ];
+        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
+                R.id.rwy_reciprocal_end_remarks );
+        String als = rwy.getString( rwy.getColumnIndex(
+                Runways.RECIPROCAL_END_APCH_LIGHT_SYSTEM ) );
+        if ( als.length() > 0 ) {
+            String apchLights = DataUtils.getApproachLightSystemDescription( als );
+            if ( apchLights.length() > 0 ) {
+                addRemarkRow( layout, apchLights );
+                ++count;
+            }
+        }
+
+        // Show obstructions
+        count += showReciprocalEndObstructions( layout, result );
+
+        String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
+        showRemarks( layout, result, runwayId );
+
+        if ( count > 0 ) {
+            layout.setVisibility( View.VISIBLE );
+        }
+    }
+
+    protected int showRemarks( LinearLayout layout, Cursor[] result, String runwayId ) {
+        int count = 0;
         Cursor rmk = result[ 2 ];
         if ( rmk.moveToFirst() ) {
-            int rmkNum = 0;
-            LinearLayout layout = (LinearLayout) mMainLayout.findViewById( resid );
             do {
                 String rmkName = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_NAME ) );
                 if ( rmkName.endsWith( "-"+runwayId ) ) {
-                    ++rmkNum;
+                    ++count;
                     String rmkText = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
                     addRemarkRow( layout, rmkText );
                 }
             } while ( rmk.moveToNext() );
-            if ( rmkNum > 0 ) {
-                layout.setVisibility( View.VISIBLE );
-            }
         }
+        return count;
     }
 
-    protected void showBaseEndObstructions( int resid, Cursor[] result ) {
+    protected int showBaseEndObstructions( LinearLayout layout, Cursor[] result ) {
+        int count = 0;
         Cursor rwy = result[ 1 ];
         String text;
         String object = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_CONTROLLING_OBJECT ) );
@@ -452,7 +502,7 @@ public class RunwayDetailsActivity extends Activity {
                 int slope = rwy.getInt( rwy.getColumnIndex(
                         Runways.BASE_END_CONTROLLING_OBJECT_SLOPE ) );
     
-                text = String.format( " %d' %s, ", height, object );
+                text = String.format( " %d' %s, ", height, object.toLowerCase() );
                 if ( lighted.length() > 0 ) {
                     text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
                 }
@@ -469,13 +519,15 @@ public class RunwayDetailsActivity extends Activity {
                 text = object;
             }
     
-            LinearLayout layout = (LinearLayout) mMainLayout.findViewById( resid );
             addRemarkRow( layout, text );
-            layout.setVisibility( View.VISIBLE );
+            ++count;
         }
+
+        return count;
     }
 
-    protected void showReciprocalEndObstructions( int resid, Cursor[] result ) {
+    protected int showReciprocalEndObstructions( LinearLayout layout, Cursor[] result ) {
+        int count = 0;
         Cursor rwy = result[ 1 ];
         String object = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_CONTROLLING_OBJECT ) );
@@ -491,7 +543,7 @@ public class RunwayDetailsActivity extends Activity {
             int slope = rwy.getInt( rwy.getColumnIndex(
                     Runways.RECIPROCAL_END_CONTROLLING_OBJECT_SLOPE ) );
 
-            String text = String.format( "%d' %s, ", height, object );
+            String text = String.format( " %d' %s, ", height, object.toLowerCase() );
             if ( lighted.length() > 0 ) {
                 text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
             }
@@ -503,10 +555,11 @@ public class RunwayDetailsActivity extends Activity {
                 text += String.format( ", %d:1 slope to clear", slope );
             }
 
-            LinearLayout layout = (LinearLayout) mMainLayout.findViewById( resid );
             addRemarkRow( layout, text );
-            layout.setVisibility( View.VISIBLE );
+            ++count;
         }
+
+        return count;
     }
 
     protected void addRow( TableLayout table, String label, String text ) {
