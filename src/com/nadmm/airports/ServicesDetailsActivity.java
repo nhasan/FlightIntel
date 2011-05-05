@@ -166,14 +166,14 @@ public class ServicesDetailsActivity extends Activity {
         tvLabel.setText( label );
         tvLabel.setSingleLine();
         tvLabel.setGravity( Gravity.LEFT );
-        tvLabel.setPadding( 4, 2, 2, 4 );
+        tvLabel.setPadding( 2, 2, 2, 2 );
         row.addView( tvLabel, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
         TextView tvValue = new TextView( this );
         tvValue.setText( value );
         tvValue.setMarqueeRepeatLimit( -1 );
         tvValue.setGravity( Gravity.RIGHT );
-        tvLabel.setPadding( 4, 2, 2, 4 );
+        tvLabel.setPadding( 2, 2, 2, 2 );
         row.addView( tvValue, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
         table.addView( row, new TableLayout.LayoutParams(
@@ -185,7 +185,7 @@ public class ServicesDetailsActivity extends Activity {
         innerLayout.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );
         tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 12, 4, 2, 4 );
+        tv.setPadding( 10, 4, 2, 4 );
         tv.setText( "\u2022 " );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );

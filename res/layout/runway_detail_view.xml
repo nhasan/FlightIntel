@@ -51,8 +51,7 @@
                     android:background="@drawable/rounded_rectangle"
                     android:visibility="gone"
                     android:layout_marginTop="4dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
+                    android:padding="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
             </LinearLayout>
@@ -73,8 +72,7 @@
                     android:background="@drawable/rounded_rectangle"
                     android:visibility="gone"
                     android:layout_marginTop="4dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
+                    android:padding="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
             </LinearLayout>
@@ -95,8 +93,7 @@
                     android:background="@drawable/rounded_rectangle"
                     android:visibility="gone"
                     android:layout_marginTop="4dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
+                    android:padding="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
             </LinearLayout>

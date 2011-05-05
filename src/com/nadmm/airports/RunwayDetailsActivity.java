@@ -563,8 +563,7 @@ public class RunwayDetailsActivity extends Activity {
     }
 
     protected void addRow( TableLayout table, String label, String text ) {
-        TableRow row = new TableRow( this );
-        row.setPadding( 8, 8, 8, 8 );
+        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
         TextView tvLabel = new TextView( this );
         tvLabel.setText( label );
         tvLabel.setSingleLine();
@@ -594,13 +593,13 @@ public class RunwayDetailsActivity extends Activity {
         innerLayout.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );
         tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 12, 1, 2, 1 );
+        tv.setPadding( 10, 2, 2, 2 );
         tv.setText( "\u2022 " );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
         tv = new TextView( this );
         tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 1, 12, 1 );
+        tv.setPadding( 2, 2, 12, 2 );
         tv.setText( remark );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );

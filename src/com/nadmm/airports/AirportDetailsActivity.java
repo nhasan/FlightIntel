@@ -281,14 +281,14 @@ public class AirportDetailsActivity extends Activity {
         tvLabel.setText( label );
         tvLabel.setSingleLine();
         tvLabel.setGravity( Gravity.LEFT );
-        tvLabel.setPadding( 4, 4, 2, 4 );
+        tvLabel.setPadding( 4, 2, 2, 2 );
         row.addView( tvLabel, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
         TextView tvValue = new TextView( this );
         tvValue.setText( value );
         tvValue.setMarqueeRepeatLimit( -1 );
         tvValue.setGravity( Gravity.RIGHT );
-        tvLabel.setPadding( 4, 4, 2, 4 );
+        tvLabel.setPadding( 2, 2, 4, 2 );
         row.addView( tvValue, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
         table.addView( row, new TableLayout.LayoutParams(
@@ -300,7 +300,7 @@ public class AirportDetailsActivity extends Activity {
         TextView tv = new TextView( this );
         tv.setText( label );
         tv.setGravity( Gravity.CENTER_VERTICAL );
-        tv.setPadding( 4, 4, 2, 4 );
+        tv.setPadding( 4, 2, 2, 2 );
         row.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         ImageView iv = new ImageView( this );
