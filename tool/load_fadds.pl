@@ -608,13 +608,13 @@ while ( my $line = <APT_FILE> )
         #BOUNDARY_ARTCC_ID
         $sth_apt->bind_param( 33, substrim( $line,  627,  4 ) );
         #BOUNDARY_ARTCC_NAME
-        $sth_apt->bind_param( 34, substrim( $line,  634, 30 ) );
+        $sth_apt->bind_param( 34, capitalize( $line,  634, 30 ) );
         #FSS_ON_SITE
         $sth_apt->bind_param( 35, substrim( $line,  701,  1 ) );
         #FSS_ID
         $sth_apt->bind_param( 36, substrim( $line,  702,  4 ) );
         #FSS_NAME
-        $sth_apt->bind_param( 37, substrim( $line,  706, 30 ) );
+        $sth_apt->bind_param( 37, capitalize( $line,  706, 30 ) );
         #FSS_LOCAL_PHONE
         $sth_apt->bind_param( 38, substrim( $line,  736, 16 ) );
         #FSS_TOLLFREE_PHONE
