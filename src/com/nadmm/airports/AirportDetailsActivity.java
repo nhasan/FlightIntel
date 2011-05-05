@@ -205,8 +205,10 @@ public class AirportDetailsActivity extends Activity {
         String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
         addRow( layout, "Airport use", DataUtils.decodeFacilityUse( use ) );
         String activation = apt.getString( apt.getColumnIndex( Airports.ACTIVATION_DATE ) );
-        addSeparator( layout );
-        addRow( layout, "Activation date", activation );
+        if ( activation.length() > 0 ) {
+            addSeparator( layout );
+            addRow( layout, "Activation date", activation );
+        }
         String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
         addSeparator( layout );
         addRow( layout, "Wind indicator", DataUtils.decodeWindIndicator( windIndicator ) );
