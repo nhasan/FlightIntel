@@ -201,7 +201,7 @@ public class FavoritesActivity extends ListActivity {
                 getFavorites();
                 break;
             case R.id.menu_view_details:
-                Intent intent = new Intent( FavoritesActivity.this, AirportDetailsActivity.class );
+                Intent intent = new Intent( this, AirportDetailsActivity.class );
                 intent.putExtra( Airports.SITE_NUMBER, siteNumber );
                 startActivity( intent );
                 break;
