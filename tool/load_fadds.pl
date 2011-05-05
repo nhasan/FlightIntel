@@ -638,9 +638,9 @@ while ( my $line = <APT_FILE> )
         #FUEL_TYPES
         $sth_apt->bind_param( 48, substrim( $line,  914, 40 ) );
         #AIRFRAME_REPAIR_SERVICE
-        $sth_apt->bind_param( 49, substrim( $line,  954,  5 ) );
+        $sth_apt->bind_param( 49, capitalize( $line,  954,  5 ) );
         #POWER_PLANT_REPAIR_SERVICE
-        $sth_apt->bind_param( 50, substrim( $line,  959,  5 ) );
+        $sth_apt->bind_param( 50, capitalize( $line,  959,  5 ) );
         #BOTTLED_O2_AVAILABLE
         $sth_apt->bind_param( 51, substrim( $line,  964,  8 ) );
         #BULK_O2_AVAILABLE
