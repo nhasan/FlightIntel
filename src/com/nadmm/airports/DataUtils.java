@@ -173,7 +173,7 @@ public final class DataUtils {
             } else if ( type.equals( "INSTR" ) ) {
                 decodedServices += "Flight training";
             } else if ( type.equals( "PAJA" ) ) {
-                decodedServices += "Para jump";
+                decodedServices += "Parachute jump activity";
             } else if ( type.equals( "RNTL" ) ) {
                 decodedServices += "Rental";
             } else if ( type.equals( "SALES" ) ) {
@@ -444,4 +444,40 @@ public final class DataUtils {
         }
     }
 
+    public static String getApproachLightSystemDescription( String als ) {
+        if ( als.equals( "ALSAF" ) ) {
+            return " 3,000' high intensity approach lighting system with centerline "
+                    +"sequence flashers";
+        } else if ( als.equals( "ALSF1" ) ) {
+            return "Standard 2,400' high intensity approach lighting system with "
+                    +"sequenced flashers, CAT I";
+        } else if ( als.equals( "ALSF2" ) ) {
+            return "Standard 2,400' high intensity approach lighting system with "
+                    +"sequenced flashers, CAT II or III";
+        } else if ( als.equals( "MALS" ) ) {
+            return " 1,400' medium intensity approach lighting system";
+        } else if ( als.equals( "MALSF" ) ) {
+            return " 1,400' medium intensity approach lighting system with sequenced flashers";
+        } else if ( als.equals( "MALSR" ) ) {
+            return " 1,400' medium intensity approach lighting system with runway alignment "
+                    +"indicator lights";
+        } else if ( als.equals( "SSALS" ) ) {
+            return "Simplified short approach lighting system";
+        } else if ( als.equals( "SSALF" ) ) {
+            return "Simplified short approach lighting system with sequenced flashers";
+        } else if ( als.equals( "SSALR" ) ) {
+            return "Simplified short approach lighting system with runway alignment "
+                    +"indicator lights";
+        } else if ( als.equals( "NEON" ) ) {
+            return "Neon ladder approach lighting system";
+        } else if ( als.equals( "ODALS" ) ) {
+            return "Omni-directional approach lighting system";
+        } else if ( als.equals( "LDIN" ) ) {
+            return "Lead-in approach lighting system";
+        } else if ( als.equals( "MIL OVRN" ) ) {
+            return "Military overrun approach lighting system";
+        } else {
+            return "";
+        }
+    }
 }
