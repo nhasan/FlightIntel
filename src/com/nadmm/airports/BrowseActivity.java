@@ -32,14 +32,17 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
@@ -53,6 +56,9 @@ public class BrowseActivity extends ListActivity {
     // Projection maps for queries
     static private final HashMap<String, String> sStateMap = buildStateMap();
     static private final HashMap<String, String> sCityMap = buildCityMap();
+
+    private DatabaseManager mDbManager = null;
+    private BrowseCursorAdapter mListAdapter = null;
 
     static HashMap<String, String> buildStateMap() {
         HashMap<String, String> map = new HashMap<String, String>();
@@ -79,6 +85,9 @@ public class BrowseActivity extends ListActivity {
         super.onCreate( savedInstanceState );
 
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
+
+        mDbManager = DatabaseManager.instance( this );
+        registerForContextMenu( getListView() );
 
         Intent intent = getIntent();
         Bundle extra = intent.getExtras();
@@ -126,6 +135,10 @@ public class BrowseActivity extends ListActivity {
             startActivity( browse );
         } else {
             // An airport was selected - Launch the detail view activity
+            String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+            Intent intent = new Intent( this, AirportDetailsActivity.class );
+            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+            startActivity( intent );
         }
     }
 
@@ -196,18 +209,17 @@ public class BrowseActivity extends ListActivity {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            BrowseCursorAdapter adapter = null;
             if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
-                 adapter = new BrowseCursorAdapter( BrowseActivity.this,
+                 mListAdapter = new BrowseCursorAdapter( BrowseActivity.this,
                         R.layout.browse_all_item, c, R.id.browse_all_section,
                         BrowseCursorAdapter.STATE_MODE );
             } else {
-                adapter = new BrowseCursorAdapter( BrowseActivity.this,
+                mListAdapter = new BrowseCursorAdapter( BrowseActivity.this,
                         R.layout.browse_state_item, c, R.id.browse_state_section,
                         BrowseCursorAdapter.CITY_MODE );
             }
 
-            BrowseActivity.this.setListAdapter( adapter );
+            BrowseActivity.this.setListAdapter( mListAdapter );
             setProgressBarIndeterminateVisibility( false );
         }
 
@@ -302,6 +314,61 @@ public class BrowseActivity extends ListActivity {
         default:
             return super.onOptionsItemSelected( item );
         }
+    }
+
+    @Override
+    public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
+        super.onCreateContextMenu( menu, v, menuInfo );
+
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        Cursor c = mListAdapter.getCursor();
+        int pos = c.getPosition();
+        // Subtract 1 to account for header item
+        c.moveToPosition( info.position-1 );
+        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+        String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null || code.length() == 0 ) {
+            code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );            
+        }
+        String facilityName = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
+        c.moveToPosition( pos );
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate( R.menu.airport_list_context_menu, menu );
+        menu.setHeaderTitle( code+" - "+facilityName );
+
+        // Show either "Add" or "Remove" entry depending on the context
+        if ( mDbManager.isFavoriteAirport( siteNumber ) ) {
+            menu.removeItem( R.id.menu_add_favorites );
+        } else {
+            menu.removeItem( R.id.menu_remove_favorites );
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected( MenuItem item ) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        Cursor c = mListAdapter.getCursor();
+        int pos = c.getPosition();
+        c.moveToPosition( info.position );
+        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+        c.moveToPosition( pos );
+
+        switch ( item.getItemId() ) {
+            case R.id.menu_add_favorites:
+                mDbManager.addToFavorites( siteNumber );
+                break;
+            case R.id.menu_remove_favorites:
+                mDbManager.removeFromFavorites( siteNumber );
+                break;
+            case R.id.menu_view_details:
+                Intent intent = new Intent( this, AirportDetailsActivity.class );
+                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                startActivity( intent );
+                break;
+            default:
+        }
+        return super.onContextItemSelected( item );
     }
 
     protected void showErrorMessage( String msg )
