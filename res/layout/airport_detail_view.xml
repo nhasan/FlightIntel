@@ -93,7 +93,7 @@
                     style="@style/TextSmall.Bold"
                     android:padding="4dp"
                     android:layout_marginTop="4dp"
-                    android:text="@string/services"
+                    android:text="@string/airport_services"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
             <TableLayout android:id="@+id/detail_services_layout"
