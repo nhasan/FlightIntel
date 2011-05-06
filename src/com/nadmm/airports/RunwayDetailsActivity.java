@@ -426,9 +426,16 @@ public class RunwayDetailsActivity extends Activity {
         if ( als.length() > 0 ) {
             String apchLights = DataUtils.getApproachLightSystemDescription( als );
             if ( apchLights.length() > 0 ) {
-                addRemarkRow( layout, apchLights );
+                addRow( layout, apchLights );
                 ++count;
             }
+        }
+
+        // Show RVR information
+        String rvr = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_RVR_LOCATIONS ) );
+        if ( rvr.length() > 0 ) {
+            addRow( layout, "RVR equipment located at "+DataUtils.decodeRVRLocations( rvr ) );
+            ++count;
         }
 
         // Show obstructions
@@ -452,9 +459,16 @@ public class RunwayDetailsActivity extends Activity {
         if ( als.length() > 0 ) {
             String apchLights = DataUtils.getApproachLightSystemDescription( als );
             if ( apchLights.length() > 0 ) {
-                addRemarkRow( layout, apchLights );
+                addRow( layout, apchLights );
                 ++count;
             }
+        }
+
+        // Show RVR information
+        String rvr = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_RVR_LOCATIONS ) );
+        if ( rvr.length() > 0 ) {
+            addRow( layout, "RVR equipment located at "+DataUtils.decodeRVRLocations( rvr ) );
+            ++count;
         }
 
         // Show obstructions
@@ -502,7 +516,7 @@ public class RunwayDetailsActivity extends Activity {
                 int slope = rwy.getInt( rwy.getColumnIndex(
                         Runways.BASE_END_CONTROLLING_OBJECT_SLOPE ) );
     
-                text = String.format( " %d' %s, ", height, object.toLowerCase() );
+                text = String.format( "%d' %s, ", height, object.toLowerCase() );
                 if ( lighted.length() > 0 ) {
                     text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
                 }
@@ -519,7 +533,7 @@ public class RunwayDetailsActivity extends Activity {
                 text = object;
             }
     
-            addRemarkRow( layout, text );
+            addRow( layout, text );
             ++count;
         }
 
@@ -543,7 +557,7 @@ public class RunwayDetailsActivity extends Activity {
             int slope = rwy.getInt( rwy.getColumnIndex(
                     Runways.RECIPROCAL_END_CONTROLLING_OBJECT_SLOPE ) );
 
-            String text = String.format( " %d' %s, ", height, object.toLowerCase() );
+            String text = String.format( "%d' %s, ", height, object.toLowerCase() );
             if ( lighted.length() > 0 ) {
                 text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
             }
@@ -555,7 +569,7 @@ public class RunwayDetailsActivity extends Activity {
                 text += String.format( ", %d:1 slope to clear", slope );
             }
 
-            addRemarkRow( layout, text );
+            addRow( layout, text );
             ++count;
         }
 
@@ -589,6 +603,10 @@ public class RunwayDetailsActivity extends Activity {
             }
             remark = remark.substring( index );
         }
+        addRow( layout, remark );
+    }
+
+    protected void addRow( LinearLayout layout, String remark ) {
         LinearLayout innerLayout = new LinearLayout( this );
         innerLayout.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );

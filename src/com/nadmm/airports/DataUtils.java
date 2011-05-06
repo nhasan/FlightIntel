@@ -444,9 +444,28 @@ public final class DataUtils {
         }
     }
 
+    public static String decodeRVRLocations( String rvr ) {
+        String decodedRvr = "";
+        int index = 0;
+        while ( index < rvr.length() ) {
+            if ( decodedRvr.length() > 0 ) {
+                decodedRvr += ", ";
+            }
+            if ( rvr.charAt( index ) == 'T' ) {
+                decodedRvr += "touchdown";
+            } else if ( rvr.charAt( index ) == 'M' ) {
+                decodedRvr += "midpoint";
+            } else if ( rvr.charAt( index ) == 'R' ) {
+                decodedRvr += "rollout";
+            }
+            ++index;
+        }
+        return decodedRvr;
+    }
+
     public static String getApproachLightSystemDescription( String als ) {
         if ( als.equals( "ALSAF" ) ) {
-            return " 3,000' high intensity approach lighting system with centerline "
+            return "3,000' high intensity approach lighting system with centerline "
                     +"sequence flashers";
         } else if ( als.equals( "ALSF1" ) ) {
             return "Standard 2,400' high intensity approach lighting system with "
@@ -455,11 +474,11 @@ public final class DataUtils {
             return "Standard 2,400' high intensity approach lighting system with "
                     +"sequenced flashers, CAT II or III";
         } else if ( als.equals( "MALS" ) ) {
-            return " 1,400' medium intensity approach lighting system";
+            return "1,400' medium intensity approach lighting system";
         } else if ( als.equals( "MALSF" ) ) {
-            return " 1,400' medium intensity approach lighting system with sequenced flashers";
+            return "1,400' medium intensity approach lighting system with sequenced flashers";
         } else if ( als.equals( "MALSR" ) ) {
-            return " 1,400' medium intensity approach lighting system with runway alignment "
+            return "1,400' medium intensity approach lighting system with runway alignment "
                     +"indicator lights";
         } else if ( als.equals( "SSALS" ) ) {
             return "Simplified short approach lighting system";
