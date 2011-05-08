@@ -64,4 +64,12 @@
                 android:entryValues="@array/nearby_radius_values"
                 android:defaultValue="30" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="Display settings">
+        <CheckBoxPreference
+                android:key="extra_runway_data"
+                android:title="Show extra runway data"
+                android:summaryOn="Show extended runway information"
+                android:summaryOff="Show basic runway information"
+                defaultValue="false" />
+    </PreferenceCategory>
 </PreferenceScreen>
