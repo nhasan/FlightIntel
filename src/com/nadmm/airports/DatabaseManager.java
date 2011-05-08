@@ -57,7 +57,6 @@ public class DatabaseManager {
         public static final String TABLE_NAME = "airports";
         // Fields for airport table
         public static final String SITE_NUMBER = "SITE_NUMBER";
-        public static final String FACILITY_TYPE = "FACILITY_TYPE";
         public static final String FAA_CODE = "FAA_CODE";
         public static final String EFFECTIVE_DATE = "EFFECTIVE_DATE";
         public static final String REGION_CODE = "REGION_CODE";
