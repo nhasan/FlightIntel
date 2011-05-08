@@ -73,7 +73,10 @@ public class RemarkDetailsActivity extends Activity {
                     new String[] { Remarks.REMARK_TEXT },
                     Runways.SITE_NUMBER+"=? "
                     +"AND substr("+Remarks.REMARK_NAME+", 1, 2) not in ('A3', 'A4', 'A5', 'A6') "
-                    +"AND substr("+Remarks.REMARK_NAME+", 1, 3) not in ('A23', 'A17')",
+                    +"AND substr("+Remarks.REMARK_NAME+", 1, 3) not in ('A23', 'A17')"
+                    +"AND "+Remarks.REMARK_NAME
+                    +" not in ('E147', 'A3', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', "
+                    +"'A24', 'A70', 'A81', 'A81 1', 'A82')",
                     new String[] { siteNumber }, null, null, Remarks.REMARK_NAME, null );
 
             return cursors;
@@ -84,6 +87,11 @@ public class RemarkDetailsActivity extends Activity {
             if ( result == null ) {
                 // TODO: Show an error here
                 return;
+            }
+
+            Cursor rmk = result[ 1 ];
+            if ( rmk.getCount() == 0 ) {
+                RemarkDetailsActivity.this.finish();
             }
 
             View view = mInflater.inflate( R.layout.remarks_detail_view, null );

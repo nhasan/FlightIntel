@@ -22,9 +22,12 @@ package com.nadmm.airports;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.util.Linkify;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -32,6 +35,8 @@ import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Remarks;
+import com.nadmm.airports.DatabaseManager.Runways;
 
 public class OwnershipDetailsActivity extends Activity {
 
@@ -52,17 +57,30 @@ public class OwnershipDetailsActivity extends Activity {
         task.execute( siteNumber );
     }
 
-    private final class AirportDetailsTask extends AsyncTask<String, Void, Cursor> {
+    private final class AirportDetailsTask extends AsyncTask<String, Void, Cursor[]> {
 
         @Override
-        protected Cursor doInBackground( String... params ) {
+        protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
+
             DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
-            return dbManager.getAirportDetails( siteNumber );
+            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+            Cursor[] cursors = new Cursor[ 2 ];
+
+            cursors[ 0 ] = dbManager.getAirportDetails( siteNumber );
+
+            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+            builder.setTables( Remarks.TABLE_NAME );
+            cursors[ 1 ] = builder.query( db, new String[] { Remarks.REMARK_TEXT },
+                    Runways.SITE_NUMBER+"=? "
+                    +"AND "+Remarks.REMARK_NAME+" in ('A11', 'A12', 'A13', 'A14', 'A15', 'A16')",
+                    new String[] { siteNumber }, null, null, null, null );
+
+            return cursors;
         }
 
         @Override
-        protected void onPostExecute( Cursor result ) {
+        protected void onPostExecute( Cursor[] result ) {
             if ( result == null ) {
                 // TODO: Show an error here
                 return;
@@ -73,16 +91,19 @@ public class OwnershipDetailsActivity extends Activity {
             mMainLayout = (LinearLayout) view.findViewById( R.id.ownership_top_layout );
 
             // Title
-            GuiUtils.showAirportTitle( mMainLayout, result );
+            Cursor apt = result[ 0 ];
+            GuiUtils.showAirportTitle( mMainLayout, apt );
 
             showOwnershipType( result );
             showOwnerInfo( result );
             showManagerInfo( result );
+            showRemarks( result );
         }
 
     }
 
-    protected void showOwnershipType( Cursor apt ) {
+    protected void showOwnershipType( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
         LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
                 R.id.detail_ownership_type_layout );
         String ownership = DataUtils.decodeOwnershipType(
@@ -92,7 +113,8 @@ public class OwnershipDetailsActivity extends Activity {
         addRow( layout, ownership+" / "+use );
     }
 
-    protected void showOwnerInfo( Cursor apt ) {
+    protected void showOwnerInfo( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
         String text;
         LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_owner_layout );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_NAME ) );
@@ -111,7 +133,8 @@ public class OwnershipDetailsActivity extends Activity {
         }
     }
 
-    protected void showManagerInfo( Cursor apt ) {
+    protected void showManagerInfo( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
         String text;
         LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_manager_layout );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_NAME ) );
@@ -130,6 +153,19 @@ public class OwnershipDetailsActivity extends Activity {
         }
     }
 
+    protected void showRemarks( Cursor[] result ) {
+        Cursor rmk = result[ 1 ];
+        if ( !rmk.moveToFirst() ) {
+            return;
+        }
+        LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_remarks_layout );
+        layout.setVisibility( View.VISIBLE );
+        do {
+            String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
+            addRemarkRow( layout, remark );
+        } while ( rmk.moveToNext() );
+    }
+
     protected void addRow( LinearLayout layout, String text ) {
         TextView tv = new TextView( this );
         tv.setText( text );
@@ -140,10 +176,38 @@ public class OwnershipDetailsActivity extends Activity {
 
     protected void addPhoneRow( LinearLayout layout, String text ) {
         TextView tv = new TextView( this );
-        tv.setText( text );
         tv.setPadding( 0, 1, 0, 1 );
+        tv.setText( text );
         Linkify.addLinks( tv, Linkify.PHONE_NUMBERS );
         layout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
+
+    protected void addRemarkRow( LinearLayout layout, String remark ) {
+        int index = remark.indexOf( ' ' );
+        if ( index != -1 ) {
+            while ( remark.charAt( index ) == ' ' ) {
+                ++index;
+            }
+            remark = remark.substring( index );
+        }
+        LinearLayout innerLayout = new LinearLayout( this );
+        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
+        TextView tv = new TextView( this );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 10, 2, 2, 2 );
+        tv.setText( "\u2022 " );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
+        tv = new TextView( this );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 2, 2, 12, 2 );
+        tv.setText( remark );
+        Linkify.addLinks( tv, Linkify.PHONE_NUMBERS );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
+        layout.addView( innerLayout, new LinearLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
 }

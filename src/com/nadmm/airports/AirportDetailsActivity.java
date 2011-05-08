@@ -30,17 +30,18 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
-import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.ImageView.ScaleType;
+import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 
 public class AirportDetailsActivity extends Activity {
@@ -77,7 +78,7 @@ public class AirportDetailsActivity extends Activity {
 
             DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 2 ];
+            Cursor[] cursors = new Cursor[ 3 ];
 
             cursors[ 0 ] = dbManager.getAirportDetails( siteNumber );
 
@@ -88,6 +89,14 @@ public class AirportDetailsActivity extends Activity {
                     Airports.SITE_NUMBER+"=?", new String[] { siteNumber },
                     null, null, null, null );
             cursors[ 1 ] = c;
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Remarks.TABLE_NAME );
+            c = builder.query( db, new String[] { Remarks.REMARK_TEXT },
+                    Runways.SITE_NUMBER+"=? "
+                    +"AND "+Remarks.REMARK_NAME+" in ('E147', 'A3', 'A24', 'A70', 'A82')",
+                    new String[] { siteNumber }, null, null, null, null );
+            cursors[ 2 ] = c;
 
             return cursors;
         }
@@ -114,6 +123,8 @@ public class AirportDetailsActivity extends Activity {
             showRunwayDetails( result );
             // Airport Operations section
             showOperationsDetails( result );
+            // Airport Remarks section
+            showRemarks( result );
             // Airport Services section
             showServicesDetails( result );
             // Other details
@@ -218,6 +229,11 @@ public class AirportDetailsActivity extends Activity {
         String beacon = apt.getString( apt.getColumnIndex( Airports.BEACON_COLOR ) );
         addSeparator( layout );
         addRow( layout, "Beacon", DataUtils.decodeBeacon( beacon ) );
+        String lighting = apt.getString( apt.getColumnIndex( Airports.LIGHTING_SCHEDULE ) );
+        if ( lighting.length() > 0 ) {
+            addSeparator( layout );
+            addRow( layout, "Lighting schedule", lighting );
+        }
         String landingFee = apt.getString( apt.getColumnIndex( Airports.LANDING_FEE ) );
         addSeparator( layout );
         addRow( layout, "Landing fee", landingFee.equals( "Y" )? "Yes" : "No" );
@@ -227,6 +243,24 @@ public class AirportDetailsActivity extends Activity {
         addSeparator( layout );
         addRow( layout, "Magnetic variation", 
                 String.format( "%d\u00B0 %s (%s)", variation, dir, varYear ) );
+        addSeparator( layout );
+        String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
+        addRow( layout, "Sectional chart", sectional );
+    }
+
+    protected void showRemarks( Cursor[] result ) {
+        Cursor rmk = result[ 2 ];
+        if ( !rmk.moveToFirst() ) {
+            return;
+        }
+        TextView label = (TextView) mMainLayout.findViewById( R.id.detail_remarks_label );
+        LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_remarks_layout );
+        label.setVisibility( View.VISIBLE );
+        layout.setVisibility( View.VISIBLE );
+        do {
+            String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
+            addRemarkRow( layout, remark );
+        } while ( rmk.moveToNext() );
     }
 
     protected void showServicesDetails( Cursor[] result ) {
@@ -268,7 +302,7 @@ public class AirportDetailsActivity extends Activity {
         intent = new Intent( this, RemarkDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addSeparator( layout );
-        addClickableRow( layout, "Remarks", intent );
+        addClickableRow( layout, "Additional remarks", intent );
         intent = new Intent( this, AttendanceDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addSeparator( layout );
@@ -375,6 +409,32 @@ public class AirportDetailsActivity extends Activity {
         } );
 
         table.addView( row, new TableLayout.LayoutParams( 
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addRemarkRow( LinearLayout layout, String remark ) {
+        int index = remark.indexOf( ' ' );
+        if ( index != -1 ) {
+            while ( remark.charAt( index ) == ' ' ) {
+                ++index;
+            }
+            remark = remark.substring( index );
+        }
+        LinearLayout innerLayout = new LinearLayout( this );
+        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
+        TextView tv = new TextView( this );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 10, 2, 2, 2 );
+        tv.setText( "\u2022 " );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
+        tv = new TextView( this );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 2, 2, 12, 2 );
+        tv.setText( remark );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
+        layout.addView( innerLayout, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 

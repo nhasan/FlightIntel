@@ -90,7 +90,8 @@ public class RunwayDetailsActivity extends Activity {
             builder.setTables( Remarks.TABLE_NAME );
             c = builder.query( db, new String[] { Remarks.REMARK_NAME, Remarks.REMARK_TEXT },
                     Runways.SITE_NUMBER+"=? "
-                    +"AND substr("+Remarks.REMARK_NAME+", 1, 2) in ('A3', 'A4', 'A5', 'A6')",
+                    +"AND ( substr("+Remarks.REMARK_NAME+", 1, 2) in ('A3', 'A4', 'A5', 'A6')"
+                    +"OR "+Remarks.REMARK_NAME+" in ('A81', 'A81 1') )",
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 2 ] = c;
 
@@ -163,7 +164,7 @@ public class RunwayDetailsActivity extends Activity {
         // Show remarks
         LinearLayout rmkLayout = (LinearLayout) mMainLayout.findViewById(
                 R.id.rwy_common_remarks );
-        showRemarks( rmkLayout, result, runwayId );
+        showCommonRemarks( rmkLayout, result, runwayId );
     }
 
     protected void showBaseEndInformation( Cursor[] result ) {
@@ -489,6 +490,25 @@ public class RunwayDetailsActivity extends Activity {
         LinearLayout rmkLayout = (LinearLayout) mMainLayout.findViewById(
                 R.id.rwy_base_end_remarks );
         showRemarks( rmkLayout, result, helipadId );
+    }
+
+    protected void showCommonRemarks( LinearLayout layout, Cursor[] result, String runwayId ) {
+        int count = 0;
+        Cursor rmk = result[ 2 ];
+        if ( rmk.moveToFirst() ) {
+            do {
+                String rmkName = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_NAME ) );
+                if ( rmkName.startsWith( "A81" ) ) {
+                    ++count;
+                    String rmkText = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
+                    addRemarkRow( layout, rmkText );
+                }
+            } while ( rmk.moveToNext() );
+        }
+        count += showRemarks( layout, result, runwayId );
+        if ( count > 0 ) {
+            layout.setVisibility( View.VISIBLE );
+        }
     }
 
     protected void showBaseEndRemarks( Cursor[] result ) {
