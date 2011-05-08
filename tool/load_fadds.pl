@@ -302,8 +302,6 @@ my $create_runways_table = "CREATE TABLE runways ("
         ."BASE_END_MARKING_TYPE TEXT, "
         ."BASE_END_MARKING_CONDITION TEXT, "
         ."BASE_END_ARRESTING_DEVICE_TYPE TEXT, "
-        ."BASE_END_LATTITUDE_DEGREES REAL, "
-        ."BASE_END_LONGITUDE_DEGREES REAL, "
         ."BASE_END_RUNWAY_ELEVATION REAL, "
         ."BASE_END_THRESHOLD_CROSSING_HEIGHT INTEGER, "
         ."BASE_END_GLIDE_ANGLE REAL, "
@@ -328,8 +326,6 @@ my $create_runways_table = "CREATE TABLE runways ("
         ."RECIPROCAL_END_MARKING_TYPE TEXT, "
         ."RECIPROCAL_END_MARKING_CONDITION TEXT, "
         ."RECIPROCAL_END_ARRESTING_DEVICE_TYPE TEXT, "
-        ."RECIPROCAL_END_LATTITUDE_DEGREES REAL, "
-        ."RECIPROCAL_END_LONGITUDE_DEGREES REAL, "
         ."RECIPROCAL_END_RUNWAY_ELEVATION REAL, "
         ."RECIPROCAL_END_THRESHOLD_CROSSING_HEIGHT INTEGER, "
         ."RECIPROCAL_END_GLIDE_ANGLE REAL, "
@@ -380,8 +376,6 @@ my $insert_runways_record = "INSERT INTO runways ("
         ."BASE_END_MARKING_TYPE, "
         ."BASE_END_MARKING_CONDITION, "
         ."BASE_END_ARRESTING_DEVICE_TYPE, "
-        ."BASE_END_LATTITUDE_DEGREES, "
-        ."BASE_END_LONGITUDE_DEGREES, "
         ."BASE_END_RUNWAY_ELEVATION, "
         ."BASE_END_THRESHOLD_CROSSING_HEIGHT, "
         ."BASE_END_GLIDE_ANGLE, "
@@ -406,8 +400,6 @@ my $insert_runways_record = "INSERT INTO runways ("
         ."RECIPROCAL_END_MARKING_TYPE, "
         ."RECIPROCAL_END_MARKING_CONDITION, "
         ."RECIPROCAL_END_ARRESTING_DEVICE_TYPE, "
-        ."RECIPROCAL_END_LATTITUDE_DEGREES, "
-        ."RECIPROCAL_END_LONGITUDE_DEGREES, "
         ."RECIPROCAL_END_RUNWAY_ELEVATION, "
         ."RECIPROCAL_END_THRESHOLD_CROSSING_HEIGHT, "
         ."RECIPROCAL_END_GLIDE_ANGLE, "
@@ -449,7 +441,7 @@ my $insert_runways_record = "INSERT INTO runways ("
         ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ?, ?)";
+        ."?)";
  
 my $create_attendance_table = "CREATE TABLE attendance ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -600,7 +592,7 @@ while ( my $line = <APT_FILE> )
         #PATTERN_ALTITUDE_AGL
         $sth_apt->bind_param( 29, substrim( $line,  583,  4 ) );
         #SECTIONAL_CHART
-        $sth_apt->bind_param( 30, substrim( $line,  587, 30 ) );
+        $sth_apt->bind_param( 30, capitalize( $line,  587, 30 ) );
         #DISTANCE_FROM_CITY_NM
         $sth_apt->bind_param( 31, substrim( $line,  617,  2 ) );
         #DIRECTION_FROM_CITY
@@ -646,7 +638,7 @@ while ( my $line = <APT_FILE> )
         #BULK_O2_AVAILABLE
         $sth_apt->bind_param( 52, substrim( $line,  972,  8 ) );
         #LIGHTING_SCHEDULE
-        $sth_apt->bind_param( 53, substrim( $line,  980,  9 ) );
+        $sth_apt->bind_param( 53, capitalize( $line,  980,  9 ) );
         #TOWER_ON_SITE
         $sth_apt->bind_param( 54, substrim( $line,  989,  1 ) );
         #UNICOM_FREQS
