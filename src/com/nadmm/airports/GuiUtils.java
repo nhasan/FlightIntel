@@ -38,7 +38,8 @@ public class GuiUtils {
         String title = code + " - " + name;
         tv.setText( title );
         tv = (TextView) root.findViewById( R.id.airport_info );
-        String type = c.getString( c.getColumnIndex( Airports.FACILITY_TYPE ) );
+        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+        String type = DataUtils.decodeLandingFaclityType( siteNumber );
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
         String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );
         String info = type+", "+city+", "+state;

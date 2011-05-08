@@ -29,6 +29,27 @@ public final class DataUtils {
         return magneticHeading;
     }
 
+    public static String decodeLandingFaclityType( String siteNumber ) {
+        char type = siteNumber.charAt( siteNumber.length()-1 );
+        if ( type == 'A') {
+            return "Airport";
+        } else if ( type == 'B' ) {
+            return "Balloonport";
+        } else if ( type == 'C' ) {
+            return "Seaplane base";
+        } else if ( type == 'G' ) {
+            return "Gliderport";
+        } else if ( type == 'H' ) {
+            return "Heliport";
+        } else if ( type == 'S' ) {
+            return "STOLport";
+        } else if ( type == 'U' ) {
+            return "Ultralight park";
+        } else {
+            return "";
+        }
+    }
+
     public static String decodeOwnershipType( String ownership ) {
         if ( ownership.equals( "PU" ) ) {
             return "Publicly owned";
