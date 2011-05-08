@@ -78,7 +78,6 @@ public class NearbyActivity extends Activity {
             Airports.FACILITY_NAME,
             Airports.ASSOC_CITY,
             Airports.ASSOC_STATE,
-            Airports.FACILITY_TYPE,
             Airports.FUEL_TYPES,
             Airports.UNICOM_FREQS,
             Airports.ELEVATION_MSL,
@@ -196,7 +195,6 @@ public class NearbyActivity extends Activity {
         public String FACILITY_NAME;
         public String ASSOC_CITY;
         public String ASSOC_STATE;
-        public String FACILITY_TYPE;
         public String FUEL_TYPES;
         public String UNICOM_FREQ;
         public String ELEVATION_MSL;
@@ -212,7 +210,6 @@ public class NearbyActivity extends Activity {
             FAA_CODE = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
             ASSOC_CITY = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
             ASSOC_STATE = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
-            FACILITY_TYPE = c.getString( c.getColumnIndex( Airports.FACILITY_TYPE ) );
             FUEL_TYPES = c.getString( c.getColumnIndex( Airports.FUEL_TYPES ) );
             ELEVATION_MSL = c.getString( c.getColumnIndex( Airports.ELEVATION_MSL ) );
             UNICOM_FREQ = c.getString( c.getColumnIndex( Airports.UNICOM_FREQS ) );
@@ -315,7 +312,6 @@ public class NearbyActivity extends Activity {
                         .add( airport.FACILITY_NAME )
                         .add( airport.ASSOC_CITY )
                         .add( airport.ASSOC_STATE )
-                        .add( airport.FACILITY_TYPE )
                         .add( airport.FUEL_TYPES )
                         .add( airport.UNICOM_FREQ )
                         .add( airport.ELEVATION_MSL )

@@ -72,7 +72,8 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
         }
 
         tv = (TextView) view.findViewById( R.id.other_info );
-        String type = c.getString( c.getColumnIndex( Airports.FACILITY_TYPE ) );
+        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+        String type = DataUtils.decodeLandingFaclityType( siteNumber );
         String fuel = c.getString( c.getColumnIndex( Airports.FUEL_TYPES ) );
         String elev = c.getString( c.getColumnIndex( Airports.ELEVATION_MSL ) );
         String unicom = c.getString( c.getColumnIndex( Airports.UNICOM_FREQS ) );

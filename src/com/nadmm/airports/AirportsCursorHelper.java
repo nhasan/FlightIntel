@@ -38,7 +38,6 @@ public class AirportsCursorHelper {
             Airports.FACILITY_NAME,
             Airports.ASSOC_CITY,
             Airports.ASSOC_STATE,
-            Airports.FACILITY_TYPE,
             Airports.FUEL_TYPES,
             Airports.UNICOM_FREQS,
             Airports.ELEVATION_MSL,
