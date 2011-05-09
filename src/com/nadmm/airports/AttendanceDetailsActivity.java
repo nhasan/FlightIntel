@@ -114,21 +114,20 @@ public class AttendanceDetailsActivity extends Activity {
             do {
                 String schedule = att.getString(
                         att.getColumnIndex( Attendance.ATTENDANCE_SCHEDULE ) );
-                addRow( layout, schedule );
+                addBulletedRow( layout, schedule );
             } while ( att.moveToNext() );
         }
 
         Cursor rmk = result[ 2 ];
         if ( rmk.moveToFirst() ) {
             do {
-                String remark = rmk.getString(
-                        rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
+                String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
                 addRemarkRow( layout, remark );
             } while ( att.moveToNext() );            
         }
     }
 
-    protected void addRow( LinearLayout layout, String remark ) {
+    protected void addBulletedRow( LinearLayout layout, String remark ) {
         LinearLayout innerLayout = new LinearLayout( this );
         innerLayout.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );
@@ -155,22 +154,7 @@ public class AttendanceDetailsActivity extends Activity {
             }
             remark = remark.substring( index );
         }
-        LinearLayout innerLayout = new LinearLayout( this );
-        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 10, 2, 2, 2 );
-        tv.setText( "\u2022 " );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 2, 12, 2 );
-        tv.setText( remark );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        addBulletedRow( layout, remark );
     }
 
 }
