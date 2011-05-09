@@ -45,7 +45,6 @@
             <LinearLayout android:id="@+id/detail_attendance_layout"
                     android:background="@drawable/rounded_rectangle"
                     android:orientation="vertical"
-                    android:layout_marginTop="4dp"
                     android:padding="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
