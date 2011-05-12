@@ -219,6 +219,38 @@ public class DatabaseManager {
         public static final String ATTENDANCE_SCHEDULE = "ATTENDANCE_SCHEDULE";
     }
 
+    public static final class Tower1 implements BaseColumns {
+        public static final String TABLE_NAME = "Tower1";
+        public static final String FACILITY_ID = "FACILITY_ID";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
+        public static final String FACILITY_TYPE = "FACILITY_TYPE";
+        public static final String RADIO_CALL_TOWER = "RADIO_CALL_TOWER";
+        public static final String RADIO_CALL_APCH = "RADIO_CALL_APCH";
+        public static final String RADIO_CALL_DEP = "RADIO_CALL_DEP";
+    }
+
+    public static final class Tower3 implements BaseColumns {
+        public static final String TABLE_NAME = "Tower3";
+        public static final String FACILITY_ID = "FACILITY_ID";
+        public static final String MASTER_AIRPORT_FREQ = "MASTER_AIRPORT_FREQ";
+        public static final String MASTER_AIRPORT_FREQ_USE = "MASTER_AIRPORT_FREQ_USE";
+    }
+
+    public static final class Tower6 implements BaseColumns {
+        public static final String TABLE_NAME = "Tower6";
+        public static final String FACILITY_ID = "FACILITY_ID";
+        public static final String ELEMENT_NUMBER = "ELEMENT_NUMBER";
+        public static final String REMARK_TEXT = "REMARK_TEXT";
+    }
+
+    public static final class Tower7 implements BaseColumns {
+        public static final String TABLE_NAME = "Tower7";
+        public static final String SATELLITE_AIRPORT_FREQ_USE = "SATELLITE_AIRPORT_FREQ_USE";
+        public static final String SATELLITE_AIRPORT_SITE_NUMBER = "SATELLITE_AIRPORT_SITE_NUMBER";
+        public static final String MASTER_AIRPORT_SITE_NUMBER = "MASTER_AIRPORT_SITE_NUMBER";
+        public static final String SATELLITE_AIRPORT_FREQ = "SATELLITE_AIRPORT_FREQ";
+    }
+
     public static final class Catalog implements BaseColumns {
         public static final String TABLE_NAME = "catalog";
         public static final String TYPE = "TYPE";
