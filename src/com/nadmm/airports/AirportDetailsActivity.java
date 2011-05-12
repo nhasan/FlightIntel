@@ -43,6 +43,9 @@ import android.widget.TableLayout.LayoutParams;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
+import com.nadmm.airports.DatabaseManager.Tower1;
+import com.nadmm.airports.DatabaseManager.Tower3;
+import com.nadmm.airports.DatabaseManager.Tower7;
 
 public class AirportDetailsActivity extends Activity {
 
@@ -78,9 +81,10 @@ public class AirportDetailsActivity extends Activity {
 
             DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 3 ];
+            Cursor[] cursors = new Cursor[ 6 ];
 
-            cursors[ 0 ] = dbManager.getAirportDetails( siteNumber );
+            Cursor apt = dbManager.getAirportDetails( siteNumber );
+            cursors[ 0 ] = apt;
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Runways.TABLE_NAME );
@@ -97,6 +101,28 @@ public class AirportDetailsActivity extends Activity {
                     +"AND "+Remarks.REMARK_NAME+" in ('E147', 'A3', 'A24', 'A70', 'A82')",
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 2 ] = c;
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Tower1.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" },
+                    Tower1.SITE_NUMBER+"=? ",
+                    new String[] { siteNumber }, null, null, null, null );
+            cursors[ 3 ] = c;
+
+            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Tower3.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" },
+                    Tower3.FACILITY_ID+"=? ",
+                    new String[] { faaCode }, null, null, null, null );
+            cursors[ 4 ] = c;
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Tower7.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" },
+                    Tower7.SATELLITE_AIRPORT_SITE_NUMBER+"=? ",
+                    new String[] { siteNumber }, null, null, null, null );
+            cursors[ 5 ] = c;
 
             return cursors;
         }
@@ -141,19 +167,98 @@ public class AirportDetailsActivity extends Activity {
     protected void showCommunicationsDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.detail_comm_layout );
+        int row = 0;
+
         String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
+        if ( ctaf.length() > 0 ) {
+            ++row;
+            addRow( layout, "CTAF", ctaf );
+        }
+
         String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
-        if ( ctaf.length() > 0 || unicom.length() > 0 ) {
-            if ( ctaf.length() > 0 ) {
-                addRow( layout, "CTAF", ctaf );
-            }
-            if ( ctaf.length() > 0 && unicom.length() > 0 ) {
+        if ( unicom.length() > 0 ) {
+            if ( row > 0 ) {
                 addSeparator( layout );
             }
-            if ( unicom.length() > 0 ) {
-                addRow( layout, "Unicom", DataUtils.decodeUnicomFreq( unicom ) );
+            ++row;
+            addRow( layout, "Unicom", DataUtils.decodeUnicomFreq( unicom ) );
+        }
+
+        Cursor twr1 = result[ 3 ];
+        if ( twr1.moveToFirst() ) {
+            String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
+            if ( !facilityType.equals( "NON-ATCT" ) ) {
+                // This facility has a control tower
+                Cursor twr3 = result[ 4 ];
+                if ( twr3.moveToFirst() ) {
+                    String towerFreqs = "";
+                    do {
+                        String use = twr3.getString( twr3.getColumnIndex(
+                                Tower3.MASTER_AIRPORT_FREQ_USE ) );
+                        if ( use.startsWith( "LCL/" ) ) {
+                            if ( towerFreqs.length() > 0 ) {
+                                towerFreqs += ", ";
+                            }
+                            String freq = twr3.getString( twr3.getColumnIndex(
+                                    Tower3.MASTER_AIRPORT_FREQ ) );
+                            towerFreqs += freq;
+                        }
+                    } while ( twr3.moveToNext() );
+
+                    if ( towerFreqs.length() > 0 ) {
+                        if ( row > 0 ) {
+                            addSeparator( layout );
+                        }
+                        ++row;
+                        addRow( layout, "Tower", towerFreqs );
+                    }
+                }
+            } else {
+                String apchRadioCall =  twr1.getString( twr1.getColumnIndex(
+                        Tower1.RADIO_CALL_APCH ) );
+                String depRadioCall =  twr1.getString( twr1.getColumnIndex(
+                        Tower1.RADIO_CALL_DEP ) );
+                Cursor twr7 = result[ 5 ];
+                if ( twr7.moveToFirst() ) {
+                    String apchFreqs = "";
+                    String depFreqs = "";
+                    do {
+                        String freq = twr7.getString( twr7.getColumnIndex(
+                                Tower7.SATELLITE_AIRPORT_FREQ ) );
+                        String freqUse = twr7.getString( twr7.getColumnIndex(
+                                Tower7.SATELLITE_AIRPORT_FREQ_USE ) );
+                        if ( freqUse.contains( "APCH/" ) ) {
+                            if ( apchFreqs.length() > 0 ) {
+                                apchFreqs += ", ";
+                            }
+                            apchFreqs += freq;
+                        }
+                        if ( freqUse.contains( "DEP/" ) ) {
+                            if ( depFreqs.length() > 0 ) {
+                                depFreqs += ", ";
+                            }
+                            depFreqs += freq;
+                        }
+                    } while ( twr7.moveToNext() );
+                    if ( apchFreqs.length() > 0 ) {
+                        if ( row > 0 ) {
+                            addSeparator( layout );
+                        }
+                        ++row;
+                        addRow( layout, apchRadioCall+" Approach", apchFreqs );
+                    }
+                    if ( depFreqs.length() > 0 ) {
+                        if ( row > 0 ) {
+                            addSeparator( layout );
+                        }
+                        ++row;
+                        addRow( layout, depRadioCall+" Departure", depFreqs );
+                    }
+                }
             }
-        } else {
+        }
+
+        if ( row == 0 ) {
             layout.setVisibility( View.GONE );
         }
     }
