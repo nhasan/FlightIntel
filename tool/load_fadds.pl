@@ -110,11 +110,9 @@ sub capitalize($$$)
 }
 
 my $dbfile = "fadds.db";
-my $APT = shift @ARGV;
+my $FADDS_BASE = shift @ARGV;
 
 my %site_number;
-
-open( APT_FILE, "<$APT" ) or die "Could not open data file\n";
 
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
@@ -471,6 +469,76 @@ my $insert_remarks_record = "INSERT INTO remarks ("
         ."?, ?, ?"
         .")";
 
+my $create_tower1_table = "CREATE TABLE tower1 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."FACILITY_ID TEXT, "
+        ."SITE_NUMBER TEXT, "
+        ."FACILITY_TYPE TEXT, "
+        ."RADIO_CALL_TOWER TEXT, "
+        ."RADIO_CALL_APCH TEXT, "
+        ."RADIO_CALL_DEP TEXT "
+        .");";
+
+my $insert_tower1_record = "INSERT INTO tower1 ("
+        ."FACILITY_ID, "
+        ."SITE_NUMBER, "
+        ."FACILITY_TYPE, "
+        ."RADIO_CALL_TOWER, "
+        ."RADIO_CALL_APCH, "
+        ."RADIO_CALL_DEP"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?"
+        .");";
+
+my $create_tower3_table = "CREATE TABLE tower3 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."FACILITY_ID TEXT, "
+        ."MASTER_AIRPORT_FREQ TEXT, "
+        ."MASTER_AIRPORT_FREQ_USE TEXT"
+        .");";
+
+my $insert_tower3_record = "INSERT INTO tower3 ("
+        ."FACILITY_ID, "
+        ."MASTER_AIRPORT_FREQ, "
+        ."MASTER_AIRPORT_FREQ_USE"
+        .") VALUES ("
+        ."?, ?, ?"
+        .");";
+
+my $create_tower6_table = "CREATE TABLE tower6 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."FACILITY_ID TEXT, "
+        ."ELEMENT_NUMBER INTEGER, "
+        ."REMARK_TEXT TEXT"
+        .");";
+
+my $insert_tower6_record = "INSERT INTO tower6 ("
+        ."FACILITY_ID, "
+        ."ELEMENT_NUMBER, "
+        ."REMARK_TEXT"
+        .") VALUES ("
+        ."?, ?, ?"
+        .");";
+
+my $create_tower7_table = "CREATE TABLE tower7 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."FACILITY_ID TEXT, "
+        ."SATELLITE_AIRPORT_FREQ_USE TEXT, "
+        ."SATELLITE_AIRPORT_SITE_NUMBER TEXT, "
+        ."MASTER_AIRPORT_SITE_NUMBER, "
+        ."SATELLITE_AIRPORT_FREQ TEXT"
+        .");";
+
+my $insert_tower7_record = "INSERT INTO tower7 ("
+        ."FACILITY_ID, "
+        ."SATELLITE_AIRPORT_FREQ_USE, "
+        ."SATELLITE_AIRPORT_SITE_NUMBER, "
+        ."MASTER_AIRPORT_SITE_NUMBER, "
+        ."SATELLITE_AIRPORT_FREQ"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?"
+        .")";
+
 $dbh->do( "DROP TABLE IF EXISTS airports" );
 $dbh->do( $create_airports_table );
 $dbh->do( "CREATE INDEX idx_apt_site_number on airports ( SITE_NUMBER );" );
@@ -491,10 +559,28 @@ $dbh->do( "DROP TABLE IF EXISTS remarks" );
 $dbh->do( $create_remarks_table );
 $dbh->do( "CREATE INDEX idx_rmk_site_number on remarks ( SITE_NUMBER );" );
 
+$dbh->do( "DROP TABLE IF EXISTS tower1" );
+$dbh->do( $create_tower1_table );
+$dbh->do( "CREATE INDEX idx_twr1_site_number on tower1 ( SITE_NUMBER );" );
+
+$dbh->do( "DROP TABLE IF EXISTS tower3" );
+$dbh->do( $create_tower3_table );
+
+$dbh->do( "DROP TABLE IF EXISTS tower6" );
+$dbh->do( $create_tower6_table );
+
+$dbh->do( "DROP TABLE IF EXISTS tower7" );
+$dbh->do( $create_tower7_table );
+$dbh->do( "CREATE INDEX idx_twr7_site_number on tower7 ( SATELLITE_AIRPORT_SITE_NUMBER );" );
+
 my $sth_apt = $dbh->prepare( $insert_airports_record );
 my $sth_rwy = $dbh->prepare( $insert_runways_record );
 my $sth_att = $dbh->prepare( $insert_attendance_record );
 my $sth_rmk = $dbh->prepare( $insert_remarks_record );
+my $sth_twr1 = $dbh->prepare( $insert_tower1_record );
+my $sth_twr3 = $dbh->prepare( $insert_tower3_record );
+my $sth_twr6 = $dbh->prepare( $insert_tower6_record );
+my $sth_twr7 = $dbh->prepare( $insert_tower7_record );
 
 my $i = 0;
 
@@ -502,11 +588,15 @@ my $ofh = select STDOUT;
 $| = 1;
 select $ofh;
 
+my $APT = $FADDS_BASE."/APT.txt";
+print( "$APT\n" );
+open( APT_FILE, "<$APT" ) or die "Could not open data file\n";
+
 while ( my $line = <APT_FILE> )
 {
     ++$i;
 
-    if ( ($i % 100) == 0 )
+    if ( ($i % 1000) == 0 )
     {
         $dbh->do( "PRAGMA synchronous=ON" );
     }
@@ -519,7 +609,7 @@ while ( my $line = <APT_FILE> )
         next if ( substrim( $line,  177,  2 ) eq "PR" );
 
         # Store the site number for later use
-        $site_number{ substrim( $line,    3, 11 ) } = 1;
+        $site_number{ substrim( $line, 3, 11 ) } = 1;
 
         #SITE_NUMBER
         $sth_apt->bind_param(  1, substrim( $line,    3, 11 ) );
@@ -834,9 +924,10 @@ while ( my $line = <APT_FILE> )
         $sth_rmk->execute();
     }
 
-    if ( ($i % 100) == 0 )
+    if ( ($i % 1000) == 0 )
     {
         print( "\rProcessed $i records..." );
+        $| = 1;
         $dbh->do( "PRAGMA synchronous=OFF" );
     }
 }
@@ -845,7 +936,101 @@ while ( my $line = <APT_FILE> )
 $dbh->do( "update airports set icao_code=null where length(icao_code)=0;" );
 
 print( "\rFinished processing $i records.\n" );
-
 close APT_FILE;
+
+my $TWR = $FADDS_BASE."/TWR.txt";
+open( TWR_FILE, "<$TWR" ) or die "Could not open data file\n";
+
+$i = 0;
+print( "$TWR\n" );
+while ( my $line = <TWR_FILE> )
+{
+    ++$i;
+
+    if ( ($i % 1000) == 0 )
+    {
+        $dbh->do( "PRAGMA synchronous=ON" );
+    }
+
+    my $type = substrim( $line, 0, 4 );
+
+    if ( $type eq "TWR1" )
+    {
+        #FACILITY_ID
+        $sth_twr1->bind_param( 1, substrim( $line,   4,  4 ) );
+        #SITE_NUMBER
+        $sth_twr1->bind_param( 2, substrim( $line,  18, 11 ) );
+        #FACILITY_TYPE
+        $sth_twr1->bind_param( 3, substrim( $line, 202, 12 ) );
+        #RADIO_CALL_TOWER
+        $sth_twr1->bind_param( 4, capitalize( $line, 738, 26 ) );
+        #RADIO_CALL_APCH
+        $sth_twr1->bind_param( 5, capitalize( $line, 790, 26 ) );
+        #RADIO_CALL_DEP
+        $sth_twr1->bind_param( 6, capitalize( $line, 842, 26 ) );
+ 
+        $sth_twr1->execute();
+    }
+    elsif ( $type eq "TWR3" )
+    {
+        my $facility_id = substrim( $line, 4, 4 );
+        my $j = 0;
+        while ( $j < 9 )
+        {
+            my $freq = substrim( $line, 854+$j*60, 60 );
+            my $freq_use = substrim( $line, 52+$j*94, 50 );
+            if ( $freq eq "" )
+            {
+                last;
+            }
+            #FACILITY_ID
+            $sth_twr3->bind_param( 1, $facility_id );
+            #MASTER_AIRPORT_FREQ
+            $sth_twr3->bind_param( 2, $freq );
+            #MASTER_AIRPORT_FREQ_USE
+            $sth_twr3->bind_param( 3, $freq_use );
+ 
+            $sth_twr3->execute();
+            ++$j;
+        }
+    }
+    elsif ( $type eq "TWR6" )
+    {
+        #FACILITY_ID
+        $sth_twr6->bind_param( 1, substrim( $line,   4,   4 ) );
+        #ELEMENT_NUMBER
+        $sth_twr6->bind_param( 2, substrim( $line,   8,   5 ) );
+        #REMARK_TEXT
+        $sth_twr6->bind_param( 3, substrim( $line,  13, 400 ) );
+ 
+        $sth_twr6->execute();
+    }
+    elsif ( $type eq "TWR7" )
+    {
+        #FACILITY_ID
+        $sth_twr7->bind_param( 1, substrim( $line,   4,  4 ) );
+        #SATELLITE_AIRPORT_FREQ_USE
+        $sth_twr7->bind_param( 2, substrim( $line,  52, 50 ) );
+        #SATELLITE_AIRPORT_SITE_NUMBER
+        $sth_twr7->bind_param( 3, substrim( $line, 102, 11 ) );
+        #MASTER_AIRPORT_SITE_NUMBER
+        $sth_twr7->bind_param( 4, substrim( $line, 290, 11 ) );
+        #SATELLITE_AIRPORT_FREQ_FULL
+        $sth_twr7->bind_param( 5, substrim( $line, 394, 60 ) );
+ 
+        $sth_twr7->execute();
+    }
+
+    if ( ($i % 1000) == 0 )
+    {
+        print( "\rProcessed $i records..." );
+        $| = 1;
+        $dbh->do( "PRAGMA synchronous=OFF" );
+    }
+}
+
+print( "\rFinished processing $i records.\n" );
+close TWR_FILE;
+
 $dbh->disconnect();
 
