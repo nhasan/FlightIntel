@@ -201,6 +201,18 @@ public class AirportDetailsActivity extends Activity {
                             }
                             String freq = twr3.getString( twr3.getColumnIndex(
                                     Tower3.MASTER_AIRPORT_FREQ ) );
+                            if ( freq.length() > 7 ) {
+                                // Remove any text past the frequency
+                                int i = 0;
+                                while ( i < freq.length() ) {
+                                    char c = freq.charAt( i );
+                                    if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
+                                        ++i;
+                                        continue;
+                                    }
+                                    freq = freq.substring( 0, i );
+                                }
+                            }
                             towerFreqs += freq;
                         }
                     } while ( twr3.moveToNext() );
@@ -211,6 +223,10 @@ public class AirportDetailsActivity extends Activity {
                         }
                         ++row;
                         addRow( layout, "Tower", towerFreqs );
+                        addSeparator( layout );
+                        ++row;
+                        Intent intent = new Intent( this, CommDetailsActivity.class );
+                        addClickableRow( layout, "Other frequencies", intent );
                     }
                 }
             } else {
