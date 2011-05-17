@@ -42,7 +42,6 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
@@ -87,7 +86,6 @@ public class BrowseActivity extends ListActivity {
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
 
         mDbManager = DatabaseManager.instance( this );
-        registerForContextMenu( getListView() );
 
         Intent intent = getIntent();
         Bundle extra = intent.getExtras();
@@ -104,6 +102,7 @@ public class BrowseActivity extends ListActivity {
             } else {
                 String stateName = extra.getString( BUNDLE_KEY_STATE_NAME );
                 setTitle( "Browse Airports - "+stateName );
+                registerForContextMenu( getListView() );
             }
             BrowseTask task = new BrowseTask();
             task.execute( extra );
@@ -116,30 +115,6 @@ public class BrowseActivity extends ListActivity {
         CursorAdapter adapter = (CursorAdapter) getListAdapter();
         Cursor c = adapter.getCursor();
         c.close();
-    }
-
-    @Override
-    protected void onListItemClick( ListView l, View v, int position, long id ) {
-        CursorAdapter adapter = (CursorAdapter) l.getAdapter();
-        Cursor c = adapter.getCursor();
-        if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
-            // User clicked on a state
-            Intent browse = new Intent( this, BrowseActivity.class );
-            Bundle extra = new Bundle();
-            String state_code = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
-            String state_name = c.getString( c.getColumnIndex( States.STATE_NAME ) );
-            extra.putString( BUNDLE_KEY_STATE_CODE, state_code );
-            extra.putString( BUNDLE_KEY_STATE_NAME, state_name );
-            browse.putExtras( extra );
-            // Start this activity again with state parameter
-            startActivity( browse );
-        } else {
-            // An airport was selected - Launch the detail view activity
-            String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-            Intent intent = new Intent( this, AirportDetailsActivity.class );
-            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            startActivity( intent );
-        }
     }
 
     private final class BrowseTask extends AsyncTask<Bundle, Void, Cursor> {
@@ -317,21 +292,39 @@ public class BrowseActivity extends ListActivity {
     }
 
     @Override
+    protected void onListItemClick( ListView l, View v, int position, long id ) {
+        Cursor c = mListAdapter.getCursor();
+        if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
+            // User clicked on a state
+            Intent browse = new Intent( this, BrowseActivity.class );
+            Bundle extra = new Bundle();
+            String state_code = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
+            String state_name = c.getString( c.getColumnIndex( States.STATE_NAME ) );
+            extra.putString( BUNDLE_KEY_STATE_CODE, state_code );
+            extra.putString( BUNDLE_KEY_STATE_NAME, state_name );
+            browse.putExtras( extra );
+            // Start this activity again with state parameter
+            startActivity( browse );
+        } else {
+            // An airport was selected - Launch the detail view activity
+            String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+            Intent intent = new Intent( this, AirportDetailsActivity.class );
+            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+            startActivity( intent );
+        }
+    }
+
+    @Override
     public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
         super.onCreateContextMenu( menu, v, menuInfo );
 
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         Cursor c = mListAdapter.getCursor();
-        int pos = c.getPosition();
-        // Subtract 1 to account for header item
-        c.moveToPosition( info.position-1 );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
         String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
         if ( code == null || code.length() == 0 ) {
             code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );            
         }
         String facilityName = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
-        c.moveToPosition( pos );
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate( R.menu.airport_list_context_menu, menu );
@@ -347,12 +340,8 @@ public class BrowseActivity extends ListActivity {
 
     @Override
     public boolean onContextItemSelected( MenuItem item ) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         Cursor c = mListAdapter.getCursor();
-        int pos = c.getPosition();
-        c.moveToPosition( info.position );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-        c.moveToPosition( pos );
 
         switch ( item.getItemId() ) {
             case R.id.menu_add_favorites:
