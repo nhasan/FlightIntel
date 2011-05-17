@@ -62,10 +62,6 @@ public class RunwayDetailsActivity extends Activity {
         task.execute( args );
     }
 
-    protected void onResume() {
-        super.onResume();
-    }
-
     private final class RunwayDetailsTask extends AsyncTask<Bundle, Void, Cursor[]> {
 
         @Override
@@ -654,10 +650,12 @@ public class RunwayDetailsActivity extends Activity {
             if ( lighted.length() > 0 ) {
                 text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
             }
-            text += String.format( "%d' from runway end, ", distance );
-            text += String.format( "%d' %s of centerline",
-                    DataUtils.decodeControllingObjectOffset( offset ),
-                    DataUtils.decodeControllingObjectOffsetDirection( offset ) );
+            text += String.format( "%d' from runway end", distance );
+            if ( offset.length() > 0 ) {
+                text += String.format( ", %d' %s of centerline",
+                        DataUtils.decodeControllingObjectOffset( offset ),
+                        DataUtils.decodeControllingObjectOffsetDirection( offset ) );
+            }
             if ( slope > 0 ) {
                 text += String.format( ", %d:1 slope to clear", slope );
             }

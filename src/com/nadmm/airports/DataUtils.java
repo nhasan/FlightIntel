@@ -449,7 +449,11 @@ public final class DataUtils {
     }
 
     public static int decodeControllingObjectOffset( String offset ) {
-        return Integer.valueOf( offset.substring( 0, offset.length()-1 ) );
+        if ( offset.length() > 1 ) {
+            return Integer.valueOf( offset.substring( 0, offset.length()-1 ) );
+        } else {
+            return 0;
+        }
     }
 
     public static String decodeControllingObjectOffsetDirection( String offset ) {
