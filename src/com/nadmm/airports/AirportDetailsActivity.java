@@ -195,7 +195,7 @@ public class AirportDetailsActivity extends Activity {
                     do {
                         String use = twr3.getString( twr3.getColumnIndex(
                                 Tower3.MASTER_AIRPORT_FREQ_USE ) );
-                        if ( use.startsWith( "LCL/" ) ) {
+                        if ( use.startsWith( "LCL/P" ) ) {
                             if ( towerFreqs.length() > 0 ) {
                                 towerFreqs += ", ";
                             }
@@ -211,6 +211,7 @@ public class AirportDetailsActivity extends Activity {
                                         continue;
                                     }
                                     freq = freq.substring( 0, i );
+                                    break;
                                 }
                             }
                             towerFreqs += freq;
@@ -226,6 +227,9 @@ public class AirportDetailsActivity extends Activity {
                         addSeparator( layout );
                         ++row;
                         Intent intent = new Intent( this, CommDetailsActivity.class );
+                        String siteNumber = apt.getString( apt.getColumnIndex(
+                                Airports.SITE_NUMBER ) );
+                        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
                         addClickableRow( layout, "Other frequencies", intent );
                     }
                 }
@@ -261,14 +265,20 @@ public class AirportDetailsActivity extends Activity {
                             addSeparator( layout );
                         }
                         ++row;
-                        addRow( layout, apchRadioCall+" Approach", apchFreqs );
+                        if ( !apchRadioCall.endsWith( "ARTCC" ) ) {
+                            apchRadioCall += " Approach";
+                        }
+                        addRow( layout, apchRadioCall, apchFreqs );
                     }
                     if ( depFreqs.length() > 0 ) {
                         if ( row > 0 ) {
                             addSeparator( layout );
                         }
                         ++row;
-                        addRow( layout, depRadioCall+" Departure", depFreqs );
+                        if ( !depRadioCall.endsWith( "ARTCC" ) ) {
+                            depRadioCall += " Departure";
+                        }
+                        addRow( layout, depRadioCall, depFreqs );
                     }
                 }
             }
