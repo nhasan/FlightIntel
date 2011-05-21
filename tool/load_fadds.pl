@@ -105,7 +105,7 @@ sub capitalize($$$)
     my ( $string, $offset, $len ) = @_;
     $string = autoformat( substr( $string, $offset, $len ), { case => 'highlight' } );
     $string =~ s/$reTrim//g;
-    $string =~ s/(Ny|Nj)/\U$1\E/g;
+    $string =~ s/(Ny|Nj|Artcc|Norcal|Socal)/\U$1\E/g;
     return $string;
 }
 
