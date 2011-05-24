@@ -70,14 +70,15 @@ public class SearchActivity extends Activity {
             @Override
             public void onItemClick( AdapterView<?> parent, View view,
                     int position, long id ) {
-                CursorAdapter adapter = (CursorAdapter) mListView.getAdapter();
-                Cursor c = adapter.getCursor();
-                c.moveToPosition( position );
+                Cursor c = mListAdapter.getCursor();
+                // Subtract 1 from position to account for header item
+                c.moveToPosition( position-1 );
                 String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
                 Intent intent = new Intent( SearchActivity.this, AirportDetailsActivity.class );
                 intent.putExtra( Airports.SITE_NUMBER, siteNumber );
                 startActivity( intent );
             }
+
         } );
 
         handleIntent( getIntent() );
@@ -97,10 +98,16 @@ public class SearchActivity extends Activity {
 
     private void handleIntent( Intent intent ) {
         if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
+            // Perform the search using user provided query string
             String query = intent.getStringExtra( SearchManager.QUERY );
             showResults( query );
         } else if ( Intent.ACTION_VIEW.equals( intent.getAction() ) ) {
             // User clicked on a suggestion
+            Bundle extra = intent.getExtras();
+            String siteNumber = extra.getString( SearchManager.EXTRA_DATA_KEY );
+            Intent view = new Intent( this, AirportDetailsActivity.class );
+            view.putExtra( Airports.SITE_NUMBER, siteNumber );
+            startActivity( view );
         }
     }
 
@@ -204,6 +211,9 @@ public class SearchActivity extends Activity {
                 mFavorites.remove( siteNumber );
                 break;
             case R.id.menu_view_details:
+                Intent intent = new Intent( this, AirportDetailsActivity.class );
+                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                startActivity( intent );
                 break;
             default:
         }

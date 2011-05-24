@@ -65,7 +65,7 @@ public class AirportsProvider extends ContentProvider {
         BaseColumns._ID,
         SearchManager.SUGGEST_COLUMN_TEXT_1,
         SearchManager.SUGGEST_COLUMN_TEXT_2,
-        SearchManager.SUGGEST_COLUMN_INTENT_DATA
+        SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA
     };
 
     @Override
@@ -97,8 +97,8 @@ public class AirportsProvider extends ContentProvider {
                 Airports.FACILITY_NAME+"||', '||"+Airports.ASSOC_CITY
                 +"||' '||"+Airports.ASSOC_STATE
                 +" AS "+SearchManager.SUGGEST_COLUMN_TEXT_2 );
-        map.put( SearchManager.SUGGEST_COLUMN_INTENT_DATA, 
-                Airports.SITE_NUMBER+" AS "+SearchManager.SUGGEST_COLUMN_INTENT_DATA);
+        map.put( SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA, 
+                Airports.SITE_NUMBER+" AS "+SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA);
 
         return map;
     }
