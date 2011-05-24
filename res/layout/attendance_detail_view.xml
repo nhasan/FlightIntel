@@ -38,8 +38,8 @@
                 android:orientation="vertical">
             <TextView android:id="@+id/detail_attendance_label"
                     style="@style/TextSmall.Bold"
-                    android:padding="6dp"
                     android:text="@string/airport_attendance"
+                    android:padding="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
             <LinearLayout android:id="@+id/detail_attendance_layout"
