@@ -137,7 +137,7 @@ public class AirportsProvider extends ContentProvider {
 
         uri = builder.build();
 
-        String query = selectionArgs[ 0 ].toUpperCase();
+        String query = selectionArgs[ 0 ].toUpperCase().trim();
         Log.v( TAG, "Search="+uri.toString()+", query="+query );
 
         switch ( sUriMatcher.match( uri ) ) {
