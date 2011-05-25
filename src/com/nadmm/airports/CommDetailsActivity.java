@@ -124,6 +124,7 @@ public class CommDetailsActivity extends Activity {
             GuiUtils.showAirportTitle( mMainLayout, apt );
 
             showAirportFrequencies( result );
+            showRemarks( result );
         }
     }
 
@@ -154,7 +155,7 @@ public class CommDetailsActivity extends Activity {
                 if ( freqUse.contains( "GND" ) ) {
                     addFrequencyToMap( map, "Ground", freq );
                 }
-                if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC DEL" ) ) {
+                if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC" ) ) {
                     addFrequencyToMap( map, "Clearance Delivery", freq );
                 }
                 if ( freqUse.contains( "CLASS B" ) ) {
@@ -169,9 +170,6 @@ public class CommDetailsActivity extends Activity {
                     } else {
                         addFrequencyToMap( map, "ATIS", freq );
                     }
-                }
-                if ( freqUse.contains( "BASIC RADAR" ) ) {
-                    addFrequencyToMap( map, "Basic Radar", freq );
                 }
                 if ( freqUse.contains( "RADAR" ) || freqUse.contains( "RDR" ) ) {
                     addFrequencyToMap( map, "Radar", freq );
@@ -212,6 +210,23 @@ public class CommDetailsActivity extends Activity {
         map.put( key, list );
     }
 
+    protected void showRemarks( Cursor[] result ) {
+        LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.comm_remarks_layout );
+        Cursor twr6 = result[ 3 ];
+        if ( twr6.moveToFirst() ) {
+            int row = 0;
+            do {
+                if ( row > 0 ) {
+                    addSeparator( layout );
+                }
+                String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
+                addRow( layout, remark );
+            } while ( twr6.moveToNext() );
+        } else {
+            layout.setVisibility( View.GONE );
+        }
+    }
+
     protected void addRow( TableLayout table, String label, String text ) {
         TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
         TextView tvLabel = new TextView( this );
@@ -231,7 +246,26 @@ public class CommDetailsActivity extends Activity {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addSeparator( TableLayout layout ) {
+    protected void addRow( LinearLayout layout, String remark ) {
+        LinearLayout innerLayout = new LinearLayout( this );
+        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
+        TextView tv = new TextView( this );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 10, 2, 2, 2 );
+        tv.setText( "\u2022 " );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
+        tv = new TextView( this );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 2, 2, 12, 2 );
+        tv.setText( remark );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
+        layout.addView( innerLayout, new LinearLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addSeparator( LinearLayout layout ) {
         View separator = new View( this );
         separator.setBackgroundColor( Color.LTGRAY );
         layout.addView( separator, 
