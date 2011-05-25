@@ -81,7 +81,7 @@ public class AirportDetailsActivity extends Activity {
 
             DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 6 ];
+            Cursor[] cursors = new Cursor[ 5 ];
 
             Cursor apt = dbManager.getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -109,20 +109,12 @@ public class AirportDetailsActivity extends Activity {
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 3 ] = c;
 
-            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower3.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    Tower3.FACILITY_ID+"=? ",
-                    new String[] { faaCode }, null, null, null, null );
-            cursors[ 4 ] = c;
-
             builder = new SQLiteQueryBuilder();
             builder.setTables( Tower7.TABLE_NAME );
             c = builder.query( db, new String[] { "*" },
                     Tower7.SATELLITE_AIRPORT_SITE_NUMBER+"=? ",
                     new String[] { siteNumber }, null, null, null, null );
-            cursors[ 5 ] = c;
+            cursors[ 4 ] = c;
 
             return cursors;
         }
@@ -188,57 +180,20 @@ public class AirportDetailsActivity extends Activity {
         if ( twr1.moveToFirst() ) {
             String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
             if ( !facilityType.equals( "NON-ATCT" ) ) {
-                // This facility has a control tower
-                Cursor twr3 = result[ 4 ];
-                if ( twr3.moveToFirst() ) {
-                    String towerFreqs = "";
-                    do {
-                        String use = twr3.getString( twr3.getColumnIndex(
-                                Tower3.MASTER_AIRPORT_FREQ_USE ) );
-                        if ( use.startsWith( "LCL/P" ) ) {
-                            if ( towerFreqs.length() > 0 ) {
-                                towerFreqs += ", ";
-                            }
-                            String freq = twr3.getString( twr3.getColumnIndex(
-                                    Tower3.MASTER_AIRPORT_FREQ ) );
-                            if ( freq.length() > 7 ) {
-                                // Remove any text past the frequency
-                                int i = 0;
-                                while ( i < freq.length() ) {
-                                    char c = freq.charAt( i );
-                                    if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
-                                        ++i;
-                                        continue;
-                                    }
-                                    freq = freq.substring( 0, i );
-                                    break;
-                                }
-                            }
-                            towerFreqs += freq;
-                        }
-                    } while ( twr3.moveToNext() );
-
-                    if ( towerFreqs.length() > 0 ) {
-                        if ( row > 0 ) {
-                            addSeparator( layout );
-                        }
-                        ++row;
-                        addRow( layout, "Tower", towerFreqs );
-                        addSeparator( layout );
-                        ++row;
-                        Intent intent = new Intent( this, CommDetailsActivity.class );
-                        String siteNumber = apt.getString( apt.getColumnIndex(
-                                Airports.SITE_NUMBER ) );
-                        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                        addClickableRow( layout, "Other frequencies", intent );
-                    }
+                if ( row > 0 ) {
+                    addSeparator( layout );
                 }
+                Intent intent = new Intent( this, CommDetailsActivity.class );
+                String siteNumber = apt.getString( apt.getColumnIndex(
+                        Airports.SITE_NUMBER ) );
+                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                addClickableRow( layout, "Other frequencies", intent );
             } else {
                 String apchRadioCall =  twr1.getString( twr1.getColumnIndex(
                         Tower1.RADIO_CALL_APCH ) );
                 String depRadioCall =  twr1.getString( twr1.getColumnIndex(
                         Tower1.RADIO_CALL_DEP ) );
-                Cursor twr7 = result[ 5 ];
+                Cursor twr7 = result[ 4 ];
                 if ( twr7.moveToFirst() ) {
                     String apchFreqs = "";
                     String depFreqs = "";
