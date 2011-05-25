@@ -19,9 +19,8 @@
 
 package com.nadmm.airports;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -131,10 +130,9 @@ public class CommDetailsActivity extends Activity {
     protected void showAirportFrequencies( Cursor[] result ) {
         Cursor twr3 = result[ 2 ];
         if ( twr3.moveToFirst() ) {
-            TextView label = (TextView) mMainLayout.findViewById( R.id.airport_comm_label );
             TableLayout layout = (TableLayout) mMainLayout.findViewById(
                     R.id.airport_comm_details );
-            HashMap<String, String> map = new HashMap<String, String>();
+            HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
             do {
                 String freq = twr3.getString( twr3.getColumnIndex( Tower3.MASTER_AIRPORT_FREQ ) );
                 String freqUse = twr3.getString( twr3.getColumnIndex(
@@ -184,35 +182,34 @@ public class CommDetailsActivity extends Activity {
                 if ( freqUse.contains( "TAXI CLNC" ) ) {
                     addFrequencyToMap( map, "Pre-Taxi Clearance", freq );
                 }
+                if ( freqUse.contains( "EMERG" ) ) {
+                    addFrequencyToMap( map, "Emergency", freq );
+                }
             } while ( twr3.moveToNext() );
 
             int row = 0;
-            for ( Map.Entry<String, String> pair : map.entrySet() ) {
-                if ( row > 0 ) {
-                    addSeparator( layout );
+            for ( String key : map.keySet() ) {
+                for ( String freq : map.get( key ) ) {
+                    if ( row > 0 ) {
+                        addSeparator( layout );
+                    }
+                    addRow( layout, key, freq );
+                    ++row;
                 }
-                addRow( layout, pair.getKey(), pair.getValue() );
-                ++row;
             }
-
-            label.setVisibility( View.VISIBLE );
-            layout.setVisibility( View.VISIBLE );
         } else {
-            TextView label = (TextView) mMainLayout.findViewById( R.id.airport_comm_label );
-            label.setText( "No Tower3 records" );
+            finish();
         }
     }
 
-    protected void addFrequencyToMap( HashMap<String, String> map, String key, String value ) {
-        String curValue = map.get( key );
-        if ( curValue == null ) {
-            curValue = "";
+    protected void addFrequencyToMap( HashMap<String, ArrayList<String>> map,
+            String key, String freq ) {
+        ArrayList<String> list = map.get( key );
+        if ( list == null ) {
+            list = new ArrayList<String>();
         }
-        if ( curValue.length() > 0 ) {
-            curValue += ", ";
-        }
-        curValue += value;
-        map.put( key, curValue );
+        list.add( freq );
+        map.put( key, list );
     }
 
     protected void addRow( TableLayout table, String label, String text ) {
