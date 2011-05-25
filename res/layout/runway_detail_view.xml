@@ -50,7 +50,7 @@
                     android:orientation="vertical"
                     android:background="@drawable/rounded_rectangle"
                     android:visibility="gone"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="8dp"
                     android:padding="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
@@ -71,7 +71,7 @@
                     android:orientation="vertical"
                     android:background="@drawable/rounded_rectangle"
                     android:visibility="gone"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="8dp"
                     android:padding="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
@@ -92,7 +92,7 @@
                     android:orientation="vertical"
                     android:background="@drawable/rounded_rectangle"
                     android:visibility="gone"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="8dp"
                     android:padding="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content">
