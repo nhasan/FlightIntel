@@ -19,6 +19,9 @@
 
 package com.nadmm.airports;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -44,7 +47,6 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.DatabaseManager.Tower1;
-import com.nadmm.airports.DatabaseManager.Tower3;
 import com.nadmm.airports.DatabaseManager.Tower7;
 
 public class AirportDetailsActivity extends Activity {
@@ -195,45 +197,32 @@ public class AirportDetailsActivity extends Activity {
                         Tower1.RADIO_CALL_DEP ) );
                 Cursor twr7 = result[ 4 ];
                 if ( twr7.moveToFirst() ) {
-                    String apchFreqs = "";
-                    String depFreqs = "";
+                    HashMap<String, ArrayList<String>> map =
+                        new HashMap<String, ArrayList<String>>();
                     do {
                         String freq = twr7.getString( twr7.getColumnIndex(
                                 Tower7.SATELLITE_AIRPORT_FREQ ) );
                         String freqUse = twr7.getString( twr7.getColumnIndex(
                                 Tower7.SATELLITE_AIRPORT_FREQ_USE ) );
                         if ( freqUse.contains( "APCH/" ) ) {
-                            if ( apchFreqs.length() > 0 ) {
-                                apchFreqs += ", ";
-                            }
-                            apchFreqs += freq;
+                            addFrequencyToMap( map, apchRadioCall+" Approach", freq );
                         }
                         if ( freqUse.contains( "DEP/" ) ) {
-                            if ( depFreqs.length() > 0 ) {
-                                depFreqs += ", ";
-                            }
-                            depFreqs += freq;
+                            addFrequencyToMap( map, depRadioCall+" Departure", freq );
+                        }
+                        if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC DEL" ) ) {
+                            addFrequencyToMap( map, "Clearance Delivery", freq );
                         }
                     } while ( twr7.moveToNext() );
-                    if ( apchFreqs.length() > 0 ) {
-                        if ( row > 0 ) {
-                            addSeparator( layout );
+
+                    for ( String key : map.keySet() ) {
+                        for ( String freq : map.get( key ) ) {
+                            if ( row > 0 ) {
+                                addSeparator( layout );
+                            }
+                            addRow( layout, key, freq );
+                            ++row;
                         }
-                        ++row;
-                        if ( !apchRadioCall.endsWith( "ARTCC" ) ) {
-                            apchRadioCall += " Approach";
-                        }
-                        addRow( layout, apchRadioCall, apchFreqs );
-                    }
-                    if ( depFreqs.length() > 0 ) {
-                        if ( row > 0 ) {
-                            addSeparator( layout );
-                        }
-                        ++row;
-                        if ( !depRadioCall.endsWith( "ARTCC" ) ) {
-                            depRadioCall += " Departure";
-                        }
-                        addRow( layout, depRadioCall, depFreqs );
                     }
                 }
             }
@@ -242,6 +231,16 @@ public class AirportDetailsActivity extends Activity {
         if ( row == 0 ) {
             layout.setVisibility( View.GONE );
         }
+    }
+
+    protected void addFrequencyToMap( HashMap<String, ArrayList<String>> map,
+            String key, String freq ) {
+        ArrayList<String> list = map.get( key );
+        if ( list == null ) {
+            list = new ArrayList<String>();
+        }
+        list.add( freq );
+        map.put( key, list );
     }
 
     protected void showRunwayDetails( Cursor[] result ) {
