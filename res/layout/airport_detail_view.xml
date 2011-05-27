@@ -39,7 +39,7 @@
 	        <TextView android:id="@+id/detail_comm_label"
 	                style="@style/TextSmall.Bold"
 	                android:padding="4dp"
-	                android:text="@string/airport_communucations"
+	                android:text="@string/airport_communications"
 	                android:layout_width="fill_parent"
 	                android:layout_height="wrap_content" />
 	        <TableLayout android:id="@+id/detail_comm_layout"
