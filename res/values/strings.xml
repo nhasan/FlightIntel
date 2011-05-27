@@ -44,11 +44,12 @@
     <string name="add_favorites">Add to favorites</string>
     <string name="remove_favorites">Remove from favorites</string>
     <string name="waiting_location">Waiting for location...</string>
-    <string name="airport_communucations">Airport Communications</string>
+    <string name="airport_communications">Airport Communications</string>
     <string name="airport_owner">Airport Owner</string>
     <string name="airport_manager">Airport Manager</string>
     <string name="airport_remarks">Airport Remarks</string>
     <string name="airport_attendance">Airport Attendance</string>
+    <string name="atc_communications">ATC Communications</string>
     <string name="runways">Runways</string>
     <string name="helipads">Helipads</string>
     <string name="airport_services">Airport Services</string>
