@@ -124,11 +124,17 @@ public class CommDetailsActivity extends Activity {
             GuiUtils.showAirportTitle( mMainLayout, apt );
 
             showAirportFrequencies( result );
+            showAtcFrequencies( result );
             showRemarks( result );
         }
     }
 
     protected void showAirportFrequencies( Cursor[] result ) {
+        Cursor twr1 = result[ 1 ];
+        String towerRadioCall = "";
+        if ( twr1.moveToFirst() ) {
+            towerRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_TOWER ) );
+        }
         Cursor twr3 = result[ 2 ];
         if ( twr3.moveToFirst() ) {
             TableLayout layout = (TableLayout) mMainLayout.findViewById(
@@ -150,10 +156,10 @@ public class CommDetailsActivity extends Activity {
                     break;
                 }
                 if ( freqUse.contains( "LCL" ) ) {
-                    addFrequencyToMap( map, "Tower", freq );
+                    addFrequencyToMap( map, towerRadioCall+" Tower", freq );
                 }
                 if ( freqUse.contains( "GND" ) ) {
-                    addFrequencyToMap( map, "Ground", freq );
+                    addFrequencyToMap( map, towerRadioCall+" Ground", freq );
                 }
                 if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC" ) ) {
                     addFrequencyToMap( map, "Clearance Delivery", freq );
@@ -197,6 +203,62 @@ public class CommDetailsActivity extends Activity {
             }
         } else {
             finish();
+        }
+    }
+
+    protected void showAtcFrequencies( Cursor[] result ) {
+        Cursor twr1 = result[ 1 ];
+        String apchRadioCall = "";
+        String depRadioCall = "";
+        if ( twr1.moveToFirst() ) {
+            apchRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_APCH ) );
+            depRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP ) );
+        }
+        Cursor twr7 = result[ 4 ];
+        if ( twr7.moveToFirst() ) {
+            TableLayout layout = (TableLayout) mMainLayout.findViewById(
+                    R.id.atc_comm_details );
+            HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
+            do {
+                String freqUse = twr7.getString( twr7.getColumnIndex(
+                        Tower7.SATELLITE_AIRPORT_FREQ_USE ) );
+                String freq = twr7.getString( twr7.getColumnIndex(
+                        Tower7.SATELLITE_AIRPORT_FREQ ) );
+                // Remove any text past the frequency
+                int i = 0;
+                while ( i < freq.length() ) {
+                    char c = freq.charAt( i );
+                    if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
+                        ++i;
+                        continue;
+                    }
+                    freq = freq.substring( 0, i );
+                    break;
+                }
+                if ( freqUse.contains( "APCH/" ) ) {
+                    addFrequencyToMap( map, apchRadioCall+" Approach", freq );
+                }
+                if ( freqUse.contains( "DEP/" ) ) {
+                    addFrequencyToMap( map, depRadioCall+" Departure", freq );
+                }
+                if ( freqUse.contains( "OPNS" ) ) {
+                    addFrequencyToMap( map, "Operations", freq );
+                }
+                if ( freqUse.contains( "FINAL VECTOR" ) ) {
+                    addFrequencyToMap( map, "Final Vector", freq );
+                }
+            } while ( twr7.moveToNext() );
+
+            int row = 0;
+            for ( String key : map.keySet() ) {
+                for ( String freq : map.get( key ) ) {
+                    if ( row > 0 ) {
+                        addSeparator( layout );
+                    }
+                    addRow( layout, key, freq );
+                    ++row;
+                }
+            }
         }
     }
 
