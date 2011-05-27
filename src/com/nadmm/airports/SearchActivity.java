@@ -108,6 +108,7 @@ public class SearchActivity extends Activity {
             Intent view = new Intent( this, AirportDetailsActivity.class );
             view.putExtra( Airports.SITE_NUMBER, siteNumber );
             startActivity( view );
+            finish();
         }
     }
 
