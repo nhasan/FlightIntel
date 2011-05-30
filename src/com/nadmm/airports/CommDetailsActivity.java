@@ -30,12 +30,13 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
@@ -139,9 +140,11 @@ public class CommDetailsActivity extends Activity {
         if ( twr3.moveToFirst() ) {
             TableLayout layout = (TableLayout) mMainLayout.findViewById(
                     R.id.airport_comm_details );
-            HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
+            HashMap<String, ArrayList<Pair<String, String>>> map =
+                new HashMap<String, ArrayList<Pair<String, String>>>();
             do {
                 String freq = twr3.getString( twr3.getColumnIndex( Tower3.MASTER_AIRPORT_FREQ ) );
+                String extra = "";
                 String freqUse = twr3.getString( twr3.getColumnIndex(
                         Tower3.MASTER_AIRPORT_FREQ_USE ) );
                 // Remove any text past the frequency
@@ -152,52 +155,53 @@ public class CommDetailsActivity extends Activity {
                         ++i;
                         continue;
                     }
+                    extra = freq.substring( i );
                     freq = freq.substring( 0, i );
                     break;
                 }
                 if ( freqUse.contains( "LCL" ) ) {
-                    addFrequencyToMap( map, towerRadioCall+" Tower", freq );
+                    addFrequencyToMap( map, towerRadioCall+" Tower", freq, extra );
                 }
                 if ( freqUse.contains( "GND" ) ) {
-                    addFrequencyToMap( map, towerRadioCall+" Ground", freq );
+                    addFrequencyToMap( map, towerRadioCall+" Ground", freq, extra );
                 }
                 if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC" ) ) {
-                    addFrequencyToMap( map, "Clearance Delivery", freq );
+                    addFrequencyToMap( map, "Clearance Delivery", freq, extra );
                 }
                 if ( freqUse.contains( "CLASS B" ) ) {
-                    addFrequencyToMap( map, "Class B", freq );
+                    addFrequencyToMap( map, "Class B", freq, extra );
                 }
                 if ( freqUse.contains( "CLASS C" ) ) {
-                    addFrequencyToMap( map, "Class C", freq );
+                    addFrequencyToMap( map, "Class C", freq, extra );
                 }
                 if ( freqUse.contains( "ATIS" ) ) {
                     if ( freqUse.contains( "D-ATIS" ) ) {
-                        addFrequencyToMap( map, "D-ATIS", freq );
+                        addFrequencyToMap( map, "D-ATIS", freq, extra );
                     } else {
-                        addFrequencyToMap( map, "ATIS", freq );
+                        addFrequencyToMap( map, "ATIS", freq, extra );
                     }
                 }
                 if ( freqUse.contains( "RADAR" ) || freqUse.contains( "RDR" ) ) {
-                    addFrequencyToMap( map, "Radar", freq );
+                    addFrequencyToMap( map, "Radar", freq, extra );
                 }
                 if ( freqUse.contains( "TRSA" ) ) {
-                    addFrequencyToMap( map, "TRSA", freq );
+                    addFrequencyToMap( map, "TRSA", freq, extra );
                 }
                 if ( freqUse.contains( "TAXI CLNC" ) ) {
-                    addFrequencyToMap( map, "Pre-Taxi Clearance", freq );
+                    addFrequencyToMap( map, "Pre-Taxi Clearance", freq, extra );
                 }
                 if ( freqUse.contains( "EMERG" ) ) {
-                    addFrequencyToMap( map, "Emergency", freq );
+                    addFrequencyToMap( map, "Emergency", freq, extra );
                 }
             } while ( twr3.moveToNext() );
 
             int row = 0;
             for ( String key : map.keySet() ) {
-                for ( String freq : map.get( key ) ) {
+                for ( Pair<String, String> pair : map.get( key ) ) {
                     if ( row > 0 ) {
                         addSeparator( layout );
                     }
-                    addRow( layout, key, freq );
+                    addRow( layout, key, pair );
                     ++row;
                 }
             }
@@ -218,12 +222,14 @@ public class CommDetailsActivity extends Activity {
         if ( twr7.moveToFirst() ) {
             TableLayout layout = (TableLayout) mMainLayout.findViewById(
                     R.id.atc_comm_details );
-            HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
+            HashMap<String, ArrayList<Pair<String, String>>> map =
+                new HashMap<String, ArrayList<Pair<String, String>>>();
             do {
-                String freqUse = twr7.getString( twr7.getColumnIndex(
-                        Tower7.SATELLITE_AIRPORT_FREQ_USE ) );
                 String freq = twr7.getString( twr7.getColumnIndex(
                         Tower7.SATELLITE_AIRPORT_FREQ ) );
+                String extra = "";
+                String freqUse = twr7.getString( twr7.getColumnIndex(
+                        Tower7.SATELLITE_AIRPORT_FREQ_USE ) );
                 // Remove any text past the frequency
                 int i = 0;
                 while ( i < freq.length() ) {
@@ -232,43 +238,44 @@ public class CommDetailsActivity extends Activity {
                         ++i;
                         continue;
                     }
+                    extra = freq.substring( i );
                     freq = freq.substring( 0, i );
                     break;
                 }
                 if ( freqUse.contains( "APCH/" ) ) {
-                    addFrequencyToMap( map, apchRadioCall+" Approach", freq );
+                    addFrequencyToMap( map, apchRadioCall+" Approach", freq, extra );
                 }
                 if ( freqUse.contains( "DEP/" ) ) {
-                    addFrequencyToMap( map, depRadioCall+" Departure", freq );
+                    addFrequencyToMap( map, depRadioCall+" Departure", freq, extra );
                 }
                 if ( freqUse.contains( "OPNS" ) ) {
-                    addFrequencyToMap( map, "Operations", freq );
+                    addFrequencyToMap( map, "Operations", freq, extra );
                 }
                 if ( freqUse.contains( "FINAL VECTOR" ) ) {
-                    addFrequencyToMap( map, "Final Vector", freq );
+                    addFrequencyToMap( map, "Final Vector", freq, extra );
                 }
             } while ( twr7.moveToNext() );
 
             int row = 0;
             for ( String key : map.keySet() ) {
-                for ( String freq : map.get( key ) ) {
+                for ( Pair<String, String> pair : map.get( key ) ) {
                     if ( row > 0 ) {
                         addSeparator( layout );
                     }
-                    addRow( layout, key, freq );
+                    addRow( layout, key, pair );
                     ++row;
                 }
             }
         }
     }
 
-    protected void addFrequencyToMap( HashMap<String, ArrayList<String>> map,
-            String key, String freq ) {
-        ArrayList<String> list = map.get( key );
+    protected void addFrequencyToMap( HashMap<String, ArrayList<Pair<String, String>>> map,
+            String key, String freq, String extra ) {
+        ArrayList<Pair<String, String>> list = map.get( key );
         if ( list == null ) {
-            list = new ArrayList<String>();
+            list = new ArrayList<Pair<String, String>>();
         }
-        list.add( freq );
+        list.add( Pair.create( freq.trim(), extra.trim() ) );
         map.put( key, list );
     }
 
@@ -289,22 +296,20 @@ public class CommDetailsActivity extends Activity {
         }
     }
 
-    protected void addRow( TableLayout table, String label, String text ) {
-        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        TextView tvLabel = new TextView( this );
-        tvLabel.setText( label );
-        tvLabel.setSingleLine();
-        tvLabel.setGravity( Gravity.LEFT );
-        tvLabel.setPadding( 4, 4, 2, 4 );
-        row.addView( tvLabel, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        TextView tvValue = new TextView( this );
-        tvValue.setText( text );
-        tvValue.setGravity( Gravity.RIGHT );
-        tvValue.setPadding( 4, 4, 2, 4 );
-        row.addView( tvValue, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        table.addView( row, new TableLayout.LayoutParams(
+    protected void addRow( TableLayout table, String freqUse, Pair<String, String> data ) {
+        RelativeLayout layout = (RelativeLayout) mInflater.inflate(
+                R.layout.comm_detail_item, null );
+        TextView tvLabel = (TextView) layout.findViewById( R.id.comm_freq_use );
+        tvLabel.setText( freqUse );
+        TextView tvValue = (TextView) layout.findViewById( R.id.comm_freq_value );
+        tvValue.setText( data.first );
+        TextView tvExtra = (TextView) layout.findViewById( R.id.comm_freq_extra );
+        if ( data.second.length() > 0 ) {
+            tvExtra.setText( data.second );
+        } else {
+            tvExtra.setVisibility( View.GONE );
+        }
+        table.addView( layout, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
