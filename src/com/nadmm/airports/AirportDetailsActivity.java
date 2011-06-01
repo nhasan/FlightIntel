@@ -30,6 +30,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +38,7 @@ import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -47,6 +49,8 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.DatabaseManager.Tower1;
+import com.nadmm.airports.DatabaseManager.Tower3;
+import com.nadmm.airports.DatabaseManager.Tower6;
 import com.nadmm.airports.DatabaseManager.Tower7;
 
 public class AirportDetailsActivity extends Activity {
@@ -83,7 +87,7 @@ public class AirportDetailsActivity extends Activity {
 
             DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 5 ];
+            Cursor[] cursors = new Cursor[ 6 ];
 
             Cursor apt = dbManager.getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -117,6 +121,16 @@ public class AirportDetailsActivity extends Activity {
                     Tower7.SATELLITE_AIRPORT_SITE_NUMBER+"=? ",
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 4 ] = c;
+
+            if ( !c.moveToFirst() ) {
+                String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Tower6.TABLE_NAME );
+                c = builder.query( db, new String[] { "*" },
+                        Tower3.FACILITY_ID+"=? ",
+                        new String[] { faaCode }, null, null, null, null );
+                cursors[ 5 ] = c;
+            }
 
             return cursors;
         }
@@ -152,7 +166,9 @@ public class AirportDetailsActivity extends Activity {
 
             // Cleanup cursors
             for ( Cursor c : result ) {
-                c.close();
+                if ( c != null ) {
+                    c.close();
+                }
             }
         }
 
@@ -189,6 +205,7 @@ public class AirportDetailsActivity extends Activity {
                 String siteNumber = apt.getString( apt.getColumnIndex(
                         Airports.SITE_NUMBER ) );
                 intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                ++row;
                 addClickableRow( layout, "Other frequencies", intent );
             } else {
                 String apchRadioCall =  twr1.getString( twr1.getColumnIndex(
@@ -197,30 +214,42 @@ public class AirportDetailsActivity extends Activity {
                         Tower1.RADIO_CALL_DEP ) );
                 Cursor twr7 = result[ 4 ];
                 if ( twr7.moveToFirst() ) {
-                    HashMap<String, ArrayList<String>> map =
-                        new HashMap<String, ArrayList<String>>();
+                    HashMap<String, ArrayList<Pair<String, String>>> map =
+                        new HashMap<String, ArrayList<Pair<String, String>>>();
                     do {
                         String freq = twr7.getString( twr7.getColumnIndex(
                                 Tower7.SATELLITE_AIRPORT_FREQ ) );
+                        String extra = "";
                         String freqUse = twr7.getString( twr7.getColumnIndex(
                                 Tower7.SATELLITE_AIRPORT_FREQ_USE ) );
+                        int i = 0;
+                        while ( i < freq.length() ) {
+                            char c = freq.charAt( i );
+                            if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
+                                ++i;
+                                continue;
+                            }
+                            extra = freq.substring( i );
+                            freq = freq.substring( 0, i );
+                            break;
+                        }
                         if ( freqUse.contains( "APCH/" ) ) {
-                            addFrequencyToMap( map, apchRadioCall+" Approach", freq );
+                            addFrequencyToMap( map, apchRadioCall+" Approach", freq, extra );
                         }
                         if ( freqUse.contains( "DEP/" ) ) {
-                            addFrequencyToMap( map, depRadioCall+" Departure", freq );
+                            addFrequencyToMap( map, depRadioCall+" Departure", freq, extra );
                         }
                         if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC DEL" ) ) {
-                            addFrequencyToMap( map, "Clearance Delivery", freq );
+                            addFrequencyToMap( map, "Clearance Delivery", freq, extra );
                         }
                     } while ( twr7.moveToNext() );
 
                     for ( String key : map.keySet() ) {
-                        for ( String freq : map.get( key ) ) {
+                        for ( Pair<String, String> pair : map.get( key ) ) {
                             if ( row > 0 ) {
                                 addSeparator( layout );
                             }
-                            addRow( layout, key, freq );
+                            addFrequencyRow( layout, key, pair );
                             ++row;
                         }
                     }
@@ -233,14 +262,14 @@ public class AirportDetailsActivity extends Activity {
         }
     }
 
-    protected void addFrequencyToMap( HashMap<String, ArrayList<String>> map,
-            String key, String freq ) {
-        ArrayList<String> list = map.get( key );
+    protected void addFrequencyToMap( HashMap<String, ArrayList<Pair<String, String>>> map,
+            String freqUse, String freq, String extra ) {
+        ArrayList<Pair<String, String>> list = map.get( freqUse );
         if ( list == null ) {
-            list = new ArrayList<String>();
+            list = new ArrayList<Pair<String, String>>();
         }
-        list.add( freq );
-        map.put( key, list );
+        list.add( Pair.create( freq.trim(), extra.trim() ) );
+        map.put( freqUse, list );
     }
 
     protected void showRunwayDetails( Cursor[] result ) {
@@ -411,6 +440,23 @@ public class AirportDetailsActivity extends Activity {
         row.addView( tvValue, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
         table.addView( row, new TableLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addFrequencyRow( TableLayout table, String freqUse, Pair<String, String> data ) {
+        RelativeLayout layout = (RelativeLayout) mInflater.inflate(
+                R.layout.comm_detail_item, null );
+        TextView tvLabel = (TextView) layout.findViewById( R.id.comm_freq_use );
+        tvLabel.setText( freqUse );
+        TextView tvValue = (TextView) layout.findViewById( R.id.comm_freq_value );
+        tvValue.setText( data.first );
+        TextView tvExtra = (TextView) layout.findViewById( R.id.comm_freq_extra );
+        if ( data.second.length() > 0 ) {
+            tvExtra.setText( data.second );
+        } else {
+            tvExtra.setVisibility( View.GONE );
+        }
+        table.addView( layout, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
