@@ -24,12 +24,15 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
@@ -102,29 +105,78 @@ public class AttendanceDetailsActivity extends Activity {
             GuiUtils.showAirportTitle( mMainLayout, apt );
 
             showAttendanceDetails( result );
+            showAttendanceRemarks( result );
         }
 
     }
 
     protected void showAttendanceDetails( Cursor[] result ) {
         Cursor att = result[ 1 ];
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
-                R.id.detail_attendance_layout );
         if ( att.moveToFirst() ) {
+            LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
+                    R.id.attendance_content_layout );
             do {
                 String schedule = att.getString(
                         att.getColumnIndex( Attendance.ATTENDANCE_SCHEDULE ) );
-                addBulletedRow( layout, schedule );
+                String[] parts = schedule.split( "/" );
+                if ( parts.length == 3 ) {
+                    TableLayout table = (TableLayout) mInflater.inflate(
+                            R.layout.attendance_detail_item, null );
+                    addRow( table, "Months", parts[ 0 ] );
+                    addSeparator( table );
+                    addRow( table, "Days", parts[ 1 ] );
+                    addSeparator( table );
+                    addRow( table, "Hours", parts[ 2 ] );
+                    layout.addView( table, 1, new LinearLayout.LayoutParams(
+                            LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+                    addSpace( layout );
+                }
             } while ( att.moveToNext() );
         }
+    }
 
+    protected void showAttendanceRemarks( Cursor[] result ) {
         Cursor rmk = result[ 2 ];
+        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
+                R.id.attendance_remark_layout );
         if ( rmk.moveToFirst() ) {
+            layout.setVisibility( View.VISIBLE );
             do {
                 String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
                 addRemarkRow( layout, remark );
-            } while ( att.moveToNext() );            
+            } while ( rmk.moveToNext() );            
         }
+    }
+
+    protected void addRow( TableLayout table, String label, String value ) {
+        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
+        TextView tv = new TextView( this );
+        tv.setText( label );
+        tv.setSingleLine();
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 4, 2, 2, 2 );
+        row.addView( tv, new TableRow.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
+        tv = new TextView( this );
+        tv.setText( value );
+        tv.setSingleLine();
+        tv.setGravity( Gravity.RIGHT );
+        tv.setPadding( 2, 2, 4, 2 );
+        row.addView( tv, new TableRow.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
+        table.addView( row, new TableLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addRemarkRow( LinearLayout layout, String remark ) {
+        int index = remark.indexOf( ' ' );
+        if ( index != -1 ) {
+            while ( remark.charAt( index ) == ' ' ) {
+                ++index;
+            }
+            remark = remark.substring( index );
+        }
+        addBulletedRow( layout, remark );
     }
 
     protected void addBulletedRow( LinearLayout layout, String remark ) {
@@ -146,15 +198,15 @@ public class AttendanceDetailsActivity extends Activity {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addRemarkRow( LinearLayout layout, String remark ) {
-        int index = remark.indexOf( ' ' );
-        if ( index != -1 ) {
-            while ( remark.charAt( index ) == ' ' ) {
-                ++index;
-            }
-            remark = remark.substring( index );
-        }
-        addBulletedRow( layout, remark );
+    protected void addSeparator( TableLayout layout ) {
+        View separator = new View( this );
+        separator.setBackgroundColor( Color.LTGRAY );
+        layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
+    }
+
+    protected void addSpace( LinearLayout layout ) {
+        View separator = new View( this );
+        layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 8 ) );
     }
 
 }
