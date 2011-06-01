@@ -230,7 +230,6 @@ public class CommDetailsActivity extends Activity {
                 String extra = "";
                 String freqUse = twr7.getString( twr7.getColumnIndex(
                         Tower7.SATELLITE_AIRPORT_FREQ_USE ) );
-                // Remove any text past the frequency
                 int i = 0;
                 while ( i < freq.length() ) {
                     char c = freq.charAt( i );
