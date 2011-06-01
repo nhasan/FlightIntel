@@ -266,6 +266,12 @@ public class CommDetailsActivity extends Activity {
                     ++row;
                 }
             }
+        } else {
+            TextView label = (TextView) mMainLayout.findViewById( R.id.atc_comm_label );
+            TableLayout layout = (TableLayout) mMainLayout.findViewById(
+                    R.id.atc_comm_details );
+            label.setVisibility( View.GONE );
+            layout.setVisibility( View.GONE );
         }
     }
 

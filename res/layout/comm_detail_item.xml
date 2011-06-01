@@ -41,7 +41,6 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:paddingRight="4dp"
             android:gravity="right"
-            android:textStyle="italic"
             android:layout_below="@id/comm_freq_value"
             android:layout_toRightOf="@id/comm_freq_use"
             android:layout_weight="1"
