@@ -133,8 +133,12 @@ public class CommDetailsActivity extends Activity {
     protected void showAirportFrequencies( Cursor[] result ) {
         Cursor twr1 = result[ 1 ];
         String towerRadioCall = "";
+        String apchRadioCall = "";
+        String depRadioCall = "";
         if ( twr1.moveToFirst() ) {
             towerRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_TOWER ) );
+            apchRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_APCH ) );
+            depRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP ) );
         }
         Cursor twr3 = result[ 2 ];
         if ( twr3.moveToFirst() ) {
@@ -158,6 +162,12 @@ public class CommDetailsActivity extends Activity {
                     extra = freq.substring( i );
                     freq = freq.substring( 0, i );
                     break;
+                }
+                if ( freqUse.contains( "APCH" ) || freqUse.contains( "ARRIVAL" ) ) {
+                    addFrequencyToMap( map, apchRadioCall+" Approach", freq, extra );
+                }
+                if ( freqUse.contains( "DEP" ) ) {
+                    addFrequencyToMap( map, depRadioCall+" Departure", freq, extra );
                 }
                 if ( freqUse.contains( "LCL" ) ) {
                     addFrequencyToMap( map, towerRadioCall+" Tower", freq, extra );
