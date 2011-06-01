@@ -241,17 +241,29 @@ public class CommDetailsActivity extends Activity {
                     freq = freq.substring( 0, i );
                     break;
                 }
-                if ( freqUse.contains( "APCH/" ) ) {
+                if ( freqUse.contains( "APCH" ) || freqUse.contains( "ARRIVAL" ) ) {
                     addFrequencyToMap( map, apchRadioCall+" Approach", freq, extra );
                 }
-                if ( freqUse.contains( "DEP/" ) ) {
+                if ( freqUse.contains( "DEP" ) ) {
                     addFrequencyToMap( map, depRadioCall+" Departure", freq, extra );
+                }
+                if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC" ) ) {
+                    addFrequencyToMap( map, "Clearance Delivery", freq, extra );
                 }
                 if ( freqUse.contains( "OPNS" ) ) {
                     addFrequencyToMap( map, "Operations", freq, extra );
                 }
-                if ( freqUse.contains( "FINAL VECTOR" ) ) {
+                if ( freqUse.contains( "FINAL" ) ) {
                     addFrequencyToMap( map, "Final Vector", freq, extra );
+                }
+                if ( freqUse.contains( "RADAR" ) || freqUse.contains( "RDR" ) ) {
+                    addFrequencyToMap( map, "Radar", freq, extra );
+                }
+                if ( freqUse.contains( "CLASS B" ) ) {
+                    addFrequencyToMap( map, "Class B", freq, extra );
+                }
+                if ( freqUse.contains( "CLASS C" ) ) {
+                    addFrequencyToMap( map, "Class C", freq, extra );
                 }
             } while ( twr7.moveToNext() );
 
