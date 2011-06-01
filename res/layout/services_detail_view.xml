@@ -61,6 +61,7 @@
                     android:stretchColumns="0"
                     android:shrinkColumns="1"
                     android:padding="6dp"
+                    android:layout_marginBottom="12dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
         </LinearLayout>
