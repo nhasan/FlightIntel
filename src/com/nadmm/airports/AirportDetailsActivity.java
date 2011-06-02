@@ -128,7 +128,7 @@ public class AirportDetailsActivity extends Activity {
                 builder.setTables( Tower6.TABLE_NAME );
                 c = builder.query( db, new String[] { "*" },
                         Tower3.FACILITY_ID+"=? ",
-                        new String[] { faaCode }, null, null, null, null );
+                        new String[] { faaCode }, null, null, Tower6.ELEMENT_NUMBER, null );
                 cursors[ 5 ] = c;
             }
 
@@ -363,18 +363,35 @@ public class AirportDetailsActivity extends Activity {
     }
 
     protected void showRemarks( Cursor[] result ) {
-        Cursor rmk = result[ 2 ];
-        if ( !rmk.moveToFirst() ) {
-            return;
-        }
+        int row = 0;
         TextView label = (TextView) mMainLayout.findViewById( R.id.detail_remarks_label );
         LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_remarks_layout );
-        label.setVisibility( View.VISIBLE );
-        layout.setVisibility( View.VISIBLE );
-        do {
-            String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
-            addRemarkRow( layout, remark );
-        } while ( rmk.moveToNext() );
+        Cursor rmk = result[ 2 ];
+        if ( rmk.moveToFirst() ) {
+            do {
+                String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
+                addRemarkRow( layout, remark );
+                ++row;
+            } while ( rmk.moveToNext() );
+        }
+
+        Cursor twr7 = result[ 4 ];
+        if ( twr7.getCount() == 0 ) {
+            // Show remarks, if any, since there are no frequencies listed
+            Cursor twr6 = result[ 5 ];
+            if ( twr6.moveToFirst() ) {
+                do {
+                    String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
+                    addBulletedRow( layout, remark );
+                    ++row;
+                } while ( twr6.moveToNext() );
+            }
+        }
+
+        if ( row == 0 ) {
+            label.setVisibility( View.GONE );
+            layout.setVisibility( View.GONE );
+        }
     }
 
     protected void showServicesDetails( Cursor[] result ) {
@@ -551,6 +568,10 @@ public class AirportDetailsActivity extends Activity {
             }
             remark = remark.substring( index );
         }
+        addBulletedRow( layout, remark );
+    }
+
+    protected void addBulletedRow( LinearLayout layout, String text ) {
         LinearLayout innerLayout = new LinearLayout( this );
         innerLayout.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );
@@ -562,14 +583,14 @@ public class AirportDetailsActivity extends Activity {
         tv = new TextView( this );
         tv.setGravity( Gravity.LEFT );
         tv.setPadding( 2, 2, 12, 2 );
-        tv.setText( remark );
+        tv.setText( text );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         layout.addView( innerLayout, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addSeparator( TableLayout layout ) {
+    protected void addSeparator( LinearLayout layout ) {
         View separator = new View( this );
         separator.setBackgroundColor( Color.LTGRAY );
         layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
