@@ -375,19 +375,23 @@ public class AirportDetailsActivity extends Activity {
             } while ( rmk.moveToNext() );
         }
 
+        Cursor twr1 = result[ 3 ];
         Cursor twr7 = result[ 4 ];
-        if ( twr7.getCount() == 0 ) {
-            // Show remarks, if any, since there are no frequencies listed
-            Cursor twr6 = result[ 5 ];
-            if ( twr6.moveToFirst() ) {
-                do {
-                    String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
-                    addBulletedRow( layout, remark );
-                    ++row;
-                } while ( twr6.moveToNext() );
+        if ( twr1.moveToFirst() ) {
+            String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
+            if ( facilityType.equals( "NON-ATCT" ) && twr7.getCount() == 0 ) {
+                // Show remarks, if any, since there are no frequencies listed
+                Cursor twr6 = result[ 5 ];
+                if ( twr6.moveToFirst() ) {
+                    do {
+                        String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
+                        addBulletedRow( layout, remark );
+                        ++row;
+                    } while ( twr6.moveToNext() );
+                }
             }
         }
-
+            
         if ( row == 0 ) {
             label.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
