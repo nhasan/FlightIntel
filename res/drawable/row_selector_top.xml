@@ -20,9 +20,18 @@
  */
  -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-</LinearLayout>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape>
+            <gradient
+                android:startColor="#ff4da6ff"
+                android:centerColor="#ff66b3ff"
+                android:endColor="#ff4da6ff"
+                android:centerY="0.5" 
+                android:angle="270" />
+            <corners
+                android:topLeftRadius="8dp"
+                android:topRightRadius="8dp" />
+	   </shape>
+	</item>
+</selector>

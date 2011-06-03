@@ -206,7 +206,8 @@ public class AirportDetailsActivity extends Activity {
                         Airports.SITE_NUMBER ) );
                 intent.putExtra( Airports.SITE_NUMBER, siteNumber );
                 ++row;
-                addClickableRow( layout, "Other frequencies", intent );
+                int resId = getSelectorResourceForRow( row-1, row );
+                addClickableRow( layout, "ATC frequencies", intent, resId );
             } else {
                 String apchRadioCall =  twr1.getString( twr1.getColumnIndex(
                         Tower1.RADIO_CALL_APCH ) );
@@ -283,6 +284,18 @@ public class AirportDetailsActivity extends Activity {
 
         Cursor rwy = result[ 1 ];
         if ( rwy.moveToFirst() ) {
+            int rwyTot = 0;
+            int heliTot = 0;
+            do {
+                String rwyId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
+                if ( rwyId.startsWith( "H" ) ) {
+                    ++heliTot;
+                } else {
+                    ++rwyTot;
+                }
+            } while ( rwy.moveToNext() );
+
+            rwy.moveToFirst();
             do {
                 String rwyId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
                 int length = rwy.getInt( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
@@ -296,14 +309,16 @@ public class AirportDetailsActivity extends Activity {
                     if ( heliNum > 0 ) {
                         addSeparator( heliLayout );
                     }
-                    addRunwayRow( heliLayout, rwy );
+                    int resId = getSelectorResourceForRow( heliNum, heliTot );
+                    addRunwayRow( heliLayout, rwy, resId );
                     ++heliNum;
                 } else {
                     // This is a runway
                     if ( rwyNum > 0 ) {
                         addSeparator( rwyLayout );
                     }
-                    addRunwayRow( rwyLayout, rwy );
+                    int resId = getSelectorResourceForRow( rwyNum, rwyTot );
+                    addRunwayRow( rwyLayout, rwy, resId );
                     ++rwyNum;
                 }
             } while ( rwy.moveToNext() );
@@ -424,7 +439,7 @@ public class AirportDetailsActivity extends Activity {
         Intent intent = new Intent( this, ServicesDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER,
                 apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) ) );
-        addClickableRow( layout, "Other services", intent );
+        addClickableRow( layout, "Other services", intent, R.drawable.row_selector_bottom );
     }
 
     protected void showOtherDetails( Cursor[] result ) {
@@ -433,15 +448,15 @@ public class AirportDetailsActivity extends Activity {
         TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.detail_other_layout );
         Intent intent = new Intent( this, OwnershipDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addClickableRow( layout, "Ownership and contact", intent );
+        addClickableRow( layout, "Ownership and contact", intent, R.drawable.row_selector_top );
         intent = new Intent( this, RemarkDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addSeparator( layout );
-        addClickableRow( layout, "Additional remarks", intent );
+        addClickableRow( layout, "Additional remarks", intent, R.drawable.row_selector_middle );
         intent = new Intent( this, AttendanceDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addSeparator( layout );
-        addClickableRow( layout, "Attendance", intent );
+        addClickableRow( layout, "Attendance", intent, R.drawable.row_selector_bottom );
     }
 
     protected void addRow( TableLayout table, String label, String value ) {
@@ -464,7 +479,8 @@ public class AirportDetailsActivity extends Activity {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addFrequencyRow( TableLayout table, String freqUse, Pair<String, String> data ) {
+    protected void addFrequencyRow( TableLayout table, String freqUse,
+            Pair<String, String> data ) {
         RelativeLayout layout = (RelativeLayout) mInflater.inflate(
                 R.layout.comm_detail_item, null );
         TextView tvLabel = (TextView) layout.findViewById( R.id.comm_freq_use );
@@ -481,8 +497,10 @@ public class AirportDetailsActivity extends Activity {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addClickableRow( TableLayout table, String label, final Intent intent ) {
+    protected void addClickableRow( TableLayout table, String label,
+            final Intent intent, int resid ) {
         LinearLayout row = (LinearLayout) mInflater.inflate( R.layout.simple_detail_item, null );
+        row.setBackgroundResource( resid );
         TextView tv = new TextView( this );
         tv.setText( label );
         tv.setGravity( Gravity.CENTER_VERTICAL );
@@ -508,7 +526,7 @@ public class AirportDetailsActivity extends Activity {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addRunwayRow( TableLayout table, Cursor c ) {
+    protected void addRunwayRow( TableLayout table, Cursor c, int resid ) {
         String siteNumber = c.getString( c.getColumnIndex( Runways.SITE_NUMBER ) );
         String runwayId = c.getString( c.getColumnIndex( Runways.RUNWAY_ID ) );
         int length = c.getInt( c.getColumnIndex( Runways.RUNWAY_LENGTH ) );
@@ -516,6 +534,8 @@ public class AirportDetailsActivity extends Activity {
         String surfaceType = c.getString( c.getColumnIndex( Runways.SURFACE_TYPE ) );
 
         TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
+        row.setBackgroundResource( resid );
+
         TextView tv = new TextView( this );
         tv.setText( runwayId );
         tv.setGravity( Gravity.CENTER_VERTICAL );
@@ -592,6 +612,18 @@ public class AirportDetailsActivity extends Activity {
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         layout.addView( innerLayout, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected int getSelectorResourceForRow( int curRow, int totRows ) {
+        if ( totRows == 1 ) {
+            return R.drawable.row_selector;
+        } else if ( curRow == 0 ) {
+            return R.drawable.row_selector_top;
+        } else if ( curRow == totRows-1 ) {
+            return R.drawable.row_selector_bottom;
+        } else {
+            return R.drawable.row_selector_middle;
+        }
     }
 
     protected void addSeparator( LinearLayout layout ) {
