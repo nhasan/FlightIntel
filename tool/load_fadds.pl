@@ -23,6 +23,7 @@ use strict;
 use DBI;
 use Clone qw(clone);
 use Text::Autoformat;
+use Geo::Coordinates::Parser;
 
 my $reTrim = qr/^\s+|\s+$/;
 
@@ -539,6 +540,33 @@ my $insert_tower7_record = "INSERT INTO tower7 ("
         ."?, ?, ?, ?, ?"
         .")";
 
+my $create_awos_table = "CREATE TABLE awos ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."WX_SENSOR_IDENT TEXT, "
+        ."WX_SENSOR_TYPE TEXT, "
+        ."COMMISSIONING_STATUS TEXT, "
+        ."STATION_LATTITUDE_DEGREES REAL, "
+        ."STATION_LONGITUDE_DEGREES REAL, "
+        ."STATION_FREQUENCY TEXT, "
+        ."SECOND_STATION_FREQUENCY TEXT, "
+        ."STATION_PHONE_NUMBER TEXT, "
+        ."SITE_NUMBER TEXT"
+        .");";
+
+my $insert_awos_record = "INSERT INTO awos ("
+        ."WX_SENSOR_IDENT, "
+        ."WX_SENSOR_TYPE, "
+        ."COMMISSIONING_STATUS, "
+        ."STATION_LATTITUDE_DEGREES, "
+        ."STATION_LONGITUDE_DEGREES, "
+        ."STATION_FREQUENCY, "
+        ."SECOND_STATION_FREQUENCY, "
+        ."STATION_PHONE_NUMBER, "
+        ."SITE_NUMBER"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?"
+        .")";
+
 $dbh->do( "DROP TABLE IF EXISTS airports" );
 $dbh->do( $create_airports_table );
 $dbh->do( "CREATE INDEX idx_apt_site_number on airports ( SITE_NUMBER );" );
@@ -565,13 +593,19 @@ $dbh->do( "CREATE INDEX idx_twr1_site_number on tower1 ( SITE_NUMBER );" );
 
 $dbh->do( "DROP TABLE IF EXISTS tower3" );
 $dbh->do( $create_tower3_table );
+$dbh->do( "CREATE INDEX idx_twr3_facility_id on tower3 ( FACILITY_ID );" );
 
 $dbh->do( "DROP TABLE IF EXISTS tower6" );
 $dbh->do( $create_tower6_table );
+$dbh->do( "CREATE INDEX idx_twr6_facility_id on tower6 ( FACILITY_ID );" );
 
 $dbh->do( "DROP TABLE IF EXISTS tower7" );
 $dbh->do( $create_tower7_table );
 $dbh->do( "CREATE INDEX idx_twr7_site_number on tower7 ( SATELLITE_AIRPORT_SITE_NUMBER );" );
+
+$dbh->do( "DROP TABLE IF EXISTS awos" );
+$dbh->do( $create_awos_table );
+$dbh->do( "CREATE INDEX idx_awos_site_number on awos ( SITE_NUMBER );" );
 
 my $sth_apt = $dbh->prepare( $insert_airports_record );
 my $sth_rwy = $dbh->prepare( $insert_runways_record );
@@ -581,12 +615,15 @@ my $sth_twr1 = $dbh->prepare( $insert_tower1_record );
 my $sth_twr3 = $dbh->prepare( $insert_tower3_record );
 my $sth_twr6 = $dbh->prepare( $insert_tower6_record );
 my $sth_twr7 = $dbh->prepare( $insert_tower7_record );
+my $sth_awos = $dbh->prepare( $insert_awos_record );
 
 my $i = 0;
 
 my $ofh = select STDOUT;
 $| = 1;
 select $ofh;
+
+###########################################################################
 
 my $APT = $FADDS_BASE."/APT.txt";
 print( "$APT\n" );
@@ -938,6 +975,8 @@ $dbh->do( "update airports set icao_code=null where length(icao_code)=0;" );
 print( "\rFinished processing $i records.\n" );
 close APT_FILE;
 
+###########################################################################
+
 my $TWR = $FADDS_BASE."/TWR.txt";
 open( TWR_FILE, "<$TWR" ) or die "Could not open data file\n";
 
@@ -1031,6 +1070,68 @@ while ( my $line = <TWR_FILE> )
 
 print( "\rFinished processing $i records.\n" );
 close TWR_FILE;
+
+###########################################################################
+
+my $AWOS = $FADDS_BASE."/AWOS.txt";
+open( AWOS_FILE, "<$AWOS" ) or die "Could not open data file\n";
+
+my $geo_parser = Geo::Coordinates::Parser->new();
+
+$i = 0;
+print( "$AWOS\n" );
+while ( my $line = <AWOS_FILE> )
+{
+    ++$i;
+
+    if ( ($i % 1000) == 0 )
+    {
+        $dbh->do( "PRAGMA synchronous=ON" );
+    }
+
+    #WX_SENSOR_IDENT
+    $sth_awos->bind_param( 1, substrim( $line,  0, 4 ) );
+    #WX_SENSOR_TYPE
+    $sth_awos->bind_param( 2, substrim( $line,  4, 10 ) );
+    #COMMISSIONING_STATUS
+    $sth_awos->bind_param( 3, substrim( $line, 14, 1 ) );
+    #STATION_LATTITUDE_DEGREES
+    my $lat_dms = substrim( $line, 15, 14 );
+    $sth_awos->bind_param( 4, 1*$geo_parser->parse( $lat_dms ) );
+    #STATION_LONGITUDE_DEGREES
+    my $lon_dms = substrim( $line, 29, 15 );
+    $sth_awos->bind_param( 5, -1*$geo_parser->parse( $lon_dms ) );
+    #STATION_FREQUENCY
+    $sth_awos->bind_param( 6, substrim( $line, 44, 7 ) );
+    #SECOND_STATION_FREQUENCY
+    $sth_awos->bind_param( 7, substrim( $line, 51, 7 ) );
+    #STATION_PHONE_NUMBER
+    $sth_awos->bind_param( 8, substrim( $line, 58, 14 ) );
+    #SITE_NUMBER
+    $sth_awos->bind_param( 9, substrim( $line, 72, 11 ) );
+
+    $sth_awos->execute();
+
+    if ( ($i % 1000) == 0 )
+    {
+        print( "\rProcessed $i records..." );
+        $| = 1;
+        $dbh->do( "PRAGMA synchronous=OFF" );
+    }
+}
+
+$dbh->do( "update awos set station_lattitude_degrees=("
+        ."select ref_lattitude_degrees from airports where airports.faa_code=awos.wx_sensor_ident"
+        .") where station_lattitude_degrees=0;" );
+
+$dbh->do( "update awos set station_longitude_degrees=("
+        ."select ref_longitude_degrees from airports where airports.faa_code=awos.wx_sensor_ident"
+        .") where station_longitude_degrees=0;" );
+
+print( "\rFinished processing $i records.\n" );
+close AWOS_FILE;
+
+###########################################################################
 
 $dbh->disconnect();
 
