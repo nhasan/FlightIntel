@@ -96,8 +96,8 @@ public class AirportDetailsActivity extends Activity {
             builder.setTables( Runways.TABLE_NAME );
             Cursor c = builder.query( db, new String[] { Runways.SITE_NUMBER, Runways.RUNWAY_ID,
                     Runways.RUNWAY_LENGTH, Runways.RUNWAY_WIDTH, Runways.SURFACE_TYPE },
-                    Airports.SITE_NUMBER+"=?", new String[] { siteNumber },
-                    null, null, null, null );
+                    Runways.SITE_NUMBER+"=? AND "+Runways.RUNWAY_LENGTH+" > 0",
+                    new String[] { siteNumber }, null, null, null, null );
             cursors[ 1 ] = c;
 
             builder = new SQLiteQueryBuilder();
@@ -298,12 +298,6 @@ public class AirportDetailsActivity extends Activity {
             rwy.moveToFirst();
             do {
                 String rwyId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
-                int length = rwy.getInt( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
-
-                if ( length == 0 ) {
-                    continue;
-                }
-
                 if ( rwyId.startsWith( "H" ) ) {
                     // This is a helipad
                     if ( heliNum > 0 ) {
