@@ -46,6 +46,7 @@ import android.widget.ImageView.ScaleType;
 import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Awos;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.DatabaseManager.Tower1;
@@ -87,7 +88,7 @@ public class AirportDetailsActivity extends Activity {
 
             DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 6 ];
+            Cursor[] cursors = new Cursor[ 7 ];
 
             Cursor apt = dbManager.getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -131,6 +132,13 @@ public class AirportDetailsActivity extends Activity {
                         new String[] { faaCode }, null, null, Tower6.ELEMENT_NUMBER, null );
                 cursors[ 5 ] = c;
             }
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Awos.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" },
+                    Awos.SITE_NUMBER+"=? ",
+                    new String[] { siteNumber }, null, null, null, null );
+            cursors[ 6 ] = c;
 
             return cursors;
         }
@@ -194,6 +202,22 @@ public class AirportDetailsActivity extends Activity {
             addRow( layout, "Unicom", DataUtils.decodeUnicomFreq( unicom ) );
         }
 
+        Cursor awos = result[ 6 ];
+        if ( awos.moveToFirst() ) {
+            do {
+                String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
+                if ( freq.length() > 0 ) {
+                    String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+                    String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+                    Pair<String, String> pair = new Pair<String, String>( freq, phone );
+                    if ( row > 0 ) {
+                        addSeparator( layout );
+                    }
+                    ++row;
+                    addFrequencyRow( layout, type, pair );
+                }
+            } while ( awos.moveToNext() );
+        }
         Cursor twr1 = result[ 3 ];
         if ( twr1.moveToFirst() ) {
             String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
@@ -400,7 +424,21 @@ public class AirportDetailsActivity extends Activity {
                 }
             }
         }
-            
+
+        // Show AWOS phone here if frequency is empty
+        Cursor awos = result[ 6 ];
+        if ( awos.moveToFirst() ) {
+            do {
+                String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
+                String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+                if ( freq.length() == 0 && phone.length() > 0 ) {
+                    String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+                    ++row;
+                    addBulletedRow( layout, type+": "+phone );
+                }
+            } while ( awos.moveToNext() );
+        }
+
         if ( row == 0 ) {
             label.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );

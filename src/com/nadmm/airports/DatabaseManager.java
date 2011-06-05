@@ -220,7 +220,7 @@ public class DatabaseManager {
     }
 
     public static final class Tower1 implements BaseColumns {
-        public static final String TABLE_NAME = "Tower1";
+        public static final String TABLE_NAME = "tower1";
         public static final String FACILITY_ID = "FACILITY_ID";
         public static final String SITE_NUMBER = "SITE_NUMBER";
         public static final String FACILITY_TYPE = "FACILITY_TYPE";
@@ -230,25 +230,38 @@ public class DatabaseManager {
     }
 
     public static final class Tower3 implements BaseColumns {
-        public static final String TABLE_NAME = "Tower3";
+        public static final String TABLE_NAME = "tower3";
         public static final String FACILITY_ID = "FACILITY_ID";
         public static final String MASTER_AIRPORT_FREQ = "MASTER_AIRPORT_FREQ";
         public static final String MASTER_AIRPORT_FREQ_USE = "MASTER_AIRPORT_FREQ_USE";
     }
 
     public static final class Tower6 implements BaseColumns {
-        public static final String TABLE_NAME = "Tower6";
+        public static final String TABLE_NAME = "tower6";
         public static final String FACILITY_ID = "FACILITY_ID";
         public static final String ELEMENT_NUMBER = "ELEMENT_NUMBER";
         public static final String REMARK_TEXT = "REMARK_TEXT";
     }
 
     public static final class Tower7 implements BaseColumns {
-        public static final String TABLE_NAME = "Tower7";
+        public static final String TABLE_NAME = "tower7";
         public static final String SATELLITE_AIRPORT_FREQ_USE = "SATELLITE_AIRPORT_FREQ_USE";
         public static final String SATELLITE_AIRPORT_SITE_NUMBER = "SATELLITE_AIRPORT_SITE_NUMBER";
         public static final String MASTER_AIRPORT_SITE_NUMBER = "MASTER_AIRPORT_SITE_NUMBER";
         public static final String SATELLITE_AIRPORT_FREQ = "SATELLITE_AIRPORT_FREQ";
+    }
+
+    public static final class Awos implements BaseColumns {
+        public static final String TABLE_NAME = "awos";
+        public static final String WX_SENSOR_IDENT = "WX_SENSOR_IDENT";
+        public static final String WX_SENSOR_TYPE = "WX_SENSOR_TYPE";
+        public static final String COMMISSIONING_STATUS = "COMMISSIONING_STATUS";
+        public static final String STATION_LATTITUDE_DEGREES = "STATION_LATTITUDE_DEGREES";
+        public static final String STATION_LONGITUDE_DEGREES = "STATION_LONGITUDE_DEGREES";
+        public static final String STATION_FREQUENCY = "STATION_FREQUENCY";
+        public static final String SECOND_STATION_FREQUENCY = "SECOND_STATION_FREQUENCY";
+        public static final String STATION_PHONE_NUMBER = "STATION_PHONE_NUMBER";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
     }
 
     public static final class Catalog implements BaseColumns {
