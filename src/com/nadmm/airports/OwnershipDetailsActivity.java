@@ -23,12 +23,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
@@ -172,13 +174,23 @@ public class OwnershipDetailsActivity extends ActivityBase {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addPhoneRow( LinearLayout layout, String text ) {
+    protected void addPhoneRow( LinearLayout layout, String phone ) {
         TextView tv = new TextView( this );
         tv.setPadding( 0, 1, 0, 1 );
-        tv.setText( text );
-        Linkify.addLinks( tv, Linkify.PHONE_NUMBERS );
+        tv.setText( phone );
+        tv.setOnClickListener( new OnClickListener() {
+            
+            @Override
+            public void onClick( View v ) {
+                TextView tv = (TextView) v;
+                String phone = (String) tv.getText();
+                Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
+                startActivity( intent );
+            }
+
+        } );
         layout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT ) );
     }
 
     protected void addRemarkRow( LinearLayout layout, String remark ) {
