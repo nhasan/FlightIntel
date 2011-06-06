@@ -127,7 +127,7 @@ public class AttendanceDetailsActivity extends ActivityBase {
                     addRow( table, "Hours", parts[ 2 ] );
                     layout.addView( table, 1, new LinearLayout.LayoutParams(
                             LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-                    addSpace( layout );
+                    addSpacing( layout );
                 }
             } while ( att.moveToNext() );
         }
@@ -202,9 +202,9 @@ public class AttendanceDetailsActivity extends ActivityBase {
         layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
     }
 
-    protected void addSpace( LinearLayout layout ) {
+    protected void addSpacing( LinearLayout layout ) {
         View separator = new View( this );
-        layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 8 ) );
+        layout.addView( separator, 1, new LayoutParams( LayoutParams.FILL_PARENT, 10 ) );
     }
 
 }
