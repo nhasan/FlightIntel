@@ -19,7 +19,6 @@
 
 package com.nadmm.airports;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -38,7 +37,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 
-public class OwnershipDetailsActivity extends Activity {
+public class OwnershipDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
     private LayoutInflater mInflater;
@@ -63,11 +62,10 @@ public class OwnershipDetailsActivity extends Activity {
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
 
-            DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 2 ];
 
-            cursors[ 0 ] = dbManager.getAirportDetails( siteNumber );
+            cursors[ 0 ] = mDbManager.getAirportDetails( siteNumber );
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Remarks.TABLE_NAME );
@@ -92,7 +90,7 @@ public class OwnershipDetailsActivity extends Activity {
 
             // Title
             Cursor apt = result[ 0 ];
-            GuiUtils.showAirportTitle( mMainLayout, apt );
+            showAirportTitle( mMainLayout, apt );
 
             showOwnershipType( result );
             showOwnerInfo( result );

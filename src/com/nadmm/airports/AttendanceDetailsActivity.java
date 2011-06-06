@@ -19,7 +19,6 @@
 
 package com.nadmm.airports;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -41,7 +40,7 @@ import com.nadmm.airports.DatabaseManager.Attendance;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 
-public class AttendanceDetailsActivity extends Activity {
+public class AttendanceDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
     private LayoutInflater mInflater;
@@ -67,10 +66,9 @@ public class AttendanceDetailsActivity extends Activity {
             String siteNumber = params[ 0 ];
             Cursor[] cursors = new Cursor[ 3 ];
             
-            DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
-            cursors[ 0 ] = dbManager.getAirportDetails( siteNumber );
+            cursors[ 0 ] = mDbManager.getAirportDetails( siteNumber );
 
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Attendance.TABLE_NAME );
             cursors[ 1 ] = builder.query( db,
@@ -102,7 +100,7 @@ public class AttendanceDetailsActivity extends Activity {
 
             // Title
             Cursor apt = result[ 0 ];
-            GuiUtils.showAirportTitle( mMainLayout, apt );
+            showAirportTitle( mMainLayout, apt );
 
             showAttendanceDetails( result );
             showAttendanceRemarks( result );

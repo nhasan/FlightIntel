@@ -19,16 +19,33 @@
 
 package com.nadmm.airports;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
 
-public class GuiUtils {
+public class ActivityBase extends Activity {
 
-    public static void showAirportTitle( View root, Cursor c ) {
+    protected DatabaseManager mDbManager = null;
+
+    
+    @Override
+    protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+        mDbManager = DatabaseManager.instance( getApplicationContext() );
+    }
+
+
+    protected void showAirportTitle( View root, Cursor c ) {
         TextView tv = (TextView) root.findViewById( R.id.airport_title );
         String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
         if ( code == null || code.length() == 0 ) {
@@ -61,6 +78,43 @@ public class GuiUtils {
         }
         info2 += String.valueOf( elev_msl+tpa_agl)+"' MSL TPA"+est;
         tv.setText( info2 );
+
+        CheckBox cb = (CheckBox) root.findViewById( R.id.airport_star );
+        cb.setChecked( mDbManager.isFavoriteAirport( siteNumber ) );
+        cb.setTag( siteNumber );
+        cb.setOnClickListener( new OnClickListener() {
+            
+            @Override
+            public void onClick( View v ) {
+                CheckBox cb = (CheckBox) v;
+                String siteNumber = (String) cb.getTag();
+                if ( cb.isChecked() ) {
+                    mDbManager.addToFavorites( siteNumber );
+                } else {
+                    mDbManager.removeFromFavorites( siteNumber );
+                }
+            }
+
+        } );
+
+        ImageView iv = (ImageView) root.findViewById( R.id.airport_map );
+        String lat = c.getString( c.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+        String lon = c.getString( c.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+        if ( lat.length() > 0 && lon.length() > 0 ) {
+            iv.setTag( "geo:"+lat+","+lon+"?z=16" );
+            iv.setOnClickListener( new OnClickListener() {
+                
+                @Override
+                public void onClick( View v ) {
+                    String tag = (String) v.getTag();
+                    Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( tag ) );
+                    startActivity( intent );
+                }
+
+            } );
+        } else {
+            iv.setVisibility( View.GONE );
+        }
     }
 
 }

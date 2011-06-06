@@ -130,7 +130,7 @@ public final class DownloadActivity extends ListActivity {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
 
-        mDbManager = DatabaseManager.instance( this );
+        mDbManager = DatabaseManager.instance( getApplicationContext() );
         mDownloadTask = null;
         mStop = new AtomicBoolean( false );
         mHandler = new Handler();

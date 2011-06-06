@@ -22,7 +22,6 @@ package com.nadmm.airports;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,7 +53,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
 
-public class NearbyActivity extends Activity {
+public class NearbyActivity extends ActivityBase {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
 
@@ -67,7 +66,6 @@ public class NearbyActivity extends Activity {
     private SharedPreferences mPrefs;
     private ArrayList<String> mFavorites;
 
-    private DatabaseManager mDbManager = null;
     private AirportsCursorAdapter mListAdapter = null;
 
     private final String[] mDisplayColumns = new String[] {
@@ -99,8 +97,6 @@ public class NearbyActivity extends Activity {
         mEmpty = (TextView) findViewById( android.R.id.empty );
         mEmpty.setText( R.string.waiting_location );
 
-        mDbManager = DatabaseManager.instance( this );
-
         mListView = (ListView) findViewById( R.id.list_view );
         mListView.addHeaderView( mHeader );
         registerForContextMenu( mListView );
@@ -116,6 +112,7 @@ public class NearbyActivity extends Activity {
                 intent.putExtra( Airports.SITE_NUMBER, siteNumber );
                 startActivity( intent );
             }
+
         } );
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
@@ -386,7 +383,6 @@ public class NearbyActivity extends Activity {
 
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         Cursor c = mListAdapter.getCursor();
-        int pos = c.getPosition();
         // Subtract 1 to account for header item
         c.moveToPosition( info.position-1 );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
@@ -395,7 +391,6 @@ public class NearbyActivity extends Activity {
             code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );            
         }
         String facilityName = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
-        c.moveToPosition( pos );
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate( R.menu.airport_list_context_menu, menu );
@@ -413,10 +408,9 @@ public class NearbyActivity extends Activity {
     public boolean onContextItemSelected( MenuItem item ) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         Cursor c = mListAdapter.getCursor();
-        int pos = c.getPosition();
-        c.moveToPosition( info.position );
+        // Subtract 1 to account for header item
+        c.moveToPosition( info.position-1 );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-        c.moveToPosition( pos );
 
         switch ( item.getItemId() ) {
             case R.id.menu_add_favorites:

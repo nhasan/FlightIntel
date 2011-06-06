@@ -22,7 +22,6 @@ package com.nadmm.airports;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -54,7 +53,7 @@ import com.nadmm.airports.DatabaseManager.Tower3;
 import com.nadmm.airports.DatabaseManager.Tower6;
 import com.nadmm.airports.DatabaseManager.Tower7;
 
-public class AirportDetailsActivity extends Activity {
+public class AirportDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
     private LayoutInflater mInflater;
@@ -86,11 +85,10 @@ public class AirportDetailsActivity extends Activity {
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
 
-            DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 7 ];
 
-            Cursor apt = dbManager.getAirportDetails( siteNumber );
+            Cursor apt = mDbManager.getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
@@ -157,7 +155,7 @@ public class AirportDetailsActivity extends Activity {
 
             // Title
             Cursor apt = result[ 0 ];
-            GuiUtils.showAirportTitle( mMainLayout, apt );
+            showAirportTitle( mMainLayout, apt );
 
             // Airport Communications section
             showCommunicationsDetails( result );
@@ -601,7 +599,7 @@ public class AirportDetailsActivity extends Activity {
         bundle.putString( Runways.SITE_NUMBER, siteNumber );
         bundle.putString( Runways.RUNWAY_ID, runwayId );
         row.setOnClickListener( new OnClickListener() {
-            
+
             @Override
             public void onClick( View v ) {
                 Intent intent = new Intent( AirportDetailsActivity.this, 

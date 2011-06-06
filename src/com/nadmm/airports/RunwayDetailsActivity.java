@@ -19,7 +19,6 @@
 
 package com.nadmm.airports;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -42,7 +41,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 
-public class RunwayDetailsActivity extends Activity {
+public class RunwayDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
     private LayoutInflater mInflater;
@@ -71,10 +70,9 @@ public class RunwayDetailsActivity extends Activity {
             String runwayId = args.getString( Runways.RUNWAY_ID );
             Cursor[] cursors = new Cursor[ 3 ];
             
-            DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
-            cursors[ 0 ] = dbManager.getAirportDetails( siteNumber );
+            cursors[ 0 ] = mDbManager.getAirportDetails( siteNumber );
 
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Runways.TABLE_NAME );
             Cursor c = builder.query( db, new String[] { "*" },
@@ -107,7 +105,7 @@ public class RunwayDetailsActivity extends Activity {
 
             Cursor apt = result[ 0 ];
             // Title
-            GuiUtils.showAirportTitle( mMainLayout, apt );
+            showAirportTitle( mMainLayout, apt );
 
             Cursor rwy = result[ 1 ];
             if ( !rwy.moveToFirst() ) {

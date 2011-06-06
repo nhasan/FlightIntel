@@ -22,7 +22,6 @@ package com.nadmm.airports;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -46,7 +45,7 @@ import com.nadmm.airports.DatabaseManager.Tower3;
 import com.nadmm.airports.DatabaseManager.Tower6;
 import com.nadmm.airports.DatabaseManager.Tower7;
 
-public class CommDetailsActivity extends Activity {
+public class CommDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
     private LayoutInflater mInflater;
@@ -71,11 +70,10 @@ public class CommDetailsActivity extends Activity {
             String siteNumber = params[ 0 ];
             Cursor[] cursors = new Cursor[ 5 ];
             
-            DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
-            Cursor apt = dbManager.getAirportDetails( siteNumber );
+            Cursor apt = mDbManager.getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
 
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder = new SQLiteQueryBuilder();
             builder.setTables( Tower1.TABLE_NAME );
@@ -122,7 +120,7 @@ public class CommDetailsActivity extends Activity {
 
             // Title
             Cursor apt = result[ 0 ];
-            GuiUtils.showAirportTitle( mMainLayout, apt );
+            showAirportTitle( mMainLayout, apt );
 
             showAirportFrequencies( result );
             showAtcFrequencies( result );

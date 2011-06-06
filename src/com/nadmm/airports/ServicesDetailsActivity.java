@@ -19,7 +19,6 @@
 
 package com.nadmm.airports;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -40,7 +39,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.DatabaseManager.States;
 
-public class ServicesDetailsActivity extends Activity {
+public class ServicesDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
     private LayoutInflater mInflater;
@@ -65,8 +64,7 @@ public class ServicesDetailsActivity extends Activity {
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
 
-            DatabaseManager dbManager = DatabaseManager.instance( getApplicationContext() );
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 2 ];
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
@@ -101,7 +99,7 @@ public class ServicesDetailsActivity extends Activity {
 
             // Title
             Cursor apt = result[ 0 ];
-            GuiUtils.showAirportTitle( mMainLayout, apt );
+            showAirportTitle( mMainLayout, apt );
 
             showAirportServices( result );
             showFaaServices( result );
