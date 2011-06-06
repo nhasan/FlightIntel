@@ -27,6 +27,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Pair;
@@ -212,10 +213,11 @@ public class AirportDetailsActivity extends ActivityBase {
                         addSeparator( layout );
                     }
                     ++row;
-                    addFrequencyRow( layout, type, pair );
+                    addAwosRow( layout, type, pair );
                 }
             } while ( awos.moveToNext() );
         }
+
         Cursor twr1 = result[ 3 ];
         if ( twr1.moveToFirst() ) {
             String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
@@ -432,7 +434,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 if ( freq.length() == 0 && phone.length() > 0 ) {
                     String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
                     ++row;
-                    addBulletedRow( layout, type+": "+phone );
+                    addPhoneRemarkRow( layout, type, phone );
                 }
             } while ( awos.moveToNext() );
         }
@@ -520,6 +522,35 @@ public class AirportDetailsActivity extends ActivityBase {
         TextView tvExtra = (TextView) layout.findViewById( R.id.comm_freq_extra );
         if ( data.second.length() > 0 ) {
             tvExtra.setText( data.second );
+        } else {
+            tvExtra.setVisibility( View.GONE );
+        }
+        table.addView( layout, new TableLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addAwosRow( TableLayout table, String sensorType,
+            Pair<String, String> data ) {
+        RelativeLayout layout = (RelativeLayout) mInflater.inflate(
+                R.layout.comm_detail_item, null );
+        TextView tvLabel = (TextView) layout.findViewById( R.id.comm_freq_use );
+        tvLabel.setText( sensorType );
+        TextView tvValue = (TextView) layout.findViewById( R.id.comm_freq_value );
+        tvValue.setText( data.first );
+        TextView tvExtra = (TextView) layout.findViewById( R.id.comm_freq_extra );
+        if ( data.second.length() > 0 ) {
+            tvExtra.setText( data.second );
+            tvExtra.setOnClickListener( new OnClickListener() {
+                
+                @Override
+                public void onClick( View v ) {
+                    TextView tv = (TextView) v;
+                    String phone = (String) tv.getText();
+                    Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
+                    startActivity( intent );
+                }
+
+            } );
         } else {
             tvExtra.setVisibility( View.GONE );
         }
@@ -625,7 +656,23 @@ public class AirportDetailsActivity extends ActivityBase {
         addBulletedRow( layout, remark );
     }
 
-    protected void addBulletedRow( LinearLayout layout, String text ) {
+    protected void addPhoneRemarkRow( LinearLayout layout, String remark, String phone ) {
+        TextView tv = addBulletedRow( layout, remark+": "+phone );
+        tv.setTag( phone );
+        tv.setOnClickListener( new OnClickListener() {
+            
+            @Override
+            public void onClick( View v ) {
+                TextView tv = (TextView) v;
+                String phone = (String) tv.getTag();
+                Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
+                startActivity( intent );
+            }
+
+        } );
+    }
+
+    protected TextView addBulletedRow( LinearLayout layout, String text ) {
         LinearLayout innerLayout = new LinearLayout( this );
         innerLayout.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );
@@ -642,6 +689,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         layout.addView( innerLayout, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return tv;
     }
 
     protected int getSelectorResourceForRow( int curRow, int totRows ) {
