@@ -284,7 +284,7 @@ public class DatabaseManager {
         public static final String SITE_NUMBER = "SITE_NUMBER";
     }
 
-    public static DatabaseManager instance( Context context) {
+    public static DatabaseManager instance( Context context ) {
         synchronized ( sLock ) {
             if ( sInstance == null ) {
                 sInstance = new DatabaseManager( context.getApplicationContext() );
