@@ -118,6 +118,7 @@ public class AttendanceDetailsActivity extends ActivityBase {
                         att.getColumnIndex( Attendance.ATTENDANCE_SCHEDULE ) );
                 String[] parts = schedule.split( "/" );
                 if ( parts.length == 3 ) {
+                    addSpacing( layout );
                     TableLayout table = (TableLayout) mInflater.inflate(
                             R.layout.attendance_detail_item, null );
                     addRow( table, "Months", parts[ 0 ] );
@@ -127,7 +128,6 @@ public class AttendanceDetailsActivity extends ActivityBase {
                     addRow( table, "Hours", parts[ 2 ] );
                     layout.addView( table, 1, new LinearLayout.LayoutParams(
                             LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-                    addSpacing( layout );
                 }
             } while ( att.moveToNext() );
         }
