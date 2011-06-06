@@ -49,6 +49,7 @@ public class DatabaseManager {
     public static File DATABASE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/databases" );
     public static final String DB_FADDS = "FADDS";
 
+    private static final Object sLock = new Object();
     private static DatabaseManager sInstance = null;
 
     public static final class Airports implements BaseColumns {
@@ -284,10 +285,12 @@ public class DatabaseManager {
     }
 
     public static DatabaseManager instance( Context context) {
-        if ( sInstance == null ) {
-            sInstance = new DatabaseManager( context.getApplicationContext() );
+        synchronized ( sLock ) {
+            if ( sInstance == null ) {
+                sInstance = new DatabaseManager( context.getApplicationContext() );
+            }
+            return sInstance;
         }
-        return sInstance;
     }
 
     private DatabaseManager( Context context ) {

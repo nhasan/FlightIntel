@@ -41,7 +41,7 @@ public class ActivityBase extends Activity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        mDbManager = DatabaseManager.instance( getApplicationContext() );
+        mDbManager = DatabaseManager.instance( this );
     }
 
 

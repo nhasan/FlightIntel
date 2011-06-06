@@ -51,7 +51,7 @@ public class FavoritesActivity extends ListActivity {
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         registerForContextMenu( getListView() );
 
-        mDbManager = DatabaseManager.instance( getApplicationContext() );
+        mDbManager = DatabaseManager.instance( this );
 
         mListAdapter = new AirportsCursorAdapter( FavoritesActivity.this, null );
         setListAdapter( mListAdapter );
