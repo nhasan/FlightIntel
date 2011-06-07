@@ -98,6 +98,8 @@ public class NearbyActivity extends ActivityBase {
 
         setContentView( R.layout.airport_list_view );
         mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
+        mEmpty = (TextView) findViewById( android.R.id.empty );
+        mEmpty.setText( R.string.waiting_location );
 
         mListView = (ListView) findViewById( R.id.list_view );
         mListView.addHeaderView( mHeader );
@@ -147,13 +149,12 @@ public class NearbyActivity extends ActivityBase {
             }
         }
 
+        setProgressBarIndeterminateVisibility( true );
+
         if ( mLastLocation != null ) {
             // We have some location to use
             NearbyTask task = new NearbyTask();
             task.execute();
-        } else {
-            // No location is available, wait for a fix
-            mEmpty.setText( R.string.waiting_location );
         }
     }
 
@@ -271,8 +272,6 @@ public class NearbyActivity extends ActivityBase {
 
         @Override
         protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-            mEmpty = (TextView) findViewById( android.R.id.empty );
         }
 
         @Override
