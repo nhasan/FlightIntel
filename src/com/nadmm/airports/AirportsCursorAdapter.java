@@ -61,14 +61,14 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
             // Check if we have distance information
             float distance = c.getFloat( c.getColumnIndex( Airports.DISTANCE ) );
             tv = (TextView) view.findViewById( R.id.distance );
-            tv.setText( new Formatter().format( "%.1f NM ", distance ).toString() );
+            tv.setText( new Formatter().format( "%.0f NM ", distance ).toString() );
         }
 
         if ( c.getColumnIndex( Airports.BEARING ) >= 0 ) {
             // Check if we have bearing information
             float bearing = c.getFloat( c.getColumnIndex( Airports.BEARING ) );
                 tv = (TextView) view.findViewById( R.id.bearing );
-                tv.setText( GeoUtils.getCardinalDirection( bearing ) );
+                tv.setText( String.format( "%.0f\u00B0 M", bearing ) );
         }
 
         tv = (TextView) view.findViewById( R.id.other_info );
