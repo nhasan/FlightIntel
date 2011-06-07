@@ -27,12 +27,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -58,6 +62,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
     private LayoutInflater mInflater;
+    private Bundle mData;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -156,6 +161,18 @@ public class AirportDetailsActivity extends ActivityBase {
 
             // Title
             Cursor apt = result[ 0 ];
+
+            // Save some details for later
+            String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+            mData = new Bundle();
+            mData.putString( Airports.ICAO_CODE, icaoCode );
+            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            mData.putString( Airports.FAA_CODE, faaCode );
+            double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+            double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+            mData.putDouble( Airports.REF_LATTITUDE_DEGREES, lat );
+            mData.putDouble( Airports.REF_LONGITUDE_DEGREES, lon );
+
             showAirportTitle( mMainLayout, apt );
 
             // Airport Communications section
@@ -708,6 +725,39 @@ public class AirportDetailsActivity extends ActivityBase {
         View separator = new View( this );
         separator.setBackgroundColor( Color.LTGRAY );
         layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu( Menu menu ) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate( R.menu.airport_menu, menu );
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+        case R.id.menu_nearby:
+            String code = mData.getString( Airports.ICAO_CODE );
+            if ( code == null  || code.length() == 0 ) {
+                code = mData.getString( Airports.FAA_CODE );
+            }
+            double lat = mData.getDouble( Airports.REF_LATTITUDE_DEGREES );
+            double lon = mData.getDouble( Airports.REF_LONGITUDE_DEGREES );
+            Location location = new Location( "" );
+            location.setLatitude( lat );
+            location.setLongitude( lon );
+            Bundle extras = new Bundle();
+            extras.putString( NearbyActivity.REF_AIRPORT, code );
+            extras.putParcelable( NearbyActivity.LOCATION, location );
+            Intent intent = new Intent( this, NearbyActivity.class );
+            intent.putExtras( extras );
+            startActivity( intent );
+            return true;
+        default:
+            return super.onOptionsItemSelected( item );
+        }
     }
 
 }
