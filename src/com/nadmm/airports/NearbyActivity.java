@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.hardware.GeomagneticField;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -56,6 +57,8 @@ import com.nadmm.airports.DatabaseManager.States;
 public class NearbyActivity extends ActivityBase {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
+    public static final String LOCATION = "Location";
+    public static final String REF_AIRPORT = "REF_AIRPORT";
 
     private TextView mHeader;
     private TextView mEmpty;
@@ -65,6 +68,7 @@ public class NearbyActivity extends ActivityBase {
     private Location mLastLocation;
     private SharedPreferences mPrefs;
     private ArrayList<String> mFavorites;
+    private String mRefAirport;
 
     private AirportsCursorAdapter mListAdapter = null;
 
@@ -94,8 +98,6 @@ public class NearbyActivity extends ActivityBase {
 
         setContentView( R.layout.airport_list_view );
         mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
-        mEmpty = (TextView) findViewById( android.R.id.empty );
-        mEmpty.setText( R.string.waiting_location );
 
         mListView = (ListView) findViewById( R.id.list_view );
         mListView.addHeaderView( mHeader );
@@ -116,38 +118,63 @@ public class NearbyActivity extends ActivityBase {
         } );
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
-        mLocationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
-        mLocationListener = new AirportsLocationListener();
         mFavorites = null;
 
-        boolean useGps = mPrefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
-        String provider = useGps? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
+        Intent intent = getIntent();
+        // Check if an airport location was passed
+        Bundle bundle = intent.getExtras();
+        if ( bundle != null ) {
+            mLastLocation = (Location) bundle.get( LOCATION );
+            mRefAirport = bundle.getString( REF_AIRPORT );
+        }
 
-        Location location = mLocationManager.getLastKnownLocation( provider );
-        if ( location != null && 
-              System.currentTimeMillis()-location.getTime() <= 5*60*DateUtils.SECOND_IN_MILLIS ) {
-            // Use the last known location if it is no more than 5 minutes old
-            mLastLocation = location;
+        if ( mLastLocation == null ) {
+            // No location was passed, initialize the location service to get a fix
+            mLocationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+            mLocationListener = new AirportsLocationListener();
+            boolean useGps = mPrefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
+            String provider = useGps? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
+
+            // Get the last known location to use a starting point
+            mLastLocation = mLocationManager.getLastKnownLocation( provider );
+            if ( mLastLocation != null ) {
+                // Use the last known location if it is no more than 5 minutes old
+                long elapsed = System.currentTimeMillis()-mLastLocation.getTime();
+                if ( elapsed > 5*60*DateUtils.SECOND_IN_MILLIS ) {
+                    // This location is too old, discard
+                    mLastLocation = null;
+                }
+            }
+        }
+
+        if ( mLastLocation != null ) {
+            // We have some location to use
             NearbyTask task = new NearbyTask();
-            task.execute( (Void[]) null );
+            task.execute();
         } else {
-            setProgressBarIndeterminateVisibility( true );
+            // No location is available, wait for a fix
+            mEmpty.setText( R.string.waiting_location );
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        boolean useGps = mPrefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
-        String provider = useGps? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
-        mLocationManager.requestLocationUpdates( provider, 60*DateUtils.SECOND_IN_MILLIS,
-                GeoUtils.METERS_PER_STATUTE_MILE, mLocationListener );
+        if ( mLocationManager != null ) {
+            boolean useGps = mPrefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
+            String provider = useGps? 
+                    LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
+            mLocationManager.requestLocationUpdates( provider, 60*DateUtils.SECOND_IN_MILLIS,
+                    GeoUtils.METERS_PER_STATUTE_MILE, mLocationListener );
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mLocationManager.removeUpdates( mLocationListener );
+        if ( mLocationManager != null ) {
+            mLocationManager.removeUpdates( mLocationListener );
+        }
     }
 
     private final class AirportsLocationListener implements LocationListener {
@@ -157,7 +184,7 @@ public class NearbyActivity extends ActivityBase {
             Log.i( "LOCATION", String.valueOf( location.toString() ) );
             if ( mLastLocation != null ) {
                 float distance = location.distanceTo( mLastLocation );
-                if ( distance < GeoUtils.METERS_PER_STATUTE_MILE ) {
+                if ( distance < 1*GeoUtils.METERS_PER_STATUTE_MILE ) {
                     // We have not moved enough to recalculate nearby airports
                     return;
                 }
@@ -166,7 +193,7 @@ public class NearbyActivity extends ActivityBase {
             // We have moved atleast a mile from the location of last calculation
             mLastLocation = location;
             NearbyTask task = new NearbyTask();
-            task.execute( (Void[]) null );
+            task.execute();
         }
 
         @Override
@@ -200,7 +227,7 @@ public class NearbyActivity extends ActivityBase {
         public float DISTANCE;
         public float BEARING;
 
-        public void setFromCursor( Cursor c ) {
+        public void setFromCursor( Cursor c, float declination ) {
             SITE_NUMBER = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
             FACILITY_NAME = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
             ICAO_CODE = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
@@ -222,7 +249,7 @@ public class NearbyActivity extends ActivityBase {
                     c.getDouble( c.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) ),
                     results );
             DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
-            BEARING = ( results[ 1 ]+360 )%360;
+            BEARING = ( results[ 1 ]+declination+360 )%360;
         }
 
         @Override
@@ -245,6 +272,7 @@ public class NearbyActivity extends ActivityBase {
         @Override
         protected void onPreExecute() {
             setProgressBarIndeterminateVisibility( true );
+            mEmpty = (TextView) findViewById( android.R.id.empty );
         }
 
         @Override
@@ -285,10 +313,19 @@ public class NearbyActivity extends ActivityBase {
                 return null;
             }
 
+            // Now find the magnetic declination at this location
+            GeomagneticField geoField = new GeomagneticField(
+                    (float)mLastLocation.getLatitude(), (float)mLastLocation.getLongitude(),
+                    (float)mLastLocation.getAltitude(), System.currentTimeMillis() );
+            // West declination is reported in negative values
+            float declination = -1*geoField.getDeclination();
+
+            Log.i( "DECLINATION", String.valueOf( declination ) );
+
             AirportData[] airports = new AirportData[ c.getCount() ];
             do {
                 AirportData airport = new AirportData();
-                airport.setFromCursor( c );
+                airport.setFromCursor( c, declination );
                 airports[ c.getPosition() ] = airport;
             } while ( c.moveToNext() );
 
@@ -300,7 +337,7 @@ public class NearbyActivity extends ActivityBase {
             // Build a cursor out of the sorted airport list
             MatrixCursor matrix = new MatrixCursor( mDisplayColumns );
             for ( AirportData airport : airports ) {
-                if ( airport.DISTANCE <= mRadius ) {
+                if ( airport.DISTANCE > 0 && airport.DISTANCE <= mRadius ) {
                     MatrixCursor.RowBuilder row = matrix.newRow();
                     row.add( matrix.getPosition() )
                         .add( airport.SITE_NUMBER )
@@ -326,8 +363,12 @@ public class NearbyActivity extends ActivityBase {
         protected void onPostExecute( Cursor c ) {
             mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );
             mListView.setAdapter( mListAdapter );
-            mHeader.setText( String.valueOf( c.getCount() )+" found within "
-                    +String.valueOf( mRadius )+" NM radius" );
+            String msg = String.valueOf( c.getCount() )+" airports found within "
+                    +String.valueOf( mRadius )+" NM";
+            if ( mRefAirport !=  null ) {
+                msg += " of "+mRefAirport;
+            }
+            mHeader.setText( msg );
             setProgressBarIndeterminateVisibility( false );
             mEmpty.setVisibility( View.GONE );
             mListView.setVisibility( View.VISIBLE );
@@ -342,13 +383,6 @@ public class NearbyActivity extends ActivityBase {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu( Menu menu ) {
-        MenuItem browse = menu.findItem( R.id.menu_nearby );
-        browse.setEnabled( false );
-        return super.onPrepareOptionsMenu( menu );
-    }
-
-    @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
         // Handle item selection
         switch ( item.getItemId() ) {
@@ -359,6 +393,10 @@ public class NearbyActivity extends ActivityBase {
             Intent browse = new Intent( this, BrowseActivity.class );
             browse.putExtras( new Bundle() );
             startActivity( browse );
+            return true;
+        case R.id.menu_nearby:
+            Intent nearby = new Intent( this, NearbyActivity.class );
+            startActivity( nearby );
             return true;
         case R.id.menu_favorites:
             Intent favorites = new Intent( this, FavoritesActivity.class );
