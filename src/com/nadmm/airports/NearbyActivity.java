@@ -57,8 +57,8 @@ import com.nadmm.airports.DatabaseManager.States;
 public class NearbyActivity extends ActivityBase {
 
     private static final String TAG = SearchActivity.class.getSimpleName();
-    public static final String LOCATION = "Location";
-    public static final String REF_AIRPORT = "REF_AIRPORT";
+    public static final String APT_LOCATION = "APT_LOCATION";
+    public static final String APT_CODE = "APT_CODE";
 
     private TextView mHeader;
     private TextView mEmpty;
@@ -96,14 +96,15 @@ public class NearbyActivity extends ActivityBase {
         setTitle( "Nearby Airports" );
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
 
+        mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
+
         setContentView( R.layout.airport_list_view );
         mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
         mEmpty = (TextView) findViewById( android.R.id.empty );
-        mEmpty.setText( R.string.waiting_location );
 
         mListView = (ListView) findViewById( R.id.list_view );
-        mListView.addHeaderView( mHeader );
         registerForContextMenu( mListView );
+        mListView.addHeaderView( mHeader );
         mListView.setOnItemClickListener( new OnItemClickListener() {
 
             @Override
@@ -119,15 +120,12 @@ public class NearbyActivity extends ActivityBase {
 
         } );
 
-        mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
-        mFavorites = null;
-
-        Intent intent = getIntent();
         // Check if an airport location was passed
+        Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if ( bundle != null ) {
-            mLastLocation = (Location) bundle.get( LOCATION );
-            mRefAirport = bundle.getString( REF_AIRPORT );
+            mLastLocation = (Location) bundle.get( APT_LOCATION );
+            mRefAirport = bundle.getString( APT_CODE );
         }
 
         if ( mLastLocation == null ) {
@@ -149,12 +147,12 @@ public class NearbyActivity extends ActivityBase {
             }
         }
 
-        setProgressBarIndeterminateVisibility( true );
-
         if ( mLastLocation != null ) {
             // We have some location to use
             NearbyTask task = new NearbyTask();
             task.execute();
+        } else {
+            mEmpty.setText( R.string.waiting_location );
         }
     }
 
@@ -272,6 +270,7 @@ public class NearbyActivity extends ActivityBase {
 
         @Override
         protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility( true );
         }
 
         @Override

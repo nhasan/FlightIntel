@@ -62,7 +62,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
     private LayoutInflater mInflater;
-    private Bundle mData;
+    private Bundle mExtras;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -162,16 +162,19 @@ public class AirportDetailsActivity extends ActivityBase {
             // Title
             Cursor apt = result[ 0 ];
 
-            // Save some details for later
-            String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-            mData = new Bundle();
-            mData.putString( Airports.ICAO_CODE, icaoCode );
-            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            mData.putString( Airports.FAA_CODE, faaCode );
+            // Extras bundle for "Nearby" activity
+            mExtras = new Bundle();
+            String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+            if ( code == null  || code.length() == 0 ) {
+                code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            }
+            mExtras.putString( NearbyActivity.APT_CODE, code );
             double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
             double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-            mData.putDouble( Airports.REF_LATTITUDE_DEGREES, lat );
-            mData.putDouble( Airports.REF_LONGITUDE_DEGREES, lon );
+            Location location = new Location( "" );
+            location.setLatitude( lat );
+            location.setLongitude( lon );
+            mExtras.putParcelable( NearbyActivity.APT_LOCATION, location );
 
             showAirportTitle( mMainLayout, apt );
 
@@ -739,20 +742,8 @@ public class AirportDetailsActivity extends ActivityBase {
         // Handle item selection
         switch ( item.getItemId() ) {
         case R.id.menu_nearby:
-            String code = mData.getString( Airports.ICAO_CODE );
-            if ( code == null  || code.length() == 0 ) {
-                code = mData.getString( Airports.FAA_CODE );
-            }
-            double lat = mData.getDouble( Airports.REF_LATTITUDE_DEGREES );
-            double lon = mData.getDouble( Airports.REF_LONGITUDE_DEGREES );
-            Location location = new Location( "" );
-            location.setLatitude( lat );
-            location.setLongitude( lon );
-            Bundle extras = new Bundle();
-            extras.putString( NearbyActivity.REF_AIRPORT, code );
-            extras.putParcelable( NearbyActivity.LOCATION, location );
             Intent intent = new Intent( this, NearbyActivity.class );
-            intent.putExtras( extras );
+            intent.putExtras( mExtras );
             startActivity( intent );
             return true;
         default:
