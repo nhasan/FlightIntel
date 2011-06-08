@@ -75,7 +75,7 @@
         <ImageView android:id="@+id/airport_map"
                 android:src="@android:drawable/ic_dialog_map"
                 android:paddingTop="12dp"
-                android:tint="#ff999999"
+                android:tint="#ff909090"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
     </LinearLayout>r
