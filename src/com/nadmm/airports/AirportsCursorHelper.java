@@ -39,6 +39,7 @@ public class AirportsCursorHelper {
             Airports.ASSOC_CITY,
             Airports.ASSOC_STATE,
             Airports.FUEL_TYPES,
+            Airports.CTAF_FREQ,
             Airports.UNICOM_FREQS,
             Airports.ELEVATION_MSL,
             Airports.STATUS_CODE,

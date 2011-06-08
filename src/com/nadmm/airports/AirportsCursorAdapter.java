@@ -57,18 +57,21 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
         tv = (TextView) view.findViewById( R.id.location );
         tv.setText( city+", "+state_name );
 
-        if ( c.getColumnIndex( Airports.DISTANCE ) >= 0 ) {
+        if ( c.getColumnIndex( Airports.DISTANCE ) >= 0 
+                && c.getColumnIndex( Airports.BEARING ) >= 0 ) {
             // Check if we have distance information
             float distance = c.getFloat( c.getColumnIndex( Airports.DISTANCE ) );
-            tv = (TextView) view.findViewById( R.id.distance );
-            tv.setText( new Formatter().format( "%.0f NM ", distance ).toString() );
-        }
-
-        if ( c.getColumnIndex( Airports.BEARING ) >= 0 ) {
-            // Check if we have bearing information
             float bearing = c.getFloat( c.getColumnIndex( Airports.BEARING ) );
-                tv = (TextView) view.findViewById( R.id.bearing );
-                tv.setText( String.format( "%.0f\u00B0 M", bearing ) );
+            tv = (TextView) view.findViewById( R.id.distance );
+            tv.setText( new Formatter().format( "%.1f NM %s, ",
+                    distance, GeoUtils.getCardinalDirection( bearing ) ).toString() );
+            tv = (TextView) view.findViewById( R.id.bearing );
+            tv.setText( String.format( "initial course %.0f\u00B0 M", bearing ) );
+        } else {
+            tv = (TextView) view.findViewById( R.id.distance );
+            tv.setVisibility( View.GONE );
+            tv = (TextView) view.findViewById( R.id.bearing );
+            tv.setVisibility( View.GONE );
         }
 
         tv = (TextView) view.findViewById( R.id.other_info );
@@ -76,13 +79,14 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
         String type = DataUtils.decodeLandingFaclityType( siteNumber );
         String fuel = c.getString( c.getColumnIndex( Airports.FUEL_TYPES ) );
         String elev = c.getString( c.getColumnIndex( Airports.ELEVATION_MSL ) );
+        String ctaf = c.getString( c.getColumnIndex( Airports.CTAF_FREQ ) );
         String unicom = c.getString( c.getColumnIndex( Airports.UNICOM_FREQS ) );
         String status = c.getString( c.getColumnIndex( Airports.STATUS_CODE ) );
         if ( status.equals( "O" ) ) {
-            tv.setText( type+", "
-                    +(fuel.length()>0? DataUtils.decodeFuelTypes( fuel )+", " : "")
-                    +(unicom.length()>0? unicom+", " : "")
-                    +elev+"' MSL" );
+            tv.setText( type+", "+elev+"' MSL"
+                    +( ctaf != null && ctaf.length() > 0? ", "+ctaf : 
+                        (unicom.length() > 0? ", "+unicom : "") )
+                    +( fuel.length() > 0? ", "+DataUtils.decodeFuelTypes( fuel ) : "" ) );
         } else {
             tv.setText( type+", "+DataUtils.decodeStatus( status ) );
         }
