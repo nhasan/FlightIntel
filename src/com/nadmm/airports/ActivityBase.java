@@ -29,6 +29,7 @@ import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
@@ -90,8 +91,12 @@ public class ActivityBase extends Activity {
                 String siteNumber = (String) cb.getTag();
                 if ( cb.isChecked() ) {
                     mDbManager.addToFavorites( siteNumber );
+                    Toast.makeText( ActivityBase.this, "Added to favorites list",
+                            Toast.LENGTH_LONG ).show();
                 } else {
                     mDbManager.removeFromFavorites( siteNumber );
+                    Toast.makeText( ActivityBase.this, "Removed from favorites list",
+                            Toast.LENGTH_LONG ).show();
                 }
             }
 
