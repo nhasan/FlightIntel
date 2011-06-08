@@ -538,7 +538,22 @@ my $insert_tower7_record = "INSERT INTO tower7 ("
         ."SATELLITE_AIRPORT_FREQ"
         .") VALUES ("
         ."?, ?, ?, ?, ?"
-        .")";
+        .");";
+
+my $create_tower8_table = "CREATE TABLE tower8 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."FACILITY_ID TEXT, "
+        ."AIRSPACE_TYPES TEXT, "
+        ."AIRSPACE_HOURS TEXT"
+        .");";
+
+my $insert_tower8_record = "INSERT INTO tower8 ("
+        ."FACILITY_ID, "
+        ."AIRSPACE_TYPES, "
+        ."AIRSPACE_HOURS"
+        .") VALUES ("
+        ."?, ?, ?"
+        .");";
 
 my $create_awos_table = "CREATE TABLE awos ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -603,6 +618,10 @@ $dbh->do( "DROP TABLE IF EXISTS tower7" );
 $dbh->do( $create_tower7_table );
 $dbh->do( "CREATE INDEX idx_twr7_site_number on tower7 ( SATELLITE_AIRPORT_SITE_NUMBER );" );
 
+$dbh->do( "DROP TABLE IF EXISTS tower8" );
+$dbh->do( $create_tower8_table );
+$dbh->do( "CREATE INDEX idx_twr8_facility_id on tower8 ( FACILITY_ID );" );
+
 $dbh->do( "DROP TABLE IF EXISTS awos" );
 $dbh->do( $create_awos_table );
 $dbh->do( "CREATE INDEX idx_awos_site_number on awos ( SITE_NUMBER );" );
@@ -615,6 +634,7 @@ my $sth_twr1 = $dbh->prepare( $insert_tower1_record );
 my $sth_twr3 = $dbh->prepare( $insert_tower3_record );
 my $sth_twr6 = $dbh->prepare( $insert_tower6_record );
 my $sth_twr7 = $dbh->prepare( $insert_tower7_record );
+my $sth_twr8 = $dbh->prepare( $insert_tower8_record );
 my $sth_awos = $dbh->prepare( $insert_awos_record );
 
 my $i = 0;
@@ -632,7 +652,7 @@ open( APT_FILE, "<$APT" ) or die "Could not open data file\n";
 while ( my $line = <APT_FILE> )
 {
     ++$i;
-
+last;
     if ( ($i % 1000) == 0 )
     {
         $dbh->do( "PRAGMA synchronous=ON" );
@@ -1036,11 +1056,11 @@ while ( my $line = <TWR_FILE> )
     elsif ( $type eq "TWR6" )
     {
         #FACILITY_ID
-        $sth_twr6->bind_param( 1, substrim( $line,   4,   4 ) );
+        $sth_twr6->bind_param( 1, substrim( $line,  4,   4 ) );
         #ELEMENT_NUMBER
-        $sth_twr6->bind_param( 2, substrim( $line,   8,   5 ) );
+        $sth_twr6->bind_param( 2, substrim( $line,  8,   5 ) );
         #REMARK_TEXT
-        $sth_twr6->bind_param( 3, substrim( $line,  13, 400 ) );
+        $sth_twr6->bind_param( 3, substrim( $line, 13, 400 ) );
  
         $sth_twr6->execute();
     }
@@ -1058,6 +1078,15 @@ while ( my $line = <TWR_FILE> )
         $sth_twr7->bind_param( 5, substrim( $line, 394, 60 ) );
  
         $sth_twr7->execute();
+    }
+    elsif ( $type eq "TWR8" )
+    {
+        #FACILITY_ID
+        $sth_twr8->bind_param( 1, substrim( $line,  4,   4 ) );
+        $sth_twr8->bind_param( 2, substrim( $line,  8,   4 ) );
+        $sth_twr8->bind_param( 3, substrim( $line, 12, 300 ) );
+ 
+        $sth_twr8->execute();
     }
 
     if ( ($i % 1000) == 0 )
