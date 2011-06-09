@@ -652,7 +652,7 @@ open( APT_FILE, "<$APT" ) or die "Could not open data file\n";
 while ( my $line = <APT_FILE> )
 {
     ++$i;
-last;
+
     if ( ($i % 1000) == 0 )
     {
         $dbh->do( "PRAGMA synchronous=ON" );
@@ -1082,6 +1082,7 @@ while ( my $line = <TWR_FILE> )
     elsif ( $type eq "TWR8" )
     {
         #FACILITY_ID
+        substr( $line, 8, 4 ) =~ s/ /N/g;
         $sth_twr8->bind_param( 1, substrim( $line,  4,   4 ) );
         $sth_twr8->bind_param( 2, substrim( $line,  8,   4 ) );
         $sth_twr8->bind_param( 3, substrim( $line, 12, 300 ) );
