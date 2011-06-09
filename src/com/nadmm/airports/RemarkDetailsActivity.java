@@ -35,6 +35,7 @@ import android.widget.TableLayout.LayoutParams;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
+import com.nadmm.airports.DatabaseManager.Tower8;
 
 public class RemarkDetailsActivity extends ActivityBase {
 
@@ -60,9 +61,10 @@ public class RemarkDetailsActivity extends ActivityBase {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 2 ];
-            
-            cursors[ 0 ] = mDbManager.getAirportDetails( siteNumber );
+            Cursor[] cursors = new Cursor[ 3 ];
+
+            Cursor apt = mDbManager.getAirportDetails( siteNumber );
+            cursors[ 0 ] = apt;
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
@@ -76,6 +78,13 @@ public class RemarkDetailsActivity extends ActivityBase {
                     +" not in ('E147', 'A3', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', "
                     +"'A24', 'A70', 'A81', 'A81 1', 'A82')",
                     new String[] { siteNumber }, null, null, Remarks.REMARK_NAME, null );
+
+            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Tower8.TABLE_NAME );
+            cursors[ 2 ] = builder.query( db, new String[] { "*" },
+                    Tower8.FACILITY_ID+"=? ",
+                    new String[] { faaCode }, null, null, null, null );
 
             return cursors;
         }
@@ -101,23 +110,64 @@ public class RemarkDetailsActivity extends ActivityBase {
             showAirportTitle( mMainLayout, apt );
 
             showRemarksDetails( result );
+            showAirspaceDetails( result );
         }
 
     }
 
     protected void showRemarksDetails( Cursor[] result ) {
+        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
+                R.id.detail_remarks_layout );
         Cursor rmk = result[ 1 ];
         if ( rmk.moveToFirst() ) {
-            LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
-                    R.id.detail_remarks_layout );
             do {
                 String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
-                addRow( layout, remark );
+                addRemarkRow( layout, remark );
             } while ( rmk.moveToNext() );
         }
     }
 
-    protected void addRow( LinearLayout layout, String remark ) {
+    protected void showAirspaceDetails( Cursor[] result ) {
+        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
+                R.id.detail_remarks_layout );
+
+        Cursor twr8 = result[ 2 ];
+        if ( twr8.moveToFirst() ) {
+            do {
+                String airspace = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_TYPES ) );
+                String remark = "";
+                if ( airspace.charAt( 0 ) == 'Y' ) {
+                    remark += "CLASS B";
+                }
+                if ( airspace.charAt( 1 ) == 'Y' ) {
+                    if ( remark.length() > 0 ) {
+                        remark += ", ";
+                    }
+                    remark += "CLASS C";
+                }
+                if ( airspace.charAt( 2 ) == 'Y' ) {
+                    if ( remark.length() > 0 ) {
+                        remark += ", ";
+                    }
+                    remark += "CLASS D";
+                }
+                if ( airspace.charAt( 3 ) == 'Y' ) {
+                    if ( remark.length() > 0 ) {
+                        remark += ", ";
+                    }
+                    remark += "CLASS E";
+                }
+                remark = "AIRSPACE: "+remark;
+                String hours = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_HOURS ) );
+                if ( hours.length() > 0 ) {
+                    remark += " ("+hours+")";
+                }
+                addRow( layout, remark );
+            } while ( twr8.moveToNext() );
+        }
+    }
+
+    protected void addRemarkRow( LinearLayout layout, String remark ) {
         int index = remark.indexOf( ' ' );
         if ( index != -1 ) {
             while ( remark.charAt( index ) == ' ' ) {
@@ -125,6 +175,11 @@ public class RemarkDetailsActivity extends ActivityBase {
             }
             remark = remark.substring( index );
         }
+
+        addRow( layout, remark );
+    }
+
+    protected void addRow( LinearLayout layout, String remark ) {
         LinearLayout innerLayout = new LinearLayout( this );
         innerLayout.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );
