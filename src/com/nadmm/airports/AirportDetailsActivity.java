@@ -280,8 +280,7 @@ public class AirportDetailsActivity extends ActivityBase {
                         }
                         if ( freqUse.contains( "APCH/" ) ) {
                             addFrequencyToMap( map, apchRadioCall+" Approach", freq, extra );
-                        }
-                        if ( freqUse.contains( "DEP/" ) ) {
+                        } else if ( freqUse.contains( "DEP/" ) ) {
                             addFrequencyToMap( map, depRadioCall+" Departure", freq, extra );
                         }
                         if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC DEL" ) ) {
