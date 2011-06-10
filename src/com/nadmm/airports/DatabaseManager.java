@@ -250,6 +250,13 @@ public class DatabaseManager {
         public static final String SATELLITE_AIRPORT_FREQ = "SATELLITE_AIRPORT_FREQ";
     }
 
+    public static final class Tower8 implements BaseColumns {
+        public static final String TABLE_NAME = "tower8";
+        public static final String FACILITY_ID = "FACILITY_ID";
+        public static final String AIRSPACE_TYPES = "AIRSPACE_TYPES";
+        public static final String AIRSPACE_HOURS = "AIRSPACE_HOURS";
+    }
+
     public static final class Awos implements BaseColumns {
         public static final String TABLE_NAME = "awos";
         public static final String WX_SENSOR_IDENT = "WX_SENSOR_IDENT";
