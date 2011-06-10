@@ -19,6 +19,7 @@
 
 package com.nadmm.airports;
 
+import android.hardware.GeomagneticField;
 import android.location.Location;
 import android.util.Log;
 
@@ -118,4 +119,11 @@ public class GeoUtils {
         return "???";
     }
 
+    public static float getMagneticDeclination( Location location ) {
+        GeomagneticField geoField = new GeomagneticField(
+                (float)location.getLatitude(), (float)location.getLongitude(),
+                (float)location.getAltitude(), System.currentTimeMillis() );
+        // West declination is reported in negative values
+        return -1*geoField.getDeclination();
+    }
 }
