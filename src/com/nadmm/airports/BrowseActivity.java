@@ -22,7 +22,6 @@ package com.nadmm.airports;
 import java.util.HashMap;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -39,14 +38,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.CursorAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
 
-public class BrowseActivity extends ListActivity {
+public class BrowseActivity extends ActivityBase {
 
     static private final String BUNDLE_KEY_STATE_CODE = "state_code";
     static private final String BUNDLE_KEY_STATE_NAME = "state_name";
@@ -56,8 +56,8 @@ public class BrowseActivity extends ListActivity {
     static private final HashMap<String, String> sStateMap = buildStateMap();
     static private final HashMap<String, String> sCityMap = buildCityMap();
 
-    private DatabaseManager mDbManager = null;
-    private BrowseCursorAdapter mListAdapter = null;
+    private ListView mListView;
+    private BrowseCursorAdapter mListAdapter;
 
     static HashMap<String, String> buildStateMap() {
         HashMap<String, String> map = new HashMap<String, String>();
@@ -85,7 +85,17 @@ public class BrowseActivity extends ListActivity {
 
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
 
-        mDbManager = DatabaseManager.instance( this );
+        setContentView( R.layout.airport_list_view );
+        mListView = (ListView) findViewById( R.id.list_view );
+        mListView.setOnItemClickListener( new OnItemClickListener() {
+
+            @Override
+            public void onItemClick( AdapterView<?> parent, View view,
+                    int position, long id ) {
+                onListItemClick( position );
+            }
+
+        } );
 
         Intent intent = getIntent();
         Bundle extra = intent.getExtras();
@@ -102,7 +112,7 @@ public class BrowseActivity extends ListActivity {
             } else {
                 String stateName = extra.getString( BUNDLE_KEY_STATE_NAME );
                 setTitle( "Browse Airports - "+stateName );
-                registerForContextMenu( getListView() );
+                registerForContextMenu( mListView );
             }
             BrowseTask task = new BrowseTask();
             task.execute( extra );
@@ -112,9 +122,10 @@ public class BrowseActivity extends ListActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        CursorAdapter adapter = (CursorAdapter) getListAdapter();
-        Cursor c = adapter.getCursor();
-        c.close();
+        if ( mListAdapter != null ) {
+            Cursor c = mListAdapter.getCursor();
+            c.close();
+        }
     }
 
     private final class BrowseTask extends AsyncTask<Bundle, Void, Cursor> {
@@ -194,7 +205,10 @@ public class BrowseActivity extends ListActivity {
                         BrowseCursorAdapter.CITY_MODE );
             }
 
-            BrowseActivity.this.setListAdapter( mListAdapter );
+            mListView.setAdapter( mListAdapter );
+            mListView.setVisibility( View.VISIBLE );
+            TextView tv = (TextView) findViewById( android.R.id.empty );
+            tv.setVisibility( View.GONE );
             setProgressBarIndeterminateVisibility( false );
         }
 
@@ -250,50 +264,15 @@ public class BrowseActivity extends ListActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu( Menu menu ) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate( R.menu.mainmenu, menu );
-        return true;
-    }
-
-    @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
         MenuItem browse = menu.findItem( R.id.menu_browse );
         browse.setEnabled( false );
         return super.onPrepareOptionsMenu( menu );
     }
 
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_search:
-            onSearchRequested();
-            return true;
-       case R.id.menu_nearby:
-            Intent nearby = new Intent( this, NearbyActivity.class );
-            startActivity( nearby );
-            return true;
-        case R.id.menu_favorites:
-            Intent favorites = new Intent( this, FavoritesActivity.class );
-            startActivity( favorites );
-            return true;
-        case R.id.menu_download:
-            Intent download = new Intent( this, DownloadActivity.class );
-            startActivity( download );
-            return true;
-        case R.id.menu_settings:
-            Intent settings = new Intent( this, PreferencesActivity.class  );
-            startActivity( settings );
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
-        }
-    }
-
-    @Override
-    protected void onListItemClick( ListView l, View v, int position, long id ) {
+    protected void onListItemClick( int position ) {
         Cursor c = mListAdapter.getCursor();
+        c.moveToPosition( position );
         if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
             // User clicked on a state
             Intent browse = new Intent( this, BrowseActivity.class );

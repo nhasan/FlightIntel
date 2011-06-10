@@ -24,6 +24,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
@@ -44,7 +47,6 @@ public class ActivityBase extends Activity {
         super.onCreate( savedInstanceState );
         mDbManager = DatabaseManager.instance( this );
     }
-
 
     protected void showAirportTitle( View root, Cursor c ) {
         TextView tv = (TextView) root.findViewById( R.id.airport_title );
@@ -119,6 +121,46 @@ public class ActivityBase extends Activity {
             } );
         } else {
             iv.setVisibility( View.GONE );
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu( Menu menu ) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate( R.menu.mainmenu, menu );
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+        case R.id.menu_search:
+            onSearchRequested();
+            return true;
+        case R.id.menu_browse:
+            Intent browse = new Intent( this, BrowseActivity.class );
+            browse.putExtras( new Bundle() );
+            startActivity( browse );
+            return true;
+        case R.id.menu_nearby:
+            Intent nearby = new Intent( this, NearbyActivity.class );
+            startActivity( nearby );
+            return true;
+        case R.id.menu_favorites:
+            Intent favorites = new Intent( this, FavoritesActivity.class );
+            startActivity( favorites );
+            return true;
+        case R.id.menu_download:
+            Intent download = new Intent( this, DownloadActivity.class );
+            startActivity( download );
+            return true;
+        case R.id.menu_settings:
+            Intent settings = new Intent( this, PreferencesActivity.class  );
+            startActivity( settings );
+            return true;
+        default:
+            return super.onOptionsItemSelected( item );
         }
     }
 

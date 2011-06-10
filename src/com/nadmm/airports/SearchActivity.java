@@ -21,16 +21,15 @@ package com.nadmm.airports;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ContextMenu;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
@@ -41,30 +40,25 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 
-public class SearchActivity extends Activity {
+public class SearchActivity extends ActivityBase {
 
     private TextView mHeader;
-    private TextView mEmpty;
     private ListView mListView;
     private ArrayList<String> mFavorites;
 
-    private DatabaseManager mDbManager = null;
     private CursorAdapter mListAdapter = null;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
+
         setContentView( R.layout.airport_list_view );
-        mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
-        mEmpty = (TextView) findViewById( android.R.id.empty );
-        mFavorites = null;
-
-        mDbManager = DatabaseManager.instance( this );
-
         mListView = (ListView) findViewById( R.id.list_view );
-        mListView.addHeaderView( mHeader );
         registerForContextMenu( mListView );
+        mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
+        mListView.addHeaderView( mHeader );
         mListView.setOnItemClickListener( new OnItemClickListener() {
 
             @Override
@@ -119,50 +113,11 @@ public class SearchActivity extends Activity {
         int count = c.getCount();
         mListAdapter = new AirportsCursorAdapter( this, c );
         mListView.setAdapter( mListAdapter );
-        mEmpty.setVisibility( View.GONE );
+        TextView tv = (TextView) findViewById( android.R.id.empty );
+        tv.setVisibility( View.GONE );
         mListView.setVisibility( View.VISIBLE );
         mHeader.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
                 count, new Object[] { count, query } ) );
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu( Menu menu ) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate( R.menu.mainmenu, menu );
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_search:
-            onSearchRequested();
-            return true;
-        case R.id.menu_browse:
-            Intent browse = new Intent( this, BrowseActivity.class );
-            browse.putExtras( new Bundle() );
-            startActivity( browse );
-            return true;
-        case R.id.menu_nearby:
-            Intent nearby = new Intent( this, NearbyActivity.class );
-            startActivity( nearby );
-            return true;
-        case R.id.menu_favorites:
-            Intent favorites = new Intent( this, FavoritesActivity.class );
-            startActivity( favorites );
-            return true;
-        case R.id.menu_download:
-            Intent download = new Intent( this, DownloadActivity.class );
-            startActivity( download );
-            return true;
-        case R.id.menu_settings:
-            Intent settings = new Intent( this, PreferencesActivity.class  );
-            startActivity( settings );
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
-        }
     }
 
     @Override

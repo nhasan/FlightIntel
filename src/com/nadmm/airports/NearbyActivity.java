@@ -27,7 +27,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.hardware.GeomagneticField;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -38,7 +37,6 @@ import android.provider.BaseColumns;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,7 +59,6 @@ public class NearbyActivity extends ActivityBase {
     public static final String APT_CODE = "APT_CODE";
 
     private TextView mHeader;
-    private TextView mEmpty;
     private ListView mListView;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
@@ -69,8 +66,7 @@ public class NearbyActivity extends ActivityBase {
     private SharedPreferences mPrefs;
     private ArrayList<String> mFavorites;
     private String mRefAirport;
-
-    private AirportsCursorAdapter mListAdapter = null;
+    private AirportsCursorAdapter mListAdapter;
 
     private final String[] mDisplayColumns = new String[] {
             BaseColumns._ID,
@@ -100,11 +96,9 @@ public class NearbyActivity extends ActivityBase {
         mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
 
         setContentView( R.layout.airport_list_view );
-        mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
-        mEmpty = (TextView) findViewById( android.R.id.empty );
-
         mListView = (ListView) findViewById( R.id.list_view );
         registerForContextMenu( mListView );
+        mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
         mListView.addHeaderView( mHeader );
         mListView.setOnItemClickListener( new OnItemClickListener() {
 
@@ -148,12 +142,15 @@ public class NearbyActivity extends ActivityBase {
             }
         }
 
+        setProgressBarIndeterminateVisibility( true );
+
         if ( mLastLocation != null ) {
             // We have some location to use
             NearbyTask task = new NearbyTask();
             task.execute();
         } else {
-            mEmpty.setText( R.string.waiting_location );
+            TextView tv = (TextView) findViewById( android.R.id.empty );
+            tv.setText( R.string.waiting_location );
         }
     }
 
@@ -164,8 +161,8 @@ public class NearbyActivity extends ActivityBase {
             boolean useGps = mPrefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
             String provider = useGps? 
                     LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
-            mLocationManager.requestLocationUpdates( provider, 60*DateUtils.SECOND_IN_MILLIS,
-                    GeoUtils.METERS_PER_STATUTE_MILE, mLocationListener );
+            mLocationManager.requestLocationUpdates( provider, 30*DateUtils.SECOND_IN_MILLIS,
+                    0.25f*GeoUtils.METERS_PER_STATUTE_MILE, mLocationListener );
         }
     }
 
@@ -177,20 +174,20 @@ public class NearbyActivity extends ActivityBase {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if ( mListAdapter != null ) {
+            Cursor c = mListAdapter.getCursor();
+            c.close();
+        }
+    }
+
     private final class AirportsLocationListener implements LocationListener {
 
         @Override
         public void onLocationChanged( Location location ) {
             Log.i( "LOCATION", String.valueOf( location.toString() ) );
-            if ( mLastLocation != null ) {
-                float distance = location.distanceTo( mLastLocation );
-                if ( distance < 1*GeoUtils.METERS_PER_STATUTE_MILE ) {
-                    // We have not moved enough to recalculate nearby airports
-                    return;
-                }
-            }
-
-            // We have moved atleast a mile from the location of last calculation
             mLastLocation = location;
             NearbyTask task = new NearbyTask();
             task.execute();
@@ -315,12 +312,7 @@ public class NearbyActivity extends ActivityBase {
             }
 
             // Now find the magnetic declination at this location
-            GeomagneticField geoField = new GeomagneticField(
-                    (float)mLastLocation.getLatitude(), (float)mLastLocation.getLongitude(),
-                    (float)mLastLocation.getAltitude(), System.currentTimeMillis() );
-            // West declination is reported in negative values
-            float declination = -1*geoField.getDeclination();
-
+            float declination = GeoUtils.getMagneticDeclination( mLastLocation );
             Log.i( "DECLINATION", String.valueOf( declination ) );
 
             AirportData[] airports = new AirportData[ c.getCount() ];
@@ -371,49 +363,11 @@ public class NearbyActivity extends ActivityBase {
                 msg += " of "+mRefAirport;
             }
             mHeader.setText( msg );
-            setProgressBarIndeterminateVisibility( false );
-            mEmpty.setVisibility( View.GONE );
+
+            TextView tv = (TextView) findViewById( android.R.id.empty );
+            tv.setVisibility( View.GONE );
             mListView.setVisibility( View.VISIBLE );
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu( Menu menu ) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate( R.menu.mainmenu, menu );
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_search:
-            onSearchRequested();
-            return true;
-        case R.id.menu_browse:
-            Intent browse = new Intent( this, BrowseActivity.class );
-            browse.putExtras( new Bundle() );
-            startActivity( browse );
-            return true;
-        case R.id.menu_nearby:
-            Intent nearby = new Intent( this, NearbyActivity.class );
-            startActivity( nearby );
-            return true;
-        case R.id.menu_favorites:
-            Intent favorites = new Intent( this, FavoritesActivity.class );
-            startActivity( favorites );
-            return true;
-        case R.id.menu_download:
-            Intent download = new Intent( this, DownloadActivity.class );
-            startActivity( download );
-            return true;
-        case R.id.menu_settings:
-            Intent settings = new Intent( this, PreferencesActivity.class  );
-            startActivity( settings );
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
+            setProgressBarIndeterminateVisibility( false );
         }
     }
 

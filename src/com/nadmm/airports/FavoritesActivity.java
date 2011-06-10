@@ -21,7 +21,6 @@ package com.nadmm.airports;
 
 import java.util.ArrayList;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -34,29 +33,30 @@ import android.view.View;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 
-public class FavoritesActivity extends ListActivity {
+public class FavoritesActivity extends ActivityBase {
 
-    private DatabaseManager mDbManager = null;
-    private AirportsCursorAdapter mListAdapter = null;
+    private ListView mListView;
+    private AirportsCursorAdapter mListAdapter;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
         setTitle( "Favorite Airports" );
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-        registerForContextMenu( getListView() );
 
-        mDbManager = DatabaseManager.instance( this );
+        setContentView( R.layout.airport_list_view );
+        mListView = (ListView) findViewById( R.id.list_view );
+        registerForContextMenu( mListView );
 
-        mListAdapter = new AirportsCursorAdapter( FavoritesActivity.this, null );
-        setListAdapter( mListAdapter );
-
-        getListView().setOnItemClickListener( new OnItemClickListener() {
+        mListView.setOnItemClickListener( new OnItemClickListener() {
 
             @Override
             public void onItemClick( AdapterView<?> parent, View view,
@@ -68,6 +68,7 @@ public class FavoritesActivity extends ListActivity {
                 intent.putExtra( Airports.SITE_NUMBER, siteNumber );
                 startActivity( intent );
             }
+
         } );
    }
 
@@ -120,7 +121,11 @@ public class FavoritesActivity extends ListActivity {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            mListAdapter.changeCursor( c );
+            mListAdapter = new AirportsCursorAdapter( FavoritesActivity.this, c );
+            mListView.setAdapter( mListAdapter );
+            mListView.setVisibility( View.VISIBLE );
+            TextView tv = (TextView) findViewById( android.R.id.empty );
+            tv.setVisibility( View.GONE );
             setProgressBarIndeterminateVisibility( false );
         }
 
@@ -144,46 +149,10 @@ public class FavoritesActivity extends ListActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu( Menu menu ) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate( R.menu.mainmenu, menu );
-        return true;
-    }
-
-    @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
         MenuItem browse = menu.findItem( R.id.menu_favorites );
         browse.setEnabled( false );
         return super.onPrepareOptionsMenu( menu );
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_search:
-            onSearchRequested();
-            return true;
-        case R.id.menu_browse:
-            Intent browse = new Intent( this, BrowseActivity.class );
-            browse.putExtras( new Bundle() );
-            startActivity( browse );
-            return true;
-        case R.id.menu_nearby:
-            Intent nearby = new Intent( this, NearbyActivity.class );
-            startActivity( nearby );
-            return true;
-        case R.id.menu_download:
-            Intent download = new Intent( this, DownloadActivity.class );
-            startActivity( download );
-            return true;
-        case R.id.menu_settings:
-            Intent settings = new Intent( this, PreferencesActivity.class  );
-            startActivity( settings );
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
-        }
     }
 
     @Override
