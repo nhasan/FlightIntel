@@ -19,15 +19,13 @@
 
 package com.nadmm.airports;
 
-import java.util.Formatter;
-
-import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.States;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.widget.TextView;
+
+import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.States;
 
 public class AirportsCursorAdapter extends SectionedCursorAdapter {
 
@@ -63,8 +61,8 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
             float distance = c.getFloat( c.getColumnIndex( Airports.DISTANCE ) );
             float bearing = c.getFloat( c.getColumnIndex( Airports.BEARING ) );
             tv = (TextView) view.findViewById( R.id.distance );
-            tv.setText( new Formatter().format( "%.1f NM %s, ",
-                    distance, GeoUtils.getCardinalDirection( bearing ) ).toString() );
+            tv.setText( String.format( "%.1f NM %s, ",
+                    distance, GeoUtils.getCardinalDirection( bearing ) ) );
             tv = (TextView) view.findViewById( R.id.bearing );
             tv.setText( String.format( "initial course %.0f\u00B0 M", bearing ) );
         } else {
