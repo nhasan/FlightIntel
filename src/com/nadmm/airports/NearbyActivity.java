@@ -208,7 +208,7 @@ public class NearbyActivity extends ActivityBase {
     };
 
     // This data class allows us to sort the airport list based in distance
-    class AirportData implements Comparable<AirportData> {
+    private final class AirportData implements Comparable<AirportData> {
 
         public String SITE_NUMBER;
         public String ICAO_CODE;
@@ -258,7 +258,6 @@ public class NearbyActivity extends ActivityBase {
             } else if ( this.DISTANCE < another.DISTANCE ) {
                 return -1;
             }
-
             return 0;
         }
 
