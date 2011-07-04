@@ -270,6 +270,30 @@ public class DatabaseManager {
         public static final String SITE_NUMBER = "SITE_NUMBER";
     }
 
+    public static final class Nav1 implements BaseColumns {
+        public static final String TABLE_NAME = "nav1";
+        public static final String NAVAID_ID = "NAVAID_ID";
+        public static final String NAVAID_TYPE = "NAVAID_TYPE";
+        public static final String NAVAID_NAME = "NAVAID_NAME";
+        public static final String NAVAID_CLASS = "NAVAID_CLASS";
+        public static final String OPERATING_HOURS = "OPERATING_HOURS";
+        public static final String REF_LATTITUDE_DEGREES = "REF_LATTITUDE_DEGREES";
+        public static final String REF_LONGITUDE_DEGREES = "REF_LONGITUDE_DEGREES";
+        public static final String ELEVATION_MSL = "ELEVATION_MSL";
+        public static final String MAGNETIC_VARIATION_DEGREES = "MAGNETIC_VARIATION_DEGREES";
+        public static final String MAGNETIC_VARIATION_DIRECTION = "MAGNETIC_VARIATION_DIRECTION";
+        public static final String NAVAID_FREQUENCY = "NAVAID_FREQUENCY";
+
+        public static final String PROTECTED_FREQUENCY_ALTITUDE = "PROTECTED_FREQUENCY_ALTITUDE";
+    }
+
+    public static final class Nav2 implements BaseColumns {
+        public static final String TABLE_NAME = "nav2";
+        public static final String NAVAID_ID = "NAVAID_ID";
+        public static final String NAVAID_TYPE = "NAVAID_TYPE";
+        public static final String REMARK_TEXT = "REMARK_TEXT";
+    }
+
     public static final class Catalog implements BaseColumns {
         public static final String TABLE_NAME = "catalog";
         public static final String TYPE = "TYPE";
@@ -278,6 +302,7 @@ public class DatabaseManager {
         public static final String START_DATE = "START_DATE";
         public static final String END_DATE = "END_DATE";
         public static final String DB_NAME = "DB_NAME";
+        public static final String INSTALL_DATE = "INSTALL_DATE";
     }
 
     public static final class States implements BaseColumns {
@@ -337,14 +362,25 @@ public class DatabaseManager {
         return c;
     }
 
-    public Cursor getLatestFromCatalog() {
+    public Cursor getCurrentFromCatalog() {
         SQLiteDatabase catalogDb = getCatalogDb();
         String query = "SELECT *,"
-            +" strftime('%s', end_date)-strftime('%s', 'now', 'localtime') as age"
+            +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now', 'localtime') as age"
             +" FROM "+Catalog.TABLE_NAME+" c1"
             +" WHERE "+Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
                 +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
-                +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE+")";
+                +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE
+                +" AND strftime('%s', c2."+Catalog.START_DATE
+                +") <= strftime('%s', 'now', 'localtime') )";
+        Log.i( TAG, query );
+        return catalogDb.rawQuery( query, null );
+    }
+
+    public Cursor getAllFromCatalog() {
+        SQLiteDatabase catalogDb = getCatalogDb();
+        String query = "SELECT *,"
+            +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now', 'localtime') as age"
+            +" FROM "+Catalog.TABLE_NAME;
         Log.i( TAG, query );
         return catalogDb.rawQuery( query, null );
     }
@@ -395,7 +431,7 @@ public class DatabaseManager {
     }
 
     private synchronized void openDatabases() {
-        Cursor c = getLatestFromCatalog();
+        Cursor c = getCurrentFromCatalog();
         if ( c.moveToFirst() ) {
             do {
                 String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
@@ -464,12 +500,8 @@ public class DatabaseManager {
                     +Catalog.VERSION+" INTEGER not null, "
                     +Catalog.START_DATE+" TEXT not null, "
                     +Catalog.END_DATE+" TEXT not null, "
-                    +Catalog.DB_NAME+" TEXT not null "
-                    +")" );
-
-            Log.i( TAG, "Creating 'favorites' table" );
-            db.execSQL( "CREATE TABLE "+Favorites.TABLE_NAME+" ( "
-                    +Favorites.SITE_NUMBER+" TEXT PRIMARY_KEY "
+                    +Catalog.DB_NAME+" TEXT not null, "
+                    +Catalog.INSTALL_DATE+" TEXT not null "
                     +")" );
         }
 
