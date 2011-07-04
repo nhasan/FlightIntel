@@ -20,6 +20,7 @@
 package com.nadmm.airports;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import android.content.Intent;
@@ -32,7 +33,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -90,6 +90,56 @@ public class AirportDetailsActivity extends ActivityBase {
 
         AirportDetailsTask task = new AirportDetailsTask();
         task.execute( siteNumber );
+    }
+
+    private final class NavaidData implements Comparable<NavaidData> {
+        public String NAVAID_ID;
+        public String NAVAID_TYPE;
+        public String NAVAID_NAME;
+        public String NAVAID_FREQ;
+        public int RADIAL;
+        public float DISTANCE;
+        public int RANGE;
+
+        public void setFromCursor( Cursor c, Location location ) {
+            // Calculate the distance and bearing to this navaid from this airport
+            NAVAID_ID = c.getString( c.getColumnIndex( Nav1.NAVAID_ID ) );
+            NAVAID_TYPE= c.getString( c.getColumnIndex( Nav1.NAVAID_TYPE ) );
+            NAVAID_NAME = c.getString( c.getColumnIndex( Nav1.NAVAID_NAME ) );
+            NAVAID_FREQ = c.getString( c.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
+
+            int var = c.getInt( c.getColumnIndex( Nav1.MAGNETIC_VARIATION_DEGREES ) );
+            String dir = c.getString( c.getColumnIndex(
+                    Nav1.MAGNETIC_VARIATION_DIRECTION ) );
+            if ( dir.equals( "E" ) ) {
+                var *= -1;
+            }
+
+            float[] results = new float[ 2 ];
+            Location.distanceBetween(
+                    location.getLatitude(),
+                    location.getLongitude(), 
+                    c.getDouble( c.getColumnIndex( Nav1.REF_LATTITUDE_DEGREES ) ),
+                    c.getDouble( c.getColumnIndex( Nav1.REF_LONGITUDE_DEGREES ) ),
+                    results );
+            DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
+            RADIAL = (int) Math.round( results[ 1 ]+360 )%360;
+            RADIAL = DataUtils.calculateMagneticHeading( RADIAL, var );
+            RADIAL = DataUtils.calculateReciprocalHeading( RADIAL );
+            String alt = c.getString( c.getColumnIndex( Nav1.PROTECTED_FREQUENCY_ALTITUDE ) );
+            RANGE = ( alt != null && alt.equals( "T" ) )? 25 : 40;
+        }
+
+        @Override
+        public int compareTo( NavaidData another ) {
+            if ( this.DISTANCE > another.DISTANCE ) {
+                return 1;
+            } else if ( this.DISTANCE < another.DISTANCE ) {
+                return -1;
+            }
+            return 0;
+        }
+
     }
 
     private final class AirportDetailsTask extends AsyncTask<String, Void, Cursor[]> {
@@ -197,61 +247,40 @@ public class AirportDetailsActivity extends ActivityBase {
             c = builder.query( db, new String[] { "*" }, selection, selectionArgs, 
                     null, null, null, null );
             if ( c.moveToFirst() ) {
-                MatrixCursor vor = new MatrixCursor( mNavColumns );
-                MatrixCursor ndb = new MatrixCursor( mNavColumns );
+                NavaidData[] navaids = new NavaidData[ c.getCount() ];
                 do {
-                    // Calculate the distance and bearing to this navaid from this airport
-                    float[] results = new float[ 2 ];
-                    Location.distanceBetween(
-                            location.getLatitude(),
-                            location.getLongitude(), 
-                            c.getDouble( c.getColumnIndex( Nav1.REF_LATTITUDE_DEGREES ) ),
-                            c.getDouble( c.getColumnIndex( Nav1.REF_LONGITUDE_DEGREES ) ),
-                            results );
-                    float distance = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
-                    int radial = (int) Math.round( results[ 1 ]+360 )%360;
-
-                    String alt = c.getString( c.getColumnIndex( 
-                            Nav1.PROTECTED_FREQUENCY_ALTITUDE ) );
-                    String id = c.getString( c.getColumnIndex( Nav1.NAVAID_ID ) );
-                    Log.i( "NAVAID_ID", id );
-                    Log.i( "PROTECTED_FREQUENCY_ALTITUDE", alt );
-                    double radius = ( alt != null && alt.equals( "T" ) )? 25 : 40;
-                    if ( distance <= radius ) {
-                        String type = c.getString( c.getColumnIndex( Nav1.NAVAID_TYPE ) );
-                        String name = c.getString( c.getColumnIndex( Nav1.NAVAID_NAME ) );
-                        int var = c.getInt( c.getColumnIndex( Nav1.MAGNETIC_VARIATION_DEGREES ) );
-                        String dir = c.getString( c.getColumnIndex(
-                                Nav1.MAGNETIC_VARIATION_DIRECTION ) );
-                        if ( dir.equals( "E" ) ) {
-                            var *= -1;
-                        }
-                        radial = DataUtils.calculateMagneticHeading( radial, var );
-                        radial = DataUtils.calculateReciprocalHeading( radial );
-                        String freq = c.getString( c.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
-                        if ( type.startsWith( "VOR" ) ) {
-                            Log.i( "DISTANCE", String.valueOf( distance ) );
-                            Log.i( "RADIAL", String.valueOf( radial ) );
-                            MatrixCursor.RowBuilder row = vor.newRow();
-                            row.add( id )
-                                    .add( type )
-                                    .add( name )
-                                    .add( freq )
-                                    .add( radial )
-                                    .add( distance );
-                        } else if ( type.startsWith( "NDB" ) ) {
-                            MatrixCursor.RowBuilder row = ndb.newRow();
-                            row.add( id )
-                                    .add( type )
-                                    .add( name )
-                                    .add( freq )
-                                    .add( radial )
-                                    .add( distance );
-                        }
-                    }
+                    NavaidData navaid = new NavaidData();
+                    navaid.setFromCursor( c, location );
+                    navaids[ c.getPosition() ] = navaid;
                 } while ( c.moveToNext() );
                 c.close();
 
+                // Sort the navaids list by distance from current location
+                Arrays.sort( navaids );
+
+                MatrixCursor vor = new MatrixCursor( mNavColumns );
+                MatrixCursor ndb = new MatrixCursor( mNavColumns );
+                for ( NavaidData navaid : navaids ) {
+                    if ( navaid.DISTANCE <= navaid.RANGE ) {
+                        if ( navaid.NAVAID_TYPE.startsWith( "VOR" ) ) {
+                            MatrixCursor.RowBuilder row = vor.newRow();
+                            row.add( navaid.NAVAID_ID )
+                                    .add( navaid.NAVAID_TYPE )
+                                    .add( navaid.NAVAID_NAME )
+                                    .add( navaid.NAVAID_FREQ )
+                                    .add( navaid.RADIAL )
+                                    .add( navaid.DISTANCE );
+                        } else if ( navaid.NAVAID_TYPE.startsWith( "NDB" ) ) {
+                            MatrixCursor.RowBuilder row = ndb.newRow();
+                            row.add( navaid.NAVAID_ID )
+                                    .add( navaid.NAVAID_TYPE )
+                                    .add( navaid.NAVAID_NAME )
+                                    .add( navaid.NAVAID_FREQ )
+                                    .add( navaid.RADIAL )
+                                    .add( navaid.DISTANCE );
+                        }
+                    }
+                }
                 cursors[ 7 ] = vor;
                 cursors[ 8 ] = ndb;
             }
@@ -565,9 +594,11 @@ public class AirportDetailsActivity extends ActivityBase {
     }
 
     protected void showNavaidDetails( Cursor[] result ) {
+        int count = 0;
         Cursor vor = result[ 7 ];
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.detail_navaids_layout );
-        if ( vor.moveToFirst() ) {
+        if ( vor != null && vor.moveToFirst() ) {
+            TableLayout layout = (TableLayout) mMainLayout.findViewById(
+                    R.id.detail_navaids_layout );
             do {
                 if ( vor.getPosition() > 0 ) {
                     addSeparator( layout );
@@ -577,11 +608,26 @@ public class AirportDetailsActivity extends ActivityBase {
                 int radial = vor.getInt( vor.getColumnIndex( "RADIAL" ) );
                 float distance = vor.getFloat( vor.getColumnIndex( "DISTANCE" ) );
                 addNavaidRow( layout, navaidId, freq, radial, distance );
+                ++count;
             } while ( vor.moveToNext() );
         } else {
+            TableLayout layout = (TableLayout) mMainLayout.findViewById(
+                    R.id.detail_navaids_layout );
+            layout.setVisibility( View.GONE );
+        }
+
+        Cursor ndb = result[ 8 ];
+        if ( ndb != null && ndb.moveToFirst() ) {
+            ++count;
+        } else {
+            TableLayout layout = (TableLayout) mMainLayout.findViewById(
+                    R.id.detail_navaids_layout );
+            layout.setVisibility( View.GONE );
+        }
+
+        if ( count == 0 ) {
             TextView tv = (TextView) mMainLayout.findViewById( R.id.detail_navaids_label );
             tv.setVisibility( View.GONE );
-            layout.setVisibility( View.GONE );
         }
     }
 
