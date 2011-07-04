@@ -396,22 +396,19 @@ public final class DownloadActivity extends ListActivity {
             int result;
 
             result = getInstalled();
-            if ( result != 0 )
-            {
+            if ( result != 0 ) {
                 showMessage( "There was an error while reading catalog" );
                 return result;
             }
 
             result = downloadManifest();
-            if ( result != 0 )
-            {
+            if ( result != 0 ) {
                 showMessage( "There was an error while downloading manifest" );
                 return result;
             }
 
             result = parseManifest();
-            if ( result != 0 )
-            {
+            if ( result != 0 ) {
                 showMessage( "There was an error while processing manifest" );
                 return result;
             }
@@ -454,9 +451,7 @@ public final class DownloadActivity extends ListActivity {
         }
 
         private int getInstalled() {
-            int result = 0;
-
-            Cursor c = mDbManager.getLatestFromCatalog();
+            Cursor c = mDbManager.getAllFromCatalog();
             if ( c.moveToFirst() ) {
                 do {
                     DataInfo info = new DataInfo();
@@ -482,7 +477,7 @@ public final class DownloadActivity extends ListActivity {
             }
             c.close();
 
-            return result;
+            return 0;
         }
 
         private int downloadManifest() {
@@ -627,8 +622,7 @@ public final class DownloadActivity extends ListActivity {
             }
 
             Iterator<DataInfo> it = mAvailableData.iterator();
-            while ( it.hasNext() )
-            {
+            while ( it.hasNext() ) {
                 DataInfo dataFile = it.next();
                 Log.i( TAG, "==== Data File Info ====" );
                 Log.i( TAG, "type="+dataFile.type );
@@ -652,8 +646,7 @@ public final class DownloadActivity extends ListActivity {
 
         private void processManifest() {
             Iterator<DataInfo> it = mAvailableData.iterator();
-            while ( it.hasNext() )
-            {
+            while ( it.hasNext() ) {
                 // Find out which of these available entries are not installed
                 DataInfo available = it.next();
                 Iterator<DataInfo> it2 = mInstalledData.iterator();
@@ -664,6 +657,7 @@ public final class DownloadActivity extends ListActivity {
                         // This update is already installed
                         Log.i( TAG, "Removing "+available.type+" version "+available.version );
                         it.remove();
+                        break;
                     }
                 }
             }
@@ -673,8 +667,7 @@ public final class DownloadActivity extends ListActivity {
     private final class DownloadTask extends AsyncTask<Void, Integer, Integer> {
         private ProgressTracker mTracker;
 
-        public DownloadTask( DownloadActivity activity )
-        {
+        public DownloadTask( DownloadActivity activity ) {
         }
 
         @Override
@@ -789,7 +782,7 @@ public final class DownloadActivity extends ListActivity {
                 int count;
                 int total = 0;
 
-                while ( mStop.get() == false && ( count = in.read( buffer, 0, len ) ) != -1 ) {
+                while ( !mStop.get() && ( count = in.read( buffer, 0, len ) ) != -1 ) {
                     out.write( buffer, 0, count );
                     total += count;
                     publishProgress( total );
@@ -877,7 +870,7 @@ public final class DownloadActivity extends ListActivity {
                 int total = 0;
 
                 // Try to read the type of record first
-                while ( mStop.get() == false && ( count = in.read( buffer, 0, len ) ) != -1 )  {
+                while ( !mStop.get() && ( count = in.read( buffer, 0, len ) ) != -1 )  {
                     out.write( buffer, 0, count );
                     total += count;
                     publishProgress( total );
@@ -918,6 +911,8 @@ public final class DownloadActivity extends ListActivity {
         }
 
         protected int updateCatalog( DataInfo data ) {
+            Time now = new Time();
+            now.set( System.currentTimeMillis() );
             ContentValues values = new ContentValues();
             values.put( Catalog.TYPE, data.type );
             values.put( Catalog.DESCRIPTION, data.desc );
@@ -925,12 +920,12 @@ public final class DownloadActivity extends ListActivity {
             values.put( Catalog.START_DATE, data.start.format3339( true ) );
             values.put( Catalog.END_DATE, data.end.format3339( true ) );
             values.put( Catalog.DB_NAME, data.dbName );
+            values.put( Catalog.INSTALL_DATE, now.format3339( false ) );
 
             Log.i( TAG, "Inserting catalog: type="+data.type
                     +", version="+data.version+", db="+data.dbName );
             int rc = mDbManager.insertCatalogEntry( values );
-            if ( rc < 0 )
-            {
+            if ( rc < 0 ) {
                 showMessage( "Failed to update catalog database" );
             }
 
@@ -1003,16 +998,13 @@ public final class DownloadActivity extends ListActivity {
             }
 
             cursor.close();
-
             return result;
         }
 
         @Override
-        protected void onPostExecute( Integer result )
-        {
+        protected void onPostExecute( Integer result ) {
             mProgressDialog.dismiss();
-            if ( result != 0 )
-            {
+            if ( result != 0 ) {
                 // Some or all data files were not deleted
                 Toast.makeText( getApplicationContext(), 
                         "There was an error while deleting installed data", 
@@ -1031,7 +1023,7 @@ public final class DownloadActivity extends ListActivity {
         now.setToNow();
         String today = now.format3339( true );
 
-        Cursor c = mDbManager.getLatestFromCatalog();
+        Cursor c = mDbManager.getAllFromCatalog();
         if ( c.moveToFirst() ) {
             do {
                 // For each type that we have valid data, delete the expired data
@@ -1111,7 +1103,7 @@ public final class DownloadActivity extends ListActivity {
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
         menu.findItem( R.id.menu_download ).setEnabled( false );
-        Cursor c = mDbManager.getLatestFromCatalog();
+        Cursor c = mDbManager.getCurrentFromCatalog();
         boolean enabled = c.moveToFirst();
         c.close();
         menu.findItem( R.id.menu_browse ).setEnabled( enabled );
@@ -1146,13 +1138,16 @@ public final class DownloadActivity extends ListActivity {
             Intent settings = new Intent( this, PreferencesActivity.class  );
             startActivity( settings );
             return true;
+        case R.id.menu_about:
+            Intent about = new Intent( this, AboutActivity.class );
+            startActivity( about );
+            return true;
         default:
             return super.onOptionsItemSelected( item );
         }
     }
 
-    protected void showErrorMessage( String msg )
-    {
+    protected void showErrorMessage( String msg ) {
         AlertDialog.Builder builder = new AlertDialog.Builder( this );
         builder.setMessage( msg )
             .setTitle( "Download Error" )
