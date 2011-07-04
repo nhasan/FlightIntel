@@ -582,6 +582,54 @@ my $insert_awos_record = "INSERT INTO awos ("
         ."?, ?, ?, ?, ?, ?, ?, ?, ?"
         .")";
 
+my $create_nav1_table = "CREATE TABLE nav1 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."NAVAID_ID TEXT, "
+        ."NAVAID_TYPE TEXT, "
+        ."NAVAID_NAME TEXT, "
+        ."NAVAID_CLASS TEXT, "
+        ."OPERATING_HOURS TEXT, "
+        ."REF_LATTITUDE_DEGREES REAL, "
+        ."REF_LONGITUDE_DEGREES REAL, "
+        ."ELEVATION_MSL INTEGER, "
+        ."MAGNETIC_VARIATION_DEGREES INTEGER, "
+        ."MAGNETIC_VARIATION_DIRECTION TEXT, "
+        ."NAVAID_FREQUENCY TEXT, "
+        ."PROTECTED_FREQUENCY_ALTITUDE TEXT"
+        .")";
+
+my $insert_nav1_record = "INSERT INTO nav1 ("
+        ."NAVAID_ID, "
+        ."NAVAID_TYPE, "
+        ."NAVAID_NAME, "
+        ."NAVAID_CLASS, "
+        ."OPERATING_HOURS, "
+        ."REF_LATTITUDE_DEGREES, "
+        ."REF_LONGITUDE_DEGREES, "
+        ."ELEVATION_MSL, "
+        ."MAGNETIC_VARIATION_DEGREES, "
+        ."MAGNETIC_VARIATION_DIRECTION, "
+        ."NAVAID_FREQUENCY, "
+        ."PROTECTED_FREQUENCY_ALTITUDE"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
+        .")";
+
+my $create_nav2_table = "CREATE TABLE nav2 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."NAVAID_ID TEXT, "
+        ."NAVAID_TYPE TEXT, "
+        ."REMARK_TEXT TEXT"
+        .")";
+
+my $insert_nav2_record = "INSERT INTO nav2 ("
+        ."NAVAID_ID, "
+        ."NAVAID_TYPE, "
+        ."REMARK_TEXT"
+        .") VALUES ("
+        ."?, ?, ?"
+        .")";
+
 $dbh->do( "DROP TABLE IF EXISTS airports" );
 $dbh->do( $create_airports_table );
 $dbh->do( "CREATE INDEX idx_apt_site_number on airports ( SITE_NUMBER );" );
@@ -626,6 +674,14 @@ $dbh->do( "DROP TABLE IF EXISTS awos" );
 $dbh->do( $create_awos_table );
 $dbh->do( "CREATE INDEX idx_awos_site_number on awos ( SITE_NUMBER );" );
 
+$dbh->do( "DROP TABLE IF EXISTS nav1" );
+$dbh->do( $create_nav1_table );
+$dbh->do( "CREATE INDEX idx_nav1_navaid_id on nav1 ( NAVAID_ID );" );
+
+$dbh->do( "DROP TABLE IF EXISTS nav2" );
+$dbh->do( $create_nav2_table );
+$dbh->do( "CREATE INDEX idx_nav2_navaid_id on nav2 ( NAVAID_ID );" );
+
 my $sth_apt = $dbh->prepare( $insert_airports_record );
 my $sth_rwy = $dbh->prepare( $insert_runways_record );
 my $sth_att = $dbh->prepare( $insert_attendance_record );
@@ -636,6 +692,8 @@ my $sth_twr6 = $dbh->prepare( $insert_tower6_record );
 my $sth_twr7 = $dbh->prepare( $insert_tower7_record );
 my $sth_twr8 = $dbh->prepare( $insert_tower8_record );
 my $sth_awos = $dbh->prepare( $insert_awos_record );
+my $sth_nav1 = $dbh->prepare( $insert_nav1_record );
+my $sth_nav2 = $dbh->prepare( $insert_nav2_record );
 
 my $i = 0;
 
@@ -708,14 +766,14 @@ while ( my $line = <APT_FILE> )
         $sth_apt->bind_param( 19, substrim( $line,  499, 16 ) );
         #REF_LATTITUDE_DEGREES
         my $lattitude = substrim( $line,  530, 11 )/3600.0;
-        if ( substrim( $line,  541,  1 ) eq "S" )
+        if ( substrim( $line, 541, 1 ) eq "S" )
         {
             $lattitude *= -1;
         }
         $sth_apt->bind_param( 20, $lattitude );
         #REF_LONGITUDE_DEGREES
         my $longitude = substrim( $line,  557, 11 )/3600.0;
-        if ( substrim( $line,  568,  1 ) eq "W" )
+        if ( substrim( $line, 568, 1 ) eq "W" )
         {
             $longitude *= -1;
         }
@@ -1160,6 +1218,86 @@ $dbh->do( "update awos set station_longitude_degrees=("
 
 print( "\rFinished processing $i records.\n" );
 close AWOS_FILE;
+
+###########################################################################
+
+my $NAV = $FADDS_BASE."/NAV.txt";
+open( NAV_FILE, "<$NAV" ) or die "Could not open data file\n";
+
+$i = 0;
+print( "$NAV\n" );
+while ( my $line = <NAV_FILE> )
+{
+    ++$i;
+
+    if ( ($i % 1000) == 0 )
+    {
+        $dbh->do( "PRAGMA synchronous=ON" );
+    }
+
+    my $type = substrim( $line, 0, 4 );
+
+    if ( $type eq "NAV1" )
+    {
+        #NAVAID_ID
+        $sth_nav1->bind_param(  1, substrim( $line,   4,  4 ) );
+        #NAVAID_TYPE
+        $sth_nav1->bind_param(  2, substrim( $line,   8, 20 ) );
+        #NAVAID_NAME
+        $sth_nav1->bind_param(  3, substrim( $line,  42, 26 ) );
+        #NAVAID_CLASS
+        $sth_nav1->bind_param(  4, substrim( $line, 243, 11 ) );
+        #OPERATING_HOURS
+        $sth_nav1->bind_param(  5, substrim( $line, 254,  9 ) );
+        #REF_LATTITUDE_DEGREES
+        my $lattitude = substrim( $line,  297, 10 )/3600.0;
+        if ( substrim( $line, 307, 1 ) eq "S" )
+        {
+            $lattitude *= -1;
+        }
+        $sth_nav1->bind_param(  6, $lattitude );
+        #REF_LONGITUDE_DEGREES
+        my $longitude = substrim( $line,  322, 10 )/3600.0;
+        if ( substrim( $line, 332, 1 ) eq "W" )
+        {
+            $longitude *= -1;
+        }
+        $sth_nav1->bind_param(  7, $longitude );
+        #ELEVATION_MSL
+        $sth_nav1->bind_param(  8, substrim( $line, 384,  5 ) );
+        #MAGNETIC_VARIATION_DEGREES
+        $sth_nav1->bind_param(  9, substrim( $line, 389,  4 ) );
+        #MAGNETIC_VARIATION_DIRECTION
+        $sth_nav1->bind_param( 10, substrim( $line, 393,  1 ) );
+        #NAVAID_FREQUENCY
+        $sth_nav1->bind_param( 11, substrim( $line, 437,  6 ) );
+        #PROTECTED_FREQUENCY_ALTITUDE
+        $sth_nav1->bind_param( 12, substrim( $line, 480,  1 ) );
+
+        $sth_nav1->execute();
+    }
+    elsif ( $type eq "NAV2" )
+    {
+        #NAVAID_ID
+        $sth_nav2->bind_param( 1, substrim( $line,  4,   4 ) );
+        #NAVAID_TYPE
+        $sth_nav2->bind_param( 2, substrim( $line,  8,  20 ) );
+        #NAVAID_REMARK_TEXT
+        $sth_nav2->bind_param( 3, substrim( $line, 28, 600 ) );
+
+        $sth_nav2->execute();
+    }
+
+    if ( ($i % 1000) == 0 )
+    {
+        print( "\rProcessed $i records..." );
+        $| = 1;
+        $dbh->do( "PRAGMA synchronous=OFF" );
+    }
+}
+
+print( "\rFinished processing $i records.\n" );
+close NAVAID_FILE;
 
 ###########################################################################
 
