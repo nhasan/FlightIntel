@@ -53,6 +53,9 @@
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:name="CommDetailsActivity" />
 
+        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+                  android:name="AboutActivity" />
+
     	<activity android:name=".SearchActivity" android:launchMode="singleTop">
         	<intent-filter>
             	<action android:name="android.intent.action.SEARCH" />
