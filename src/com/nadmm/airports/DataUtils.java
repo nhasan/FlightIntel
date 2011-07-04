@@ -22,11 +22,15 @@ package com.nadmm.airports;
 public final class DataUtils {
 
     public static int calculateMagneticHeading( int trueHeading, int variation ) {
-        int magneticHeading = ( trueHeading+variation+360 ) % 360;
+        int magneticHeading = ( trueHeading+variation+360 )%360;
         if ( magneticHeading == 0 ) {
             magneticHeading = 360;
         }
         return magneticHeading;
+    }
+
+    public static int calculateReciprocalHeading( int heading ) {
+        return ( heading+180 )%360;
     }
 
     public static String decodeLandingFaclityType( String siteNumber ) {
