@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <datafile>
+        <type>FADDS</type>
+        <desc>National Airspace System (FAA)</desc>
+        <version>60</version>
+        <filename>fadds_20110630.zip</filename>
+        <size>4144640</size>
+        <start>2011-06-30</start>
+        <end>2011-08-25</end>
+    </datafile>
+</manifest>
+
