@@ -159,6 +159,10 @@ public class ActivityBase extends Activity {
             Intent settings = new Intent( this, PreferencesActivity.class  );
             startActivity( settings );
             return true;
+        case R.id.menu_about:
+            Intent about = new Intent( this, AboutActivity.class );
+            startActivity( about );
+            return true;
         default:
             return super.onOptionsItemSelected( item );
         }
