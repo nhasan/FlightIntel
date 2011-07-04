@@ -84,7 +84,7 @@ public class NearbyActivity extends ActivityBase {
             States.STATE_NAME,
             Airports.DISTANCE,
             Airports.BEARING
-         };
+    };
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -292,7 +292,7 @@ public class NearbyActivity extends ActivityBase {
             // Check if 180th Meridian lies within the bounding Box
             boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
             String selection = "("
-                +Airports.REF_LATTITUDE_DEGREES+">=? AND "+Airports.REF_LONGITUDE_DEGREES+"<=?"
+                +Airports.REF_LATTITUDE_DEGREES+">=? AND "+Airports.REF_LATTITUDE_DEGREES+"<=?"
                 +") AND ("+Airports.REF_LONGITUDE_DEGREES+">=? "
                 +(isCrossingMeridian180? "OR " : "AND ")+Airports.REF_LONGITUDE_DEGREES+"<=?)";
             String[] selectionArgs = {
