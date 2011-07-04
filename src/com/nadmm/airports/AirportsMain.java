@@ -37,7 +37,7 @@ public class AirportsMain extends Activity {
 
         // Check if we have any data installed. If not, then redirect to the download activity
         DatabaseManager dbManager = DatabaseManager.instance( this );
-        Cursor c = dbManager.getLatestFromCatalog();
+        Cursor c = dbManager.getCurrentFromCatalog();
         if ( !c.moveToFirst() ) {
             c.close();
             Intent download = new Intent( this, DownloadActivity.class );
