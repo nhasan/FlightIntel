@@ -19,7 +19,52 @@
 
 package com.nadmm.airports;
 
+import java.util.HashMap;
+
 public final class DataUtils {
+
+    private static HashMap<String, String> sMorseCodes = new HashMap<String, String>();
+    static {
+        sMorseCodes.put( "A", ".-" );
+        sMorseCodes.put( "B", "-..." );
+        sMorseCodes.put( "C", "-.-." );
+        sMorseCodes.put( "D", "-.." );
+        sMorseCodes.put( "E", "." );
+        sMorseCodes.put( "F", "..-." );
+        sMorseCodes.put( "G", "--." );
+        sMorseCodes.put( "H", "...." );
+        sMorseCodes.put( "I", ".." );
+        sMorseCodes.put( "J", ".---" );
+        sMorseCodes.put( "K", "-.-" );
+        sMorseCodes.put( "L", ".-.." );
+        sMorseCodes.put( "M", "--" );
+        sMorseCodes.put( "N", "-." );
+        sMorseCodes.put( "O", "---" );
+        sMorseCodes.put( "P", ".--." );
+        sMorseCodes.put( "Q", "--.-" );
+        sMorseCodes.put( "R", ".-." );
+        sMorseCodes.put( "S", "..." );
+        sMorseCodes.put( "T", "-" );
+        sMorseCodes.put( "U", "..-" );
+        sMorseCodes.put( "V", "...-" );
+        sMorseCodes.put( "W", ".--" );
+        sMorseCodes.put( "X", "-..-" );
+        sMorseCodes.put( "Y", "-.--" );
+        sMorseCodes.put( "Z", "--.." );
+    }
+
+    public static String getMorseCode( String text ) {
+        String morseCode = "";
+        int i = 0;
+        while ( i < text.length() ) {
+            if ( morseCode.length() > 0 ) {
+                morseCode += "  ";
+            }
+            morseCode += sMorseCodes.get( text.substring( i, i+1 ) );
+            ++i;
+        }
+        return morseCode;
+    }
 
     public static int calculateMagneticHeading( int trueHeading, int variation ) {
         int magneticHeading = ( trueHeading+variation+360 )%360;
