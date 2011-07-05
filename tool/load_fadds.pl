@@ -1244,7 +1244,7 @@ while ( my $line = <NAV_FILE> )
         #NAVAID_TYPE
         $sth_nav1->bind_param(  2, substrim( $line,   8, 20 ) );
         #NAVAID_NAME
-        $sth_nav1->bind_param(  3, substrim( $line,  42, 26 ) );
+        $sth_nav1->bind_param(  3, capitalize( $line,  42, 26 ) );
         #NAVAID_CLASS
         $sth_nav1->bind_param(  4, substrim( $line, 243, 11 ) );
         #OPERATING_HOURS
