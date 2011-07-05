@@ -159,7 +159,7 @@ public class NavaidsActivity extends ActivityBase {
             // Check if 180th Meridian lies within the bounding Box
             boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
 
-            String selection = "(1=0 AND "
+            String selection = "("
                 +Nav1.REF_LATTITUDE_DEGREES+">=? AND "+Nav1.REF_LATTITUDE_DEGREES+"<=?"
                 +") AND ("+Nav1.REF_LONGITUDE_DEGREES+">=? "
                 +(isCrossingMeridian180? "OR " : "AND ")+Nav1.REF_LONGITUDE_DEGREES+"<=?)";
