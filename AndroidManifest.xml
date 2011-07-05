@@ -54,6 +54,9 @@
                   android:name="CommDetailsActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+                  android:name="NavaidsActivity" />
+
+        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:name="AboutActivity" />
 
     	<activity android:name=".SearchActivity" android:launchMode="singleTop">
