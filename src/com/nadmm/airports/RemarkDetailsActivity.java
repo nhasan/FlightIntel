@@ -30,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -91,13 +92,10 @@ public class RemarkDetailsActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor[] result ) {
-            if ( result == null ) {
-                // TODO: Show an error here
-                return;
-            }
-
             Cursor rmk = result[ 1 ];
             if ( rmk.getCount() == 0 ) {
+                Toast.makeText( RemarkDetailsActivity.this, "No remarks were found",
+                        Toast.LENGTH_LONG ).show();
                 RemarkDetailsActivity.this.finish();
             }
 
