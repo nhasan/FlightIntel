@@ -23,34 +23,36 @@ import java.util.HashMap;
 
 public final class DataUtils {
 
+    private final static String DOT = "\u2022";
+    private final static String DASH = "\u2013";
     private static HashMap<String, String> sMorseCodes = new HashMap<String, String>();
     static {
-        sMorseCodes.put( "A", ".-" );
-        sMorseCodes.put( "B", "-..." );
-        sMorseCodes.put( "C", "-.-." );
-        sMorseCodes.put( "D", "-.." );
-        sMorseCodes.put( "E", "." );
-        sMorseCodes.put( "F", "..-." );
-        sMorseCodes.put( "G", "--." );
-        sMorseCodes.put( "H", "...." );
-        sMorseCodes.put( "I", ".." );
-        sMorseCodes.put( "J", ".---" );
-        sMorseCodes.put( "K", "-.-" );
-        sMorseCodes.put( "L", ".-.." );
-        sMorseCodes.put( "M", "--" );
-        sMorseCodes.put( "N", "-." );
-        sMorseCodes.put( "O", "---" );
-        sMorseCodes.put( "P", ".--." );
-        sMorseCodes.put( "Q", "--.-" );
-        sMorseCodes.put( "R", ".-." );
-        sMorseCodes.put( "S", "..." );
-        sMorseCodes.put( "T", "-" );
-        sMorseCodes.put( "U", "..-" );
-        sMorseCodes.put( "V", "...-" );
-        sMorseCodes.put( "W", ".--" );
-        sMorseCodes.put( "X", "-..-" );
-        sMorseCodes.put( "Y", "-.--" );
-        sMorseCodes.put( "Z", "--.." );
+        sMorseCodes.put( "A", DOT+DASH );
+        sMorseCodes.put( "B", DASH+DOT+DOT+DOT );
+        sMorseCodes.put( "C", DASH+DOT+DASH+DOT );
+        sMorseCodes.put( "D", DASH+DOT+DOT );
+        sMorseCodes.put( "E", DOT );
+        sMorseCodes.put( "F", DOT+DOT+DASH+DOT );
+        sMorseCodes.put( "G", DASH+DASH+DOT );
+        sMorseCodes.put( "H", DOT+DOT+DOT+DOT );
+        sMorseCodes.put( "I", DOT+DOT );
+        sMorseCodes.put( "J", DOT+DASH+DASH+DASH );
+        sMorseCodes.put( "K", DASH+DOT+DASH );
+        sMorseCodes.put( "L", DOT+DASH+DOT+DOT );
+        sMorseCodes.put( "M", DASH+DASH );
+        sMorseCodes.put( "N", DASH+DOT );
+        sMorseCodes.put( "O", DASH+DASH+DASH );
+        sMorseCodes.put( "P", DOT+DASH+DASH+DOT );
+        sMorseCodes.put( "Q", DASH+DASH+DOT+DASH );
+        sMorseCodes.put( "R", DOT+DASH+DOT );
+        sMorseCodes.put( "S", DOT+DOT+DOT );
+        sMorseCodes.put( "T", DASH );
+        sMorseCodes.put( "U", DOT+DOT+DASH );
+        sMorseCodes.put( "V", DOT+DOT+DOT+DASH );
+        sMorseCodes.put( "W", DOT+DASH+DASH );
+        sMorseCodes.put( "X", DASH+DOT+DOT+DASH );
+        sMorseCodes.put( "Y", DASH+DOT+DASH+DASH );
+        sMorseCodes.put( "Z", DASH+DASH+DOT+DOT );
     }
 
     public static String getMorseCode( String text ) {
