@@ -35,6 +35,15 @@ public class AirportsMain extends Activity {
         PreferenceManager.setDefaultValues( this, R.xml.preferences, false );
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
 
+        boolean agreed = prefs.getBoolean( PreferencesActivity.KEY_DISCLAIMER_AGREED, false );
+        if ( !agreed ) {
+            // User has not yet agreed to the disclaimer, show it now
+            Intent disclaimer = new Intent( this, DisclaimerActivity.class );
+            startActivity( disclaimer );
+            finish();
+            return;
+        }
+
         // Check if we have any data installed. If not, then redirect to the download activity
         DatabaseManager dbManager = DatabaseManager.instance( this );
         Cursor c = dbManager.getCurrentFromCatalog();
