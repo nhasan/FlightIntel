@@ -180,7 +180,7 @@ public class ServicesDetailsActivity extends ActivityBase {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addPhoneRow( TableLayout table, String label, String phone ) {
+    protected void addPhoneRow( TableLayout table, String label, final String phone ) {
         TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
         TextView tvLabel = new TextView( this );
         tvLabel.setText( label );
@@ -194,13 +194,10 @@ public class ServicesDetailsActivity extends ActivityBase {
         tvValue.setMarqueeRepeatLimit( -1 );
         tvValue.setGravity( Gravity.RIGHT );
         tvValue.setPadding( 2, 2, 2, 2 );
-        tvValue.setTag( phone );
         tvValue.setOnClickListener( new OnClickListener() {
             
             @Override
             public void onClick( View v ) {
-                TextView tv = (TextView) v;
-                String phone = (String) tv.getTag();
                 Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
                 startActivity( intent );
             }

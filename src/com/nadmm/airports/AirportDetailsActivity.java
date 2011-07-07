@@ -225,14 +225,13 @@ public class AirportDetailsActivity extends ActivityBase {
             do {
                 String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
                 if ( freq.length() > 0 ) {
-                    String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
-                    String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
-                    Pair<String, String> pair = new Pair<String, String>( freq, phone );
                     if ( row > 0 ) {
                         addSeparator( layout );
                     }
+                    String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+                    String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+                    addAwosRow( layout, type, freq, phone );
                     ++row;
-                    addAwosRow( layout, type, pair );
                 }
             } while ( awos.moveToNext() );
         }
@@ -522,19 +521,19 @@ public class AirportDetailsActivity extends ActivityBase {
 
     protected void addRow( TableLayout table, String label, String value ) {
         TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        TextView tvLabel = new TextView( this );
-        tvLabel.setText( label );
-        tvLabel.setSingleLine();
-        tvLabel.setGravity( Gravity.LEFT );
-        tvLabel.setPadding( 4, 2, 2, 2 );
-        row.addView( tvLabel, new TableRow.LayoutParams(
+        TextView tv = new TextView( this );
+        tv.setText( label );
+        tv.setSingleLine();
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 4, 2, 2, 2 );
+        row.addView( tv, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        TextView tvValue = new TextView( this );
-        tvValue.setText( value );
-        tvValue.setMarqueeRepeatLimit( -1 );
-        tvValue.setGravity( Gravity.RIGHT );
-        tvLabel.setPadding( 2, 2, 4, 2 );
-        row.addView( tvValue, new TableRow.LayoutParams(
+        tv = new TextView( this );
+        tv.setText( value );
+        tv.setMarqueeRepeatLimit( -1 );
+        tv.setGravity( Gravity.RIGHT );
+        tv.setPadding( 2, 2, 4, 2 );
+        row.addView( tv, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
         table.addView( row, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
@@ -544,12 +543,12 @@ public class AirportDetailsActivity extends ActivityBase {
             Pair<String, String> data ) {
         RelativeLayout layout = (RelativeLayout) mInflater.inflate(
                 R.layout.comm_detail_item, null );
-        TextView tvLabel = (TextView) layout.findViewById( R.id.comm_freq_use );
-        tvLabel.setText( freqUse );
-        tvLabel.setPadding( 4, 2, 2, 2 );
-        TextView tvValue = (TextView) layout.findViewById( R.id.comm_freq_value );
-        tvValue.setText( data.first );
-        tvValue.setPadding( 2, 2, 4, 2 );
+        TextView tv = (TextView) layout.findViewById( R.id.comm_freq_use );
+        tv.setText( freqUse );
+        tv.setPadding( 4, 2, 2, 2 );
+        tv = (TextView) layout.findViewById( R.id.comm_freq_value );
+        tv.setText( data.first );
+        tv.setPadding( 2, 2, 4, 2 );
         TextView tvExtra = (TextView) layout.findViewById( R.id.comm_freq_extra );
         if ( data.second.length() > 0 ) {
             tvExtra.setText( data.second );
@@ -561,30 +560,27 @@ public class AirportDetailsActivity extends ActivityBase {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addAwosRow( TableLayout table, String sensorType,
-            Pair<String, String> data ) {
+    protected void addAwosRow( TableLayout table, String sensorType, String freq,
+            final String phone ) {
         RelativeLayout layout = (RelativeLayout) mInflater.inflate(
                 R.layout.comm_detail_item, null );
-        TextView tvLabel = (TextView) layout.findViewById( R.id.comm_freq_use );
-        tvLabel.setText( sensorType );
-        TextView tvValue = (TextView) layout.findViewById( R.id.comm_freq_value );
-        tvValue.setText( data.first );
-        TextView tvExtra = (TextView) layout.findViewById( R.id.comm_freq_extra );
-        if ( data.second.length() > 0 ) {
-            tvExtra.setText( data.second );
-            tvExtra.setOnClickListener( new OnClickListener() {
+        TextView tv = (TextView) layout.findViewById( R.id.comm_freq_use );
+        tv.setText( sensorType );
+        tv = (TextView) layout.findViewById( R.id.comm_freq_value );
+        tv.setText( freq );
+        tv = (TextView) layout.findViewById( R.id.comm_freq_extra );
+        if ( phone.length() > 0 ) {
+            tv.setOnClickListener( new OnClickListener() {
                 
                 @Override
                 public void onClick( View v ) {
-                    TextView tv = (TextView) v;
-                    String phone = (String) tv.getText();
                     Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
                     startActivity( intent );
                 }
 
             } );
         } else {
-            tvExtra.setVisibility( View.GONE );
+            tv.setVisibility( View.GONE );
         }
         table.addView( layout, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
@@ -688,15 +684,12 @@ public class AirportDetailsActivity extends ActivityBase {
         addBulletedRow( layout, remark );
     }
 
-    protected void addPhoneRemarkRow( LinearLayout layout, String remark, String phone ) {
+    protected void addPhoneRemarkRow( LinearLayout layout, String remark, final String phone ) {
         TextView tv = addBulletedRow( layout, remark+": "+phone );
-        tv.setTag( phone );
         tv.setOnClickListener( new OnClickListener() {
             
             @Override
             public void onClick( View v ) {
-                TextView tv = (TextView) v;
-                String phone = (String) tv.getTag();
                 Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
                 startActivity( intent );
             }

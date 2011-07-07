@@ -174,7 +174,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addPhoneRow( LinearLayout layout, String phone ) {
+    protected void addPhoneRow( LinearLayout layout, final String phone ) {
         TextView tv = new TextView( this );
         tv.setPadding( 0, 1, 0, 1 );
         tv.setText( phone );
@@ -182,8 +182,6 @@ public class OwnershipDetailsActivity extends ActivityBase {
             
             @Override
             public void onClick( View v ) {
-                TextView tv = (TextView) v;
-                String phone = (String) tv.getText();
                 Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
                 startActivity( intent );
             }
