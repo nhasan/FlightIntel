@@ -1,4 +1,5 @@
 *.db
 *.zip
+.settings
 bin/
 gen/
