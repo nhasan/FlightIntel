@@ -83,8 +83,9 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
         if ( status.equals( "O" ) ) {
             tv.setText( type+", "+elev+"' MSL"
                     +( ctaf != null && ctaf.length() > 0? ", "+ctaf : 
-                        (unicom.length() > 0? ", "+unicom : "") )
-                    +( fuel.length() > 0? ", "+DataUtils.decodeFuelTypes( fuel ) : "" ) );
+                        (unicom != null && unicom.length() > 0? ", "+unicom : "") )
+                    +( fuel != null && fuel.length() > 0? 
+                            ", "+DataUtils.decodeFuelTypes( fuel ) : "" ) );
         } else {
             tv.setText( type+", "+DataUtils.decodeStatus( status ) );
         }
