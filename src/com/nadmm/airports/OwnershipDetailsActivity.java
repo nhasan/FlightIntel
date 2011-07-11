@@ -81,11 +81,6 @@ public class OwnershipDetailsActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor[] result ) {
-            if ( result == null ) {
-                // TODO: Show an error here
-                return;
-            }
-
             View view = mInflater.inflate( R.layout.ownership_detail_view, null );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.ownership_top_layout );

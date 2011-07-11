@@ -164,10 +164,6 @@ public class AirportDetailsActivity extends ActivityBase {
         @Override
         protected void onPostExecute( Cursor[] result ) {
             setProgressBarIndeterminateVisibility( false );
-            if ( result == null ) {
-                // TODO: Show an error here
-                return;
-            }
 
             View view = mInflater.inflate( R.layout.airport_detail_view, null );
             setContentView( view );

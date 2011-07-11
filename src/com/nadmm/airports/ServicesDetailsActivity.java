@@ -90,11 +90,6 @@ public class ServicesDetailsActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor[] result ) {
-            if ( result == null ) {
-                // TODO: Show an error here
-                return;
-            }
-
             View view = mInflater.inflate( R.layout.services_detail_view, null );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.services_top_layout );

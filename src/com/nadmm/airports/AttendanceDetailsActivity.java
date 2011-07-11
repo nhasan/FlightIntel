@@ -89,11 +89,6 @@ public class AttendanceDetailsActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor[] result ) {
-            if ( result == null ) {
-                // TODO: Show an error here
-                return;
-            }
-
             View view = mInflater.inflate( R.layout.attendance_detail_view, null );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.attendance_top_layout );

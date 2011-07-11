@@ -109,11 +109,6 @@ public class CommDetailsActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor[] result ) {
-            if ( result == null ) {
-                // TODO: Show an error here
-                return;
-            }
-
             View view = mInflater.inflate( R.layout.comm_detail_view, null );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.comm_top_layout );
