@@ -95,6 +95,11 @@ public final class DownloadActivity extends ListActivity {
     private static final String PATH = "/files";
     private static final String MANIFEST = "manifest.xml";
 
+    private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
+            = new File( Environment.getExternalStorageDirectory(), 
+            "Android/data/"+DownloadActivity.class.getPackage().getName() );
+    private static final File CACHE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/cache" );
+
     final class DataInfo {
         public String type;
         public String desc;
@@ -196,6 +201,7 @@ public final class DownloadActivity extends ListActivity {
 
     private void warnIfNoWifi() {
         if ( isNetworkAvailable() == false ) {
+            Toast.makeText( this, "Please check your internet connection", Toast.LENGTH_LONG );
             return;
         }
 
@@ -228,11 +234,12 @@ public final class DownloadActivity extends ListActivity {
 
     private void download() {
         String state = Environment.getExternalStorageState();
-        if ( Environment.MEDIA_MOUNTED_READ_ONLY.equals( state ) ) {
-            showMessage( "External storage is not writable" );
-            return;
-        } else if ( !Environment.MEDIA_MOUNTED.equals( state ) ) {
+        if ( !Environment.MEDIA_MOUNTED.equals( state ) ) {
             showMessage( "External storage is not available" );
+            return;
+        }
+        else if ( Environment.MEDIA_MOUNTED_READ_ONLY.equals( state ) ) {
+            showMessage( "External storage is not writable" );
             return;
         }
 
@@ -762,14 +769,14 @@ public final class DownloadActivity extends ListActivity {
                     return -2;
                 }
 
-                if ( !DatabaseManager.CACHE_DIR.exists() ) {
-                    if ( !DatabaseManager.CACHE_DIR.mkdirs() ) {
+                if ( !CACHE_DIR.exists() ) {
+                    if ( !CACHE_DIR.mkdirs() ) {
                         showMessage( "Unable to create cache dir on external storage" );
                         return -3;
                     }
                 }
 
-                File zipFile = new File( DatabaseManager.CACHE_DIR, data.fileName );
+                File zipFile = new File( CACHE_DIR, data.fileName );
                 out = new FileOutputStream( zipFile );
 
                 HttpEntity entity = response.getEntity();
@@ -778,11 +785,10 @@ public final class DownloadActivity extends ListActivity {
                 Log.i( TAG, "Opened file "+zipFile.getCanonicalPath()+" for writing" );
 
                 byte[] buffer = new byte[ 64*1024 ];
-                int len = buffer.length;
                 int count;
                 int total = 0;
 
-                while ( !mStop.get() && ( count = in.read( buffer, 0, len ) ) != -1 ) {
+                while ( !mStop.get() && ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
                     out.write( buffer, 0, count );
                     total += count;
                     publishProgress( total );
@@ -826,7 +832,7 @@ public final class DownloadActivity extends ListActivity {
         }
 
         protected int installData( final DataInfo data ) {
-            File cacheFile = new File( DatabaseManager.CACHE_DIR, data.fileName );
+            File cacheFile = new File( CACHE_DIR, data.fileName );
             ZipFile zipFile;
             try {
                 zipFile = new ZipFile( cacheFile );
@@ -960,7 +966,7 @@ public final class DownloadActivity extends ListActivity {
         @Override
         protected void onPreExecute() {
             mProgressDialog = ProgressDialog.show( DownloadActivity.this, 
-                    "", "Delete installed data. Please wait...", true );
+                    "", "Deleting installed data. Please wait...", true );
         }
 
         @Override

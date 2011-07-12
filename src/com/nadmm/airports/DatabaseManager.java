@@ -45,7 +45,6 @@ public class DatabaseManager {
     private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
             = new File( Environment.getExternalStorageDirectory(), 
                     "Android/data/"+DownloadActivity.class.getPackage().getName() );
-    public static File CACHE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/cache" );
     public static File DATABASE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/databases" );
     public static final String DB_FADDS = "FADDS";
 
