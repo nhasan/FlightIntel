@@ -284,6 +284,7 @@ public final class DownloadActivity extends ListActivity {
     }
 
     private final class DownloadCursor extends MatrixCursor {
+
         private static final String SECTION = "SECTION";
         private static final String TYPE = "TYPE";
         private static final String DESC = "DESC";
@@ -292,6 +293,8 @@ public final class DownloadActivity extends ListActivity {
         private static final String EXPIRED = "EXPIRED";
 
         private int mId = 0;
+        private final long mNow = System.currentTimeMillis();
+        private final long mSpeed = 200;
 
         public DownloadCursor() {
             super( new String[] { BaseColumns._ID, SECTION, TYPE, DESC, DATES, MSG, EXPIRED } );
@@ -299,19 +302,19 @@ public final class DownloadActivity extends ListActivity {
 
         public void addRow( int section, DataInfo info ) {
             RowBuilder builder = newRow();
-            builder.add( mId++ );
-            builder.add( section );
-            builder.add( info.type );
-            builder.add( info.desc );
-            builder.add( "Effective "+DateUtils.formatDateRange( DownloadActivity.this, 
+            builder.add( mId++ )
+                .add( section )
+                .add( info.type )
+                .add( info.desc )
+                .add( "Effective "+DateUtils.formatDateRange( DownloadActivity.this, 
                     info.start.toMillis( false ), info.end.toMillis( false )+1000, 
-                    DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) );
-            builder.add( Formatter.formatShortFileSize( DownloadActivity.this, info.size )
-                    +"   ("+DateUtils.formatElapsedTime( info.size/(200*1024/8) )
-                    +" @ 200kbps)" );
-            long now = System.currentTimeMillis();
-            builder.add( ( now > info.end.toMillis( false ) )? "Y" : "N" );
+                    DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) )
+                .add( String.format( "%s (%s @ %dkbps)", 
+                        Formatter.formatShortFileSize( DownloadActivity.this, info.size ),
+                        DateUtils.formatElapsedTime( info.size/(mSpeed*1024/8) ), mSpeed ) )
+                .add( ( mNow > info.end.toMillis( false ) )? "Y" : "N" );
         }
+
     }
 
     private final class DownloadListAdapter extends SectionedCursorAdapter {
