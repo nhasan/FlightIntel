@@ -21,6 +21,7 @@ package com.nadmm.airports;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -121,6 +122,20 @@ public class ActivityBase extends Activity {
             } );
         } else {
             iv.setVisibility( View.GONE );
+        }
+    }
+
+    protected void makePhoneClickable( TextView tv, final String phone ) {
+        if ( getPackageManager().hasSystemFeature( PackageManager.FEATURE_TELEPHONY ) ) {
+            tv.setOnClickListener( new OnClickListener() {
+                
+                @Override
+                public void onClick( View v ) {
+                    Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
+                    startActivity( intent );
+                }
+    
+            } );
         }
     }
 

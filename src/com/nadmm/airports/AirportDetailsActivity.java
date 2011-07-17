@@ -28,7 +28,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.location.Location;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Pair;
@@ -566,15 +565,7 @@ public class AirportDetailsActivity extends ActivityBase {
         tv.setText( freq );
         tv = (TextView) layout.findViewById( R.id.comm_freq_extra );
         if ( phone.length() > 0 ) {
-            tv.setOnClickListener( new OnClickListener() {
-                
-                @Override
-                public void onClick( View v ) {
-                    Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
-                    startActivity( intent );
-                }
-
-            } );
+            makePhoneClickable( tv, phone );
         } else {
             tv.setVisibility( View.GONE );
         }
@@ -682,15 +673,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
     protected void addPhoneRemarkRow( LinearLayout layout, String remark, final String phone ) {
         TextView tv = addBulletedRow( layout, remark+": "+phone );
-        tv.setOnClickListener( new OnClickListener() {
-            
-            @Override
-            public void onClick( View v ) {
-                Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
-                startActivity( intent );
-            }
-
-        } );
+        makePhoneClickable( tv, phone );
     }
 
     protected TextView addBulletedRow( LinearLayout layout, String text ) {

@@ -24,13 +24,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -157,19 +155,19 @@ public class ServicesDetailsActivity extends ActivityBase {
 
     protected void addRow( TableLayout table, String label, String value ) {
         TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        TextView tvLabel = new TextView( this );
-        tvLabel.setText( label );
-        tvLabel.setSingleLine();
-        tvLabel.setGravity( Gravity.LEFT );
-        tvLabel.setPadding( 2, 2, 2, 2 );
-        row.addView( tvLabel, new TableRow.LayoutParams(
+        TextView tv = new TextView( this );
+        tv.setText( label );
+        tv.setSingleLine();
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 2, 2, 2, 2 );
+        row.addView( tv, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        TextView tvValue = new TextView( this );
-        tvValue.setText( value );
-        tvValue.setMarqueeRepeatLimit( -1 );
-        tvValue.setGravity( Gravity.RIGHT );
-        tvLabel.setPadding( 2, 2, 2, 2 );
-        row.addView( tvValue, new TableRow.LayoutParams(
+        tv = new TextView( this );
+        tv.setText( value );
+        tv.setMarqueeRepeatLimit( -1 );
+        tv.setGravity( Gravity.RIGHT );
+        tv.setPadding( 2, 2, 2, 2 );
+        row.addView( tv, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
         table.addView( row, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
@@ -177,28 +175,20 @@ public class ServicesDetailsActivity extends ActivityBase {
 
     protected void addPhoneRow( TableLayout table, String label, final String phone ) {
         TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        TextView tvLabel = new TextView( this );
-        tvLabel.setText( label );
-        tvLabel.setSingleLine();
-        tvLabel.setGravity( Gravity.LEFT );
-        tvLabel.setPadding( 2, 2, 2, 2 );
-        row.addView( tvLabel, new TableRow.LayoutParams(
+        TextView tv = new TextView( this );
+        tv.setText( label );
+        tv.setSingleLine();
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 2, 2, 2, 2 );
+        row.addView( tv, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        TextView tvValue = new TextView( this );
-        tvValue.setText( phone );
-        tvValue.setMarqueeRepeatLimit( -1 );
-        tvValue.setGravity( Gravity.RIGHT );
-        tvValue.setPadding( 2, 2, 2, 2 );
-        tvValue.setOnClickListener( new OnClickListener() {
-            
-            @Override
-            public void onClick( View v ) {
-                Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
-                startActivity( intent );
-            }
-
-        } );
-        row.addView( tvValue, new TableRow.LayoutParams(
+        tv = new TextView( this );
+        tv.setText( phone );
+        tv.setMarqueeRepeatLimit( -1 );
+        tv.setGravity( Gravity.RIGHT );
+        tv.setPadding( 2, 2, 2, 2 );
+        makePhoneClickable( tv, phone );
+        row.addView( tv, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
         table.addView( row, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );

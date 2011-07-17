@@ -23,14 +23,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
@@ -173,15 +171,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
         TextView tv = new TextView( this );
         tv.setPadding( 0, 1, 0, 1 );
         tv.setText( phone );
-        tv.setOnClickListener( new OnClickListener() {
-            
-            @Override
-            public void onClick( View v ) {
-                Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
-                startActivity( intent );
-            }
-
-        } );
+        makePhoneClickable( tv, phone );
         layout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT ) );
     }
