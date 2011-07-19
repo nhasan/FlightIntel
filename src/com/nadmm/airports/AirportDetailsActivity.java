@@ -565,7 +565,8 @@ public class AirportDetailsActivity extends ActivityBase {
         tv.setText( freq );
         tv = (TextView) layout.findViewById( R.id.comm_freq_extra );
         if ( phone.length() > 0 ) {
-            makePhoneClickable( tv, phone );
+            tv.setText( phone );
+            makeClickToCall( tv );
         } else {
             tv.setVisibility( View.GONE );
         }
@@ -673,7 +674,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
     protected void addPhoneRemarkRow( LinearLayout layout, String remark, final String phone ) {
         TextView tv = addBulletedRow( layout, remark+": "+phone );
-        makePhoneClickable( tv, phone );
+        makeClickToCall( tv );
     }
 
     protected TextView addBulletedRow( LinearLayout layout, String text ) {
