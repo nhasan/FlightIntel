@@ -50,7 +50,7 @@ public class AirportsMain extends Activity {
         if ( !c.moveToFirst() ) {
             c.close();
             Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "Please install data before using the application" );
+            download.putExtra( "MSG", "Please install the data before using this application" );
             startActivity( download );
             finish();
             return;
