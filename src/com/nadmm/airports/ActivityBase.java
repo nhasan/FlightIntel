@@ -125,16 +125,18 @@ public class ActivityBase extends Activity {
         }
     }
 
-    protected void makePhoneClickable( TextView tv, final String phone ) {
+    protected void makeClickToCall( TextView tv ) {
         if ( getPackageManager().hasSystemFeature( PackageManager.FEATURE_TELEPHONY ) ) {
             tv.setOnClickListener( new OnClickListener() {
-                
+
                 @Override
                 public void onClick( View v ) {
-                    Intent intent = new Intent( Intent.ACTION_CALL, Uri.parse( "tel:"+phone ) );
+                    TextView tv = (TextView) v;
+                    Intent intent = new Intent( Intent.ACTION_CALL,
+                            Uri.parse( "tel:"+tv.getText().toString() ) );
                     startActivity( intent );
                 }
-    
+
             } );
         }
     }
