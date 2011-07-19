@@ -294,7 +294,7 @@ public final class DownloadActivity extends ListActivity {
 
         private int mId = 0;
         private final long mNow = System.currentTimeMillis();
-        private final long mSpeed = 200;
+        private final long mSpeed = 500;
 
         public DownloadCursor() {
             super( new String[] { BaseColumns._ID, SECTION, TYPE, DESC, DATES, MSG, EXPIRED } );
