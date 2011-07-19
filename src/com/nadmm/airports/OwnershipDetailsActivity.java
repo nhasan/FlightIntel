@@ -171,7 +171,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
         TextView tv = new TextView( this );
         tv.setPadding( 0, 1, 0, 1 );
         tv.setText( phone );
-        makePhoneClickable( tv, phone );
+        makeClickToCall( tv );
         layout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT ) );
     }

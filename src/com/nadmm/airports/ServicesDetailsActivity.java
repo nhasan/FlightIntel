@@ -183,11 +183,11 @@ public class ServicesDetailsActivity extends ActivityBase {
         row.addView( tv, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
         tv = new TextView( this );
-        tv.setText( phone );
         tv.setMarqueeRepeatLimit( -1 );
         tv.setGravity( Gravity.RIGHT );
         tv.setPadding( 2, 2, 2, 2 );
-        makePhoneClickable( tv, phone );
+        tv.setText( phone );
+        makeClickToCall( tv );
         row.addView( tv, new TableRow.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
         table.addView( row, new TableLayout.LayoutParams(
