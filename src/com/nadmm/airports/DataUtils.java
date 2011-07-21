@@ -500,20 +500,32 @@ public final class DataUtils {
     }
 
     public static int decodeControllingObjectOffset( String offset ) {
-        if ( offset.length() > 1 ) {
-            return Integer.valueOf( offset.substring( 0, offset.length()-1 ) );
-        } else {
+        int end = 0;
+        while ( end < offset.length() 
+                && offset.charAt( end ) >= '0' && offset.charAt( end ) <= '9' ) {
+            ++end;
+        }
+        try {
+            return Integer.valueOf( offset.substring( 0, end ) );
+        } catch ( java.lang.NumberFormatException e ) {
             return 0;
         }
     }
 
     public static String decodeControllingObjectOffsetDirection( String offset ) {
-        String direction = offset.substring( offset.length()-1 );
+        int end = 0;
+        while ( end < offset.length() 
+                && offset.charAt( end ) >= '0' && offset.charAt( end ) <= '9' ) {
+            ++end;
+        }
+        String direction = offset.substring( end );
         if ( direction.equals( "R" ) ) {
             return "right";
         } else if ( direction.equals( "L" ) ) {
             return "left";
         } else if ( direction.equals( "B" ) ) {
+            return "both sides";
+        } else if ( direction.equals( "L/R" ) ) {
             return "both sides";
         } else {
             return direction;
