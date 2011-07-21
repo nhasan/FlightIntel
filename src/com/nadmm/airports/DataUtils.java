@@ -528,7 +528,7 @@ public final class DataUtils {
         } else if ( direction.equals( "L/R" ) ) {
             return "both sides";
         } else {
-            return direction;
+            return "vicinity";
         }
     }
 
