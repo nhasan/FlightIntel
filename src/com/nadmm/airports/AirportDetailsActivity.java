@@ -217,18 +217,17 @@ public class AirportDetailsActivity extends ActivityBase {
 
         Cursor awos = result[ 6 ];
         if ( awos.moveToFirst() ) {
-            do {
-                String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
-                if ( freq.length() > 0 ) {
-                    if ( row > 0 ) {
-                        addSeparator( layout );
-                    }
-                    String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
-                    String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
-                    addAwosRow( layout, type, freq, phone );
-                    ++row;
-                }
-            } while ( awos.moveToNext() );
+            String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
+            if ( freq.length() == 0 ) {
+                freq = "N/A";
+            }
+            if ( row > 0 ) {
+                addSeparator( layout );
+            }
+            String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+            String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+            addAwosRow( layout, type, freq, phone );
+            ++row;
         }
 
         Cursor twr1 = result[ 3 ];
@@ -448,20 +447,6 @@ public class AirportDetailsActivity extends ActivityBase {
             }
         }
 
-        // Show AWOS phone here if frequency is empty
-        Cursor awos = result[ 6 ];
-        if ( awos.moveToFirst() ) {
-            do {
-                String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
-                String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
-                if ( freq.length() == 0 && phone.length() > 0 ) {
-                    String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
-                    ++row;
-                    addPhoneRemarkRow( layout, type, phone );
-                }
-            } while ( awos.moveToNext() );
-        }
-
         if ( row == 0 ) {
             label.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
@@ -555,12 +540,11 @@ public class AirportDetailsActivity extends ActivityBase {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addAwosRow( TableLayout table, String sensorType, String freq,
-            final String phone ) {
+    protected void addAwosRow( TableLayout table, String type, String freq, String phone ) {
         RelativeLayout layout = (RelativeLayout) mInflater.inflate(
                 R.layout.comm_detail_item, null );
         TextView tv = (TextView) layout.findViewById( R.id.comm_freq_use );
-        tv.setText( sensorType );
+        tv.setText( type );
         tv = (TextView) layout.findViewById( R.id.comm_freq_value );
         tv.setText( freq );
         tv = (TextView) layout.findViewById( R.id.comm_freq_extra );
