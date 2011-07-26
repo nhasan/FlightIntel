@@ -630,6 +630,82 @@ my $insert_nav2_record = "INSERT INTO nav2 ("
         ."?, ?, ?"
         .")";
 
+my $create_ils1_table = "CREATE TABLE ils1 ("
+        ."SITE_NUMBER TEXT, "
+        ."RUNWAY_ID TEXT, "
+        ."ILS_TYPE TEXT, "
+        ."ILS_CATEGORY TEXT, "
+        ."ILS_MAGNETIC_BEARING TEXT, "
+        ."LOCALIZER_TYPE TEXT, "
+        ."LOCALIZER_ID TEXT, "
+        ."LOCALIZER_FREQUENCY TEXT, "
+        ."LOCALIZER_COURSE_WIDTH TEXT, "
+        ."GLIDE_SLOPE_TYPE TEXT, "
+        ."GLIDE_SLOPE_ANGLE TEXT, "
+        ."GLIDE_SLOPE_FREQUENCY TEXT, "
+        ."INNER_MARKER_TYPE TEXT, "
+        ."INNER_MARKER_DISTANCE TEXT, "
+        ."MIDDLE_MARKER_TYPE TEXT, "
+        ."MIDDLE_MARKER_ID TEXT, "
+        ."MIDDLE_MARKER_NAME TEXT, "
+        ."MIDDLE_MARKER_FREQUENCY TEXT, "
+        ."MIDDLE_MARKER_DISTANCE TEXT, "
+        ."OUTER_MARKER_TYPE TEXT, "
+        ."OUTER_MARKER_ID TEXT, "
+        ."OUTER_MARKER_NAME TEXT, "
+        ."OUTER_MARKER_FREQUENCY TEXT, "
+        ."OUTER_MARKER_DISTANCE TEXT, "
+        ."BACKCOURSE_MARKER_AVAILABLE TEXT"
+        .")";
+
+my $insert_ils1_record = "INSERT INTO ils1 ("
+        ."SITE_NUMBER, "
+        ."RUNWAY_ID, "
+        ."ILS_TYPE, "
+        ."ILS_CATEGORY, "
+        ."ILS_MAGNETIC_BEARING, "
+        ."LOCALIZER_TYPE, "
+        ."LOCALIZER_ID, "
+        ."LOCALIZER_FREQUENCY, "
+        ."LOCALIZER_COURSE_WIDTH, "
+        ."GLIDE_SLOPE_TYPE, "
+        ."GLIDE_SLOPE_ANGLE, "
+        ."GLIDE_SLOPE_FREQUENCY, "
+        ."INNER_MARKER_TYPE, "
+        ."INNER_MARKER_DISTANCE, "
+        ."MIDDLE_MARKER_TYPE, "
+        ."MIDDLE_MARKER_ID, "
+        ."MIDDLE_MARKER_NAME, "
+        ."MIDDLE_MARKER_FREQUENCY, "
+        ."MIDDLE_MARKER_DISTANCE, "
+        ."OUTER_MARKER_TYPE, "
+        ."OUTER_MARKER_ID, "
+        ."OUTER_MARKER_NAME, "
+        ."OUTER_MARKER_FREQUENCY, "
+        ."OUTER_MARKER_DISTANCE, "
+        ."BACKCOURSE_MARKER_AVAILABLE"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?,"
+        ."?, ?, ?, ?, ?, ?, ?, ?,"
+        ."?, ?, ?, ?, ?, ?, ?, ?"
+        .")";
+
+my $create_ils2_table = "CREATE TABLE ils2 ("
+        ."SITE_NUMBER TEXT, "
+        ."RUNWAY_ID TEXT, "
+        ."ILS_TYPE TEXT, "
+        ."ILS_REMARKS TEXT"
+        .")";
+
+my $insert_ils2_record = "INSERT INTO ils2 ("
+        ."SITE_NUMBER, "
+        ."RUNWAY_ID, "
+        ."ILS_TYPE, "
+        ."ILS_REMARKS"
+        .") VALUES ("
+        ."?, ?, ?, ?"
+        .")";
+
 $dbh->do( "DROP TABLE IF EXISTS airports" );
 $dbh->do( $create_airports_table );
 $dbh->do( "CREATE INDEX idx_apt_site_number on airports ( SITE_NUMBER );" );
@@ -682,6 +758,14 @@ $dbh->do( "DROP TABLE IF EXISTS nav2" );
 $dbh->do( $create_nav2_table );
 $dbh->do( "CREATE INDEX idx_nav2_navaid_id on nav2 ( NAVAID_ID );" );
 
+$dbh->do( "DROP TABLE IF EXISTS ils1" );
+$dbh->do( $create_ils1_table );
+$dbh->do( "CREATE INDEX idx_ils1_runway_id on ils1 ( SITE_NUMBER, RUNWAY_ID );" );
+
+$dbh->do( "DROP TABLE IF EXISTS ils2" );
+$dbh->do( $create_ils2_table );
+$dbh->do( "CREATE INDEX idx_ils2_runway_id on ils2 ( SITE_NUMBER, RUNWAY_ID );" );
+
 my $sth_apt = $dbh->prepare( $insert_airports_record );
 my $sth_rwy = $dbh->prepare( $insert_runways_record );
 my $sth_att = $dbh->prepare( $insert_attendance_record );
@@ -694,6 +778,8 @@ my $sth_twr8 = $dbh->prepare( $insert_tower8_record );
 my $sth_awos = $dbh->prepare( $insert_awos_record );
 my $sth_nav1 = $dbh->prepare( $insert_nav1_record );
 my $sth_nav2 = $dbh->prepare( $insert_nav2_record );
+my $sth_ils1 = $dbh->prepare( $insert_ils1_record );
+my $sth_ils2 = $dbh->prepare( $insert_ils2_record );
 
 my $i = 0;
 
@@ -709,6 +795,7 @@ open( APT_FILE, "<$APT" ) or die "Could not open data file\n";
 
 while ( my $line = <APT_FILE> )
 {
+    last;
     ++$i;
 
     if ( ($i % 1000) == 0 )
@@ -1062,6 +1149,7 @@ $i = 0;
 print( "$TWR\n" );
 while ( my $line = <TWR_FILE> )
 {
+    last;
     ++$i;
 
     if ( ($i % 1000) == 0 )
@@ -1170,6 +1258,7 @@ $i = 0;
 print( "$AWOS\n" );
 while ( my $line = <AWOS_FILE> )
 {
+    last;
     ++$i;
 
     if ( ($i % 1000) == 0 )
@@ -1228,6 +1317,7 @@ $i = 0;
 print( "$NAV\n" );
 while ( my $line = <NAV_FILE> )
 {
+    last;
     ++$i;
 
     if ( ($i % 1000) == 0 )
@@ -1301,5 +1391,102 @@ close NAVAID_FILE;
 
 ###########################################################################
 
-$dbh->disconnect();
+my $ILS = $FADDS_BASE."/ILS.txt";
+open( ILS_FILE, "<$ILS" ) or die "Could not open data file\n";
 
+$i = 0;
+print( "$ILS\n" );
+while ( my $line = <ILS_FILE> )
+{
+    ++$i;
+
+    if ( ($i % 1000) == 0 )
+    {
+        $dbh->do( "PRAGMA synchronous=ON" );
+    }
+
+    my $type = substrim( $line, 0, 4 );
+
+    if ( $type eq "ILS1" )
+    {
+        #SITE_NUMBER
+        $sth_ils1->bind_param(  1, substrim( $line,   4, 11 ) );
+        #RUNWAY_ID
+        $sth_ils1->bind_param(  2, substrim( $line,  15,  3 ) );
+        #ILS_TYPE
+        $sth_ils1->bind_param(  3, substrim( $line,  18, 10 ) );
+        #ILS_CATEGORY
+        $sth_ils1->bind_param(  4, substrim( $line, 144,  9 ) );
+        #ILS_MAGNETIC_BEARING
+        $sth_ils1->bind_param(  5, substrim( $line, 253,  3 ) );
+        #LOCALIZER_TYPE
+        $sth_ils1->bind_param(  6, substrim( $line, 259, 15 ) );
+        #LOCALIZER_ID
+        $sth_ils1->bind_param(  7, substrim( $line, 274,  5 ) );
+        #LOCALIZER_FREQUENCY
+        $sth_ils1->bind_param(  8, substrim( $line, 279,  6 ) );
+        #LOCALIZER_COURSE_WIDTH
+        $sth_ils1->bind_param(  9, substrim( $line, 335,  5 ) );
+        #GLIDE_SLOPE_TYPE
+        $sth_ils1->bind_param( 10, substrim( $line, 351, 15 ) );
+        #GLIDE_SLOPE_ANGLE
+        $sth_ils1->bind_param( 11, substrim( $line, 366,  4 ) );
+        #GLIDE_SLOPE_FREQUENCY
+        $sth_ils1->bind_param( 12, substrim( $line, 370,  6 ) );
+        #INNER_MARKER_TYPE
+        $sth_ils1->bind_param( 13, substrim( $line, 439, 15 ) );
+        #INNER_MARKER_DISTANCE
+        $sth_ils1->bind_param( 14, substrim( $line, 504,  6 ) );
+        #MIDDLE_MARKER_TYPE
+        $sth_ils1->bind_param( 15, substrim( $line, 510, 15 ) );
+        #MIDDLE_MARKER_ID
+        $sth_ils1->bind_param( 16, substrim( $line, 525,  2 ) );
+        #MIDDLE_MARKER_NAME
+        $sth_ils1->bind_param( 17, substrim( $line, 527,  5 ) );
+        #MIDDLE_MARKER_FREQUENCY
+        $sth_ils1->bind_param( 18, substrim( $line, 532,  3 ) );
+        #MIDDLE_MARKER_DISTANCE
+        $sth_ils1->bind_param( 19, substrim( $line, 585,  6 ) );
+        #OUTER_MARKER_TYPE
+        $sth_ils1->bind_param( 20, substrim( $line, 591, 15 ) );
+        #OUTER_MARKER_ID
+        $sth_ils1->bind_param( 21, substrim( $line, 606,  2 ) );
+        #OUTER_MARKER_NAME
+        $sth_ils1->bind_param( 22, substrim( $line, 608,  5 ) );
+        #OUTER_MARKER_FREQUENCY
+        $sth_ils1->bind_param( 23, substrim( $line, 613,  3 ) );
+        #OUTER_MARKER_DISTANCE
+        $sth_ils1->bind_param( 24, substrim( $line, 666,  6 ) );
+        #BACKCOURSE_MARKER_AVAILABLE
+        $sth_ils1->bind_param( 25, substrim( $line, 672,  9 ) );
+
+        $sth_ils1->execute();
+    }
+    elsif ( $type eq "ILS2" ) 
+    {
+        #SITE_NUMBER
+        $sth_ils2->bind_param(  1, substrim( $line,   4,  11 ) );
+        #RUNWAY_ID
+        $sth_ils2->bind_param(  2, substrim( $line,  15,   3 ) );
+        #ILS_TYPE
+        $sth_ils2->bind_param(  3, substrim( $line,  18,  10 ) );
+        #ILS_REMARKS
+        $sth_ils2->bind_param(  4, substrim( $line,  28, 400 ) );
+
+        $sth_ils2->execute();
+    }
+
+    if ( ($i % 1000) == 0 )
+    {
+        print( "\rProcessed $i records..." );
+        $| = 1;
+        $dbh->do( "PRAGMA synchronous=OFF" );
+    }
+}
+
+print( "\rFinished processing $i records.\n" );
+close ILS_FILE;
+
+###########################################################################
+
+$dbh->disconnect();
