@@ -198,7 +198,7 @@ public class RunwayDetailsActivity extends ActivityBase {
         String ilsType = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ILS_TYPE ) );
         if ( ilsType.length() > 0 ) {
             addSeparator( layout );
-            addRow( layout, "ILS type", ilsType );
+            addRow( layout, "Instrument approach", ilsType );
         }
         String arrestingDevice = rwy.getString( rwy.getColumnIndex( 
                 Runways.BASE_END_ARRESTING_DEVICE_TYPE ) );
@@ -337,7 +337,7 @@ public class RunwayDetailsActivity extends ActivityBase {
         String ilsType = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ILS_TYPE ) );
         if ( ilsType.length() > 0 ) {
             addSeparator( layout );
-            addRow( layout, "ILS type", ilsType );
+            addRow( layout, "Instrument approach", ilsType );
         }
         String arrestingDevice = rwy.getString( rwy.getColumnIndex( 
                 Runways.RECIPROCAL_END_ARRESTING_DEVICE_TYPE ) );
