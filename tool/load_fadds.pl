@@ -706,6 +706,86 @@ my $insert_ils2_record = "INSERT INTO ils2 ("
         ."?, ?, ?, ?"
         .")";
 
+my $create_aff1_table = "CREATE TABLE aff1 ("
+        ."ARTCC_ID TEXT, "
+        ."ARTCC_NAME TEXT, "
+        ."SITE_LOCATION TEXT, "
+        ."ARTCC_ALTERNATE_NAME TEXT, "
+        ."FACILITY_TYPE TEXT, "
+        ."SITE_STATE_NAME TEXT"
+        .")";
+
+my $insert_aff1_record = "INSERT INTO aff1 ("
+        ."ARTCC_ID, "
+        ."ARTCC_NAME, "
+        ."SITE_LOCATION, "
+        ."ARTCC_ALTERNATE_NAME, "
+        ."FACILITY_TYPE, "
+        ."SITE_STATE_NAME"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?"
+        .")";
+
+my $create_aff2_table = "CREATE TABLE aff2 ("
+        ."ARTCC_ID TEXT, "
+        ."SITE_LOCATION TEXT, "
+        ."FACILITY_TYPE TEXT, "
+        ."REMARK_ELEMENT_NO INTEGER, "
+        ."REMARK_TEXT TEXT"
+        .")";
+
+my $insert_aff2_record = "INSERT INTO aff2 ("
+        ."ARTCC_ID, "
+        ."SITE_LOCATION, "
+        ."FACILITY_TYPE, "
+        ."REMARK_ELEMENT_NO, "
+        ."REMARK_TEXT"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?"
+        .")";
+
+my $create_aff3_table = "CREATE TABLE aff3 ("
+        ."ARTCC_ID TEXT, "
+        ."SITE_LOCATION TEXT, "
+        ."FACILITY_TYPE TEXT, "
+        ."SITE_FREQUENCY TEXT, "
+        ."FREQ_ALTITUDE TEXT, "
+        ."FREQ_USAGE_NAME TEXT, "
+        ."IFR_FACILITY_ID TEXT"
+        .")";
+
+my $insert_aff3_record = "INSERT INTO aff3 ("
+        ."ARTCC_ID, "
+        ."SITE_LOCATION, "
+        ."FACILITY_TYPE, "
+        ."SITE_FREQUENCY, "
+        ."FREQ_ALTITUDE, "
+        ."FREQ_USAGE_NAME, "
+        ."IFR_FACILITY_ID"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?, ?"
+        .")";
+
+my $create_aff4_table = "CREATE TABLE aff4 ("
+        ."ARTCC_ID TEXT, "
+        ."SITE_LOCATION TEXT, "
+        ."FACILITY_TYPE TEXT, "
+        ."REMARK_FREQUENCY TEXT, "
+        ."REMARKS_ELEMENT_NO INTEGER, "
+        ."REMARK_TEXT TEXT"
+        .")";
+
+my $insert_aff4_record = "INSERT INTO aff4 ("
+        ."ARTCC_ID, "
+        ."SITE_LOCATION, "
+        ."FACILITY_TYPE, "
+        ."REMARK_FREQUENCY, "
+        ."REMARKS_ELEMENT_NO, "
+        ."REMARK_TEXT"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?"
+        .")";
+
 $dbh->do( "DROP TABLE IF EXISTS airports" );
 $dbh->do( $create_airports_table );
 $dbh->do( "CREATE INDEX idx_apt_site_number on airports ( SITE_NUMBER );" );
@@ -766,6 +846,22 @@ $dbh->do( "DROP TABLE IF EXISTS ils2" );
 $dbh->do( $create_ils2_table );
 $dbh->do( "CREATE INDEX idx_ils2_runway_id on ils2 ( SITE_NUMBER, RUNWAY_ID );" );
 
+$dbh->do( "DROP TABLE IF EXISTS aff1" );
+$dbh->do( $create_aff1_table );
+$dbh->do( "CREATE INDEX idx_aff1_artcc_id on aff1 ( ARTCC_ID );" );
+
+$dbh->do( "DROP TABLE IF EXISTS aff2" );
+$dbh->do( $create_aff2_table );
+$dbh->do( "CREATE INDEX idx_aff2_artcc_id on aff2 ( ARTCC_ID );" );
+
+$dbh->do( "DROP TABLE IF EXISTS aff3" );
+$dbh->do( $create_aff3_table );
+$dbh->do( "CREATE INDEX idx_aff3_artcc_id on aff3 ( ARTCC_ID );" );
+
+$dbh->do( "DROP TABLE IF EXISTS aff4" );
+$dbh->do( $create_aff4_table );
+$dbh->do( "CREATE INDEX idx_aff4_artcc_id on aff4 ( ARTCC_ID );" );
+
 my $sth_apt = $dbh->prepare( $insert_airports_record );
 my $sth_rwy = $dbh->prepare( $insert_runways_record );
 my $sth_att = $dbh->prepare( $insert_attendance_record );
@@ -780,6 +876,10 @@ my $sth_nav1 = $dbh->prepare( $insert_nav1_record );
 my $sth_nav2 = $dbh->prepare( $insert_nav2_record );
 my $sth_ils1 = $dbh->prepare( $insert_ils1_record );
 my $sth_ils2 = $dbh->prepare( $insert_ils2_record );
+my $sth_aff1 = $dbh->prepare( $insert_aff1_record );
+my $sth_aff2 = $dbh->prepare( $insert_aff2_record );
+my $sth_aff3 = $dbh->prepare( $insert_aff3_record );
+my $sth_aff4 = $dbh->prepare( $insert_aff4_record );
 
 my $i = 0;
 
@@ -795,7 +895,6 @@ open( APT_FILE, "<$APT" ) or die "Could not open data file\n";
 
 while ( my $line = <APT_FILE> )
 {
-    last;
     ++$i;
 
     if ( ($i % 1000) == 0 )
@@ -1149,7 +1248,6 @@ $i = 0;
 print( "$TWR\n" );
 while ( my $line = <TWR_FILE> )
 {
-    last;
     ++$i;
 
     if ( ($i % 1000) == 0 )
@@ -1258,7 +1356,6 @@ $i = 0;
 print( "$AWOS\n" );
 while ( my $line = <AWOS_FILE> )
 {
-    last;
     ++$i;
 
     if ( ($i % 1000) == 0 )
@@ -1317,7 +1414,6 @@ $i = 0;
 print( "$NAV\n" );
 while ( my $line = <NAV_FILE> )
 {
-    last;
     ++$i;
 
     if ( ($i % 1000) == 0 )
@@ -1486,6 +1582,104 @@ while ( my $line = <ILS_FILE> )
 
 print( "\rFinished processing $i records.\n" );
 close ILS_FILE;
+
+###########################################################################
+
+my $AFF = $FADDS_BASE."/AFF.txt";
+open( AFF_FILE, "<$AFF" ) or die "Could not open data file\n";
+
+$i = 0;
+print( "$AFF\n" );
+while ( my $line = <AFF_FILE> )
+{
+    ++$i;
+
+    if ( ($i % 1000) == 0 )
+    {
+        $dbh->do( "PRAGMA synchronous=ON" );
+    }
+
+    my $type = substrim( $line, 0, 4 );
+
+    if ( $type eq "AFF1" )
+    {
+        #ARTCC_ID
+        $sth_aff1->bind_param( 1, substrim( $line,   4,  3 ) );
+        #ARTCC_NAME
+        $sth_aff1->bind_param( 2, substrim( $line,   7, 40 ) );
+        #SITE_LOCATION
+        $sth_aff1->bind_param( 3, substrim( $line,  47, 30 ) );
+        #ARTCC_ALTERNATE_NAME
+        $sth_aff1->bind_param( 4, substrim( $line,  77, 50 ) );
+        #FACILITY_TYPE
+        $sth_aff1->bind_param( 5, substrim( $line, 127,  5 ) );
+        #SITE_STATE_NAME
+        $sth_aff1->bind_param( 6, substrim( $line, 142, 20 ) );
+
+        $sth_aff1->execute();
+    }
+    elsif ( $type eq "AFF2" ) 
+    {
+        #ARTCC_ID
+        $sth_aff2->bind_param( 1, substrim( $line,  4,   3 ) );
+        #SITE_LOCATION
+        $sth_aff2->bind_param( 2, substrim( $line,  7,  30 ) );
+        #FACILITY_TYPE
+        $sth_aff2->bind_param( 3, substrim( $line, 37,   5 ) );
+        #REMARK_ELEMENT_NO
+        $sth_aff2->bind_param( 4, substrim( $line, 42,   4 ) );
+        #REMARK_TEXT
+        $sth_aff2->bind_param( 5, substrim( $line, 46, 200 ) );
+
+        $sth_aff2->execute();
+    }
+    elsif ( $type eq "AFF3" ) 
+    {
+        #ARTCC_ID
+        $sth_aff3->bind_param( 1, substrim( $line,  4,  3 ) );
+        #SITE_LOCATION
+        $sth_aff3->bind_param( 2, substrim( $line,  7, 30 ) );
+        #FACILITY_TYPE
+        $sth_aff3->bind_param( 3, substrim( $line, 37,  5 ) );
+        #SITE_FREQUENCY
+        $sth_aff3->bind_param( 4, substrim( $line, 42,  7 ) );
+        #FREQ_ALTITUDE
+        $sth_aff3->bind_param( 5, substrim( $line, 49, 10 ) );
+        #FREQ_USAGE_NAME
+        $sth_aff3->bind_param( 6, substrim( $line, 59, 17 ) );
+        #IFR_FACILITY_ID
+        $sth_aff3->bind_param( 7, substrim( $line, 76,  4 ) );
+
+        $sth_aff3->execute();
+    }
+    elsif ( $type eq "AFF4" ) 
+    {
+        #ARTCC_ID
+        $sth_aff4->bind_param( 1, substrim( $line,  4,   3 ) );
+        #SITE_LOCATION
+        $sth_aff4->bind_param( 2, substrim( $line,  7,  30 ) );
+        #FACILITY_TYPE
+        $sth_aff4->bind_param( 3, substrim( $line, 37,   5 ) );
+        #REMARK_FREQUENCY
+        $sth_aff4->bind_param( 4, substrim( $line, 42,   7 ) );
+        #REMARKS_ELEMENT_NO
+        $sth_aff4->bind_param( 5, substrim( $line, 49,   2 ) );
+        #REMARK_TEXT
+        $sth_aff4->bind_param( 6, substrim( $line, 51, 200 ) );
+
+        $sth_aff4->execute();
+    }
+
+    if ( ($i % 1000) == 0 )
+    {
+        print( "\rProcessed $i records..." );
+        $| = 1;
+        $dbh->do( "PRAGMA synchronous=OFF" );
+    }
+}
+
+print( "\rFinished processing $i records.\n" );
+close AFF_FILE;
 
 ###########################################################################
 
