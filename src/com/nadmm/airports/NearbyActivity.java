@@ -354,8 +354,15 @@ public class NearbyActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );
-            mListView.setAdapter( mListAdapter );
+            if ( mListAdapter == null ) {
+                // No adapter is set yet
+                mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );
+                mListView.setAdapter( mListAdapter );
+            } else {
+                int position = mListView.getFirstVisiblePosition();
+                mListAdapter.changeCursor( c );
+                mListView.setSelection( position );
+            }
             String msg = String.valueOf( c.getCount() )+" airports found within "
                     +String.valueOf( mRadius )+" NM";
             if ( mRefAirport !=  null ) {
