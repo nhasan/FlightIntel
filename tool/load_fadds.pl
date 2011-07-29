@@ -631,6 +631,7 @@ my $insert_nav2_record = "INSERT INTO nav2 ("
         .")";
 
 my $create_ils1_table = "CREATE TABLE ils1 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."SITE_NUMBER TEXT, "
         ."RUNWAY_ID TEXT, "
         ."ILS_TYPE TEXT, "
@@ -691,6 +692,7 @@ my $insert_ils1_record = "INSERT INTO ils1 ("
         .")";
 
 my $create_ils2_table = "CREATE TABLE ils2 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."SITE_NUMBER TEXT, "
         ."RUNWAY_ID TEXT, "
         ."ILS_TYPE TEXT, "
@@ -707,6 +709,7 @@ my $insert_ils2_record = "INSERT INTO ils2 ("
         .")";
 
 my $create_aff1_table = "CREATE TABLE aff1 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."ARTCC_ID TEXT, "
         ."ARTCC_NAME TEXT, "
         ."SITE_LOCATION TEXT, "
@@ -727,6 +730,7 @@ my $insert_aff1_record = "INSERT INTO aff1 ("
         .")";
 
 my $create_aff2_table = "CREATE TABLE aff2 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."ARTCC_ID TEXT, "
         ."SITE_LOCATION TEXT, "
         ."FACILITY_TYPE TEXT, "
@@ -745,6 +749,7 @@ my $insert_aff2_record = "INSERT INTO aff2 ("
         .")";
 
 my $create_aff3_table = "CREATE TABLE aff3 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."ARTCC_ID TEXT, "
         ."SITE_LOCATION TEXT, "
         ."FACILITY_TYPE TEXT, "
@@ -767,6 +772,7 @@ my $insert_aff3_record = "INSERT INTO aff3 ("
         .")";
 
 my $create_aff4_table = "CREATE TABLE aff4 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."ARTCC_ID TEXT, "
         ."SITE_LOCATION TEXT, "
         ."FACILITY_TYPE TEXT, "
@@ -784,6 +790,31 @@ my $insert_aff4_record = "INSERT INTO aff4 ("
         ."REMARK_TEXT"
         .") VALUES ("
         ."?, ?, ?, ?, ?, ?"
+        .")";
+
+my $create_wxl_table = "CREATE TABLE wxl ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."LOCATION_ID TEXT,"
+        ."LOC_LATTITUDE_DEGREES REAL, "
+        ."LOC_LONGITUDE_DEGREES REAL, "
+        ."ASSOC_CITY TEXT, "
+        ."ASSOC_STATE TEXT, "
+        ."LOC_ELEVATION_FEET INTEGER, "
+        ."LOC_ELEVATION_ACCURACY TEXT, "
+        ."WX_SERVICE_TYPES TEXT"
+        .")";
+
+my $insert_wxl_record = "INSERT INTO wxl ("
+        ."LOCATION_ID,"
+        ."LOC_LATTITUDE_DEGREES, "
+        ."LOC_LONGITUDE_DEGREES, "
+        ."ASSOC_CITY, "
+        ."ASSOC_STATE, "
+        ."LOC_ELEVATION_FEET, "
+        ."LOC_ELEVATION_ACCURACY, "
+        ."WX_SERVICE_TYPES"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?, ?, ?"
         .")";
 
 $dbh->do( "DROP TABLE IF EXISTS airports" );
@@ -862,6 +893,10 @@ $dbh->do( "DROP TABLE IF EXISTS aff4" );
 $dbh->do( $create_aff4_table );
 $dbh->do( "CREATE INDEX idx_aff4_artcc_id on aff4 ( ARTCC_ID );" );
 
+$dbh->do( "DROP TABLE IF EXISTS wxl" );
+$dbh->do( $create_wxl_table );
+$dbh->do( "CREATE INDEX idx_wxl_location_id on wxl ( LOCATION_ID );" );
+
 my $sth_apt = $dbh->prepare( $insert_airports_record );
 my $sth_rwy = $dbh->prepare( $insert_runways_record );
 my $sth_att = $dbh->prepare( $insert_attendance_record );
@@ -880,6 +915,7 @@ my $sth_aff1 = $dbh->prepare( $insert_aff1_record );
 my $sth_aff2 = $dbh->prepare( $insert_aff2_record );
 my $sth_aff3 = $dbh->prepare( $insert_aff3_record );
 my $sth_aff4 = $dbh->prepare( $insert_aff4_record );
+my $sth_wxl = $dbh->prepare( $insert_wxl_record );
 
 my $i = 0;
 
@@ -952,14 +988,14 @@ while ( my $line = <APT_FILE> )
         $sth_apt->bind_param( 19, substrim( $line,  499, 16 ) );
         #REF_LATTITUDE_DEGREES
         my $lattitude = substrim( $line,  530, 11 )/3600.0;
-        if ( substrim( $line, 541, 1 ) eq "S" )
+        if ( substr( $line, 541, 1 ) eq "S" )
         {
             $lattitude *= -1;
         }
         $sth_apt->bind_param( 20, $lattitude );
         #REF_LONGITUDE_DEGREES
         my $longitude = substrim( $line,  557, 11 )/3600.0;
-        if ( substrim( $line, 568, 1 ) eq "W" )
+        if ( substr( $line, 568, 1 ) eq "W" )
         {
             $longitude *= -1;
         }
@@ -1680,6 +1716,74 @@ while ( my $line = <AFF_FILE> )
 
 print( "\rFinished processing $i records.\n" );
 close AFF_FILE;
+
+###########################################################################
+
+my $WXL = $FADDS_BASE."/WXL.txt";
+open( WXL_FILE, "<$WXL" ) or die "Could not open data file\n";
+
+$i = 0;
+print( "$WXL\n" );
+while ( my $line = <WXL_FILE> )
+{
+    ++$i;
+
+    if ( ($i % 1000) == 0 )
+    {
+        $dbh->do( "PRAGMA synchronous=ON" );
+    }
+
+    if ( substr( $line, 0, 1 ) eq "*" )
+    {
+        #Ignore and skip the continuation record
+        next;
+    }
+
+    #LOCAION_ID
+    $sth_wxl->bind_param( 1, substrim( $line,  0,  5 ) );
+    #LOC_LATTITUDE_DEGREES
+    my $deg = substr( $line, 5, 2 );
+    my $min = substr( $line, 7, 2 );
+    my $sec = substr( $line, 9, 3 );
+    my $lattitude = $deg+$min/60+$sec/36000;
+    if ( substr( $line, 12, 1 ) eq "S" )
+    {
+        $lattitude *= -1;
+    }
+    $sth_wxl->bind_param( 2, $lattitude );
+    #LOC_LONGITUDE_DEGREES
+    my $deg = substr( $line, 13, 3 );
+    my $min = substr( $line, 16, 2 );
+    my $sec = substr( $line, 18, 3 );
+    my $longitude = $deg+$min/60+$sec/36000;
+    if ( substr( $line, 21, 1 ) eq "W" )
+    {
+        $longitude *= -1;
+    }
+    $sth_wxl->bind_param( 3, $longitude );
+    #ASSOC_CITY
+    $sth_wxl->bind_param( 4, substrim( $line,  22, 26 ) );
+    #ASSOC_STATE
+    $sth_wxl->bind_param( 5, substrim( $line,  48,  2 ) );
+    #LOC_ELEVATION_FEET
+    $sth_wxl->bind_param( 6, substrim( $line,  53,  5 ) );
+    #LOC_ELEVATION_ACCURACY
+    $sth_wxl->bind_param( 7, substrim( $line,  58,  1 ) );
+    #WX_SERICES_TYPES
+    $sth_wxl->bind_param( 8, substrim( $line,  59, 60 ) );
+
+    $sth_wxl->execute();
+
+    if ( ($i % 1000) == 0 )
+    {
+        print( "\rProcessed $i records..." );
+        $| = 1;
+        $dbh->do( "PRAGMA synchronous=OFF" );
+    }
+}
+
+print( "\rFinished processing $i records.\n" );
+close WXL_FILE;
 
 ###########################################################################
 
