@@ -304,8 +304,6 @@ public class NearbyActivity extends ActivityBase {
                     null, null, null, null );
             if ( !c.moveToFirst() ) {
                 Log.i( TAG, "No airports found within the query radius" );
-                Toast.makeText( NearbyActivity.this, "No airports found within the query radius", 
-                        Toast.LENGTH_LONG ).show();
                 c.close();
                 return null;
             }
@@ -354,6 +352,13 @@ public class NearbyActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor c ) {
+            if ( c == null ) {
+                Toast.makeText( NearbyActivity.this, "No airports found within the query radius", 
+                        Toast.LENGTH_LONG ).show();
+                finish();
+                return;
+            }
+
             if ( mListAdapter == null ) {
                 // No adapter is set yet
                 mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );

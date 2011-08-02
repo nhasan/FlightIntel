@@ -351,7 +351,7 @@ public class DatabaseManager {
         SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
+        builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
                 +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
         Cursor c = builder.query( db, new String[] { "*" }, Airports.SITE_NUMBER+"=?",
                 new String[] { siteNumber }, null, null, null, null );

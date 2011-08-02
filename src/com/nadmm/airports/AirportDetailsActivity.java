@@ -414,7 +414,9 @@ public class AirportDetailsActivity extends ActivityBase {
                 String.format( "%d\u00B0 %s (%s)", variation, dir, varYear ) );
         addSeparator( layout );
         String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
-        addRow( layout, "Sectional chart", sectional );
+        if ( sectional.length() > 0 ) {
+            addRow( layout, "Sectional chart", sectional );
+        }
     }
 
     protected void showRemarks( Cursor[] result ) {

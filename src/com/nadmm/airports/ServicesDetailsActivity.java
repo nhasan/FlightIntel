@@ -21,8 +21,6 @@ package com.nadmm.airports;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,8 +34,6 @@ import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Runways;
-import com.nadmm.airports.DatabaseManager.States;
 
 public class ServicesDetailsActivity extends ActivityBase {
 
@@ -63,26 +59,8 @@ public class ServicesDetailsActivity extends ActivityBase {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-
-            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 2 ];
-
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
-                    +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
-            Cursor c = builder.query( db, new String[] { "*" }, Airports.SITE_NUMBER+"=?",
-                    new String[] { siteNumber }, null, null, null, null );
-            if ( !c.moveToFirst() ) {
-                return null;
-            }
-            cursors[ 0 ] = c;
-
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Runways.TABLE_NAME );
-            c = builder.query( db, new String[] { "*"  }, Airports.SITE_NUMBER+"=?",
-                    new String[] { siteNumber }, null, null, null, null );
-            cursors[ 1 ] = c;
-
+            Cursor[] cursors = new Cursor[ 1 ];
+            cursors[ 0 ] = mDbManager.getAirportDetails( siteNumber );
             return cursors;
         }
 

@@ -63,6 +63,9 @@ public class ActivityBase extends Activity {
         String type = DataUtils.decodeLandingFaclityType( siteNumber );
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
         String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );
+        if ( state == null ) {
+            state = c.getString( c.getColumnIndex( Airports.ASSOC_COUNTY ) );
+        }
         String info = type+", "+city+", "+state;
         tv.setText( info );
         tv = (TextView) root.findViewById( R.id.airport_info2 );

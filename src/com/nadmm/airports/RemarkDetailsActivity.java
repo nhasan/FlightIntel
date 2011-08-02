@@ -131,37 +131,35 @@ public class RemarkDetailsActivity extends ActivityBase {
 
         Cursor twr8 = result[ 2 ];
         if ( twr8.moveToFirst() ) {
-            do {
-                String airspace = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_TYPES ) );
-                String remark = "";
-                if ( airspace.charAt( 0 ) == 'Y' ) {
-                    remark += "CLASS B";
+            String airspace = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_TYPES ) );
+            String remark = "";
+            if ( airspace.charAt( 0 ) == 'Y' ) {
+                remark += "CLASS B";
+            }
+            if ( airspace.charAt( 1 ) == 'Y' ) {
+                if ( remark.length() > 0 ) {
+                    remark += ", ";
                 }
-                if ( airspace.charAt( 1 ) == 'Y' ) {
-                    if ( remark.length() > 0 ) {
-                        remark += ", ";
-                    }
-                    remark += "CLASS C";
+                remark += "CLASS C";
+            }
+            if ( airspace.charAt( 2 ) == 'Y' ) {
+                if ( remark.length() > 0 ) {
+                    remark += ", ";
                 }
-                if ( airspace.charAt( 2 ) == 'Y' ) {
-                    if ( remark.length() > 0 ) {
-                        remark += ", ";
-                    }
-                    remark += "CLASS D";
+                remark += "CLASS D";
+            }
+            if ( airspace.charAt( 3 ) == 'Y' ) {
+                if ( remark.length() > 0 ) {
+                    remark += ", ";
                 }
-                if ( airspace.charAt( 3 ) == 'Y' ) {
-                    if ( remark.length() > 0 ) {
-                        remark += ", ";
-                    }
-                    remark += "CLASS E";
-                }
-                remark = "AIRSPACE: "+remark;
-                String hours = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_HOURS ) );
-                if ( hours.length() > 0 ) {
-                    remark += " ("+hours+")";
-                }
-                addRow( layout, remark );
-            } while ( twr8.moveToNext() );
+                remark += "CLASS E";
+            }
+            remark = "AIRSPACE: "+remark;
+            String hours = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_HOURS ) );
+            if ( hours.length() > 0 ) {
+                remark += " ("+hours+")";
+            }
+            addRow( layout, remark );
         }
     }
 
