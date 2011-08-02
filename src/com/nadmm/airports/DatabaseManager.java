@@ -445,8 +445,8 @@ public class DatabaseManager {
                     mDatabases.put( type, db );                    
                 }
             } while ( c.moveToNext() );
-            c.close();
         }
+        c.close();
     }
 
     public SQLiteDatabase getDatabase( String type ) {
