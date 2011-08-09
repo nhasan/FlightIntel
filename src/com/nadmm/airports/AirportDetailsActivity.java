@@ -185,6 +185,10 @@ public class AirportDetailsActivity extends ActivityBase {
             // Other details
             showOtherDetails( result );
 
+            TextView tv = (TextView) mMainLayout.findViewById( R.id.effective_date );
+            tv.setText( "Effective date: "
+                    +apt.getString( apt.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
+
             // Cleanup cursors
             for ( Cursor c : result ) {
                 if ( c != null ) {
