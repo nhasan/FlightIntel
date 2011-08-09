@@ -28,6 +28,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
@@ -100,7 +102,8 @@ public final class DownloadActivity extends ListActivity {
             "Android/data/"+DownloadActivity.class.getPackage().getName() );
     private static final File CACHE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/cache" );
 
-    final class DataInfo {
+    final class DataInfo implements Comparable<DataInfo> {
+
         public String type;
         public String desc;
         public int version;
@@ -122,6 +125,21 @@ public final class DownloadActivity extends ListActivity {
             start = info.start;
             end = info.end;
         }
+
+        @Override
+        public boolean equals( Object o ) {
+            DataInfo info = (DataInfo) o;
+            return type.equals( info.type ) && version == info.version;
+        }
+
+        @Override
+        public int compareTo( DataInfo info ) {
+            if ( !type.equals( info.type ) ) {
+                return type.compareTo( info.type );
+            }            
+            return Time.compare( start, info.start );
+        }
+
     }
 
     private final ArrayList<DataInfo> mInstalledData = new ArrayList<DataInfo>();
@@ -132,7 +150,6 @@ public final class DownloadActivity extends ListActivity {
     private AtomicBoolean mStop;
     private Handler mHandler;
 
-    /** Called when the activity is first created. */
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
@@ -143,8 +160,6 @@ public final class DownloadActivity extends ListActivity {
         mHandler = new Handler();
 
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-        setTitle( "Airports - "+getTitle() );
-
         setContentView( R.layout.download_list_view );
         
         // Add the footer view
@@ -158,7 +173,7 @@ public final class DownloadActivity extends ListActivity {
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        warnIfNoWifi();
+                        checkNetworkAndDownload();
                     }
                 }
         );
@@ -179,12 +194,12 @@ public final class DownloadActivity extends ListActivity {
             Toast.makeText( this, msg, Toast.LENGTH_LONG ).show();
         }
 
-        checkData();
+        checkData( false );
     }
 
-    private void checkData() {
-        CheckDataTask task = new CheckDataTask( this );
-        task.execute();
+    private void checkData( boolean startDownload ) {
+        CheckDataTask task = new CheckDataTask();
+        task.execute( startDownload );
     }
 
     private boolean isNetworkAvailable() {
@@ -192,16 +207,15 @@ public final class DownloadActivity extends ListActivity {
                 Context.CONNECTIVITY_SERVICE );
         NetworkInfo network = connMan.getActiveNetworkInfo();
         if ( network == null || !network.isConnected() ) {
-            showMessage( "Network connectivity is not available" );
+            showMessage( "Please check your internet connection" );
             return false;
         }
 
         return true;
     }
 
-    private void warnIfNoWifi() {
-        if ( isNetworkAvailable() == false ) {
-            Toast.makeText( this, "Please check your internet connection", Toast.LENGTH_LONG );
+    private void checkNetworkAndDownload() {
+        if ( !isNetworkAvailable() ) {
             return;
         }
 
@@ -243,8 +257,19 @@ public final class DownloadActivity extends ListActivity {
             return;
         }
 
-        mDownloadTask = new DownloadTask( this );
-        mDownloadTask.execute();
+        startDownload();
+    }
+
+    private void startDownload() {
+        mHandler.post( new Runnable() {
+
+            @Override
+            public void run() {
+                mDownloadTask = new DownloadTask( DownloadActivity.this );
+                mDownloadTask.execute();
+            }
+
+        } );
     }
 
     private final class ProgressTracker {
@@ -385,11 +410,11 @@ public final class DownloadActivity extends ListActivity {
         return c;
     }
 
-    private final class CheckDataTask extends AsyncTask<Void, Void, Integer> {
+    private final class CheckDataTask extends AsyncTask<Boolean, Void, Integer> {
         private DownloadActivity mActivity;
 
-        public CheckDataTask( DownloadActivity activity ) {
-            mActivity = activity;
+        public CheckDataTask() {
+            mActivity = DownloadActivity.this;
         }
 
         @Override
@@ -402,12 +427,13 @@ public final class DownloadActivity extends ListActivity {
         }
 
         @Override
-        protected Integer doInBackground( Void... params ) {
+        protected Integer doInBackground( Boolean... params ) {
+            boolean startDownload = params[ 0 ];
             int result;
 
             result = getInstalled();
             if ( result != 0 ) {
-                showMessage( "There was an error while reading catalog" );
+                showMessage( "There was an error while checking installed data" );
                 return result;
             }
 
@@ -425,6 +451,10 @@ public final class DownloadActivity extends ListActivity {
 
             processManifest();
 
+            if ( startDownload ) {
+                download();
+            }
+
             return 0;
         }
 
@@ -438,29 +468,11 @@ public final class DownloadActivity extends ListActivity {
                 return;
             }
 
-            Cursor c = createCursor();
-            DownloadListAdapter adapter = new DownloadListAdapter( DownloadActivity.this, c );
-            mActivity.setListAdapter( adapter );
-            adapter.notifyDataSetInvalidated();
-
-            Button btnDelete = (Button) findViewById( R.id.btnDelete );
-            if ( !mInstalledData.isEmpty() ) {
-                btnDelete.setVisibility( View.VISIBLE );
-                btnDelete.setEnabled( true );
-            } else {
-                btnDelete.setVisibility( View.GONE );
-            }
-
-            Button btnDownload = (Button) findViewById( R.id.btnDownload );
-            if ( !mAvailableData.isEmpty() ) {
-                btnDownload.setVisibility( View.VISIBLE );
-                btnDownload.setEnabled( true );
-            } else {
-                btnDownload.setVisibility( View.GONE );
-            }
+            updateDownloadList();
         }
 
         private int getInstalled() {
+            mInstalledData.clear();
             Cursor c = mDbManager.getAllFromCatalog();
             if ( c.moveToFirst() ) {
                 do {
@@ -492,7 +504,7 @@ public final class DownloadActivity extends ListActivity {
 
         private int downloadManifest() {
             try {
-                if ( isNetworkAvailable() == false ) {
+                if ( !isNetworkAvailable() ) {
                     return -1;
                 }
 
@@ -539,9 +551,7 @@ public final class DownloadActivity extends ListActivity {
             try {
                 in = mActivity.openFileInput( MANIFEST );
             } catch ( FileNotFoundException e ) {
-                Log.e( TAG, e.getMessage() );
-                setProgressBarIndeterminateVisibility( false );
-                showMessage( "Unable to read manifest file" );
+                Log.e( TAG, "FileNotFoundException: "+e.getMessage() );
                 return -1;
             }
 
@@ -631,6 +641,8 @@ public final class DownloadActivity extends ListActivity {
                 return -1;
             }
 
+            Collections.sort( mAvailableData );
+
             Iterator<DataInfo> it = mAvailableData.iterator();
             while ( it.hasNext() ) {
                 DataInfo dataFile = it.next();
@@ -655,29 +667,82 @@ public final class DownloadActivity extends ListActivity {
         }
 
         private void processManifest() {
+            Time now = new Time();
+            now.setToNow();
+            HashSet<String> seenTypes = new HashSet<String>();
             Iterator<DataInfo> it = mAvailableData.iterator();
             while ( it.hasNext() ) {
-                // Find out which of these available entries are not installed
                 DataInfo available = it.next();
-                Iterator<DataInfo> it2 = mInstalledData.iterator();
-                while ( it2.hasNext() ) {
-                    DataInfo installed = it2.next();
-                    if ( available.type.equals( installed.type )
-                            && available.version <= installed.version ) {
-                        // This update is already installed
-                        Log.i( TAG, "Removing "+available.type+" version "+available.version );
-                        it.remove();
-                        break;
-                    }
+                if ( now.after( available.end ) ) {
+                    // Expired
+                    Log.i( TAG, "Removing expired "+available.type+":"+available.version );
+                    it.remove();
+                    continue;
+                }
+                if ( isInstalled( available ) ) {
+                    // Already installed
+                    Log.i( TAG, "Removing installed "+available.type+":"+available.version );
+                    it.remove();
+                    continue;
+                }
+                if ( seenTypes.contains( available.type ) )
+                {
+                    // Already selected
+                    Log.i( TAG, "Removing future "+available.type+":"+available.version );
+                    //it.remove();
+                    continue;
+                }
+
+                seenTypes.add( available.type );
+            }
+        }
+
+        private boolean isInstalled( DataInfo available ) {
+            Iterator<DataInfo> it = mInstalledData.iterator();
+            while ( it.hasNext() ) {
+                DataInfo installed = it.next();
+                if ( available.equals( installed ) ) {
+                    return true;
                 }
             }
+            return false;
+        }
+    }
+
+    protected void updateDownloadList() {
+        Cursor c = createCursor();
+        DownloadListAdapter adapter = new DownloadListAdapter( this, c );
+        setListAdapter( adapter );
+
+        if ( c.getCount() == 0 ) {
+            TextView empty = (TextView) findViewById( android.R.id.empty );
+            empty.setText( R.string.download_error );
+            return;
+        }
+
+        Button btnDelete = (Button) findViewById( R.id.btnDelete );
+        if ( !mInstalledData.isEmpty() ) {
+            btnDelete.setVisibility( View.VISIBLE );
+            btnDelete.setEnabled( true );
+        } else {
+            btnDelete.setVisibility( View.GONE );
+        }
+
+        Button btnDownload = (Button) findViewById( R.id.btnDownload );
+        if ( !mAvailableData.isEmpty() ) {
+            btnDownload.setVisibility( View.VISIBLE );
+            btnDownload.setEnabled( true );
+        } else {
+            btnDownload.setVisibility( View.GONE );
         }
     }
 
     private final class DownloadTask extends AsyncTask<Void, Integer, Integer> {
+        private DownloadActivity mActivity;
         private ProgressTracker mTracker;
 
         public DownloadTask( DownloadActivity activity ) {
+            mActivity = activity;
         }
 
         @Override
@@ -687,7 +752,7 @@ public final class DownloadActivity extends ListActivity {
         @Override
         protected Integer doInBackground( Void... params ) {
             Iterator<DataInfo> it = mAvailableData.iterator();
-            while ( it.hasNext() ) {
+            if ( it.hasNext() ) {
                 final DataInfo data = it.next();
     
                 mTracker = getTrackerForType( data.type );
@@ -696,22 +761,26 @@ public final class DownloadActivity extends ListActivity {
                 if ( result < 0 ) {
                     return result;
                 }
-                Log.i( TAG, "Download done" );
     
                 result = installData( data );
                 if ( result < 0 ) {
                     return result;
                 }
-                Log.i( TAG, "Install done" );
     
                 result = updateCatalog( data );
                 if ( result < 0 ) {
                     return result;
                 }         
-                Log.i( TAG, "Catalog updated" );
+
+                // Update the displayed list to reflect the installed data
+                mInstalledData.add( data );
+                mAvailableData.remove( data );
+            } else {
+                // No more downloads left, cleanup any expired data
+                cleanupExpiredData();
+                showMessage( "The data was downloaded and installed successfully" );
+                return 1;
             }
-    
-            cleanupExpiredData();
 
             return 0;
         }
@@ -723,17 +792,19 @@ public final class DownloadActivity extends ListActivity {
 
         @Override
         protected void onPostExecute( Integer result ) {
-            if ( result == 0 ) {
-                showMessage( "The data was downloaded and installed successfully" );
-            }
-            else {
+            if ( result < 0 ) {
                 showMessage( "There was an error while downloading data" );
             }
 
             mStop.set( false );
 
-            // Re-check for data to reflect the current downloads
-            checkData();
+            // Update the displayed list to reflect the recently installed data
+            updateDownloadList();
+
+            if ( result == 0 ) {
+                // Start the download of the next data file
+                mActivity.startDownload();
+            }
         }
 
         protected ProgressTracker getTrackerForType( String type ) {
@@ -873,7 +944,7 @@ public final class DownloadActivity extends ListActivity {
                 File dbFile = new File( DatabaseManager.DATABASE_DIR, data.dbName );
                 out = new FileOutputStream( dbFile );
 
-                byte[] buffer = new byte[ 4*1024 ];
+                byte[] buffer = new byte[ 16*1024 ];
                 int len = buffer.length;
                 int count;
                 int total = 0;
@@ -885,7 +956,7 @@ public final class DownloadActivity extends ListActivity {
                     publishProgress( total );
                 }
 
-                if ( mStop.get() == true ) {
+                if ( mStop.get() ) {
                     // Process was stopped by the user
                     return -3;
                 }
@@ -1021,7 +1092,7 @@ public final class DownloadActivity extends ListActivity {
             }
 
             // Refresh the download list view
-            checkData();
+            checkData( false );
         }
     }
 
@@ -1035,47 +1106,24 @@ public final class DownloadActivity extends ListActivity {
         Cursor c = mDbManager.getAllFromCatalog();
         if ( c.moveToFirst() ) {
             do {
-                // For each type that we have valid data, delete the expired data
+                // Check and delete all the expired databases
                 String end = c.getString( c.getColumnIndex( Catalog.END_DATE ) );
-                if ( end.compareTo( today ) >= 0 ) {
-                    // This data is valid today, cleanup any previous expired data
+                if ( end.compareTo( today ) < 0 ) {
+                    // This database has expired, remove it
+                    Integer _id = c.getInt( c.getColumnIndex( Catalog._ID ) );
                     String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
-                    int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
-                    Cursor expired = catalogDb.query( Catalog.TABLE_NAME, 
-                            new String[] { Catalog._ID, Catalog.DB_NAME },
-                            Catalog.TYPE+"=? and "+Catalog.VERSION+"<?",
-                            new String[] { type, Integer.toString( version ) },
-                            null, null, null );
-                    if ( expired.moveToFirst() ) {
-                        do {
-                            Integer _id = expired.getInt( c.getColumnIndex( Catalog._ID ) );
-                            String dbName = expired.getString( 
-                                    expired.getColumnIndex( Catalog.DB_NAME ) );
-                            Log.i( TAG, "Deleting _id="+_id+" type="+type+" dbName="+dbName );
-                            File file = new File( DatabaseManager.DATABASE_DIR, dbName );
-                            if ( file.delete() ) {
-                                // Now delete the catalog entry for the file
-                                catalogDb.delete( Catalog.TABLE_NAME, Catalog._ID+"=?", 
-                                        new String[] { Integer.toString( _id ) } );
-                            }
-                        } while ( expired.moveToNext() );
+                    String dbName = c.getString( c.getColumnIndex( Catalog.DB_NAME ) );
+                    Log.i( TAG, "Deleting _id="+_id+" type="+type+" dbName="+dbName );
+                    File file = new File( DatabaseManager.DATABASE_DIR, dbName );
+                    if ( file.delete() ) {
+                        // Now delete the catalog entry for the file
+                        catalogDb.delete( Catalog.TABLE_NAME, Catalog._ID+"=?", 
+                                new String[] { Integer.toString( _id ) } );
                     }
-
-                    expired.close();
                 }
             } while ( c.moveToNext() );
         }
         c.close();
-    }
-
-    protected void showMessage( final String msg ) {
-        Log.i( TAG, msg );
-        mHandler.post( new Runnable () {
-            @Override
-            public void run() {
-                Toast.makeText( getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
-            }
-        } );
     }
 
     @Override
@@ -1154,6 +1202,19 @@ public final class DownloadActivity extends ListActivity {
         default:
             return super.onOptionsItemSelected( item );
         }
+    }
+
+    protected void showMessage( final String msg ) {
+        if ( msg == null ) {
+            return;
+        }
+        Log.i( TAG, msg );
+        mHandler.post( new Runnable () {
+            @Override
+            public void run() {
+                Toast.makeText( getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
+            }
+        } );
     }
 
     protected void showErrorMessage( String msg ) {
