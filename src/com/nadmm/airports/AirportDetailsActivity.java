@@ -410,12 +410,26 @@ public class AirportDetailsActivity extends ActivityBase {
         String landingFee = apt.getString( apt.getColumnIndex( Airports.LANDING_FEE ) );
         addSeparator( layout );
         addRow( layout, "Landing fee", landingFee.equals( "Y" )? "Yes" : "No" );
-        int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
         String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
-        String varYear = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_YEAR ) );
-        addSeparator( layout );
-        addRow( layout, "Magnetic variation", 
-                String.format( "%d\u00B0 %s (%s)", variation, dir, varYear ) );
+        if ( dir.length() > 0 ) {
+            int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
+            String year = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_YEAR ) );
+            addSeparator( layout );
+            if ( year.length() > 0 ) {
+                addRow( layout, "Magnetic variation", 
+                        String.format( "%d\u00B0 %s (%s)", variation, dir, year ) );
+            } else {
+                addRow( layout, "Magnetic variation", 
+                        String.format( "%d\u00B0 %s", variation, dir ) );
+            }
+        } else {
+            Location location = (Location) mExtras.get( NearbyActivity.APT_LOCATION );
+            int variation = Math.round( GeoUtils.getMagneticDeclination( location ) );
+            dir = ( variation >= 0 )? "W" : "E";
+            addSeparator( layout );
+            addRow( layout, "Magnetic variation", 
+                    String.format( "%d\u00B0 %s (actual)", Math.abs( variation ), dir ) );
+        }
         addSeparator( layout );
         String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
         if ( sectional.length() > 0 ) {
