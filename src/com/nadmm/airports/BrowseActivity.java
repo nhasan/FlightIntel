@@ -112,7 +112,7 @@ public class BrowseActivity extends ActivityBase {
             // Show browse list
             String stateCode = extra.getString( BUNDLE_KEY_STATE_CODE );
             if ( stateCode == null ) {
-                setTitle( "Browse Airports - All States" );
+                setTitle( "Browse Airports - All Locations" );
             } else {
                 String stateName = extra.getString( BUNDLE_KEY_STATE_NAME );
                 setTitle( "Browse Airports - "+stateName );
