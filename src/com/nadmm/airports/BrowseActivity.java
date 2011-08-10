@@ -48,9 +48,10 @@ import com.nadmm.airports.DatabaseManager.States;
 
 public class BrowseActivity extends ActivityBase {
 
+    static private final String BUNDLE_KEY_SITE_NUMBER = "site_number";
     static private final String BUNDLE_KEY_STATE_CODE = "state_code";
     static private final String BUNDLE_KEY_STATE_NAME = "state_name";
-    static private final String BUNDLE_KEY_SITE_NUMBER = "site_number";
+    static private final String BUNDLE_KEY_COUNTY_NAME = "county_name";
 
     // Projection maps for queries
     static private final HashMap<String, String> sStateMap = buildStateMap();
@@ -63,19 +64,22 @@ public class BrowseActivity extends ActivityBase {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put( BaseColumns._ID, "max("+BaseColumns._ID+") AS "+BaseColumns._ID );
         map.put( Airports.ASSOC_STATE, Airports.ASSOC_STATE );
-        map.put( States.STATE_NAME, States.STATE_NAME );
+        map.put( Airports.ASSOC_COUNTY, Airports.ASSOC_COUNTY );
+        map.put( States.STATE_NAME,
+                 "IFNULL("+States.STATE_NAME+", "+Airports.ASSOC_COUNTY+")"
+                 +" AS "+States.STATE_NAME );
         return map;
     }
 
     static HashMap<String, String> buildCityMap() {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put( BaseColumns._ID, BaseColumns._ID );
+        map.put( Airports.SITE_NUMBER, Airports.SITE_NUMBER );
         map.put( Airports.ASSOC_CITY, Airports.ASSOC_CITY );
         map.put( Airports.FACILITY_NAME, Airports.FACILITY_NAME );
         map.put( Airports.ICAO_CODE,
                 "IFNULL("+Airports.ICAO_CODE+", "+Airports.FAA_CODE+")"
                 +" AS "+Airports.ICAO_CODE );
-        map.put( Airports.SITE_NUMBER, Airports.SITE_NUMBER );
         return map;
     }
 
@@ -145,21 +149,22 @@ public class BrowseActivity extends ActivityBase {
             Bundle extra = params[ 0 ];
             if ( !extra.containsKey( BUNDLE_KEY_STATE_CODE ) ) {
                 // Show all the states grouped by first letter
-                builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
-                        +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
+                builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "
+                        +States.TABLE_NAME+" s"+" ON a."+Airports.ASSOC_STATE
+                        +"=s."+States.STATE_CODE );
                 builder.setProjectionMap( sStateMap );
-                String selection = Airports.ASSOC_STATE+"<>''";
                 c = builder.query( db,
                         // String[] projectionIn
                         new String[] { Airports._ID, 
                                        Airports.ASSOC_STATE,
+                                       Airports.ASSOC_COUNTY,
                                        States.STATE_NAME },
                         // String selection
-                        selection,
+                        null,
                         // String[] selectionArgs
                         null,
                         // String groupBy
-                        Airports.ASSOC_STATE,
+                        States.STATE_NAME,
                         // String having
                         null,
                         // String sortOrder
@@ -168,9 +173,11 @@ public class BrowseActivity extends ActivityBase {
                 // Show all the airports in the selected state grouped by city
                 builder.setTables( Airports.TABLE_NAME );
                 String state_code = extra.getString( BUNDLE_KEY_STATE_CODE );
+                String county_name = extra.getString( BUNDLE_KEY_COUNTY_NAME );
                 builder.setProjectionMap( sCityMap );
-                String selection = Airports.ASSOC_STATE+"=?";
-                String[] selectionArgs = new String[] { state_code };
+                String selection = "("+Airports.ASSOC_STATE+" <> '' AND "+Airports.ASSOC_STATE
+                        +"=?) OR "+Airports.ASSOC_COUNTY+"=?";
+                String[] selectionArgs = new String[] { state_code, county_name };
 
                 c = builder.query( db,
                         // String[] projectionIn
@@ -233,7 +240,7 @@ public class BrowseActivity extends ActivityBase {
             String name;
             if ( mMode == STATE_MODE ) {
                 // Section name is the first character of the state postal code
-                name = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) ).substring( 0, 1 );
+                name = c.getString( c.getColumnIndex( States.STATE_NAME ) ).substring( 0, 1 );
             } else {
                 // Section name is name of the city
                 name = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
@@ -279,8 +286,10 @@ public class BrowseActivity extends ActivityBase {
             Bundle extra = new Bundle();
             String state_code = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
             String state_name = c.getString( c.getColumnIndex( States.STATE_NAME ) );
+            String county_name = c.getString( c.getColumnIndex( Airports.ASSOC_COUNTY ) );
             extra.putString( BUNDLE_KEY_STATE_CODE, state_code );
             extra.putString( BUNDLE_KEY_STATE_NAME, state_name );
+            extra.putString( BUNDLE_KEY_COUNTY_NAME, county_name );
             browse.putExtras( extra );
             // Start this activity again with state parameter
             startActivity( browse );
