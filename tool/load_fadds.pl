@@ -587,6 +587,9 @@ my $create_nav1_table = "CREATE TABLE nav1 ("
         ."NAVAID_ID TEXT, "
         ."NAVAID_TYPE TEXT, "
         ."NAVAID_NAME TEXT, "
+        ."ASSOC_CITY TEXT, "
+        ."ASSOC_STATE TEXT, "
+        ."PUBLIC_USE TEXT, "
         ."NAVAID_CLASS TEXT, "
         ."OPERATING_HOURS TEXT, "
         ."REF_LATTITUDE_DEGREES REAL, "
@@ -594,6 +597,11 @@ my $create_nav1_table = "CREATE TABLE nav1 ("
         ."ELEVATION_MSL INTEGER, "
         ."MAGNETIC_VARIATION_DEGREES INTEGER, "
         ."MAGNETIC_VARIATION_DIRECTION TEXT, "
+        ."MAGNETIC_VARIATION_YEAR TEXT, "
+        ."VOICE_FEATURE TEXT, "
+        ."POWER_OUTPUT TEXT, "
+        ."AUTOMATIC_VOICE_IDENTIFICATION TEXT, "
+        ."TACAN_CHANNEL TEXT, "
         ."NAVAID_FREQUENCY TEXT, "
         ."PROTECTED_FREQUENCY_ALTITUDE TEXT"
         .")";
@@ -602,6 +610,9 @@ my $insert_nav1_record = "INSERT INTO nav1 ("
         ."NAVAID_ID, "
         ."NAVAID_TYPE, "
         ."NAVAID_NAME, "
+        ."ASSOC_CITY, "
+        ."ASSOC_STATE, "
+        ."PUBLIC_USE, "
         ."NAVAID_CLASS, "
         ."OPERATING_HOURS, "
         ."REF_LATTITUDE_DEGREES, "
@@ -609,10 +620,16 @@ my $insert_nav1_record = "INSERT INTO nav1 ("
         ."ELEVATION_MSL, "
         ."MAGNETIC_VARIATION_DEGREES, "
         ."MAGNETIC_VARIATION_DIRECTION, "
+        ."MAGNETIC_VARIATION_YEAR, "
+        ."VOICE_FEATURE, "
+        ."POWER_OUTPUT, "
+        ."AUTOMATIC_VOICE_IDENTIFICATION, "
+        ."TACAN_CHANNEL, "
         ."NAVAID_FREQUENCY, "
         ."PROTECTED_FREQUENCY_ALTITUDE"
         .") VALUES ("
-        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
         .")";
 
 my $create_nav2_table = "CREATE TABLE nav2 ("
@@ -1467,34 +1484,50 @@ while ( my $line = <NAV_FILE> )
         $sth_nav1->bind_param(  2, substrim( $line,   8, 20 ) );
         #NAVAID_NAME
         $sth_nav1->bind_param(  3, capitalize( $line,  42, 26 ) );
+        #ASSOC_CITY
+        $sth_nav1->bind_param(  4, capitalize( $line,  68, 26 ) );
+        #ASSOC_STATE
+        $sth_nav1->bind_param(  5, substrim( $line, 114,  2 ) );
+        #PUBLIC_USE
+        $sth_nav1->bind_param(  6, substrim( $line, 242,  1 ) );
         #NAVAID_CLASS
-        $sth_nav1->bind_param(  4, substrim( $line, 243, 11 ) );
+        $sth_nav1->bind_param(  7, substrim( $line, 243, 11 ) );
         #OPERATING_HOURS
-        $sth_nav1->bind_param(  5, substrim( $line, 254,  9 ) );
+        $sth_nav1->bind_param(  8, substrim( $line, 254,  9 ) );
         #REF_LATTITUDE_DEGREES
         my $lattitude = substrim( $line,  297, 10 )/3600.0;
         if ( substrim( $line, 307, 1 ) eq "S" )
         {
             $lattitude *= -1;
         }
-        $sth_nav1->bind_param(  6, $lattitude );
+        $sth_nav1->bind_param(  9, $lattitude );
         #REF_LONGITUDE_DEGREES
         my $longitude = substrim( $line,  322, 10 )/3600.0;
         if ( substrim( $line, 332, 1 ) eq "W" )
         {
             $longitude *= -1;
         }
-        $sth_nav1->bind_param(  7, $longitude );
+        $sth_nav1->bind_param( 10, $longitude );
         #ELEVATION_MSL
-        $sth_nav1->bind_param(  8, substrim( $line, 384,  5 ) );
+        $sth_nav1->bind_param( 11, substrim( $line, 384,  5 ) );
         #MAGNETIC_VARIATION_DEGREES
-        $sth_nav1->bind_param(  9, substrim( $line, 389,  4 ) );
+        $sth_nav1->bind_param( 12, substrim( $line, 389,  4 ) );
         #MAGNETIC_VARIATION_DIRECTION
-        $sth_nav1->bind_param( 10, substrim( $line, 393,  1 ) );
+        $sth_nav1->bind_param( 13, substrim( $line, 393,  1 ) );
+        #MAGNETIC_VARIATION_YEAR
+        $sth_nav1->bind_param( 14, substrim( $line, 394,  4 ) );
+        #VOICE_FEATURE
+        $sth_nav1->bind_param( 15, substrim( $line, 398,  3 ) );
+        #POWER_OUTPUT
+        $sth_nav1->bind_param( 16, substrim( $line, 401,  4 ) );
+        #AUTOMATIC_VOICE_IDENTIFICATION
+        $sth_nav1->bind_param( 17, substrim( $line, 405,  3 ) );
+        #TACAN_CHANNEL
+        $sth_nav1->bind_param( 18, substrim( $line, 433,  4 ) );
         #NAVAID_FREQUENCY
-        $sth_nav1->bind_param( 11, substrim( $line, 437,  6 ) );
+        $sth_nav1->bind_param( 19, substrim( $line, 437,  6 ) );
         #PROTECTED_FREQUENCY_ALTITUDE
-        $sth_nav1->bind_param( 12, substrim( $line, 480,  1 ) );
+        $sth_nav1->bind_param( 20, substrim( $line, 480,  1 ) );
 
         $sth_nav1->execute();
     }
