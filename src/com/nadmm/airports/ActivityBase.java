@@ -50,7 +50,7 @@ public class ActivityBase extends Activity {
     }
 
     protected void showAirportTitle( View root, Cursor c ) {
-        TextView tv = (TextView) root.findViewById( R.id.airport_title );
+        TextView tv = (TextView) root.findViewById( R.id.airport_name );
         String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
         if ( code == null || code.length() == 0 ) {
             code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
