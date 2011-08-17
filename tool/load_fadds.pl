@@ -600,7 +600,7 @@ my $create_nav1_table = "CREATE TABLE nav1 ("
         ."MAGNETIC_VARIATION_YEAR TEXT, "
         ."VOICE_FEATURE TEXT, "
         ."POWER_OUTPUT TEXT, "
-        ."AUTOMATIC_VOICE_IDENTIFICATION TEXT, "
+        ."AUTOMATIC_VOICE_IDENT TEXT, "
         ."TACAN_CHANNEL TEXT, "
         ."NAVAID_FREQUENCY TEXT, "
         ."PROTECTED_FREQUENCY_ALTITUDE TEXT"
@@ -623,7 +623,7 @@ my $insert_nav1_record = "INSERT INTO nav1 ("
         ."MAGNETIC_VARIATION_YEAR, "
         ."VOICE_FEATURE, "
         ."POWER_OUTPUT, "
-        ."AUTOMATIC_VOICE_IDENTIFICATION, "
+        ."AUTOMATIC_VOICE_IDENT, "
         ."TACAN_CHANNEL, "
         ."NAVAID_FREQUENCY, "
         ."PROTECTED_FREQUENCY_ALTITUDE"
@@ -1520,7 +1520,7 @@ while ( my $line = <NAV_FILE> )
         $sth_nav1->bind_param( 15, substrim( $line, 398,  3 ) );
         #POWER_OUTPUT
         $sth_nav1->bind_param( 16, substrim( $line, 401,  4 ) );
-        #AUTOMATIC_VOICE_IDENTIFICATION
+        #AUTOMATIC_VOICE_IDENT
         $sth_nav1->bind_param( 17, substrim( $line, 405,  3 ) );
         #TACAN_CHANNEL
         $sth_nav1->bind_param( 18, substrim( $line, 433,  4 ) );
