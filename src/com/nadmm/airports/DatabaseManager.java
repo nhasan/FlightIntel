@@ -274,6 +274,9 @@ public class DatabaseManager {
         public static final String NAVAID_ID = "NAVAID_ID";
         public static final String NAVAID_TYPE = "NAVAID_TYPE";
         public static final String NAVAID_NAME = "NAVAID_NAME";
+        public static final String ASSOC_CITY = "ASSOC_CITY";
+        public static final String ASSOC_STATE = "ASSOC_STATE";
+        public static final String PUBLIC_USE = "PUBLIC_USE";
         public static final String NAVAID_CLASS = "NAVAID_CLASS";
         public static final String OPERATING_HOURS = "OPERATING_HOURS";
         public static final String REF_LATTITUDE_DEGREES = "REF_LATTITUDE_DEGREES";
@@ -281,8 +284,12 @@ public class DatabaseManager {
         public static final String ELEVATION_MSL = "ELEVATION_MSL";
         public static final String MAGNETIC_VARIATION_DEGREES = "MAGNETIC_VARIATION_DEGREES";
         public static final String MAGNETIC_VARIATION_DIRECTION = "MAGNETIC_VARIATION_DIRECTION";
+        public static final String MAGNETIC_VARIATION_YEAR = "MAGNETIC_VARIATION_YEAR";
+        public static final String VOICE_FEATURE = "VOICE_FEATURE";
+        public static final String POWER_OUTPUT = "POWER_OUTPUT";
+        public static final String AUTOMATIC_VOICE_IDENT = "AUTOMATIC_VOICE_IDENT";
+        public static final String TACAN_CHANNEL = "TACAN_CHANNEL";
         public static final String NAVAID_FREQUENCY = "NAVAID_FREQUENCY";
-
         public static final String PROTECTED_FREQUENCY_ALTITUDE = "PROTECTED_FREQUENCY_ALTITUDE";
     }
 
