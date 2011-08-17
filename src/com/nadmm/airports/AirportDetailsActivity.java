@@ -152,7 +152,7 @@ public class AirportDetailsActivity extends ActivityBase {
             mExtras.putString( NearbyActivity.APT_CODE, code );
             double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
             double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-            int elev_msl = c.getInt( c.getColumnIndex( Airports.ELEVATION_MSL ) );
+            int elev_msl = apt.getInt( apt.getColumnIndex( Airports.ELEVATION_MSL ) );
             Location location = new Location( "" );
             location.setLatitude( lat );
             location.setLongitude( lon );
