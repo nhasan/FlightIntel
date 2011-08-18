@@ -1,0 +1,19 @@
+FlightIntel for Pilots is a must have for all pilots. It provides detailed information about 5000+ US public airports. It is like having the printed Airport/Facility Directory (A/FD) on your phone.
+
+FlightIntel is ad-free and is available free of charge on the Market. I am a pilot hence the app is strongly focused to provide all the relevant information for pilots. I hope other pilots find it useful too. Please make sure to leave comments to tell me what you like and what you don't.
+
+FlightIntel uses the National Airspace System data published by FAA on a 56-day cycle. This data includes information on airports, runways, communication and navaids.
+
+FlightIntel is location-aware and can list airports around a user's location. It also provides heading and distance data to these airports. Additionally, FlightIntel also lists navaids around an airports and provides radial/heading information.
+
+The app requires "Call Phone" permission to allow it to call the phone numbers when you tap on them. You can directly call the phone numbers displayed by simply tapping on them. The application does not make any calls by itself.
+
+Planned features:
+===
+* Detailed ILS information with frequencies
+* Detailed navaid information
+* Detailed ARTCC information with frequencies
+* Weather reports (METAR/TAF)
+* Weather radar images
+
+
