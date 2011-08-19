@@ -162,8 +162,7 @@ public class NavaidsActivity extends ActivityBase {
             String selection = "("
                 +Nav1.REF_LATTITUDE_DEGREES+">=? AND "+Nav1.REF_LATTITUDE_DEGREES+"<=?"
                 +") AND ("+Nav1.REF_LONGITUDE_DEGREES+">=? "
-                +(isCrossingMeridian180? "OR " : "AND ")+Nav1.REF_LONGITUDE_DEGREES+"<=?)"
-                +" AND "+Nav1.PUBLIC_USE+"='Y'";
+                +(isCrossingMeridian180? "OR " : "AND ")+Nav1.REF_LONGITUDE_DEGREES+"<=?)";
             String[] selectionArgs = {
                     String.valueOf( Math.toDegrees( radLatMin ) ), 
                     String.valueOf( Math.toDegrees( radLatMax ) ),
