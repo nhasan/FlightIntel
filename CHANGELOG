@@ -26,6 +26,5 @@ v1.0.5 (08/19/2011)
 ===================
 * Non-US locations (e.g. Canada, Bahamas) now appear in "Browse" screen
 * Improved the display of magnetic declination/variation
-* List only public use navaids in "Navaids" screen
 * Load additional data into nav1 table
-
+* Show warning in the header when showing expired data
