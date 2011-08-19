@@ -512,9 +512,11 @@ public final class DownloadActivity extends ListActivity {
                     return -1;
                 }
 
+                Time now = new Time();
+                now.setToNow();
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 HttpHost target = new HttpHost( HOST, PORT );
-                URI uri = new URI( PATH+"/"+MANIFEST );
+                URI uri = new URI( PATH+"/"+MANIFEST+"?unused="+now.toString() );
                 HttpGet get = new HttpGet( uri );
 
                 HttpResponse response = httpClient.execute( target, get );
@@ -826,9 +828,11 @@ public final class DownloadActivity extends ListActivity {
             FileOutputStream out = null;
 
             try {
+                Time now = new Time();
+                now.setToNow();
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 HttpHost target = new HttpHost( HOST, PORT );
-                URI uri = new URI( PATH+"/"+data.fileName );
+                URI uri = new URI( PATH+"/"+data.fileName+"?unused="+now.toString() );
                 HttpGet get = new HttpGet( uri );
 
                 HttpResponse response = httpClient.execute( target, get );
