@@ -29,7 +29,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
@@ -473,6 +472,9 @@ public final class DownloadActivity extends ListActivity {
 
         private int getInstalled() {
             mInstalledData.clear();
+            Time now = new Time();
+            now.setToNow();
+
             Cursor c = mDbManager.getAllFromCatalog();
             if ( c.moveToFirst() ) {
                 do {
@@ -490,7 +492,9 @@ public final class DownloadActivity extends ListActivity {
                         info.end = new Time();
                         info.end.parse3339( end );
                         info.end.normalize( false );
-                        mInstalledData.add( info );
+                        if ( now.before( info.end ) ) {
+                            mInstalledData.add( info );
+                        }
                     } catch ( TimeFormatException e ) {
                         Log.e( TAG, "Error parsing dates: "+e.getMessage() );
                         return -1;
@@ -669,7 +673,6 @@ public final class DownloadActivity extends ListActivity {
         private void processManifest() {
             Time now = new Time();
             now.setToNow();
-            HashSet<String> seenTypes = new HashSet<String>();
             Iterator<DataInfo> it = mAvailableData.iterator();
             while ( it.hasNext() ) {
                 DataInfo available = it.next();
@@ -685,15 +688,6 @@ public final class DownloadActivity extends ListActivity {
                     it.remove();
                     continue;
                 }
-                if ( seenTypes.contains( available.type ) )
-                {
-                    // Already selected
-                    Log.i( TAG, "Removing future "+available.type+":"+available.version );
-                    //it.remove();
-                    continue;
-                }
-
-                seenTypes.add( available.type );
             }
         }
 
