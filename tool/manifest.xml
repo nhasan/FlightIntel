@@ -9,5 +9,13 @@
         <start>2011-06-30</start>
         <end>2011-08-25</end>
     </datafile>
+    <datafile>
+        <type>FADDS</type>
+        <desc>National Airspace System (FAA)</desc>
+        <version>61</version>
+        <filename>fadds_20110825.zip</filename>
+        <size>4593634</size>
+        <start>2011-08-25</start>
+        <end>2011-10-20</end>
+    </datafile>
 </manifest>
-
