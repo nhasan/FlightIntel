@@ -25,6 +25,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.format.Time;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -85,6 +87,23 @@ public class ActivityBase extends Activity {
         }
         info2 += String.valueOf( elev_msl+tpa_agl)+"' MSL TPA"+est;
         tv.setText( info2 );
+
+        String s = c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) );
+        Time endDate = new Time();
+        endDate.set( Integer.valueOf( s.substring( 3, 5 ) ).intValue(),
+                Integer.valueOf( s.substring( 0, 2 ) )-1,
+                Integer.valueOf( s.substring( 6 ) ).intValue() );
+        // Calculate end date of the 56-day cycle
+        endDate.monthDay += 56;
+        endDate.normalize( false );
+        Time now = new Time();
+        now.setToNow();
+        if ( now.after( endDate ) )
+        {
+            // Show the expired warning
+            tv = (TextView) root.findViewById( R.id.expired_label );
+            tv.setVisibility( View.VISIBLE );
+        }
 
         CheckBox cb = (CheckBox) root.findViewById( R.id.airport_star );
         cb.setChecked( mDbManager.isFavoriteAirport( siteNumber ) );
