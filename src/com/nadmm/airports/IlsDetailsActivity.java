@@ -137,8 +137,7 @@ public class IlsDetailsActivity extends ActivityBase {
             addSeparator( layout );
         }
         String bearing = ils1.getString( ils1.getColumnIndex( Ils1.ILS_MAGNETIC_BEARING ) );
-        addRow( layout, "Magnetic bearing", String.format( "%03d\u00B0", 
-                Integer.valueOf( bearing ) ) );
+        addRow( layout, "Magnetic bearing", bearing+"\u00B0" );
     }
 
     protected void showLocalizerDetails( Cursor result[] ) {
