@@ -53,8 +53,7 @@
                     android:layout_marginTop="8dp"
                     android:padding="6dp"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content">
-            </LinearLayout>
+                    android:layout_height="wrap_content" />
             <TextView android:id="@+id/rwy_base_end_label"
                     style="@style/TextSmall.Bold"
                     android:padding="6dp"
