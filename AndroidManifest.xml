@@ -55,6 +55,9 @@
                   android:name="NavaidsActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+                  android:name=".IlsDetailsActivity" />
+
+        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:name="AboutActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"

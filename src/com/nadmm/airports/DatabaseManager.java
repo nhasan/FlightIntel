@@ -300,6 +300,43 @@ public class DatabaseManager {
         public static final String REMARK_TEXT = "REMARK_TEXT";
     }
 
+    public static final class Ils1 implements BaseColumns {
+        public static final String TABLE_NAME = "ils1";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
+        public static final String RUNWAY_ID = "RUNWAY_ID";
+        public static final String ILS_TYPE = "ILS_TYPE";
+        public static final String ILS_CATEGORY = "ILS_CATEGORY";
+        public static final String ILS_MAGNETIC_BEARING = "ILS_MAGNETIC_BEARING";
+        public static final String LOCALIZER_TYPE = "LOCALIZER_TYPE";
+        public static final String LOCALIZER_ID = "LOCALIZER_ID";
+        public static final String LOCALIZER_FREQUENCY = "LOCALIZER_FREQUENCY";
+        public static final String LOCALIZER_COURSE_WIDTH = "LOCALIZER_COURSE_WIDTH";
+        public static final String GLIDE_SLOPE_TYPE = "GLIDE_SLOPE_TYPE";
+        public static final String GLIDE_SLOPE_ANGLE = "GLIDE_SLOPE_ANGLE";
+        public static final String GLIDE_SLOPE_FREQUENCY = "GLIDE_SLOPE_FREQUENCY";
+        public static final String INNER_MARKER_TYPE = "INNER_MARKER_TYPE";
+        public static final String INNER_MARKER_DISTANCE = "INNER_MARKER_DISTANCE";
+        public static final String MIDDLE_MARKER_TYPE = "MIDDLE_MARKER_TYPE";
+        public static final String MIDDLE_MARKER_ID = "MIDDLE_MARKER_ID";
+        public static final String MIDDLE_MARKER_NAME = "MIDDLE_MARKER_NAME";
+        public static final String MIDDLE_MARKER_FREQUENCY = "MIDDLE_MARKER_FREQUENCY";
+        public static final String MIDDLE_MARKER_DISTANCE = "MIDDLE_MARKER_DISTANCE";
+        public static final String OUTER_MARKER_TYPE = "OUTER_MARKER_TYPE";
+        public static final String OUTER_MARKER_ID = "OUTER_MARKER_ID";
+        public static final String OUTER_MARKER_NAME = "OUTER_MARKER_NAME";
+        public static final String OUTER_MARKER_FREQUENCY = "OUTER_MARKER_FREQUENCY";
+        public static final String OUTER_MARKER_DISTANCE = "OUTER_MARKER_DISTANCE";
+        public static final String BACKCOURSE_MARKER_AVAILABLE = "BACKCOURSE_MARKER_AVAILABLE";
+    }
+
+    public static final class Ils2 implements BaseColumns {
+        public static final String TABLE_NAME = "ils2";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
+        public static final String RUNWAY_ID = "RUNWAY_ID";
+        public static final String ILS_TYPE = "ILS_TYPE";
+        public static final String ILS_REMARKS = "ILS_REMARKS";
+    }
+
     public static final class Catalog implements BaseColumns {
         public static final String TABLE_NAME = "catalog";
         public static final String TYPE = "TYPE";

@@ -31,13 +31,17 @@ import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 
@@ -173,6 +177,20 @@ public class RunwayDetailsActivity extends ActivityBase {
         tv.setText( "Runway "+runwayId );
 
         TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_base_end_details );
+        String ilsType = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ILS_TYPE ) );
+        if ( ilsType.length() > 0 ) {
+            String siteNumber = apt.getString( apt.getColumnIndex(
+                    Airports.SITE_NUMBER ) );
+            Bundle args = new Bundle();
+            args.putString( Ils1.SITE_NUMBER, siteNumber );
+            args.putString( Ils1.RUNWAY_ID, runwayId );
+            args.putString( Ils1.ILS_TYPE, ilsType );
+            Intent intent = new Intent( this, IlsDetailsActivity.class );
+            intent.putExtras( args );
+            addClickableRow( layout, "Instrument approach", ilsType, intent, 
+                    R.drawable.row_selector_top );
+            addSeparator( layout );
+        }
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_HEADING ) );
         int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
         String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
@@ -194,11 +212,6 @@ public class RunwayDetailsActivity extends ActivityBase {
             }
             addSeparator( layout );
             addRow( layout, "Gradient", gradientString );
-        }
-        String ilsType = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ILS_TYPE ) );
-        if ( ilsType.length() > 0 ) {
-            addSeparator( layout );
-            addRow( layout, "ILS type", ilsType );
         }
         String arrestingDevice = rwy.getString( rwy.getColumnIndex( 
                 Runways.BASE_END_ARRESTING_DEVICE_TYPE ) );
@@ -311,6 +324,20 @@ public class RunwayDetailsActivity extends ActivityBase {
 
         TableLayout layout = (TableLayout) mMainLayout.findViewById(
                 R.id.rwy_reciprocal_end_details );
+        String ilsType = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ILS_TYPE ) );
+        if ( ilsType.length() > 0 ) {
+            String siteNumber = apt.getString( apt.getColumnIndex(
+                    Airports.SITE_NUMBER ) );
+            Bundle args = new Bundle();
+            args.putString( Ils1.SITE_NUMBER, siteNumber );
+            args.putString( Ils1.RUNWAY_ID, runwayId );
+            args.putString( Ils1.ILS_TYPE, ilsType );
+            Intent intent = new Intent( this, IlsDetailsActivity.class );
+            intent.putExtras( args );
+            addClickableRow( layout, "Instrument approach", ilsType, intent, 
+                    R.drawable.row_selector_top );
+            addSeparator( layout );
+        }
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_HEADING ) );
         int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
         String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
@@ -333,11 +360,6 @@ public class RunwayDetailsActivity extends ActivityBase {
             }
             addSeparator( layout );
             addRow( layout, "Gradient", gradientString );
-        }
-        String ilsType = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ILS_TYPE ) );
-        if ( ilsType.length() > 0 ) {
-            addSeparator( layout );
-            addRow( layout, "Instrument approach", ilsType );
         }
         String arrestingDevice = rwy.getString( rwy.getColumnIndex( 
                 Runways.RECIPROCAL_END_ARRESTING_DEVICE_TYPE ) );
@@ -513,7 +535,7 @@ public class RunwayDetailsActivity extends ActivityBase {
         if ( als.length() > 0 ) {
             String apchLights = DataUtils.getApproachLightSystemDescription( als );
             if ( apchLights.length() > 0 ) {
-                addRow( layout, apchLights );
+                addBulletedRow( layout, apchLights );
                 ++count;
             }
         }
@@ -521,7 +543,8 @@ public class RunwayDetailsActivity extends ActivityBase {
         // Show RVR information
         String rvr = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_RVR_LOCATIONS ) );
         if ( rvr.length() > 0 ) {
-            addRow( layout, "RVR equipment located at "+DataUtils.decodeRVRLocations( rvr ) );
+            addBulletedRow( layout, "RVR equipment located at "
+                    +DataUtils.decodeRVRLocations( rvr ) );
             ++count;
         }
 
@@ -546,7 +569,7 @@ public class RunwayDetailsActivity extends ActivityBase {
         if ( als.length() > 0 ) {
             String apchLights = DataUtils.getApproachLightSystemDescription( als );
             if ( apchLights.length() > 0 ) {
-                addRow( layout, apchLights );
+                addBulletedRow( layout, apchLights );
                 ++count;
             }
         }
@@ -554,7 +577,8 @@ public class RunwayDetailsActivity extends ActivityBase {
         // Show RVR information
         String rvr = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_RVR_LOCATIONS ) );
         if ( rvr.length() > 0 ) {
-            addRow( layout, "RVR equipment located at "+DataUtils.decodeRVRLocations( rvr ) );
+            addBulletedRow( layout, "RVR equipment located at "
+                    +DataUtils.decodeRVRLocations( rvr ) );
             ++count;
         }
 
@@ -620,7 +644,7 @@ public class RunwayDetailsActivity extends ActivityBase {
                 text = object;
             }
     
-            addRow( layout, text );
+            addBulletedRow( layout, text );
             ++count;
         }
 
@@ -658,7 +682,7 @@ public class RunwayDetailsActivity extends ActivityBase {
                 text += String.format( ", %d:1 slope to clear", slope );
             }
 
-            addRow( layout, text );
+            addBulletedRow( layout, text );
             ++count;
         }
 
@@ -692,10 +716,10 @@ public class RunwayDetailsActivity extends ActivityBase {
             }
             remark = remark.substring( index );
         }
-        addRow( layout, remark );
+        addBulletedRow( layout, remark );
     }
 
-    protected void addRow( LinearLayout layout, String remark ) {
+    protected void addBulletedRow( LinearLayout layout, String remark ) {
         LinearLayout innerLayout = new LinearLayout( this );
         innerLayout.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );
@@ -711,6 +735,41 @@ public class RunwayDetailsActivity extends ActivityBase {
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         layout.addView( innerLayout, new LinearLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addClickableRow( TableLayout table, String label, String value,
+            final Intent intent, int resid ) {
+        LinearLayout row = (LinearLayout) mInflater.inflate( R.layout.simple_detail_item, null );
+        row.setBackgroundResource( resid );
+        TextView tv = new TextView( this );
+        tv.setText( label );
+        tv.setGravity( Gravity.CENTER_VERTICAL );
+        tv.setPadding( 4, 2, 2, 2 );
+        row.addView( tv, new LinearLayout.LayoutParams( 
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
+        tv = new TextView( this );
+        tv.setText( value );
+        tv.setGravity( Gravity.RIGHT );
+        tv.setPadding( 4, 0, 4, 0 );
+        row.addView( tv, new LinearLayout.LayoutParams( 
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
+        ImageView iv = new ImageView( this );
+        iv.setImageResource( R.drawable.arrow );
+        iv.setPadding( 6, 0, 4, 0 );
+        iv.setScaleType( ScaleType.CENTER );
+        row.addView( iv, new LinearLayout.LayoutParams( 
+                LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 0f ) );
+        row.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                startActivity( intent );
+            }
+
+        } );
+
+        table.addView( row, new TableLayout.LayoutParams( 
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
