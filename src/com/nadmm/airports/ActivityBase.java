@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
 
 public class ActivityBase extends Activity {
@@ -146,6 +147,31 @@ public class ActivityBase extends Activity {
         }
     }
 
+    protected void showNavaidTitle( View root, Cursor c ) {
+        String id = c.getString( c.getColumnIndex( Nav1.NAVAID_ID ) );
+        String name = c.getString( c.getColumnIndex( Nav1.NAVAID_NAME ) );
+        String type = c.getString( c.getColumnIndex( Nav1.NAVAID_TYPE ) );
+        TextView tv = (TextView) root.findViewById( R.id.navaid_name );
+        tv.setText( id+" - "+name+" "+type );
+        String city = c.getString( c.getColumnIndex( Nav1.ASSOC_CITY ) );
+        String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );        
+        tv = (TextView) root.findViewById( R.id.navaid_info );
+        tv.setText( city+", "+state );
+        String use = c.getString( c.getColumnIndex( Nav1.PUBLIC_USE ) );
+        int elev_msl = c.getInt( c.getColumnIndex( Nav1.ELEVATION_MSL ) );
+        String info2 = use.equals( "Y" )? "Public use" : "Private use";
+        info2 += ", ";
+        info2 += String.valueOf( elev_msl )+"' MSL elevation";
+        tv = (TextView) root.findViewById( R.id.navaid_info2 );
+        tv.setText( info2 );
+        tv = (TextView) root.findViewById( R.id.navaid_morse1 );
+        tv.setText( DataUtils.getMorseCode( id.substring( 0, 1 ) ) );
+        tv = (TextView) root.findViewById( R.id.navaid_morse2 );
+        tv.setText( DataUtils.getMorseCode( id.substring( 1, 2 ) ) );
+        tv = (TextView) root.findViewById( R.id.navaid_morse3 );
+        tv.setText( DataUtils.getMorseCode( id.substring( 2, 3 ) ) );
+    }
+
     protected void makeClickToCall( TextView tv ) {
         if ( getPackageManager().hasSystemFeature( PackageManager.FEATURE_TELEPHONY ) ) {
             tv.setOnClickListener( new OnClickListener() {
@@ -159,6 +185,18 @@ public class ActivityBase extends Activity {
                 }
 
             } );
+        }
+    }
+
+    protected int getSelectorResourceForRow( int curRow, int totRows ) {
+        if ( totRows == 1 ) {
+            return R.drawable.row_selector;
+        } else if ( curRow == 0 ) {
+            return R.drawable.row_selector_top;
+        } else if ( curRow == totRows-1 ) {
+            return R.drawable.row_selector_bottom;
+        } else {
+            return R.drawable.row_selector_middle;
         }
     }
 

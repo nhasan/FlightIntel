@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Airports for Android
+ *
+ * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+ -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/header_layout"
+        android:background="@drawable/top_bar"
+        android:padding="6dp"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout android:id="@+id/header_inner_layout"
+	        android:orientation="horizontal"
+	        android:layout_weight="1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content">
+	    <LinearLayout android:id="@+id/header_inner1_layout"
+		        android:orientation="vertical"
+		        android:layout_weight="1"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content">
+	        <TextView android:id="@+id/navaid_name"
+	                style="@style/TextMedium.Bold"
+	                android:singleLine="true"
+	                android:ellipsize="marquee"
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content" />
+	        <TextView android:id="@+id/navaid_info"
+	                style="@style/TextSmall.Bold"
+	                android:singleLine="true"
+	                android:ellipsize="marquee"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content" />
+	        <TextView android:id="@+id/navaid_info2"
+	                style="@style/TextSmall"
+	                android:singleLine="true"
+	                android:ellipsize="marquee"
+	                android:paddingBottom="2dp"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content" />
+	        <TextView android:id="@+id/expired_label"
+	                style="@style/TextSmall.Bold"
+	                android:padding="0dp"
+	                android:textColor="#ff0000"
+	                android:text="@string/download_expired"
+	                android:visibility="gone"
+	                android:layout_gravity="center_horizontal"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content" />
+	    </LinearLayout>
+        <LinearLayout android:id="@+id/header_inner2_layout"
+                android:orientation="vertical"
+                android:layout_weight="0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <TextView android:id="@+id/navaid_morse1"
+                    style="@style/TextSmall.Bold"
+                    android:singleLine="true"
+                    android:height="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/navaid_morse2"
+                    style="@style/TextSmall.Bold"
+                    android:singleLine="true"
+                    android:height="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/navaid_morse3"
+                    style="@style/TextSmall.Bold"
+                    android:singleLine="true"
+                    android:height="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+	</LinearLayout>
+</LinearLayout>

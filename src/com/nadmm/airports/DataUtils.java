@@ -551,6 +551,47 @@ public final class DataUtils {
         return decodedRvr;
     }
 
+    public static String decodeNavProtectedAltitude( String alt ) {
+        if ( alt.equals( "T" ) ) {
+            return "Terminal";
+        } else if ( alt.equals( "L" ) ) {
+            return "Low altitude";
+        } else if ( alt.equals( "H" ) ) {
+            return "High altitude";
+        } else {
+            return alt;
+        }
+    }
+
+    public static boolean isDirectionalNavaid( String type ) {
+        return type.equals( "VOR" )
+            || type.equals( "VOR/DME" ) 
+            || type.equals( "VORTAC" ) 
+            || type.equals( "VOT" ) 
+            || type.equals( "TACAN" );
+    }
+
+    public static double getTacanChannelFrequency( String channel ) {
+        double freq = 0;
+        if ( channel.length() > 0 ) {
+            String type = channel.substring( channel.length()-1 );
+            int num = Integer.valueOf( channel.substring( 0, channel.length()-1 ) );
+
+            double offset = ((double)num)/10;
+            if ( type.equals( "Y" ) ) {
+                offset += 0.05;
+            }
+
+            if ( num >= 17 && num <= 59 ) {
+                freq = 106.3+offset;
+            } else if ( num >= 70 && num <= 126 ) {
+                freq = 105.3+offset;
+            }
+        }
+
+        return freq;
+    }
+
     public static String getApproachLightSystemDescription( String als ) {
         if ( als.equals( "ALSAF" ) ) {
             return "3,000' high intensity approach lighting system with centerline "

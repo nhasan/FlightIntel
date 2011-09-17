@@ -34,11 +34,14 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageView.ScaleType;
 import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -188,7 +191,7 @@ public class NavaidsActivity extends ActivityBase {
                 MatrixCursor ndb = new MatrixCursor( mNavColumns );
                 for ( NavaidData navaid : navaids ) {
                     if ( navaid.DISTANCE <= navaid.RANGE ) {
-                        if ( navaid.NAVAID_TYPE.startsWith( "VOR" ) ) {
+                        if ( DataUtils.isDirectionalNavaid( navaid.NAVAID_TYPE ) ) {
                             MatrixCursor.RowBuilder row = vor.newRow();
                             row.add( navaid.NAVAID_ID )
                                     .add( navaid.NAVAID_TYPE )
@@ -196,7 +199,7 @@ public class NavaidsActivity extends ActivityBase {
                                     .add( navaid.NAVAID_FREQ )
                                     .add( navaid.RADIAL )
                                     .add( navaid.DISTANCE );
-                        } else if ( navaid.NAVAID_TYPE.startsWith( "NDB" ) ) {
+                        } else {
                             MatrixCursor.RowBuilder row = ndb.newRow();
                             row.add( navaid.NAVAID_ID )
                                     .add( navaid.NAVAID_TYPE )
@@ -263,7 +266,9 @@ public class NavaidsActivity extends ActivityBase {
                 String type = vor.getString( vor.getColumnIndex( Nav1.NAVAID_TYPE ) );
                 int radial = vor.getInt( vor.getColumnIndex( "RADIAL" ) );
                 float distance = vor.getFloat( vor.getColumnIndex( "DISTANCE" ) );
-                addDirectionalNavaidRow( layout, navaidId, name, type, freq, radial, distance );
+                int resid = getSelectorResourceForRow( vor.getPosition(), vor.getCount() );
+                addDirectionalNavaidRow( layout, navaidId, name, type, freq, radial,
+                        distance, resid );
             } while ( vor.moveToNext() );
         } else {
             TableLayout layout = (TableLayout) mMainLayout.findViewById(
@@ -282,12 +287,14 @@ public class NavaidsActivity extends ActivityBase {
                     addSeparator( layout );
                 }
                 String navaidId = ndb.getString( vor.getColumnIndex( Nav1.NAVAID_ID ) );
-                String freq = ndb.getString( vor.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
-                String name = ndb.getString( vor.getColumnIndex( Nav1.NAVAID_NAME ) );
-                String type = ndb.getString( vor.getColumnIndex( Nav1.NAVAID_TYPE ) );
-                int heading = ndb.getInt( vor.getColumnIndex( "RADIAL" ) );
-                float distance = ndb.getFloat( vor.getColumnIndex( "DISTANCE" ) );
-                addNonDirectionalNavaidRow( layout, navaidId, name, type, freq, heading, distance );
+                String freq = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
+                String name = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_NAME ) );
+                String type = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_TYPE ) );
+                int heading = ndb.getInt( ndb.getColumnIndex( "RADIAL" ) );
+                float distance = ndb.getFloat( ndb.getColumnIndex( "DISTANCE" ) );
+                int resid = getSelectorResourceForRow( ndb.getPosition(), ndb.getCount() );
+                addNonDirectionalNavaidRow( layout, navaidId, name, type, freq, heading,
+                        distance, resid );
             } while ( ndb.moveToNext() );
         } else {
             TableLayout layout = (TableLayout) mMainLayout.findViewById(
@@ -298,77 +305,133 @@ public class NavaidsActivity extends ActivityBase {
         }
     }
 
-    protected void addDirectionalNavaidRow( TableLayout table, String navaidId,
-            String name, String type, String freq, int radial, float distance ) {
+    protected void addDirectionalNavaidRow( TableLayout table, final String navaidId,
+            String name, final String type, String freq, int radial, float 
+            distance, int resid ) {
         TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        int rowPadding = row.getPaddingLeft();
-        row.setPadding( rowPadding, rowPadding, rowPadding, 0 );
+        row.setBackgroundResource( resid );
+
+        LinearLayout layout2 = new LinearLayout( this );
+        layout2.setOrientation( LinearLayout.VERTICAL );
+        LinearLayout layout3 = new LinearLayout( this );
+        layout3.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );
         tv.setText( navaidId+"      "+DataUtils.getMorseCode( navaidId ));
         tv.setGravity( Gravity.LEFT );
         tv.setPadding( 4, 0, 2, 0 );
-        row.addView( tv, new TableRow.LayoutParams( 
+        layout3.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         tv = new TextView( this );
         tv.setText( freq );
         tv.setGravity( Gravity.RIGHT );
         tv.setPadding( 2, 0, 4, 0 );
-        row.addView( tv, new TableRow.LayoutParams( 
+        layout3.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 1f ) );
-        table.addView( row, new TableLayout.LayoutParams(
+        layout2.addView( layout3, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-        LinearLayout row2 = (LinearLayout) mInflater.inflate( R.layout.simple_detail_item, null );
+        LinearLayout layout4 = new LinearLayout( this );
+        layout4.setOrientation( LinearLayout.HORIZONTAL );
         tv = new TextView( this );
         tv.setText( name+" "+type );
         tv.setGravity( Gravity.LEFT );
         tv.setPadding( 4, 0, 2, 0 );
-        row2.addView( tv, new LinearLayout.LayoutParams( 
+        layout4.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        row2.setPadding( rowPadding, 0, rowPadding, rowPadding );
         tv = new TextView( this );
         tv.setText( String.format( "r%03d/%.1fNM", radial, distance ) );
         tv.setGravity( Gravity.RIGHT );
         tv.setPadding( 2, 0, 4, 0 );
-        row2.addView( tv, new LinearLayout.LayoutParams( 
+        layout4.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        table.addView( row2, new TableLayout.LayoutParams(
+        layout2.addView( layout4, new LinearLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        row.addView( layout2, new TableRow.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
+        ImageView iv = new ImageView( this );
+        iv.setImageResource( R.drawable.arrow );
+        iv.setPadding( 6, 0, 4, 0 );
+        iv.setScaleType( ScaleType.CENTER );
+        row.addView( iv, new TableRow.LayoutParams(
+                TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
+
+        row.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                Intent intent = new Intent( NavaidsActivity.this, NavaidDetailsActivity.class );
+                intent.putExtra( Nav1.NAVAID_ID, navaidId );
+                intent.putExtra( Nav1.NAVAID_TYPE, type );
+                startActivity( intent );
+            }
+
+        } );
+
+        table.addView( row, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addNonDirectionalNavaidRow( TableLayout table, String navaidId,
-            String name, String type, String freq, int heading, float distance ) {
+    protected void addNonDirectionalNavaidRow( TableLayout table, final String navaidId,
+            String name, final String type, String freq, int heading,
+            float distance, int resid ) {
         TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        int rowPadding = row.getPaddingLeft();
-        row.setPadding( rowPadding, rowPadding, rowPadding, 0 );
+        row.setBackgroundResource( resid );
+
+        LinearLayout layout2 = new LinearLayout( this );
+        layout2.setOrientation( LinearLayout.VERTICAL );
+        LinearLayout layout3 = new LinearLayout( this );
+        layout3.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );
-        tv.setText( navaidId+"      "+DataUtils.getMorseCode( navaidId ));
+        tv.setText( navaidId+"      "+DataUtils.getMorseCode( navaidId ) );
         tv.setGravity( Gravity.LEFT );
         tv.setPadding( 4, 0, 2, 0 );
-        row.addView( tv, new TableRow.LayoutParams( 
+        layout3.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         tv = new TextView( this );
         tv.setText( freq );
         tv.setGravity( Gravity.RIGHT );
         tv.setPadding( 2, 0, 4, 0 );
-        row.addView( tv, new TableRow.LayoutParams( 
+        layout3.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 1f ) );
-        table.addView( row, new TableLayout.LayoutParams(
+        layout2.addView( layout3, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-        LinearLayout row2 = (LinearLayout) mInflater.inflate( R.layout.simple_detail_item, null );
+        LinearLayout layout4 = new LinearLayout( this );
+        layout4.setOrientation( LinearLayout.HORIZONTAL );
         tv = new TextView( this );
         tv.setText( name+" "+type );
         tv.setGravity( Gravity.LEFT );
         tv.setPadding( 4, 0, 2, 0 );
-        row2.addView( tv, new LinearLayout.LayoutParams( 
+        layout4.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        row2.setPadding( rowPadding, 0, rowPadding, rowPadding );
         tv = new TextView( this );
         tv.setText( String.format( "%03d\u00B0M/%.1fNM", heading, distance ) );
         tv.setGravity( Gravity.RIGHT );
         tv.setPadding( 2, 0, 4, 0 );
-        row2.addView( tv, new LinearLayout.LayoutParams( 
+        layout4.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        table.addView( row2, new TableLayout.LayoutParams(
+        layout2.addView( layout4, new LinearLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        row.addView( layout2, new TableRow.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
+        ImageView iv = new ImageView( this );
+        iv.setImageResource( R.drawable.arrow );
+        iv.setPadding( 6, 0, 4, 0 );
+        iv.setScaleType( ScaleType.CENTER );
+        row.addView( iv, new TableRow.LayoutParams(
+                TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
+
+        row.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                Intent intent = new Intent( NavaidsActivity.this, NavaidDetailsActivity.class );
+                intent.putExtra( Nav1.NAVAID_ID, navaidId );
+                intent.putExtra( Nav1.NAVAID_TYPE, type );
+                startActivity( intent );
+            }
+
+        } );
+
+        table.addView( row, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 

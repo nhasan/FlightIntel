@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Airports for Android
+ *
+ * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+ -->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+    <LinearLayout android:id="@+id/navaid_top_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        <include layout="@layout/navaid_title_layout" />
+        <LinearLayout android:id="@+id/navaid_detail_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="12dp"
+                android:paddingTop="20dp"
+                android:paddingRight="12dp"
+                android:paddingBottom="12dp"
+                android:orientation="vertical">
+            <TableLayout android:id="@+id/navaid_details"
+                    android:background="@drawable/rounded_rectangle"
+                    android:stretchColumns="0"
+                    android:shrinkColumns="1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <LinearLayout android:id="@+id/navaid_remarks"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_rectangle"
+                    android:layout_marginTop="8dp"
+                    android:padding="6dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
