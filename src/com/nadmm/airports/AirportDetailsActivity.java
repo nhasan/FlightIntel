@@ -248,7 +248,7 @@ public class AirportDetailsActivity extends ActivityBase {
                         Airports.SITE_NUMBER ) );
                 intent.putExtra( Airports.SITE_NUMBER, siteNumber );
                 ++row;
-                int resId = getSelectorResourceForRow( row-1, row );
+                int resId = getSelectorResourceForRow( row-1, row+1 );
                 addClickableRow( layout, "ATC frequencies", intent, resId );
             } else {
                 String apchRadioCall =  twr1.getString( twr1.getColumnIndex(
@@ -701,18 +701,6 @@ public class AirportDetailsActivity extends ActivityBase {
         layout.addView( innerLayout, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
         return tv;
-    }
-
-    protected int getSelectorResourceForRow( int curRow, int totRows ) {
-        if ( totRows == 1 ) {
-            return R.drawable.row_selector;
-        } else if ( curRow == 0 ) {
-            return R.drawable.row_selector_top;
-        } else if ( curRow == totRows-1 ) {
-            return R.drawable.row_selector_bottom;
-        } else {
-            return R.drawable.row_selector_middle;
-        }
     }
 
     protected void addSeparator( LinearLayout layout ) {
