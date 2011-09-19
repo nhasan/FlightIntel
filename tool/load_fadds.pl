@@ -672,8 +672,7 @@ my $create_ils1_table = "CREATE TABLE ils1 ("
         ."OUTER_MARKER_ID TEXT, "
         ."OUTER_MARKER_NAME TEXT, "
         ."OUTER_MARKER_FREQUENCY TEXT, "
-        ."OUTER_MARKER_DISTANCE TEXT, "
-        ."BACKCOURSE_MARKER_AVAILABLE TEXT"
+        ."OUTER_MARKER_DISTANCE TEXT"
         .")";
 
 my $insert_ils1_record = "INSERT INTO ils1 ("
@@ -700,10 +699,9 @@ my $insert_ils1_record = "INSERT INTO ils1 ("
         ."OUTER_MARKER_ID, "
         ."OUTER_MARKER_NAME, "
         ."OUTER_MARKER_FREQUENCY, "
-        ."OUTER_MARKER_DISTANCE, "
-        ."BACKCOURSE_MARKER_AVAILABLE"
+        ."OUTER_MARKER_DISTANCE"
         .") VALUES ("
-        ."?, ?, ?, ?, ?, ?, ?, ?, ?,"
+        ."?, ?, ?, ?, ?, ?, ?, ?,"
         ."?, ?, ?, ?, ?, ?, ?, ?,"
         ."?, ?, ?, ?, ?, ?, ?, ?"
         .")";
@@ -730,20 +728,18 @@ my $create_aff1_table = "CREATE TABLE aff1 ("
         ."ARTCC_ID TEXT, "
         ."ARTCC_NAME TEXT, "
         ."SITE_LOCATION TEXT, "
-        ."ARTCC_ALTERNATE_NAME TEXT, "
         ."FACILITY_TYPE TEXT, "
-        ."SITE_STATE_NAME TEXT"
+        ."SITE_STATE_CODE TEXT"
         .")";
 
 my $insert_aff1_record = "INSERT INTO aff1 ("
         ."ARTCC_ID, "
         ."ARTCC_NAME, "
         ."SITE_LOCATION, "
-        ."ARTCC_ALTERNATE_NAME, "
         ."FACILITY_TYPE, "
-        ."SITE_STATE_NAME"
+        ."SITE_STATE_CODE"
         .") VALUES ("
-        ."?, ?, ?, ?, ?, ?"
+        ."?, ?, ?, ?, ?"
         .")";
 
 my $create_aff2_table = "CREATE TABLE aff2 ("
@@ -811,7 +807,7 @@ my $insert_aff4_record = "INSERT INTO aff4 ("
 
 my $create_wxl_table = "CREATE TABLE wxl ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        ."LOCATION_ID TEXT,"
+        ."LOCATION_ID TEXT, "
         ."LOC_LATTITUDE_DEGREES REAL, "
         ."LOC_LONGITUDE_DEGREES REAL, "
         ."ASSOC_CITY TEXT, "
@@ -822,7 +818,7 @@ my $create_wxl_table = "CREATE TABLE wxl ("
         .")";
 
 my $insert_wxl_record = "INSERT INTO wxl ("
-        ."LOCATION_ID,"
+        ."LOCATION_ID, "
         ."LOC_LATTITUDE_DEGREES, "
         ."LOC_LONGITUDE_DEGREES, "
         ."ASSOC_CITY, "
@@ -833,6 +829,21 @@ my $insert_wxl_record = "INSERT INTO wxl ("
         .") VALUES ("
         ."?, ?, ?, ?, ?, ?, ?, ?"
         .")";
+
+my $create_com_table = "CREATE TABLE com ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."COM_OUTLET_ID TEXT, "
+        ."COM_OUTLET_TYPE TEXT, "
+        ."ASSOC_NAVAID_ID TEXT, "
+        ."A, "
+        .", "
+        .", "
+        .", "
+        .", "
+        .", "
+        .", "
+        .", "
+        .", "
 
 $dbh->do( "DROP TABLE IF EXISTS airports" );
 $dbh->do( $create_airports_table );
@@ -1622,8 +1633,6 @@ while ( my $line = <ILS_FILE> )
         $sth_ils1->bind_param( 23, substrim( $line, 613,  3 ) );
         #OUTER_MARKER_DISTANCE
         $sth_ils1->bind_param( 24, substrim( $line, 666,  6 ) );
-        #BACKCOURSE_MARKER_AVAILABLE
-        $sth_ils1->bind_param( 25, substrim( $line, 672,  9 ) );
 
         $sth_ils1->execute();
     }
@@ -1675,15 +1684,13 @@ while ( my $line = <AFF_FILE> )
         #ARTCC_ID
         $sth_aff1->bind_param( 1, substrim( $line,   4,  3 ) );
         #ARTCC_NAME
-        $sth_aff1->bind_param( 2, substrim( $line,   7, 40 ) );
+        $sth_aff1->bind_param( 2, capitalize( $line,   7, 40 ) );
         #SITE_LOCATION
-        $sth_aff1->bind_param( 3, substrim( $line,  47, 30 ) );
-        #ARTCC_ALTERNATE_NAME
-        $sth_aff1->bind_param( 4, substrim( $line,  77, 50 ) );
+        $sth_aff1->bind_param( 3, capitalize( $line,  47, 30 ) );
         #FACILITY_TYPE
         $sth_aff1->bind_param( 5, substrim( $line, 127,  5 ) );
-        #SITE_STATE_NAME
-        $sth_aff1->bind_param( 6, substrim( $line, 142, 20 ) );
+        #SITE_STATE_CODE
+        $sth_aff1->bind_param( 6, substrim( $line, 162,  2 ) );
 
         $sth_aff1->execute();
     }
@@ -1692,7 +1699,7 @@ while ( my $line = <AFF_FILE> )
         #ARTCC_ID
         $sth_aff2->bind_param( 1, substrim( $line,  4,   3 ) );
         #SITE_LOCATION
-        $sth_aff2->bind_param( 2, substrim( $line,  7,  30 ) );
+        $sth_aff2->bind_param( 2, capitalize( $line,  7,  30 ) );
         #FACILITY_TYPE
         $sth_aff2->bind_param( 3, substrim( $line, 37,   5 ) );
         #REMARK_ELEMENT_NO
@@ -1707,15 +1714,15 @@ while ( my $line = <AFF_FILE> )
         #ARTCC_ID
         $sth_aff3->bind_param( 1, substrim( $line,  4,  3 ) );
         #SITE_LOCATION
-        $sth_aff3->bind_param( 2, substrim( $line,  7, 30 ) );
+        $sth_aff3->bind_param( 2, capitalize( $line,  7, 30 ) );
         #FACILITY_TYPE
         $sth_aff3->bind_param( 3, substrim( $line, 37,  5 ) );
         #SITE_FREQUENCY
         $sth_aff3->bind_param( 4, substrim( $line, 42,  7 ) );
         #FREQ_ALTITUDE
-        $sth_aff3->bind_param( 5, substrim( $line, 49, 10 ) );
+        $sth_aff3->bind_param( 5, capitalize( $line, 49, 10 ) );
         #FREQ_USAGE_NAME
-        $sth_aff3->bind_param( 6, substrim( $line, 59, 17 ) );
+        $sth_aff3->bind_param( 6, capitalize( $line, 59, 17 ) );
         #IFR_FACILITY_ID
         $sth_aff3->bind_param( 7, substrim( $line, 76,  4 ) );
 
@@ -1726,7 +1733,7 @@ while ( my $line = <AFF_FILE> )
         #ARTCC_ID
         $sth_aff4->bind_param( 1, substrim( $line,  4,   3 ) );
         #SITE_LOCATION
-        $sth_aff4->bind_param( 2, substrim( $line,  7,  30 ) );
+        $sth_aff4->bind_param( 2, capitalize( $line,  7,  30 ) );
         #FACILITY_TYPE
         $sth_aff4->bind_param( 3, substrim( $line, 37,   5 ) );
         #REMARK_FREQUENCY
