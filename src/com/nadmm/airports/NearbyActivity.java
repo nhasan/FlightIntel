@@ -380,6 +380,7 @@ public class NearbyActivity extends ActivityBase {
             mListView.setVisibility( View.VISIBLE );
             setProgressBarIndeterminateVisibility( false );
         }
+
     }
 
     @Override

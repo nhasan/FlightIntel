@@ -38,11 +38,8 @@ import android.util.Log;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 
-/**
- * Provides access to FAA airports database
- *
- */
 public class AirportsProvider extends ContentProvider {
+
     public static final String TAG = AirportsProvider.class.getSimpleName();
 
     public static final String AUTHORITY = "com.nadmm.airports.AirportsProvider";
@@ -200,4 +197,5 @@ public class AirportsProvider extends ContentProvider {
             String[] selectionArgs) {
         throw new UnsupportedOperationException();
     }
+
 }

@@ -750,19 +750,19 @@ public final class DownloadActivity extends ListActivity {
             Iterator<DataInfo> it = mAvailableData.iterator();
             if ( it.hasNext() ) {
                 final DataInfo data = it.next();
-    
+
                 mTracker = getTrackerForType( data.type );
-    
+
                 int result = downloadData( data );
                 if ( result < 0 ) {
                     return result;
                 }
-    
+
                 result = installData( data );
                 if ( result < 0 ) {
                     return result;
                 }
-    
+
                 result = updateCatalog( data );
                 if ( result < 0 ) {
                     return result;
@@ -919,10 +919,12 @@ public final class DownloadActivity extends ListActivity {
             final ZipEntry entry = (ZipEntry) zipFile.entries().nextElement();
 
             mHandler.post( new Runnable() {
+
                 @Override
                 public void run() {
                     mTracker.initProgress( R.string.installing, (int) entry.getSize() );
                 }
+
             } );
 
             if ( !DatabaseManager.DATABASE_DIR.exists() ) {
@@ -1146,14 +1148,12 @@ public final class DownloadActivity extends ListActivity {
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate( R.menu.mainmenu, menu );
         return true;
     }
-
 
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {

@@ -35,6 +35,7 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 public class DatabaseManager {
+
     public static final String TAG = DatabaseManager.class.getSimpleName();
 
     private final CatalogDbOpenHelper mCatalogDbHelper;
@@ -579,4 +580,5 @@ public class DatabaseManager {
         }
 
     }
+
 }

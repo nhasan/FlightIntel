@@ -126,4 +126,5 @@ public class GeoUtils {
         // West declination is reported in negative values
         return -1*geoField.getDeclination();
     }
+
 }

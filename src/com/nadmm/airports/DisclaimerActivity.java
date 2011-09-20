@@ -68,7 +68,7 @@ public class DisclaimerActivity extends Activity {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean( PreferencesActivity.KEY_DISCLAIMER_AGREED, agreed );
-        editor.commit();        
+        editor.commit();
     }
 
 }

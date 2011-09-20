@@ -44,7 +44,6 @@ public class ActivityBase extends Activity {
 
     protected DatabaseManager mDbManager = null;
 
-    
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -98,8 +97,7 @@ public class ActivityBase extends Activity {
         endDate.normalize( false );
         Time now = new Time();
         now.setToNow();
-        if ( now.after( endDate ) )
-        {
+        if ( now.after( endDate ) ) {
             // Show the expired warning
             tv = (TextView) root.findViewById( R.id.expired_label );
             tv.setVisibility( View.VISIBLE );
@@ -109,7 +107,7 @@ public class ActivityBase extends Activity {
         cb.setChecked( mDbManager.isFavoriteAirport( siteNumber ) );
         cb.setTag( siteNumber );
         cb.setOnClickListener( new OnClickListener() {
-            
+
             @Override
             public void onClick( View v ) {
                 CheckBox cb = (CheckBox) v;

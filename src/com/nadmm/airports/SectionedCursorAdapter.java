@@ -118,4 +118,5 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
         // Reset section name cache
         mSectionNames.clear();
     }
+
 }

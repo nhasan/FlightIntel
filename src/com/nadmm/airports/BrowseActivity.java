@@ -310,7 +310,7 @@ public class BrowseActivity extends ActivityBase {
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
         String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
         if ( code == null || code.length() == 0 ) {
-            code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );            
+            code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
         }
         String facilityName = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
 
