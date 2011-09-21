@@ -38,8 +38,7 @@
     <TextView android:id="@+id/comm_freq_extra"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:gravity="right"
-            android:layout_below="@id/comm_freq_value"
-            android:layout_toRightOf="@id/comm_freq_use"
+            android:layout_below="@id/comm_freq_use"
             android:layout_weight="1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
