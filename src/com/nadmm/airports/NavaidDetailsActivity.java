@@ -120,6 +120,13 @@ public class NavaidDetailsActivity extends ActivityBase {
 
             showNavaidDetails( result );
             showNavaidRemarks( result );
+
+            // Cleanup cursors
+            for ( Cursor c : result ) {
+                if ( c != null ) {
+                    c.close();
+                }
+            }
         }
 
     }

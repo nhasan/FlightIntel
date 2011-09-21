@@ -118,6 +118,13 @@ public class IlsDetailsActivity extends ActivityBase {
             showMiddleMarkerDetails( result );
             showOuterMarkerDetails( result );
             showIlsRemarks( result );
+
+            // Cleanup cursors
+            for ( Cursor c : result ) {
+                if ( c != null ) {
+                    c.close();
+                }
+            }
         }
 
     }
