@@ -158,7 +158,7 @@ public class AirportsProvider extends ContentProvider {
                 +Airports.ICAO_CODE+"=? OR "
                 +Airports.FACILITY_NAME+" LIKE ? OR "
                 +Airports.ASSOC_CITY+" LIKE ?";
-        String[] selectionArgs = new String[] { query, query, "%"+query+"%", "%"+query+"%" };
+        String[] selectionArgs = new String[] { query, query, "%"+query+"%", query+"%" };
         String limit = uri.getQueryParameter( "limit" );
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
