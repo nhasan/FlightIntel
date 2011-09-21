@@ -26,5 +26,6 @@
     android:searchSuggestIntentAction="android.intent.action.VIEW"
     android:searchSuggestThreshold="3"
     android:searchSuggestSelection=" ?"
-    android:includeInGlobalSearch="true">
+    android:includeInGlobalSearch="true"
+    android:searchSettingsDescription="@string/search_hint" >
 </searchable>
