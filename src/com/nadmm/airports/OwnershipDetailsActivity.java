@@ -91,6 +91,13 @@ public class OwnershipDetailsActivity extends ActivityBase {
             showOwnerInfo( result );
             showManagerInfo( result );
             showRemarks( result );
+
+            // Cleanup cursors
+            for ( Cursor c : result ) {
+                if ( c != null ) {
+                    c.close();
+                }
+            }
         }
 
     }

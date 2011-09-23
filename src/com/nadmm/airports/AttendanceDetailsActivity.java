@@ -99,6 +99,13 @@ public class AttendanceDetailsActivity extends ActivityBase {
 
             showAttendanceDetails( result );
             showAttendanceRemarks( result );
+
+            // Cleanup cursors
+            for ( Cursor c : result ) {
+                if ( c != null ) {
+                    c.close();
+                }
+            }
         }
 
     }

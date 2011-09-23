@@ -109,6 +109,13 @@ public class RemarkDetailsActivity extends ActivityBase {
 
             showRemarksDetails( result );
             showAirspaceDetails( result );
+
+            // Cleanup cursors
+            for ( Cursor c : result ) {
+                if ( c != null ) {
+                    c.close();
+                }
+            }
         }
 
     }
