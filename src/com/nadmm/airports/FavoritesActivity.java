@@ -72,7 +72,22 @@ public class FavoritesActivity extends ActivityBase {
         } );
 
         getFavorites();
-   }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if ( mListAdapter != null ) {
+            Cursor c = mListAdapter.getCursor();
+            c.close();
+        }
+    }
+     
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getFavorites();
+    }
 
     protected void getFavorites() {
         // Get the favorites list
@@ -111,14 +126,12 @@ public class FavoritesActivity extends ActivityBase {
             if ( mListAdapter == null ) {
                 mListAdapter = new AirportsCursorAdapter( FavoritesActivity.this, c );
                 mListView.setAdapter( mListAdapter );
-                mListView.setVisibility( View.VISIBLE );
             } else {
                 mListAdapter.changeCursor( c );
             }
             TextView tv = (TextView) findViewById( android.R.id.empty );
             tv.setVisibility( View.GONE );
             setProgressBarIndeterminateVisibility( false );
-            startManagingCursor( c );
         }
 
     }
