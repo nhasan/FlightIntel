@@ -338,6 +338,17 @@ public class DatabaseManager {
         public static final String ILS_REMARKS = "ILS_REMARKS";
     }
 
+    public static final class Aff3 implements BaseColumns {
+        public static final String TABLE_NAME = "aff3";
+        public static final String ARTCC_ID = "ARTCC_ID";
+        public static final String SITE_LOCATION = "SITE_LOCATION";
+        public static final String FACILITY_TYPE = "FACILITY_TYPE";
+        public static final String SITE_FREQUENCY = "SITE_FREQUENCY";
+        public static final String FREQ_ALTITUDE = "FREQ_ALTITUDE";
+        public static final String FREQ_USAGE_NAME= "FREQ_USAGE_NAME";
+        public static final String IFR_FACILITY_ID = "IFR_FACILITY_ID";
+    }
+
     public static final class Catalog implements BaseColumns {
         public static final String TABLE_NAME = "catalog";
         public static final String TYPE = "TYPE";

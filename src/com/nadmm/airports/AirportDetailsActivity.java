@@ -48,6 +48,7 @@ import android.widget.TextView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TableLayout.LayoutParams;
 
+import com.nadmm.airports.DatabaseManager.Aff3;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos;
 import com.nadmm.airports.DatabaseManager.Remarks;
@@ -91,7 +92,7 @@ public class AirportDetailsActivity extends ActivityBase {
             String siteNumber = params[ 0 ];
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 9 ];
+            Cursor[] cursors = new Cursor[ 8 ];
 
             Cursor apt = mDbManager.getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -107,7 +108,7 @@ public class AirportDetailsActivity extends ActivityBase {
             builder = new SQLiteQueryBuilder();
             builder.setTables( Remarks.TABLE_NAME );
             c = builder.query( db, new String[] { Remarks.REMARK_TEXT },
-                    Runways.SITE_NUMBER+"=? "
+                    Runways.SITE_NUMBER+"=?"
                     +"AND "+Remarks.REMARK_NAME+" in ('E147', 'A3', 'A24', 'A70', 'A82')",
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 2 ] = c;
@@ -115,14 +116,14 @@ public class AirportDetailsActivity extends ActivityBase {
             builder = new SQLiteQueryBuilder();
             builder.setTables( Tower1.TABLE_NAME );
             c = builder.query( db, new String[] { "*" },
-                    Tower1.SITE_NUMBER+"=? ",
+                    Tower1.SITE_NUMBER+"=?",
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 3 ] = c;
 
             builder = new SQLiteQueryBuilder();
             builder.setTables( Tower7.TABLE_NAME );
             c = builder.query( db, new String[] { "*" },
-                    Tower7.SATELLITE_AIRPORT_SITE_NUMBER+"=? ",
+                    Tower7.SATELLITE_AIRPORT_SITE_NUMBER+"=?",
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 4 ] = c;
 
@@ -131,7 +132,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Tower6.TABLE_NAME );
                 c = builder.query( db, new String[] { "*" },
-                        Tower3.FACILITY_ID+"=? ",
+                        Tower3.FACILITY_ID+"=?",
                         new String[] { faaCode }, null, null, Tower6.ELEMENT_NUMBER, null );
                 cursors[ 5 ] = c;
             }
@@ -139,9 +140,17 @@ public class AirportDetailsActivity extends ActivityBase {
             builder = new SQLiteQueryBuilder();
             builder.setTables( Awos.TABLE_NAME );
             c = builder.query( db, new String[] { "*" },
-                    Awos.SITE_NUMBER+"=? ",
+                    Awos.SITE_NUMBER+"=?",
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 6 ] = c;
+
+            String faa_code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Aff3.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" },
+                    Aff3.IFR_FACILITY_ID+"=?",
+                    new String[] { faa_code }, null, null, null, null );
+            cursors[ 7 ] = c;
 
             // Extras bundle for "Nearby" activity
             mExtras = new Bundle();
@@ -226,6 +235,8 @@ public class AirportDetailsActivity extends ActivityBase {
             String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
             if ( freq.length() == 0 ) {
                 freq = "N/A";
+            } else {
+                freq = String.format( "%.3f", Double.valueOf( freq ) );
             }
             if ( row > 0 ) {
                 addSeparator( layout );
@@ -296,6 +307,21 @@ public class AirportDetailsActivity extends ActivityBase {
                         }
                     }
                 }
+
+                Cursor aff3 = result[ 7 ];
+                if ( aff3.moveToFirst() ) {
+                    do {
+                        String artcc = aff3.getString( aff3.getColumnIndex( Aff3.ARTCC_ID ) );
+                        Double freq = aff3.getDouble( aff3.getColumnIndex( Aff3.SITE_FREQUENCY ) );
+                        String alt = aff3.getString( aff3.getColumnIndex( Aff3.FREQ_ALTITUDE ) );
+                        if ( row > 0 ) {
+                            addSeparator( layout );
+                        }
+                        addFrequencyRow( layout, DataUtils.decodeArtcc( artcc ),
+                                Pair.create( String.format( "%.3f", freq ), "("+alt+")" ) );
+                        ++row;
+                    } while ( aff3.moveToNext() );
+                }
             }
         }
 
@@ -309,10 +335,6 @@ public class AirportDetailsActivity extends ActivityBase {
         ++row;
         int resId = getSelectorResourceForRow( row-1, row );
         addClickableRow( layout, "Navaids", intent, resId );
-
-        if ( row == 0 ) {
-            layout.setVisibility( View.GONE );
-        }
     }
 
     protected void addFrequencyToMap( HashMap<String, ArrayList<Pair<String, String>>> map,
@@ -321,7 +343,7 @@ public class AirportDetailsActivity extends ActivityBase {
         if ( list == null ) {
             list = new ArrayList<Pair<String, String>>();
         }
-        list.add( Pair.create( freq.trim(), extra.trim() ) );
+        list.add( Pair.create( String.format( "%.3f", Double.valueOf( freq ) ), extra.trim() ) );
         map.put( freqUse, list );
     }
 

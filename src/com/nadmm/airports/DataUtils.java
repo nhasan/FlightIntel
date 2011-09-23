@@ -563,6 +563,62 @@ public final class DataUtils {
         }
     }
 
+    public static String decodeArtcc( String artcc ) {
+        if ( artcc.equals( "ZAB" ) ) {
+            return "Albuquerque Center";
+        } else if ( artcc.equals( "ZAN" ) ) {
+            return "Anchorage Center";
+        } else if ( artcc.equals( "ZAP" ) ) {
+            return "Anchorage Oceanic";
+        } else if ( artcc.equals( "ZAU" ) ) {
+            return "Chicago Center";
+        } else if ( artcc.equals( "ZBW" ) ) {
+            return "Boston Center";
+        } else if ( artcc.equals( "ZDC" ) ) {
+            return "Washington Center";
+        } else if ( artcc.equals( "ZDV" ) ) {
+            return "Denver Center";
+        } else if ( artcc.equals( "ZFW" ) ) {
+            return "Fort Worth Center";
+        } else if ( artcc.equals( "ZHN" ) ) {
+            return "Honolulu Control Facility";
+        } else if ( artcc.equals( "ZHU" ) ) {
+            return "Houston Center";
+        } else if ( artcc.equals( "ZID" ) ) {
+            return "Indianapolis Center";
+        } else if ( artcc.equals( "ZJX" ) ) {
+            return "Jacksonville Center";
+        } else if ( artcc.equals( "ZKC" ) ) {
+            return "Kansas City Center";
+        } else if ( artcc.equals( "ZLA" ) ) {
+            return "Los Angeles Center";
+        } else if ( artcc.equals( "ZLC" ) ) {
+            return "Salt Lake City Center";
+        } else if ( artcc.equals( "ZMA" ) ) {
+            return "Miami Center";
+        } else if ( artcc.equals( "ZME" ) ) {
+            return "Memphis Center";
+        } else if ( artcc.equals( "ZMP" ) ) {
+            return "Minneapolis Center";
+        } else if ( artcc.equals( "ZNY" ) ) {
+            return "New York Center";
+        } else if ( artcc.equals( "ZOA" ) ) {
+            return "Oakland Center";
+        } else if ( artcc.equals( "ZOB" ) ) {
+            return "Cleveland Center";
+        } else if ( artcc.equals( "ZSE" ) ) {
+            return "Seattle Center";
+        } else if ( artcc.equals( "ZSU" ) ) {
+            return "San Juan Center";
+        } else if ( artcc.equals( "ZTL" ) ) {
+            return "Atlanta Center";
+        } else if ( artcc.equals( "ZUA" ) ) {
+            return "Guam Center";
+        } else {
+            return "";
+        }
+    }
+
     public static boolean isDirectionalNavaid( String type ) {
         return type.equals( "VOR" )
             || type.equals( "VOR/DME" ) 
