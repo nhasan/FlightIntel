@@ -208,7 +208,8 @@ my $create_airports_table = "CREATE TABLE airports ("
         ."STORAGE_FACILITY TEXT, "
         ."OTHER_SERVICES TEXT, "
         ."WIND_INDICATOR TEXT, "
-        ."ICAO_CODE TEXT "
+        ."ICAO_CODE TEXT, "
+        ."TIMEZONE_ID TEXT"
         .");";
 
 my $insert_airports_record = "INSERT INTO airports ("
@@ -273,7 +274,8 @@ my $insert_airports_record = "INSERT INTO airports ("
         ."STORAGE_FACILITY, "
         ."OTHER_SERVICES, "
         ."WIND_INDICATOR, "
-        ."ICAO_CODE"
+        ."ICAO_CODE, "
+        ."TIMEZONE_ID"
         .") VALUES ("
         ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
@@ -281,7 +283,7 @@ my $insert_airports_record = "INSERT INTO airports ("
         ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?)";
+        ."?, ?, ?)";
 
 my $create_runways_table = "CREATE TABLE runways ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -835,15 +837,27 @@ my $create_com_table = "CREATE TABLE com ("
         ."COM_OUTLET_ID TEXT, "
         ."COM_OUTLET_TYPE TEXT, "
         ."ASSOC_NAVAID_ID TEXT, "
-        ."A, "
-        .", "
-        .", "
-        .", "
-        .", "
-        .", "
-        .", "
-        .", "
-        .", "
+        ."COMM_OUTLET_LATTITUDE_DEGREES REAL, "
+        ."COMM_OUTLET_LANGITUDE_DEGREES REAL, "
+        ."COMM_OUTLET_CALL TEXT, "
+        ."COMM_OUTLET_FREQS TEXT, "
+        ."FSS_IDENT TEXT, "
+        ."FSS_NAME TEXT"
+        .")";
+
+my $insert_com_record = "INSERT INTO com ("
+        ."COM_OUTLET_ID, "
+        ."COM_OUTLET_TYPE, "
+        ."ASSOC_NAVAID_ID, "
+        ."COMM_OUTLET_LATTITUDE_DEGREES, "
+        ."COMM_OUTLET_LANGITUDE_DEGREES, "
+        ."COMM_OUTLET_CALL, "
+        ."COMM_OUTLET_FREQS, "
+        ."FSS_IDENT, "
+        ."FSS_NAME"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?"
+        .")";
 
 $dbh->do( "DROP TABLE IF EXISTS airports" );
 $dbh->do( $create_airports_table );
@@ -925,6 +939,10 @@ $dbh->do( "DROP TABLE IF EXISTS wxl" );
 $dbh->do( $create_wxl_table );
 $dbh->do( "CREATE INDEX idx_wxl_location_id on wxl ( LOCATION_ID );" );
 
+$dbh->do( "DROP TABLE IF EXISTS com" );
+$dbh->do( $create_com_table );
+$dbh->do( "CREATE INDEX idx_com_navaid_id on com ( ASSOC_NAVAID_ID );" );
+
 my $sth_apt = $dbh->prepare( $insert_airports_record );
 my $sth_rwy = $dbh->prepare( $insert_runways_record );
 my $sth_att = $dbh->prepare( $insert_attendance_record );
@@ -944,6 +962,7 @@ my $sth_aff2 = $dbh->prepare( $insert_aff2_record );
 my $sth_aff3 = $dbh->prepare( $insert_aff3_record );
 my $sth_aff4 = $dbh->prepare( $insert_aff4_record );
 my $sth_wxl = $dbh->prepare( $insert_wxl_record );
+my $sth_com = $dbh->prepare( $insert_com_record );
 
 my $i = 0;
 
@@ -1110,6 +1129,8 @@ while ( my $line = <APT_FILE> )
         $sth_apt->bind_param( 61, substrim( $line, 1251,  3 ) );
         #ICAO_CODE
         $sth_apt->bind_param( 62, substrim( $line, 1254,  7 ) );
+        #TIMEZONE_ID
+        $sth_apt->bind_param( 63, "" );
 
         $sth_apt->execute();
     }
@@ -1802,15 +1823,15 @@ while ( my $line = <WXL_FILE> )
     }
     $sth_wxl->bind_param( 3, $longitude );
     #ASSOC_CITY
-    $sth_wxl->bind_param( 4, substrim( $line,  22, 26 ) );
+    $sth_wxl->bind_param( 4, capitalize( $line, 22, 26 ) );
     #ASSOC_STATE
-    $sth_wxl->bind_param( 5, substrim( $line,  48,  2 ) );
+    $sth_wxl->bind_param( 5, substrim( $line, 48,  2 ) );
     #LOC_ELEVATION_FEET
-    $sth_wxl->bind_param( 6, substrim( $line,  53,  5 ) );
+    $sth_wxl->bind_param( 6, substrim( $line, 53,  5 ) );
     #LOC_ELEVATION_ACCURACY
-    $sth_wxl->bind_param( 7, substrim( $line,  58,  1 ) );
+    $sth_wxl->bind_param( 7, substrim( $line, 58,  1 ) );
     #WX_SERICES_TYPES
-    $sth_wxl->bind_param( 8, substrim( $line,  59, 60 ) );
+    $sth_wxl->bind_param( 8, substrim( $line, 59, 60 ) );
 
     $sth_wxl->execute();
 
@@ -1824,6 +1845,93 @@ while ( my $line = <WXL_FILE> )
 
 print( "\rFinished processing $i records.\n" );
 close WXL_FILE;
+
+###########################################################################
+
+my $COM = $FADDS_BASE."/COM.txt";
+open( COM_FILE, "<$COM" ) or die "Could not open data file\n";
+
+$i = 0;
+print( "$COM\n" );
+while ( my $line = <COM_FILE> )
+{
+    ++$i;
+
+    if ( ($i % 1000) == 0 )
+    {
+        $dbh->do( "PRAGMA synchronous=ON" );
+    }
+
+    #COM_OUTLET_ID
+    $sth_com->bind_param( 1, substrim( $line,   0,   4 ) );
+    #COM_OUTLET_TYPE
+    $sth_com->bind_param( 2, substrim( $line,   4,   7 ) );
+    #ASSOC_NAVAID_ID
+    my $navaid_id = substrim( $line,  11,   4 );
+    $sth_com->bind_param( 3, $navaid_id );
+    #COMM_OUTLET_LATTITUDE_DEGREES
+    my $offset = 186;
+    if ( length( $navaid_id ) > 0 )
+    {
+        $offset = 89;
+    }
+    my $lat = substrim( $line, $offset, 14 );
+    if ( $lat =~ /(\d+)-(\d+)-(\d+)(\.\d+)([NSEW])/ )
+    {
+        my $deg = $1;
+        my $min = $2;
+        my $sec = $3;
+        my $subsec = $4;
+        my $dir = $5;
+        my $latdeg = $deg + $min/60 + ($sec+$subsec)/3600;
+        if ( $dir eq "S" )
+        {
+            $latdeg *= -1;
+        }
+        $sth_com->bind_param( 4, $latdeg );
+    }
+    #COMM_OUTLET_LANGITUDE_DEGREES
+    $offset = 200;
+    if ( length( $navaid_id ) > 0 )
+    {
+        $offset = 103;
+    }
+    my $lon = substrim( $line, $offset, 14 );
+    if ( $lon =~ /(\d+)-(\d+)-(\d+)(\.\d+)([NSEW])/ )
+    {
+        my $deg = $1;
+        my $min = $2;
+        my $sec = $3;
+        my $subsec = $4;
+        my $dir = $5;
+        my $londeg = $deg +$min/60 + ($sec+$subsec)/3600;
+        if ( $dir eq "W" )
+        {
+            $londeg *= -1;
+        }
+        $sth_com->bind_param( 5, $londeg );
+    }
+    #COMM_OUTLET_CALL
+    $sth_com->bind_param( 6, capitalize( $line, 214,  26 ) );
+    #COMM_OUTLET_FREQS
+    $sth_com->bind_param( 7, substrim( $line, 240, 144 ) );
+    #FSS_IDENT
+    $sth_com->bind_param( 8, substrim( $line, 384,   4 ) );
+    #FSS_NAME
+    $sth_com->bind_param( 9, capitalize( $line, 392,  26 ) );
+
+    $sth_com->execute();
+
+    if ( ($i % 1000) == 0 )
+    {
+        print( "\rProcessed $i records..." );
+        $| = 1;
+        $dbh->do( "PRAGMA synchronous=OFF" );
+    }
+}
+
+print( "\rFinished processing $i records.\n" );
+close COM_FILE;
 
 ###########################################################################
 
