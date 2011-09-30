@@ -20,16 +20,20 @@
 package com.nadmm.airports;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.BaseColumns;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -63,6 +67,7 @@ public class AirportDetailsActivity extends ActivityBase {
     private LinearLayout mMainLayout;
     private LayoutInflater mInflater;
     private Bundle mExtras;
+    private Location mLocation;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -78,6 +83,51 @@ public class AirportDetailsActivity extends ActivityBase {
 
         AirportDetailsTask task = new AirportDetailsTask();
         task.execute( siteNumber );
+    }
+
+    private final class AwosData implements Comparable<AwosData> {
+
+            public String SENSOR_ID;
+            public String SENSOR_TYPE;
+            public double LATITUDE;
+            public double LONGITUDE;
+            public String FREQUENCY;
+            public String PHONE;
+            public String NAME;
+            public float DISTANCE;
+            public float BEARING;
+
+            public AwosData( Cursor c, float declination ) {
+                SENSOR_ID = c.getString( c.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
+                SENSOR_TYPE = c.getString( c.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+                LATITUDE = c.getDouble( c.getColumnIndex( Awos.STATION_LATTITUDE_DEGREES ) );
+                LONGITUDE = c.getDouble( c.getColumnIndex( Awos.STATION_LONGITUDE_DEGREES ) );
+                FREQUENCY = c.getString( c.getColumnIndex( Awos.STATION_FREQUENCY ) );
+                if ( FREQUENCY.length() == 0 ) {
+                    FREQUENCY = "N/A";
+                } else {
+                    FREQUENCY = String.format( "%.3f", Double.valueOf( FREQUENCY ) );
+                }
+                PHONE = c.getString( c.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+                NAME = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
+
+                // Now calculate the distance to this wx station
+                float[] results = new float[ 2 ];
+                Location.distanceBetween( mLocation.getLatitude(), mLocation.getLongitude(), 
+                        LATITUDE, LONGITUDE, results );
+                DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
+                BEARING = ( results[ 1 ]+declination+360 )%360;
+            }
+
+            @Override
+            public int compareTo( AwosData another ) {
+                if ( this.DISTANCE > another.DISTANCE ) {
+                    return 1;
+                } else if ( this.DISTANCE < another.DISTANCE ) {
+                    return -1;
+                }
+                return 0;
+            }
     }
 
     private final class AirportDetailsTask extends AsyncTask<String, Void, Cursor[]> {
@@ -137,12 +187,87 @@ public class AirportDetailsActivity extends ActivityBase {
                 cursors[ 5 ] = c;
             }
 
+            double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+            double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+            int elev_msl = apt.getInt( apt.getColumnIndex( Airports.ELEVATION_MSL ) );
+            mLocation = new Location( "" );
+            mLocation.setLatitude( lat );
+            mLocation.setLongitude( lon );
+            mLocation.setAltitude( elev_msl );
+
+            // Get the bounding box first to do a quick query as a first cut
+            double[] box = GeoUtils.getBoundingBox( mLocation, 20 );
+
+            double radLatMin = box[ 0 ];
+            double radLatMax = box[ 1 ];
+            double radLonMin = box[ 2 ];
+            double radLonMax = box[ 3 ];
+
+            // Check if 180th Meridian lies within the bounding Box
+            boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
+            String selection = "("
+                +Awos.STATION_LATTITUDE_DEGREES+">=? AND "+Awos.STATION_LATTITUDE_DEGREES+"<=?"
+                +") AND ("+Awos.STATION_LONGITUDE_DEGREES+">=? "
+                +(isCrossingMeridian180? "OR " : "AND ")+Awos.STATION_LONGITUDE_DEGREES+"<=?)"
+                +" AND "+Awos.COMMISSIONING_STATUS+"='Y'";
+            String[] selectionArgs = {
+                    String.valueOf( Math.toDegrees( radLatMin ) ), 
+                    String.valueOf( Math.toDegrees( radLatMax ) ),
+                    String.valueOf( Math.toDegrees( radLonMin ) ),
+                    String.valueOf( Math.toDegrees( radLonMax ) )
+                    };
+
             builder = new SQLiteQueryBuilder();
-            builder.setTables( Awos.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    Awos.SITE_NUMBER+"=?",
-                    new String[] { siteNumber }, null, null, null, null );
-            cursors[ 6 ] = c;
+            builder.setTables( Awos.TABLE_NAME+" w LEFT OUTER JOIN "+Airports.TABLE_NAME+" a"
+                    +" ON w."+Awos.SITE_NUMBER+" = a."+Airports.SITE_NUMBER );
+            c = builder.query( db, new String[] { "w.*", "a."+Airports.FACILITY_NAME, 
+                    "0 'DISTANCE'", "0 'BEARING'" },
+                    selection, selectionArgs, null, null, null, null );
+            String[] columns = new String[] {
+                    BaseColumns._ID,
+                    Awos.WX_SENSOR_IDENT,
+                    Awos.WX_SENSOR_TYPE,
+                    Awos.STATION_FREQUENCY,
+                    Awos.STATION_PHONE_NUMBER,
+                    Airports.FACILITY_NAME,
+                    "DISTANCE",
+                    "BEARING"
+            };
+
+            MatrixCursor matrix = new MatrixCursor( columns );
+
+            if ( c.moveToFirst() ) {
+                // Now find the magnetic declination at this location
+                float declination = GeoUtils.getMagneticDeclination( mLocation );
+    
+                AwosData[] awosList = new AwosData[ c.getCount() ];
+                do {
+                    AwosData awos = new AwosData( c, declination );
+                    awosList[ c.getPosition() ] = awos;
+                } while ( c.moveToNext() );
+    
+                c.close();
+    
+                // Sort the airport list by distance from current location
+                Arrays.sort( awosList );
+
+                // Build a cursor out of the sorted airport list
+                for ( AwosData awos : awosList ) {
+                    if ( awos.DISTANCE <= 20 ) {
+                        MatrixCursor.RowBuilder row = matrix.newRow();
+                        row.add( matrix.getPosition() )
+                            .add( awos.SENSOR_ID )
+                            .add( awos.SENSOR_TYPE )
+                            .add( awos.FREQUENCY )
+                            .add( awos.PHONE )
+                            .add( awos.NAME )
+                            .add( awos.DISTANCE )
+                            .add( awos.BEARING );
+                    }
+                }
+            }
+
+            cursors[ 6 ] = matrix;
 
             String faa_code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
             builder = new SQLiteQueryBuilder();
@@ -159,14 +284,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
             }
             mExtras.putString( NearbyActivity.APT_CODE, code );
-            double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
-            double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-            int elev_msl = apt.getInt( apt.getColumnIndex( Airports.ELEVATION_MSL ) );
-            Location location = new Location( "" );
-            location.setLatitude( lat );
-            location.setLongitude( lon );
-            location.setAltitude( elev_msl );
-            mExtras.putParcelable( NearbyActivity.APT_LOCATION, location );
+            mExtras.putParcelable( NearbyActivity.APT_LOCATION, mLocation );
 
             return cursors;
         }
@@ -187,6 +305,8 @@ public class AirportDetailsActivity extends ActivityBase {
             showCommunicationsDetails( result );
             // Runway section
             showRunwayDetails( result );
+            // AWOS section
+            showAwosDetails( result );
             // Airport Operations section
             showOperationsDetails( result );
             // Airport Remarks section
@@ -228,23 +348,6 @@ public class AirportDetailsActivity extends ActivityBase {
             }
             ++row;
             addRow( layout, "Unicom", DataUtils.decodeUnicomFreq( unicom ) );
-        }
-
-        Cursor awos = result[ 6 ];
-        if ( awos.moveToFirst() ) {
-            String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
-            if ( freq.length() == 0 ) {
-                freq = "N/A";
-            } else {
-                freq = String.format( "%.3f", Double.valueOf( freq ) );
-            }
-            if ( row > 0 ) {
-                addSeparator( layout );
-            }
-            String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
-            String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
-            addAwosRow( layout, type, freq, phone );
-            ++row;
         }
 
         Cursor twr1 = result[ 3 ];
@@ -403,6 +506,33 @@ public class AirportDetailsActivity extends ActivityBase {
             tv = (TextView) mMainLayout.findViewById( R.id.detail_heli_label );
             tv.setVisibility( View.GONE );
             heliLayout.setVisibility( View.GONE );
+        }
+    }
+
+    protected void showAwosDetails( Cursor[] result ) {
+        TextView label = (TextView) mMainLayout.findViewById( R.id.detail_awos_label );
+        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.detail_awos_layout );
+        Cursor awos = result[ 6 ];
+        if ( awos.moveToFirst() ) {
+            int row = 0;
+            do {
+                String SENSOR_ID = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
+                String SENSOR_TYPE = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+                String FREQUENCY = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
+                String PHONE = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+                String NAME = awos.getString( awos.getColumnIndex( Airports.FACILITY_NAME ) );
+                float DISTANCE = awos.getFloat( awos.getColumnIndex( "DISTANCE" ) );
+                float BEARING = awos.getFloat( awos.getColumnIndex( "BEARING" ) );
+                if ( row > 0 ) {
+                    addSeparator( layout );
+                }
+                addAwosRow( layout, SENSOR_ID, NAME, SENSOR_TYPE, FREQUENCY, PHONE, 
+                        DISTANCE, BEARING );
+                ++row;
+            } while ( awos.moveToNext() );
+        } else {
+            label.setVisibility( View.GONE );
+            layout.setVisibility( View.GONE );
         }
     }
 
@@ -584,19 +714,27 @@ public class AirportDetailsActivity extends ActivityBase {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addAwosRow( TableLayout table, String type, String freq, String phone ) {
+    protected void addAwosRow( TableLayout table, String id, String name, String type, 
+            String freq, String phone, float distance, float bearing ) {
         RelativeLayout layout = (RelativeLayout) mInflater.inflate(
-                R.layout.comm_detail_item, null );
-        TextView tv = (TextView) layout.findViewById( R.id.comm_freq_use );
-        tv.setText( type );
-        tv = (TextView) layout.findViewById( R.id.comm_freq_value );
+                R.layout.awos_detail_item, null );
+        TextView tv = (TextView) layout.findViewById( R.id.awos_station_name );
+        tv.setText( id+" - "+name );
+        tv = (TextView) layout.findViewById( R.id.awos_freq );
         tv.setText( freq );
-        tv = (TextView) layout.findViewById( R.id.comm_freq_extra );
+        tv = (TextView) layout.findViewById( R.id.awos_phone );
         if ( phone.length() > 0 ) {
             tv.setText( phone );
             makeClickToCall( tv );
         } else {
             tv.setVisibility( View.GONE );
+        }
+        tv = (TextView) layout.findViewById( R.id.awos_info );
+        if ( distance > 1 ) {
+            tv.setText( String.format( "%s, %.0fNM %s", type, distance,
+                    GeoUtils.getCardinalDirection( bearing ) ) );
+        } else {
+            tv.setText( type+", On-site" );
         }
         table.addView( layout, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
