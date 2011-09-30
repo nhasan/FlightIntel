@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * Airports for Android
+ *
+ * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+ -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:padding="10dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+    <TextView android:id="@+id/awos_station_name"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:gravity="left"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent" />
+    <TextView android:id="@+id/awos_freq"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:gravity="right"
+            android:layout_toRightOf="@id/awos_station_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    <TextView android:id="@+id/awos_info"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:gravity="left"
+            android:layout_below="@id/awos_station_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    <TextView android:id="@+id/awos_phone"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:gravity="right"
+            android:layout_below="@id/awos_freq"
+            android:layout_toRightOf="@id/awos_info"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+</RelativeLayout>
