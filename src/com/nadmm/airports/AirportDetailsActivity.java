@@ -103,11 +103,6 @@ public class AirportDetailsActivity extends ActivityBase {
                 LATITUDE = c.getDouble( c.getColumnIndex( Awos.STATION_LATTITUDE_DEGREES ) );
                 LONGITUDE = c.getDouble( c.getColumnIndex( Awos.STATION_LONGITUDE_DEGREES ) );
                 FREQUENCY = c.getString( c.getColumnIndex( Awos.STATION_FREQUENCY ) );
-                if ( FREQUENCY.length() == 0 ) {
-                    FREQUENCY = "N/A";
-                } else {
-                    FREQUENCY = String.format( "%.3f", Double.valueOf( FREQUENCY ) );
-                }
                 PHONE = c.getString( c.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
                 NAME = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
 
@@ -220,9 +215,9 @@ public class AirportDetailsActivity extends ActivityBase {
             builder = new SQLiteQueryBuilder();
             builder.setTables( Awos.TABLE_NAME+" w LEFT OUTER JOIN "+Airports.TABLE_NAME+" a"
                     +" ON w."+Awos.SITE_NUMBER+" = a."+Airports.SITE_NUMBER );
-            c = builder.query( db, new String[] { "w.*", "a."+Airports.FACILITY_NAME, 
-                    "0 'DISTANCE'", "0 'BEARING'" },
+            c = builder.query( db, new String[] { "w.*", "a."+Airports.FACILITY_NAME },
                     selection, selectionArgs, null, null, null, null );
+
             String[] columns = new String[] {
                     BaseColumns._ID,
                     Awos.WX_SENSOR_IDENT,
@@ -233,7 +228,6 @@ public class AirportDetailsActivity extends ActivityBase {
                     "DISTANCE",
                     "BEARING"
             };
-
             MatrixCursor matrix = new MatrixCursor( columns );
 
             if ( c.moveToFirst() ) {
@@ -247,11 +241,11 @@ public class AirportDetailsActivity extends ActivityBase {
                 } while ( c.moveToNext() );
     
                 c.close();
-    
+
                 // Sort the airport list by distance from current location
                 Arrays.sort( awosList );
 
-                // Build a cursor out of the sorted airport list
+                // Build a cursor out of the sorted wx station list
                 for ( AwosData awos : awosList ) {
                     if ( awos.DISTANCE <= 20 ) {
                         MatrixCursor.RowBuilder row = matrix.newRow();
@@ -719,15 +713,19 @@ public class AirportDetailsActivity extends ActivityBase {
         RelativeLayout layout = (RelativeLayout) mInflater.inflate(
                 R.layout.awos_detail_item, null );
         TextView tv = (TextView) layout.findViewById( R.id.awos_station_name );
-        tv.setText( id+" - "+name );
+        if ( name != null && name.length() > 0 ) {
+            tv.setText( id+" - "+name );
+        } else {
+            tv.setText( id );
+        }
         tv = (TextView) layout.findViewById( R.id.awos_freq );
-        tv.setText( freq );
+        if ( freq.length() > 0 ) {
+            tv.setText( String.format( "%.3f", Double.valueOf( freq ) ) );
+        }
         tv = (TextView) layout.findViewById( R.id.awos_phone );
         if ( phone.length() > 0 ) {
             tv.setText( phone );
             makeClickToCall( tv );
-        } else {
-            tv.setVisibility( View.GONE );
         }
         tv = (TextView) layout.findViewById( R.id.awos_info );
         if ( distance > 1 ) {
