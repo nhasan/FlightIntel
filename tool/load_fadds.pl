@@ -21,9 +21,7 @@
 
 use strict;
 use DBI;
-use Clone qw(clone);
 use Text::Autoformat;
-use Geo::Coordinates::Parser;
 
 my $reTrim = qr/^\s+|\s+$/;
 
@@ -810,7 +808,7 @@ my $insert_aff4_record = "INSERT INTO aff4 ("
 my $create_wxl_table = "CREATE TABLE wxl ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."LOCATION_ID TEXT, "
-        ."LOC_LATTITUDE_DEGREES REAL, "
+        ."LOC_LATITUDE_DEGREES REAL, "
         ."LOC_LONGITUDE_DEGREES REAL, "
         ."ASSOC_CITY TEXT, "
         ."ASSOC_STATE TEXT, "
@@ -821,7 +819,7 @@ my $create_wxl_table = "CREATE TABLE wxl ("
 
 my $insert_wxl_record = "INSERT INTO wxl ("
         ."LOCATION_ID, "
-        ."LOC_LATTITUDE_DEGREES, "
+        ."LOC_LATITUDE_DEGREES, "
         ."LOC_LONGITUDE_DEGREES, "
         ."ASSOC_CITY, "
         ."ASSOC_STATE, "
@@ -837,8 +835,8 @@ my $create_com_table = "CREATE TABLE com ("
         ."COM_OUTLET_ID TEXT, "
         ."COM_OUTLET_TYPE TEXT, "
         ."ASSOC_NAVAID_ID TEXT, "
-        ."COMM_OUTLET_LATTITUDE_DEGREES REAL, "
-        ."COMM_OUTLET_LANGITUDE_DEGREES REAL, "
+        ."COMM_OUTLET_LATITUDE_DEGREES REAL, "
+        ."COMM_OUTLET_LONGITUDE_DEGREES REAL, "
         ."COMM_OUTLET_CALL TEXT, "
         ."COMM_OUTLET_FREQS TEXT, "
         ."FSS_IDENT TEXT, "
@@ -849,8 +847,8 @@ my $insert_com_record = "INSERT INTO com ("
         ."COM_OUTLET_ID, "
         ."COM_OUTLET_TYPE, "
         ."ASSOC_NAVAID_ID, "
-        ."COMM_OUTLET_LATTITUDE_DEGREES, "
-        ."COMM_OUTLET_LANGITUDE_DEGREES, "
+        ."COMM_OUTLET_LATITUDE_DEGREES, "
+        ."COMM_OUTLET_LONGITUDE_DEGREES, "
         ."COMM_OUTLET_CALL, "
         ."COMM_OUTLET_FREQS, "
         ."FSS_IDENT, "
@@ -1435,8 +1433,6 @@ close TWR_FILE;
 my $AWOS = $FADDS_BASE."/AWOS.txt";
 open( AWOS_FILE, "<$AWOS" ) or die "Could not open data file\n";
 
-my $geo_parser = Geo::Coordinates::Parser->new();
-
 $i = 0;
 print( "$AWOS\n" );
 while ( my $line = <AWOS_FILE> )
@@ -1456,10 +1452,10 @@ while ( my $line = <AWOS_FILE> )
     $sth_awos->bind_param( 3, substrim( $line, 14, 1 ) );
     #STATION_LATTITUDE_DEGREES
     my $lat_dms = substrim( $line, 15, 14 );
-    $sth_awos->bind_param( 4, 1*$geo_parser->parse( $lat_dms ) );
+    $sth_awos->bind_param( 4, geo_parse_lat_dms( $lat_dms ) );
     #STATION_LONGITUDE_DEGREES
     my $lon_dms = substrim( $line, 29, 15 );
-    $sth_awos->bind_param( 5, -1*$geo_parser->parse( $lon_dms ) );
+    $sth_awos->bind_param( 5, geo_parse_lon_dms( $lon_dms ) );
     #STATION_FREQUENCY
     $sth_awos->bind_param( 6, substrim( $line, 44, 7 ) );
     #SECOND_STATION_FREQUENCY
@@ -1802,7 +1798,7 @@ while ( my $line = <WXL_FILE> )
 
     #LOCAION_ID
     $sth_wxl->bind_param( 1, substrim( $line,  0,  5 ) );
-    #LOC_LATTITUDE_DEGREES
+    #LOC_LATITUDE_DEGREES
     my $deg = substr( $line, 5, 2 );
     my $min = substr( $line, 7, 2 );
     my $sec = substr( $line, 9, 3 );
@@ -1869,48 +1865,22 @@ while ( my $line = <COM_FILE> )
     #ASSOC_NAVAID_ID
     my $navaid_id = substrim( $line,  11,   4 );
     $sth_com->bind_param( 3, $navaid_id );
-    #COMM_OUTLET_LATTITUDE_DEGREES
+    #COMM_OUTLET_LATITUDE_DEGREES
     my $offset = 186;
     if ( length( $navaid_id ) > 0 )
     {
         $offset = 89;
     }
     my $lat = substrim( $line, $offset, 14 );
-    if ( $lat =~ /(\d+)-(\d+)-(\d+)(\.\d+)([NSEW])/ )
-    {
-        my $deg = $1;
-        my $min = $2;
-        my $sec = $3;
-        my $subsec = $4;
-        my $dir = $5;
-        my $latdeg = $deg + $min/60 + ($sec+$subsec)/3600;
-        if ( $dir eq "S" )
-        {
-            $latdeg *= -1;
-        }
-        $sth_com->bind_param( 4, $latdeg );
-    }
-    #COMM_OUTLET_LANGITUDE_DEGREES
+    $sth_com->bind_param( 4, geo_parse_lat_dms( $lat ) );
+    #COMM_OUTLET_LONGITUDE_DEGREES
     $offset = 200;
     if ( length( $navaid_id ) > 0 )
     {
         $offset = 103;
     }
     my $lon = substrim( $line, $offset, 14 );
-    if ( $lon =~ /(\d+)-(\d+)-(\d+)(\.\d+)([NSEW])/ )
-    {
-        my $deg = $1;
-        my $min = $2;
-        my $sec = $3;
-        my $subsec = $4;
-        my $dir = $5;
-        my $londeg = $deg +$min/60 + ($sec+$subsec)/3600;
-        if ( $dir eq "W" )
-        {
-            $londeg *= -1;
-        }
-        $sth_com->bind_param( 5, $londeg );
-    }
+    $sth_com->bind_param( 5, geo_parse_lon_dms( $lon ) );
     #COMM_OUTLET_CALL
     $sth_com->bind_param( 6, capitalize( $line, 214,  26 ) );
     #COMM_OUTLET_FREQS
@@ -1936,3 +1906,37 @@ close COM_FILE;
 ###########################################################################
 
 $dbh->disconnect();
+
+exit;
+
+###########################################################################
+
+sub geo_parse_lat_dms
+{
+    my $lat = 0;
+    my $dms = shift;
+    if ( $dms =~ /(\d+)-(\d+)-(\d+\.\d+)([NS])/ )
+    {
+        $lat = $1+$2/60+$3/3600;
+        if ( $4 eq "S" )
+        {
+            $lat *= -1;
+        }
+    }
+    return $lat;
+}
+
+sub geo_parse_lon_dms
+{
+    my $lon = 0;
+    my $dms = shift;
+    if ( $dms =~ /(\d+)-(\d+)-(\d+\.\d+)([EW])/ )
+    {
+        $lon = $1+$2/60+$3/3600;
+        if ( $4 eq "W" )
+        {
+            $lon *= -1;
+        }
+    }
+    return $lon;
+}
