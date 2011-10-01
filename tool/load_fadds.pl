@@ -603,6 +603,7 @@ my $create_nav1_table = "CREATE TABLE nav1 ("
         ."AUTOMATIC_VOICE_IDENT TEXT, "
         ."TACAN_CHANNEL TEXT, "
         ."NAVAID_FREQUENCY TEXT, "
+        ."FANMARKER_TYPE TEXT, "
         ."PROTECTED_FREQUENCY_ALTITUDE TEXT"
         .")";
 
@@ -626,11 +627,12 @@ my $insert_nav1_record = "INSERT INTO nav1 ("
         ."AUTOMATIC_VOICE_IDENT, "
         ."TACAN_CHANNEL, "
         ."NAVAID_FREQUENCY, "
+        ."FANMARKER_TYPE, "
         ."PROTECTED_FREQUENCY_ALTITUDE"
         .") VALUES ("
         ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
-        .")";
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?)";
 
 my $create_nav2_table = "CREATE TABLE nav2 ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -1554,8 +1556,10 @@ while ( my $line = <NAV_FILE> )
         $sth_nav1->bind_param( 18, substrim( $line, 433,  4 ) );
         #NAVAID_FREQUENCY
         $sth_nav1->bind_param( 19, substrim( $line, 437,  6 ) );
+        #FANMARKER_TYPE TEXT
+        $sth_nav1->bind_param( 20, capitalize( $line, 467, 10 ) );
         #PROTECTED_FREQUENCY_ALTITUDE
-        $sth_nav1->bind_param( 20, substrim( $line, 480,  1 ) );
+        $sth_nav1->bind_param( 21, substrim( $line, 480,  1 ) );
 
         $sth_nav1->execute();
     }
