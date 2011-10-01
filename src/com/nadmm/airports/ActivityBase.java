@@ -164,8 +164,10 @@ public class ActivityBase extends Activity {
         tv.setText( info2 );
         tv = (TextView) root.findViewById( R.id.navaid_morse1 );
         tv.setText( DataUtils.getMorseCode( id.substring( 0, 1 ) ) );
-        tv = (TextView) root.findViewById( R.id.navaid_morse2 );
-        tv.setText( DataUtils.getMorseCode( id.substring( 1, 2 ) ) );
+        if ( id.length() > 1 ) {
+            tv = (TextView) root.findViewById( R.id.navaid_morse2 );
+            tv.setText( DataUtils.getMorseCode( id.substring( 1, 2 ) ) );
+        }
         if ( id.length() > 2 ) {
             tv = (TextView) root.findViewById( R.id.navaid_morse3 );
             tv.setText( DataUtils.getMorseCode( id.substring( 2, 3 ) ) );
