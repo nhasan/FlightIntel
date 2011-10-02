@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #/*
-# * Airports for Android
+# * FlightIntel for Pilots
 # *
 # * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
 # *
