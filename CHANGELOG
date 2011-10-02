@@ -1,3 +1,8 @@
+v1.3.0 (09/23/2011)
+===================
+* Show center (ARTCC) frequencies where available
+* Minor fixes and improvements
+
 v1.2.0 (09/19/2011)
 ===================
 * Added navaid (VOR/NDB) details activity
