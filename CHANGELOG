@@ -1,26 +1,7 @@
-v1.0.0 (07/17/2011)
+v1.1.0 (09/12/2011)
 ===================
-* Initial release
-
-v1.0.1 (07/18/2011)
-===================
-* Improved "Click-to-Call" function
-
-v1.0.2 (07/21/2011)
-===================
-* Fixed a crash when parsing runway obstruction data
-* Made the telephony and hardware GPS optional to make the app compatible with tablets
-
-v1.0.3 (08/02/2011)
-===================
-* Display non-US (e.g. Canada, Bahamas) airport details without crashing
-* Show AWOS details even if a frequency is not listed
-* Load ILS and ARTCC data into the database
-
-v1.0.4 (08/09/2011)
-===================
-* Fixed "Download" screen to work with multiple downloads of same type
-* Show effective date of the data at the bottom of the airport details screen
+* Added ILS details activity
+* Show expired data warning in the header
 
 v1.0.5 (08/19/2011)
 ===================
@@ -28,3 +9,27 @@ v1.0.5 (08/19/2011)
 * Improved the display of magnetic declination/variation
 * Load additional data into nav1 table
 * Show warning in the header when showing expired data
+
+v1.0.4 (08/09/2011)
+===================
+* Fixed "Download" screen to work with multiple downloads of same type
+* Show effective date of the data at the bottom of the airport details screen
+
+v1.0.3 (08/02/2011)
+===================
+* Display non-US (e.g. Canada, Bahamas) airport details without crashing
+* Show AWOS details even if a frequency is not listed
+* Load ILS and ARTCC data into the database
+
+v1.0.2 (07/21/2011)
+===================
+* Fixed a crash when parsing runway obstruction data
+* Made the telephony and hardware GPS optional to make the app compatible with tablets
+
+v1.0.1 (07/18/2011)
+===================
+* Improved "Click-to-Call" function
+
+v1.0.0 (07/17/2011)
+===================
+* Initial release
