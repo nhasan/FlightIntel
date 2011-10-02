@@ -1,3 +1,8 @@
+v1.4.0 (09/23/2011)
+===================
+* Show a list of wx stations (ASOS/AWOS) within 20nm radius of the airport
+* Fix a crash bug when showing certain navaids
+
 v1.3.0 (09/23/2011)
 ===================
 * Show center (ARTCC) frequencies where available
