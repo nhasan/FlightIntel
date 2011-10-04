@@ -54,7 +54,6 @@ import com.nadmm.airports.DatabaseManager.States;
 
 public class NearbyActivity extends ActivityBase {
 
-    private static final String TAG = SearchActivity.class.getSimpleName();
     public static final String APT_LOCATION = "APT_LOCATION";
     public static final String APT_CODE = "APT_CODE";
 
@@ -303,7 +302,6 @@ public class NearbyActivity extends ActivityBase {
             Cursor c = AirportsCursorHelper.query( NearbyActivity.this, selection, selectionArgs,
                     null, null, null, null );
             if ( !c.moveToFirst() ) {
-                Log.i( TAG, "No airports found within the query radius" );
                 c.close();
                 return null;
             }
