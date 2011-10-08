@@ -21,7 +21,9 @@ package com.nadmm.airports;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -239,8 +241,6 @@ public class AirportDetailsActivity extends ActivityBase {
                     awosList[ c.getPosition() ] = awos;
                 } while ( c.moveToNext() );
     
-                c.close();
-
                 // Sort the airport list by distance from current location
                 Arrays.sort( awosList );
 
@@ -260,6 +260,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 }
             }
 
+            c.close();
             cursors[ 6 ] = matrix;
 
             String faa_code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
@@ -325,6 +326,8 @@ public class AirportDetailsActivity extends ActivityBase {
 
     protected void showCommunicationsDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
+        String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
+
         TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.detail_comm_layout );
         int row = 0;
 
@@ -351,8 +354,6 @@ public class AirportDetailsActivity extends ActivityBase {
                     addSeparator( layout );
                 }
                 Intent intent = new Intent( this, CommDetailsActivity.class );
-                String siteNumber = apt.getString( apt.getColumnIndex(
-                        Airports.SITE_NUMBER ) );
                 intent.putExtra( Airports.SITE_NUMBER, siteNumber );
                 ++row;
                 int resId = getSelectorResourceForRow( row-1, row+1 );
@@ -424,13 +425,20 @@ public class AirportDetailsActivity extends ActivityBase {
         if ( row > 0 ) {
             addSeparator( layout );
         }
-        Intent intent = new Intent( this, NavaidsActivity.class );
-        String siteNumber = apt.getString( apt.getColumnIndex(
-                Airports.SITE_NUMBER ) );
-        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+
         ++row;
-        int resId = getSelectorResourceForRow( row-1, row );
-        addClickableRow( layout, "Navaids", intent, resId );
+        Intent fss = new Intent( this, FssCommActivity.class );
+        fss.putExtra( Airports.SITE_NUMBER, siteNumber );
+        int resId = getSelectorResourceForRow( row, row+2 );
+        addClickableRow( layout, "Flight service", fss, resId );
+
+        addSeparator( layout );
+
+        ++row;
+        Intent navaids = new Intent( this, NavaidsActivity.class );
+        navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
+        resId = getSelectorResourceForRow( row, row+1 );
+        addClickableRow( layout, "Navaids", navaids, resId );
     }
 
     protected void addFrequencyToMap( HashMap<String, ArrayList<Pair<String, String>>> map,
@@ -577,10 +585,22 @@ public class AirportDetailsActivity extends ActivityBase {
             addRow( layout, "Magnetic variation", 
                     String.format( "%d\u00B0 %s (actual)", Math.abs( variation ), dir ) );
         }
-        addSeparator( layout );
         String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
         if ( sectional.length() > 0 ) {
+            addSeparator( layout );
             addRow( layout, "Sectional chart", sectional );
+        }
+        String timezone_id = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
+        if ( timezone_id.length() > 0 ) {
+            addSeparator( layout );
+            TimeZone tz = TimeZone.getTimeZone( timezone_id );
+            String tzName = tz.getDisplayName( tz.inDaylightTime( new Date() ), TimeZone.SHORT );
+            // UTC offset in minutes
+            int utcOffset = tz.getOffset( new Date().getTime() )/(60*1000);
+            String sign = utcOffset >= 0? "+" : "-";
+            utcOffset = Math.abs( utcOffset );
+            addRow( layout, "Timezone", String.format( "%s (UTC%s%02d:%02d)", tzName, sign,
+                    utcOffset/60, utcOffset%60 ) );
         }
     }
 

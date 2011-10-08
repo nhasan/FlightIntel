@@ -55,10 +55,13 @@
                   android:name="NavaidsActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
-                  android:name=".IlsDetailsActivity" />
+                  android:name="IlsDetailsActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
-                  android:name=".NavaidDetailsActivity" />
+                  android:name="NavaidDetailsActivity" />
+
+        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+                  android:name="FssCommActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:name="AboutActivity" />

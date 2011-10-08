@@ -118,6 +118,7 @@ public class DatabaseManager {
         public static final String OTHER_SERVICES = "OTHER_SERVICES";
         public static final String WIND_INDICATOR = "WIND_INDICATOR";
         public static final String ICAO_CODE = "ICAO_CODE";
+        public static final String TIMEZONE_ID = "TIMEZONE_ID";
 
         // These are not really columns in the table, but calculated
         public static final String DISTANCE = "DISTANCE";
@@ -347,6 +348,19 @@ public class DatabaseManager {
         public static final String FREQ_ALTITUDE = "FREQ_ALTITUDE";
         public static final String FREQ_USAGE_NAME= "FREQ_USAGE_NAME";
         public static final String IFR_FACILITY_ID = "IFR_FACILITY_ID";
+    }
+
+    public static final class Com implements BaseColumns {
+        public static final String TABLE_NAME = "com";
+        public static final String COM_OUTLET_ID = "COM_OUTLET_ID";
+        public static final String COM_OUTLET_TYPE = "COM_OUTLET_TYPE";
+        public static final String ASSOC_NAVAID_ID = "ASSOC_NAVAID_ID";
+        public static final String COMM_OUTLET_LATITUDE_DEGREES = "COMM_OUTLET_LATITUDE_DEGREES";
+        public static final String COMM_OUTLET_LONGITUDE_DEGREES = "COMM_OUTLET_LONGITUDE_DEGREES";
+        public static final String COMM_OUTLET_CALL = "COMM_OUTLET_CALL";
+        public static final String COMM_OUTLET_FREQS = "COMM_OUTLET_FREQS";
+        public static final String FSS_IDENT = "FSS_IDENT";
+        public static final String FSS_NAME = "FSS_NAME";
     }
 
     public static final class Catalog implements BaseColumns {
