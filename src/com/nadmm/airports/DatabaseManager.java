@@ -352,8 +352,8 @@ public class DatabaseManager {
 
     public static final class Com implements BaseColumns {
         public static final String TABLE_NAME = "com";
-        public static final String COM_OUTLET_ID = "COM_OUTLET_ID";
-        public static final String COM_OUTLET_TYPE = "COM_OUTLET_TYPE";
+        public static final String COMM_OUTLET_ID = "COMM_OUTLET_ID";
+        public static final String COMM_OUTLET_TYPE = "COMM_OUTLET_TYPE";
         public static final String ASSOC_NAVAID_ID = "ASSOC_NAVAID_ID";
         public static final String COMM_OUTLET_LATITUDE_DEGREES = "COMM_OUTLET_LATITUDE_DEGREES";
         public static final String COMM_OUTLET_LONGITUDE_DEGREES = "COMM_OUTLET_LONGITUDE_DEGREES";

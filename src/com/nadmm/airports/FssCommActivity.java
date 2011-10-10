@@ -228,8 +228,8 @@ public class FssCommActivity extends ActivityBase {
                 R.id.fss_detail_layout );
         if ( com.moveToFirst() ) {
             do {
-                String outletId = com.getString( com.getColumnIndex( Com.COM_OUTLET_ID ) );
-                String outletType = com.getString( com.getColumnIndex( Com.COM_OUTLET_TYPE ) );
+                String outletId = com.getString( com.getColumnIndex( Com.COMM_OUTLET_ID ) );
+                String outletType = com.getString( com.getColumnIndex( Com.COMM_OUTLET_TYPE ) );
                 String outletCall = com.getString( com.getColumnIndex( Com.COMM_OUTLET_CALL ) );
                 String navId = com.getString( com.getColumnIndex( Com.ASSOC_NAVAID_ID ) );
                 String navName = com.getString( com.getColumnIndex( Nav1.NAVAID_NAME ) );

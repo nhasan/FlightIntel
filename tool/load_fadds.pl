@@ -834,8 +834,8 @@ my $insert_wxl_record = "INSERT INTO wxl ("
 
 my $create_com_table = "CREATE TABLE com ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        ."COM_OUTLET_ID TEXT, "
-        ."COM_OUTLET_TYPE TEXT, "
+        ."COMM_OUTLET_ID TEXT, "
+        ."COMM_OUTLET_TYPE TEXT, "
         ."ASSOC_NAVAID_ID TEXT, "
         ."COMM_OUTLET_LATITUDE_DEGREES REAL, "
         ."COMM_OUTLET_LONGITUDE_DEGREES REAL, "
@@ -846,8 +846,8 @@ my $create_com_table = "CREATE TABLE com ("
         .")";
 
 my $insert_com_record = "INSERT INTO com ("
-        ."COM_OUTLET_ID, "
-        ."COM_OUTLET_TYPE, "
+        ."COMM_OUTLET_ID, "
+        ."COMM_OUTLET_TYPE, "
         ."ASSOC_NAVAID_ID, "
         ."COMM_OUTLET_LATITUDE_DEGREES, "
         ."COMM_OUTLET_LONGITUDE_DEGREES, "
@@ -1862,9 +1862,9 @@ while ( my $line = <COM_FILE> )
         $dbh->do( "PRAGMA synchronous=ON" );
     }
 
-    #COM_OUTLET_ID
+    #COMM_OUTLET_ID
     $sth_com->bind_param( 1, substrim( $line,   0,   4 ) );
-    #COM_OUTLET_TYPE
+    #COMM_OUTLET_TYPE
     $sth_com->bind_param( 2, substrim( $line,   4,   7 ) );
     #ASSOC_NAVAID_ID
     my $navaid_id = substrim( $line,  11,   4 );
