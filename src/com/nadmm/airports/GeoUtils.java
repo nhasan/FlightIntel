@@ -21,7 +21,6 @@ package com.nadmm.airports;
 
 import android.hardware.GeomagneticField;
 import android.location.Location;
-import android.util.Log;
 
 public class GeoUtils {
 
@@ -56,9 +55,6 @@ public class GeoUtils {
         double R = getEarthRadius( radLat );
         // Calculate the angular distance
         double radDist = r/R;
-        Log.i( "RADIUS", String.valueOf( R ) );
-        Log.i( "NEARBY", String.valueOf( r ) );
-        Log.i( "ANGLE", String.valueOf( radDist ) );
         double radLatMin = radLat-radDist;
         double radLatMax = radLat+radDist;
 
