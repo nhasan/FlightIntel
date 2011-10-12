@@ -25,7 +25,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
@@ -62,12 +61,8 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
         // Get the view that represents the section header
         TextView section = (TextView) view.findViewById( mSectionId );
         section.setVisibility( View.GONE );
-        section.setOnClickListener( new OnClickListener() {
-            @Override
-            public void onClick( View v ) {
-                // Ignore clicks on the section title
-            }
-        } );
+        section.setClickable( false );
+        section.setFocusable( false );
 
         String curSectionName = getSectionName( position );
 
