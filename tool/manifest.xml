@@ -3,11 +3,11 @@
     <datafile>
         <type>FADDS</type>
         <desc>National Airspace System (FAA)</desc>
-        <version>60</version>
-        <filename>fadds_20110630.zip</filename>
-        <size>3900766</size>
-        <start>2011-06-30</start>
-        <end>2011-08-25</end>
+        <version>62</version>
+        <filename>fadds_20111020.zip</filename>
+        <size>4390452</size>
+        <start>2011-10-20</start>
+        <end>2011-12-15</end>
     </datafile>
     <datafile>
         <type>FADDS</type>
