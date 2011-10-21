@@ -19,6 +19,8 @@
 
 package com.nadmm.airports;
 
+import com.nadmm.airports.DatabaseManager.Catalog;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -56,23 +58,29 @@ public class AirportsMain extends Activity {
             return;
         }
 
-        boolean checkData = prefs.getBoolean( PreferencesActivity.KEY_STARTUP_CHECK_EXPIRED_DATA, 
-                true );
-        if ( checkData ) {
-            // Check if we have any expired data. If yes, then redirect to download activity
-            do {
-                int age = c.getInt( c.getColumnIndex( "age" ) );
-                if ( age <= 0 ) {
-                    // We have some expired data
-                    c.close();
-                    Intent download = new Intent( this, DownloadActivity.class );
-                    download.putExtra( "MSG", "One or more data items have expired" );
-                    startActivity( download );
-                    finish();
-                    return;
-                }
-            } while ( c.moveToNext() );
+        int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
+        if ( version < 62 ) {
+            c.close();
+            Intent download = new Intent( this, DownloadActivity.class );
+            download.putExtra( "MSG", "The app requires latest data update to function" );
+            startActivity( download );
+            finish();
+            return;
         }
+
+        // Check if we have any expired data. If yes, then redirect to download activity
+        do {
+            int age = c.getInt( c.getColumnIndex( "age" ) );
+            if ( age <= 0 ) {
+                // We have some expired data
+                c.close();
+                Intent download = new Intent( this, DownloadActivity.class );
+                download.putExtra( "MSG", "One or more data items have expired" );
+                startActivity( download );
+                finish();
+                return;
+            }
+        } while ( c.moveToNext() );
 
         c.close();
 
