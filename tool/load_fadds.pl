@@ -989,8 +989,12 @@ while ( my $line = <APT_FILE> )
 
     if ( $type eq "APT" )
     {
+        my $own = substrim( $line,  175,  2 );
+        my $use = substrim( $line,  177,  2 );
+
         # Skip the private use airports
-        next if ( substrim( $line,  177,  2 ) eq "PR" );
+        next if ( $own eq "PR" );
+        next if ( $own eq "PU" && $use eq "PR" );
 
         # Store the site number for later use
         $site_number{ substrim( $line, 3, 11 ) } = 1;
