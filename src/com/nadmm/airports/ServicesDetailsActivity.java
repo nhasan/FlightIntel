@@ -86,17 +86,24 @@ public class ServicesDetailsActivity extends ActivityBase {
                 R.id.detail_airport_services_layout );
         String otherServices = DataUtils.decodeServices(
                 apt.getString( apt.getColumnIndex( Airports.OTHER_SERVICES ) ) );
-        otherServices += ","+DataUtils.decodeStorage( 
+        String storage = DataUtils.decodeStorage( 
                 apt.getString( apt.getColumnIndex( Airports.STORAGE_FACILITY ) ) );
-        String bottledOxygen = apt.getString( apt.getColumnIndex(
-                Airports.BOTTLED_O2_AVAILABLE ) );
-        if ( bottledOxygen.equals( "Y" ) ) {
-            otherServices += ","+"Bottled Oxygen";
+        if ( storage.length() > 0 ) {
+            otherServices += ","+storage;
         }
-        String bulkOxygen = apt.getString( apt.getColumnIndex(
-                Airports.BULK_O2_AVAILABLE ) );
+        String bottOxygen = apt.getString( apt.getColumnIndex( Airports.BOTTLED_O2_AVAILABLE ) );
+        if ( bottOxygen.equals( "Y" ) ) {
+            if  ( otherServices.length() > 0 ) {
+                otherServices += ",";
+            }
+            otherServices += "Bottled Oxygen";
+        }
+        String bulkOxygen = apt.getString( apt.getColumnIndex( Airports.BULK_O2_AVAILABLE ) );
         if ( bulkOxygen.equals( "Y" ) ) {
-            otherServices += ","+"Bulk Oxygen";
+            if  ( otherServices.length() > 0 ) {
+                otherServices += ",";
+            }
+            otherServices += "Bulk Oxygen";
         }
         String[] services = otherServices.split( ",\\s*" );
         for ( String service : services ) {
