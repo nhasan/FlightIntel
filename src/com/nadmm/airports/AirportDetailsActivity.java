@@ -543,6 +543,18 @@ public class AirportDetailsActivity extends ActivityBase {
                 R.id.detail_operations_layout );
         String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
         addRow( layout, "Airport use", DataUtils.decodeFacilityUse( use ) );
+        String timezone_id = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
+        if ( timezone_id.length() > 0 ) {
+            addSeparator( layout );
+            TimeZone tz = TimeZone.getTimeZone( timezone_id );
+            String tzName = tz.getDisplayName( tz.inDaylightTime( new Date() ), TimeZone.SHORT );
+            // UTC offset in minutes
+            int utcOffset = tz.getOffset( new Date().getTime() )/(60*1000);
+            String sign = utcOffset >= 0? "+" : "-";
+            utcOffset = Math.abs( utcOffset );
+            addRow( layout, "Timezone", String.format( "%s (UTC%s%02d:%02d)", tzName, sign,
+                    utcOffset/60, utcOffset%60 ) );
+        }
         String activation = apt.getString( apt.getColumnIndex( Airports.ACTIVATION_DATE ) );
         if ( activation.length() > 0 ) {
             addSeparator( layout );
@@ -589,18 +601,6 @@ public class AirportDetailsActivity extends ActivityBase {
         if ( sectional.length() > 0 ) {
             addSeparator( layout );
             addRow( layout, "Sectional chart", sectional );
-        }
-        String timezone_id = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
-        if ( timezone_id.length() > 0 ) {
-            addSeparator( layout );
-            TimeZone tz = TimeZone.getTimeZone( timezone_id );
-            String tzName = tz.getDisplayName( tz.inDaylightTime( new Date() ), TimeZone.SHORT );
-            // UTC offset in minutes
-            int utcOffset = tz.getOffset( new Date().getTime() )/(60*1000);
-            String sign = utcOffset >= 0? "+" : "-";
-            utcOffset = Math.abs( utcOffset );
-            addRow( layout, "Timezone", String.format( "%s (UTC%s%02d:%02d)", tzName, sign,
-                    utcOffset/60, utcOffset%60 ) );
         }
     }
 
