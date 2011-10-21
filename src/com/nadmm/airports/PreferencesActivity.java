@@ -81,7 +81,7 @@ public class PreferencesActivity extends PreferenceActivity
             }
         } else if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
             String radius = mSharedPrefs.getString( key, "20" );
-            pref.setSummary( "Show airports within a radius of "+radius+ " miles" );
+            pref.setSummary( "Show airports within a radius of "+radius+ " NM" );
         } else if ( key.equals( KEY_SEARCH_RESULT_LIMIT ) ) {
             String value = mSharedPrefs.getString( key, "20" );
             int limit;

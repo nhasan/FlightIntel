@@ -21,9 +21,9 @@
  -->
 <resources>
     <string-array name="nearby_radius_entries">
-        <item>20 Miles</item>
-        <item>30 Miles</item>
-        <item>50 Miles</item>
+        <item>20 NM</item>
+        <item>30 NM</item>
+        <item>50 NM</item>
     </string-array>
     <string-array name="nearby_radius_values">
         <item>20</item>
