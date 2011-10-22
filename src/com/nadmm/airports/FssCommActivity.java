@@ -30,16 +30,15 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
+import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Com;
@@ -51,8 +50,7 @@ public class FssCommActivity extends ActivityBase {
     private static final String DISTANCE = "DISTANCE";
     private static final String BEARING = "BEARING";
 
-    // Use a 40NM radius
-    private static final int RADIUS = 40;
+    private static final int RADIUS = 25;
 
     private LinearLayout mMainLayout;
     private LayoutInflater mInflater;
@@ -64,7 +62,6 @@ public class FssCommActivity extends ActivityBase {
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
 
         mInflater = getLayoutInflater();
-        setContentView( R.layout.wait_msg );
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
@@ -148,8 +145,7 @@ public class FssCommActivity extends ActivityBase {
             String selection = "("
                 +Com.COMM_OUTLET_LATITUDE_DEGREES+">=? AND "+Com.COMM_OUTLET_LATITUDE_DEGREES+"<=?"
                 +") AND ("+Com.COMM_OUTLET_LONGITUDE_DEGREES+">=? "
-                +(isCrossingMeridian180? "OR " : "AND ")+Com.COMM_OUTLET_LONGITUDE_DEGREES+"<=?)"
-                +" and "+Nav1.NAVAID_TYPE+" != 'VOT'";
+                +(isCrossingMeridian180? "OR " : "AND ")+Com.COMM_OUTLET_LONGITUDE_DEGREES+"<=?)";
             String[] selectionArgs = {
                     String.valueOf( Math.toDegrees( radLatMin ) ), 
                     String.valueOf( Math.toDegrees( radLatMax ) ),
@@ -159,7 +155,8 @@ public class FssCommActivity extends ActivityBase {
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Com.TABLE_NAME+" c LEFT OUTER JOIN "+Nav1.TABLE_NAME+" n"
-                    +" ON c."+Com.ASSOC_NAVAID_ID+" = n."+Nav1.NAVAID_ID );
+                    +" ON c."+Com.ASSOC_NAVAID_ID+" = n."+Nav1.NAVAID_ID
+                    +" AND n."+Nav1.NAVAID_TYPE+" <> 'VOT'");
             Cursor c = builder.query( db, 
                     new String[] { "c.*", "n."+Nav1.NAVAID_NAME,
                     "n."+Nav1.NAVAID_TYPE, "n."+Nav1.NAVAID_FREQUENCY },
@@ -241,16 +238,13 @@ public class FssCommActivity extends ActivityBase {
                 float bearing  = com.getFloat( com.getColumnIndex( BEARING ) );
                 float distance  = com.getFloat( com.getColumnIndex( DISTANCE ) );
 
-                Log.i( "BEARING", String.valueOf( bearing ) );
-                Log.i( "DISTANCE", String.valueOf( distance ) );
-
                 LinearLayout layout = (LinearLayout) mInflater.inflate( 
                         R.layout.fss_detail_item, null );
                 TextView tv = (TextView) layout.findViewById( R.id.fss_comm_name );
                 if ( navId.length() > 0 ) {
-                    tv.setText( navId+" - "+navName+" "+navType );
+                    tv.setText( navId+" - "+navName+" "+navType+" - "+navFreq );
                 } else {
-                    tv.setText( outletId+" - "+outletCall );
+                    tv.setText( outletId+" - "+outletCall+" outlet" );
                 }
                 TableLayout table = (TableLayout) layout.findViewById( R.id.fss_comm_details );
                 addRow( table, "FSS", fssName+" ("+fssId+")" );
@@ -260,11 +254,7 @@ public class FssCommActivity extends ActivityBase {
                     int end = Math.min( i+9, freqs.length() );
                     String freq = freqs.substring( i, end ).trim();
                     addRow( table, outletType, freq );
-                    i += end;
-                }
-                if ( navId.length() > 0 ) {
-                    addSeparator( table );
-                    addRow( table, navId+" "+navType, navFreq );
+                    i = end;
                 }
                 addSeparator( table );
                 if ( distance < 1.0 ) {
@@ -280,10 +270,10 @@ public class FssCommActivity extends ActivityBase {
         } else {
             TextView tv = new TextView( this );
             tv.setGravity( Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL );
+            tv.setPadding( 12, 8, 12, 8 );
             tv.setText( String.format( "No FSS communication outlets found within %dNM radius.",
                     RADIUS ) );
-            detailLayout.addView( tv, new LinearLayout.LayoutParams(
-                    LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT ) );
+            setContentView( tv );
         }
     }
 
