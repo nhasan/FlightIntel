@@ -35,19 +35,18 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
@@ -186,7 +185,6 @@ public class NearbyActivity extends ActivityBase {
 
         @Override
         public void onLocationChanged( Location location ) {
-            Log.i( "LOCATION", String.valueOf( location.toString() ) );
             mLastLocation = location;
             NearbyTask task = new NearbyTask();
             task.execute();
@@ -308,7 +306,6 @@ public class NearbyActivity extends ActivityBase {
 
             // Now find the magnetic declination at this location
             float declination = GeoUtils.getMagneticDeclination( mLastLocation );
-            Log.i( "DECLINATION", String.valueOf( declination ) );
 
             AirportData[] airports = new AirportData[ c.getCount() ];
             do {
