@@ -88,7 +88,7 @@ public class RunwayDetailsActivity extends ActivityBase {
             builder.setTables( Remarks.TABLE_NAME );
             c = builder.query( db, new String[] { Remarks.REMARK_NAME, Remarks.REMARK_TEXT },
                     Runways.SITE_NUMBER+"=? "
-                    +"AND ( substr("+Remarks.REMARK_NAME+", 1, 2) in ('A3', 'A4', 'A5', 'A6')"
+                    +"AND ( substr("+Remarks.REMARK_NAME+", 1, 2) in ('A2', 'A3', 'A4', 'A5', 'A6')"
                     +"OR "+Remarks.REMARK_NAME+" in ('A81', 'A81 1') )",
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 2 ] = c;
