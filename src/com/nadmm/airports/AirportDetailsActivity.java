@@ -357,7 +357,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 intent.putExtra( Airports.SITE_NUMBER, siteNumber );
                 ++row;
                 int resId = getSelectorResourceForRow( row-1, row+1 );
-                addClickableRow( layout, "ATC frequencies", intent, resId );
+                addClickableRow( layout, "ATC", intent, resId );
             } else {
                 String apchRadioCall =  twr1.getString( twr1.getColumnIndex(
                         Tower1.RADIO_CALL_APCH ) );
@@ -430,7 +430,7 @@ public class AirportDetailsActivity extends ActivityBase {
         Intent fss = new Intent( this, FssCommActivity.class );
         fss.putExtra( Airports.SITE_NUMBER, siteNumber );
         int resId = getSelectorResourceForRow( row, row+2 );
-        addClickableRow( layout, "Flight service", fss, resId );
+        addClickableRow( layout, "FSS outlets", fss, resId );
 
         addSeparator( layout );
 
