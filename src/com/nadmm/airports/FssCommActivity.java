@@ -215,6 +215,13 @@ public class FssCommActivity extends ActivityBase {
             showAirportTitle( mMainLayout, apt );
 
             showFssDetails( result );
+
+            // Cleanup cursors
+            for ( Cursor c : result ) {
+                if ( c != null ) {
+                    c.close();
+                }
+            }
         }
 
     }
