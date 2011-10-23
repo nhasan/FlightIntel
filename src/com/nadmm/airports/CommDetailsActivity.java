@@ -36,8 +36,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
-import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
+import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Aff3;
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -197,7 +197,7 @@ public class CommDetailsActivity extends ActivityBase {
                     addFrequencyToMap( map, "TRSA", freq, extra );
                 }
                 if ( freqUse.contains( "TAXI CLNC" ) ) {
-                    addFrequencyToMap( map, "Pre-Taxi Clearance", freq, extra );
+                    addFrequencyToMap( map, "Pre-taxi Clearance", freq, extra );
                 }
                 if ( freqUse.contains( "EMERG" ) ) {
                     addFrequencyToMap( map, "Emergency", freq, extra );
