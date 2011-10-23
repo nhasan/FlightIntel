@@ -155,7 +155,7 @@ public class AirportDetailsActivity extends ActivityBase {
             builder.setTables( Remarks.TABLE_NAME );
             c = builder.query( db, new String[] { Remarks.REMARK_TEXT },
                     Runways.SITE_NUMBER+"=?"
-                    +"AND "+Remarks.REMARK_NAME+" in ('E147', 'A3', 'A24', 'A70', 'A82')",
+                    +"AND "+Remarks.REMARK_NAME+" in ('E147', 'A3', 'A24', 'A70', 'A75', 'A82')",
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 2 ] = c;
 
