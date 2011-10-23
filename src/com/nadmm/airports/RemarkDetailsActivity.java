@@ -77,7 +77,7 @@ public class RemarkDetailsActivity extends ActivityBase {
                     +"AND substr("+Remarks.REMARK_NAME+", 1, 3) not in ('A23', 'A17')"
                     +"AND "+Remarks.REMARK_NAME
                     +" not in ('E147', 'A3', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', "
-                    +"'A24', 'A70', 'A81', 'A81 1', 'A82')",
+                    +"'A24', 'A70', 'A75', 'A81', 'A81 1', 'A82')",
                     new String[] { siteNumber }, null, null, Remarks.REMARK_NAME, null );
 
             String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
