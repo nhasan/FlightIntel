@@ -192,14 +192,16 @@ public class RunwayDetailsActivity extends ActivityBase {
             addSeparator( layout );
         }
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_HEADING ) );
-        int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
-        String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
-        if ( dir.equals( "E" ) ) {
-            variation *= -1;
+        if ( heading > 0 ) {
+            int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
+            String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
+            if ( dir.equals( "E" ) ) {
+                variation *= -1;
+            }
+            addRow( layout, "Magnetic heading", String.format( "%03d\u00B0",
+                    DataUtils.calculateMagneticHeading( heading, variation ) ) );
+            addSeparator( layout );
         }
-        addRow( layout, "Magnetic heading", String.format( "%03d\u00B0",
-                DataUtils.calculateMagneticHeading( heading, variation ) ) );
-        addSeparator( layout );
         String rhPattern = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_RIGHT_TRAFFIC ) );
         addRow( layout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
         double gradient = rwy.getDouble( rwy.getColumnIndex( Runways.BASE_END_GRADIENT ) );
@@ -343,14 +345,16 @@ public class RunwayDetailsActivity extends ActivityBase {
             addSeparator( layout );
         }
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_HEADING ) );
-        int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
-        String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
-        if ( dir.equals( "E" ) ) {
-            variation *= -1;
+        if ( heading > 0 ) {
+            int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
+            String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
+            if ( dir.equals( "E" ) ) {
+                variation *= -1;
+            }
+            addRow( layout, "Magnetic heading", String.format( "%03d\u00B0",
+                    DataUtils.calculateMagneticHeading( heading, variation ) ) );
+            addSeparator( layout );
         }
-        addRow( layout, "Magnetic heading", String.format( "%03d\u00B0",
-                DataUtils.calculateMagneticHeading( heading, variation ) ) );
-        addSeparator( layout );
         String rhPattern = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_RIGHT_TRAFFIC ) );
         addRow( layout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
