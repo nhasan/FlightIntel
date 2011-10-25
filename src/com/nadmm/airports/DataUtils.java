@@ -53,6 +53,16 @@ public final class DataUtils {
         sMorseCodes.put( "X", DASH+DOT+DOT+DASH );
         sMorseCodes.put( "Y", DASH+DOT+DASH+DASH );
         sMorseCodes.put( "Z", DASH+DASH+DOT+DOT );
+        sMorseCodes.put( "1", DOT+DASH+DASH+DASH+DASH );
+        sMorseCodes.put( "2", DOT+DOT+DASH+DASH+DASH );
+        sMorseCodes.put( "3", DOT+DOT+DOT+DASH+DASH );
+        sMorseCodes.put( "4", DOT+DOT+DOT+DOT+DASH );
+        sMorseCodes.put( "5", DOT+DOT+DOT+DOT+DOT );
+        sMorseCodes.put( "6", DASH+DOT+DOT+DOT+DOT );
+        sMorseCodes.put( "7", DASH+DASH+DOT+DOT+DOT );
+        sMorseCodes.put( "8", DASH+DASH+DASH+DOT+DOT );
+        sMorseCodes.put( "9", DASH+DASH+DASH+DASH+DOT );
+        sMorseCodes.put( "0", DASH+DASH+DASH+DASH+DASH );
     }
 
     public static String getMorseCode( String text ) {
