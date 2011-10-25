@@ -246,6 +246,9 @@ public class RunwayDetailsActivity extends ActivityBase {
             addRow( layout, "Glide angle",
                     String.format( "%.02f\u00B0", glideAngle ) );
         }
+        String reil = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_REIL_AVAILABLE ) );
+        addSeparator( layout );
+        addRow( layout, "REIL", reil.equals( "Y" )? "Yes" : "No" );
         int displacedThreshold = rwy.getInt( rwy.getColumnIndex(
                 Runways.BASE_END_DISPLACED_THRESHOLD_LENGTH ) );
         if ( displacedThreshold > 0 ) {
@@ -259,9 +262,10 @@ public class RunwayDetailsActivity extends ActivityBase {
                     Runways.BASE_END_CENTERLINE_LIGHTS_AVAILABLE ) );
             addSeparator( layout );
             addRow( layout, "Centerline lights", centerline.equals( "Y" )? "Yes" : "No" );
-            String reil = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_REIL_AVAILABLE ) );
+            String touchdown = rwy.getString( rwy.getColumnIndex(
+                    Runways.BASE_END_TOUCHDOWN_LIGHTS_AVAILABLE ) );
             addSeparator( layout );
-            addRow( layout, "REIL", reil.equals( "Y" )? "Yes" : "No" );
+            addRow( layout, "Touchdown lights", touchdown.equals( "Y" )? "Yes" : "No" );
             int tora = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_TORA ) );
             if ( tora > 0 ) {
                 addSeparator( layout );
@@ -394,6 +398,9 @@ public class RunwayDetailsActivity extends ActivityBase {
             addRow( layout, "Glide angle",
                     String.format( "%.02f\u00B0", glideAngle ) );
         }
+        String reil = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_REIL_AVAILABLE ) );
+        addSeparator( layout );
+        addRow( layout, "REIL", reil.equals( "Y" )? "Yes" : "No" );
         int displacedThreshold = rwy.getInt( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_DISPLACED_THRESHOLD_LENGTH ) );
         if ( displacedThreshold > 0 ) {
@@ -407,10 +414,10 @@ public class RunwayDetailsActivity extends ActivityBase {
                     Runways.RECIPROCAL_END_CENTERLINE_LIGHTS_AVAILABLE ) );
             addSeparator( layout );
             addRow( layout, "Centerline lights", centerline.equals( "Y" )? "Yes" : "No" );
-            String reil = rwy.getString( rwy.getColumnIndex(
-                    Runways.RECIPROCAL_END_REIL_AVAILABLE ) );
+            String touchdown = rwy.getString( rwy.getColumnIndex(
+                    Runways.RECIPROCAL_END_TOUCHDOWN_LIGHTS_AVAILABLE ) );
             addSeparator( layout );
-            addRow( layout, "REIL", reil.equals( "Y" )? "Yes" : "No" );
+            addRow( layout, "Touchdown lights", touchdown.equals( "Y" )? "Yes" : "No" );
             int tora = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_TORA ) );
             if ( tora > 0 ) {
                 addSeparator( layout );
