@@ -32,16 +32,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
@@ -51,7 +51,6 @@ public class BrowseActivity extends ActivityBase {
     static private final String BUNDLE_KEY_SITE_NUMBER = "site_number";
     static private final String BUNDLE_KEY_STATE_CODE = "state_code";
     static private final String BUNDLE_KEY_STATE_NAME = "state_name";
-    static private final String BUNDLE_KEY_COUNTY_NAME = "county_name";
 
     // Projection maps for queries
     static private final HashMap<String, String> sStateMap = buildStateMap();
@@ -64,7 +63,6 @@ public class BrowseActivity extends ActivityBase {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put( BaseColumns._ID, "max("+BaseColumns._ID+") AS "+BaseColumns._ID );
         map.put( Airports.ASSOC_STATE, Airports.ASSOC_STATE );
-        map.put( Airports.ASSOC_COUNTY, Airports.ASSOC_COUNTY );
         map.put( States.STATE_NAME,
                  "IFNULL("+States.STATE_NAME+", "+Airports.ASSOC_COUNTY+")"
                  +" AS "+States.STATE_NAME );
@@ -157,7 +155,6 @@ public class BrowseActivity extends ActivityBase {
                         // String[] projectionIn
                         new String[] { Airports._ID, 
                                        Airports.ASSOC_STATE,
-                                       Airports.ASSOC_COUNTY,
                                        States.STATE_NAME },
                         // String selection
                         null,
@@ -173,11 +170,11 @@ public class BrowseActivity extends ActivityBase {
                 // Show all the airports in the selected state grouped by city
                 builder.setTables( Airports.TABLE_NAME );
                 String state_code = extra.getString( BUNDLE_KEY_STATE_CODE );
-                String county_name = extra.getString( BUNDLE_KEY_COUNTY_NAME );
+                String state_name = extra.getString( BUNDLE_KEY_STATE_NAME );
                 builder.setProjectionMap( sCityMap );
                 String selection = "("+Airports.ASSOC_STATE+" <> '' AND "+Airports.ASSOC_STATE
-                        +"=?) OR "+Airports.ASSOC_COUNTY+"=?";
-                String[] selectionArgs = new String[] { state_code, county_name };
+                        +"=?) OR ("+Airports.ASSOC_STATE+" = '' AND "+Airports.ASSOC_COUNTY+"=?)";
+                String[] selectionArgs = new String[] { state_code, state_name };
 
                 c = builder.query( db,
                         // String[] projectionIn
@@ -286,10 +283,8 @@ public class BrowseActivity extends ActivityBase {
             Bundle extra = new Bundle();
             String state_code = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
             String state_name = c.getString( c.getColumnIndex( States.STATE_NAME ) );
-            String county_name = c.getString( c.getColumnIndex( Airports.ASSOC_COUNTY ) );
             extra.putString( BUNDLE_KEY_STATE_CODE, state_code );
             extra.putString( BUNDLE_KEY_STATE_NAME, state_name );
-            extra.putString( BUNDLE_KEY_COUNTY_NAME, county_name );
             browse.putExtras( extra );
             // Start this activity again with state parameter
             startActivity( browse );
