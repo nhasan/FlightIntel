@@ -135,6 +135,7 @@ public class NavaidDetailsActivity extends ActivityBase {
         Cursor nav1 = result[ 0 ];
         TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.navaid_details );
         String navaidClass = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_CLASS ) );
+        String navaidType = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_TYPE ) );
         addRow( layout, "Class", navaidClass );
         double freq = nav1.getDouble( nav1.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
         String tacan = nav1.getString( nav1.getColumnIndex( Nav1.TACAN_CHANNEL ) );
@@ -143,10 +144,10 @@ public class NavaidDetailsActivity extends ActivityBase {
         }
         if ( freq > 0 ) {
             addSeparator( layout );
-            if ( ( freq%1.0 ) > 0 ) {
-                addRow( layout, "Frequency", String.format( "%.2f", freq ) );
-            } else {
+            if ( !DataUtils.isDirectionalNavaid( navaidType ) && ( freq%1.0 ) == 0 ) {
                 addRow( layout, "Frequency", String.format( "%.0f", freq ) );
+            } else {
+                addRow( layout, "Frequency", String.format( "%.2f", freq ) );
             }
         }
         String power = nav1.getString( nav1.getColumnIndex( Nav1.POWER_OUTPUT ) );
