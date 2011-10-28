@@ -117,6 +117,11 @@ public class ServicesDetailsActivity extends ActivityBase {
         Cursor apt = result[ 0 ];
         TableLayout layout = (TableLayout) mMainLayout.findViewById(
                 R.id.detail_faa_services_layout );
+        String region = apt.getString( apt.getColumnIndex( Airports.REGION_CODE ) );
+        if ( region.length() > 0 ) {
+            addRow( layout, "FAA region", DataUtils.decodeFaaRegion( region ) );
+            addSeparator( layout );
+        }
         String artccId = apt.getString( apt.getColumnIndex( Airports.BOUNDARY_ARTCC_ID ) );
         String artccName = apt.getString( apt.getColumnIndex( Airports.BOUNDARY_ARTCC_NAME ) );
         addRow( layout, "ARTCC", artccId+" ("+artccName+")" );

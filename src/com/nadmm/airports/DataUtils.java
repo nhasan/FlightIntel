@@ -624,11 +624,39 @@ public final class DataUtils {
             return "Atlanta Center";
         } else if ( artcc.equals( "ZUA" ) ) {
             return "Guam Center";
-        } else {
-            return "";
         }
+
+        // Should never reach here
+        return "";
     }
 
+    public static String decodeFaaRegion( String code ) {
+        if ( code.equals( "AAL" ) ) {
+            return "Alaska";
+        } else if ( code.equals( "ACE" ) ) {
+            return "Central";
+        } else if ( code.equals( "AEA" ) ) {
+            return "Eastern";
+        } else if ( code.equals( "AGL" ) ) {
+            return "Great Lakes";
+        } else if ( code.equals( "AIN" ) ) {
+            return "International";
+        } else if ( code.equals( "ANE" ) ) {
+            return "New England";
+        } else if ( code.equals( "ANM" ) ) {
+            return "Northwest Mountain";
+        } else if ( code.equals( "ASO" ) ) {
+            return "Southern";
+        } else if ( code.equals( "ASW" ) ) {
+            return "Southwest";
+        } else if ( code.equals( "AWP" ) ) {
+            return "Western Pacific";
+        }
+
+        // Should never reach here
+        return "";
+    }
+    
     public static boolean isDirectionalNavaid( String type ) {
         return type.equals( "VOR" )
             || type.equals( "VOR/DME" ) 
