@@ -560,6 +560,9 @@ public class AirportDetailsActivity extends ActivityBase {
             addSeparator( layout );
             addRow( layout, "Activation date", activation );
         }
+        String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
+        addSeparator( layout );
+        addRow( layout, "Control tower", tower.equals( "Y" )? "Yes" : "No" );
         String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
         addSeparator( layout );
         addRow( layout, "Wind indicator", DataUtils.decodeWindIndicator( windIndicator ) );
