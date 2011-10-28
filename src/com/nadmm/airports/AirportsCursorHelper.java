@@ -19,6 +19,8 @@
 
 package com.nadmm.airports;
 
+import java.util.HashMap;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -48,13 +50,27 @@ public class AirportsCursorHelper {
             States.STATE_NAME
          };
 
+    static HashMap<String, String> buildProjectionMap() {
+        HashMap<String, String> map = new HashMap<String, String>();
+        for ( String col : mQueryColumns ) {
+            if ( !col.equals( States.STATE_NAME ) ) {
+                map.put( col, col );
+            }
+        }
+        map.put( States.STATE_NAME,
+                "IFNULL("+States.STATE_NAME+", "+Airports.ASSOC_COUNTY+")"
+                +" AS "+States.STATE_NAME );
+        return map;
+    }
+
     public static Cursor query( Context context, String selection, String[] selectionArgs, 
             String groupBy, String having, String sortOrder, String limit ) {
         DatabaseManager dbManager = DatabaseManager.instance( context );
         SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( Airports.TABLE_NAME+" a INNER JOIN "+States.TABLE_NAME+" s"
+        builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
                 +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
+        builder.setProjectionMap( buildProjectionMap() );
         Cursor c = builder.query( db, mQueryColumns, selection, selectionArgs, 
                 groupBy, having, sortOrder, limit );
         return c;
