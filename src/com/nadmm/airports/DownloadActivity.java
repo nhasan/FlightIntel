@@ -766,7 +766,7 @@ public final class DownloadActivity extends ListActivity {
                 result = updateCatalog( data );
                 if ( result < 0 ) {
                     return result;
-                }         
+                }
 
                 // Update the displayed list to reflect the installed data
                 mInstalledData.add( data );
