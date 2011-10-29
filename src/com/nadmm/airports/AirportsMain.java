@@ -52,7 +52,7 @@ public class AirportsMain extends Activity {
         if ( !c.moveToFirst() ) {
             c.close();
             Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "Please install the data before using this application" );
+            download.putExtra( "MSG", "Please install the data before using the app" );
             startActivity( download );
             finish();
             return;
@@ -62,7 +62,7 @@ public class AirportsMain extends Activity {
         if ( version < 62 ) {
             c.close();
             Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "The app requires latest data update to function" );
+            download.putExtra( "MSG", "ATTENTION: The app version requires latest data update" );
             startActivity( download );
             finish();
             return;
