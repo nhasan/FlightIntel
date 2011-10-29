@@ -1,3 +1,20 @@
+v1.6.0 (10/29/2011)
+===================
+* This update requires the latest data file dated 10/20/2011
+* Canadian airports now show up in the favorites list (thanks for reporting)
+* Show additional ARTCC location information
+* Show whether there is a control tower at the airport
+* Show FAA region
+
+v1.5.0 (10/26/2011)
+===================
+* This update requires the latest data file dated 10/20/2011
+* Show FSS outlets within 20NM of the airport
+* Show current timezone the airport falls under
+* Show TDZ lights info in runway extras
+* Fixed a bug that caused browse screen to show cities from another state
+* Fixed a bug to show additional runway remarks that were missed
+
 v1.4.0 (09/23/2011)
 ===================
 * Show a list of wx stations (ASOS/AWOS) within 20nm radius of the airport
