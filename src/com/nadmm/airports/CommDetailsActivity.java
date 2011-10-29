@@ -313,7 +313,7 @@ public class CommDetailsActivity extends ActivityBase {
                 String artcc = aff3.getString( aff3.getColumnIndex( Aff3.ARTCC_ID ) );
                 String freq = aff3.getString( aff3.getColumnIndex( Aff3.SITE_FREQUENCY ) );
                 String alt = aff3.getString( aff3.getColumnIndex( Aff3.FREQ_ALTITUDE ) );
-                String extra = "("+alt+")";
+                String extra = "("+alt+" altitude)";
                 String type = aff3.getString( aff3.getColumnIndex( Aff3.FACILITY_TYPE ) );
                 if ( !type.equals( "ARTCC" ) ) {
                     extra = aff3.getString( aff3.getColumnIndex( Aff3.SITE_LOCATION ) )
