@@ -313,7 +313,13 @@ public class CommDetailsActivity extends ActivityBase {
                 String artcc = aff3.getString( aff3.getColumnIndex( Aff3.ARTCC_ID ) );
                 String freq = aff3.getString( aff3.getColumnIndex( Aff3.SITE_FREQUENCY ) );
                 String alt = aff3.getString( aff3.getColumnIndex( Aff3.FREQ_ALTITUDE ) );
-                addFrequencyToMap( map, DataUtils.decodeArtcc( artcc ), freq, "("+alt+")" );
+                String extra = "("+alt+")";
+                String type = aff3.getString( aff3.getColumnIndex( Aff3.FACILITY_TYPE ) );
+                if ( !type.equals( "ARTCC" ) ) {
+                    extra = aff3.getString( aff3.getColumnIndex( Aff3.SITE_LOCATION ) )
+                            +" "+type+" "+extra;
+                }
+                addFrequencyToMap( map, DataUtils.decodeArtcc( artcc ), freq, extra );
             } while ( aff3.moveToNext() );
         }
 
@@ -366,15 +372,14 @@ public class CommDetailsActivity extends ActivityBase {
     protected void addRow( TableLayout table, String freqUse, Pair<String, String> data ) {
         RelativeLayout layout = (RelativeLayout) mInflater.inflate(
                 R.layout.comm_detail_item, null );
-        TextView tvLabel = (TextView) layout.findViewById( R.id.comm_freq_use );
-        tvLabel.setText( freqUse );
-        TextView tvValue = (TextView) layout.findViewById( R.id.comm_freq_value );
-        tvValue.setText( data.first );
-        TextView tvExtra = (TextView) layout.findViewById( R.id.comm_freq_extra );
+        TextView tv = (TextView) layout.findViewById( R.id.comm_freq_use );
+        tv.setText( freqUse );
+        tv = (TextView) layout.findViewById( R.id.comm_freq_value );
+        tv.setText( data.first );
+        tv = (TextView) layout.findViewById( R.id.comm_freq_extra );
         if ( data.second.length() > 0 ) {
-            tvExtra.setText( data.second );
-        } else {
-            tvExtra.setVisibility( View.GONE );
+            tv.setText( data.second );
+            tv.setVisibility( View.VISIBLE );
         }
         table.addView( layout, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );

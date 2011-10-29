@@ -266,8 +266,7 @@ public class AirportDetailsActivity extends ActivityBase {
             String faa_code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
             builder = new SQLiteQueryBuilder();
             builder.setTables( Aff3.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    Aff3.IFR_FACILITY_ID+"=?",
+            c = builder.query( db, new String[] { "*" }, Aff3.IFR_FACILITY_ID+"=?",
                     new String[] { faa_code }, null, null, null, null );
             cursors[ 7 ] = c;
 
@@ -411,11 +410,17 @@ public class AirportDetailsActivity extends ActivityBase {
                         String artcc = aff3.getString( aff3.getColumnIndex( Aff3.ARTCC_ID ) );
                         Double freq = aff3.getDouble( aff3.getColumnIndex( Aff3.SITE_FREQUENCY ) );
                         String alt = aff3.getString( aff3.getColumnIndex( Aff3.FREQ_ALTITUDE ) );
+                        String extra = "("+alt+" altitude)";
+                        String type = aff3.getString( aff3.getColumnIndex( Aff3.FACILITY_TYPE ) );
+                        if ( !type.equals( "ARTCC" ) ) {
+                            extra = aff3.getString( aff3.getColumnIndex( Aff3.SITE_LOCATION ) )
+                                    +" "+type+" "+extra;
+                        }
                         if ( row > 0 ) {
                             addSeparator( layout );
                         }
                         addFrequencyRow( layout, DataUtils.decodeArtcc( artcc ),
-                                Pair.create( String.format( "%.3f", freq ), "("+alt+")" ) );
+                                Pair.create( String.format( "%.3f", freq ), extra ) );
                         ++row;
                     } while ( aff3.moveToNext() );
                 }
@@ -722,8 +727,7 @@ public class AirportDetailsActivity extends ActivityBase {
         TextView tvExtra = (TextView) layout.findViewById( R.id.comm_freq_extra );
         if ( data.second.length() > 0 ) {
             tvExtra.setText( data.second );
-        } else {
-            tvExtra.setVisibility( View.GONE );
+            tvExtra.setVisibility( View.VISIBLE );
         }
         tvExtra.setPadding( 2, 2, 4, 2 );
         table.addView( layout, new TableLayout.LayoutParams(
