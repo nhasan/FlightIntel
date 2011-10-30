@@ -746,7 +746,10 @@ public class AirportDetailsActivity extends ActivityBase {
         }
         tv = (TextView) layout.findViewById( R.id.awos_freq );
         if ( freq.length() > 0 ) {
-            tv.setText( String.format( "%.3f", Double.valueOf( freq ) ) );
+            try {
+                tv.setText( String.format( "%.3f", Double.valueOf( freq ) ) );
+            } catch ( NumberFormatException e ) {
+            }
         }
         tv = (TextView) layout.findViewById( R.id.awos_phone );
         if ( phone.length() > 0 ) {
