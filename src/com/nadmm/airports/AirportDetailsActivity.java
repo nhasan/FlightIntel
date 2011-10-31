@@ -56,6 +56,7 @@ import android.widget.TableLayout.LayoutParams;
 import com.nadmm.airports.DatabaseManager.Aff3;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.DatabaseManager.Tower1;
@@ -73,6 +74,26 @@ public class AirportDetailsActivity extends ActivityBase {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        Cursor c = mDbManager.getCurrentFromCatalog();
+        if ( !c.moveToFirst() ) {
+            c.close();
+            Intent download = new Intent( this, DownloadActivity.class );
+            download.putExtra( "MSG", "Please install the data before using the app" );
+            startActivity( download );
+            finish();
+            return;
+        }
+
+        int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
+        if ( version < 62 ) {
+            c.close();
+            Intent download = new Intent( this, DownloadActivity.class );
+            download.putExtra( "MSG", "ATTENTION: The app version requires latest data update" );
+            startActivity( download );
+            finish();
+            return;
+        }
 
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
 
