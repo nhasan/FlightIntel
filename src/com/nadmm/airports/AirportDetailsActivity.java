@@ -42,21 +42,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
+import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.ImageView.ScaleType;
-import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Aff3;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos;
-import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.DatabaseManager.Tower1;
@@ -75,22 +74,9 @@ public class AirportDetailsActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        Cursor c = mDbManager.getCurrentFromCatalog();
-        if ( !c.moveToFirst() ) {
-            c.close();
-            Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "Please install the data before using the app" );
-            startActivity( download );
-            finish();
-            return;
-        }
-
-        int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
-        if ( version < 62 ) {
-            c.close();
-            Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "ATTENTION: The app version requires latest data update" );
-            startActivity( download );
+        Intent intent = checkData();
+        if ( intent != null ) {
+            startActivity( intent );
             finish();
             return;
         }
@@ -100,7 +86,7 @@ public class AirportDetailsActivity extends ActivityBase {
         mInflater = getLayoutInflater();
         setContentView( R.layout.wait_msg );
 
-        Intent intent = getIntent();
+        intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
 
         AirportDetailsTask task = new AirportDetailsTask();

@@ -19,16 +19,12 @@
 
 package com.nadmm.airports;
 
-import com.nadmm.airports.DatabaseManager.Catalog;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-public class AirportsMain extends Activity {
+public class AirportsMain extends ActivityBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -46,47 +42,15 @@ public class AirportsMain extends Activity {
             return;
         }
 
-        // Check if we have any data installed. If not, then redirect to the download activity
-        DatabaseManager dbManager = DatabaseManager.instance( this );
-        Cursor c = dbManager.getCurrentFromCatalog();
-        if ( !c.moveToFirst() ) {
-            c.close();
-            Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "Please install the data before using the app" );
-            startActivity( download );
+        Intent intent = checkData();
+        if ( intent != null ) {
+            startActivity( intent );
             finish();
             return;
         }
-
-        int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
-        if ( version < 62 ) {
-            c.close();
-            Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "ATTENTION: The app version requires latest data update" );
-            startActivity( download );
-            finish();
-            return;
-        }
-
-        // Check if we have any expired data. If yes, then redirect to download activity
-        do {
-            int age = c.getInt( c.getColumnIndex( "age" ) );
-            if ( age <= 0 ) {
-                // We have some expired data
-                c.close();
-                Intent download = new Intent( this, DownloadActivity.class );
-                download.putExtra( "MSG", "One or more data items have expired" );
-                startActivity( download );
-                finish();
-                return;
-            }
-        } while ( c.moveToNext() );
-
-        c.close();
 
         String startupActivity = prefs.getString( 
                 PreferencesActivity.KEY_STARTUP_SHOW_ACTIVITY,  "browse" );
-        Intent intent = null;
         if ( startupActivity.equals( "browse" ) ) {
             intent = new Intent( this, BrowseActivity.class );
             intent.putExtras( new Bundle() );

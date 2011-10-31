@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
 
@@ -48,6 +49,43 @@ public class ActivityBase extends Activity {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         mDbManager = DatabaseManager.instance( this );
+    }
+
+    protected Intent checkData() {
+        Cursor c = mDbManager.getCurrentFromCatalog();
+        if ( !c.moveToFirst() ) {
+            c.close();
+            Intent download = new Intent( this, DownloadActivity.class );
+            download.putExtra( "MSG", "Please install the data before using the app" );
+            c.close();
+            return download;
+        }
+
+        int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
+        if ( version < 62 ) {
+            c.close();
+            Intent download = new Intent( this, DownloadActivity.class );
+            download.putExtra( "MSG", "ATTENTION: The app version requires latest data update" );
+            c.close();
+            return download;
+        }
+
+        // Check if we have any expired data. If yes, then redirect to download activity
+        do {
+            int age = c.getInt( c.getColumnIndex( "age" ) );
+            if ( age <= 0 ) {
+                // We have some expired data
+                c.close();
+                Intent download = new Intent( this, DownloadActivity.class );
+                download.putExtra( "MSG", "One or more data items have expired" );
+                c.close();
+                return download;
+            }
+        } while ( c.moveToNext() );
+
+        c.close();
+
+        return null;
     }
 
     protected void showAirportTitle( View root, Cursor c ) {
