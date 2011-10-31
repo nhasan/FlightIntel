@@ -724,12 +724,12 @@ public class AirportDetailsActivity extends ActivityBase {
         tv = (TextView) layout.findViewById( R.id.comm_freq_value );
         tv.setText( data.first );
         tv.setPadding( 2, 2, 4, 2 );
-        TextView tvExtra = (TextView) layout.findViewById( R.id.comm_freq_extra );
         if ( data.second.length() > 0 ) {
-            tvExtra.setText( data.second );
-            tvExtra.setVisibility( View.VISIBLE );
+            tv = (TextView) layout.findViewById( R.id.comm_freq_extra );
+            tv.setText( data.second );
+            tv.setVisibility( View.VISIBLE );
+            tv.setPadding( 2, 2, 4, 2 );
         }
-        tvExtra.setPadding( 2, 2, 4, 2 );
         table.addView( layout, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
@@ -744,15 +744,15 @@ public class AirportDetailsActivity extends ActivityBase {
         } else {
             tv.setText( id );
         }
-        tv = (TextView) layout.findViewById( R.id.awos_freq );
         if ( freq.length() > 0 ) {
             try {
+                tv = (TextView) layout.findViewById( R.id.awos_freq );
                 tv.setText( String.format( "%.3f", Double.valueOf( freq ) ) );
             } catch ( NumberFormatException e ) {
             }
         }
-        tv = (TextView) layout.findViewById( R.id.awos_phone );
         if ( phone.length() > 0 ) {
+            tv = (TextView) layout.findViewById( R.id.awos_phone );
             tv.setText( phone );
             makeClickToCall( tv );
         }
