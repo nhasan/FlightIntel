@@ -1,3 +1,8 @@
+v1.6.1 (10/31/2011)
+===================
+* Fixed a FC when show AWOS frequency (Thanks for reporting).
+* Always force user to update the db when required before showing airport details
+
 v1.6.0 (10/29/2011)
 ===================
 * This update requires the latest data file dated 10/20/2011

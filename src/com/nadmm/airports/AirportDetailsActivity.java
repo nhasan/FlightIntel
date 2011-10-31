@@ -734,8 +734,8 @@ public class AirportDetailsActivity extends ActivityBase {
         if ( data.second.length() > 0 ) {
             tv = (TextView) layout.findViewById( R.id.comm_freq_extra );
             tv.setText( data.second );
+            tv.setPadding( 4, 2, 2, 2 );
             tv.setVisibility( View.VISIBLE );
-            tv.setPadding( 2, 2, 4, 2 );
         }
         table.addView( layout, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
