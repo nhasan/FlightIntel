@@ -727,14 +727,11 @@ public class AirportDetailsActivity extends ActivityBase {
                 R.layout.comm_detail_item, null );
         TextView tv = (TextView) layout.findViewById( R.id.comm_freq_use );
         tv.setText( freqUse );
-        tv.setPadding( 4, 2, 2, 2 );
         tv = (TextView) layout.findViewById( R.id.comm_freq_value );
         tv.setText( data.first );
-        tv.setPadding( 2, 2, 4, 2 );
         if ( data.second.length() > 0 ) {
             tv = (TextView) layout.findViewById( R.id.comm_freq_extra );
             tv.setText( data.second );
-            tv.setPadding( 4, 2, 2, 2 );
             tv.setVisibility( View.VISIBLE );
         }
         table.addView( layout, new TableLayout.LayoutParams(
