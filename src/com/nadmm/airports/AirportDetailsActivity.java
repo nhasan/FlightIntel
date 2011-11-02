@@ -32,6 +32,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.BaseColumns;
@@ -615,7 +616,18 @@ public class AirportDetailsActivity extends ActivityBase {
         String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
         if ( sectional.length() > 0 ) {
             addSeparator( layout );
-            addRow( layout, "Sectional chart", sectional );
+            String lat = apt.getString( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+            String lon = apt.getString( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+            if ( lat.length() > 0 && lon.length() > 0 ) {
+                // Link to the sectional at SkyVector if location is available
+                Uri uri = Uri.parse( String.format(
+                        "http://skyvector.com/?ll=%s,%s&zoom=1", lat, lon ) );
+                Intent intent = new Intent( Intent.ACTION_VIEW, uri );
+                addClickableRow( layout, "Sectional chart", sectional, intent, 
+                        R.drawable.row_selector_bottom );
+            } else {
+                addRow( layout, "Sectional chart", sectional );
+            }
         }
     }
 
@@ -773,22 +785,23 @@ public class AirportDetailsActivity extends ActivityBase {
 
     protected void addClickableRow( TableLayout table, String label,
             final Intent intent, int resid ) {
-        LinearLayout row = (LinearLayout) mInflater.inflate( R.layout.simple_detail_item, null );
-        row.setBackgroundResource( resid );
-        TextView tv = new TextView( this );
+        addClickableRow( table, label, null, intent, resid );
+    }
+
+    protected void addClickableRow( TableLayout table, String label, String value,
+            final Intent intent, int resid ) {
+        LinearLayout row = (LinearLayout) mInflater.inflate( R.layout.clickable_detail_item, null );
+
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( label );
-        tv.setGravity( Gravity.CENTER_VERTICAL );
-        tv.setPadding( 4, 2, 2, 2 );
-        row.addView( tv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        ImageView iv = new ImageView( this );
-        iv.setImageResource( R.drawable.arrow );
-        iv.setPadding( 0, 0, 4, 0 );
-        iv.setScaleType( ScaleType.CENTER );
-        row.addView( iv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 0f ) );
+        if ( value != null && value.length() > 0 ) {
+            tv = (TextView) row.findViewById( R.id.item_value );
+            tv.setText( value );
+        }
+
+        row.setBackgroundResource( resid );
         row.setOnClickListener( new OnClickListener() {
-            
+
             @Override
             public void onClick( View v ) {
                 startActivity( intent );
