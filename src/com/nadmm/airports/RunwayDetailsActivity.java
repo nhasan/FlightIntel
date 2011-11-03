@@ -44,6 +44,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
+import com.nadmm.airports.utils.DataUtils;
 
 public class RunwayDetailsActivity extends ActivityBase {
 

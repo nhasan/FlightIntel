@@ -45,6 +45,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.utils.SectionedCursorAdapter;
 
 public class BrowseActivity extends ActivityBase {
 

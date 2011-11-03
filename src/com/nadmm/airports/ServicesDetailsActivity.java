@@ -34,6 +34,7 @@ import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.utils.DataUtils;
 
 public class ServicesDetailsActivity extends ActivityBase {
 

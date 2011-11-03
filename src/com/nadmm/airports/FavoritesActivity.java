@@ -39,6 +39,8 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.utils.AirportsCursorAdapter;
+import com.nadmm.airports.utils.AirportsCursorHelper;
 
 public class FavoritesActivity extends ActivityBase {
 

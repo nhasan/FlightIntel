@@ -50,6 +50,9 @@ import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.utils.AirportsCursorAdapter;
+import com.nadmm.airports.utils.AirportsCursorHelper;
+import com.nadmm.airports.utils.GeoUtils;
 
 public class NearbyActivity extends ActivityBase {
 

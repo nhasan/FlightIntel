@@ -63,6 +63,8 @@ import com.nadmm.airports.DatabaseManager.Tower1;
 import com.nadmm.airports.DatabaseManager.Tower3;
 import com.nadmm.airports.DatabaseManager.Tower6;
 import com.nadmm.airports.DatabaseManager.Tower7;
+import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.GeoUtils;
 
 public class AirportDetailsActivity extends ActivityBase {
 
@@ -642,7 +644,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 addRemarkRow( layout, remark );
                 ++row;
             } while ( rmk.moveToNext() );
-        }
+         }
 
         Cursor twr1 = result[ 3 ];
         Cursor twr7 = result[ 4 ];

@@ -46,6 +46,8 @@ import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Nav1;
+import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.GeoUtils;
 
 public class NavaidsActivity extends ActivityBase {
 

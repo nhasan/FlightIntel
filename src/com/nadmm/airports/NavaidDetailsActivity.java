@@ -40,6 +40,7 @@ import android.widget.TableLayout.LayoutParams;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.Nav2;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.utils.DataUtils;
 
 public class NavaidDetailsActivity extends ActivityBase {
 

@@ -39,6 +39,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.utils.AirportsCursorAdapter;
 
 public class SearchActivity extends ActivityBase {
 

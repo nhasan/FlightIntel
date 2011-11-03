@@ -40,6 +40,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.utils.DataUtils;
 
 public class ActivityBase extends Activity {
 

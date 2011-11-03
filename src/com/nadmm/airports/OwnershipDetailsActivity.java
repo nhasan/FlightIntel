@@ -36,6 +36,7 @@ import android.widget.LinearLayout.LayoutParams;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
+import com.nadmm.airports.utils.DataUtils;
 
 public class OwnershipDetailsActivity extends ActivityBase {
 
