@@ -19,7 +19,11 @@
 
 package com.nadmm.airports.utils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 public final class DataUtils {
 
@@ -723,4 +727,11 @@ public final class DataUtils {
         }
     }
 
+    public static String getTimeZoneAsString( TimeZone tz ) {
+        Date now = new Date();
+        String tzName = tz.getDisplayName( tz.inDaylightTime( now ), TimeZone.SHORT );
+        DateFormat tzFormat = new SimpleDateFormat( "Z" );
+        tzFormat.setTimeZone( tz );
+        return tzName+" (UTC"+tzFormat.format( now )+")";
+    }
 }
