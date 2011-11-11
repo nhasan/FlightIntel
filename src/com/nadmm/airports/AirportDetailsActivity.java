@@ -608,11 +608,16 @@ public class AirportDetailsActivity extends ActivityBase {
                         "http://skyvector.com/?ll=%s,%s&zoom=1", lat, lon ) );
                 Intent intent = new Intent( Intent.ACTION_VIEW, uri );
                 addClickableRow( layout, "Sectional chart", sectional, intent, 
-                        R.drawable.row_selector_bottom );
+                        R.drawable.row_selector_middle );
             } else {
                 addRow( layout, "Sectional chart", sectional );
             }
         }
+        addSeparator( layout );
+        Intent intent = new Intent( this, AlmanacActivity.class );
+        String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
+        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+        addClickableRow( layout, "Sunset/Sunrise", intent, R.drawable.row_selector_bottom );
     }
 
     protected void showRemarks( Cursor[] result ) {
@@ -694,11 +699,7 @@ public class AirportDetailsActivity extends ActivityBase {
         intent = new Intent( this, AttendanceDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addSeparator( layout );
-        addClickableRow( layout, "Attendance", intent, R.drawable.row_selector_middle );
-        addSeparator( layout );
-        intent = new Intent( this, AlmanacActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addClickableRow( layout, "Sunset/Sunrise", intent, R.drawable.row_selector_bottom );
+        addClickableRow( layout, "Attendance", intent, R.drawable.row_selector_bottom );
     }
 
     protected void addAwosRow( TableLayout table, String id, String name, String type, 
