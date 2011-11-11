@@ -157,13 +157,18 @@ public class AlmanacActivity extends ActivityBase {
         format.setTimeZone( utc );
         addRow( layout, "Current time (UTC)", format.format( now.getTime() ) );
         addSeparator( layout );
-        String far;
-        if ( now.compareTo( morningTwilight ) >= 0 && now.compareTo( eveningTwilight ) <= 0 ) {
-            far = "Day";
-        } else {
-            far = "Night";
-        }
-        addRow( layout, "FAR day/night", far );
+        // Determine FAR 1.1 definition of day/night for logging flight time
+        boolean day = ( now.compareTo( morningTwilight ) >= 0
+                && now.compareTo( eveningTwilight ) <= 0 );
+        addRow( layout, "FAR 1.1 day/night", day? "Day" : "Night" );
+        addSeparator( layout );
+        // Determine FAR 61.75(b) definition of day/night for carrying passengers
+        Calendar far6175bBegin = (Calendar) sunset.clone();
+        far6175bBegin.add( Calendar.HOUR_OF_DAY, 1 );
+        Calendar far6175bEnd = (Calendar) sunrise.clone();
+        far6175bEnd.add( Calendar.HOUR_OF_DAY, -1 );
+        day = ( now.compareTo( far6175bEnd ) >= 0 && now.compareTo( far6175bBegin ) <= 0 );
+        addRow( layout, "FAR 61.75(b) day/night", day? "Day" : "Night" );
     }
 
 }
