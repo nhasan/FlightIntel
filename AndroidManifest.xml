@@ -64,6 +64,9 @@
                   android:name="FssCommActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+                  android:name="AlmanacActivity" />
+
+        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:name="AboutActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
