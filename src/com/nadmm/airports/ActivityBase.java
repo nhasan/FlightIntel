@@ -23,9 +23,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.Time;
+import android.util.Pair;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,6 +37,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,12 +52,18 @@ import com.nadmm.airports.utils.DataUtils;
 
 public class ActivityBase extends Activity {
 
-    protected DatabaseManager mDbManager = null;
+    protected DatabaseManager mDbManager;
+    private LayoutInflater mInflater;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         mDbManager = DatabaseManager.instance( this );
+        mInflater = getLayoutInflater();
+    }
+
+    protected View inflate( int resource ) {
+        return mInflater.inflate( resource, null );
     }
 
     protected Intent checkData() {
@@ -239,6 +253,80 @@ public class ActivityBase extends Activity {
         } else {
             return R.drawable.row_selector_middle;
         }
+    }
+
+    protected void addRow( TableLayout table, String label, String text ) {
+        RelativeLayout row = (RelativeLayout) mInflater.inflate( R.layout.airport_detail_item, null );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( label );
+        tv = (TextView) row.findViewById( R.id.item_value );
+        tv.setText( text );
+        table.addView( row, new TableLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addRow( TableLayout table, String label, Pair<String, String> values ) {
+        RelativeLayout layout = (RelativeLayout) inflate( R.layout.airport_detail_item );
+        TextView tv = (TextView) layout.findViewById( R.id.item_label );
+        tv.setText( label );
+        tv = (TextView) layout.findViewById( R.id.item_value );
+        tv.setText( values.first );
+        tv = (TextView) layout.findViewById( R.id.item_extra_value );
+        if ( values.second.length() > 0 ) {
+            tv.setText( values.second );
+            tv.setVisibility( View.VISIBLE );
+        }
+        table.addView( layout, new TableLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addClickableRow( TableLayout table, String label, String value,
+            final Intent intent, int resid ) {
+        LinearLayout row = (LinearLayout) mInflater.inflate( R.layout.clickable_detail_item, null );
+        row.setBackgroundResource( resid );
+
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( label );
+        if ( value != null && value.length() > 0 ) {
+            tv = (TextView) row.findViewById( R.id.item_value );
+            tv.setText( value );
+        }
+        row.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                startActivity( intent );
+            }
+
+        } );
+
+        table.addView( row, new TableLayout.LayoutParams( 
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addBulletedRow( LinearLayout layout, String remark ) {
+        LinearLayout innerLayout = new LinearLayout( this );
+        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
+        TextView tv = new TextView( this );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 10, 2, 2, 2 );
+        tv.setText( "\u2022 " );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
+        tv = new TextView( this );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 2, 2, 12, 2 );
+        tv.setText( remark );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
+        layout.addView( innerLayout, new LinearLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addSeparator( LinearLayout layout ) {
+        View separator = new View( this );
+        separator.setBackgroundColor( Color.LTGRAY );
+        layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
     }
 
     @Override

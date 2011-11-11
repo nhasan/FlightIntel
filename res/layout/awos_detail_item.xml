@@ -21,11 +21,15 @@
  -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:padding="10dp"
+        android:padding="8dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/awos_station_name"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingLeft="4dp"
+            android:paddingTop="0dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="0dp"
             android:layout_weight="0"
             android:ellipsize="end"
             android:gravity="left"
@@ -33,6 +37,10 @@
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/awos_freq"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingLeft="4dp"
+            android:paddingTop="0dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="0dp"
             android:gravity="right"
             android:layout_weight="1"
             android:ellipsize="none"
@@ -42,12 +50,20 @@
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/awos_info"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingLeft="4dp"
+            android:paddingTop="0dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="0dp"
             android:gravity="left"
             android:layout_below="@id/awos_station_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/awos_phone"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingLeft="4dp"
+            android:paddingTop="0dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="0dp"
             android:gravity="right"
             android:layout_below="@id/awos_freq"
             android:layout_toRightOf="@id/awos_info"

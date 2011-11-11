@@ -24,21 +24,13 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.ImageView.ScaleType;
-import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Ils1;
@@ -49,7 +41,6 @@ import com.nadmm.airports.utils.DataUtils;
 public class RunwayDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
-    private LayoutInflater mInflater;
     private SharedPreferences mPrefs;
 
     @Override
@@ -57,9 +48,6 @@ public class RunwayDetailsActivity extends ActivityBase {
         super.onCreate( savedInstanceState );
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
-        mInflater = getLayoutInflater();
-        setContentView( R.layout.wait_msg );
-
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
         RunwayDetailsTask task = new RunwayDetailsTask();
@@ -104,7 +92,7 @@ public class RunwayDetailsActivity extends ActivityBase {
                 return;
             }
 
-            View view = mInflater.inflate( R.layout.runway_detail_view, null );
+            View view = inflate( R.layout.runway_detail_view );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.rwy_top_layout );
 
@@ -701,25 +689,6 @@ public class RunwayDetailsActivity extends ActivityBase {
         return count;
     }
 
-    protected void addRow( TableLayout table, String label, String text ) {
-        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        TextView tvLabel = new TextView( this );
-        tvLabel.setText( label );
-        tvLabel.setSingleLine();
-        tvLabel.setGravity( Gravity.LEFT );
-        tvLabel.setPadding( 4, 4, 2, 4 );
-        row.addView( tvLabel, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        TextView tvValue = new TextView( this );
-        tvValue.setText( text );
-        tvValue.setGravity( Gravity.RIGHT );
-        tvValue.setPadding( 4, 4, 2, 4 );
-        row.addView( tvValue, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        table.addView( row, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
     protected void addRemarkRow( LinearLayout layout, String remark ) {
         int index = remark.indexOf( ' ' );
         if ( index != -1 ) {
@@ -729,67 +698,6 @@ public class RunwayDetailsActivity extends ActivityBase {
             remark = remark.substring( index );
         }
         addBulletedRow( layout, remark );
-    }
-
-    protected void addBulletedRow( LinearLayout layout, String remark ) {
-        LinearLayout innerLayout = new LinearLayout( this );
-        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 10, 2, 2, 2 );
-        tv.setText( "\u2022 " );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 2, 12, 2 );
-        tv.setText( remark );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addClickableRow( TableLayout table, String label, String value,
-            final Intent intent, int resid ) {
-        LinearLayout row = (LinearLayout) mInflater.inflate( R.layout.simple_detail_item, null );
-        row.setBackgroundResource( resid );
-        TextView tv = new TextView( this );
-        tv.setText( label );
-        tv.setGravity( Gravity.CENTER_VERTICAL );
-        tv.setPadding( 4, 2, 2, 2 );
-        row.addView( tv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        tv = new TextView( this );
-        tv.setText( value );
-        tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 4, 0, 4, 0 );
-        row.addView( tv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        ImageView iv = new ImageView( this );
-        iv.setImageResource( R.drawable.arrow );
-        iv.setPadding( 6, 0, 4, 0 );
-        iv.setScaleType( ScaleType.CENTER );
-        row.addView( iv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 0f ) );
-        row.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                startActivity( intent );
-            }
-
-        } );
-
-        table.addView( row, new TableLayout.LayoutParams( 
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addSeparator( TableLayout layout ) {
-        View separator = new View( this );
-        separator.setBackgroundColor( Color.LTGRAY );
-        layout.addView( separator, 
-                new TableLayout.LayoutParams( TableLayout.LayoutParams.FILL_PARENT, 1 ) );
     }
 
 }

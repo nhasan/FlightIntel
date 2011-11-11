@@ -21,17 +21,15 @@ package com.nadmm.airports;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
+import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.utils.DataUtils;
@@ -39,23 +37,24 @@ import com.nadmm.airports.utils.DataUtils;
 public class ServicesDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
-    private LayoutInflater mInflater;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mInflater = getLayoutInflater();
-        setContentView( R.layout.wait_msg );
-
+        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-
         ServicesDetailsTask task = new ServicesDetailsTask();
         task.execute( siteNumber );
     }
 
     private final class ServicesDetailsTask extends AsyncTask<String, Void, Cursor[]> {
+
+        @Override
+        protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility( true );
+        }
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -67,7 +66,8 @@ public class ServicesDetailsActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor[] result ) {
-            View view = mInflater.inflate( R.layout.services_detail_view, null );
+            setProgressBarIndeterminateVisibility( false );
+            View view = inflate( R.layout.services_detail_view );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.services_top_layout );
 
@@ -109,7 +109,7 @@ public class ServicesDetailsActivity extends ActivityBase {
         String[] services = otherServices.split( ",\\s*" );
         for ( String service : services ) {
             if ( service.length() > 0 ) {
-                addBulletRow( layout, service );
+                addBulletedRow( layout, service );
             }
         }
     }
@@ -144,70 +144,15 @@ public class ServicesDetailsActivity extends ActivityBase {
         addRow( layout, "NOTAM D Available", notamD.equals( "Y" )? "Yes" : "No" );
     }
 
-    protected void addRow( TableLayout table, String label, String value ) {
-        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        TextView tv = new TextView( this );
-        tv.setText( label );
-        tv.setSingleLine();
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 2, 2, 2 );
-        row.addView( tv, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        tv = new TextView( this );
-        tv.setText( value );
-        tv.setMarqueeRepeatLimit( -1 );
-        tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 2, 2, 2, 2 );
-        row.addView( tv, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        table.addView( row, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
     protected void addPhoneRow( TableLayout table, String label, final String phone ) {
-        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        TextView tv = new TextView( this );
+        RelativeLayout row = (RelativeLayout) inflate( R.layout.airport_detail_item );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( label );
-        tv.setSingleLine();
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 2, 2, 2 );
-        row.addView( tv, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        tv = new TextView( this );
-        tv.setMarqueeRepeatLimit( -1 );
-        tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 2, 2, 2, 2 );
+        tv = (TextView) row.findViewById( R.id.item_value );
         tv.setText( phone );
         makeClickToCall( tv );
-        row.addView( tv, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
         table.addView( row, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addBulletRow( LinearLayout layout, String service ) {
-        LinearLayout innerLayout = new LinearLayout( this );
-        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 10, 4, 2, 4 );
-        tv.setText( "\u2022 " );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 4, 4, 12, 4 );
-        tv.setText( service );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addSeparator( LinearLayout layout ) {
-        View separator = new View( this );
-        separator.setBackgroundColor( Color.LTGRAY );
-        layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
     }
 
 }

@@ -19,8 +19,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
  -->
-<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:padding="8dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
-</TableRow>
+    <TextView android:id="@+id/item_label"
+            style="@style/TextSmall"
+            android:paddingLeft="4dp"
+            android:paddingTop="0dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="0dp"
+            android:gravity="left|center_vertical"
+            android:singleLine="true"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    <TextView android:id="@+id/item_value"
+            style="@style/TextSmall"
+            android:paddingLeft="4dp"
+            android:paddingTop="0dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="0dp"
+            android:gravity="right"
+            android:layout_weight="0"
+            android:layout_toRightOf="@id/item_label"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    <TextView android:id="@+id/item_extra_value"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingLeft="4dp"
+            android:paddingTop="0dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="0dp"
+            android:gravity="left"
+            android:layout_below="@id/item_value"
+            android:visibility="gone"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+</RelativeLayout>

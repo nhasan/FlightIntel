@@ -23,16 +23,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -43,18 +38,13 @@ import com.nadmm.airports.DatabaseManager.Runways;
 public class AttendanceDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
-    private LayoutInflater mInflater;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mInflater = getLayoutInflater();
-        setContentView( R.layout.wait_msg );
-
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-
         AirportAttendanceTask task = new AirportAttendanceTask();
         task.execute( siteNumber );
     }
@@ -89,7 +79,7 @@ public class AttendanceDetailsActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor[] result ) {
-            View view = mInflater.inflate( R.layout.attendance_detail_view, null );
+            View view = inflate( R.layout.attendance_detail_view );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.attendance_top_layout );
 
@@ -121,8 +111,7 @@ public class AttendanceDetailsActivity extends ActivityBase {
                 String[] parts = schedule.split( "/" );
                 if ( parts.length == 3 ) {
                     addSpacing( layout );
-                    TableLayout table = (TableLayout) mInflater.inflate(
-                            R.layout.attendance_detail_item, null );
+                    TableLayout table = (TableLayout) inflate( R.layout.attendance_detail_item );
                     addRow( table, "Months", parts[ 0 ] );
                     addSeparator( table );
                     addRow( table, "Days", parts[ 1 ] );
@@ -148,26 +137,6 @@ public class AttendanceDetailsActivity extends ActivityBase {
         }
     }
 
-    protected void addRow( TableLayout table, String label, String value ) {
-        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        TextView tv = new TextView( this );
-        tv.setText( label );
-        tv.setSingleLine();
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 4, 2, 2, 2 );
-        row.addView( tv, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        tv = new TextView( this );
-        tv.setText( value );
-        tv.setSingleLine();
-        tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 2, 2, 4, 2 );
-        row.addView( tv, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        table.addView( row, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
     protected void addRemarkRow( LinearLayout layout, String remark ) {
         int index = remark.indexOf( ' ' );
         if ( index != -1 ) {
@@ -177,31 +146,6 @@ public class AttendanceDetailsActivity extends ActivityBase {
             remark = remark.substring( index );
         }
         addBulletedRow( layout, remark );
-    }
-
-    protected void addBulletedRow( LinearLayout layout, String remark ) {
-        LinearLayout innerLayout = new LinearLayout( this );
-        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 10, 4, 2, 4 );
-        tv.setText( "\u2022 " );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 4, 4, 12, 4 );
-        tv.setText( remark );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addSeparator( TableLayout layout ) {
-        View separator = new View( this );
-        separator.setBackgroundColor( Color.LTGRAY );
-        layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
     }
 
     protected void addSpacing( LinearLayout layout ) {

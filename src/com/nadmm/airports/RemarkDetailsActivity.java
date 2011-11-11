@@ -25,13 +25,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
@@ -41,18 +37,13 @@ import com.nadmm.airports.DatabaseManager.Tower8;
 public class RemarkDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
-    private LayoutInflater mInflater;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mInflater = getLayoutInflater();
-        setContentView( R.layout.wait_msg );
-
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-
         AirportRemarksTask task = new AirportRemarksTask();
         task.execute( siteNumber );
     }
@@ -99,7 +90,7 @@ public class RemarkDetailsActivity extends ActivityBase {
                 RemarkDetailsActivity.this.finish();
             }
 
-            View view = mInflater.inflate( R.layout.remarks_detail_view, null );
+            View view = inflate( R.layout.remarks_detail_view );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.remarks_top_layout );
 
@@ -166,7 +157,7 @@ public class RemarkDetailsActivity extends ActivityBase {
             if ( hours.length() > 0 ) {
                 remark += " ("+hours+")";
             }
-            addRow( layout, remark );
+            addBulletedRow( layout, remark );
         }
     }
 
@@ -179,26 +170,7 @@ public class RemarkDetailsActivity extends ActivityBase {
             remark = remark.substring( index );
         }
 
-        addRow( layout, remark );
-    }
-
-    protected void addRow( LinearLayout layout, String remark ) {
-        LinearLayout innerLayout = new LinearLayout( this );
-        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 10, 2, 2, 2 );
-        tv.setText( "\u2022 " );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 2, 12, 2 );
-        tv.setText( remark );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        addBulletedRow( layout, remark );
     }
 
 }

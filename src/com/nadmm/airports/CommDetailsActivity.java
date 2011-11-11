@@ -26,18 +26,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Pair;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout;
-import android.widget.TableLayout.LayoutParams;
-import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Aff3;
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -50,14 +44,10 @@ import com.nadmm.airports.utils.DataUtils;
 public class CommDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
-    private LayoutInflater mInflater;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        mInflater = getLayoutInflater();
-        setContentView( R.layout.wait_msg );
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
@@ -119,7 +109,7 @@ public class CommDetailsActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor[] result ) {
-            View view = mInflater.inflate( R.layout.comm_detail_view, null );
+            View view = inflate( R.layout.comm_detail_view );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.comm_top_layout );
 
@@ -363,53 +353,11 @@ public class CommDetailsActivity extends ActivityBase {
                     addSeparator( layout );
                 }
                 String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
-                addRow( layout, remark );
+                addBulletedRow( layout, remark );
             } while ( twr6.moveToNext() );
         } else {
             layout.setVisibility( View.GONE );
         }
-    }
-
-    protected void addRow( TableLayout table, String freqUse, Pair<String, String> data ) {
-        RelativeLayout layout = (RelativeLayout) mInflater.inflate(
-                R.layout.comm_detail_item, null );
-        TextView tv = (TextView) layout.findViewById( R.id.comm_freq_use );
-        tv.setText( freqUse );
-        tv = (TextView) layout.findViewById( R.id.comm_freq_value );
-        tv.setText( data.first );
-        tv = (TextView) layout.findViewById( R.id.comm_freq_extra );
-        if ( data.second.length() > 0 ) {
-            tv.setText( data.second );
-            tv.setVisibility( View.VISIBLE );
-        }
-        table.addView( layout, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addRow( LinearLayout layout, String remark ) {
-        LinearLayout innerLayout = new LinearLayout( this );
-        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 10, 2, 2, 2 );
-        tv.setText( "\u2022 " );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 2, 12, 2 );
-        tv.setText( remark );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addSeparator( LinearLayout layout ) {
-        View separator = new View( this );
-        separator.setBackgroundColor( Color.LTGRAY );
-        layout.addView( separator, 
-                new TableLayout.LayoutParams( TableLayout.LayoutParams.FILL_PARENT, 1 ) );
     }
 
 }

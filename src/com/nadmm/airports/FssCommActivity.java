@@ -26,18 +26,15 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableLayout.LayoutParams;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -54,16 +51,12 @@ public class FssCommActivity extends ActivityBase {
     private static final int RADIUS = 25;
 
     private LinearLayout mMainLayout;
-    private LayoutInflater mInflater;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-
-        mInflater = getLayoutInflater();
-
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         FssCommTask task = new FssCommTask();
@@ -207,7 +200,7 @@ public class FssCommActivity extends ActivityBase {
         protected void onPostExecute( Cursor[] result ) {
             setProgressBarIndeterminateVisibility( false );
 
-            View view = mInflater.inflate( R.layout.fss_detail_view, null );
+            View view = inflate( R.layout.fss_detail_view );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.fss_top_layout );
 
@@ -246,8 +239,7 @@ public class FssCommActivity extends ActivityBase {
                 float bearing  = com.getFloat( com.getColumnIndex( BEARING ) );
                 float distance  = com.getFloat( com.getColumnIndex( DISTANCE ) );
 
-                LinearLayout layout = (LinearLayout) mInflater.inflate( 
-                        R.layout.fss_detail_item, null );
+                LinearLayout layout = (LinearLayout) inflate( R.layout.fss_detail_item );
                 TextView tv = (TextView) layout.findViewById( R.id.fss_comm_name );
                 if ( navId.length() > 0 ) {
                     tv.setText( navId+" - "+navName+" "+navType+" - "+navFreq );
@@ -283,32 +275,6 @@ public class FssCommActivity extends ActivityBase {
                     RADIUS ) );
             setContentView( tv );
         }
-    }
-
-    protected void addRow( TableLayout table, String label, String value ) {
-        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        TextView tv = new TextView( this );
-        tv.setText( label );
-        tv.setSingleLine();
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 4, 2, 2, 2 );
-        row.addView( tv, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        tv = new TextView( this );
-        tv.setText( value );
-        tv.setMarqueeRepeatLimit( -1 );
-        tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 2, 2, 4, 2 );
-        row.addView( tv, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        table.addView( row, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addSeparator( LinearLayout layout ) {
-        View separator = new View( this );
-        separator.setBackgroundColor( Color.LTGRAY );
-        layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
     }
 
 }

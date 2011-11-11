@@ -21,7 +21,6 @@ package com.nadmm.airports;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.TimeZone;
 
@@ -30,23 +29,18 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.util.Pair;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -69,7 +63,6 @@ import com.nadmm.airports.utils.GeoUtils;
 public class AirportDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
-    private LayoutInflater mInflater;
     private Bundle mExtras;
     private Location mLocation;
 
@@ -85,13 +78,8 @@ public class AirportDetailsActivity extends ActivityBase {
         }
 
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-
-        mInflater = getLayoutInflater();
-        setContentView( R.layout.wait_msg );
-
         intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-
         AirportDetailsTask task = new AirportDetailsTask();
         task.execute( siteNumber );
     }
@@ -296,7 +284,7 @@ public class AirportDetailsActivity extends ActivityBase {
         protected void onPostExecute( Cursor[] result ) {
             setProgressBarIndeterminateVisibility( false );
 
-            View view = mInflater.inflate( R.layout.airport_detail_view, null );
+            View view = inflate( R.layout.airport_detail_view );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.airport_detail_layout );
 
@@ -408,7 +396,7 @@ public class AirportDetailsActivity extends ActivityBase {
                             if ( row > 0 ) {
                                 addSeparator( layout );
                             }
-                            addFrequencyRow( layout, key, pair );
+                            addRow( layout, key, pair );
                             ++row;
                         }
                     }
@@ -429,7 +417,7 @@ public class AirportDetailsActivity extends ActivityBase {
                         if ( row > 0 ) {
                             addSeparator( layout );
                         }
-                        addFrequencyRow( layout, DataUtils.decodeArtcc( artcc ),
+                        addRow( layout, DataUtils.decodeArtcc( artcc ),
                                 Pair.create( String.format( "%.3f", freq ), extra ) );
                         ++row;
                     } while ( aff3.moveToNext() );
@@ -558,17 +546,11 @@ public class AirportDetailsActivity extends ActivityBase {
                 R.id.detail_operations_layout );
         String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
         addRow( layout, "Airport use", DataUtils.decodeFacilityUse( use ) );
-        String timezone_id = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
-        if ( timezone_id.length() > 0 ) {
+        String timezoneId = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
+        if ( timezoneId.length() > 0 ) {
             addSeparator( layout );
-            TimeZone tz = TimeZone.getTimeZone( timezone_id );
-            String tzName = tz.getDisplayName( tz.inDaylightTime( new Date() ), TimeZone.SHORT );
-            // UTC offset in minutes
-            int utcOffset = tz.getOffset( new Date().getTime() )/(60*1000);
-            String sign = utcOffset >= 0? "+" : "-";
-            utcOffset = Math.abs( utcOffset );
-            addRow( layout, "Timezone", String.format( "%s (UTC%s%02d:%02d)", tzName, sign,
-                    utcOffset/60, utcOffset%60 ) );
+            TimeZone tz = TimeZone.getTimeZone( timezoneId );
+            addRow( layout, "Local Time zone", DataUtils.getTimeZoneAsString( tz ) );
         }
         String activation = apt.getString( apt.getColumnIndex( Airports.ACTIVATION_DATE ) );
         if ( activation.length() > 0 ) {
@@ -712,50 +694,16 @@ public class AirportDetailsActivity extends ActivityBase {
         intent = new Intent( this, AttendanceDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addSeparator( layout );
-        addClickableRow( layout, "Attendance", intent, R.drawable.row_selector_bottom );
-    }
-
-    protected void addRow( TableLayout table, String label, String value ) {
-        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        TextView tv = new TextView( this );
-        tv.setText( label );
-        tv.setSingleLine();
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 4, 2, 2, 2 );
-        row.addView( tv, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        tv = new TextView( this );
-        tv.setText( value );
-        tv.setMarqueeRepeatLimit( -1 );
-        tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 2, 2, 4, 2 );
-        row.addView( tv, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        table.addView( row, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addFrequencyRow( TableLayout table, String freqUse,
-            Pair<String, String> data ) {
-        RelativeLayout layout = (RelativeLayout) mInflater.inflate(
-                R.layout.comm_detail_item, null );
-        TextView tv = (TextView) layout.findViewById( R.id.comm_freq_use );
-        tv.setText( freqUse );
-        tv = (TextView) layout.findViewById( R.id.comm_freq_value );
-        tv.setText( data.first );
-        if ( data.second.length() > 0 ) {
-            tv = (TextView) layout.findViewById( R.id.comm_freq_extra );
-            tv.setText( data.second );
-            tv.setVisibility( View.VISIBLE );
-        }
-        table.addView( layout, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        addClickableRow( layout, "Attendance", intent, R.drawable.row_selector_middle );
+        addSeparator( layout );
+        intent = new Intent( this, AlmanacActivity.class );
+        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+        addClickableRow( layout, "Sunset/Sunrise", intent, R.drawable.row_selector_bottom );
     }
 
     protected void addAwosRow( TableLayout table, String id, String name, String type, 
             String freq, String phone, float distance, float bearing ) {
-        RelativeLayout layout = (RelativeLayout) mInflater.inflate(
-                R.layout.awos_detail_item, null );
+        RelativeLayout layout = (RelativeLayout) inflate( R.layout.awos_detail_item );
         TextView tv = (TextView) layout.findViewById( R.id.awos_station_name );
         if ( name != null && name.length() > 0 ) {
             tv.setText( id+" - "+name );
@@ -790,31 +738,6 @@ public class AirportDetailsActivity extends ActivityBase {
         addClickableRow( table, label, null, intent, resid );
     }
 
-    protected void addClickableRow( TableLayout table, String label, String value,
-            final Intent intent, int resid ) {
-        LinearLayout row = (LinearLayout) mInflater.inflate( R.layout.clickable_detail_item, null );
-
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
-        tv.setText( label );
-        if ( value != null && value.length() > 0 ) {
-            tv = (TextView) row.findViewById( R.id.item_value );
-            tv.setText( value );
-        }
-
-        row.setBackgroundResource( resid );
-        row.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                startActivity( intent );
-            }
-
-        } );
-
-        table.addView( row, new TableLayout.LayoutParams( 
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
     protected void addRunwayRow( TableLayout table, Cursor c, int resid ) {
         String siteNumber = c.getString( c.getColumnIndex( Runways.SITE_NUMBER ) );
         String runwayId = c.getString( c.getColumnIndex( Runways.RUNWAY_ID ) );
@@ -822,38 +745,15 @@ public class AirportDetailsActivity extends ActivityBase {
         int width = c.getInt( c.getColumnIndex( Runways.RUNWAY_WIDTH ) );
         String surfaceType = c.getString( c.getColumnIndex( Runways.SURFACE_TYPE ) );
 
-        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
+        TableRow row = (TableRow) inflate( R.layout.runway_detail_item );
         row.setBackgroundResource( resid );
 
-        TextView tv = new TextView( this );
+        TextView tv = (TextView) row.findViewById( R.id.runway_id );
         tv.setText( runwayId );
-        tv.setGravity( Gravity.CENTER_VERTICAL );
-        tv.setPadding( 4, 0, 4, 0 );
-        row.addView( tv, new TableRow.LayoutParams( 
-                TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 1f ) );
-        LinearLayout layout = new LinearLayout( this );
-        layout.setOrientation( LinearLayout.VERTICAL );
-        tv = new TextView( this );
+        tv = (TextView) row.findViewById( R.id.runway_size );
         tv.setText( String.valueOf( length )+"' x "+String.valueOf( width )+"'" );
-        tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 4, 0, 4, 0 );
-        layout.addView( tv, new LinearLayout.LayoutParams( 
-                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT ) );
-        tv = new TextView( this );
+        tv = (TextView) row.findViewById( R.id.runway_surface );
         tv.setText( DataUtils.decodeSurfaceType( surfaceType ) );
-        tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 4, 0, 4, 0 );
-        layout.addView( tv, new LinearLayout.LayoutParams( 
-                TableRow.LayoutParams.FILL_PARENT, TableRow.LayoutParams.WRAP_CONTENT ) );
-        row.addView( layout, new TableRow.LayoutParams( 
-                TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
-        ImageView iv = new ImageView( this );
-        iv.setImageResource( R.drawable.arrow );
-        iv.setPadding( 6, 0, 4, 0 );
-        iv.setScaleType( ScaleType.CENTER );
-        row.addView( iv, new TableRow.LayoutParams(
-                TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
-
         final Bundle bundle = new Bundle();
         bundle.putString( Runways.SITE_NUMBER, siteNumber );
         bundle.putString( Runways.RUNWAY_ID, runwayId );
@@ -882,37 +782,6 @@ public class AirportDetailsActivity extends ActivityBase {
             remark = remark.substring( index );
         }
         addBulletedRow( layout, remark );
-    }
-
-    protected void addPhoneRemarkRow( LinearLayout layout, String remark, final String phone ) {
-        TextView tv = addBulletedRow( layout, remark+": "+phone );
-        makeClickToCall( tv );
-    }
-
-    protected TextView addBulletedRow( LinearLayout layout, String text ) {
-        LinearLayout innerLayout = new LinearLayout( this );
-        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 10, 2, 2, 2 );
-        tv.setText( "\u2022 " );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 2, 12, 2 );
-        tv.setText( text );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-        return tv;
-    }
-
-    protected void addSeparator( LinearLayout layout ) {
-        View separator = new View( this );
-        separator.setBackgroundColor( Color.LTGRAY );
-        layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
     }
 
     @Override

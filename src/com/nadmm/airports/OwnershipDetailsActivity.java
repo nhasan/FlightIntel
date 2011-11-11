@@ -25,13 +25,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.util.Linkify;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
@@ -41,18 +38,13 @@ import com.nadmm.airports.utils.DataUtils;
 public class OwnershipDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
-    private LayoutInflater mInflater;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mInflater = getLayoutInflater();
-        setContentView( R.layout.wait_msg );
-
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-
         AirportDetailsTask task = new AirportDetailsTask();
         task.execute( siteNumber );
     }
@@ -80,7 +72,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor[] result ) {
-            View view = mInflater.inflate( R.layout.ownership_detail_view, null );
+            View view = inflate( R.layout.ownership_detail_view );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.ownership_top_layout );
 
@@ -144,6 +136,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
         addRow( layout, text );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_CITY_STATE_ZIP ) );
         addRow( layout, text );
+
         layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_manager_phone_layout );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_PHONE ) );
         if ( text.length() > 0 ) {
@@ -192,23 +185,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
             }
             remark = remark.substring( index );
         }
-        LinearLayout innerLayout = new LinearLayout( this );
-        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 10, 2, 2, 2 );
-        tv.setText( "\u2022 " );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 2, 12, 2 );
-        tv.setText( remark );
-        Linkify.addLinks( tv, Linkify.PHONE_NUMBERS );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        addBulletedRow( layout, remark );
     }
 
 }

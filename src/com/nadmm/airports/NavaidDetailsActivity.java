@@ -23,19 +23,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.Nav2;
@@ -45,21 +39,15 @@ import com.nadmm.airports.utils.DataUtils;
 public class NavaidDetailsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
-    private LayoutInflater mInflater;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-
-        mInflater = getLayoutInflater();
-        setContentView( R.layout.wait_msg );
-
         Intent intent = getIntent();
         String navaidId = intent.getStringExtra( Nav1.NAVAID_ID );
         String type = intent.getStringExtra( Nav1.NAVAID_TYPE );
-
         NavaidDetailsTask task = new NavaidDetailsTask();
         task.execute( navaidId, type );
     }
@@ -111,7 +99,7 @@ public class NavaidDetailsActivity extends ActivityBase {
                 return;
             }
 
-            View view = mInflater.inflate( R.layout.navaid_detail_view, null );
+            View view = inflate( R.layout.navaid_detail_view );
             setContentView( view );
             mMainLayout = (LinearLayout) view.findViewById( R.id.navaid_top_layout );
 
@@ -198,50 +186,6 @@ public class NavaidDetailsActivity extends ActivityBase {
         } else {
             layout.setVisibility( View.GONE );
         }
-    }
-    protected void addRow( TableLayout table, String label, String text ) {
-        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
-        TextView tvLabel = new TextView( this );
-        tvLabel.setText( label );
-        tvLabel.setSingleLine();
-        tvLabel.setGravity( Gravity.LEFT );
-        tvLabel.setPadding( 4, 4, 2, 4 );
-        row.addView( tvLabel, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        TextView tvValue = new TextView( this );
-        tvValue.setText( text );
-        tvValue.setGravity( Gravity.RIGHT );
-        tvValue.setPadding( 4, 4, 2, 4 );
-        row.addView( tvValue, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        table.addView( row, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addBulletedRow( LinearLayout layout, String remark ) {
-        LinearLayout innerLayout = new LinearLayout( this );
-        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 10, 2, 2, 2 );
-        tv.setText( "\u2022 " );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 2, 12, 2 );
-        tv.setText( remark );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addSeparator( TableLayout layout ) {
-        View separator = new View( this );
-        separator.setBackgroundColor( Color.LTGRAY );
-        layout.addView( separator, 
-                new TableLayout.LayoutParams( TableLayout.LayoutParams.FILL_PARENT, 1 ) );
     }
 
 }

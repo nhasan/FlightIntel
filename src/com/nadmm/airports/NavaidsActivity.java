@@ -26,23 +26,21 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
+import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ImageView.ScaleType;
-import android.widget.TableLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Nav1;
@@ -52,7 +50,6 @@ import com.nadmm.airports.utils.GeoUtils;
 public class NavaidsActivity extends ActivityBase {
 
     private LinearLayout mMainLayout;
-    private LayoutInflater mInflater;
 
     private final String[] mNavColumns = new String[] {
             Nav1.NAVAID_ID,
@@ -68,13 +65,8 @@ public class NavaidsActivity extends ActivityBase {
         super.onCreate( savedInstanceState );
 
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-
-        mInflater = getLayoutInflater();
-        setContentView( R.layout.wait_msg );
-
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-
         NavaidDetailsTask task = new NavaidDetailsTask();
         task.execute( siteNumber );
     }
@@ -232,7 +224,7 @@ public class NavaidsActivity extends ActivityBase {
                NavaidsActivity.this.finish();
            }
 
-           View view = mInflater.inflate( R.layout.airport_navaids_view, null );
+           View view = inflate( R.layout.airport_navaids_view );
            setContentView( view );
            mMainLayout = (LinearLayout) view.findViewById( R.id.navaids_detail_layout );
 
@@ -310,7 +302,7 @@ public class NavaidsActivity extends ActivityBase {
     protected void addDirectionalNavaidRow( TableLayout table, final String navaidId,
             String name, final String type, String freq, int radial, float 
             distance, int resid ) {
-        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
+        LinearLayout row = (LinearLayout) inflate( R.layout.simple_detail_item );
         row.setBackgroundResource( resid );
 
         LinearLayout layout2 = new LinearLayout( this );
@@ -320,13 +312,13 @@ public class NavaidsActivity extends ActivityBase {
         TextView tv = new TextView( this );
         tv.setText( navaidId+"      "+DataUtils.getMorseCode( navaidId ));
         tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 4, 0, 2, 0 );
+        tv.setPadding( 4, 0, 4, 0 );
         layout3.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         tv = new TextView( this );
         tv.setText( freq );
         tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 2, 0, 4, 0 );
+        tv.setPadding( 4, 0, 4, 0 );
         layout3.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 1f ) );
         layout2.addView( layout3, new LinearLayout.LayoutParams(
@@ -336,13 +328,13 @@ public class NavaidsActivity extends ActivityBase {
         tv = new TextView( this );
         tv.setText( name+" "+type );
         tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 4, 0, 2, 0 );
+        tv.setPadding( 4, 0, 4, 0 );
         layout4.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         tv = new TextView( this );
         tv.setText( String.format( "r%03d/%.1fNM", radial, distance ) );
         tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 2, 0, 4, 0 );
+        tv.setPadding( 4, 0, 4, 0 );
         layout4.addView( tv, new LinearLayout.LayoutParams( 
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         layout2.addView( layout4, new LinearLayout.LayoutParams(
@@ -375,7 +367,7 @@ public class NavaidsActivity extends ActivityBase {
     protected void addNonDirectionalNavaidRow( TableLayout table, final String navaidId,
             String name, final String type, String freq, int heading,
             float distance, int resid ) {
-        TableRow row = (TableRow) mInflater.inflate( R.layout.airport_detail_item, null );
+        LinearLayout row = (LinearLayout) inflate( R.layout.simple_detail_item );
         row.setBackgroundResource( resid );
 
         LinearLayout layout2 = new LinearLayout( this );
@@ -435,12 +427,6 @@ public class NavaidsActivity extends ActivityBase {
 
         table.addView( row, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addSeparator( LinearLayout layout ) {
-        View separator = new View( this );
-        separator.setBackgroundColor( Color.LTGRAY );
-        layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
     }
 
 }
