@@ -29,7 +29,7 @@ public class SolarCalculator {
     public static final double ASTRONOMICAL = 108.0;
     public static final double NAUTICAL = 102.0;
     public static final double CIVIL = 96.0;
-    public static final double OFFICIAL = 90.83333333;
+    public static final double OFFICIAL = 90.8333;
 
     final private int MSEC_PER_HOUR = 60*60*1000;
 
