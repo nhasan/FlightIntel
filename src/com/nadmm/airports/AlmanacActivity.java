@@ -29,7 +29,6 @@ import android.database.Cursor;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
@@ -65,7 +64,6 @@ public class AlmanacActivity extends ActivityBase {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-            Log.d( "SITE_NUMBER", siteNumber );
             Cursor[] cursors = new Cursor[ 1 ];
             cursors[ 0 ] = mDbManager.getAirportDetails( siteNumber );
             return cursors;
@@ -118,7 +116,7 @@ public class AlmanacActivity extends ActivityBase {
         DateFormat date = DateFormat.getDateInstance();
         tv.setText( "Sunrise and Sunset ("+date.format( now.getTime() )+")" );
 
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.sunrise_info_layout );
+        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.morning_info_layout );
         format.setTimeZone( local );
         addRow( layout, "Morning civil twilight (Local)",
                 format.format( morningTwilight.getTime() ) );
@@ -126,7 +124,8 @@ public class AlmanacActivity extends ActivityBase {
         format.setTimeZone( utc );
         addRow( layout, "Morning civil twilight (UTC)",
                 format.format( morningTwilight.getTime() ) );
-        addSeparator( layout );
+
+        layout = (TableLayout) mMainLayout.findViewById( R.id.sunrise_info_layout );
         format.setTimeZone( local );
         addRow( layout, "Sunrise (Local)", format.format( sunrise.getTime() ) );
         addSeparator( layout );
@@ -139,7 +138,8 @@ public class AlmanacActivity extends ActivityBase {
         addSeparator( layout );
         format.setTimeZone( utc );
         addRow( layout, "Sunset (UTC)", format.format( sunset.getTime() ) );
-        addSeparator( layout );
+
+        layout = (TableLayout) mMainLayout.findViewById( R.id.evening_info_layout );
         format.setTimeZone( local );
         addRow( layout, "Evening civil twilight (Local)",
                 format.format( eveningTwilight.getTime() ) );
