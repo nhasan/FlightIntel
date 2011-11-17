@@ -32,14 +32,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -75,9 +73,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -85,6 +83,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Catalog;
+import com.nadmm.airports.utils.GuiUtils;
+import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 
 public final class DownloadActivity extends ListActivity {
@@ -202,20 +202,8 @@ public final class DownloadActivity extends ListActivity {
         task.execute( startDownload );
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connMan = (ConnectivityManager) getSystemService( 
-                Context.CONNECTIVITY_SERVICE );
-        NetworkInfo network = connMan.getActiveNetworkInfo();
-        if ( network == null || !network.isConnected() ) {
-            showMessage( "Please check your internet connection" );
-            return false;
-        }
-
-        return true;
-    }
-
     private void checkNetworkAndDownload() {
-        if ( !isNetworkAvailable() ) {
+        if ( !NetworkUtils.isNetworkAvailable( this ) ) {
             return;
         }
 
@@ -249,11 +237,11 @@ public final class DownloadActivity extends ListActivity {
     private void download() {
         String state = Environment.getExternalStorageState();
         if ( !Environment.MEDIA_MOUNTED.equals( state ) ) {
-            showMessage( "External storage is not available" );
+            showToast( "External storage is not available" );
             return;
         }
         else if ( Environment.MEDIA_MOUNTED_READ_ONLY.equals( state ) ) {
-            showMessage( "External storage is not writable" );
+            showToast( "External storage is not writable" );
             return;
         }
 
@@ -433,19 +421,19 @@ public final class DownloadActivity extends ListActivity {
 
             result = getInstalled();
             if ( result != 0 ) {
-                showMessage( "There was an error while checking installed data" );
+                showToast( "There was an error while checking installed data" );
                 return result;
             }
 
             result = downloadManifest();
             if ( result != 0 ) {
-                showMessage( "There was an error while downloading manifest" );
+                showToast( "There was an error while downloading manifest" );
                 return result;
             }
 
             result = parseManifest();
             if ( result != 0 ) {
-                showMessage( "There was an error while processing manifest" );
+                showToast( "There was an error while processing manifest" );
                 return result;
             }
 
@@ -509,7 +497,7 @@ public final class DownloadActivity extends ListActivity {
 
         private int downloadManifest() {
             try {
-                if ( !isNetworkAvailable() ) {
+                if ( !NetworkUtils.isNetworkAvailable( mActivity ) ) {
                     return -1;
                 }
 
@@ -775,7 +763,7 @@ public final class DownloadActivity extends ListActivity {
             } else {
                 // No more downloads left, cleanup any expired data
                 cleanupExpiredData();
-                showMessage( "The data was downloaded and installed successfully" );
+                showToast( "The data was downloaded and installed successfully" );
                 return 1;
             }
 
@@ -790,7 +778,7 @@ public final class DownloadActivity extends ListActivity {
         @Override
         protected void onPostExecute( Integer result ) {
             if ( result < 0 ) {
-                showMessage( "There was an error while downloading data" );
+                showToast( "There was an error while downloading data" );
             }
 
             mStop.set( false );
@@ -844,7 +832,7 @@ public final class DownloadActivity extends ListActivity {
 
                 if ( !CACHE_DIR.exists() ) {
                     if ( !CACHE_DIR.mkdirs() ) {
-                        showMessage( "Unable to create cache dir on external storage" );
+                        showToast( "Unable to create cache dir on external storage" );
                         return -3;
                     }
                 }
@@ -873,20 +861,8 @@ public final class DownloadActivity extends ListActivity {
                 }
 
                 return 0;
-            } catch ( URISyntaxException e ) {
-                showMessage( e.getMessage() );
-                return -1;
-            } catch ( ClientProtocolException e ) {
-                showMessage( e.getMessage() );
-                return -1;
-            } catch ( FileNotFoundException e ) {
-                showMessage( e.getMessage() );
-                return -1;
-            } catch ( IOException e ) {
-                showMessage( e.getMessage() );
-                return -1;
-            } catch ( IllegalStateException e ) {
-                showMessage( e.getMessage() );
+            } catch ( Exception e ) {
+                showToast( e.getMessage() );
                 return -1;
             } finally {
                 if ( in != null ) {
@@ -909,11 +885,8 @@ public final class DownloadActivity extends ListActivity {
             ZipFile zipFile;
             try {
                 zipFile = new ZipFile( cacheFile );
-            } catch ( ZipException e ) {
-                showMessage( e.getMessage() );
-                return -1;
-            } catch ( IOException e ) {
-                showMessage( e.getMessage() );
+            } catch ( Exception e ) {
+                showToast( e.getMessage() );
                 return -1;
             }
 
@@ -930,7 +903,7 @@ public final class DownloadActivity extends ListActivity {
 
             if ( !DatabaseManager.DATABASE_DIR.exists() ) {
                 if ( !DatabaseManager.DATABASE_DIR.mkdirs() ) {
-                    showMessage( "Unable to create database dir on external storage" );
+                    showToast( "Unable to create database dir on external storage" );
                     return -3;
                 }
             }
@@ -964,10 +937,10 @@ public final class DownloadActivity extends ListActivity {
 
                 return 0;
             } catch ( FileNotFoundException e ) {
-                showMessage( e.getMessage() );
+                showToast( e.getMessage() );
                 return -1;
             } catch ( IOException e ) {
-                showMessage( e.getMessage() );
+                showToast( e.getMessage() );
                return -1;
             } finally {
                 cacheFile.delete();
@@ -1007,7 +980,7 @@ public final class DownloadActivity extends ListActivity {
                     +", version="+data.version+", db="+data.dbName );
             int rc = mDbManager.insertCatalogEntry( values );
             if ( rc < 0 ) {
-                showMessage( "Failed to update catalog database" );
+                showToast( "Failed to update catalog database" );
             }
 
             return rc;
@@ -1203,29 +1176,7 @@ public final class DownloadActivity extends ListActivity {
         }
     }
 
-    protected void showMessage( final String msg ) {
-        if ( msg == null ) {
-            return;
-        }
-        Log.i( TAG, msg );
-        mHandler.post( new Runnable () {
-            @Override
-            public void run() {
-                Toast.makeText( getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
-            }
-        } );
+    void showToast( String msg ) {
+        GuiUtils.showToast( this, msg );
     }
-
-    protected void showErrorMessage( String msg ) {
-        AlertDialog.Builder builder = new AlertDialog.Builder( this );
-        builder.setMessage( msg )
-            .setTitle( "Download Error" )
-            .setPositiveButton( "Close", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                }
-            } );
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
 }
