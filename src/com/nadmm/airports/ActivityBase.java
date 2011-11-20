@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.Time;
 import android.util.Pair;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -304,19 +305,19 @@ public class ActivityBase extends Activity {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addBulletedRow( LinearLayout layout, String remark ) {
+    protected void addBulletedRow( LinearLayout layout, String text ) {
         LinearLayout innerLayout = new LinearLayout( this );
         innerLayout.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );
         tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 10, 2, 2, 2 );
+        tv.setPadding( convertDpToPx( 6 ), 2, 2, 2 );
         tv.setText( "\u2022 " );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
         tv = new TextView( this );
         tv.setGravity( Gravity.LEFT );
         tv.setPadding( 2, 2, 12, 2 );
-        tv.setText( remark );
+        tv.setText( text );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
         layout.addView( innerLayout, new LinearLayout.LayoutParams(
@@ -327,6 +328,11 @@ public class ActivityBase extends Activity {
         View separator = new View( this );
         separator.setBackgroundColor( Color.LTGRAY );
         layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
+    }
+
+    public int convertDpToPx( int dp ) {
+        return (int) TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP,
+                dp, getResources().getDisplayMetrics() );
     }
 
     @Override
