@@ -67,6 +67,9 @@
                   android:name="AlmanacActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+                  android:name="NotamActivity" />
+
+        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:name="AboutActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"

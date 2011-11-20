@@ -617,7 +617,11 @@ public class AirportDetailsActivity extends ActivityBase {
         Intent intent = new Intent( this, AlmanacActivity.class );
         String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addClickableRow( layout, "Sunset/Sunrise", intent, R.drawable.row_selector_bottom );
+        addClickableRow( layout, "Sunset/Sunrise", intent, R.drawable.row_selector_middle );
+        addSeparator( layout );
+        intent = new Intent( this, NotamActivity.class );
+        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+        addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
     }
 
     protected void showRemarks( Cursor[] result ) {

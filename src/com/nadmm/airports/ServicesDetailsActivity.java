@@ -129,19 +129,23 @@ public class ServicesDetailsActivity extends ActivityBase {
         addSeparator( layout );
         String fssId = apt.getString( apt.getColumnIndex( Airports.FSS_ID ) );
         String fssName = apt.getString( apt.getColumnIndex( Airports.FSS_NAME ) );
-        addRow( layout, "Flight Service", fssId+" ("+fssName+")" );
+        addRow( layout, "Flight service", fssId+" ("+fssName+")" );
         addSeparator( layout );
         String fssPhone = apt.getString( apt.getColumnIndex( Airports.FSS_LOCAL_PHONE ) );
         if ( fssPhone.length() == 0 ) {
             fssPhone = apt.getString( apt.getColumnIndex( Airports.FSS_TOLLFREE_PHONE ) );
         }
-        addPhoneRow( layout, "FSS Phone", fssPhone );
+        addPhoneRow( layout, "FSS phone", fssPhone );
         addSeparator( layout );
+        String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
         String notamFacility = apt.getString( apt.getColumnIndex( Airports.NOTAM_FACILITY_ID ) );
-        addRow( layout, "NOTAM Facility", notamFacility );
+        Intent intent = new Intent( this, NotamActivity.class );
+        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+        addClickableRow( layout, "NOTAM facility", notamFacility, intent,
+                R.drawable.row_selector_middle );
         addSeparator( layout );
         String notamD = apt.getString( apt.getColumnIndex( Airports.NOTAM_D_AVAILABLE ) );
-        addRow( layout, "NOTAM D Available", notamD.equals( "Y" )? "Yes" : "No" );
+        addRow( layout, "NOTAM D available", notamD.equals( "Y" )? "Yes" : "No" );
     }
 
     protected void addPhoneRow( TableLayout table, String label, final String phone ) {

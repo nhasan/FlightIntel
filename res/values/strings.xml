@@ -71,6 +71,10 @@
     <string name="phone">Phone</string>
     <string name="close">Close</string>
     <string name="about">About</string>
+    <plurals name="notams_found">
+        <item quantity="one">1 active NOTAM found</item>
+        <item quantity="other">%1$d active NOTAMs found</item>
+    </plurals>
     <plurals name="search_entry_found">
         <item quantity="one">1 airport found</item>
         <item quantity="other">%1$d airports found matching \'%2$s\'</item>
