@@ -537,7 +537,7 @@ public final class DownloadActivity extends ListActivity {
                 Log.e( TAG, "URISyntaxException: "+e.getMessage() );
                 return -1;
             }
-            
+
             return 0;
         }
 
