@@ -730,8 +730,405 @@ public final class DataUtils {
     public static String getTimeZoneAsString( TimeZone tz ) {
         Date now = new Date();
         String tzName = tz.getDisplayName( tz.inDaylightTime( now ), TimeZone.SHORT );
-        DateFormat tzFormat = new SimpleDateFormat( "Z" );
+        DateFormat tzFormat = new SimpleDateFormat( "'(UTC'Z')'" );
         tzFormat.setTimeZone( tz );
-        return tzName+" (UTC"+tzFormat.format( now )+")";
+        return tzName+" "+tzFormat.format( now );
     }
+
+    public static String[] getNotamSubjects() {
+        return new String[] {
+                "Aerodrome",
+                "Obstructions",
+                "Airspace",
+                "Navigation",
+                "Communications",
+                "Movement and Landing Area",
+                "Services",
+                "Flight Data Center",
+                "Other"
+        };
+    }
+
+    public static String getNotamSubjectFromKeyword( String keyword ) {
+        if ( keyword.equals( "RWY" ) ) {
+            return "Movement and Landing Area";
+        } else if ( keyword.equals( "TWY" ) ) {
+            return "Movement and Landing Area";
+        } else if ( keyword.equals( "APRON" ) ) {
+            return "Movement and Landing Area";
+        } else if ( keyword.equals( "RAMP" ) ) {
+            return "Movement and Landing Area";
+        } else if ( keyword.equals( "AD" ) ) {
+            return "Aerodrome";
+        } else if ( keyword.equals( "AIRSPACE" ) ) {
+            return "Airspace";
+        } else if ( keyword.equals( "OBST" ) ) {
+            return "Obstructions";
+        } else if ( keyword.equals( "NAV" ) ) {
+            return "Navigation";
+        } else if ( keyword.equals( "COM" ) ) {
+            return "Communications";
+        } else if ( keyword.equals( "SVC" ) ) {
+            return "Services";
+        } else if ( keyword.equals( "FDC" ) ) {
+            return "Flight Data Center";
+        } else {
+            return "Other";
+        }
+    }
+
+    public static String getNotamSubjectName( String code ) {
+        if ( code.equals( "H" ) ) {
+            return "Lighting Facilities";
+        } else if ( code.equals( "M" ) ) {
+            return "Movement and Landing Area";
+        } else if ( code.equals( "F" ) ) {
+            return "Facilities and Services";
+        } else if ( code.equals( "C" ) ) {
+            return "Communications and Radar";
+        } else if ( code.equals( "I" ) ) {
+            return "ILS and MLS";
+        } else if ( code.equals( "N" ) ) {
+            return "Terminal and En Route Navigation";
+        } else if ( code.equals( "A" ) ) {
+            return "Airspace Organization";
+        } else if ( code.equals( "S" ) ) {
+            return "Air Traffic and VOLMET Services";
+        } else if ( code.equals( "P" ) ) {
+            return "Air Traffic Procedures";
+        } else if ( code.equals( "R" ) ) {
+            return "Airspace Restrictions";
+        } else if ( code.equals( "W" ) ) {
+            return "Warnings";
+        } else if ( code.equals( "O" ) ) {
+            return "Other Information";
+        } else {
+            return "";
+        }
+    }
+
+    public static String determineNotamSubjectCode( String notam ) {
+        if ( notam.contains( "APCH LGT" ) ) {
+            return "LA";
+        } else if ( notam.contains( "ABN" ) ) {
+            return "LB";
+        } else if ( notam.contains( "RWY CENTERLINE LGT" ) ) {
+            return "LC";
+        } else if ( notam.contains( "LDI LGT" ) ) {
+            return "LD";
+        } else if ( notam.contains( "RWY EDGE LGT" ) ) {
+            return "LE";
+        } else if ( notam.contains( "SEQUENCED FLG LGT" ) ) {
+            return "LF";
+        } else if ( notam.contains( "HIGH INTST RWY LGT" ) ) {
+            return "LH";
+        } else if ( notam.contains( "RWY END ID LGT" ) ) {
+            return "LI";
+        } else if ( notam.contains( "REIL" ) ) {
+            return "LI";
+        } else if ( notam.contains( "RWY ALIGNMENT INDICATOR LGT" ) ) {
+            return "LJ";
+        } else if ( notam.contains( "RAIL" ) ) {
+            return "LJ";
+        } else if ( notam.contains( "CATEGORY II COMPONENTS APCH LGT" ) ) {
+            return "LK";
+        } else if ( notam.contains( "LOW INTST RWY LGT" ) ) {
+            return "LL";
+        } else if ( notam.contains( "LIRL" ) ) {
+            return "LL";
+        } else if ( notam.contains( "MEDIUM INTST RWY LGT" ) ) {
+            return "LM";
+        } else if ( notam.contains( "MIRL" ) ) {
+            return "LM";
+        } else if ( notam.contains( "PAPI" ) ) {
+            return "LP";
+        } else if ( notam.contains( "LDG AREA LGT FAC" ) ) {
+            return "LR";
+        } else if ( notam.contains( "SWY LGT" ) ) {
+            return "LS";
+        } else if ( notam.contains( "THR LGT" ) ) {
+            return "LT";
+        } else if ( notam.contains( "VASIS" ) ) {
+            return "LV";
+        } else if ( notam.contains( "HELIPORT LGT" ) ) {
+            return "LW";
+        } else if ( notam.contains( "TWY CENTERLINE LGT" ) ) {
+            return "LX";
+        } else if ( notam.contains( "TWY EDGE LGT" ) ) {
+            return "LY";
+        } else if ( notam.contains( "TWY TDZ LGT" ) ) {
+            return "LZ";
+        } else if ( notam.contains( "ILS DME" ) ) {
+            return "ID";
+        } else if ( notam.contains( "ILS GP" ) ) {
+            return "IG";
+        } else if ( notam.contains( "ILS IM" ) ) {
+            return "II";
+        } else if ( notam.contains( "ILS LIZ" ) ) {
+            return "IL";
+        } else if ( notam.contains( " MM " ) ) {
+            return "IM";
+        } else if ( notam.contains( " OM " ) ) {
+            return "IO";
+        } else if ( notam.contains( "ILS III" ) ) {
+            return "IU";
+        } else if ( notam.contains( "ILS II" ) ) {
+            return "IT";
+        } else if ( notam.contains( "ILS I" ) ) {
+            return "IS";
+        } else if ( notam.contains( " MLS " ) ) {
+            return "IW";
+        } else if ( notam.contains( " LO " ) ) {
+            return "IX";
+        } else if ( notam.contains( " LM " ) ) {
+            return "IY";
+        } else if ( notam.contains( "NAV ILS" ) ) {
+            return "IC";
+        } else if ( notam.contains( " AIS " ) ) {
+            return "OA";
+        } else if ( notam.contains( "OBST" ) ) {
+            return "OB";
+        } else if ( notam.contains( "ACFT ENTRY RQMNTS" ) ) {
+            return "OE";
+        } else if ( notam.contains( "OBST LGT" ) ) {
+            return "OL";
+        } else if ( notam.contains( "RCC" ) ) {
+            return "OR";
+        } else if ( notam.contains( "STAR" ) ) {
+            return "PA";
+        } else if ( notam.contains( "ARRIVAL" ) ) {
+            return "PA";
+        } else if ( notam.contains( "SID" ) ) {
+            return "PD";
+        } else if ( notam.contains( "FLOW CTL PROC" ) ) {
+            return "PF";
+        } else if ( notam.contains( "HLDG PROC" ) ) {
+            return "PH";
+        } else if ( notam.contains( "INST APCH PROC" ) ) {
+            return "PI";
+        } else if ( notam.contains( " IAP " ) ) {
+            return "PI";
+        } else if ( notam.contains( " OCL " ) ) {
+            return "PL";
+        } else if ( notam.contains( "OPR MINIMA" ) ) {
+            return "PM";
+        } else if ( notam.contains( " OCA " ) ) {
+            return "PO";
+        } else if ( notam.contains( " OCH " ) ) {
+            return "PP";
+        } else if ( notam.contains( "RADIO FAILURE PROC" ) ) {
+            return "PR";
+        } else if ( notam.contains( "TRANSITION ALT" ) ) {
+            return "PT";
+        } else if ( notam.contains( "MISSED APCH PROC" ) ) {
+            return "PU";
+        } else if ( notam.contains( "MNM HLDG ALT" ) ) {
+            return "PX";
+        } else if ( notam.contains( "ADIZ PROC" ) ) {
+            return "PZ";
+        } else if ( notam.contains( "MOV AREA" ) ) {
+            return "MA";
+        } else if ( notam.contains( "BEARING STRENGTH" ) ) {
+            return "MB";
+        } else if ( notam.contains( " CWY " ) ) {
+            return "MC";
+        } else if ( notam.contains( "DECLARED DIST" ) ) {
+            return "MD";
+        } else if ( notam.contains( "TAX GUIDANCE SYSTEM" ) ) {
+            return "MG";
+        } else if ( notam.contains( "RWY ARST GEAR" ) ) {
+            return "MH";
+        } else if ( notam.contains( "PRKG AREA" ) ) {
+            return "MK";
+        } else if ( notam.contains( "DAY MARKINGS" ) ) {
+            return "MM";
+        } else if ( notam.contains( "APRON" ) ) {
+            return "MN";
+        } else if ( notam.contains( "ACFT STANDS" ) ) {
+            return "MP";
+        } else if ( notam.contains( "RWY TURNING BAY" ) ) {
+            return "MU";
+        } else if ( notam.contains( " SWY " ) ) {
+            return "MS";
+        } else if ( notam.contains( " THR " ) ) {
+            return "MT";
+        } else if ( notam.contains( "STRIP" ) ) {
+            return "MW";
+        } else if ( notam.contains( " TWY " ) ) {
+            return "MX";
+        } else if ( notam.contains( " RWY " ) ) {
+            return "MR";
+        } else if ( notam.contains( " AD " ) ) {
+            return "FA";
+        } else if ( notam.contains( "BA MEASUREMENT EQPT" ) ) {
+            return "FB";
+        } else if ( notam.contains( "CEILING MEASUREMENT EQPT" ) ) {
+            return "FC";
+        } else if ( notam.contains( "DCKG SYSTEM" ) ) {
+            return "FD";
+        } else if ( notam.contains( "FIRE AND RESCUE" ) ) {
+            return "FF";
+        } else if ( notam.contains( "GND MOV CTL" ) ) {
+            return "FG";
+        } else if ( notam.contains( "HEL ALIGHTING AREA" ) ) {
+            return "FH";
+        } else if ( notam.contains( " LDI " ) ) {
+            return "FL";
+        } else if ( notam.contains( " MET " ) ) {
+            return "FM";
+        } else if ( notam.contains( "FOG DISPERSAL" ) ) {
+            return "FO";
+        } else if ( notam.contains( "HELIPORT" ) ) {
+            return "FP";
+        } else if ( notam.contains( "SNOW REMOVAL EQPT" ) ) {
+            return "FS";
+        } else if ( notam.contains( "TRANSMISSOMETER" ) ) {
+            return "FT";
+        } else if ( notam.contains( "FUEL AVBL" ) ) {
+            return "FU";
+        } else if ( notam.contains( " WDI " ) ) {
+            return "FW";
+        } else if ( notam.contains( " CUST " ) ) {
+            return "FZ";
+        } else if ( notam.contains( "A/G FAC" ) ) {
+            return "CA";
+        } else if ( notam.contains( " RSR " ) ) {
+            return "CE";
+        } else if ( notam.contains( " GCA " ) ) {
+            return "CG";
+        } else if ( notam.contains( "SELCAL" ) ) {
+            return "CL";
+        } else if ( notam.contains( " SMR " ) ) {
+            return "CM";
+        } else if ( notam.contains( " PAR " ) ) {
+            return "CP";
+        } else if ( notam.contains( " SRE " ) ) {
+            return "CR";
+        } else if ( notam.contains( " SSR " ) ) {
+            return "CS";
+        } else if ( notam.contains( " TAR " ) ) {
+            return "CT";
+        } else if ( notam.contains( "ALL RDO NAV FAC" ) ) {
+            return "NA";
+        } else if ( notam.contains( " NDB " ) ) {
+            return "NB";
+        } else if ( notam.contains( "DECCA" ) ) {
+            return "NC";
+        } else if ( notam.contains( " DME " ) ) {
+            return "ND";
+        } else if ( notam.contains( "FAN MKR" ) ) {
+            return "NF";
+        } else if ( notam.contains( " L " ) ) {
+            return "NL";
+        } else if ( notam.contains( "VOR/DME" ) ) {
+            return "NM";
+        } else if ( notam.contains( "TACAN" ) ) {
+            return "NN";
+        } else if ( notam.contains( "OMEGA" ) ) {
+            return "NO";
+        } else if ( notam.contains( "VORTAC" ) ) {
+            return "NT";
+        } else if ( notam.contains( " VOR " ) ) {
+            return "NV";
+        } else if ( notam.contains( " DF " ) ) {
+            return "NX";
+        } else if ( notam.contains( "MNM ALT" ) ) {
+            return "AA";
+        } else if ( notam.contains( " CTR " ) ) {
+            return "AC";
+        } else if ( notam.contains( "ADIZ" ) ) {
+            return "AD";
+        } else if ( notam.contains( " CTA " ) ) {
+            return "AE";
+        } else if ( notam.contains( " FIR " ) ) {
+            return "AF";
+        } else if ( notam.contains( " UTA " ) ) {
+            return "AH";
+        } else if ( notam.contains( "MNM USABLE FL" ) ) {
+            return "AL";
+        } else if ( notam.contains( "RNAV ROUTE" ) ) {
+            return "AN";
+        } else if ( notam.contains( " OCA " ) ) {
+            return "AO";
+        } else if ( notam.contains( " REP " ) ) {
+            return "AP";
+        } else if ( notam.contains( "ATS ROUTE" ) ) {
+            return "AR";
+        } else if ( notam.contains( " TMA " ) ) {
+            return "AT";
+        } else if ( notam.contains( " UIR " ) ) {
+            return "AU";
+        } else if ( notam.contains( " UDA " ) ) {
+            return "AV";
+        } else if ( notam.contains( " INT " ) ) {
+            return "AX";
+        } else if ( notam.contains( " ATZ " ) ) {
+            return "AZ";
+        } else if ( notam.contains( "ATIS" ) ) {
+            return "SA";
+        } else if ( notam.contains( " ARO " ) ) {
+            return "SB";
+        } else if ( notam.contains( " ACC " ) ) {
+            return "SC";
+        } else if ( notam.contains( " FIS " ) ) {
+            return "SE";
+        } else if ( notam.contains( "AFIS" ) ) {
+            return "SF";
+        } else if ( notam.contains( "FLOW CTL CENTRE" ) ) {
+            return "SL";
+        } else if ( notam.contains( " OAC " ) ) {
+            return "SO";
+        } else if ( notam.contains( " APP " ) ) {
+            return "SP";
+        } else if ( notam.contains( "FSS" ) ) {
+            return "SS";
+        } else if ( notam.contains( "TWR" ) ) {
+            return "ST";
+        } else if ( notam.contains( "UAC" ) ) {
+            return "SU";
+        } else if ( notam.contains( "VOLMET" ) ) {
+            return "SV";
+        } else if ( notam.contains( "ADVISORY SER" ) ) {
+            return "SY";
+        } else if ( notam.contains( "AIRSPACE RESERVATION" ) ) {
+            return "RA";
+        } else if ( notam.contains( "OVERFLYING" ) ) {
+            return "RO";
+        } else if ( notam.contains( "TEMP RESTRICTED" ) ) {
+            return "RT";
+        } else if ( notam.contains( "AIR DISPLAY" ) ) {
+            return "WA";
+        } else if ( notam.contains( "AEROBATICS" ) ) {
+            return "WB";
+        } else if ( notam.contains( "CAPTIVE BALLOON OR KITE" ) ) {
+            return "WC";
+        } else if ( notam.contains( "DEMOLITION OF EXPLOSIVES" ) ) {
+            return "WD";
+        } else if ( notam.contains( "EXER" ) ) {
+            return "WE";
+        } else if ( notam.contains( "AIR REFUELING" ) ) {
+            return "WF";
+        } else if ( notam.contains( "GLIDER FLYING" ) ) {
+            return "WG";
+        } else if ( notam.contains( "BANNER/TARGET TOWING" ) ) {
+            return "WJ";
+        } else if ( notam.contains( "ASCENT OF FREE BALLOON" ) ) {
+            return "WL";
+        } else if ( notam.contains( "FRNG" ) ) {
+            return "WM";
+        } else if ( notam.contains( "PJE" ) ) {
+            return "WP";
+        } else if ( notam.contains( "BURNING OR BLOWING GAS" ) ) {
+            return "WS";
+        } else if ( notam.contains( "MASS MOV OF ACFT" ) ) {
+            return "WT";
+        } else if ( notam.contains( "FORMATION FLT" ) ) {
+            return "WV";
+        } else if ( notam.contains( "MODEL FLYING" ) ) {
+            return "WZ";
+        } else {
+            return "XX";
+        }
+    }
+
 }
