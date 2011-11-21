@@ -28,6 +28,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Environment;
@@ -419,6 +420,9 @@ public class DatabaseManager {
 
     public Cursor getAirportDetails( String siteNumber ) {
         SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        if ( db == null ) {
+            return null;
+        }
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
@@ -428,6 +432,7 @@ public class DatabaseManager {
         if ( !c.moveToFirst() ) {
             return null;
         }
+
         return c;
     }
 
@@ -507,11 +512,13 @@ public class DatabaseManager {
                 File dbName = new File( DATABASE_DIR, 
                         c.getString( c.getColumnIndex( Catalog.DB_NAME ) ) );
                 Log.i( TAG, "Opening db type="+type+", path="+dbName.getPath() );
-                SQLiteDatabase db = SQLiteDatabase.openDatabase( dbName.getPath(), null,
-                        SQLiteDatabase.OPEN_READONLY );
-                if ( db == null ) {
+                SQLiteDatabase db = null;
+                try {
+                    db = SQLiteDatabase.openDatabase( dbName.getPath(), null,
+                            SQLiteDatabase.OPEN_READONLY );
+                } catch ( SQLiteException e ) {
                     Log.i( TAG, "Unable to open db type="+type );
-                } else {
+                } finally {
                     mDatabases.put( type, db );                    
                 }
             } while ( c.moveToNext() );
