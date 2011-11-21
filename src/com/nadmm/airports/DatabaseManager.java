@@ -516,10 +516,9 @@ public class DatabaseManager {
                 try {
                     db = SQLiteDatabase.openDatabase( dbName.getPath(), null,
                             SQLiteDatabase.OPEN_READONLY );
+                    mDatabases.put( type, db );
                 } catch ( SQLiteException e ) {
                     Log.i( TAG, "Unable to open db type="+type );
-                } finally {
-                    mDatabases.put( type, db );                    
                 }
             } while ( c.moveToNext() );
         }
