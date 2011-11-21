@@ -19,9 +19,7 @@
 
 package com.nadmm.airports.utils;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
@@ -45,18 +43,6 @@ public class GuiUtils {
                 Toast.makeText( context.getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
             }
         } );
-    }
-
-    void showErrorMessage( Context context, String msg ) {
-        AlertDialog.Builder builder = new AlertDialog.Builder( context );
-        builder.setMessage( msg )
-            .setTitle( "Download Error" )
-            .setPositiveButton( "Close", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                }
-            } );
-        AlertDialog alert = builder.create();
-        alert.show();
     }
 
 }
