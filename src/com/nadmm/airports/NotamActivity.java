@@ -129,7 +129,7 @@ public final class NotamActivity extends ActivityBase {
         File notamFile = new File( NOTAM_DIR, "NOTAM_"+icaoCode+".txt" );
 
         HashMap<String, ArrayList<String>> notams = getNotamFromCache( notamFile );
-        if ( notams.isEmpty() ) {
+        if ( notams == null ) {
             return;
         }
 
@@ -156,8 +156,7 @@ public final class NotamActivity extends ActivityBase {
         }
 
         TextView title1 = (TextView) mMainLayout.findViewById( R.id.notam_title1 );
-        title1.setText( getResources().getQuantityString( R.plurals.notams_found, count,
-                new Object[] { count } ) );
+        title1.setText( getResources().getQuantityString( R.plurals.notams_found, count, count ) );
         TextView title2 = (TextView) mMainLayout.findViewById( R.id.notam_title2 );
         Date lastModified = new Date( notamFile.lastModified() );
         title2.setText( "Last updated at "+ lastModified.toLocaleString() );
@@ -211,17 +210,16 @@ public final class NotamActivity extends ActivityBase {
             // Request was successful, parse the html to extract notams
             in = conn.getInputStream();
             ArrayList<String> notams = parseNotamsFromHtml( in );
-            if ( !notams.isEmpty() ) {
-                // Got some NOTAMS, write in the cache file
-                BufferedOutputStream cache = new BufferedOutputStream( 
-                        new FileOutputStream( notamFile ) );
-                for ( String notam : notams ) {
-                    cache.write( notam.getBytes() );
-                    cache.write( '\n' );
-                }
-                cache.close();
-            }
             in.close();
+
+            // Write the NOTAMS to the cache file
+            BufferedOutputStream cache = new BufferedOutputStream( 
+                    new FileOutputStream( notamFile ) );
+            for ( String notam : notams ) {
+                cache.write( notam.getBytes() );
+                cache.write( '\n' );
+            }
+            cache.close();
         }
     }
 
@@ -229,9 +227,10 @@ public final class NotamActivity extends ActivityBase {
         HashMap<String, ArrayList<String>> notams = new HashMap<String, ArrayList<String>>();
 
         if ( !notamFile.exists() ) {
+            // NOTAM cache file is missing. Must be an issue with fetching from FAA
             TextView title1 = (TextView) mMainLayout.findViewById( R.id.notam_title1 );
-            title1.setText( "No active NOTAMs found for this location." );
-            return notams;
+            title1.setText( "There was an error while fetching NOTAMs from FAA." );
+            return null;
         }
 
         // Build the NOTAM list group by the subject
@@ -251,12 +250,9 @@ public final class NotamActivity extends ActivityBase {
             }
             in.close();
         } catch ( IOException e ) {
-            GuiUtils.showToast( NotamActivity.this, e.getMessage() );
-        }
-
-        if ( notams.isEmpty() ) {
             TextView title1 = (TextView) mMainLayout.findViewById( R.id.notam_title1 );
-            title1.setText( "There was an error during reading NOTAMs from cache." );
+            title1.setText( "There was an error during parsing NOTAMs from cache: "
+                    +e.getMessage() );
         }
 
         return notams;
