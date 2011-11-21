@@ -72,6 +72,7 @@
     <string name="close">Close</string>
     <string name="about">About</string>
     <plurals name="notams_found">
+        <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>
         <item quantity="other">%1$d active NOTAMs found</item>
     </plurals>
