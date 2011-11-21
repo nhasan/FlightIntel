@@ -739,10 +739,10 @@ public final class DataUtils {
         return new String[] {
                 "Aerodrome",
                 "Obstructions",
-                "Airspace",
+                "Movement and Landing Area",
                 "Navigation",
                 "Communications",
-                "Movement and Landing Area",
+                "Airspace",
                 "Services",
                 "Flight Data Center",
                 "Other"
