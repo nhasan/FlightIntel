@@ -66,12 +66,14 @@ public class SearchActivity extends ActivityBase {
             public void onItemClick( AdapterView<?> parent, View view,
                     int position, long id ) {
                 Cursor c = mListAdapter.getCursor();
-                // Subtract 1 from position to account for header item
-                c.moveToPosition( position-1 );
-                String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-                Intent intent = new Intent( SearchActivity.this, AirportDetailsActivity.class );
-                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                startActivity( intent );
+                if ( position > 0 ) {
+                    // Subtract 1 from position to account for header item
+                    c.moveToPosition( position-1 );
+                    String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+                    Intent intent = new Intent( SearchActivity.this, AirportDetailsActivity.class );
+                    intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                    startActivity( intent );
+                }
             }
 
         } );
