@@ -36,25 +36,19 @@ import java.util.HashMap;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import android.content.Intent;
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
-import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GuiUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 
-public final class NotamActivity extends ActivityBase {
+public class NotamActivityBase extends ActivityBase {
 
-    private LinearLayout mMainLayout;
+    protected LinearLayout mMainLayout;
 
     private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
             = new File( Environment.getExternalStorageDirectory(), 
@@ -66,65 +60,12 @@ public final class NotamActivity extends ActivityBase {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-        setContentView( R.layout.wait_msg );
-
-        Intent intent = getIntent();
-        String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-
-        NotamTask task = new NotamTask();
-        task.execute( siteNumber );
+        if ( !NOTAM_DIR.exists() ) {
+            NOTAM_DIR.mkdirs();
+        }
     }
 
-    private final class NotamTask extends AsyncTask<String, Void, Cursor> {
-
-        String mIcaoCode;
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-            if ( !NOTAM_DIR.exists() ) {
-                NOTAM_DIR.mkdirs();
-            }
-        }
-
-        @Override
-        protected Cursor doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
-            Cursor apt = mDbManager.getAirportDetails( siteNumber );
-
-            mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-            if ( mIcaoCode == null || mIcaoCode.length() == 0 ) {
-                String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-                mIcaoCode = "K"+faaCode;
-            }
-
-            getNotams( mIcaoCode );
-
-            return apt;
-        }
-        
-        @Override
-        protected void onPostExecute( Cursor result ) {
-            setProgressBarIndeterminateVisibility( false );
-
-            View view = inflate( R.layout.notam_detail_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.notam_top_layout );
-
-            // Title
-            showAirportTitle( mMainLayout, result );
-
-            showNotams( mIcaoCode );
-
-            // Cleanup cursor
-            result.close();
-        }
-
-    }
-
-    private void showNotams( String icaoCode ) {
+    protected void showNotams( String icaoCode ) {
         LinearLayout content = (LinearLayout) mMainLayout.findViewById( R.id.notam_content_layout );
         File notamFile = new File( NOTAM_DIR, "NOTAM_"+icaoCode+".txt" );
 
@@ -162,7 +103,7 @@ public final class NotamActivity extends ActivityBase {
         title2.setText( "Last updated at "+ lastModified.toLocaleString() );
     }
 
-    private void getNotams( String icaoCode ) {
+    protected void getNotams( String icaoCode ) {
         cleanupNotamCache();
         File notamFile = new File( NOTAM_DIR, "NOTAM_"+icaoCode+".txt" );
         if ( notamFile.exists() ) {
@@ -174,7 +115,7 @@ public final class NotamActivity extends ActivityBase {
         try {
             getNotamsFromFAA( icaoCode, notamFile );
         } catch ( IOException e ) {
-            GuiUtils.showToast( NotamActivity.this, e.getMessage() );
+            GuiUtils.showToast( NotamActivityBase.this, e.getMessage() );
         }
     }
 

@@ -47,9 +47,9 @@ public class NavaidDetailsActivity extends ActivityBase {
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         Intent intent = getIntent();
         String navaidId = intent.getStringExtra( Nav1.NAVAID_ID );
-        String type = intent.getStringExtra( Nav1.NAVAID_TYPE );
+        String navaidType = intent.getStringExtra( Nav1.NAVAID_TYPE );
         NavaidDetailsTask task = new NavaidDetailsTask();
-        task.execute( navaidId, type );
+        task.execute( navaidId, navaidType );
     }
 
     private final class NavaidDetailsTask extends AsyncTask<String, Void, Cursor[]> {
@@ -62,7 +62,7 @@ public class NavaidDetailsActivity extends ActivityBase {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String navaidId = params[ 0 ];
-            String type = params[ 1 ];
+            String navaidType = params[ 1 ];
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 2 ];
@@ -72,7 +72,7 @@ public class NavaidDetailsActivity extends ActivityBase {
                     +" ON a."+Nav1.ASSOC_STATE+"=s."+States.STATE_CODE );
             Cursor c = builder.query( db, new String[] { "*" },
                     Nav1.NAVAID_ID+"=? AND "+Nav1.NAVAID_TYPE+"=?",
-                    new String[] { navaidId, type }, null, null, null, null );
+                    new String[] { navaidId, navaidType }, null, null, null, null );
             if ( !c.moveToFirst() ) {
                 return null;
             }
@@ -83,7 +83,7 @@ public class NavaidDetailsActivity extends ActivityBase {
             builder.setTables( Nav2.TABLE_NAME );
             c = builder.query( db, new String[] { "*" },
                     Nav1.NAVAID_ID+"=? AND "+Nav1.NAVAID_TYPE+"=?",
-                    new String[] { navaidId, type }, null, null, null, null );
+                    new String[] { navaidId, navaidType }, null, null, null, null );
             cursors[ 1 ] = c;
 
             return cursors;
@@ -172,6 +172,12 @@ public class NavaidDetailsActivity extends ActivityBase {
         String voiceIdent = nav1.getString( nav1.getColumnIndex( Nav1.AUTOMATIC_VOICE_IDENT ) );
         addSeparator( layout );
         addRow( layout, "Voice ident", voiceIdent.equals( "Y" )? "Yes" : "No" );
+        addSeparator( layout );
+        String navaidId = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
+        Intent intent = new Intent( this, NavaidNotamActivity.class );
+        intent.putExtra( Nav1.NAVAID_ID, navaidId );
+        intent.putExtra( Nav1.NAVAID_TYPE, navaidType );
+        addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
     }
 
     protected void showNavaidRemarks( Cursor[] result ) {

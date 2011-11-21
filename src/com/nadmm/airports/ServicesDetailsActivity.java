@@ -139,7 +139,7 @@ public class ServicesDetailsActivity extends ActivityBase {
         addSeparator( layout );
         String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
         String notamFacility = apt.getString( apt.getColumnIndex( Airports.NOTAM_FACILITY_ID ) );
-        Intent intent = new Intent( this, NotamActivity.class );
+        Intent intent = new Intent( this, AirportNotamActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addClickableRow( layout, "NOTAM facility", notamFacility, intent,
                 R.drawable.row_selector_middle );

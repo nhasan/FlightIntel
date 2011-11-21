@@ -281,6 +281,11 @@ public class ActivityBase extends Activity {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
+    protected void addClickableRow( TableLayout table, String label,
+            final Intent intent, int resid ) {
+        addClickableRow( table, label, null, intent, resid );
+    }
+
     protected void addClickableRow( TableLayout table, String label, String value,
             final Intent intent, int resid ) {
         LinearLayout row = (LinearLayout) mInflater.inflate( R.layout.clickable_detail_item, null );

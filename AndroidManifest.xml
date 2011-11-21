@@ -67,8 +67,11 @@
                   android:name="AlmanacActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
-                  android:name="NotamActivity" />
+                  android:name=".AirportNotamActivity" />
 
+        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+                  android:name=".NavaidNotamActivity" />
+        
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:name="AboutActivity" />
 

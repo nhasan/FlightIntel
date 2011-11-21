@@ -619,7 +619,7 @@ public class AirportDetailsActivity extends ActivityBase {
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addClickableRow( layout, "Sunset/Sunrise", intent, R.drawable.row_selector_middle );
         addSeparator( layout );
-        intent = new Intent( this, NotamActivity.class );
+        intent = new Intent( this, AirportNotamActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
     }
@@ -736,11 +736,6 @@ public class AirportDetailsActivity extends ActivityBase {
         }
         table.addView( layout, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addClickableRow( TableLayout table, String label,
-            final Intent intent, int resid ) {
-        addClickableRow( table, label, null, intent, resid );
     }
 
     protected void addRunwayRow( TableLayout table, Cursor c, int resid ) {
