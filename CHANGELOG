@@ -1,3 +1,9 @@
+v1.8.1 (11/21/2011)
+===================
+* Show NOTAMs for navaids
+* Apply the 5 minute cache timeout even if no NOTAMs are available for a location
+* Crash fixes
+
 v1.8.0 (11/20/2011)
 ===================
 * NOTAMs NOTAMs NOTAMs 
