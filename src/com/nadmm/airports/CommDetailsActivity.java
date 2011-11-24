@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
@@ -43,8 +42,6 @@ import com.nadmm.airports.utils.DataUtils;
 
 public class CommDetailsActivity extends ActivityBase {
 
-    private LinearLayout mMainLayout;
-
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -55,7 +52,7 @@ public class CommDetailsActivity extends ActivityBase {
         task.execute( siteNumber );
     }
 
-    private final class CommDetailsTask extends AsyncTask<String, Void, Cursor[]> {
+    private final class CommDetailsTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -108,25 +105,14 @@ public class CommDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor[] result ) {
-            View view = inflate( R.layout.comm_detail_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.comm_top_layout );
-
-            // Title
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.comm_detail_view );
+  
             Cursor apt = result[ 0 ];
-            showAirportTitle( mMainLayout, apt );
-
+            showAirportTitle( apt );
             showAirportFrequencies( result );
             showAtcFrequencies( result );
             showRemarks( result );
-
-            // Cleanup cursors
-            for ( Cursor c : result ) {
-                if ( c != null ) {
-                    c.close();
-                }
-            }
         }
 
     }
@@ -195,8 +181,7 @@ public class CommDetailsActivity extends ActivityBase {
                 }
             } while ( twr3.moveToNext() );
 
-            TableLayout layout = (TableLayout) mMainLayout.findViewById(
-                    R.id.airport_comm_details );
+            TableLayout layout = (TableLayout) findViewById( R.id.airport_comm_details );
             int row = 0;
             for ( String key : map.keySet() ) {
                 for ( Pair<String, String> pair : map.get( key ) ) {
@@ -315,7 +300,7 @@ public class CommDetailsActivity extends ActivityBase {
         }
 
         if ( !map.isEmpty() ) {
-            TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.atc_comm_details );
+            TableLayout layout = (TableLayout) findViewById( R.id.atc_comm_details );
             int row = 0;
             for ( String key : map.keySet() ) {
                 for ( Pair<String, String> pair : map.get( key ) ) {
@@ -327,8 +312,7 @@ public class CommDetailsActivity extends ActivityBase {
                 }
             }
         } else {
-            TableLayout layout = (TableLayout) mMainLayout.findViewById(
-                    R.id.atc_comm_details );
+            TableLayout layout = (TableLayout) findViewById( R.id.atc_comm_details );
             layout.setVisibility( View.GONE );
         }
     }
@@ -344,7 +328,7 @@ public class CommDetailsActivity extends ActivityBase {
     }
 
     protected void showRemarks( Cursor[] result ) {
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.comm_remarks_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.comm_remarks_layout );
         Cursor twr6 = result[ 3 ];
         if ( twr6.moveToFirst() ) {
             int row = 0;

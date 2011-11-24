@@ -23,45 +23,38 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Ils2;
+import com.nadmm.airports.utils.GuiUtils;
 
 public class IlsDetailsActivity extends ActivityBase {
-
-    private LinearLayout mMainLayout;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
+        String siteNumber = args.getString( Ils1.SITE_NUMBER );
+        String runwayId = args.getString( Ils1.RUNWAY_ID );
+        String ilsType = args.getString( Ils1.ILS_TYPE );
         ILSDetailsTask task = new ILSDetailsTask();
-        task.execute( args );
+        task.execute( siteNumber, runwayId, ilsType );
     }
 
-    private final class ILSDetailsTask extends AsyncTask<Bundle, Void, Cursor[]> {
+    private final class ILSDetailsTask extends CursorAsyncTask {
 
         @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
-
-        @Override
-        protected Cursor[] doInBackground( Bundle... params ) {
-            Bundle args = params[ 0 ];
-            String siteNumber = args.getString( Ils1.SITE_NUMBER );
-            String runwayId = args.getString( Ils1.RUNWAY_ID );
-            String ilsType = args.getString( Ils1.ILS_TYPE );
+        protected Cursor[] doInBackground( String... params ) {
+            String siteNumber = params[ 0 ];
+            String runwayId = params[ 1 ];
+            String ilsType = params[ 2 ];
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 3 ];
@@ -85,22 +78,18 @@ public class IlsDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor[] result ) {
-            setProgressBarIndeterminateVisibility( false );
-
-            View view = inflate( R.layout.ils_detail_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.ils_top_layout );
-
-            Cursor apt = result[ 0 ];
-            // Title
-            showAirportTitle( mMainLayout, apt );
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.ils_detail_view );
 
             Cursor ils1 = result[ 1 ];
             if ( !ils1.moveToFirst() ) {
+                GuiUtils.showToast( getApplicationContext(), "Unable to find ILS info" );
+                finish();
                 return;
             }
 
+            Cursor apt = result[ 0 ];
+            showAirportTitle( apt );
             showIlsDetails( result );
             showLocalizerDetails( result );
             showGlideslopeDetails( result );
@@ -108,23 +97,16 @@ public class IlsDetailsActivity extends ActivityBase {
             showMiddleMarkerDetails( result );
             showOuterMarkerDetails( result );
             showIlsRemarks( result );
-
-            // Cleanup cursors
-            for ( Cursor c : result ) {
-                if ( c != null ) {
-                    c.close();
-                }
-            }
         }
 
     }
 
     protected void showIlsDetails( Cursor[] result ) {
         Cursor ils1 = result[ 1 ];
-        TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_ils_label );
+        TextView tv = (TextView) findViewById( R.id.rwy_ils_label );
         String rwyId = ils1.getString( ils1.getColumnIndex( Ils1.RUNWAY_ID ) );
         tv.setText( "Runway "+rwyId );
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_ils_details );
+        TableLayout layout = (TableLayout) findViewById( R.id.rwy_ils_details );
         String ilsType = ils1.getString( ils1.getColumnIndex( Ils1.ILS_TYPE ) );
         addRow( layout, "Type", ilsType );
         addSeparator( layout );
@@ -139,7 +121,7 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showLocalizerDetails( Cursor result[] ) {
         Cursor ils1 = result[ 1 ];
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_loc_details );
+        TableLayout layout = (TableLayout) findViewById( R.id.rwy_loc_details );
         String locType = ils1.getString( ils1.getColumnIndex( Ils1.LOCALIZER_TYPE ) );
         addRow( layout, "Type", locType );
         addSeparator( layout );
@@ -155,7 +137,7 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showGlideslopeDetails( Cursor result[] ) {
         Cursor ils1 = result[ 1 ];
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_gs_details );
+        TableLayout layout = (TableLayout) findViewById( R.id.rwy_gs_details );
         String gsType = ils1.getString( ils1.getColumnIndex( Ils1.GLIDE_SLOPE_TYPE ) );
         if ( gsType.length() > 0 ) {
             addRow( layout, "Type", gsType );
@@ -166,7 +148,7 @@ public class IlsDetailsActivity extends ActivityBase {
             String gsFreq = ils1.getString( ils1.getColumnIndex( Ils1.GLIDE_SLOPE_FREQUENCY ) );
             addRow( layout, "Frequency", gsFreq );
         } else {
-            TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_gs_label );
+            TextView tv = (TextView) findViewById( R.id.rwy_gs_label );
             tv.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
         }
@@ -174,7 +156,7 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showInnerMarkerDetails( Cursor result[] ) {
         Cursor ils1 = result[ 1 ];
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_im_details );
+        TableLayout layout = (TableLayout) findViewById( R.id.rwy_im_details );
         String imType = ils1.getString( ils1.getColumnIndex( Ils1.INNER_MARKER_TYPE ) );
         if ( imType.length() > 0 ) {
             addRow( layout, "Type", imType );
@@ -182,7 +164,7 @@ public class IlsDetailsActivity extends ActivityBase {
             int imDistance = ils1.getInt( ils1.getColumnIndex( Ils1.INNER_MARKER_DISTANCE ) );
             addRow( layout, "Distance", String.format( "%d'", imDistance ) );
         } else {
-            TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_im_label );
+            TextView tv = (TextView) findViewById( R.id.rwy_im_label );
             tv.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
         }
@@ -190,7 +172,7 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showMiddleMarkerDetails( Cursor result[] ) {
         Cursor ils1 = result[ 1 ];
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_mm_details );
+        TableLayout layout = (TableLayout) findViewById( R.id.rwy_mm_details );
         String mmType = ils1.getString( ils1.getColumnIndex( Ils1.MIDDLE_MARKER_TYPE ) );
         if ( mmType.length() > 0 ) {
             addRow( layout, "Type", mmType );
@@ -213,7 +195,7 @@ public class IlsDetailsActivity extends ActivityBase {
             int mmDistance = ils1.getInt( ils1.getColumnIndex( Ils1.MIDDLE_MARKER_DISTANCE ) );
             addRow( layout, "Distance", String.format( "%d'", mmDistance ) );
         } else {
-            TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_mm_label );
+            TextView tv = (TextView) findViewById( R.id.rwy_mm_label );
             tv.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
         }
@@ -221,7 +203,7 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showOuterMarkerDetails( Cursor result[] ) {
         Cursor ils1 = result[ 1 ];
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_om_details );
+        TableLayout layout = (TableLayout) findViewById( R.id.rwy_om_details );
         String omType = ils1.getString( ils1.getColumnIndex( Ils1.OUTER_MARKER_TYPE ) );
         if ( omType.length() > 0 ) {
             addRow( layout, "Type", omType );
@@ -244,7 +226,7 @@ public class IlsDetailsActivity extends ActivityBase {
             int omDistance = ils1.getInt( ils1.getColumnIndex( Ils1.OUTER_MARKER_DISTANCE ) );
             addRow( layout, "Distance", String.format( "%d'", omDistance ) );
         } else {
-            TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_om_label );
+            TextView tv = (TextView) findViewById( R.id.rwy_om_label );
             tv.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
         }
@@ -252,7 +234,7 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showIlsRemarks( Cursor result[] ) {
         Cursor ils2 = result[ 2 ];
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.rwy_ils_remarks );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_ils_remarks );
         if ( ils2.moveToFirst() ) {
             do {
                 String remark = ils2.getString( ils2.getColumnIndex( Ils2.ILS_REMARKS ) );

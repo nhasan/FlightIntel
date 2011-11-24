@@ -26,17 +26,16 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.utils.AirportsCursorAdapter;
@@ -52,7 +51,6 @@ public class FavoritesActivity extends ActivityBase {
         super.onCreate( savedInstanceState );
 
         setTitle( "Favorite Airports" );
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
 
         setContentView( R.layout.airport_list_view );
         mListView = (ListView) findViewById( R.id.list_view );

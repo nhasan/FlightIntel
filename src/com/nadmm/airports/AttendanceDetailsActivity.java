@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -37,8 +36,6 @@ import com.nadmm.airports.DatabaseManager.Runways;
 
 public class AttendanceDetailsActivity extends ActivityBase {
 
-    private LinearLayout mMainLayout;
-
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -49,7 +46,7 @@ public class AttendanceDetailsActivity extends ActivityBase {
         task.execute( siteNumber );
     }
 
-    private final class AirportAttendanceTask extends AsyncTask<String, Void, Cursor[]> {
+    private final class AirportAttendanceTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -78,24 +75,13 @@ public class AttendanceDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor[] result ) {
-            View view = inflate( R.layout.attendance_detail_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.attendance_top_layout );
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.attendance_detail_view );
 
-            // Title
             Cursor apt = result[ 0 ];
-            showAirportTitle( mMainLayout, apt );
-
+            showAirportTitle( apt );
             showAttendanceDetails( result );
             showAttendanceRemarks( result );
-
-            // Cleanup cursors
-            for ( Cursor c : result ) {
-                if ( c != null ) {
-                    c.close();
-                }
-            }
         }
 
     }
@@ -103,8 +89,7 @@ public class AttendanceDetailsActivity extends ActivityBase {
     protected void showAttendanceDetails( Cursor[] result ) {
         Cursor att = result[ 1 ];
         if ( att.moveToFirst() ) {
-            LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
-                    R.id.attendance_content_layout );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.attendance_content_layout );
             do {
                 String schedule = att.getString(
                         att.getColumnIndex( Attendance.ATTENDANCE_SCHEDULE ) );
@@ -126,8 +111,7 @@ public class AttendanceDetailsActivity extends ActivityBase {
 
     protected void showAttendanceRemarks( Cursor[] result ) {
         Cursor rmk = result[ 2 ];
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
-                R.id.attendance_remark_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.attendance_remark_layout );
         if ( rmk.moveToFirst() ) {
             layout.setVisibility( View.VISIBLE );
             do {

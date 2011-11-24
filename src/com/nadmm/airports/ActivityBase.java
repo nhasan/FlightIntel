@@ -25,6 +25,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.format.Time;
 import android.util.Pair;
@@ -36,6 +37,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -61,6 +63,9 @@ public class ActivityBase extends Activity {
         super.onCreate( savedInstanceState );
         mDbManager = DatabaseManager.instance( this );
         mInflater = getLayoutInflater();
+
+        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
+        setContentView( R.layout.wait_msg );
     }
 
     protected View inflate( int resource ) {
@@ -104,7 +109,8 @@ public class ActivityBase extends Activity {
         return null;
     }
 
-    protected void showAirportTitle( View root, Cursor c ) {
+    protected void showAirportTitle( Cursor c ) {
+        View root = findViewById( R.id.airport_title_layout );
         TextView tv = (TextView) root.findViewById( R.id.airport_name );
         String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
         if ( code == null || code.length() == 0 ) {
@@ -199,7 +205,8 @@ public class ActivityBase extends Activity {
         }
     }
 
-    protected void showNavaidTitle( View root, Cursor c ) {
+    protected void showNavaidTitle( Cursor c ) {
+        View root = findViewById( R.id.navaid_title_layout );
         String id = c.getString( c.getColumnIndex( Nav1.NAVAID_ID ) );
         String name = c.getString( c.getColumnIndex( Nav1.NAVAID_NAME ) );
         String type = c.getString( c.getColumnIndex( Nav1.NAVAID_TYPE ) );
@@ -384,4 +391,27 @@ public class ActivityBase extends Activity {
         }
     }
 
+    protected abstract class CursorAsyncTask extends AsyncTask<String, Void, Cursor[]> {
+
+        @Override
+        protected final void onPreExecute() {
+            setProgressBarIndeterminateVisibility( true );
+        }
+
+        @Override
+        protected final void onPostExecute( Cursor[] result ) {
+            setProgressBarIndeterminateVisibility( false );
+
+            onResult( result );
+
+            for ( Cursor c : result ) {
+                if ( c != null ) {
+                    c.close();
+                }
+            }
+        }
+
+        protected abstract void onResult( Cursor[] result );
+
+    }
 }

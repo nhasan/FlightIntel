@@ -27,12 +27,10 @@ import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
@@ -40,16 +38,14 @@ import android.widget.TableLayout;
 import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.utils.GuiUtils;
 
 public class NavaidsActivity extends ActivityBase {
-
-    private LinearLayout mMainLayout;
 
     private final String[] mNavColumns = new String[] {
             Nav1.NAVAID_ID,
@@ -64,7 +60,6 @@ public class NavaidsActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         NavaidDetailsTask task = new NavaidDetailsTask();
@@ -121,12 +116,7 @@ public class NavaidsActivity extends ActivityBase {
 
     }
 
-    private final class NavaidDetailsTask extends AsyncTask<String, Void, Cursor[]> {
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
+    private final class NavaidDetailsTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -213,34 +203,20 @@ public class NavaidsActivity extends ActivityBase {
        }
 
        @Override
-       protected void onPostExecute( Cursor[] result ) {
-           setProgressBarIndeterminateVisibility( false );
+       protected void onResult( Cursor[] result ) {
+           setContentView( R.layout.airport_navaids_view );
 
            Cursor vor = result[ 1 ];
            Cursor ndb = result[ 2 ];
            if ( vor == null && ndb == null ) {
-               Toast.makeText( NavaidsActivity.this, "No navaids found in the vicinity",
-                       Toast.LENGTH_LONG ).show();
-               NavaidsActivity.this.finish();
+               GuiUtils.showToast( getApplicationContext(), "No navaids found in the vicinity" );
+               finish();
+               return;
            }
 
-           View view = inflate( R.layout.airport_navaids_view );
-           setContentView( view );
-           mMainLayout = (LinearLayout) view.findViewById( R.id.navaids_detail_layout );
-
-           // Title
            Cursor apt = result[ 0 ];
-           showAirportTitle( mMainLayout, apt );
-
-           // Navaids
+           showAirportTitle( apt );
            showNavaidDetails( result );
-
-           // Cleanup cursors
-           for ( Cursor c : result ) {
-               if ( c != null ) {
-                   c.close();
-               }
-           }
        }
 
     }
@@ -248,8 +224,7 @@ public class NavaidsActivity extends ActivityBase {
     protected void showNavaidDetails( Cursor[] result ) {
         Cursor vor = result[ 1 ];
         if ( vor != null && vor.moveToFirst() ) {
-            TableLayout layout = (TableLayout) mMainLayout.findViewById(
-                    R.id.detail_navaids_vor_layout );
+            TableLayout layout = (TableLayout) findViewById( R.id.detail_navaids_vor_layout );
             do {
                 if ( vor.getPosition() > 0 ) {
                     addSeparator( layout );
@@ -265,17 +240,15 @@ public class NavaidsActivity extends ActivityBase {
                         distance, resid );
             } while ( vor.moveToNext() );
         } else {
-            TableLayout layout = (TableLayout) mMainLayout.findViewById(
-                    R.id.detail_navaids_vor_layout );
+            TableLayout layout = (TableLayout) findViewById( R.id.detail_navaids_vor_layout );
             layout.setVisibility( View.GONE );
-            TextView tv = (TextView) mMainLayout.findViewById( R.id.detail_navaids_vor_label );
+            TextView tv = (TextView) findViewById( R.id.detail_navaids_vor_label );
             tv.setVisibility( View.GONE );
         }
 
         Cursor ndb = result[ 2 ];
         if ( ndb != null && ndb.moveToFirst() ) {
-            TableLayout layout = (TableLayout) mMainLayout.findViewById(
-                    R.id.detail_navaids_ndb_layout );
+            TableLayout layout = (TableLayout) findViewById( R.id.detail_navaids_ndb_layout );
             do {
                 if ( ndb.getPosition() > 0 ) {
                     addSeparator( layout );
@@ -291,10 +264,9 @@ public class NavaidsActivity extends ActivityBase {
                         distance, resid );
             } while ( ndb.moveToNext() );
         } else {
-            TableLayout layout = (TableLayout) mMainLayout.findViewById(
-                    R.id.detail_navaids_ndb_layout );
+            TableLayout layout = (TableLayout) findViewById( R.id.detail_navaids_ndb_layout );
             layout.setVisibility( View.GONE );
-            TextView tv = (TextView) mMainLayout.findViewById( R.id.detail_navaids_ndb_label );
+            TextView tv = (TextView) findViewById( R.id.detail_navaids_ndb_label );
             tv.setVisibility( View.GONE );
         }
     }

@@ -37,7 +37,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -85,8 +84,6 @@ public class BrowseActivity extends ActivityBase {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
 
         setContentView( R.layout.airport_list_view );
         mListView = (ListView) findViewById( R.id.list_view );

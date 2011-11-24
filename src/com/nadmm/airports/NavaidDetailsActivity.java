@@ -23,28 +23,23 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
-import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.Nav2;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.GuiUtils;
 
 public class NavaidDetailsActivity extends ActivityBase {
-
-    private LinearLayout mMainLayout;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         Intent intent = getIntent();
         String navaidId = intent.getStringExtra( Nav1.NAVAID_ID );
         String navaidType = intent.getStringExtra( Nav1.NAVAID_TYPE );
@@ -52,12 +47,7 @@ public class NavaidDetailsActivity extends ActivityBase {
         task.execute( navaidId, navaidType );
     }
 
-    private final class NavaidDetailsTask extends AsyncTask<String, Void, Cursor[]> {
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
+    private final class NavaidDetailsTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -90,39 +80,26 @@ public class NavaidDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor[] result ) {
-            setProgressBarIndeterminateVisibility( false );
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.navaid_detail_view );
 
             if ( result == null ) {
-                Toast.makeText( getApplicationContext(), "Navaid not found", Toast.LENGTH_LONG );
-                NavaidDetailsActivity.this.finish();
+                GuiUtils.showToast( getApplicationContext(), "Navaid not found" );
+                finish();
                 return;
             }
 
-            View view = inflate( R.layout.navaid_detail_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.navaid_top_layout );
-
-            // Title
             Cursor nav1 = result[ 0 ];
-            showNavaidTitle( mMainLayout, nav1 );
-
+            showNavaidTitle( nav1 );
             showNavaidDetails( result );
             showNavaidRemarks( result );
-
-            // Cleanup cursors
-            for ( Cursor c : result ) {
-                if ( c != null ) {
-                    c.close();
-                }
-            }
         }
 
     }
 
     protected void showNavaidDetails( Cursor[] result ) {
         Cursor nav1 = result[ 0 ];
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.navaid_details );
+        TableLayout layout = (TableLayout) findViewById( R.id.navaid_details );
         String navaidClass = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_CLASS ) );
         String navaidType = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_TYPE ) );
         addRow( layout, "Class", navaidClass );
@@ -182,7 +159,7 @@ public class NavaidDetailsActivity extends ActivityBase {
 
     protected void showNavaidRemarks( Cursor[] result ) {
         Cursor nav2 = result[ 1 ];
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.navaid_remarks );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_remarks );
 
         if ( nav2.moveToFirst() ) {
             do {

@@ -33,6 +33,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -48,8 +50,6 @@ import com.nadmm.airports.utils.NetworkUtils;
 
 public class NotamActivityBase extends ActivityBase {
 
-    protected LinearLayout mMainLayout;
-
     private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
             = new File( Environment.getExternalStorageDirectory(), 
             "Android/data/"+DownloadActivity.class.getPackage().getName() );
@@ -60,13 +60,14 @@ public class NotamActivityBase extends ActivityBase {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
         if ( !NOTAM_DIR.exists() ) {
             NOTAM_DIR.mkdirs();
         }
     }
 
     protected void showNotams( String icaoCode ) {
-        LinearLayout content = (LinearLayout) mMainLayout.findViewById( R.id.notam_content_layout );
+        LinearLayout content = (LinearLayout) findViewById( R.id.notam_content_layout );
         File notamFile = new File( NOTAM_DIR, "NOTAM_"+icaoCode+".txt" );
 
         HashMap<String, ArrayList<String>> notams = getNotamFromCache( notamFile );
@@ -96,9 +97,9 @@ public class NotamActivityBase extends ActivityBase {
             }
         }
 
-        TextView title1 = (TextView) mMainLayout.findViewById( R.id.notam_title1 );
+        TextView title1 = (TextView) findViewById( R.id.notam_title1 );
         title1.setText( getResources().getQuantityString( R.plurals.notams_found, count, count ) );
-        TextView title2 = (TextView) mMainLayout.findViewById( R.id.notam_title2 );
+        TextView title2 = (TextView) findViewById( R.id.notam_title2 );
         Date lastModified = new Date( notamFile.lastModified() );
         title2.setText( "Last updated at "+ lastModified.toLocaleString() );
     }
@@ -169,10 +170,13 @@ public class NotamActivityBase extends ActivityBase {
 
         if ( !notamFile.exists() ) {
             // NOTAM cache file is missing. Must be an issue with fetching from FAA
-            TextView title1 = (TextView) mMainLayout.findViewById( R.id.notam_title1 );
+            TextView title1 = (TextView) findViewById( R.id.notam_title1 );
             title1.setText( "There was an error while fetching NOTAMs from FAA." );
             return null;
         }
+
+        // Remeber the ids we have seen to remove duplicates
+        Set<String> notamIDs = new HashSet<String>();
 
         // Build the NOTAM list group by the subject
         try {
@@ -180,18 +184,22 @@ public class NotamActivityBase extends ActivityBase {
             String notam;
             while ( ( notam = in.readLine() ) != null ) {
                 String parts[] = notam.split( " ", 5 );
-                String keyword = parts[0].equals( "!FDC" )? "FDC" : parts[ 3 ];
-                String subject = DataUtils.getNotamSubjectFromKeyword( keyword );
-                ArrayList<String> list = notams.get( subject );
-                if ( list == null ) {
-                    list = new ArrayList<String>();
+                String notamID = parts[ 1 ];
+                if ( !notamIDs.contains( notamID ) ) {
+                    String keyword = parts[0].equals( "!FDC" )? "FDC" : parts[ 3 ];
+                    String subject = DataUtils.getNotamSubjectFromKeyword( keyword );
+                    ArrayList<String> list = notams.get( subject );
+                    if ( list == null ) {
+                        list = new ArrayList<String>();
+                    }
+                    list.add( notam );
+                    notams.put( subject, list );
+                    notamIDs.add( notamID );
                 }
-                list.add( notam );
-                notams.put( subject, list );
             }
             in.close();
         } catch ( IOException e ) {
-            TextView title1 = (TextView) mMainLayout.findViewById( R.id.notam_title1 );
+            TextView title1 = (TextView) findViewById( R.id.notam_title1 );
             title1.setText( "There was an error during parsing NOTAMs from cache: "
                     +e.getMessage() );
         }

@@ -36,6 +36,7 @@ public class PreferencesActivity extends PreferenceActivity
     public static final String KEY_LOCATION_USE_GPS = "location_use_gps";
     public static final String KEY_LOCATION_NEARBY_RADIUS = "location_nearby_radius";
     public static final String KEY_SHOW_EXTRA_RUNWAY_DATA = "extra_runway_data";
+    public static final String KEY_SHOW_GPS_NOTAMS = "show_gps_notams";
     public static final String KEY_DISCLAIMER_AGREED = "disclaimer_agreed";
 
     private SharedPreferences mSharedPrefs;

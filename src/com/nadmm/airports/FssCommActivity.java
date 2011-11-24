@@ -27,11 +27,8 @@ import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableLayout.LayoutParams;
@@ -50,13 +47,10 @@ public class FssCommActivity extends ActivityBase {
 
     private static final int RADIUS = 25;
 
-    private LinearLayout mMainLayout;
-
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         FssCommTask task = new FssCommTask();
@@ -103,12 +97,7 @@ public class FssCommActivity extends ActivityBase {
         }
         
     }
-    private final class FssCommTask extends AsyncTask<String, Void, Cursor[]> {
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
+    private final class FssCommTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -197,33 +186,19 @@ public class FssCommActivity extends ActivityBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor[] result ) {
-            setProgressBarIndeterminateVisibility( false );
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.fss_detail_view );
 
-            View view = inflate( R.layout.fss_detail_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.fss_top_layout );
-
-            // Title
             Cursor apt = result[ 0 ];
-            showAirportTitle( mMainLayout, apt );
-
+            showAirportTitle( apt );
             showFssDetails( result );
-
-            // Cleanup cursors
-            for ( Cursor c : result ) {
-                if ( c != null ) {
-                    c.close();
-                }
-            }
         }
 
     }
 
     private void showFssDetails( Cursor[] result ) {
         Cursor com = result[ 1 ];
-        LinearLayout detailLayout = (LinearLayout) mMainLayout.findViewById(
-                R.id.fss_detail_layout );
+        LinearLayout detailLayout = (LinearLayout) findViewById( R.id.fss_detail_layout );
         if ( com.moveToFirst() ) {
             do {
                 String outletId = com.getString( com.getColumnIndex( Com.COMM_OUTLET_ID ) );
@@ -234,7 +209,6 @@ public class FssCommActivity extends ActivityBase {
                 String navType = com.getString( com.getColumnIndex( Nav1.NAVAID_TYPE ) );
                 String navFreq = com.getString( com.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
                 String freqs = com.getString( com.getColumnIndex( Com.COMM_OUTLET_FREQS ) );
-                String fssId = com.getString( com.getColumnIndex( Com.FSS_IDENT ) );
                 String fssName = com.getString( com.getColumnIndex( Com.FSS_NAME ) );
                 float bearing  = com.getFloat( com.getColumnIndex( BEARING ) );
                 float distance  = com.getFloat( com.getColumnIndex( DISTANCE ) );
@@ -247,7 +221,7 @@ public class FssCommActivity extends ActivityBase {
                     tv.setText( outletId+" - "+outletCall+" outlet" );
                 }
                 TableLayout table = (TableLayout) layout.findViewById( R.id.fss_comm_details );
-                addRow( table, "FSS", fssName+" ("+fssId+")" );
+                addRow( table, "Call", fssName+" Radio" );
                 int i =0;
                 while ( i < freqs.length() ) {
                     addSeparator( table );

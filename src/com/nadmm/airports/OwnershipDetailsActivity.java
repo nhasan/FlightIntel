@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -37,8 +36,6 @@ import com.nadmm.airports.utils.DataUtils;
 
 public class OwnershipDetailsActivity extends ActivityBase {
 
-    private LinearLayout mMainLayout;
-
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -49,7 +46,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
         task.execute( siteNumber );
     }
 
-    private final class AirportDetailsTask extends AsyncTask<String, Void, Cursor[]> {
+    private final class AirportDetailsTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -71,34 +68,22 @@ public class OwnershipDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor[] result ) {
-            View view = inflate( R.layout.ownership_detail_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.ownership_top_layout );
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.ownership_detail_view );
 
-            // Title
             Cursor apt = result[ 0 ];
-            showAirportTitle( mMainLayout, apt );
-
+            showAirportTitle( apt );
             showOwnershipType( result );
             showOwnerInfo( result );
             showManagerInfo( result );
             showRemarks( result );
-
-            // Cleanup cursors
-            for ( Cursor c : result ) {
-                if ( c != null ) {
-                    c.close();
-                }
-            }
         }
 
     }
 
     protected void showOwnershipType( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
-                R.id.detail_ownership_type_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_ownership_type_layout );
         String ownership = DataUtils.decodeOwnershipType(
                 apt.getString( apt.getColumnIndex( Airports.OWNERSHIP_TYPE ) ) );
         String use = DataUtils.decodeFacilityUse(
@@ -109,27 +94,27 @@ public class OwnershipDetailsActivity extends ActivityBase {
     protected void showOwnerInfo( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         String text;
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_owner_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_owner_layout );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_NAME ) );
         addRow( layout, text );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_ADDRESS ) );
         addRow( layout, text );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_CITY_STATE_ZIP ) );
         addRow( layout, text );
-        layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_owner_phone_layout );
+        layout = (LinearLayout) findViewById( R.id.detail_owner_phone_layout );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_PHONE ) );
         if ( text.length() > 0 ) {
             addPhoneRow( layout, text );
         } else {
             layout.setVisibility( View.GONE );
-            mMainLayout.findViewById( R.id.detail_owner_phone_label ).setVisibility( View.GONE );
+            findViewById( R.id.detail_owner_phone_label ).setVisibility( View.GONE );
         }
     }
 
     protected void showManagerInfo( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         String text;
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_manager_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_manager_layout );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_NAME ) );
         addRow( layout, text );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_ADDRESS ) );
@@ -137,13 +122,13 @@ public class OwnershipDetailsActivity extends ActivityBase {
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_CITY_STATE_ZIP ) );
         addRow( layout, text );
 
-        layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_manager_phone_layout );
+        layout = (LinearLayout) findViewById( R.id.detail_manager_phone_layout );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_PHONE ) );
         if ( text.length() > 0 ) {
             addPhoneRow( layout, text );
         } else {
             layout.setVisibility( View.GONE );
-            mMainLayout.findViewById( R.id.detail_manager_phone_label ).setVisibility( View.GONE );
+            findViewById( R.id.detail_manager_phone_label ).setVisibility( View.GONE );
         }
     }
 
@@ -152,7 +137,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
         if ( !rmk.moveToFirst() ) {
             return;
         }
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_remarks_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
         layout.setVisibility( View.VISIBLE );
         do {
             String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );

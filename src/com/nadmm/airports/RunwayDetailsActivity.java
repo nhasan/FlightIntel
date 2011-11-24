@@ -24,7 +24,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -37,10 +36,10 @@ import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.GuiUtils;
 
 public class RunwayDetailsActivity extends ActivityBase {
 
-    private LinearLayout mMainLayout;
     private SharedPreferences mPrefs;
 
     @Override
@@ -50,19 +49,20 @@ public class RunwayDetailsActivity extends ActivityBase {
         mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
+        String siteNumber = args.getString( Runways.SITE_NUMBER );
+        String runwayId = args.getString( Runways.RUNWAY_ID );
         RunwayDetailsTask task = new RunwayDetailsTask();
-        task.execute( args );
+        task.execute( siteNumber, runwayId );
     }
 
-    private final class RunwayDetailsTask extends AsyncTask<Bundle, Void, Cursor[]> {
+    private final class RunwayDetailsTask extends CursorAsyncTask {
 
         @Override
-        protected Cursor[] doInBackground( Bundle... params ) {
-            Bundle args = params[ 0 ];
-            String siteNumber = args.getString( Runways.SITE_NUMBER );
-            String runwayId = args.getString( Runways.RUNWAY_ID );
+        protected Cursor[] doInBackground( String... params ) {
+            String siteNumber = params[ 0 ];
+            String runwayId = params[ 1 ];
             Cursor[] cursors = new Cursor[ 3 ];
-            
+
             cursors[ 0 ] = mDbManager.getAirportDetails( siteNumber );
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
@@ -86,22 +86,16 @@ public class RunwayDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor[] result ) {
-            if ( result == null ) {
-                // TODO: Show an error here
-                return;
-            }
-
-            View view = inflate( R.layout.runway_detail_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.rwy_top_layout );
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.runway_detail_view );
 
             Cursor apt = result[ 0 ];
-            // Title
-            showAirportTitle( mMainLayout, apt );
+            showAirportTitle( apt );
 
             Cursor rwy = result[ 1 ];
             if ( !rwy.moveToFirst() ) {
+                GuiUtils.showToast( getApplicationContext(), "Unable to get runway information" );
+                finish();
                 return;
             }
 
@@ -109,20 +103,11 @@ public class RunwayDetailsActivity extends ActivityBase {
             boolean isHelipad = runwayId.startsWith( "H" );
 
             if ( isHelipad ) {
-                // Helipad information
                 showHelipadInformation( result );
             } else {
-                // Common information
                 showCommonInformation( result );
-                // Base end information
                 showBaseEndInformation( result );
-                // Reciprocal end information
                 showReciprocalEndInformation( result );
-            }
-
-            // Cleanup cursors
-            for ( Cursor c : result ) {
-                c.close();
             }
         }
 
@@ -132,9 +117,9 @@ public class RunwayDetailsActivity extends ActivityBase {
         // Common runway information
         Cursor rwy = result[ 1 ];
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
-        TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_common_label );
+        TextView tv = (TextView) findViewById( R.id.rwy_common_label );
         tv.setText( "Runway "+runwayId );
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_common_details );
+        TableLayout layout = (TableLayout) findViewById( R.id.rwy_common_details );
         String length = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
         String width = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_WIDTH ) );
         addRow( layout, "Dimensions", length+"' x "+width+"'" );
@@ -149,8 +134,7 @@ public class RunwayDetailsActivity extends ActivityBase {
         addRow( layout, "Edge lights", DataUtils.decodeRunwayEdgeLights( edgeLights ) );
 
         // Show remarks
-        LinearLayout rmkLayout = (LinearLayout) mMainLayout.findViewById(
-                R.id.rwy_common_remarks );
+        LinearLayout rmkLayout = (LinearLayout) findViewById( R.id.rwy_common_remarks );
         showCommonRemarks( rmkLayout, result, runwayId );
     }
 
@@ -162,10 +146,10 @@ public class RunwayDetailsActivity extends ActivityBase {
                 false );
 
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ID ) );
-        TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_base_end_label );
+        TextView tv = (TextView) findViewById( R.id.rwy_base_end_label );
         tv.setText( "Runway "+runwayId );
 
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_base_end_details );
+        TableLayout layout = (TableLayout) findViewById( R.id.rwy_base_end_details );
         String ilsType = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ILS_TYPE ) );
         if ( ilsType.length() > 0 ) {
             String siteNumber = apt.getString( apt.getColumnIndex(
@@ -314,11 +298,10 @@ public class RunwayDetailsActivity extends ActivityBase {
                 false );
 
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
-        TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_reciprocal_end_label );
+        TextView tv = (TextView) findViewById( R.id.rwy_reciprocal_end_label );
         tv.setText( "Runway "+runwayId );
 
-        TableLayout layout = (TableLayout) mMainLayout.findViewById(
-                R.id.rwy_reciprocal_end_details );
+        TableLayout layout = (TableLayout) findViewById( R.id.rwy_reciprocal_end_details );
         String ilsType = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ILS_TYPE ) );
         if ( ilsType.length() > 0 ) {
             String siteNumber = apt.getString( apt.getColumnIndex(
@@ -462,22 +445,21 @@ public class RunwayDetailsActivity extends ActivityBase {
 
     protected void showHelipadInformation( Cursor[] result ) {
         // Hide the runway sections
-        TextView tv = (TextView) mMainLayout.findViewById( R.id.rwy_base_end_label );
+        TextView tv = (TextView) findViewById( R.id.rwy_base_end_label );
         tv.setVisibility( View.GONE );
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_base_end_details );
+        TableLayout layout = (TableLayout) findViewById( R.id.rwy_base_end_details );
         layout.setVisibility( View.GONE );
-        tv = (TextView) mMainLayout.findViewById( R.id.rwy_reciprocal_end_label );
+        tv = (TextView) findViewById( R.id.rwy_reciprocal_end_label );
         tv.setVisibility( View.GONE );
-        layout = (TableLayout) mMainLayout.findViewById( R.id.rwy_reciprocal_end_details );
+        layout = (TableLayout) findViewById( R.id.rwy_reciprocal_end_details );
         layout.setVisibility( View.GONE );
 
         Cursor rwy = result[ 1 ];
         String helipadId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
-        tv = (TextView) mMainLayout.findViewById( R.id.rwy_common_label );
+        tv = (TextView) findViewById( R.id.rwy_common_label );
         tv.setText( "Helipad "+helipadId );
 
-        layout = (TableLayout) mMainLayout.findViewById(
-                R.id.rwy_common_details );
+        layout = (TableLayout) findViewById( R.id.rwy_common_details );
         String length = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
         String width = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_WIDTH ) );
         addRow( layout, "Dimensions", length+"' x "+width+"'" );
@@ -503,8 +485,7 @@ public class RunwayDetailsActivity extends ActivityBase {
         addRow( layout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
 
         // Show remarks
-        LinearLayout rmkLayout = (LinearLayout) mMainLayout.findViewById(
-                R.id.rwy_base_end_remarks );
+        LinearLayout rmkLayout = (LinearLayout) findViewById( R.id.rwy_base_end_remarks );
         showRemarks( rmkLayout, result, helipadId );
     }
 
@@ -530,7 +511,7 @@ public class RunwayDetailsActivity extends ActivityBase {
     protected void showBaseEndRemarks( Cursor[] result ) {
         int count = 0;
         Cursor rwy = result[ 1 ];
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(R.id.rwy_base_end_remarks );
+        LinearLayout layout = (LinearLayout) findViewById(R.id.rwy_base_end_remarks );
         String als = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_APCH_LIGHT_SYSTEM ) );
         if ( als.length() > 0 ) {
             String apchLights = DataUtils.getApproachLightSystemDescription( als );
@@ -562,8 +543,7 @@ public class RunwayDetailsActivity extends ActivityBase {
     protected void showReciprocalEndRemarks( Cursor[] result ) {
         int count = 0;
         Cursor rwy = result[ 1 ];
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
-                R.id.rwy_reciprocal_end_remarks );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_reciprocal_end_remarks );
         String als = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_APCH_LIGHT_SYSTEM ) );
         if ( als.length() > 0 ) {

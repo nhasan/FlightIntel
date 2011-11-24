@@ -31,7 +31,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.util.Pair;
@@ -40,9 +39,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableLayout.LayoutParams;
 import android.widget.TableRow;
@@ -62,7 +59,6 @@ import com.nadmm.airports.utils.GeoUtils;
 
 public class AirportDetailsActivity extends ActivityBase {
 
-    private LinearLayout mMainLayout;
     private Bundle mExtras;
     private Location mLocation;
 
@@ -77,7 +73,6 @@ public class AirportDetailsActivity extends ActivityBase {
             return;
         }
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         AirportDetailsTask task = new AirportDetailsTask();
@@ -124,12 +119,7 @@ public class AirportDetailsActivity extends ActivityBase {
             }
     }
 
-    private final class AirportDetailsTask extends AsyncTask<String, Void, Cursor[]> {
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
+    private final class AirportDetailsTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -281,42 +271,22 @@ public class AirportDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor[] result ) {
-            setProgressBarIndeterminateVisibility( false );
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.airport_detail_view );
 
-            View view = inflate( R.layout.airport_detail_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.airport_detail_layout );
-
-            // Title
             Cursor apt = result[ 0 ];
-            showAirportTitle( mMainLayout, apt );
-
-            // Airport Communications section
+            showAirportTitle( apt );
             showCommunicationsDetails( result );
-            // Runway section
             showRunwayDetails( result );
-            // AWOS section
             showAwosDetails( result );
-            // Airport Operations section
             showOperationsDetails( result );
-            // Airport Remarks section
             showRemarks( result );
-            // Airport Services section
             showServicesDetails( result );
-            // Other details
             showOtherDetails( result );
 
-            TextView tv = (TextView) mMainLayout.findViewById( R.id.effective_date );
+            TextView tv = (TextView) findViewById( R.id.effective_date );
             tv.setText( "Effective date: "
                     +apt.getString( apt.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
-
-            // Cleanup cursors
-            for ( Cursor c : result ) {
-                if ( c != null ) {
-                    c.close();
-                }
-            }
         }
 
     }
@@ -325,7 +295,7 @@ public class AirportDetailsActivity extends ActivityBase {
         Cursor apt = result[ 0 ];
         String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
 
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.detail_comm_layout );
+        TableLayout layout = (TableLayout) findViewById( R.id.detail_comm_layout );
         int row = 0;
 
         String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
@@ -455,10 +425,8 @@ public class AirportDetailsActivity extends ActivityBase {
     }
 
     protected void showRunwayDetails( Cursor[] result ) {
-        TableLayout rwyLayout = (TableLayout) mMainLayout.findViewById(
-                R.id.detail_rwy_layout );
-        TableLayout heliLayout = (TableLayout) mMainLayout.findViewById(
-                R.id.detail_heli_layout );
+        TableLayout rwyLayout = (TableLayout) findViewById( R.id.detail_rwy_layout );
+        TableLayout heliLayout = (TableLayout) findViewById( R.id.detail_heli_layout );
         TextView tv;
         int rwyNum = 0;
         int heliNum = 0;
@@ -501,21 +469,21 @@ public class AirportDetailsActivity extends ActivityBase {
 
         if ( rwyNum == 0 ) {
             // No runways so remove the section
-            tv = (TextView) mMainLayout.findViewById( R.id.detail_rwy_label );
+            tv = (TextView) findViewById( R.id.detail_rwy_label );
             tv.setVisibility( View.GONE );
             rwyLayout.setVisibility( View.GONE );
         }
         if ( heliNum == 0 ) {
             // No helipads so remove the section
-            tv = (TextView) mMainLayout.findViewById( R.id.detail_heli_label );
+            tv = (TextView) findViewById( R.id.detail_heli_label );
             tv.setVisibility( View.GONE );
             heliLayout.setVisibility( View.GONE );
         }
     }
 
     protected void showAwosDetails( Cursor[] result ) {
-        TextView label = (TextView) mMainLayout.findViewById( R.id.detail_awos_label );
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.detail_awos_layout );
+        TextView label = (TextView) findViewById( R.id.detail_awos_label );
+        TableLayout layout = (TableLayout) findViewById( R.id.detail_awos_layout );
         Cursor awos = result[ 6 ];
         if ( awos.moveToFirst() ) {
             int row = 0;
@@ -542,8 +510,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
     protected void showOperationsDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        TableLayout layout = (TableLayout) mMainLayout.findViewById(
-                R.id.detail_operations_layout );
+        TableLayout layout = (TableLayout) findViewById( R.id.detail_operations_layout );
         String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
         addRow( layout, "Airport use", DataUtils.decodeFacilityUse( use ) );
         String timezoneId = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
@@ -626,8 +593,8 @@ public class AirportDetailsActivity extends ActivityBase {
 
     protected void showRemarks( Cursor[] result ) {
         int row = 0;
-        TextView label = (TextView) mMainLayout.findViewById( R.id.detail_remarks_label );
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById( R.id.detail_remarks_layout );
+        TextView label = (TextView) findViewById( R.id.detail_remarks_label );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
         Cursor rmk = result[ 2 ];
         if ( rmk.moveToFirst() ) {
             do {
@@ -662,7 +629,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
     protected void showServicesDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.detail_services_layout );
+        TableLayout layout = (TableLayout) findViewById( R.id.detail_services_layout );
         String fuelTypes = DataUtils.decodeFuelTypes( 
                 apt.getString( apt.getColumnIndex( Airports.FUEL_TYPES ) ) );
         if ( fuelTypes.length() == 0 ) {
@@ -692,7 +659,7 @@ public class AirportDetailsActivity extends ActivityBase {
     protected void showOtherDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.detail_other_layout );
+        TableLayout layout = (TableLayout) findViewById( R.id.detail_other_layout );
         Intent intent = new Intent( this, OwnershipDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         addClickableRow( layout, "Ownership and contact", intent, R.drawable.row_selector_top );
@@ -708,7 +675,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
     protected void addAwosRow( TableLayout table, String id, String name, String type, 
             String freq, String phone, float distance, float bearing ) {
-        RelativeLayout layout = (RelativeLayout) inflate( R.layout.awos_detail_item );
+        LinearLayout layout = (LinearLayout) inflate( R.layout.awos_detail_item );
         TextView tv = (TextView) layout.findViewById( R.id.awos_station_name );
         if ( name != null && name.length() > 0 ) {
             tv.setText( id+" - "+name );

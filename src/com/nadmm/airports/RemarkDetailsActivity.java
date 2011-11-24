@@ -23,11 +23,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
@@ -35,8 +32,6 @@ import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.DatabaseManager.Tower8;
 
 public class RemarkDetailsActivity extends ActivityBase {
-
-    private LinearLayout mMainLayout;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -48,7 +43,7 @@ public class RemarkDetailsActivity extends ActivityBase {
         task.execute( siteNumber );
     }
 
-    private final class AirportRemarksTask extends AsyncTask<String, Void, Cursor[]> {
+    private final class AirportRemarksTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -82,38 +77,19 @@ public class RemarkDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor[] result ) {
-            Cursor rmk = result[ 1 ];
-            if ( rmk.getCount() == 0 ) {
-                Toast.makeText( RemarkDetailsActivity.this, "No remarks were found",
-                        Toast.LENGTH_LONG ).show();
-                RemarkDetailsActivity.this.finish();
-            }
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.remarks_detail_view );
 
-            View view = inflate( R.layout.remarks_detail_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.remarks_top_layout );
-
-            // Title
             Cursor apt = result[ 0 ];
-            showAirportTitle( mMainLayout, apt );
-
+            showAirportTitle( apt );
             showRemarksDetails( result );
             showAirspaceDetails( result );
-
-            // Cleanup cursors
-            for ( Cursor c : result ) {
-                if ( c != null ) {
-                    c.close();
-                }
-            }
         }
 
     }
 
     protected void showRemarksDetails( Cursor[] result ) {
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
-                R.id.detail_remarks_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
         Cursor rmk = result[ 1 ];
         if ( rmk.moveToFirst() ) {
             do {
@@ -124,8 +100,7 @@ public class RemarkDetailsActivity extends ActivityBase {
     }
 
     protected void showAirspaceDetails( Cursor[] result ) {
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
-                R.id.detail_remarks_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
 
         Cursor twr8 = result[ 2 ];
         if ( twr8.moveToFirst() ) {

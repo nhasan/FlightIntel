@@ -23,11 +23,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
-import android.widget.LinearLayout;
 
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
@@ -39,28 +35,20 @@ public class NavaidNotamActivity extends NotamActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-        setContentView( R.layout.wait_msg );
-
         Intent intent = getIntent();
         String navaidId = intent.getStringExtra( Nav1.NAVAID_ID );
         String navaidType = intent.getStringExtra( Nav1.NAVAID_TYPE );
-
         NotamTask task = new NotamTask();
         task.execute( navaidId, navaidType );
     }
 
-    private final class NotamTask extends AsyncTask<String, Void, Cursor> {
+    private final class NotamTask extends CursorAsyncTask {
 
         String mIcaoCode;
 
         @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
-
-        @Override
-        protected Cursor doInBackground( String... params ) {
+        protected Cursor[] doInBackground( String... params ) {
+            Cursor[] result = new Cursor[ 1 ];
             String navaidId = params[ 0 ];
             String navaidType = params[ 1 ];
             mIcaoCode = "K"+navaidId;
@@ -73,36 +61,28 @@ public class NavaidNotamActivity extends NotamActivityBase {
             Cursor c = builder.query( db, new String[] { "*" },
                     Nav1.NAVAID_ID+"=? AND "+Nav1.NAVAID_TYPE+"=?",
                     new String[] { navaidId, navaidType }, null, null, null, null );
+            result[ 0 ] = c;
             if ( !c.moveToFirst() ) {
                 return null;
             }
 
             getNotams( mIcaoCode );
 
-            return c;
+            return result;
         }
         
         @Override
-        protected void onPostExecute( Cursor result ) {
-            setProgressBarIndeterminateVisibility( false );
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.navaid_notam_view );
 
             if ( result == null ) {
                 GuiUtils.showToast( getApplicationContext(), "Navaid not found" );
-                NavaidNotamActivity.this.finish();
+                finish();
                 return;
             }
 
-            View view = inflate( R.layout.navaid_notam_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.notam_top_layout );
-
-            // Title
-            showNavaidTitle( mMainLayout, result );
-
+            showNavaidTitle( result[ 0 ] );
             showNotams( mIcaoCode );
-
-            // Cleanup cursor
-            result.close();
         }
 
     }

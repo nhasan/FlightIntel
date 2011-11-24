@@ -736,6 +736,7 @@ public final class DataUtils {
     }
 
     public static String[] getNotamSubjects() {
+        // Defines the order in which NOTAMs will be displayed by subject
         return new String[] {
                 "Aerodrome",
                 "Obstructions",

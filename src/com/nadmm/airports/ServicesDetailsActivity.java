@@ -21,10 +21,7 @@ package com.nadmm.airports;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -36,25 +33,17 @@ import com.nadmm.airports.utils.DataUtils;
 
 public class ServicesDetailsActivity extends ActivityBase {
 
-    private LinearLayout mMainLayout;
-
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         ServicesDetailsTask task = new ServicesDetailsTask();
         task.execute( siteNumber );
     }
 
-    private final class ServicesDetailsTask extends AsyncTask<String, Void, Cursor[]> {
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
+    private final class ServicesDetailsTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -65,16 +54,11 @@ public class ServicesDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor[] result ) {
-            setProgressBarIndeterminateVisibility( false );
-            View view = inflate( R.layout.services_detail_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.services_top_layout );
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.services_detail_view );
 
-            // Title
             Cursor apt = result[ 0 ];
-            showAirportTitle( mMainLayout, apt );
-
+            showAirportTitle( apt );
             showAirportServices( result );
             showFaaServices( result );
         }
@@ -83,8 +67,7 @@ public class ServicesDetailsActivity extends ActivityBase {
 
     protected void showAirportServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        LinearLayout layout = (LinearLayout) mMainLayout.findViewById(
-                R.id.detail_airport_services_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_airport_services_layout );
         String otherServices = DataUtils.decodeServices(
                 apt.getString( apt.getColumnIndex( Airports.OTHER_SERVICES ) ) );
         String storage = DataUtils.decodeStorage( 
@@ -116,8 +99,7 @@ public class ServicesDetailsActivity extends ActivityBase {
 
     protected void showFaaServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        TableLayout layout = (TableLayout) mMainLayout.findViewById(
-                R.id.detail_faa_services_layout );
+        TableLayout layout = (TableLayout) findViewById( R.id.detail_faa_services_layout );
         String region = apt.getString( apt.getColumnIndex( Airports.REGION_CODE ) );
         if ( region.length() > 0 ) {
             addRow( layout, "FAA region", DataUtils.decodeFaaRegion( region ) );

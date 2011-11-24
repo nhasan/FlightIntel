@@ -27,11 +27,7 @@ import java.util.TimeZone;
 import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
-import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -41,25 +37,17 @@ import com.nadmm.airports.utils.SolarCalculator;
 
 public class AlmanacActivity extends ActivityBase {
 
-    private LinearLayout mMainLayout;
-
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         AlmanacDetailsTask task = new AlmanacDetailsTask();
         task.execute( siteNumber );
     }
 
-    private final class AlmanacDetailsTask extends AsyncTask<String, Void, Cursor[]> {
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
+    private final class AlmanacDetailsTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -70,38 +58,27 @@ public class AlmanacActivity extends ActivityBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor[] result ) {
-            setProgressBarIndeterminateVisibility( false );
-            View view = inflate( R.layout.almanac_detail_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.almanac_top_layout );
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.almanac_detail_view );
 
-            // Title
             Cursor apt = result[ 0 ];
-            showAirportTitle( mMainLayout, apt );
-
-            String timezoneId = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
-            TimeZone tz = TimeZone.getTimeZone( timezoneId );
-            double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
-            double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-            Location location = new Location( "" );
-            location.setLatitude( lat );
-            location.setLongitude( lon );
-
-            Calendar now = Calendar.getInstance( tz );
-            showSolarInfo( location, now );
-
-            // Cleanup cursors
-            for ( Cursor c : result ) {
-                if ( c != null ) {
-                    c.close();
-                }
-            }
+            showAirportTitle( apt );
+            showSolarInfo( result );
         }
 
     }
 
-    private void showSolarInfo( Location location, Calendar now ) {
+    private void showSolarInfo( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        String timezoneId = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
+        TimeZone tz = TimeZone.getTimeZone( timezoneId );
+        double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+        double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+        Location location = new Location( "" );
+        location.setLatitude( lat );
+        location.setLongitude( lon );
+        Calendar now = Calendar.getInstance( tz );
+
         SolarCalculator solarCalc = new SolarCalculator( location, now.getTimeZone() );
         Calendar sunrise = solarCalc.getSunriseTime( SolarCalculator.OFFICIAL, now );
         Calendar sunset = solarCalc.getSunsetTime( SolarCalculator.OFFICIAL, now );
@@ -112,11 +89,11 @@ public class AlmanacActivity extends ActivityBase {
         TimeZone local = now.getTimeZone();
         TimeZone utc = TimeZone.getTimeZone( "GMT" );
 
-        TextView tv = (TextView) mMainLayout.findViewById( R.id.sunrise_sunset_label );
+        TextView tv = (TextView) findViewById( R.id.sunrise_sunset_label );
         DateFormat date = DateFormat.getDateInstance();
         tv.setText( "Sunrise and Sunset ("+date.format( now.getTime() )+")" );
 
-        TableLayout layout = (TableLayout) mMainLayout.findViewById( R.id.morning_info_layout );
+        TableLayout layout = (TableLayout) findViewById( R.id.morning_info_layout );
         format.setTimeZone( local );
         addRow( layout, "Morning civil twilight (Local)",
                 format.format( morningTwilight.getTime() ) );
@@ -125,21 +102,21 @@ public class AlmanacActivity extends ActivityBase {
         addRow( layout, "Morning civil twilight (UTC)",
                 format.format( morningTwilight.getTime() ) );
 
-        layout = (TableLayout) mMainLayout.findViewById( R.id.sunrise_info_layout );
+        layout = (TableLayout) findViewById( R.id.sunrise_info_layout );
         format.setTimeZone( local );
         addRow( layout, "Sunrise (Local)", format.format( sunrise.getTime() ) );
         addSeparator( layout );
         format.setTimeZone( utc );
         addRow( layout, "Sunrise (UTC)", format.format( sunrise.getTime() ) );
 
-        layout = (TableLayout) mMainLayout.findViewById( R.id.sunset_info_layout );
+        layout = (TableLayout) findViewById( R.id.sunset_info_layout );
         format.setTimeZone( local );
         addRow( layout, "Sunset (Local)", format.format( sunset.getTime() ) );
         addSeparator( layout );
         format.setTimeZone( utc );
         addRow( layout, "Sunset (UTC)", format.format( sunset.getTime() ) );
 
-        layout = (TableLayout) mMainLayout.findViewById( R.id.evening_info_layout );
+        layout = (TableLayout) findViewById( R.id.evening_info_layout );
         format.setTimeZone( local );
         addRow( layout, "Evening civil twilight (Local)",
                 format.format( eveningTwilight.getTime() ) );
@@ -148,7 +125,7 @@ public class AlmanacActivity extends ActivityBase {
         addRow( layout, "Evening civil twilight (UTC)",
                 format.format( eveningTwilight.getTime() ) );
 
-        layout = (TableLayout) mMainLayout.findViewById( R.id.current_time_layout );
+        layout = (TableLayout) findViewById( R.id.current_time_layout );
         format.setTimeZone( local );
         addRow( layout, "Local time zone", DataUtils.getTimeZoneAsString( local ) );
         addSeparator( layout );
