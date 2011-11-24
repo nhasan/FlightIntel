@@ -59,7 +59,7 @@ public class CommDetailsActivity extends ActivityBase {
             String siteNumber = params[ 0 ];
             Cursor[] cursors = new Cursor[ 6 ];
             
-            Cursor apt = mDbManager.getAirportDetails( siteNumber );
+            Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );

@@ -55,7 +55,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 2 ];
 
-            cursors[ 0 ] = mDbManager.getAirportDetails( siteNumber );
+            cursors[ 0 ] = getAirportDetails( siteNumber );
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Remarks.TABLE_NAME );

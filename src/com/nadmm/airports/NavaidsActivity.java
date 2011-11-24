@@ -125,7 +125,7 @@ public class NavaidsActivity extends ActivityBase {
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 3 ];
 
-            Cursor apt = mDbManager.getAirportDetails( siteNumber );
+            Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
 
             double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );

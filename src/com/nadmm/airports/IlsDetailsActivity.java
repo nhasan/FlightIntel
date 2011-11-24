@@ -59,7 +59,7 @@ public class IlsDetailsActivity extends ActivityBase {
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 3 ];
 
-            Cursor apt = mDbManager.getAirportDetails( siteNumber );
+            Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();

@@ -53,7 +53,7 @@ public class AttendanceDetailsActivity extends ActivityBase {
             String siteNumber = params[ 0 ];
             Cursor[] cursors = new Cursor[ 3 ];
             
-            cursors[ 0 ] = mDbManager.getAirportDetails( siteNumber );
+            cursors[ 0 ] = getAirportDetails( siteNumber );
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();

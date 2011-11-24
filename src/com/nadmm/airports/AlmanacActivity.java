@@ -53,7 +53,7 @@ public class AlmanacActivity extends ActivityBase {
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
             Cursor[] cursors = new Cursor[ 1 ];
-            cursors[ 0 ] = mDbManager.getAirportDetails( siteNumber );
+            cursors[ 0 ] = getAirportDetails( siteNumber );
             return cursors;
         }
 

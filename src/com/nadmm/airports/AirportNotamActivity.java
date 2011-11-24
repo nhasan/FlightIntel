@@ -47,7 +47,7 @@ public class AirportNotamActivity extends NotamActivityBase {
         protected Cursor[] doInBackground( String... params ) {
             Cursor[] result = new Cursor[ 1 ];
             String siteNumber = params[ 0 ];
-            Cursor apt = mDbManager.getAirportDetails( siteNumber );
+            Cursor apt = getAirportDetails( siteNumber );
             result[ 0 ] = apt;
 
             mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );

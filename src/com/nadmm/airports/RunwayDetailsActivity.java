@@ -63,7 +63,7 @@ public class RunwayDetailsActivity extends ActivityBase {
             String runwayId = params[ 1 ];
             Cursor[] cursors = new Cursor[ 3 ];
 
-            cursors[ 0 ] = mDbManager.getAirportDetails( siteNumber );
+            cursors[ 0 ] = getAirportDetails( siteNumber );
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();

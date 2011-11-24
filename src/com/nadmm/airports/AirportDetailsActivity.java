@@ -66,14 +66,7 @@ public class AirportDetailsActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        Intent intent = checkData();
-        if ( intent != null ) {
-            startActivity( intent );
-            finish();
-            return;
-        }
-
-        intent = getIntent();
+        Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         AirportDetailsTask task = new AirportDetailsTask();
         task.execute( siteNumber );
@@ -128,7 +121,7 @@ public class AirportDetailsActivity extends ActivityBase {
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 8 ];
 
-            Cursor apt = mDbManager.getAirportDetails( siteNumber );
+            Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();

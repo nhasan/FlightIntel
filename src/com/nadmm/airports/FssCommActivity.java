@@ -106,7 +106,7 @@ public class FssCommActivity extends ActivityBase {
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] result = new Cursor[ 2 ];
 
-            Cursor apt = mDbManager.getAirportDetails( siteNumber );
+            Cursor apt = getAirportDetails( siteNumber );
             result[ 0 ] = apt;
 
             double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
