@@ -42,8 +42,6 @@ import com.nadmm.airports.utils.AirportsCursorAdapter;
 
 public class SearchActivity extends ActivityBase {
 
-    private TextView mHeader;
-    private ListView mListView;
     private ArrayList<String> mFavorites;
 
     private CursorAdapter mListAdapter = null;
@@ -51,29 +49,6 @@ public class SearchActivity extends ActivityBase {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( R.layout.airport_list_view );
-        mListView = (ListView) findViewById( R.id.list_view );
-        registerForContextMenu( mListView );
-        mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
-        mListView.addHeaderView( mHeader );
-        mListView.setOnItemClickListener( new OnItemClickListener() {
-
-            @Override
-            public void onItemClick( AdapterView<?> parent, View view,
-                    int position, long id ) {
-                Cursor c = mListAdapter.getCursor();
-                if ( position > 0 ) {
-                    // Subtract 1 from position to account for header item
-                    c.moveToPosition( position-1 );
-                    String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-                    Intent intent = new Intent( SearchActivity.this, AirportDetailsActivity.class );
-                    intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                    startActivity( intent );
-                }
-            }
-
-        } );
 
         handleIntent( getIntent() );
     }
@@ -109,14 +84,31 @@ public class SearchActivity extends ActivityBase {
     private void showResults( String query ) {
         Cursor c = managedQuery( AirportsProvider.CONTENT_URI, null, null, 
                 new String[] { query }, null );
-        startManagingCursor( c );
         int count = c.getCount();
+        startManagingCursor( c );
+
+        setContentView( R.layout.airport_list_view );
+        ListView listView = (ListView) findViewById( R.id.list_view );
+        registerForContextMenu( listView );
+        listView.setOnItemClickListener( new OnItemClickListener() {
+
+            @Override
+            public void onItemClick( AdapterView<?> parent, View view,
+                    int position, long id ) {
+                Cursor c = mListAdapter.getCursor();
+                String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+                Intent intent = new Intent( SearchActivity.this, AirportDetailsActivity.class );
+                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                startActivity( intent );
+            }
+
+        } );
+
         mListAdapter = new AirportsCursorAdapter( this, c );
-        mListView.setAdapter( mListAdapter );
-        TextView tv = (TextView) findViewById( android.R.id.empty );
-        tv.setVisibility( View.GONE );
-        mListView.setVisibility( View.VISIBLE );
-        mHeader.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
+        listView.setAdapter( mListAdapter );
+        TextView title = (TextView) findViewById( R.id.airport_list_title );
+        title.setVisibility( View.VISIBLE );
+        title.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
                 count, new Object[] { count, query } ) );
     }
 

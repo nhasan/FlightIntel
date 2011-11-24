@@ -35,7 +35,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.utils.AirportsCursorAdapter;
@@ -43,7 +42,6 @@ import com.nadmm.airports.utils.AirportsCursorHelper;
 
 public class FavoritesActivity extends ActivityBase {
 
-    private ListView mListView;
     private AirportsCursorAdapter mListAdapter;
 
     @Override
@@ -51,25 +49,6 @@ public class FavoritesActivity extends ActivityBase {
         super.onCreate( savedInstanceState );
 
         setTitle( "Favorite Airports" );
-
-        setContentView( R.layout.airport_list_view );
-        mListView = (ListView) findViewById( R.id.list_view );
-        registerForContextMenu( mListView );
-
-        mListView.setOnItemClickListener( new OnItemClickListener() {
-
-            @Override
-            public void onItemClick( AdapterView<?> parent, View view,
-                    int position, long id ) {
-                Cursor c = mListAdapter.getCursor();
-                c.moveToPosition( position );
-                String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-                Intent intent = new Intent( FavoritesActivity.this, AirportDetailsActivity.class );
-                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                startActivity( intent );
-            }
-
-        } );
 
         getFavorites();
     }
@@ -124,13 +103,30 @@ public class FavoritesActivity extends ActivityBase {
         @Override
         protected void onPostExecute( Cursor c ) {
             if ( mListAdapter == null ) {
+                setContentView( R.layout.airport_list_view );
+                ListView listView = (ListView) findViewById( R.id.list_view );
+                registerForContextMenu( listView );
+
+                listView.setOnItemClickListener( new OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick( AdapterView<?> parent, View view,
+                            int position, long id ) {
+                        Cursor c = mListAdapter.getCursor();
+                        c.moveToPosition( position );
+                        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+                        Intent intent = new Intent( FavoritesActivity.this, AirportDetailsActivity.class );
+                        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                        startActivity( intent );
+                    }
+
+                } );
+
                 mListAdapter = new AirportsCursorAdapter( FavoritesActivity.this, c );
-                mListView.setAdapter( mListAdapter );
+                listView.setAdapter( mListAdapter );
             } else {
                 mListAdapter.changeCursor( c );
             }
-            TextView tv = (TextView) findViewById( android.R.id.empty );
-            tv.setVisibility( View.GONE );
             setProgressBarIndeterminateVisibility( false );
         }
 

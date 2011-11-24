@@ -46,17 +46,12 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 
-public class BrowseActivity extends ActivityBase {
-
-    static private final String BUNDLE_KEY_SITE_NUMBER = "site_number";
-    static private final String BUNDLE_KEY_STATE_CODE = "state_code";
-    static private final String BUNDLE_KEY_STATE_NAME = "state_name";
+public final class BrowseActivity extends ActivityBase {
 
     // Projection maps for queries
     static private final HashMap<String, String> sStateMap = buildStateMap();
     static private final HashMap<String, String> sCityMap = buildCityMap();
 
-    private ListView mListView;
     private BrowseCursorAdapter mListAdapter;
 
     static HashMap<String, String> buildStateMap() {
@@ -85,18 +80,6 @@ public class BrowseActivity extends ActivityBase {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( R.layout.airport_list_view );
-        mListView = (ListView) findViewById( R.id.list_view );
-        mListView.setOnItemClickListener( new OnItemClickListener() {
-
-            @Override
-            public void onItemClick( AdapterView<?> parent, View view,
-                    int position, long id ) {
-                onListItemClick( position );
-            }
-
-        } );
-
         Intent intent = getIntent();
         Bundle extra = intent.getExtras();
         if ( extra == null ) {
@@ -104,15 +87,14 @@ public class BrowseActivity extends ActivityBase {
             extra = new Bundle();
         }
 
-        if ( !extra.containsKey( BUNDLE_KEY_SITE_NUMBER ) ) {
+        if ( !extra.containsKey( Airports.SITE_NUMBER ) ) {
             // Show browse list
-            String stateCode = extra.getString( BUNDLE_KEY_STATE_CODE );
+            String stateCode = extra.getString( States.STATE_CODE );
             if ( stateCode == null ) {
                 setTitle( "Browse Airports - All Locations" );
             } else {
-                String stateName = extra.getString( BUNDLE_KEY_STATE_NAME );
+                String stateName = extra.getString( States.STATE_NAME );
                 setTitle( "Browse Airports - "+stateName );
-                registerForContextMenu( mListView );
             }
             BrowseTask task = new BrowseTask();
             task.execute( extra );
@@ -138,13 +120,12 @@ public class BrowseActivity extends ActivityBase {
         @Override
         protected Cursor doInBackground( Bundle... params ) {
             Cursor c = null;
-            DatabaseManager dbManager = DatabaseManager.instance( BrowseActivity.this );
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
 
             Bundle extra = params[ 0 ];
-            if ( !extra.containsKey( BUNDLE_KEY_STATE_CODE ) ) {
+            if ( !extra.containsKey( States.STATE_CODE ) ) {
                 // Show all the states grouped by first letter
+                SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
                 builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "
                         +States.TABLE_NAME+" s"+" ON a."+Airports.ASSOC_STATE
                         +"=s."+States.STATE_CODE );
@@ -166,9 +147,10 @@ public class BrowseActivity extends ActivityBase {
                         States.STATE_NAME );
             } else {
                 // Show all the airports in the selected state grouped by city
+                SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
                 builder.setTables( Airports.TABLE_NAME );
-                String state_code = extra.getString( BUNDLE_KEY_STATE_CODE );
-                String state_name = extra.getString( BUNDLE_KEY_STATE_NAME );
+                String state_code = extra.getString( States.STATE_CODE );
+                String state_name = extra.getString( States.STATE_NAME );
                 builder.setProjectionMap( sCityMap );
                 String selection = "("+Airports.ASSOC_STATE+" <> '' AND "+Airports.ASSOC_STATE
                         +"=?) OR ("+Airports.ASSOC_STATE+" = '' AND "+Airports.ASSOC_COUNTY+"=?)";
@@ -197,6 +179,18 @@ public class BrowseActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor c ) {
+            setContentView( R.layout.airport_list_view );
+            ListView listView = (ListView) findViewById( R.id.list_view );
+            listView.setOnItemClickListener( new OnItemClickListener() {
+
+                @Override
+                public void onItemClick( AdapterView<?> parent, View view,
+                        int position, long id ) {
+                    onListItemClick( position );
+                }
+
+            } );
+
             if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
                  mListAdapter = new BrowseCursorAdapter( BrowseActivity.this,
                         R.layout.browse_all_item, c, R.id.browse_all_section,
@@ -205,12 +199,10 @@ public class BrowseActivity extends ActivityBase {
                 mListAdapter = new BrowseCursorAdapter( BrowseActivity.this,
                         R.layout.browse_state_item, c, R.id.browse_state_section,
                         BrowseCursorAdapter.CITY_MODE );
+                registerForContextMenu( listView );
             }
 
-            mListView.setAdapter( mListAdapter );
-            mListView.setVisibility( View.VISIBLE );
-            TextView tv = (TextView) findViewById( android.R.id.empty );
-            tv.setVisibility( View.GONE );
+            listView.setAdapter( mListAdapter );
             setProgressBarIndeterminateVisibility( false );
         }
 
@@ -281,8 +273,8 @@ public class BrowseActivity extends ActivityBase {
             Bundle extra = new Bundle();
             String state_code = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
             String state_name = c.getString( c.getColumnIndex( States.STATE_NAME ) );
-            extra.putString( BUNDLE_KEY_STATE_CODE, state_code );
-            extra.putString( BUNDLE_KEY_STATE_NAME, state_name );
+            extra.putString( States.STATE_CODE, state_code );
+            extra.putString( States.STATE_NAME, state_name );
             browse.putExtras( extra );
             // Start this activity again with state parameter
             startActivity( browse );

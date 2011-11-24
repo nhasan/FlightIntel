@@ -45,7 +45,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
@@ -58,8 +57,6 @@ public class NearbyActivity extends ActivityBase {
     public static final String APT_LOCATION = "APT_LOCATION";
     public static final String APT_CODE = "APT_CODE";
 
-    private TextView mHeader;
-    private ListView mListView;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
     private Location mLastLocation;
@@ -94,26 +91,6 @@ public class NearbyActivity extends ActivityBase {
  
         mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
 
-        setContentView( R.layout.airport_list_view );
-        mListView = (ListView) findViewById( R.id.list_view );
-        registerForContextMenu( mListView );
-        mHeader = (TextView) getLayoutInflater().inflate( R.layout.list_header, null );
-        mListView.addHeaderView( mHeader );
-        mListView.setOnItemClickListener( new OnItemClickListener() {
-
-            @Override
-            public void onItemClick( AdapterView<?> parent, View view,
-                    int position, long id ) {
-                Cursor c = mListAdapter.getCursor();
-                c.moveToPosition( position-1 );
-                String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-                Intent intent = new Intent( NearbyActivity.this, AirportDetailsActivity.class );
-                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                startActivity( intent );
-            }
-
-        } );
-
         // Check if an airport location was passed
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -141,14 +118,12 @@ public class NearbyActivity extends ActivityBase {
             }
         }
 
-        setProgressBarIndeterminateVisibility( true );
-
         if ( mLastLocation != null ) {
             // We have some location to use
             NearbyTask task = new NearbyTask();
             task.execute();
         } else {
-            TextView tv = (TextView) findViewById( android.R.id.empty );
+            TextView tv = (TextView) findViewById( R.id.wait_msg );
             tv.setText( R.string.waiting_location );
         }
     }
@@ -348,32 +323,53 @@ public class NearbyActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor c ) {
+            TextView title = (TextView) findViewById( R.id.airport_list_title );
+            if ( title == null ) {
+                setContentView( R.layout.airport_list_view );
+                title = (TextView) findViewById( R.id.airport_list_title );
+                title.setVisibility( View.VISIBLE );
+            }
+
             if ( c == null ) {
-                Toast.makeText( NearbyActivity.this, "No airports found within the query radius", 
-                        Toast.LENGTH_LONG ).show();
-                finish();
+                title.setText( "No airports found within the query radius" );
                 return;
             }
+
+            ListView listView = (ListView) findViewById( R.id.list_view );
+            registerForContextMenu( listView );
+            listView.setOnItemClickListener( new OnItemClickListener() {
+
+                @Override
+                public void onItemClick( AdapterView<?> parent, View view,
+                        int position, long id ) {
+                    Cursor c = mListAdapter.getCursor();
+                    c.moveToPosition( position );
+                    String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+                    Intent intent = new Intent( NearbyActivity.this, AirportDetailsActivity.class );
+                    intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                    startActivity( intent );
+                }
+
+            } );
 
             if ( mListAdapter == null ) {
                 // No adapter is set yet
                 mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );
-                mListView.setAdapter( mListAdapter );
+                listView.setAdapter( mListAdapter );
             } else {
-                int position = mListView.getFirstVisiblePosition();
+                int position = listView.getFirstVisiblePosition();
                 mListAdapter.changeCursor( c );
-                mListView.setSelection( position );
+                listView.setSelection( position );
             }
+
             String msg = String.valueOf( c.getCount() )+" airports found within "
                     +String.valueOf( mRadius )+" NM";
             if ( mRefAirport !=  null ) {
                 msg += " of "+mRefAirport;
             }
-            mHeader.setText( msg );
 
-            TextView tv = (TextView) findViewById( android.R.id.empty );
-            tv.setVisibility( View.GONE );
-            mListView.setVisibility( View.VISIBLE );
+            title.setText( msg );
+
             setProgressBarIndeterminateVisibility( false );
         }
 
@@ -385,8 +381,7 @@ public class NearbyActivity extends ActivityBase {
 
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         Cursor c = mListAdapter.getCursor();
-        // Subtract 1 to account for header item
-        c.moveToPosition( info.position-1 );
+        c.moveToPosition( info.position );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
         String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
         if ( code == null || code.length() == 0 ) {
@@ -410,8 +405,7 @@ public class NearbyActivity extends ActivityBase {
     public boolean onContextItemSelected( MenuItem item ) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
         Cursor c = mListAdapter.getCursor();
-        // Subtract 1 to account for header item
-        c.moveToPosition( info.position-1 );
+        c.moveToPosition( info.position );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
 
         switch ( item.getItemId() ) {
