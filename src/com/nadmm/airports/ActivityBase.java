@@ -23,6 +23,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -72,6 +74,24 @@ public class ActivityBase extends Activity {
         return mInflater.inflate( resource, null );
     }
 
+    public Cursor getAirportDetails( String siteNumber ) {
+        SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+        if ( db == null ) {
+            return null;
+        }
+
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
+                +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
+        Cursor c = builder.query( db, new String[] { "*" }, Airports.SITE_NUMBER+"=?",
+                new String[] { siteNumber }, null, null, null, null );
+        if ( !c.moveToFirst() ) {
+            return null;
+        }
+
+        return c;
+    }
+
     protected Intent checkData() {
         Cursor c = mDbManager.getCurrentFromCatalog();
         if ( !c.moveToFirst() ) {
@@ -96,9 +116,18 @@ public class ActivityBase extends Activity {
             int age = c.getInt( c.getColumnIndex( "age" ) );
             if ( age <= 0 ) {
                 // We have some expired data
-                c.close();
                 Intent download = new Intent( this, DownloadActivity.class );
                 download.putExtra( "MSG", "One or more data items have expired" );
+                c.close();
+                return download;
+            }
+
+            // Try to make sure we can open the databases
+            String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
+            SQLiteDatabase db = mDbManager.getDatabase( type );
+            if ( db == null ) {
+                Intent download = new Intent( this, DownloadActivity.class );
+                download.putExtra( "MSG", "Database is corrupted. Please delete and re-install" );
                 c.close();
                 return download;
             }
@@ -400,8 +429,6 @@ public class ActivityBase extends Activity {
 
         @Override
         protected final void onPostExecute( Cursor[] result ) {
-            setProgressBarIndeterminateVisibility( false );
-
             onResult( result );
 
             for ( Cursor c : result ) {
@@ -409,6 +436,8 @@ public class ActivityBase extends Activity {
                     c.close();
                 }
             }
+
+            setProgressBarIndeterminateVisibility( false );
         }
 
         protected abstract void onResult( Cursor[] result );
