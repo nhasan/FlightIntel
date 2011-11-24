@@ -20,7 +20,7 @@
  */
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/header_layout"
+        android:id="@+id/navaid_title_layout"
         android:background="@drawable/top_bar"
         android:padding="6dp"
         android:orientation="horizontal"
