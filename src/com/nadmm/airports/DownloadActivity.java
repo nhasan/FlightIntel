@@ -73,6 +73,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -158,6 +159,7 @@ public final class DownloadActivity extends ListActivity {
         mStop = new AtomicBoolean( false );
         mHandler = new Handler();
 
+        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         setContentView( R.layout.download_list_view );
         
         // Add the footer view
