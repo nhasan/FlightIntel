@@ -66,4 +66,12 @@
                 android:summaryOff="Show basic runway information"
                 defaultValue="false" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="NOTAMs">
+        <CheckBoxPreference
+                android:key="show_gps_notams"
+                android:title="Show GPS NOTAMs"
+                android:summaryOn="GPS NOTAMs will also be shown"
+                android:summaryOff="GPS NOTAMs will not be shown"
+                defaultValue="false" />
+    </PreferenceCategory>
 </PreferenceScreen>

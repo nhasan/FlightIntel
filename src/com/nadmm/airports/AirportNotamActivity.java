@@ -20,12 +20,10 @@
 package com.nadmm.airports;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
-import android.widget.LinearLayout;
+import android.preference.PreferenceManager;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 
@@ -35,29 +33,22 @@ public class AirportNotamActivity extends NotamActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-        setContentView( R.layout.wait_msg );
-
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-
         NotamTask task = new NotamTask();
         task.execute( siteNumber );
     }
 
-    private final class NotamTask extends AsyncTask<String, Void, Cursor> {
+    private final class NotamTask extends CursorAsyncTask {
 
         String mIcaoCode;
 
         @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
-
-        @Override
-        protected Cursor doInBackground( String... params ) {
+        protected Cursor[] doInBackground( String... params ) {
+            Cursor[] result = new Cursor[ 1 ];
             String siteNumber = params[ 0 ];
             Cursor apt = mDbManager.getAirportDetails( siteNumber );
+            result[ 0 ] = apt;
 
             mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
             if ( mIcaoCode == null || mIcaoCode.length() == 0 ) {
@@ -65,26 +56,25 @@ public class AirportNotamActivity extends NotamActivityBase {
                 mIcaoCode = "K"+faaCode;
             }
 
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
+                    AirportNotamActivity.this );
+            boolean showGPS = prefs.getBoolean( PreferencesActivity.KEY_SHOW_GPS_NOTAMS, false );
+            if ( showGPS ) {
+                // Also request GPS NOTAMs
+                mIcaoCode += ",KGPS";
+            }
+
             getNotams( mIcaoCode );
 
-            return apt;
+            return result;
         }
-        
+
         @Override
-        protected void onPostExecute( Cursor result ) {
-            setProgressBarIndeterminateVisibility( false );
+        protected void onResult( Cursor[] result ) {
+            setContentView( R.layout.airport_notam_view );
 
-            View view = inflate( R.layout.airport_notam_view );
-            setContentView( view );
-            mMainLayout = (LinearLayout) view.findViewById( R.id.notam_top_layout );
-
-            // Title
-            showAirportTitle( mMainLayout, result );
-
+            showAirportTitle( result[ 0 ] );
             showNotams( mIcaoCode );
-
-            // Cleanup cursor
-            result.close();
         }
 
     }
