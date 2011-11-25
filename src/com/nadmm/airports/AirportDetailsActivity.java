@@ -510,7 +510,7 @@ public class AirportDetailsActivity extends ActivityBase {
         if ( timezoneId.length() > 0 ) {
             addSeparator( layout );
             TimeZone tz = TimeZone.getTimeZone( timezoneId );
-            addRow( layout, "Local Time zone", DataUtils.getTimeZoneAsString( tz ) );
+            addRow( layout, "Local time zone", DataUtils.getTimeZoneAsString( tz ) );
         }
         String activation = apt.getString( apt.getColumnIndex( Airports.ACTIVATION_DATE ) );
         if ( activation.length() > 0 ) {
