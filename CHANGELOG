@@ -1,3 +1,9 @@
+v1.8.2 (11/24/2011)
+===================
+* Sow GPS NOTAMs
+* Fix display of long airport names in AWOS section
+* Try to handle database corruption gracefully instead of crashing
+
 v1.8.1 (11/21/2011)
 ===================
 * Show NOTAMs for navaids
