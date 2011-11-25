@@ -323,6 +323,8 @@ public class NearbyActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor c ) {
+            setProgressBarIndeterminateVisibility( false );
+
             TextView title = (TextView) findViewById( R.id.airport_list_title );
             if ( title == null ) {
                 setContentView( R.layout.airport_list_view );
@@ -369,8 +371,6 @@ public class NearbyActivity extends ActivityBase {
             }
 
             title.setText( msg );
-
-            setProgressBarIndeterminateVisibility( false );
         }
 
     }
