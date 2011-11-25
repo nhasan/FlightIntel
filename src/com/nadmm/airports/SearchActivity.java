@@ -109,7 +109,7 @@ public class SearchActivity extends ActivityBase {
         TextView title = (TextView) findViewById( R.id.airport_list_title );
         title.setVisibility( View.VISIBLE );
         title.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
-                count, new Object[] { count, query } ) );
+                count, count, query ) );
     }
 
     @Override
