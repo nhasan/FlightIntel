@@ -35,12 +35,14 @@
                 android:gravity="left"
 	            android:ellipsize="end"
 	            android:singleLine="true"
+                android:paddingRight="4dp"
 	            android:layout_weight="1"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content" />
 	    <TextView android:id="@+id/awos_freq"
 	            android:textAppearance="?android:attr/textAppearanceSmall"
 	            android:gravity="right"
+                android:paddingLeft="4dp"
 	            android:layout_weight="0"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content" />
