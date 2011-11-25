@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 
+import com.nadmm.airports.DatabaseManager.Com;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.Nav2;
 import com.nadmm.airports.DatabaseManager.States;
@@ -55,7 +56,7 @@ public class NavaidDetailsActivity extends ActivityBase {
             String navaidType = params[ 1 ];
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 2 ];
+            Cursor[] cursors = new Cursor[ 3 ];
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Nav1.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
@@ -76,18 +77,29 @@ public class NavaidDetailsActivity extends ActivityBase {
                     new String[] { navaidId, navaidType }, null, null, null, null );
             cursors[ 1 ] = c;
 
+            if ( !navaidType.equals( "VOT" ) ) {
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Com.TABLE_NAME );
+                c = builder.query( db, new String[] { "*" },
+                        Com.ASSOC_NAVAID_ID+"=?", new String[] { navaidId },
+                        null, null, null, null );
+                cursors[ 2 ] = c;
+            } else {
+                cursors[ 2 ] = null;
+            }
+
             return cursors;
         }
 
         @Override
         protected void onResult( Cursor[] result ) {
-            setContentView( R.layout.navaid_detail_view );
-
             if ( result == null ) {
                 GuiUtils.showToast( getApplicationContext(), "Navaid not found" );
                 finish();
                 return;
             }
+
+            setContentView( R.layout.navaid_detail_view );
 
             Cursor nav1 = result[ 0 ];
             showNavaidTitle( nav1 );
@@ -149,6 +161,23 @@ public class NavaidDetailsActivity extends ActivityBase {
         String voiceIdent = nav1.getString( nav1.getColumnIndex( Nav1.AUTOMATIC_VOICE_IDENT ) );
         addSeparator( layout );
         addRow( layout, "Voice ident", voiceIdent.equals( "Y" )? "Yes" : "No" );
+        Cursor com = result[ 2 ];
+        if ( com != null && com.moveToFirst() ) {
+            do {
+                String outletType = com.getString( com.getColumnIndex( Com.COMM_OUTLET_TYPE ) );
+                String fssName = com.getString( com.getColumnIndex( Com.FSS_NAME ) );
+                String freqs = com.getString( com.getColumnIndex( Com.COMM_OUTLET_FREQS ) );
+                String outletName = fssName+" Radio ("+outletType+")";
+                int i =0;
+                while ( i < freqs.length() ) {
+                    addSeparator( layout );
+                    int end = Math.min( i+9, freqs.length() );
+                    String fssFreq = freqs.substring( i, end ).trim();
+                    addRow( layout, outletName, fssFreq );
+                    i = end;
+                }
+            } while ( com.moveToNext() );
+        }
         addSeparator( layout );
         String navaidId = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
         Intent intent = new Intent( this, NavaidNotamActivity.class );
