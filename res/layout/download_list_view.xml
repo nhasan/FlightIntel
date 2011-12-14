@@ -30,7 +30,6 @@
         android:visibility="gone" />
     <ListView android:id="@android:id/list"
             android:divider="@drawable/list_divider"
-            android:dividerHeight="1px"
             android:footerDividersEnabled="false"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
