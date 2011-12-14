@@ -4,6 +4,17 @@
       android:versionCode="182"
       android:versionName="1.8.2" >
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+
+    <uses-sdk android:minSdkVersion="7" />
+    
     <application android:icon="@drawable/icon"
             android:label="@string/app_name"
             android:debuggable="false"
@@ -73,6 +84,9 @@
                   android:name=".NavaidNotamActivity" />
         
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+                  android:name=".WxDetailActivity" />
+        
+        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:name="AboutActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
@@ -93,16 +107,7 @@
 		<provider android:name=".AirportsProvider"
 		          android:authorities="com.nadmm.airports.AirportsProvider"
 		          android:syncable="false" />
+
+		<service android:name=".wx.MetarService" />
 	</application>
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-
-    <uses-feature android:name="android.hardware.telephony" android:required="false" />
-    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
-
-    <uses-sdk android:minSdkVersion="7" />
 </manifest>
