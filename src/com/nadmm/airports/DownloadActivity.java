@@ -509,7 +509,7 @@ public final class DownloadActivity extends ListActivity {
                 HttpGet get = new HttpGet( uri );
 
                 HttpResponse response = httpClient.execute( target, get );
-                if ( response.getStatusLine().getStatusCode() != 200 ) {
+                if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK ) {
                     Log.e( TAG, response.getStatusLine().getReasonPhrase() );
                     return -1;
                 }
