@@ -33,9 +33,8 @@
             android:layout_height="wrap_content" />
     <ListView android:id="@+id/list_view"
             android:divider="@drawable/list_divider"
-            android:dividerHeight="1px"
             android:footerDividersEnabled="false"
             android:layout_weight="1"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="0dp"/>
 </LinearLayout>
