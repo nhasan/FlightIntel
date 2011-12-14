@@ -124,7 +124,7 @@ public final class DataUtils {
             return "Airforce owned";
         } else if ( ownership.equals( "MN" ) ) {
             return "Navy Owned";
-        } else if ( ownership.equals( "MA" ) ) {
+        } else if ( ownership.equals( "MR" ) ) {
             return "Army owned";
         } else {
             return "Unknown ownership";
