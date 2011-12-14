@@ -293,6 +293,7 @@ public class DatabaseManager {
         public static final String AUTOMATIC_VOICE_IDENT = "AUTOMATIC_VOICE_IDENT";
         public static final String TACAN_CHANNEL = "TACAN_CHANNEL";
         public static final String NAVAID_FREQUENCY = "NAVAID_FREQUENCY";
+        public static final String FANMARKER_TYPE = "FANMARKER_TYPE";
         public static final String PROTECTED_FREQUENCY_ALTITUDE = "PROTECTED_FREQUENCY_ALTITUDE";
     }
 
@@ -362,6 +363,18 @@ public class DatabaseManager {
         public static final String COMM_OUTLET_FREQS = "COMM_OUTLET_FREQS";
         public static final String FSS_IDENT = "FSS_IDENT";
         public static final String FSS_NAME = "FSS_NAME";
+    }
+
+    public static final class Wxl implements BaseColumns {
+        public static final String TABLE_NAME = "wxl";
+        public static final String LOCATION_ID = "LOCATION_ID";
+        public static final String LOC_LATITUDE_DEGREES = "LOC_LATITUDE_DEGREES";
+        public static final String LOC_LONGITUDE_DEGREES = "LOC_LONGITUDE_DEGREES";
+        public static final String ASSOC_CITY = "ASSOC_CITY";
+        public static final String ASSOC_STATE = "ASSOC_STATE";
+        public static final String LOC_ELEVATION_FEET = "LOC_ELEVATION_FEET";
+        public static final String LOC_ELEVATION_ACCURACY = "LOC_ELEVATION_ACCURACY";
+        public static final String WX_SERVICE_TYPES = "WX_SERVICE_TYPES";
     }
 
     public static final class Catalog implements BaseColumns {
