@@ -28,15 +28,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableLayout.LayoutParams;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -52,6 +48,7 @@ public class NavaidsActivity extends ActivityBase {
             Nav1.NAVAID_TYPE,
             Nav1.NAVAID_NAME,
             Nav1.NAVAID_FREQUENCY,
+            Nav1.TACAN_CHANNEL,
             "RADIAL",
             "DISTANCE"
     };
@@ -71,6 +68,7 @@ public class NavaidsActivity extends ActivityBase {
         public String NAVAID_TYPE;
         public String NAVAID_NAME;
         public String NAVAID_FREQ;
+        public String TACAN_CHANNEL;
         public int RADIAL;
         public float DISTANCE;
         public int RANGE;
@@ -81,6 +79,7 @@ public class NavaidsActivity extends ActivityBase {
             NAVAID_TYPE= c.getString( c.getColumnIndex( Nav1.NAVAID_TYPE ) );
             NAVAID_NAME = c.getString( c.getColumnIndex( Nav1.NAVAID_NAME ) );
             NAVAID_FREQ = c.getString( c.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
+            TACAN_CHANNEL = c.getString( c.getColumnIndex( Nav1.TACAN_CHANNEL ) );
 
             int var = c.getInt( c.getColumnIndex( Nav1.MAGNETIC_VARIATION_DEGREES ) );
             String dir = c.getString( c.getColumnIndex(
@@ -181,6 +180,7 @@ public class NavaidsActivity extends ActivityBase {
                                     .add( navaid.NAVAID_TYPE )
                                     .add( navaid.NAVAID_NAME )
                                     .add( navaid.NAVAID_FREQ )
+                                    .add( navaid.TACAN_CHANNEL )
                                     .add( navaid.RADIAL )
                                     .add( navaid.DISTANCE );
                         } else {
@@ -189,6 +189,7 @@ public class NavaidsActivity extends ActivityBase {
                                     .add( navaid.NAVAID_TYPE )
                                     .add( navaid.NAVAID_NAME )
                                     .add( navaid.NAVAID_FREQ )
+                                    .add( navaid.TACAN_CHANNEL )
                                     .add( navaid.RADIAL )
                                     .add( navaid.DISTANCE );
                         }
@@ -231,6 +232,9 @@ public class NavaidsActivity extends ActivityBase {
                 }
                 String navaidId = vor.getString( vor.getColumnIndex( Nav1.NAVAID_ID ) );
                 String freq = vor.getString( vor.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
+                if ( freq.length() == 0 ) {
+                    freq = vor.getString( vor.getColumnIndex( Nav1.TACAN_CHANNEL ) );
+                }
                 String name = vor.getString( vor.getColumnIndex( Nav1.NAVAID_NAME ) );
                 String type = vor.getString( vor.getColumnIndex( Nav1.NAVAID_TYPE ) );
                 int radial = vor.getInt( vor.getColumnIndex( "RADIAL" ) );
@@ -271,62 +275,30 @@ public class NavaidsActivity extends ActivityBase {
         }
     }
 
-    protected void addDirectionalNavaidRow( TableLayout table, final String navaidId,
-            String name, final String type, String freq, int radial, float 
-            distance, int resid ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.simple_detail_item );
+    protected void addDirectionalNavaidRow( TableLayout table, String navaidId,
+            String name, String type, String freq, int radial, float distance, int resid ) {
+        LinearLayout row = (LinearLayout) inflate( R.layout.navaid_detail_item );
         row.setBackgroundResource( resid );
 
-        LinearLayout layout2 = new LinearLayout( this );
-        layout2.setOrientation( LinearLayout.VERTICAL );
-        LinearLayout layout3 = new LinearLayout( this );
-        layout3.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( this );
+        TextView tv = (TextView) row.findViewById( R.id.navaid_name );
         tv.setText( navaidId+"      "+DataUtils.getMorseCode( navaidId ));
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 4, 0, 4, 0 );
-        layout3.addView( tv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        tv = new TextView( this );
+        tv = (TextView) row.findViewById( R.id.navaid_freq );
         tv.setText( freq );
-        tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 4, 0, 4, 0 );
-        layout3.addView( tv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 1f ) );
-        layout2.addView( layout3, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-        LinearLayout layout4 = new LinearLayout( this );
-        layout4.setOrientation( LinearLayout.HORIZONTAL );
-        tv = new TextView( this );
+        tv = (TextView) row.findViewById( R.id.navaid_info );
         tv.setText( name+" "+type );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 4, 0, 4, 0 );
-        layout4.addView( tv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        tv = new TextView( this );
+        tv = (TextView) row.findViewById( R.id.navaid_radial );
         tv.setText( String.format( "r%03d/%.1fNM", radial, distance ) );
-        tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 4, 0, 4, 0 );
-        layout4.addView( tv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout2.addView( layout4, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-        row.addView( layout2, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        ImageView iv = new ImageView( this );
-        iv.setImageResource( R.drawable.arrow );
-        iv.setPadding( 6, 0, 4, 0 );
-        iv.setScaleType( ScaleType.CENTER );
-        row.addView( iv, new TableRow.LayoutParams(
-                TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
+
+        Intent intent = new Intent( NavaidsActivity.this, NavaidDetailsActivity.class );
+        intent.putExtra( Nav1.NAVAID_ID, navaidId );
+        intent.putExtra( Nav1.NAVAID_TYPE, type );
+        row.setTag( intent );
 
         row.setOnClickListener( new OnClickListener() {
 
             @Override
             public void onClick( View v ) {
-                Intent intent = new Intent( NavaidsActivity.this, NavaidDetailsActivity.class );
-                intent.putExtra( Nav1.NAVAID_ID, navaidId );
-                intent.putExtra( Nav1.NAVAID_TYPE, type );
+                Intent intent = (Intent) v.getTag();
                 startActivity( intent );
             }
 
@@ -336,62 +308,30 @@ public class NavaidsActivity extends ActivityBase {
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void addNonDirectionalNavaidRow( TableLayout table, final String navaidId,
-            String name, final String type, String freq, int heading,
-            float distance, int resid ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.simple_detail_item );
+    protected void addNonDirectionalNavaidRow( TableLayout table, String navaidId,
+            String name, String type, String freq, int heading, float distance, int resid ) {
+        LinearLayout row = (LinearLayout) inflate( R.layout.navaid_detail_item );
         row.setBackgroundResource( resid );
 
-        LinearLayout layout2 = new LinearLayout( this );
-        layout2.setOrientation( LinearLayout.VERTICAL );
-        LinearLayout layout3 = new LinearLayout( this );
-        layout3.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( this );
-        tv.setText( navaidId+"      "+DataUtils.getMorseCode( navaidId ) );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 4, 0, 2, 0 );
-        layout3.addView( tv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        tv = new TextView( this );
+        TextView tv = (TextView) row.findViewById( R.id.navaid_name );
+        tv.setText( navaidId+"      "+DataUtils.getMorseCode( navaidId ));
+        tv = (TextView) row.findViewById( R.id.navaid_freq );
         tv.setText( freq );
-        tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 2, 0, 4, 0 );
-        layout3.addView( tv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT, 1f ) );
-        layout2.addView( layout3, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-        LinearLayout layout4 = new LinearLayout( this );
-        layout4.setOrientation( LinearLayout.HORIZONTAL );
-        tv = new TextView( this );
+        tv = (TextView) row.findViewById( R.id.navaid_info );
         tv.setText( name+" "+type );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 4, 0, 2, 0 );
-        layout4.addView( tv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        tv = new TextView( this );
+        tv = (TextView) row.findViewById( R.id.navaid_radial );
         tv.setText( String.format( "%03d\u00B0M/%.1fNM", heading, distance ) );
-        tv.setGravity( Gravity.RIGHT );
-        tv.setPadding( 2, 0, 4, 0 );
-        layout4.addView( tv, new LinearLayout.LayoutParams( 
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout2.addView( layout4, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-        row.addView( layout2, new TableRow.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1f ) );
-        ImageView iv = new ImageView( this );
-        iv.setImageResource( R.drawable.arrow );
-        iv.setPadding( 6, 0, 4, 0 );
-        iv.setScaleType( ScaleType.CENTER );
-        row.addView( iv, new TableRow.LayoutParams(
-                TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.FILL_PARENT, 0f ) );
+
+        Intent intent = new Intent( NavaidsActivity.this, NavaidDetailsActivity.class );
+        intent.putExtra( Nav1.NAVAID_ID, navaidId );
+        intent.putExtra( Nav1.NAVAID_TYPE, type );
+        row.setTag( intent );
 
         row.setOnClickListener( new OnClickListener() {
 
             @Override
             public void onClick( View v ) {
-                Intent intent = new Intent( NavaidsActivity.this, NavaidDetailsActivity.class );
-                intent.putExtra( Nav1.NAVAID_ID, navaidId );
-                intent.putExtra( Nav1.NAVAID_TYPE, type );
+                Intent intent = (Intent) v.getTag();
                 startActivity( intent );
             }
 
