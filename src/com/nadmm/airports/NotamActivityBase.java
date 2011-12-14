@@ -39,7 +39,6 @@ import java.util.Set;
 import javax.net.ssl.HttpsURLConnection;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -50,10 +49,8 @@ import com.nadmm.airports.utils.NetworkUtils;
 
 public class NotamActivityBase extends ActivityBase {
 
-    private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
-            = new File( Environment.getExternalStorageDirectory(), 
-            "Android/data/"+DownloadActivity.class.getPackage().getName() );
-    private static final File NOTAM_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/notam" );
+    private static final File NOTAM_DIR = new File(
+            AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/notam" );
     private static final int MSEC_PER_MINUTE = 60*1000;
     private static final int NOTAM_CACHE_MAX_AGE = 5*MSEC_PER_MINUTE;
 
