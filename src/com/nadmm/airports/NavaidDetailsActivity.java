@@ -155,6 +155,11 @@ public class NavaidDetailsActivity extends ActivityBase {
         String hours = nav1.getString( nav1.getColumnIndex( Nav1.OPERATING_HOURS ) );
         addSeparator( layout );
         addRow( layout, "Operating hours", hours );
+        String type = nav1.getString( nav1.getColumnIndex( Nav1.FANMARKER_TYPE ) );
+        if ( type.length() > 0 ) {
+            addSeparator( layout );
+            addRow( layout, "Fan marker type", type );
+        }
         String voiceFeature = nav1.getString( nav1.getColumnIndex( Nav1.VOICE_FEATURE ) );
         addSeparator( layout );
         addRow( layout, "Voice feature", voiceFeature.equals( "Y" )? "Yes" : "No" );
