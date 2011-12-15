@@ -23,10 +23,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout;
-import android.widget.TableLayout.LayoutParams;
-import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.utils.DataUtils;
@@ -128,17 +125,6 @@ public class ServicesDetailsActivity extends ActivityBase {
         addSeparator( layout );
         String notamD = apt.getString( apt.getColumnIndex( Airports.NOTAM_D_AVAILABLE ) );
         addRow( layout, "NOTAM D available", notamD.equals( "Y" )? "Yes" : "No" );
-    }
-
-    protected void addPhoneRow( TableLayout table, String label, final String phone ) {
-        RelativeLayout row = (RelativeLayout) inflate( R.layout.airport_detail_item );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
-        tv.setText( label );
-        tv = (TextView) row.findViewById( R.id.item_value );
-        tv.setText( phone );
-        makeClickToCall( tv );
-        table.addView( row, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
 }
