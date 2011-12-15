@@ -993,7 +993,7 @@ while ( my $line = <APT_FILE> )
         my $use = substrim( $line,  177,  2 );
 
         # Skip the private use airports
-        next if ( $own eq "PR" );
+        next if ( $own eq "PR" && $use eq "PR" );
         next if ( $own eq "PU" && $use eq "PR" );
 
         # Store the site number for later use
