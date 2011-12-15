@@ -68,7 +68,7 @@ while ( ( $site_number, $latitude, $longitude, $tz ) = $sth->fetchrow_array )
     $sth_upd->bind_param( 1, $json->{timezoneId} );
     $sth_upd->bind_param( 2, $site_number );
     $sth_upd->execute();
-    sleep( 2 );
+    sleep( 1 );
     ++$row;
 }
 
