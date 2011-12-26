@@ -1,6 +1,10 @@
+v2.0.0 (12/26/2011)
+===================
+* METAR details display screen
+
 v1.8.2 (11/24/2011)
 ===================
-* Sow GPS NOTAMs
+* Show GPS NOTAMs
 * Fix display of long airport names in AWOS section
 * Try to handle database corruption gracefully instead of crashing
 
