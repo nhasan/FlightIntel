@@ -24,7 +24,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.TimeZone;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -33,6 +36,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -56,15 +60,37 @@ import com.nadmm.airports.DatabaseManager.Tower6;
 import com.nadmm.airports.DatabaseManager.Tower7;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.utils.WxUtils;
+import com.nadmm.airports.wx.Metar;
+import com.nadmm.airports.wx.MetarService;
 
 public class AirportDetailsActivity extends ActivityBase {
 
     private Bundle mExtras;
     private Location mLocation;
+    private BroadcastReceiver mReceiver;
+    private HashMap<String, TextView> mAwosMap;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        mAwosMap =new HashMap<String, TextView>();
+        mReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive( Context context, Intent intent ) {
+                if ( !intent.hasExtra( MetarService.RESULT ) ) {
+                    Log.d( "ACTIVITY", "METAR is not available" );
+                    return;
+                }
+
+                Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
+                Log.d( "ACTIVITY", "Got METAR for "+metar.stationId );
+                showWxInfo( metar );
+            }
+
+        };
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
@@ -72,9 +98,30 @@ public class AirportDetailsActivity extends ActivityBase {
         task.execute( siteNumber );
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction( MetarService.ACTION_GET_METAR );
+        registerReceiver( mReceiver, filter );
+        Log.d( "BCAST", "Registered receiver" );
+        //Request metar from cache in case user navigates back to this activity
+        requestMetars();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Log.d( "BCAST", "Unregistered receiver" );
+        unregisterReceiver( mReceiver );
+    }
+
     private final class AwosData implements Comparable<AwosData> {
 
-            public String SENSOR_ID;
+            public String ICAO_CODE;
+            public String SENSOR_IDENT;
             public String SENSOR_TYPE;
             public double LATITUDE;
             public double LONGITUDE;
@@ -85,7 +132,8 @@ public class AirportDetailsActivity extends ActivityBase {
             public float BEARING;
 
             public AwosData( Cursor c, float declination ) {
-                SENSOR_ID = c.getString( c.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
+                ICAO_CODE = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
+                SENSOR_IDENT = c.getString( c.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
                 SENSOR_TYPE = c.getString( c.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
                 LATITUDE = c.getDouble( c.getColumnIndex( Awos.STATION_LATTITUDE_DEGREES ) );
                 LONGITUDE = c.getDouble( c.getColumnIndex( Awos.STATION_LONGITUDE_DEGREES ) );
@@ -197,11 +245,13 @@ public class AirportDetailsActivity extends ActivityBase {
             builder = new SQLiteQueryBuilder();
             builder.setTables( Awos.TABLE_NAME+" w LEFT OUTER JOIN "+Airports.TABLE_NAME+" a"
                     +" ON w."+Awos.SITE_NUMBER+" = a."+Airports.SITE_NUMBER );
-            c = builder.query( db, new String[] { "w.*", "a."+Airports.FACILITY_NAME },
-                    selection, selectionArgs, null, null, null, null );
+            c = builder.query( db, new String[] { "w.*, a."+Airports.ICAO_CODE,
+                    "a."+Airports.FACILITY_NAME }, selection, selectionArgs,
+                    null, null, null, null );
 
             String[] columns = new String[] {
                     BaseColumns._ID,
+                    Airports.ICAO_CODE,
                     Awos.WX_SENSOR_IDENT,
                     Awos.WX_SENSOR_TYPE,
                     Awos.STATION_FREQUENCY,
@@ -230,7 +280,8 @@ public class AirportDetailsActivity extends ActivityBase {
                     if ( awos.DISTANCE <= 20 ) {
                         MatrixCursor.RowBuilder row = matrix.newRow();
                         row.add( matrix.getPosition() )
-                            .add( awos.SENSOR_ID )
+                            .add( awos.ICAO_CODE )
+                            .add( awos.SENSOR_IDENT )
                             .add( awos.SENSOR_TYPE )
                             .add( awos.FREQUENCY )
                             .add( awos.PHONE )
@@ -280,8 +331,24 @@ public class AirportDetailsActivity extends ActivityBase {
             TextView tv = (TextView) findViewById( R.id.effective_date );
             tv.setText( "Effective date: "
                     +apt.getString( apt.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
+
+            //requestMetars();
         }
 
+    }
+
+    protected void requestMetars() {
+        // Now get the METAR if already in the cache
+        String[] icaoCodes = new String[ mAwosMap.size() ];
+        mAwosMap.keySet().toArray( icaoCodes );
+        for ( String icaoCode : icaoCodes ) {
+            Intent service = new Intent( AirportDetailsActivity.this, MetarService.class );
+            service.setAction( MetarService.ACTION_GET_METAR );
+            service.putExtra( MetarService.STATION_ID, icaoCode );
+            service.putExtra( MetarService.CACHE_ONLY, true );
+            Log.d( "METAR", "Starting METAR service for "+icaoCode );
+            startService( service );
+        }
     }
 
     protected void showCommunicationsDetails( Cursor[] result ) {
@@ -478,23 +545,33 @@ public class AirportDetailsActivity extends ActivityBase {
         TextView label = (TextView) findViewById( R.id.detail_awos_label );
         TableLayout layout = (TableLayout) findViewById( R.id.detail_awos_layout );
         Cursor awos = result[ 6 ];
+
         if ( awos.moveToFirst() ) {
-            int row = 0;
             do {
-                String SENSOR_ID = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
-                String SENSOR_TYPE = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
-                String FREQUENCY = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
-                String PHONE = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
-                String NAME = awos.getString( awos.getColumnIndex( Airports.FACILITY_NAME ) );
-                float DISTANCE = awos.getFloat( awos.getColumnIndex( "DISTANCE" ) );
-                float BEARING = awos.getFloat( awos.getColumnIndex( "BEARING" ) );
-                if ( row > 0 ) {
+                String icaoCode = awos.getString( awos.getColumnIndex( Airports.ICAO_CODE ) );
+                String id = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
+                if ( icaoCode == null || icaoCode.length() == 0 ) {
+                    icaoCode = "K"+id;
+                }
+                String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+                String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
+                String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+                String name = awos.getString( awos.getColumnIndex( Airports.FACILITY_NAME ) );
+                float distance = awos.getFloat( awos.getColumnIndex( "DISTANCE" ) );
+                float bearing = awos.getFloat( awos.getColumnIndex( "BEARING" ) );
+                if ( awos.getPosition() > 0 ) {
                     addSeparator( layout );
                 }
-                addAwosRow( layout, SENSOR_ID, NAME, SENSOR_TYPE, FREQUENCY, PHONE, 
-                        DISTANCE, BEARING );
-                ++row;
+                Intent intent = new Intent( this, WxDetailActivity.class );
+                intent.putExtra( Awos.WX_SENSOR_IDENT, id );
+                intent.putExtra( MetarService.STATION_ID, icaoCode );
+                int resid = getSelectorResourceForRow( awos.getPosition(), awos.getCount() );
+                addAwosRow( layout, icaoCode, name, type, freq, phone, distance,
+                        bearing, intent, resid );
             } while ( awos.moveToNext() );
+
+            // Request the metar from cache
+            requestMetars();
         } else {
             label.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
@@ -667,26 +744,34 @@ public class AirportDetailsActivity extends ActivityBase {
     }
 
     protected void addAwosRow( TableLayout table, String id, String name, String type, 
-            String freq, String phone, float distance, float bearing ) {
+            String freq, String phone, float distance, float bearing,
+            Intent intent, int resid ) {
         LinearLayout layout = (LinearLayout) inflate( R.layout.awos_detail_item );
+        layout.setBackgroundResource( resid );
+        layout.setTag( intent );
+
         TextView tv = (TextView) layout.findViewById( R.id.awos_station_name );
+        mAwosMap.put( id, tv );
         if ( name != null && name.length() > 0 ) {
             tv.setText( id+" - "+name );
         } else {
             tv.setText( id );
         }
-        if ( freq.length() > 0 ) {
+
+        if ( freq != null && freq.length() > 0 ) {
             try {
                 tv = (TextView) layout.findViewById( R.id.awos_freq );
                 tv.setText( String.format( "%.3f", Double.valueOf( freq ) ) );
             } catch ( NumberFormatException e ) {
             }
         }
-        if ( phone.length() > 0 ) {
+
+        if ( phone != null && phone.length() > 0 ) {
             tv = (TextView) layout.findViewById( R.id.awos_phone );
             tv.setText( phone );
             makeClickToCall( tv );
         }
+
         tv = (TextView) layout.findViewById( R.id.awos_info );
         if ( distance > 1 ) {
             tv.setText( String.format( "%s, %.0fNM %s", type, distance,
@@ -694,6 +779,17 @@ public class AirportDetailsActivity extends ActivityBase {
         } else {
             tv.setText( type+", On-site" );
         }
+
+        layout.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                Intent intent = (Intent) v.getTag();
+                startActivity( intent );
+            }
+
+        } );
+
         table.addView( layout, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
@@ -742,6 +838,15 @@ public class AirportDetailsActivity extends ActivityBase {
             remark = remark.substring( index );
         }
         addBulletedRow( layout, remark );
+    }
+
+    protected void showWxInfo( Metar metar ) {
+        if ( metar.isValid ) {
+            TextView tv = mAwosMap.get( metar.stationId );
+            if ( tv != null ) {
+                WxUtils.showWxFlightCategoryIcon( tv, metar.flightCategory );
+            }
+        }
     }
 
     @Override

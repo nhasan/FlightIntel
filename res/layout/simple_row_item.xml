@@ -29,6 +29,7 @@
             android:paddingTop="0dp"
             android:paddingRight="4dp"
             android:paddingBottom="0dp"
+            android:gravity="left|center_vertical"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
@@ -38,7 +39,7 @@
             android:paddingTop="0dp"
             android:paddingRight="4dp"
             android:paddingBottom="0dp"
-            android:gravity="right"
+            android:gravity="right|center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 </LinearLayout>

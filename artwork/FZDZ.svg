@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg4472"
+   version="1.1"
+   inkscape:version="0.48.2 r9819"
+   sodipodi:docname="FZDZ.svg"
+   inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/HZ.png"
+   inkscape:export-xdpi="287.42999"
+   inkscape:export-ydpi="287.42999">
+  <defs
+     id="defs4474" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.979899"
+     inkscape:cx="242.50447"
+     inkscape:cy="542.74835"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1600"
+     inkscape:window-height="846"
+     inkscape:window-x="0"
+     inkscape:window-y="-3"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata4477">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:0.98000003999999996;fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+       id="rect2984"
+       width="250"
+       height="250.71428"
+       x="250"
+       y="351.64789"
+       inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/FZDZ.png"
+       inkscape:export-xdpi="288"
+       inkscape:export-ydpi="288" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:12;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 276.91191,496.78573 c -18.7066,-14.54502 -29.96251,-67.50162 8.12208,-80.53745 38.08459,-13.03582 68.75078,23.60742 90.34514,44.20304 21.59436,20.59563 52.26054,57.23887 90.34514,44.20305 38.08458,-13.03583 25.33952,-67.00258 6.63293,-81.5476"
+       id="path3757"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="czczc" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text3891"
+       y="453.69458"
+       x="409.47546"
+       style="font-size:256.05853271000000859px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.99999994000000003;stroke-opacity:1;font-family:FreeSerif;-inkscape-font-specification:FreeSerif"
+       xml:space="preserve"
+       transform="scale(0.99958707,1.0004131)"><tspan
+         y="453.69458"
+         x="409.47546"
+         id="tspan3893"
+         sodipodi:role="line"
+         style="stroke-width:0.99999994000000003;stroke:#000000;stroke-opacity:1">, </tspan></text>
+    <text
+       transform="scale(0.99958707,1.0004131)"
+       xml:space="preserve"
+       style="font-size:256.05853271px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.99999994;stroke-opacity:1;font-family:FreeSerif;-inkscape-font-specification:FreeSerif"
+       x="271.41861"
+       y="453.69458"
+       id="text3899"
+       sodipodi:linespacing="125%"><tspan
+         style="stroke:#000000;stroke-width:0.99999994;stroke-opacity:1"
+         sodipodi:role="line"
+         id="tspan3901"
+         x="271.41861"
+         y="453.69458">, </tspan></text>
+  </g>
+</svg>

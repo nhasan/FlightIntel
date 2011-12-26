@@ -50,6 +50,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Awos;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
@@ -264,8 +265,34 @@ public class ActivityBase extends Activity {
         }
     }
 
+    protected void showWxTitle( Cursor[] cursors ) {
+        Cursor awos = cursors[ 0 ];
+
+        if ( !awos.moveToFirst() ) {
+            return;
+        }
+
+        TextView tv = (TextView) findViewById( R.id.wx_station_name );
+        String icaoCode = awos.getString( awos.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( icaoCode == null || icaoCode.length() == 0 ) {
+            icaoCode = "K"+awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
+        }
+        String stationName = awos.getString( awos.getColumnIndex( Airports.FACILITY_NAME ) );
+        String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+        tv.setText( icaoCode+" - "+ stationName );
+        tv = (TextView) findViewById( R.id.wx_station_info );
+        String city = awos.getString( awos.getColumnIndex( Airports.ASSOC_CITY ) );
+        String state = awos.getString( awos.getColumnIndex( Airports.ASSOC_STATE ) );
+        tv.setText( type+", "+city+", "+state );
+        tv = (TextView) findViewById( R.id.wx_station_info2 );
+        int elev = awos.getInt( awos.getColumnIndex( Airports.ELEVATION_MSL ) );
+        tv.setText( String.format( "Located at %d' MSL elevation", elev ) );
+    }
+
     protected void makeClickToCall( TextView tv ) {
         if ( getPackageManager().hasSystemFeature( PackageManager.FEATURE_TELEPHONY ) ) {
+            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_phone, 0, 0, 0 );
+            tv.setCompoundDrawablePadding( convertDpToPx( 3 ) );
             tv.setOnClickListener( new OnClickListener() {
 
                 @Override
@@ -293,12 +320,32 @@ public class ActivityBase extends Activity {
     }
 
     protected void addRow( TableLayout table, String label, String text ) {
-        RelativeLayout row = (RelativeLayout) mInflater.inflate( R.layout.airport_detail_item, null );
+        RelativeLayout row = (RelativeLayout) inflate( R.layout.airport_detail_item );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( label );
         tv = (TextView) row.findViewById( R.id.item_value );
         tv.setText( text );
         table.addView( row, new TableLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addRow( LinearLayout layout, String text ) {
+        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( text );
+        tv = (TextView) row.findViewById( R.id.item_value );
+        tv.setVisibility( View.GONE );
+        layout.addView( row, new LinearLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addRow( LinearLayout layout, String label, String text ) {
+        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( label );
+        tv = (TextView) row.findViewById( R.id.item_value );
+        tv.setText( text );
+        layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
@@ -324,7 +371,7 @@ public class ActivityBase extends Activity {
 
     protected void addClickableRow( TableLayout table, String label, String value,
             final Intent intent, int resid ) {
-        LinearLayout row = (LinearLayout) mInflater.inflate( R.layout.clickable_detail_item, null );
+        LinearLayout row = (LinearLayout) inflate( R.layout.clickable_detail_item );
         row.setBackgroundResource( resid );
 
         TextView tv = (TextView) row.findViewById( R.id.item_label );
@@ -343,6 +390,17 @@ public class ActivityBase extends Activity {
         } );
 
         table.addView( row, new TableLayout.LayoutParams( 
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addPhoneRow( TableLayout table, String label, final String phone ) {
+        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( label );
+        tv = (TextView) row.findViewById( R.id.item_value );
+        tv.setText( phone );
+        makeClickToCall( tv );
+        table.addView( row, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * FlightIntel for Pilots
+ *
+ * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+ -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+    <LinearLayout android:id="@+id/wx_top_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        <include layout="@layout/wx_title_layout" />
+        <LinearLayout
+                android:orientation="horizontal"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            <TextView android:id="@+id/wx_station_phone"
+                    style="@style/TextSmall"
+                    android:singleLine="true"
+                    android:paddingBottom="2dp"
+                    android:paddingRight="12dp"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/wx_station_freq"
+                    style="@style/TextSmall"
+                    android:singleLine="true"
+                    android:drawableLeft="@drawable/ic_freq"
+                    android:drawablePadding="2dp"
+                    android:paddingBottom="2dp"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/wx_age"
+                    style="@style/TextSmall"
+                    android:padding="2dp"
+                    android:gravity="right"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+        <TextView android:id="@+id/status_msg"
+                android:gravity="center"
+                android:padding="12dp"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:layout_width="fill_parent"
+                android:layout_height="0dp" />
+        <LinearLayout android:id="@+id/wx_status_layout"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:padding="6dp"
+                android:layout_marginTop="10dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+        <LinearLayout android:id="@+id/wx_detail_layout"
+                android:paddingLeft="12dp"
+                android:paddingTop="0dp"
+                android:paddingRight="12dp"
+                android:paddingBottom="12dp"
+                android:visibility="gone"
+                android:orientation="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            <TextView android:id="@+id/wx_raw_metar_label"
+                    android:text="@string/raw_text"
+                    style="@style/TextSmall.Bold"
+                    android:padding="2dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/wx_raw_metar"
+                    android:background="@drawable/rounded_rectangle"
+                    android:layout_marginTop="2dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/wx_wind_label"
+                    android:text="@string/winds"
+                    style="@style/TextSmall.Bold"
+                    android:visibility="gone"
+                    android:padding="2dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <LinearLayout android:id="@+id/wx_wind_layout"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_rectangle"
+                    android:visibility="gone"
+                    android:layout_marginTop="2dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/wx_vis_label"
+                    android:text="@string/visibility"
+                    style="@style/TextSmall.Bold"
+                    android:visibility="gone"
+                    android:padding="2dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <LinearLayout android:id="@+id/wx_vis_layout"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_rectangle"
+                    android:visibility="gone"
+                    android:layout_marginTop="2dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/wx_weather_label"
+                    android:text="@string/weather"
+                    style="@style/TextSmall.Bold"
+                    android:padding="2dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <LinearLayout android:id="@+id/wx_weather_layout"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_rectangle"
+                    android:layout_marginTop="2dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/wx_sky_cond_label"
+                    android:text="@string/sky_condition"
+                    style="@style/TextSmall.Bold"
+                    android:visibility="gone"
+                    android:padding="2dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <LinearLayout android:id="@+id/wx_sky_cond_layout"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_rectangle"
+                    android:visibility="gone"
+                    android:layout_marginTop="2dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/wx_temp_label"
+                    android:text="@string/temperature"
+                    style="@style/TextSmall.Bold"
+                    android:visibility="gone"
+                    android:padding="2dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <LinearLayout android:id="@+id/wx_temp_layout"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_rectangle"
+                    android:visibility="gone"
+                    android:layout_marginTop="2dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/wx_pressure_label"
+                    android:text="@string/pressure"
+                    style="@style/TextSmall.Bold"
+                    android:visibility="gone"
+                    android:padding="2dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <LinearLayout android:id="@+id/wx_pressure_layout"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_rectangle"
+                    android:visibility="gone"
+                    android:layout_marginTop="2dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/wx_precip_label"
+                    android:text="@string/precipitation"
+                    style="@style/TextSmall.Bold"
+                    android:visibility="gone"
+                    android:padding="2dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <LinearLayout android:id="@+id/wx_precip_layout"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_rectangle"
+                    android:visibility="gone"
+                    android:layout_marginTop="2dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/wx_remarks_label"
+                    android:text="@string/remarks"
+                    style="@style/TextSmall.Bold"
+                    android:visibility="gone"
+                    android:padding="2dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <LinearLayout android:id="@+id/wx_remarks_layout"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_rectangle"
+                    android:visibility="gone"
+                    android:layout_marginTop="2dp"
+                    android:padding="6dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
