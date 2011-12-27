@@ -215,6 +215,14 @@
                     android:padding="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
-        </LinearLayout>
+            <TextView android:id="@+id/wx_fetch_time"
+                    style="@style/TextSmall"
+                    android:singleLine="true"
+                    android:padding="8dp"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
     </LinearLayout>
 </ScrollView>

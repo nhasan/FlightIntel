@@ -778,4 +778,7 @@ public final class DataUtils {
         }
     }
 
+    public static int metersToFeet( float meters ) {
+        return (int) (meters*3.2808);
+    }
 }

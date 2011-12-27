@@ -286,7 +286,7 @@ public class ActivityBase extends Activity {
         tv.setText( type+", "+city+", "+state );
         tv = (TextView) findViewById( R.id.wx_station_info2 );
         int elev = awos.getInt( awos.getColumnIndex( Airports.ELEVATION_MSL ) );
-        tv.setText( String.format( "Located at %d' MSL elevation", elev ) );
+        tv.setText( String.format( "Located at %d' MSL elevation (est.)", elev ) );
     }
 
     protected void makeClickToCall( TextView tv ) {

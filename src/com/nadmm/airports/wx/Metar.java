@@ -125,7 +125,7 @@ public final class Metar implements Serializable {
     public float snowInches;
     public int vertVisibilityFeet;
     public String metarType;
-    public int stationElevationMeters;
+    public float stationElevationMeters;
     public Remarks remarks;
 
     public Metar() {
@@ -149,7 +149,7 @@ public final class Metar implements Serializable {
         precip24HrInches = Float.MAX_VALUE;
         snowInches = Float.MAX_VALUE;
         vertVisibilityFeet = Integer.MAX_VALUE;
-        stationElevationMeters = Integer.MAX_VALUE;
+        stationElevationMeters = Float.MAX_VALUE;
 
         wxList = new ArrayList<WxSymbol>();
         skyConditions = new ArrayList<SkyCondition>();

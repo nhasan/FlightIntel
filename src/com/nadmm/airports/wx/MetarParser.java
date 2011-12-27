@@ -138,7 +138,7 @@ public final class MetarParser {
                 throws SAXException {
             text.append( ch, start, length );
         }
-    
+
         @Override
         public void startElement( String uri, String localName, String qName,
                 Attributes attributes ) throws SAXException {
@@ -155,7 +155,7 @@ public final class MetarParser {
                 text.delete( 0, text.length() );
             }
         }
-    
+
         @Override
         public void endElement( String uri, String localName, String qName )
                 throws SAXException {
@@ -171,6 +171,8 @@ public final class MetarParser {
                     metar.observationTime = time.toMillis( true );
                 } catch ( TimeFormatException e ) {
                 }
+            } else if ( qName.equalsIgnoreCase( "elevation_m" ) ) {
+                metar.stationElevationMeters = Float.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "temp_c" ) ) {
                 metar.tempCelsius = Float.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "dewpoint_c" ) ) {

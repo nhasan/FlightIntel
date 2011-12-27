@@ -92,7 +92,7 @@ public class WxUtils {
         return (e/es)*100;
     }
    
-    static public int getDensityAltitude( float temp, float altimHg ) {
+    static public int getDensityAltitudeFeet( float temp, float altimHg ) {
         float altimMb = (float) inchesHgToMillibar(altimHg);
         float p = altimMb/StdSeaLevelPressure;
         float t = (float)  celsiusToKelvins( temp )/celsiusToKelvins( StdSeaLevelTemp );

@@ -32,10 +32,12 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -45,6 +47,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.GuiUtils;
 import com.nadmm.airports.utils.TimeUtils;
@@ -213,8 +216,19 @@ public class WxDetailActivity extends ActivityBase {
 
         Date now = new Date();
 
+        if ( metar.stationElevationMeters < Integer.MAX_VALUE ) {
+            tv = (TextView) findViewById( R.id.wx_station_info2 );
+            tv.setText( String.format( "Located at %d' MSL elevation",
+                    DataUtils.metersToFeet( metar.stationElevationMeters ) ) );
+        }
+
         tv = (TextView) findViewById( R.id.wx_age );
-        tv.setText( TimeUtils.formatDuration( now.getTime()-metar.observationTime )+" old" );
+        long age = now.getTime()-metar.observationTime;
+        tv.setText( TimeUtils.formatDuration( age )+" old" );
+        if ( age > 60*60*1000 ) {
+            // Observation is more than an hour old
+            tv.setTextColor( Color.RED );
+        }
 
         tv = (TextView) findViewById( R.id.wx_station_info3 );
         tv.setText( metar.flightCategory+" conditions prevailing" );
@@ -332,8 +346,8 @@ public class WxDetailActivity extends ActivityBase {
             addRow( layout,"Relative humidity", String.format( "%.0f%%",
                     WxUtils.getRelativeHumidity( metar.tempCelsius, metar.dewpointCelsius ) ) );
             if ( metar.tempCelsius > WxUtils.StdSeaLevelTemp ) {
-                int denAlt = WxUtils.getDensityAltitude( metar.tempCelsius, metar.altimeterHg );
-                if ( denAlt > metar.stationElevationMeters*3.2808 ) {
+                int denAlt = WxUtils.getDensityAltitudeFeet( metar.tempCelsius, metar.altimeterHg );
+                if ( denAlt > DataUtils.metersToFeet( metar.stationElevationMeters ) ) {
                     addSeparator( layout );
                     NumberFormat decimal = NumberFormat.getNumberInstance();
                     addRow( layout, "Density altitude",
@@ -469,6 +483,11 @@ public class WxDetailActivity extends ActivityBase {
             tv.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
         }
+
+        tv = (TextView) findViewById( R.id.wx_fetch_time );
+        tv.setText( "Fetched on "
+                +DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( metar.fetchTime ) ) );
+        tv.setVisibility( View.VISIBLE );
 
         View detail = findViewById( R.id.wx_detail_layout );
         detail.setVisibility( View.VISIBLE );
