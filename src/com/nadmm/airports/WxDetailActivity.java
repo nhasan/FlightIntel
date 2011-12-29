@@ -249,9 +249,9 @@ public class WxDetailActivity extends ActivityBase {
             layout.setVisibility( View.VISIBLE );
 
             addWindRow( layout, metar );
-            if ( metar.remarks.wshft ) {
+            if ( metar.wshft ) {
                 String s = "Wind shift detected during past hour";
-                if ( metar.remarks.fropa ) {
+                if ( metar.fropa ) {
                     s += " due to frontal passage";
                 }
                 addSeparator( layout );
@@ -270,7 +270,7 @@ public class WxDetailActivity extends ActivityBase {
             tv.setVisibility( View.VISIBLE );
             layout.setVisibility( View.VISIBLE );
 
-            if ( metar.remarks.flags.contains( Flags.AutoReport ) && metar.visibilitySM == 10 ) {
+            if ( metar.flags.contains( Flags.AutoReport ) && metar.visibilitySM == 10 ) {
                 addRow( layout, "10 statute miles or more horizontal" );
             } else {
                 NumberFormat decimal = NumberFormat.getNumberInstance();
@@ -294,13 +294,6 @@ public class WxDetailActivity extends ActivityBase {
                     addSeparator( layout );
                 }
                 addWeatherRow( layout, wx, metar.flightCategory );
-                ++row;
-            }
-            if ( metar.remarks.snincr ) {
-                if ( row > 0 ) {
-                    addSeparator( layout );
-                }
-                addRow( layout, "Snow increasing rapidly" );
                 ++row;
             }
         } else {
@@ -404,10 +397,10 @@ public class WxDetailActivity extends ActivityBase {
                 addRow( layout, "3-hour tendency", String.format( "%+.2f mb",
                         metar.pressureTend3HrMb ) );
             }
-            if ( metar.remarks.presfr ) {
+            if ( metar.presfr ) {
                 addSeparator( layout );
                 addRow( layout, "Pressure falling rapidly" );
-            } if ( metar.remarks.presrr ) {
+            } if ( metar.presrr ) {
                 addSeparator( layout );
                 addRow( layout, "Pressure rising rapidly" );
             }
@@ -460,6 +453,13 @@ public class WxDetailActivity extends ActivityBase {
             addRow( layout, "Snow depth", String.format( "%.0f'", metar.snowInches ) );
             ++row;
         }
+        if ( metar.snincr ) {
+            if ( row > 0 ) {
+                addSeparator( layout );
+            }
+            addRow( layout, "Snow is increasing rapidly" );
+            ++row;
+        }
 
         if ( row > 0 ) {
             tv.setVisibility( View.VISIBLE );
@@ -473,11 +473,11 @@ public class WxDetailActivity extends ActivityBase {
         tv = (TextView) findViewById( R.id.wx_remarks_label );
         layout = (LinearLayout) findViewById( R.id.wx_remarks_layout );
         layout.removeAllViews();
-        if ( !metar.remarks.flags.isEmpty() ) {
+        if ( !metar.flags.isEmpty() ) {
             tv.setVisibility( View.VISIBLE );
             layout.setVisibility( View.VISIBLE );
 
-            for ( Flags flag : metar.remarks.flags ) {
+            for ( Flags flag : metar.flags ) {
                 addBulletedRow( layout, flag.toString() );
             }
         } else {
@@ -506,8 +506,8 @@ public class WxDetailActivity extends ActivityBase {
             if ( metar.windGustKnots < Integer.MAX_VALUE ) {
                 s.append( String.format( " gusting to %d knots", metar.windGustKnots ) );
             }
-            if ( metar.remarks.pkwndSpeed < Integer.MAX_VALUE ) {
-                s.append( String.format( ", peaking at %d knots", metar.remarks.pkwndSpeed ) );
+            if ( metar.windPeakKnots < Integer.MAX_VALUE ) {
+                s.append( String.format( ", peaking at %d knots", metar.windPeakKnots ) );
             }
         }
         return s.toString();

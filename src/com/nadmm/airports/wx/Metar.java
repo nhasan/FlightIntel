@@ -78,31 +78,6 @@ public final class Metar implements Serializable {
         };
     }
 
-    public final class Remarks implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        public EnumSet<Flags> flags;
-        public boolean presrr;
-        public boolean presfr;
-        public boolean snincr;
-        public boolean wshft;
-        public boolean fropa;
-        public int pkwndDir;
-        public int pkwndSpeed;
-
-        public Remarks() {
-            flags = EnumSet.noneOf( Flags.class );
-            presrr = false;
-            presfr = false;
-            snincr = false;
-            wshft = false;
-            fropa = false;
-            pkwndDir = Integer.MAX_VALUE;
-            pkwndSpeed = Integer.MAX_VALUE;
-        }
-    }
-
     public boolean isValid;
     public String stationId;
     public String rawText;
@@ -113,6 +88,7 @@ public final class Metar implements Serializable {
     public int windDirDegrees;
     public int windSpeedKnots;
     public int windGustKnots;
+    public int windPeakKnots;
     public float visibilitySM;
     public float altimeterHg;
     public float seaLevelPressureMb;
@@ -132,7 +108,13 @@ public final class Metar implements Serializable {
     public int vertVisibilityFeet;
     public String metarType;
     public float stationElevationMeters;
-    public Remarks remarks;
+
+    public EnumSet<Flags> flags;
+    public boolean presrr;
+    public boolean presfr;
+    public boolean snincr;
+    public boolean wshft;
+    public boolean fropa;
 
     public Metar() {
         isValid = false;
@@ -141,6 +123,7 @@ public final class Metar implements Serializable {
         windDirDegrees = Integer.MAX_VALUE;
         windSpeedKnots = Integer.MAX_VALUE;
         windGustKnots = Integer.MAX_VALUE;
+        windPeakKnots = Integer.MAX_VALUE;
         visibilitySM = Float.MAX_VALUE;
         altimeterHg = Float.MAX_VALUE;
         seaLevelPressureMb = Float.MAX_VALUE;
@@ -159,12 +142,20 @@ public final class Metar implements Serializable {
 
         wxList = new ArrayList<WxSymbol>();
         skyConditions = new ArrayList<SkyCondition>();
-        remarks = new Remarks();
+
+        flags = EnumSet.noneOf( Flags.class );
+        presrr = false;
+        presfr = false;
+        snincr = false;
+        wshft = false;
+        fropa = false;
     }
 
     public void computeFlightCategory() {
         int ceiling = 12000;
         for ( SkyCondition sky : skyConditions ) {
+            // Ceiling is defined as the lowest layer aloft reported as broken or overcast;
+            // or the vertical visibility into an indefinite ceiling
             if ( sky.name().equals( "BKN" ) 
                     || sky.name().equals( "OVC" ) 
                     || sky.name().equals( "OVX" ) ) {
@@ -180,6 +171,29 @@ public final class Metar implements Serializable {
             flightCategory = "MVFR";
         } else {
             flightCategory = "VFR";
+        }
+    }
+
+    public void setMissingFields() {
+        if ( skyConditions.isEmpty() ) {
+            // Sky condition is not available in the METAR
+            skyConditions.add( SkyCondition.create( "SKM", 0 ) );
+        }
+        if ( flightCategory == null ) {
+            computeFlightCategory();
+        }
+        if ( vertVisibilityFeet < Integer.MAX_VALUE ) {
+            // Check to see if we have an OVX layer, if not add it
+            boolean found = false;
+            for ( SkyCondition sky : skyConditions ) {
+                if ( sky.name().equals( "OVX" ) ) {
+                    found = true;
+                    break;
+                }
+            }
+            if ( !found ) {
+                skyConditions.add( SkyCondition.create( "OVX", vertVisibilityFeet ) );
+            }
         }
     }
 

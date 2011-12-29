@@ -41,6 +41,7 @@ public final class MetarParser {
 
     public void parse( File xml, Metar metar ) {
         try {
+            metar.fetchTime = xml.lastModified();
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             XMLReader xmlReader = parser.getXMLReader();
@@ -49,17 +50,6 @@ public final class MetarParser {
             InputSource input = new InputSource( new FileReader( xml ) );
 
             xmlReader.parse( input );
-
-            if ( metar.isValid ) {
-                metar.fetchTime = xml.lastModified();
-                if ( metar.skyConditions.isEmpty() ) {
-                    // Sky condition is not available in the METAR
-                    metar.skyConditions.add( SkyCondition.create( "SKM", 0 ) );
-                }
-                if ( metar.flightCategory == null ) {
-                    metar.computeFlightCategory();
-                }
-            }
         } catch ( Exception e ) {
         }
     }
@@ -78,7 +68,7 @@ public final class MetarParser {
                 WxSymbol wx = null;
                 for  ( String name : names  ) {
                     if ( group.substring( offset ).startsWith( name ) ) {
-                        wx =WxSymbol.get( name );
+                        wx = WxSymbol.get( name );
                         if ( intensity.length() > 0 ) {
                             wx.setIntensity( intensity );
                             intensity = "";
@@ -108,24 +98,23 @@ public final class MetarParser {
         while ( index < rmks.length ) {
             String rmk = rmks[ index++ ];
             if ( rmk.equals( "PRESRR" ) ) {
-                metar.remarks.presrr = true;
+                metar.presrr = true;
             } else if ( rmk.equals( "PRESFR" ) ) {
-                metar.remarks.presfr = true;
+                metar.presfr = true;
             } else if ( rmk.equals( "SNINCR" ) ) {
-                metar.remarks.snincr = true;
+                metar.snincr = true;
             } else if ( rmk.equals( "WSHFT" ) ) {
-                metar.remarks.wshft = true;
+                metar.wshft = true;
             } else if ( rmk.equals( "FROPA" ) ) {
-                metar.remarks.fropa = true;
+                metar.fropa = true;
             } else if ( rmk.equals( "PNO" ) ) {
-                metar.remarks.flags.add( Flags.RainSensorOff );
+                metar.flags.add( Flags.RainSensorOff );
             } else if ( rmk.equals( "PK" ) ) {
                 rmk = rmks[ index++ ];
                 if ( rmk.equals( "WND" ) ) {
                     rmk = rmks[ index++ ];
-                    metar.remarks.pkwndDir = Integer.valueOf( rmk.substring( 0, 3 ) );
-                    metar.remarks.pkwndSpeed = Integer.valueOf(
-                            rmk.substring( 3, rmk.indexOf( '/' ) ) );
+                    String speed = rmk.substring( 3, rmk.indexOf( '/' ) );
+                    metar.windPeakKnots = Integer.valueOf( speed );
                 }
             }
         }
@@ -198,31 +187,31 @@ public final class MetarParser {
                 metar.seaLevelPressureMb = Float.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "corrected" ) ) {
                 if ( text.toString().equalsIgnoreCase( "true" ) ) {
-                    metar.remarks.flags.add( Flags.Corrected ) ;
+                    metar.flags.add( Flags.Corrected ) ;
                 }
             } else if ( qName.equalsIgnoreCase( "auto_station" ) ) {
                 if ( text.toString().equalsIgnoreCase( "true" ) ) {
-                    metar.remarks.flags.add( Flags.AutoStation ) ;
+                    metar.flags.add( Flags.AutoStation ) ;
                 }
             } else if ( qName.equalsIgnoreCase( "auto" ) ) {
                 if ( text.toString().equalsIgnoreCase( "true" ) ) {
-                    metar.remarks.flags.add( Flags.AutoReport ) ;
+                    metar.flags.add( Flags.AutoReport ) ;
                 }
             } else if ( qName.equalsIgnoreCase( "maintenance_indicator_on" ) ) {
                 if ( text.toString().equalsIgnoreCase( "true" ) ) {
-                    metar.remarks.flags.add( Flags.MaintenanceIndicatorOn ) ;
+                    metar.flags.add( Flags.MaintenanceIndicatorOn ) ;
                 }
             } else if ( qName.equalsIgnoreCase( "present_weather_sensor_off" ) ) {
                 if ( text.toString().equalsIgnoreCase( "true" ) ) {
-                    metar.remarks.flags.add( Flags.PresentWeatherSensorOff ) ;
+                    metar.flags.add( Flags.PresentWeatherSensorOff ) ;
                 }
             } else if ( qName.equalsIgnoreCase( "lightning_sensor_off" ) ) {
                 if ( text.toString().equalsIgnoreCase( "true" ) ) {
-                    metar.remarks.flags.add( Flags.LightningSensorOff ) ;
+                    metar.flags.add( Flags.LightningSensorOff ) ;
                 }
             } else if ( qName.equalsIgnoreCase( "freezing_rain_sensor_off" ) ) {
                 if ( text.toString().equalsIgnoreCase( "true" ) ) {
-                    metar.remarks.flags.add( Flags.FreezingRainSensorOff ) ;
+                    metar.flags.add( Flags.FreezingRainSensorOff ) ;
                 }
             } else if ( qName.equalsIgnoreCase( "wx_string" ) ) {
                 parseWxGroups( metar, text.toString() );
@@ -254,6 +243,7 @@ public final class MetarParser {
                 metar.metarType = text.toString();
             } else if ( qName.equalsIgnoreCase( "metar" ) ) {
                 metar.isValid = true;
+                metar.setMissingFields();
             }
         }
     }
