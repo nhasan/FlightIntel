@@ -37,4 +37,10 @@ public class NetworkUtils {
         return true;
     }
 
+    public static boolean isConnectedToWifi( Context context ) {
+        ConnectivityManager connMan = (ConnectivityManager) context.getSystemService( 
+                Context.CONNECTIVITY_SERVICE );
+        NetworkInfo network = connMan.getActiveNetworkInfo();
+        return ( network.getType() == ConnectivityManager.TYPE_WIFI );
+    }
 }

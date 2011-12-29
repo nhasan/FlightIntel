@@ -52,8 +52,6 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -73,9 +71,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -207,10 +205,7 @@ public final class DownloadActivity extends ListActivity {
             return;
         }
 
-        ConnectivityManager connMan = (ConnectivityManager) getSystemService( 
-                Context.CONNECTIVITY_SERVICE );
-        NetworkInfo network = connMan.getActiveNetworkInfo();
-        if ( network.getType() != ConnectivityManager.TYPE_WIFI ) {
+        if ( !NetworkUtils.isConnectedToWifi( this ) ) {
             AlertDialog.Builder builder = new AlertDialog.Builder( this );
             builder.setMessage( "You are not connected to a wifi network.\n"
                     +"Continue download?" )
