@@ -52,34 +52,45 @@ public abstract class SkyCondition implements Serializable {
     static public SkyCondition create( String name, int cloudBase ) {
         SkyCondition sky = null;
 
-        if ( name.equalsIgnoreCase( "FEW" ) ) {
+        if ( name.equalsIgnoreCase( "CLR" ) ) {
+            sky = new SkyCondition( name, 0 ) {
+                private static final long serialVersionUID = 1L;
+    
+                @Override
+                public String toString() {
+                    return String.format( "Sky clear below 12,000 ft AGL" );
+                }
+    
+                public int getDrawable() {
+                    return R.drawable.clr;
+                }
+            };
+        } else if ( name.equalsIgnoreCase( "SKC" ) ) {
+            sky = new SkyCondition( name, 0 ) {
+                private static final long serialVersionUID = 1L;
+    
+                @Override
+                public String toString() {
+                    return "Sky clear";
+                }
+    
+                public int getDrawable() {
+                    return R.drawable.skc;
+                }
+            };
+        } else if ( name.equalsIgnoreCase( "FEW" ) ) {
             sky = new SkyCondition( name, cloudBase ) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
                 public String toString() {
                     NumberFormat decimal = NumberFormat.getNumberInstance();
-                    return String.format( "Few clouds at %s ft",
+                    return String.format( "Few clouds at %s ft AGL",
                             decimal.format( mCloudBaseAGL ) );
                 }
 
                 public int getDrawable() {
                     return R.drawable.few;
-                }
-            };
-        } else if ( name.equalsIgnoreCase( "BKN" ) ) {
-            sky = new SkyCondition( name, cloudBase ) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public String toString() {
-                    NumberFormat decimal = NumberFormat.getNumberInstance();
-                    return String.format( "Broken clouds at %s ft",
-                            decimal.format( mCloudBaseAGL ) );
-                }
-
-                public int getDrawable() {
-                    return R.drawable.bkn;
                 }
             };
         } else if ( name.equalsIgnoreCase( "SCT" ) ) {
@@ -89,12 +100,27 @@ public abstract class SkyCondition implements Serializable {
                 @Override
                 public String toString() {
                     NumberFormat decimal = NumberFormat.getNumberInstance();
-                    return String.format( "Scattered clouds at %s ft",
+                    return String.format( "Scattered clouds at %s ft AGL",
                             decimal.format( mCloudBaseAGL ) );
                 }
 
                 public int getDrawable() {
                     return R.drawable.sct;
+                }
+            };
+        } else if ( name.equalsIgnoreCase( "BKN" ) ) {
+            sky = new SkyCondition( name, cloudBase ) {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public String toString() {
+                    NumberFormat decimal = NumberFormat.getNumberInstance();
+                    return String.format( "Broken clouds at %s ft AGL",
+                            decimal.format( mCloudBaseAGL ) );
+                }
+
+                public int getDrawable() {
+                    return R.drawable.bkn;
                 }
             };
         } else if ( name.equalsIgnoreCase( "OVC" ) ) {
@@ -104,7 +130,7 @@ public abstract class SkyCondition implements Serializable {
                 @Override
                 public String toString() {
                     NumberFormat decimal = NumberFormat.getNumberInstance();
-                    return String.format( "Overcast clouds at %s ft",
+                    return String.format( "Overcast clouds at %s ft AGL",
                             decimal.format( mCloudBaseAGL ) );
                 }
 
@@ -118,37 +144,26 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    return String.format( "Overcast with indefinite ceiling" );
+                    NumberFormat decimal = NumberFormat.getNumberInstance();
+                    return String.format( "Indefinite ceiling at %s ft AGL",
+                            decimal.format( mCloudBaseAGL ) );
                 }
 
                 public int getDrawable() {
                     return R.drawable.ovx;
                 }
             };
-        } else if ( name.equalsIgnoreCase( "CLR" ) ) {
+        } else if ( name.equalsIgnoreCase( "SKM" ) ) {
             sky = new SkyCondition( name, cloudBase ) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
                 public String toString() {
-                    return String.format( "Sky clear below 12,000 ft AGL" );
+                    return String.format( "Sky condition is missing" );
                 }
 
                 public int getDrawable() {
-                    return R.drawable.skc;
-                }
-            };
-        } else if ( name.equalsIgnoreCase( "SKC" ) ) {
-            sky = new SkyCondition( name, cloudBase ) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public String toString() {
-                    return "Sky clear";
-                }
-
-                public int getDrawable() {
-                    return R.drawable.skc;
+                    return R.drawable.skm;
                 }
             };
         }

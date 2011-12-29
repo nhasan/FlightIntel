@@ -732,21 +732,6 @@ public abstract class WxSymbol implements Serializable, Cloneable {
             }
         };
 
-        new WxSymbol( "+FC" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.fc;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Tornado";
-            }
-        };
-
         new WxSymbol( "FC" ) {
 
             private static final long serialVersionUID = 1L;
@@ -759,6 +744,17 @@ public abstract class WxSymbol implements Serializable, Cloneable {
             @Override
             protected String getDescription() {
                 return "Funnel clouds";
+            }
+
+            @Override
+            public String toString() {
+                String desc;
+                if ( mIntensity.equals( "+" ) ) {
+                    desc = "Tornado";
+                } else {
+                    desc = "Funnel clouds";
+                }
+                return desc;
             }
         };
 

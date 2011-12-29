@@ -14,10 +14,10 @@
    id="svg4472"
    version="1.1"
    inkscape:version="0.48.2 r9819"
-   sodipodi:docname="template.svg"
-   inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/HZ.png"
-   inkscape:export-xdpi="287.42999"
-   inkscape:export-ydpi="287.42999">
+   sodipodi:docname="CLR.svg"
+   inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/CLR.png"
+   inkscape:export-xdpi="288"
+   inkscape:export-ydpi="288">
   <defs
      id="defs4474">
     <marker
@@ -57,8 +57,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="156.94779"
-     inkscape:cy="129.58932"
+     inkscape:cx="101.35855"
+     inkscape:cy="91.703237"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -79,7 +79,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -87,5 +87,13 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-250.00001,-352.36217)" />
+     transform="translate(-250.00001,-352.36217)">
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:24;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect2989"
+       width="190.91882"
+       height="190.91882"
+       x="279.54059"
+       y="381.90274" />
+  </g>
 </svg>

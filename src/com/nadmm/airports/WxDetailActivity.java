@@ -32,12 +32,12 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -81,6 +81,7 @@ public class WxDetailActivity extends ActivityBase {
 
         };
 
+        
         Intent intent = getIntent();
         String icaoCode = intent.getStringExtra( MetarService.STATION_ID );
         String sensorId = intent.getStringExtra( Awos.WX_SENSOR_IDENT );
@@ -174,6 +175,8 @@ public class WxDetailActivity extends ActivityBase {
             return;
         }
 
+        AnimationDrawable refresh = (AnimationDrawable) iv.getDrawable();
+
         iv.setOnClickListener( new OnClickListener() {
 
             @Override
@@ -190,14 +193,14 @@ public class WxDetailActivity extends ActivityBase {
 
         } );
 
-        AnimationDrawable refresh = (AnimationDrawable) iv.getDrawable();
-        refresh.stop();
-
         LinearLayout layout;
         TextView tv;
 
+        View detail = findViewById( R.id.wx_detail_layout );
+
         tv =(TextView) findViewById( R.id.status_msg );
         layout = (LinearLayout) findViewById( R.id.wx_status_layout );
+        layout.removeAllViews();
         if ( !intent.hasExtra( MetarService.RESULT ) ) {
             tv.setVisibility( View.VISIBLE );
             layout.setVisibility( View.VISIBLE );
@@ -206,10 +209,14 @@ public class WxDetailActivity extends ActivityBase {
             addBulletedRow( layout, "Network connection is not available" );
             addBulletedRow( layout, "ADDS does not publish METAR for this station" );
             addBulletedRow( layout, "Station has not updated the METAR for more than 3 hours" );
+            detail.setVisibility( View.GONE );
+            refresh.stop();
             return;
         } else {
+            tv.setText( "" );
             tv.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
+            detail.setVisibility( View.VISIBLE );
         }
 
         Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
@@ -225,14 +232,10 @@ public class WxDetailActivity extends ActivityBase {
         tv = (TextView) findViewById( R.id.wx_age );
         long age = now.getTime()-metar.observationTime;
         tv.setText( TimeUtils.formatDuration( age )+" old" );
-        if ( age > 60*60*1000 ) {
-            // Observation is more than an hour old
-            tv.setTextColor( Color.RED );
-        }
 
         tv = (TextView) findViewById( R.id.wx_station_info3 );
         tv.setText( metar.flightCategory+" conditions prevailing" );
-        WxUtils.showWxFlightCategoryIcon( tv, metar.flightCategory );
+        WxUtils.setFlightCategoryDrawable( tv, metar );
 
         // Raw Text
         tv = (TextView) findViewById( R.id.wx_raw_metar );
@@ -271,16 +274,15 @@ public class WxDetailActivity extends ActivityBase {
             if ( metar.remarks.flags.contains( Flags.AutoReport ) && metar.visibilitySM == 10 ) {
                 addRow( layout, "10 statute miles or more horizontal" );
             } else {
-                addRow( layout, String.format( "%.1f statute miles horizontal",
-                        metar.visibilitySM ) );
-            }
-            if ( metar.vertVisibilityFeet < Integer.MAX_VALUE ) {
-                addSeparator( layout );
-                addRow( layout, String.format( "%d ft vertical", metar.vertVisibilityFeet ) );
+                NumberFormat decimal = NumberFormat.getNumberInstance();
+                decimal.setMaximumFractionDigits( 2 );
+                decimal.setMinimumFractionDigits( 0 );
+                addRow( layout, String.format( "%s statute miles horizontal",
+                        decimal.format( metar.visibilitySM ) ) );
             }
         } else {
-            tv.setVisibility( View.VISIBLE );
-            layout.setVisibility( View.VISIBLE );
+            tv.setVisibility( View.GONE );
+            layout.setVisibility( View.GONE );
         }
 
         // Weather
@@ -392,7 +394,7 @@ public class WxDetailActivity extends ActivityBase {
             layout.setVisibility( View.VISIBLE );
 
             addRow( layout, "Altimeter", String.format( "%.2f' Hg (%.1f mb)",
-                    metar.altimeterHg, WxUtils.inchesHgToMillibar( metar.altimeterHg ) ) );
+                    metar.altimeterHg, WxUtils.hgToMillibar( metar.altimeterHg ) ) );
             if ( metar.seaLevelPressureMb < Float.MAX_VALUE ) {
                 addSeparator( layout );
                 addRow( layout, "Sea level pressure",
@@ -400,7 +402,7 @@ public class WxDetailActivity extends ActivityBase {
             }
             if ( metar.pressureTend3HrMb < Float.MAX_VALUE ) {
                 addSeparator( layout );
-                addRow( layout, "3-hour tendency", String.format( "%.2f mb",
+                addRow( layout, "3-hour tendency", String.format( "%+.2f mb",
                         metar.pressureTend3HrMb ) );
             }
             if ( metar.remarks.presfr ) {
@@ -411,8 +413,8 @@ public class WxDetailActivity extends ActivityBase {
                 addRow( layout, "Pressure rising rapidly" );
             }
         } else {
-            tv.setVisibility( View.VISIBLE );
-            layout.setVisibility( View.VISIBLE );
+            tv.setVisibility( View.GONE );
+            layout.setVisibility( View.GONE );
         }
 
         // Precipitation
@@ -489,8 +491,7 @@ public class WxDetailActivity extends ActivityBase {
                 +DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( metar.fetchTime ) ) );
         tv.setVisibility( View.VISIBLE );
 
-        View detail = findViewById( R.id.wx_detail_layout );
-        detail.setVisibility( View.VISIBLE );
+        refresh.stop();
     }
 
     protected String getWindsDescription( Metar metar ) {
@@ -542,10 +543,8 @@ public class WxDetailActivity extends ActivityBase {
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( sky.toString() );
 
-        Drawable d = WxUtils.colorizeFlightCategoryDrawable( flightCategory, getResources(),
-                sky.getDrawable() );
-        tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
-        tv.setCompoundDrawablePadding( convertDpToPx( 6 ) );
+        Log.d( sky.toString(), String.format( "%08x", sky.getDrawable() ) );
+        WxUtils.setColorizedDrawable( tv, flightCategory, sky.getDrawable() );
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
@@ -556,10 +555,7 @@ public class WxDetailActivity extends ActivityBase {
         tv.setText( wx.toString() );
 
         if ( wx.getDrawable() > 0 ) {
-            Drawable d = WxUtils.colorizeFlightCategoryDrawable( flightCategory, getResources(),
-                    wx.getDrawable() );
-            tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
-            tv.setCompoundDrawablePadding( convertDpToPx( 6 ) );
+            WxUtils.setColorizedDrawable( tv, flightCategory, wx.getDrawable() );
         }
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );

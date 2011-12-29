@@ -26,6 +26,8 @@ import android.graphics.drawable.Drawable;
 import android.widget.TextView;
 
 import com.nadmm.airports.R;
+import com.nadmm.airports.wx.Metar;
+import com.nadmm.airports.wx.SkyCondition;
 
 public class WxUtils {
 
@@ -46,28 +48,25 @@ public class WxUtils {
         return color;
     }
 
-    static public void showWxFlightCategoryIcon( TextView tv, String flightCategory ) {
+    static public void setColorizedDrawable( TextView tv, String flightCategory, int resid ) {
         if ( flightCategory != null ) {
-            Resources res = tv.getResources();
             // Get a mutable copy of the drawable so each can be set to a different color
-            Drawable d = res.getDrawable( R.drawable.circle ).mutate();
+            Resources res = tv.getResources();
+            Drawable d = res.getDrawable( resid ).mutate();
             int color = getFlightCategoryColor( flightCategory );
             d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
             tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
-            tv.setCompoundDrawablePadding( 5 );
+            tv.setCompoundDrawablePadding( (int) (res.getDisplayMetrics().density*6+0.5) );
         }
     }
 
-    static public Drawable colorizeFlightCategoryDrawable( String flightCategory,
-            Resources res, int resid ) {
-        // Get a mutable copy of the drawable so each can be set to a different color
-        Drawable d = res.getDrawable( resid ).mutate();
-        if ( flightCategory != null ) {
-            int color = getFlightCategoryColor( flightCategory );
-            d.setColorFilter( color, PorterDuff.Mode.SRC_IN );
-        }
+    static public void setFlightCategoryDrawable( TextView tv, Metar metar ) {
+        setColorizedDrawable( tv, metar.flightCategory, R.drawable.circle );
+    }
 
-        return d;
+    static public void setColorizedCeilingDrawable( TextView tv, Metar metar ) {
+        SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
+        setColorizedDrawable( tv, metar.flightCategory, sky.getDrawable() );
     }
 
     static public float celsiusToFahrenheit( float degrees ) {
@@ -82,7 +81,7 @@ public class WxUtils {
         return (float) (degrees+273.15);
     }
 
-    static public float inchesHgToMillibar( float altimHg ) {
+    static public float hgToMillibar( float altimHg ) {
         return (float) (33.8639*altimHg);
     }
 
@@ -93,7 +92,7 @@ public class WxUtils {
     }
    
     static public int getDensityAltitudeFeet( float temp, float altimHg ) {
-        float altimMb = (float) inchesHgToMillibar(altimHg);
+        float altimMb = (float) hgToMillibar(altimHg);
         float p = altimMb/StdSeaLevelPressure;
         float t = (float)  celsiusToKelvins( temp )/celsiusToKelvins( StdSeaLevelTemp );
         return (int) ( 145442.156*( 1-Math.pow( p/t, 0.235 ) ) );

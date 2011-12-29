@@ -844,7 +844,7 @@ public class AirportDetailsActivity extends ActivityBase {
         if ( metar.isValid ) {
             TextView tv = mAwosMap.get( metar.stationId );
             if ( tv != null ) {
-                WxUtils.showWxFlightCategoryIcon( tv, metar.flightCategory );
+                WxUtils.setColorizedCeilingDrawable( tv, metar );
             }
         }
     }

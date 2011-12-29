@@ -41,55 +41,57 @@ public final class MetarParser {
 
     public void parse( File xml, Metar metar ) {
         try {
-            InputSource input = new InputSource( new FileReader( xml ) );
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             XMLReader xmlReader = parser.getXMLReader();
             MetarHandler handler = new MetarHandler( metar );
             xmlReader.setContentHandler( handler );
+            InputSource input = new InputSource( new FileReader( xml ) );
+
             xmlReader.parse( input );
-            metar.fetchTime = xml.lastModified();
+
+            if ( metar.isValid ) {
+                metar.fetchTime = xml.lastModified();
+                if ( metar.skyConditions.isEmpty() ) {
+                    // Sky condition is not available in the METAR
+                    metar.skyConditions.add( SkyCondition.create( "SKM", 0 ) );
+                }
+            }
         } catch ( Exception e ) {
         }
     }
 
     protected void parseWxGroups( Metar metar, String wxString ) {
         String[] groups = wxString.split( "\\s+" );
+        ArrayList<String> names = WxSymbol.getNames();
         for ( String group : groups ) {
             int offset = 0;
+            String intensity = "";
+            if ( group.charAt( offset ) == '+' || group.charAt( offset ) == '-' ) {
+                intensity = group.substring( offset, offset+1 );
+                ++offset;
+            }
             while ( offset < group.length() ) {
-                WxSymbol wx = findWxSymbol( group.substring( offset ) );
-                if ( wx == null ) {
-                    if ( group.charAt( offset ) == '+' || group.charAt( offset ) == '-' ) {
-                        String intensity = group.substring( offset, 1 );
-                        ++offset;
-                        wx = findWxSymbol( group.substring( offset ) );
+                WxSymbol wx = null;
+                for  ( String name : names  ) {
+                    if ( group.substring( offset ).startsWith( name ) ) {
+                        wx =WxSymbol.get( name );
                         if ( intensity.length() > 0 ) {
                             wx.setIntensity( intensity );
                             intensity = "";
                         }
+                        metar.wxList.add( wx );
+                        offset += wx.getName().length();
+                        break;
                     }
                 }
 
                 if ( wx == null ) {
-                    // Could not recognize this symbol so skip it
-                    break;
+                    // No match found, skip to next character and try again
+                    ++offset;
                 }
-
-                metar.wxList.add( wx );
-                offset += wx.getName().length();
             }
         }
-    }
-
-    protected WxSymbol findWxSymbol( String group ) {
-        ArrayList<String> names = WxSymbol.getNames();
-        for  ( String name : names  ) {
-            if ( group.startsWith( name ) ) {
-                return WxSymbol.get( name );
-            }
-        }
-        return null;
     }
 
     protected void parseRemarks( Metar metar ) {
@@ -112,6 +114,8 @@ public final class MetarParser {
                 metar.remarks.wshft = true;
             } else if ( rmk.equals( "FROPA" ) ) {
                 metar.remarks.fropa = true;
+            } else if ( rmk.equals( "PNO" ) ) {
+                metar.remarks.flags.add( Flags.RainSensorOff );
             } else if ( rmk.equals( "PK" ) ) {
                 rmk = rmks[ index++ ];
                 if ( rmk.equals( "WND" ) ) {

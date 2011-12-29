@@ -64,6 +64,12 @@ public final class Metar implements Serializable {
                 return "Lightning detection sensor is not operating";
             }
         },
+        RainSensorOff {
+            @Override
+            public String toString() {
+                return "Rain sensor is not operating";
+            }
+        },
         FreezingRainSensorOff {
             @Override
             public String toString() {
