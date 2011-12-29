@@ -37,7 +37,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -533,6 +532,7 @@ public class WxDetailActivity extends ActivityBase {
             tv.setCompoundDrawablesWithIntrinsicBounds( wind, null, null, null );
             tv.setCompoundDrawablePadding( convertDpToPx( 6 ) );
         }
+
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
@@ -542,9 +542,8 @@ public class WxDetailActivity extends ActivityBase {
         LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( sky.toString() );
-
-        Log.d( sky.toString(), String.format( "%08x", sky.getDrawable() ) );
         WxUtils.setColorizedDrawable( tv, flightCategory, sky.getDrawable() );
+
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
@@ -553,10 +552,8 @@ public class WxDetailActivity extends ActivityBase {
         LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( wx.toString() );
+        WxUtils.setColorizedDrawable( tv, flightCategory, wx.getDrawable() );
 
-        if ( wx.getDrawable() > 0 ) {
-            WxUtils.setColorizedDrawable( tv, flightCategory, wx.getDrawable() );
-        }
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
