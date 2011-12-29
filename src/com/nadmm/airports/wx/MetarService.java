@@ -94,9 +94,6 @@ public class MetarService extends IntentService {
 
         if ( xml.exists() ) {
             mParser.parse( xml, metar );
-            if ( !metar.isValid ) {
-                xml.delete();
-            }
         }
 
         // Broadcast the result
