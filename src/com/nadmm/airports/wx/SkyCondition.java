@@ -45,6 +45,10 @@ public abstract class SkyCondition implements Serializable {
         return mName;
     }
 
+    public int getCloudBase() {
+        return mCloudBaseAGL;
+    }
+
     static public SkyCondition create( String name, int cloudBase ) {
         SkyCondition sky = null;
 

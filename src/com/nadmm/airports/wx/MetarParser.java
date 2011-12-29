@@ -56,6 +56,9 @@ public final class MetarParser {
                     // Sky condition is not available in the METAR
                     metar.skyConditions.add( SkyCondition.create( "SKM", 0 ) );
                 }
+                if ( metar.flightCategory == null ) {
+                    metar.computeFlightCategory();
+                }
             }
         } catch ( Exception e ) {
         }

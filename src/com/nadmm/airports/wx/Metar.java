@@ -162,4 +162,25 @@ public final class Metar implements Serializable {
         remarks = new Remarks();
     }
 
+    public void computeFlightCategory() {
+        int ceiling = 12000;
+        for ( SkyCondition sky : skyConditions ) {
+            if ( sky.name().equals( "BKN" ) 
+                    || sky.name().equals( "OVC" ) 
+                    || sky.name().equals( "OVX" ) ) {
+                ceiling =sky.getCloudBase();
+                break;
+            }
+        }
+        if ( ceiling < 500 || visibilitySM < 1.0 ) {
+            flightCategory = "LIFR";
+        } else if ( ceiling < 1000 || visibilitySM < 3.0 ) {
+            flightCategory = "IFR";
+        } else if ( ceiling <= 3000 || visibilitySM <= 5.0 ) {
+            flightCategory = "MVFR";
+        } else {
+            flightCategory = "VFR";
+        }
+    }
+
 }
