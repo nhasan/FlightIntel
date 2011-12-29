@@ -356,29 +356,29 @@ public class WxDetailActivity extends ActivityBase {
                             String.format( "%s ft", decimal.format( denAlt ) ) );
                 }
             }
-            if ( metar.minTemp6HrCentigrade < Float.MAX_VALUE ) {
-                addSeparator( layout );
-                addRow( layout, "6-hour minimum", String.format( "%.1f\u00B0C (%.0f\u00B0F)",
-                        metar.minTemp6HrCentigrade,
-                        WxUtils.celsiusToFahrenheit( metar.minTemp6HrCentigrade ) ) );
-            }
             if ( metar.maxTemp6HrCentigrade < Float.MAX_VALUE ) {
                 addSeparator( layout );
                 addRow( layout, "6-hour maximum", String.format( "%.1f\u00B0C (%.0f\u00B0F)",
                         metar.maxTemp6HrCentigrade,
                         WxUtils.celsiusToFahrenheit( metar.maxTemp6HrCentigrade ) ) );
             }
-            if ( metar.minTemp24HrCentigrade < Float.MAX_VALUE ) {
+            if ( metar.minTemp6HrCentigrade < Float.MAX_VALUE ) {
                 addSeparator( layout );
-                addRow( layout, "24-hour minimum", String.format( "%.1f\u00B0C (%.0f\u00B0F)",
-                        metar.minTemp24HrCentigrade,
-                        WxUtils.celsiusToFahrenheit( metar.minTemp24HrCentigrade ) ) );
+                addRow( layout, "6-hour minimum", String.format( "%.1f\u00B0C (%.0f\u00B0F)",
+                        metar.minTemp6HrCentigrade,
+                        WxUtils.celsiusToFahrenheit( metar.minTemp6HrCentigrade ) ) );
             }
             if ( metar.maxTemp24HrCentigrade < Float.MAX_VALUE ) {
                 addSeparator( layout );
                 addRow( layout, "24-hour maximum", String.format( "%.1f\u00B0C (%.0f\u00B0F)",
                         metar.maxTemp24HrCentigrade,
                         WxUtils.celsiusToFahrenheit( metar.maxTemp24HrCentigrade ) ) );
+            }
+            if ( metar.minTemp24HrCentigrade < Float.MAX_VALUE ) {
+                addSeparator( layout );
+                addRow( layout, "24-hour minimum", String.format( "%.1f\u00B0C (%.0f\u00B0F)",
+                        metar.minTemp24HrCentigrade,
+                        WxUtils.celsiusToFahrenheit( metar.minTemp24HrCentigrade ) ) );
             }
         } else {
             tv.setVisibility( View.GONE );
