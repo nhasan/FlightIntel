@@ -44,7 +44,7 @@
             <TextView android:id="@+id/wx_station_freq"
                     style="@style/TextSmall"
                     android:singleLine="true"
-                    android:drawableLeft="@drawable/ic_freq"
+                    android:drawableLeft="@drawable/freq"
                     android:drawablePadding="2dp"
                     android:paddingBottom="2dp"
                     android:visibility="gone"

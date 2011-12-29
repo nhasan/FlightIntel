@@ -291,7 +291,7 @@ public class ActivityBase extends Activity {
 
     protected void makeClickToCall( TextView tv ) {
         if ( getPackageManager().hasSystemFeature( PackageManager.FEATURE_TELEPHONY ) ) {
-            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_phone, 0, 0, 0 );
+            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.phone, 0, 0, 0 );
             tv.setCompoundDrawablePadding( convertDpToPx( 3 ) );
             tv.setOnClickListener( new OnClickListener() {
 
