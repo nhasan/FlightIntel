@@ -207,6 +207,7 @@ public class WxDetailActivity extends ActivityBase {
             addRow( layout, "This could be due to the following reasons:" );
             addBulletedRow( layout, "Network connection is not available" );
             addBulletedRow( layout, "ADDS does not publish METAR for this station" );
+            addBulletedRow( layout, "Station is currently out of service" );
             addBulletedRow( layout, "Station has not updated the METAR for more than 3 hours" );
             detail.setVisibility( View.GONE );
             refresh.stop();
