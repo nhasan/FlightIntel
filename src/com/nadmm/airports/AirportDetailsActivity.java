@@ -60,6 +60,7 @@ import com.nadmm.airports.DatabaseManager.Tower6;
 import com.nadmm.airports.DatabaseManager.Tower7;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.MetarService;
@@ -345,7 +346,9 @@ public class AirportDetailsActivity extends ActivityBase {
             Intent service = new Intent( AirportDetailsActivity.this, MetarService.class );
             service.setAction( MetarService.ACTION_GET_METAR );
             service.putExtra( MetarService.STATION_ID, icaoCode );
-            service.putExtra( MetarService.CACHE_ONLY, true );
+            if ( !NetworkUtils.isConnectedToWifi( this ) ) {
+                service.putExtra( MetarService.CACHE_ONLY, true );
+            }
             Log.d( "METAR", "Starting METAR service for "+icaoCode );
             startService( service );
         }
