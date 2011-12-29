@@ -778,7 +778,7 @@ public final class DataUtils {
         }
     }
 
-    public static int metersToFeet( float meters ) {
-        return (int) (meters*3.2808);
+    public static long metersToFeet( float meters ) {
+        return Math.round(meters*3.2808);
     }
 }
