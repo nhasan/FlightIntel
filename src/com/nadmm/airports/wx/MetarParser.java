@@ -68,13 +68,10 @@ public final class MetarParser {
                 WxSymbol wx = null;
                 for  ( String name : names  ) {
                     if ( group.substring( offset ).startsWith( name ) ) {
-                        wx = WxSymbol.get( name );
-                        if ( intensity.length() > 0 ) {
-                            wx.setIntensity( intensity );
-                            intensity = "";
-                        }
+                        wx = WxSymbol.get( name, intensity );
+                        intensity = "";
                         metar.wxList.add( wx );
-                        offset += wx.getName().length();
+                        offset += wx.name().length();
                         break;
                     }
                 }

@@ -43,11 +43,7 @@ public abstract class WxSymbol implements Serializable, Cloneable {
         sWxSymbolsMap.put( name, this );
     }
 
-    public void setIntensity( String intensity ) {
-        mIntensity = intensity;
-    }
-
-    public String getName() {
+    public String name() {
         return mName;
     }
 
@@ -71,11 +67,12 @@ public abstract class WxSymbol implements Serializable, Cloneable {
         return o;
     }
 
-    public static WxSymbol get( String name ) {
+    public static WxSymbol get( String name, String intensity ) {
         WxSymbol symbol = null;
         try {
             if ( sWxSymbolsMap.containsKey( name ) ) {
                 symbol = (WxSymbol) sWxSymbolsMap.get( name ).clone();
+                symbol.mIntensity = intensity;
             }
         } catch ( CloneNotSupportedException e ) {
         }
