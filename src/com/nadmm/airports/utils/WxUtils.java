@@ -31,9 +31,6 @@ import com.nadmm.airports.wx.SkyCondition;
 
 public class WxUtils {
 
-    static public final float StdSeaLevelTemp = 15;
-    static public final float StdSeaLevelPressure = (float) 1013.25;
-
     static public int getFlightCategoryColor( String flightCategory ) {
         int color = 0;
         if ( flightCategory.equals( "VFR" ) ) {
@@ -69,33 +66,74 @@ public class WxUtils {
         setColorizedDrawable( tv, metar.flightCategory, sky.getDrawable() );
     }
 
-    static public float celsiusToFahrenheit( float degrees ) {
-        return ( degrees*9/5 )+32;
+    static public float celsiusToFahrenheit( float tempCelsius ) {
+        return ( tempCelsius*9/5 )+32;
     }
 
-    static public float fahrenheitToCelsius( float degrees ) {
-        return ( degrees-32 )*5/9;
+    static public float fahrenheitToCelsius( float tempFahrenheit ) {
+        return ( tempFahrenheit-32 )*5/9;
     }
 
-    static public float celsiusToKelvins( float degrees ) {
-        return (float) (degrees+273.15);
+    static public float celsiusToKelvin( float tempCelsius ) {
+        return (float) ( tempCelsius+273.15 );
+    }
+
+    static public float kelvinToCelsius( float tempKelvin ) {
+        return (float) ( tempKelvin-273.15 );
+    }
+
+    static public float kelvinToRankine( float tempKelvin ) {
+        return (float) ( celsiusToFahrenheit( kelvinToCelsius( tempKelvin ) )+459.69 );
     }
 
     static public float hgToMillibar( float altimHg ) {
-        return (float) (33.8639*altimHg);
+        return (float) ( 33.8639*altimHg );
     }
 
-    static public float getRelativeHumidity( float temp, float dewPoint ) {
-        float e = (float) ( 6.1094*Math.exp( (17.625*dewPoint)/(dewPoint+243.04) ) );
-        float es = (float) ( 6.1094*Math.exp( (17.625*temp)/(temp+243.04) ) );
+    static public float getVirtualTemperature( float tempCelsius, float dewpointCelsius,
+            float stationPressureHg ) {
+        float tempKelvin = celsiusToKelvin( tempCelsius );
+        float eMb = getVaporPressure( dewpointCelsius );
+        float pMb = hgToMillibar( stationPressureHg );
+        return (float) ( tempKelvin/( 1-( eMb/pMb )*( 1-0.622 ) ) );
+    }
+
+    static public float getVaporPressure( float tempCelsius ) {
+        // Vapor pressure is in mb or hPa
+        return (float) ( 6.1094*Math.exp( ( 17.625*tempCelsius )/( tempCelsius+243.04 ) ) );
+    }
+
+    static public float getStationPressure( Float altimHg, float elevMeters ) {
+        // Station pressure is in inHg
+        return (float) ( altimHg*Math.pow( ( 288-0.0065*elevMeters )/288, 5.2561 ) );
+    }
+
+    static public float getRelativeHumidity( float tempCelsius, float dewPointCelsius ) {
+        float e = getVaporPressure( dewPointCelsius );
+        float es = getVaporPressure( tempCelsius );
         return (e/es)*100;
     }
-   
-    static public int getDensityAltitudeFeet( float temp, float altimHg ) {
-        float altimMb = (float) hgToMillibar(altimHg);
-        float p = altimMb/StdSeaLevelPressure;
-        float t = (float)  celsiusToKelvins( temp )/celsiusToKelvins( StdSeaLevelTemp );
-        return (int) ( 145442.156*( 1-Math.pow( p/t, 0.235 ) ) );
+
+    static public long getPressureAltitude( Metar metar ) {
+        return getPressureAltitude( metar.altimeterHg, metar.stationElevationMeters );
+    }
+
+    static public long getPressureAltitude( float altimHg, float elevMeters ) {
+        float pMb = hgToMillibar( getStationPressure( altimHg, elevMeters ) );
+        return Math.round( ( 1-Math.pow( pMb/1013.25, 0.190284 ) )*145366.45 );
+    }
+
+    static public long getDensityAltitude( Metar metar ) {
+        return getDensityAltitude( metar.tempCelsius, metar.dewpointCelsius, metar.altimeterHg,
+                metar.stationElevationMeters );
+    }
+
+    static public long getDensityAltitude( float tempCelsius, float dewpointCelsius,
+            float altimHg, float elevMeters ) {
+        float stationPressureHg = getStationPressure( altimHg, elevMeters );
+        float tvKelvin = getVirtualTemperature( tempCelsius, dewpointCelsius, stationPressureHg );
+        float tvRankine = kelvinToRankine( tvKelvin );
+        return Math.round( 145366*( 1-Math.pow( 17.326*stationPressureHg/tvRankine, 0.235 ) ) );
     }
 
 }

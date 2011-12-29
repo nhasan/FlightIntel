@@ -63,6 +63,7 @@ public class WxDetailActivity extends ActivityBase {
     private View mContentView;
     private Cursor[] mCursors;
     private String mIcaoCode;
+    private long mElevation;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -138,6 +139,8 @@ public class WxDetailActivity extends ActivityBase {
 
             mContentView = inflate( R.layout.wx_detail_view );
             setContentView( mContentView );
+
+            mElevation = awos.getInt( awos.getColumnIndex( Airports.ELEVATION_MSL ) );
 
             showWxTitle( mCursors );
 
@@ -224,9 +227,11 @@ public class WxDetailActivity extends ActivityBase {
         Date now = new Date();
 
         if ( metar.stationElevationMeters < Integer.MAX_VALUE ) {
+            mElevation = DataUtils.metersToFeet( metar.stationElevationMeters );
             tv = (TextView) findViewById( R.id.wx_station_info2 );
-            tv.setText( String.format( "Located at %d' MSL elevation",
-                    DataUtils.metersToFeet( metar.stationElevationMeters ) ) );
+            tv.setText( String.format( "Located at %d' MSL elevation", mElevation ) );
+        } else {
+            metar.stationElevationMeters = DataUtils.feetToMeters( mElevation );
         }
 
         tv = (TextView) findViewById( R.id.wx_age );
@@ -340,15 +345,21 @@ public class WxDetailActivity extends ActivityBase {
             addSeparator( layout );
             addRow( layout,"Relative humidity", String.format( "%.0f%%",
                     WxUtils.getRelativeHumidity( metar.tempCelsius, metar.dewpointCelsius ) ) );
-            if ( metar.tempCelsius > WxUtils.StdSeaLevelTemp ) {
-                int denAlt = WxUtils.getDensityAltitudeFeet( metar.tempCelsius, metar.altimeterHg );
-                if ( denAlt > DataUtils.metersToFeet( metar.stationElevationMeters ) ) {
+
+            long denAlt = WxUtils.getDensityAltitude( metar );
+            if ( denAlt > mElevation ) {
+                NumberFormat decimal = NumberFormat.getNumberInstance();
+                long presAlt = WxUtils.getPressureAltitude( metar );
+                if ( presAlt > mElevation ) {
                     addSeparator( layout );
-                    NumberFormat decimal = NumberFormat.getNumberInstance();
-                    addRow( layout, "Density altitude",
-                            String.format( "%s ft", decimal.format( denAlt ) ) );
+                    addRow( layout, "Pressure altitude",
+                            String.format( "%s ft", decimal.format( presAlt ) ) );
                 }
+                addSeparator( layout );
+                addRow( layout, "Density altitude",
+                        String.format( "%s ft", decimal.format( denAlt ) ) );
             }
+
             if ( metar.maxTemp6HrCentigrade < Float.MAX_VALUE ) {
                 addSeparator( layout );
                 addRow( layout, "6-hour maximum", String.format( "%.1f\u00B0C (%.0f\u00B0F)",
