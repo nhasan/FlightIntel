@@ -268,10 +268,6 @@ public class ActivityBase extends Activity {
     protected void showWxTitle( Cursor[] cursors ) {
         Cursor awos = cursors[ 0 ];
 
-        if ( !awos.moveToFirst() ) {
-            return;
-        }
-
         TextView tv = (TextView) findViewById( R.id.wx_station_name );
         String icaoCode = awos.getString( awos.getColumnIndex( Airports.ICAO_CODE ) );
         if ( icaoCode == null || icaoCode.length() == 0 ) {
