@@ -19,6 +19,8 @@
 
 package com.nadmm.airports;
 
+import java.text.NumberFormat;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -167,14 +169,15 @@ public class ActivityBase extends Activity {
                 +String.valueOf( distance )+" miles "+dir+" of city center" );
         tv = (TextView) root.findViewById( R.id.airport_info3 );
         int elev_msl = c.getInt( c.getColumnIndex( Airports.ELEVATION_MSL ) );
-        String info2 = String.valueOf( elev_msl )+"' MSL elevation, ";
+        NumberFormat decimal = NumberFormat.getNumberInstance();
+        String info2 = decimal.format( elev_msl )+"' MSL elevation, ";
         int tpa_agl = c.getInt( c.getColumnIndex( Airports.PATTERN_ALTITUDE_AGL ) );
         String est = "";
         if ( tpa_agl == 0 ) {
             tpa_agl = 1000;
             est = " (est.)";
         }
-        info2 += String.valueOf( elev_msl+tpa_agl)+"' MSL TPA"+est;
+        info2 += decimal.format( elev_msl+tpa_agl)+"' MSL TPA"+est;
         tv.setText( info2 );
 
         String s = c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) );
@@ -250,7 +253,8 @@ public class ActivityBase extends Activity {
         int elev_msl = c.getInt( c.getColumnIndex( Nav1.ELEVATION_MSL ) );
         String info2 = use.equals( "Y" )? "Public use" : "Private use";
         info2 += ", ";
-        info2 += String.valueOf( elev_msl )+"' MSL elevation";
+        NumberFormat decimal = NumberFormat.getNumberInstance();
+        info2 += decimal.format( elev_msl )+"' MSL elevation";
         tv = (TextView) root.findViewById( R.id.navaid_info2 );
         tv.setText( info2 );
         tv = (TextView) root.findViewById( R.id.navaid_morse1 );
@@ -281,8 +285,6 @@ public class ActivityBase extends Activity {
         String state = awos.getString( awos.getColumnIndex( Airports.ASSOC_STATE ) );
         tv.setText( type+", "+city+", "+state );
         tv = (TextView) findViewById( R.id.wx_station_info2 );
-        int elev = awos.getInt( awos.getColumnIndex( Airports.ELEVATION_MSL ) );
-        tv.setText( String.format( "Located at %d' MSL elevation (est.)", elev ) );
     }
 
     protected void makeClickToCall( TextView tv ) {

@@ -228,11 +228,14 @@ public class WxDetailActivity extends ActivityBase {
 
         if ( metar.stationElevationMeters < Integer.MAX_VALUE ) {
             mElevation = DataUtils.metersToFeet( metar.stationElevationMeters );
-            tv = (TextView) findViewById( R.id.wx_station_info2 );
-            tv.setText( String.format( "Located at %d' MSL elevation", mElevation ) );
         } else {
             metar.stationElevationMeters = DataUtils.feetToMeters( mElevation );
         }
+
+        NumberFormat decimal = NumberFormat.getNumberInstance();
+        tv = (TextView) findViewById( R.id.wx_station_info2 );
+        tv.setText( String.format( "Located at %s' MSL elevation",
+                decimal.format( mElevation ) ) );
 
         tv = (TextView) findViewById( R.id.wx_age );
         long age = now.getTime()-metar.observationTime;
@@ -279,9 +282,9 @@ public class WxDetailActivity extends ActivityBase {
             if ( metar.flags.contains( Flags.AutoReport ) && metar.visibilitySM == 10 ) {
                 addRow( layout, "10 statute miles or more horizontal" );
             } else {
-                NumberFormat decimal = NumberFormat.getNumberInstance();
-                decimal.setMaximumFractionDigits( 2 );
-                decimal.setMinimumFractionDigits( 0 );
+                NumberFormat decimal2 = NumberFormat.getNumberInstance();
+                decimal2.setMaximumFractionDigits( 2 );
+                decimal2.setMinimumFractionDigits( 0 );
                 addRow( layout, String.format( "%s statute miles horizontal",
                         decimal.format( metar.visibilitySM ) ) );
             }
@@ -348,13 +351,6 @@ public class WxDetailActivity extends ActivityBase {
 
             long denAlt = WxUtils.getDensityAltitude( metar );
             if ( denAlt > mElevation ) {
-                NumberFormat decimal = NumberFormat.getNumberInstance();
-                long presAlt = WxUtils.getPressureAltitude( metar );
-                if ( presAlt > mElevation ) {
-                    addSeparator( layout );
-                    addRow( layout, "Pressure altitude",
-                            String.format( "%s ft", decimal.format( presAlt ) ) );
-                }
                 addSeparator( layout );
                 addRow( layout, "Density altitude",
                         String.format( "%s ft", decimal.format( denAlt ) ) );
@@ -403,6 +399,12 @@ public class WxDetailActivity extends ActivityBase {
                 addSeparator( layout );
                 addRow( layout, "Sea level pressure",
                         String.format( "%.1f mb", metar.seaLevelPressureMb ) );
+            }
+            long presAlt = WxUtils.getPressureAltitude( metar );
+            if ( presAlt > mElevation ) {
+                addSeparator( layout );
+                addRow( layout, "Pressure altitude",
+                        String.format( "%s ft", decimal.format( presAlt ) ) );
             }
             if ( metar.pressureTend3HrMb < Float.MAX_VALUE ) {
                 addSeparator( layout );
