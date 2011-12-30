@@ -32,6 +32,7 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -60,6 +61,7 @@ import com.nadmm.airports.DatabaseManager.Tower6;
 import com.nadmm.airports.DatabaseManager.Tower7;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.utils.GuiUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar;
@@ -176,7 +178,8 @@ public class AirportDetailsActivity extends ActivityBase {
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Runways.TABLE_NAME );
             Cursor c = builder.query( db, new String[] { Runways.SITE_NUMBER, Runways.RUNWAY_ID,
-                    Runways.RUNWAY_LENGTH, Runways.RUNWAY_WIDTH, Runways.SURFACE_TYPE },
+                    Runways.RUNWAY_LENGTH, Runways.RUNWAY_WIDTH, Runways.SURFACE_TYPE,
+                    Runways.BASE_END_HEADING },
                     Runways.SITE_NUMBER+"=? AND "+Runways.RUNWAY_LENGTH+" > 0",
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 1 ] = c;
@@ -804,15 +807,24 @@ public class AirportDetailsActivity extends ActivityBase {
         int width = c.getInt( c.getColumnIndex( Runways.RUNWAY_WIDTH ) );
         String surfaceType = c.getString( c.getColumnIndex( Runways.SURFACE_TYPE ) );
 
+        int heading = c.getInt( c.getColumnIndex( Runways.BASE_END_HEADING ) );
+        if ( heading > 0 ) {
+            heading += GeoUtils.getMagneticDeclination( mLocation );
+        }
+
         TableRow row = (TableRow) inflate( R.layout.runway_detail_item );
         row.setBackgroundResource( resid );
 
         TextView tv = (TextView) row.findViewById( R.id.runway_id );
         tv.setText( runwayId );
+        setRunwayDrawable( tv, runwayId, length, heading );
+
         tv = (TextView) row.findViewById( R.id.runway_size );
         tv.setText( String.valueOf( length )+"' x "+String.valueOf( width )+"'" );
+
         tv = (TextView) row.findViewById( R.id.runway_surface );
         tv.setText( DataUtils.decodeSurfaceType( surfaceType ) );
+
         final Bundle bundle = new Bundle();
         bundle.putString( Runways.SITE_NUMBER, siteNumber );
         bundle.putString( Runways.RUNWAY_ID, runwayId );
@@ -830,6 +842,62 @@ public class AirportDetailsActivity extends ActivityBase {
 
         table.addView( row, new TableLayout.LayoutParams( 
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void setRunwayDrawable( TextView tv, String runwayId, int length, int heading ) {
+        int resid = 0;
+        if ( runwayId.startsWith( "H" ) ) {
+            resid = R.drawable.helipad;
+        } else {
+            if ( length > 10000 ) {
+                resid = R.drawable.runway9;
+            } else if ( length > 9000 ) {
+                resid = R.drawable.runway8;
+            } else if ( length > 8000 ) {
+                resid = R.drawable.runway7;
+            } else if ( length > 7000 ) {
+                resid = R.drawable.runway6;
+            } else if ( length > 6000 ) {
+                resid = R.drawable.runway5;
+            } else if ( length > 5000 ) {
+                resid = R.drawable.runway4;
+            } else if ( length > 4000 ) {
+                resid = R.drawable.runway3;
+            } else if ( length > 3000 ) {
+                resid = R.drawable.runway2;
+            } else if ( length > 2000 ) {
+                resid = R.drawable.runway1;
+            } else {
+                resid = R.drawable.runway0;
+            }
+
+            if ( heading == 0 ) {
+                // Actual heading is not available, try to deduce it from runway id
+                heading = getRunwayHeading( runwayId );
+            }
+        }
+
+        Drawable rwy = GuiUtils.getRotatedDrawable( this, resid, heading );
+        tv.setCompoundDrawablesWithIntrinsicBounds( rwy, null, null, null );
+        tv.setCompoundDrawablePadding( convertDpToPx( 5 ) );
+    }
+
+    protected int getRunwayHeading( String runwayId ) {
+        int index = 0;
+        while ( index < runwayId.length() ) {
+            if ( !Character.isDigit( runwayId.charAt( index ) ) ) {
+                break;
+            }
+            ++index;
+        }
+
+        int heading = 0;
+        try {
+            heading = Integer.valueOf( runwayId.substring( 0, index ) )*10;
+        } catch ( Exception e ) {
+        }
+
+        return heading;
     }
 
     protected void addRemarkRow( LinearLayout layout, String remark ) {
