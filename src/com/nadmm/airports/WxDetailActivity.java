@@ -29,11 +29,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -527,22 +523,13 @@ public class WxDetailActivity extends ActivityBase {
         return s.toString();
     }
 
-    protected Drawable getWindDrawable( Metar metar ) {
-        Bitmap windsock = BitmapFactory.decodeResource( getResources(), R.drawable.windsock );
-        Bitmap bmp = Bitmap.createBitmap( windsock.getWidth(), windsock.getHeight(),
-                Bitmap.Config.ARGB_8888 );
-        Canvas canvas = new Canvas( bmp );
-        canvas.rotate( metar.windDirDegrees, bmp.getWidth()/2, bmp.getHeight()/2 );
-        canvas.drawBitmap( windsock, 0, 0, null );
-        return new BitmapDrawable( bmp );
-    }
-
     protected void addWindRow( LinearLayout layout, Metar metar ) {
         LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( getWindsDescription( metar ) );
         if ( metar.windDirDegrees > 0 ) {
-            Drawable wind = getWindDrawable( metar );
+            Drawable wind = GuiUtils.getRotatedDrawable( this, R.drawable.windsock,
+                    metar.windDirDegrees );
             tv.setCompoundDrawablesWithIntrinsicBounds( wind, null, null, null );
             tv.setCompoundDrawablePadding( convertDpToPx( 6 ) );
         }

@@ -20,29 +20,46 @@
 package com.nadmm.airports.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
 public class GuiUtils {
 
-    private final static Handler mHandler;
+    private final static Handler sHandler;
+    private final static Paint sPaint = new Paint( Paint.FILTER_BITMAP_FLAG );
 
     static {
         // Make sure to associate with the Looper in the main (Gui) thread
-        mHandler = new Handler( Looper.getMainLooper() );
+        sHandler = new Handler( Looper.getMainLooper() );
     }
 
     public static void showToast( final Context context, final String msg ) {
         if ( msg == null ) {
             return;
         }
-        mHandler.post( new Runnable () {
+        sHandler.post( new Runnable () {
             @Override
             public void run() {
                 Toast.makeText( context.getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
             }
         } );
+    }
+
+    public static Drawable getRotatedDrawable( Context context, int resid, float degrees ) {
+        Bitmap bmp = BitmapFactory.decodeResource( context.getResources(), resid );
+        Bitmap rotated = Bitmap.createBitmap( bmp.getWidth(), bmp.getHeight(),
+                Bitmap.Config.ARGB_8888 );
+        Canvas canvas = new Canvas( rotated );
+        canvas.rotate( degrees, bmp.getWidth()/2, bmp.getHeight()/2 );
+        canvas.drawBitmap( bmp, 0, 0, sPaint );
+        return new BitmapDrawable( rotated );
     }
 
 }
