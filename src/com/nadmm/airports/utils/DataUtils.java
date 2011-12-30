@@ -212,7 +212,7 @@ public final class DataUtils {
             if ( type.equals( "BUOY" ) ) {
                 decodedStorage += "Buoy";
             } else if ( type.equals( "HGR" ) ) {
-                decodedStorage += "Hanger";
+                decodedStorage += "Hangar";
             } else if ( type.equals( "TIE" ) ) {
                 decodedStorage += "Tiedown";
             } else {
