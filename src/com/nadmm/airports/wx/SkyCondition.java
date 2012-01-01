@@ -27,6 +27,7 @@ import com.nadmm.airports.R;
 public abstract class SkyCondition implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static NumberFormat sDecimal = NumberFormat.getNumberInstance();
 
     protected int mCloudBaseAGL;
     protected String mName;
@@ -84,9 +85,8 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    NumberFormat decimal = NumberFormat.getNumberInstance();
                     return String.format( "Few clouds at %s ft AGL",
-                            decimal.format( mCloudBaseAGL ) );
+                            sDecimal.format( mCloudBaseAGL ) );
                 }
 
                 public int getDrawable() {
@@ -99,9 +99,8 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    NumberFormat decimal = NumberFormat.getNumberInstance();
                     return String.format( "Scattered clouds at %s ft AGL",
-                            decimal.format( mCloudBaseAGL ) );
+                            sDecimal.format( mCloudBaseAGL ) );
                 }
 
                 public int getDrawable() {
@@ -114,9 +113,8 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    NumberFormat decimal = NumberFormat.getNumberInstance();
                     return String.format( "Broken clouds at %s ft AGL",
-                            decimal.format( mCloudBaseAGL ) );
+                            sDecimal.format( mCloudBaseAGL ) );
                 }
 
                 public int getDrawable() {
@@ -129,9 +127,8 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    NumberFormat decimal = NumberFormat.getNumberInstance();
                     return String.format( "Overcast clouds at %s ft AGL",
-                            decimal.format( mCloudBaseAGL ) );
+                            sDecimal.format( mCloudBaseAGL ) );
                 }
 
                 public int getDrawable() {
@@ -144,9 +141,7 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    NumberFormat decimal = NumberFormat.getNumberInstance();
-                    return String.format( "Indefinite ceiling at %s ft AGL",
-                            decimal.format( mCloudBaseAGL ) );
+                    return String.format( "Indefinite ceiling" );
                 }
 
                 public int getDrawable() {
