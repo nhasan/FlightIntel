@@ -9,15 +9,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="250"
+   height="250"
    id="svg3889"
    version="1.1"
    inkscape:version="0.48.2 r9819"
    sodipodi:docname="SKM.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/SKM.png"
-   inkscape:export-xdpi="179.96001"
-   inkscape:export-ydpi="179.96001">
+   inkscape:export-xdpi="288"
+   inkscape:export-ydpi="288">
   <defs
      id="defs3891" />
   <sodipodi:namedview
@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="289.88512"
-     inkscape:cy="574.21856"
+     inkscape:zoom="1.798067"
+     inkscape:cx="34.472153"
+     inkscape:cy="106.06452"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -53,34 +53,28 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(0,-802.36218)">
     <path
        sodipodi:type="arc"
-       style="fill:none;stroke:#000000;stroke-width:31.91304207;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#000000;stroke-width:33.16148376;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path3897"
        sodipodi:cx="343.45187"
        sodipodi:cy="474.55493"
        sodipodi:rx="163.64471"
        sodipodi:ry="163.64471"
        d="m 507.09659,474.55493 a 163.64471,163.64471 0 1 1 -327.28943,0 163.64471,163.64471 0 1 1 327.28943,0 z"
-       transform="matrix(1.0027248,0,0,1.0027248,-4.3877114,-3.4858316)" />
-    <rect
-       style="opacity:0.8;fill:none;stroke:none"
-       id="rect2984"
-       width="400.08719"
-       height="400.08719"
-       x="139.95641"
-       y="272.31857" />
+       transform="matrix(0.69357572,0,0,0.69357571,-113.20988,598.22241)" />
     <text
        xml:space="preserve"
-       style="font-size:255.55831909px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="229.69064"
-       y="565.51367"
+       style="font-size:169.75900269px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="51.725117"
+       y="989.23969"
        id="text2985"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan2987"
-         x="229.69064"
-         y="565.51367">M</tspan></text>
+         x="51.725117"
+         y="989.23969">M</tspan></text>
   </g>
 </svg>

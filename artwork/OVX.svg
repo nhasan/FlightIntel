@@ -9,15 +9,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="250"
+   height="250"
    id="svg3889"
    version="1.1"
    inkscape:version="0.48.2 r9819"
    sodipodi:docname="OVX.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/OVX.png"
-   inkscape:export-xdpi="180.45"
-   inkscape:export-ydpi="180.45">
+   inkscape:export-xdpi="288"
+   inkscape:export-ydpi="288">
   <defs
      id="defs3891" />
   <sodipodi:namedview
@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.8990335"
-     inkscape:cx="157.64826"
-     inkscape:cy="499.32946"
+     inkscape:zoom="2.676"
+     inkscape:cx="125"
+     inkscape:cy="125"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -53,7 +53,8 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(0,-802.36218)">
     <path
        d="m 507.09659,474.55493 a 163.64471,163.64471 0 1 1 -327.28943,0 163.64471,163.64471 0 1 1 327.28943,0 z"
        sodipodi:ry="163.64471"
@@ -61,12 +62,12 @@
        sodipodi:cy="474.55493"
        sodipodi:cx="343.45187"
        id="path2983"
-       style="fill:none;stroke:#000000;stroke-width:32;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#000000;stroke-width:34.75640106;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        sodipodi:type="arc"
-       transform="translate(28.548126,-2.192749)" />
+       transform="matrix(0.69052032,0,0,0.69052032,-112.1605,599.67236)" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:32;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="M 254.82231,355.18449 489.17769,589.53988"
+       style="fill:none;stroke:#000000;stroke-width:24;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="M 44.08643,846.44857 205.91357,1008.2758"
        id="path2985"
        inkscape:connector-curvature="0"
        inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/OVX.png"
@@ -75,14 +76,7 @@
     <path
        inkscape:connector-curvature="0"
        id="path3755"
-       d="M 489.17769,355.1845 254.8223,589.53987"
-       style="fill:none;stroke:#000000;stroke-width:32;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-    <rect
-       style="opacity:0.80000000000000004;fill:none;stroke:none;stroke-width:1;stroke-opacity:1"
-       id="rect2986"
-       width="399"
-       height="399"
-       x="172.5"
-       y="272.86218" />
+       d="M 205.91357,846.44857 44.086425,1008.2758"
+       style="fill:none;stroke:#000000;stroke-width:24;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
   </g>
 </svg>

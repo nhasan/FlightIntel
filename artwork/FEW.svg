@@ -16,8 +16,8 @@
    inkscape:version="0.48.2 r9819"
    sodipodi:docname="FEW.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/FEW.png"
-   inkscape:export-xdpi="179.96001"
-   inkscape:export-ydpi="179.96001">
+   inkscape:export-xdpi="288"
+   inkscape:export-ydpi="288">
   <defs
      id="defs3891" />
   <sodipodi:namedview
@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="-49.138056"
-     inkscape:cy="94.475703"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="27.539418"
+     inkscape:cy="123.59063"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -64,17 +64,17 @@
      transform="translate(-224.90887,-337.76239)">
     <path
        sodipodi:type="arc"
-       style="fill:none;stroke:#000000;stroke-width:38.29747391;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#000000;stroke-width:34.7563996;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path3897"
        sodipodi:cx="343.45187"
        sodipodi:cy="474.55493"
        sodipodi:rx="163.64471"
        sodipodi:ry="163.64471"
-       d="m 507.09659,474.55493 a 163.64471,163.64471 0 1 1 -327.28943,0 163.64471,163.64471 0 1 1 327.28943,0 z"
-       transform="matrix(0.6266732,0,0,0.6266732,134.67679,165.37153)" />
+       d="m 507.09659,474.55493 c 0,90.37848 -73.26624,163.64472 -163.64472,163.64472 -90.37848,0 -163.64471,-73.26624 -163.64471,-163.64472 0,-90.37848 73.26623,-163.64471 163.64471,-163.64471 90.37848,0 163.64472,73.26623 163.64472,163.64471 z"
+       transform="matrix(0.69052032,0,0,0.69052031,112.74837,135.07257)" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:24;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 349.90887,364.27157 0,196.98163"
+       style="fill:none;stroke:#000000;stroke-width:23.99999619;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 349.90887,354.23707 0,217.05063"
        id="path4426"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />

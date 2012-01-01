@@ -9,15 +9,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="250"
+   height="250"
    id="svg3889"
    version="1.1"
    inkscape:version="0.48.2 r9819"
    sodipodi:docname="SCT.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/SCT.png"
-   inkscape:export-xdpi="180.45"
-   inkscape:export-ydpi="180.45">
+   inkscape:export-xdpi="288"
+   inkscape:export-ydpi="288">
   <defs
      id="defs3891" />
   <sodipodi:namedview
@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.2303658"
-     inkscape:cx="177.8449"
-     inkscape:cy="619.91346"
+     inkscape:zoom="2"
+     inkscape:cx="51.606085"
+     inkscape:cy="141.76739"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -53,35 +53,29 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(0,-802.36218)">
     <path
-       transform="matrix(1.0382655,0,0,1.0382655,15.405769,-20.351831)"
+       transform="matrix(0.69052031,0,0,0.69052031,-112.16049,599.67236)"
        d="m 507.09659,474.55493 a 163.64471,163.64471 0 1 1 -327.28943,0 163.64471,163.64471 0 1 1 327.28943,0 z"
        sodipodi:ry="163.64471"
        sodipodi:rx="163.64471"
        sodipodi:cy="474.55493"
        sodipodi:cx="343.45187"
        id="path3754"
-       style="fill:none;stroke:#000000;stroke-width:30.82063293;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#000000;stroke-width:34.75640106;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        sodipodi:type="arc" />
     <path
        sodipodi:type="arc"
-       style="opacity:0.98000004;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.96314478;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="opacity:0.98000004;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.63644719;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path3756"
        sodipodi:cx="343.45187"
        sodipodi:cy="474.55493"
        sodipodi:rx="163.64471"
        sodipodi:ry="163.64471"
        d="m 343.45188,310.91022 a 163.64471,163.64471 0 0 1 163.64471,163.64471 l -163.64472,0 z"
-       transform="matrix(1.0382655,0,0,1.0382655,12.596678,-16.995523)"
+       transform="matrix(0.61107993,0,0,0.61107993,-84.276547,636.77119)"
        sodipodi:start="4.712389"
        sodipodi:end="6.2831853" />
-    <rect
-       style="opacity:0.80000000000000004;fill:none;stroke:none;stroke-width:1;stroke-opacity:1"
-       id="rect2984"
-       width="399"
-       height="399"
-       x="172.5"
-       y="272.86218" />
   </g>
 </svg>

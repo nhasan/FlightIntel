@@ -9,15 +9,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="250"
+   height="250"
    id="svg3889"
    version="1.1"
    inkscape:version="0.48.2 r9819"
    sodipodi:docname="SKC.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/SKC.png"
-   inkscape:export-xdpi="180.45"
-   inkscape:export-ydpi="180.45">
+   inkscape:export-xdpi="288"
+   inkscape:export-ydpi="288">
   <defs
      id="defs3891" />
   <sodipodi:namedview
@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.88620548"
-     inkscape:cx="237.47538"
-     inkscape:cy="529.32717"
+     inkscape:zoom="1.798067"
+     inkscape:cx="95.061535"
+     inkscape:cy="119.16765"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -53,23 +53,17 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(0,-802.36218)">
     <path
        sodipodi:type="arc"
-       style="fill:none;stroke:#000000;stroke-width:32;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:#000000;stroke-width:34.75640106;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path3897"
        sodipodi:cx="343.45187"
        sodipodi:cy="474.55493"
        sodipodi:rx="163.64471"
        sodipodi:ry="163.64471"
        d="m 507.09659,474.55493 a 163.64471,163.64471 0 1 1 -327.28943,0 163.64471,163.64471 0 1 1 327.28943,0 z"
-       transform="translate(36.548126,-2.192749)" />
-    <rect
-       style="opacity:0.80000000000000004;fill:none;stroke:none;stroke-width:0.99999994000000003;stroke-opacity:1"
-       id="rect2983"
-       width="399"
-       height="399"
-       x="180.5"
-       y="272.86218" />
+       transform="matrix(0.69052032,0,0,0.69052032,-112.1605,599.67236)" />
   </g>
 </svg>
