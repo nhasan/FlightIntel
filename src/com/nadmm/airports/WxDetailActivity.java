@@ -347,7 +347,7 @@ public class WxDetailActivity extends ActivityBase {
                     WxUtils.celsiusToFahrenheit( metar.dewpointCelsius ) ) );
             addSeparator( layout );
             addRow( layout,"Relative humidity", String.format( "%.0f%%",
-                    WxUtils.getRelativeHumidity( metar.tempCelsius, metar.dewpointCelsius ) ) );
+                    WxUtils.getRelativeHumidity( metar ) ) );
 
             long denAlt = WxUtils.getDensityAltitude( metar );
             if ( denAlt > mElevation ) {

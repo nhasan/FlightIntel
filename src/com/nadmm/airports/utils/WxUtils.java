@@ -164,8 +164,12 @@ public class WxUtils {
         return (float) ( altimHg*Math.pow( ( 288-0.0065*elevMeters )/288, 5.2561 ) );
     }
 
-    static public float getRelativeHumidity( float tempCelsius, float dewPointCelsius ) {
-        float e = getVaporPressure( dewPointCelsius );
+    static public float getRelativeHumidity( Metar metar ) {
+        return getRelativeHumidity( metar.tempCelsius, metar.dewpointCelsius );
+    }
+
+    static public float getRelativeHumidity( float tempCelsius, float dewpointCelsius ) {
+        float e = getVaporPressure( dewpointCelsius );
         float es = getVaporPressure( tempCelsius );
         return (e/es)*100;
     }
