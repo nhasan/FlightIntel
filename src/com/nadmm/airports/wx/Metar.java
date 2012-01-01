@@ -175,10 +175,6 @@ public final class Metar implements Serializable {
     }
 
     public void setMissingFields() {
-        if ( skyConditions.isEmpty() ) {
-            // Sky condition is not available in the METAR
-            skyConditions.add( SkyCondition.create( "SKM", 0 ) );
-        }
         if ( flightCategory == null ) {
             computeFlightCategory();
         }
@@ -192,8 +188,12 @@ public final class Metar implements Serializable {
                 }
             }
             if ( !found ) {
-                skyConditions.add( SkyCondition.create( "OVX", vertVisibilityFeet ) );
+                skyConditions.add( SkyCondition.create( "OVX", 0 ) );
             }
+        }
+        if ( skyConditions.isEmpty() ) {
+            // Sky condition is not available in the METAR
+            skyConditions.add( SkyCondition.create( "SKM", 0 ) );
         }
     }
 
