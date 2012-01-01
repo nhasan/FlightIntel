@@ -37,7 +37,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -84,12 +83,10 @@ public class AirportDetailsActivity extends ActivityBase {
             @Override
             public void onReceive( Context context, Intent intent ) {
                 if ( !intent.hasExtra( MetarService.RESULT ) ) {
-                    Log.d( "ACTIVITY", "METAR is not available" );
                     return;
                 }
 
                 Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
-                Log.d( "ACTIVITY", "Got METAR for "+metar.stationId );
                 showWxInfo( metar );
             }
 
@@ -108,7 +105,6 @@ public class AirportDetailsActivity extends ActivityBase {
         IntentFilter filter = new IntentFilter();
         filter.addAction( MetarService.ACTION_GET_METAR );
         registerReceiver( mReceiver, filter );
-        Log.d( "BCAST", "Registered receiver" );
         //Request metar from cache in case user navigates back to this activity
         requestMetars();
     }
@@ -117,7 +113,6 @@ public class AirportDetailsActivity extends ActivityBase {
     protected void onPause() {
         super.onPause();
 
-        Log.d( "BCAST", "Unregistered receiver" );
         unregisterReceiver( mReceiver );
     }
 
@@ -352,7 +347,6 @@ public class AirportDetailsActivity extends ActivityBase {
             if ( !NetworkUtils.isConnectedToWifi( this ) ) {
                 service.putExtra( MetarService.CACHE_ONLY, true );
             }
-            Log.d( "METAR", "Starting METAR service for "+icaoCode );
             startService( service );
         }
     }
@@ -915,7 +909,7 @@ public class AirportDetailsActivity extends ActivityBase {
         if ( metar.isValid ) {
             TextView tv = mAwosMap.get( metar.stationId );
             if ( tv != null ) {
-                WxUtils.setColorizedCeilingDrawable( tv, metar );
+                WxUtils.setColorizedWxDrawable( tv, metar );
             }
         }
     }

@@ -52,12 +52,32 @@ public class GuiUtils {
         } );
     }
 
-    public static Drawable getRotatedDrawable( Context context, int resid, float degrees ) {
+    public static Drawable combineDrawables( Drawable d1, Drawable d2 ) {
+        // Assumes both d1 & d2 are same size and square shaped
+        int w = d1.getIntrinsicWidth();
+        int h = d1.getIntrinsicHeight();
+        Bitmap result = Bitmap.createBitmap( w+( d2!=null? w : 0 ), h, Bitmap.Config.ARGB_8888 );
+
+        Canvas canvas = new Canvas( result );
+        canvas.setDensity( Bitmap.DENSITY_NONE );
+        d1.setBounds( 0, 0, w-1, h-1 );
+        d1.draw( canvas );
+        if ( d2 != null ) {
+            canvas.translate( w, 0 );
+            d2.setBounds( 0, 0, w-1, h-1 );
+            d2.draw( canvas );
+        }
+
+        return new BitmapDrawable( result );
+    }
+
+    public static Drawable getRotatedDrawable( Context context, int resid, float rotation ) {
         Bitmap bmp = BitmapFactory.decodeResource( context.getResources(), resid );
         Bitmap rotated = Bitmap.createBitmap( bmp.getWidth(), bmp.getHeight(),
                 Bitmap.Config.ARGB_8888 );
         Canvas canvas = new Canvas( rotated );
-        canvas.rotate( degrees, bmp.getWidth()/2, bmp.getHeight()/2 );
+        canvas.setDensity( Bitmap.DENSITY_NONE );
+        canvas.rotate( rotation, bmp.getWidth()/2, bmp.getHeight()/2 );
         canvas.drawBitmap( bmp, 0, 0, sPaint );
         return new BitmapDrawable( rotated );
     }

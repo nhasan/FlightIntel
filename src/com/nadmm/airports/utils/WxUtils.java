@@ -19,10 +19,12 @@
 
 package com.nadmm.airports.utils;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
 import android.widget.TextView;
 
 import com.nadmm.airports.R;
@@ -45,25 +47,79 @@ public class WxUtils {
         return color;
     }
 
-    static public void setColorizedDrawable( TextView tv, String flightCategory, int resid ) {
-        if ( flightCategory != null ) {
-            // Get a mutable copy of the drawable so each can be set to a different color
-            Resources res = tv.getResources();
-            Drawable d = res.getDrawable( resid ).mutate();
-            int color = getFlightCategoryColor( flightCategory );
-            d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
-            tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
-            tv.setCompoundDrawablePadding( (int) (res.getDisplayMetrics().density*6+0.5) );
-        }
+    static public Drawable getColorizedDrawable( Resources res, String flightCategory,
+            int resid ) {
+        Drawable d = res.getDrawable( resid ).mutate();
+        int color = getFlightCategoryColor( flightCategory );
+        d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
+        return d;
+    }
+
+    static public void setTextViewDrawable( TextView tv, Drawable d ) {
+        DisplayMetrics dm = tv.getResources().getDisplayMetrics();
+        tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
+        tv.setCompoundDrawablePadding( (int) ( dm.density*6+0.5 ) );
+    }
+
+    static public void showColorizedDrawable( TextView tv, String flightCategory, int resid ) {
+        // Get a mutable copy of the drawable so each can be set to a different color
+        Resources res = tv.getResources();
+        Drawable d = getColorizedDrawable( res, flightCategory, resid );
+        setTextViewDrawable( tv, d );
     }
 
     static public void setFlightCategoryDrawable( TextView tv, Metar metar ) {
-        setColorizedDrawable( tv, metar.flightCategory, R.drawable.circle );
+        showColorizedDrawable( tv, metar.flightCategory, R.drawable.circle );
     }
 
     static public void setColorizedCeilingDrawable( TextView tv, Metar metar ) {
         SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
-        setColorizedDrawable( tv, metar.flightCategory, sky.getDrawable() );
+        showColorizedDrawable( tv, metar.flightCategory, sky.getDrawable() );
+    }
+
+    static public Drawable getWindBarbDrawable( Context context, Metar metar ) {
+        Drawable d = null;
+        if ( metar.windDirDegrees > 0 && metar.windSpeedKnots > 0 ) {
+            int resid = 0;
+            if ( metar.windSpeedKnots >= 48 ) {
+                resid = R.drawable.windbarb50;
+            } else if ( metar.windSpeedKnots >= 43 ) {
+                resid = R.drawable.windbarb45;
+            } else if ( metar.windSpeedKnots >= 38 ) {
+                resid = R.drawable.windbarb40;
+            } else if ( metar.windSpeedKnots >= 33 ) {
+                resid = R.drawable.windbarb35;
+            } else if ( metar.windSpeedKnots >= 28 ) {
+                resid = R.drawable.windbarb30;
+            } else if ( metar.windSpeedKnots >= 23 ) {
+                resid = R.drawable.windbarb25;
+            } else if ( metar.windSpeedKnots >= 18 ) {
+                resid = R.drawable.windbarb20;
+            } else if ( metar.windSpeedKnots >= 13 ) {
+                resid = R.drawable.windbarb15;
+            } else if ( metar.windSpeedKnots >= 8 ) {
+                resid = R.drawable.windbarb10;
+            } else if ( metar.windSpeedKnots >= 3 ) {
+                resid = R.drawable.windbarb5;
+            } else {
+                resid = R.drawable.windbarb0;
+            }
+            d = GuiUtils.getRotatedDrawable( context, resid, metar.windDirDegrees );
+        }
+        return d;
+    }
+
+    static public void setColorizedWxDrawable( TextView tv, Metar metar ) {
+        Resources res = tv.getResources();
+        SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
+        Drawable d1 = getColorizedDrawable( res, metar.flightCategory, sky.getDrawable() );
+        Drawable d2 = null;
+        if ( metar.windDirDegrees > 0 && metar.windDirDegrees < Integer.MAX_VALUE
+                && metar.windSpeedKnots > 0 && metar.windSpeedKnots < Integer.MAX_VALUE ) {
+            d2 = getWindBarbDrawable( tv.getContext(), metar );
+        }
+        Drawable result = GuiUtils.combineDrawables( d1, d2 );
+        setTextViewDrawable( tv, result );
     }
 
     static public float celsiusToFahrenheit( float tempCelsius ) {

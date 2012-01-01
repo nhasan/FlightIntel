@@ -70,13 +70,12 @@ public class WxDetailActivity extends ActivityBase {
             @Override
             public void onReceive( Context context, Intent intent ) {
                 String icaoCode = intent.getStringExtra( MetarService.STATION_ID );
-                if ( mIcaoCode.equals( icaoCode ) ) {
+                if ( mIcaoCode !=null && mIcaoCode.equals( icaoCode ) ) {
                     showWeather( intent );
                 }
             }
 
         };
-
         
         Intent intent = getIntent();
         String icaoCode = intent.getStringExtra( MetarService.STATION_ID );
@@ -276,13 +275,18 @@ public class WxDetailActivity extends ActivityBase {
             layout.setVisibility( View.VISIBLE );
 
             if ( metar.flags.contains( Flags.AutoReport ) && metar.visibilitySM == 10 ) {
-                addRow( layout, "10 statute miles or more horizontal" );
+                addRow( layout, "10 statute miles or more horizontal visibility" );
             } else {
                 NumberFormat decimal2 = NumberFormat.getNumberInstance();
                 decimal2.setMaximumFractionDigits( 2 );
                 decimal2.setMinimumFractionDigits( 0 );
-                addRow( layout, String.format( "%s statute miles horizontal",
+                addRow( layout, String.format( "%s statute miles horizontal visibility",
                         decimal.format( metar.visibilitySM ) ) );
+            }
+            if ( metar.vertVisibilityFeet < Integer.MAX_VALUE ) {
+                addSeparator( layout );
+                addRow( layout, String.format( "%s ft AGL vertical visibility",
+                        decimal.format( metar.vertVisibilityFeet ) ) );
             }
         } else {
             tv.setVisibility( View.GONE );
@@ -543,7 +547,7 @@ public class WxDetailActivity extends ActivityBase {
         LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( sky.toString() );
-        WxUtils.setColorizedDrawable( tv, flightCategory, sky.getDrawable() );
+        WxUtils.showColorizedDrawable( tv, flightCategory, sky.getDrawable() );
 
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
@@ -553,7 +557,7 @@ public class WxDetailActivity extends ActivityBase {
         LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( wx.toString() );
-        WxUtils.setColorizedDrawable( tv, flightCategory, wx.getDrawable() );
+        WxUtils.showColorizedDrawable( tv, flightCategory, wx.getDrawable() );
 
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
