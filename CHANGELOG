@@ -1,3 +1,15 @@
+v2.1.0 (1/1/2012)
+===================
+* Show wind barb in the weather summary icon
+* Show runway graphic with proportional size and runway heading
+* Auto-fetch the weather for an airport if connected to wifi
+* Lots of fixes and improvements to METAR functionality
+
+v2.0.1 (12/29/2011)
+===================
+* Show weather summary icon in the airport detail activity
+* Some other fixes and improvements to METAR functionality
+
 v2.0.0 (12/26/2011)
 ===================
 * METAR details display screen
