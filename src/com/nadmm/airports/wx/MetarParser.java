@@ -155,8 +155,6 @@ public final class MetarParser {
             if ( qName.equalsIgnoreCase( "raw_text" ) ) {
                 metar.rawText = text.toString();
                 parseRemarks( metar );
-            } else if ( qName.equalsIgnoreCase( "station_id" ) ) {
-                metar.stationId = text.toString();
             } else if ( qName.equalsIgnoreCase( "observation_time" ) ) {
                 try {
                     Time time = new Time();
