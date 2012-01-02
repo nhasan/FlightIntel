@@ -93,6 +93,7 @@ public class MetarService extends IntentService {
         }
 
         if ( xml.exists() ) {
+            metar.stationId = stationId;
             mParser.parse( xml, metar );
         }
 
@@ -100,9 +101,7 @@ public class MetarService extends IntentService {
         Intent result = new Intent();
         result.setAction( ACTION_GET_METAR );
         result.putExtra( STATION_ID, stationId );
-        if ( metar.isValid ) {
-            result.putExtra( RESULT, metar );
-        }
+        result.putExtra( RESULT, metar );
         sendBroadcast( result );
     }
 

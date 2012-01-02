@@ -190,15 +190,16 @@ public class WxDetailActivity extends ActivityBase {
 
         } );
 
+        Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
+
         LinearLayout layout;
         TextView tv;
-
         View detail = findViewById( R.id.wx_detail_layout );
 
         tv =(TextView) findViewById( R.id.status_msg );
         layout = (LinearLayout) findViewById( R.id.wx_status_layout );
         layout.removeAllViews();
-        if ( !intent.hasExtra( MetarService.RESULT ) ) {
+        if ( !metar.isValid ) {
             tv.setVisibility( View.VISIBLE );
             layout.setVisibility( View.VISIBLE );
             tv.setText( R.string.metar_error );
@@ -216,8 +217,6 @@ public class WxDetailActivity extends ActivityBase {
             layout.setVisibility( View.GONE );
             detail.setVisibility( View.VISIBLE );
         }
-
-        Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
 
         Date now = new Date();
 
