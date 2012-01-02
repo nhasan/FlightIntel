@@ -82,10 +82,6 @@ public class AirportDetailsActivity extends ActivityBase {
 
             @Override
             public void onReceive( Context context, Intent intent ) {
-                if ( !intent.hasExtra( MetarService.RESULT ) ) {
-                    return;
-                }
-
                 Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
                 showWxInfo( metar );
             }
@@ -906,10 +902,12 @@ public class AirportDetailsActivity extends ActivityBase {
     }
 
     protected void showWxInfo( Metar metar ) {
-        if ( metar.isValid ) {
-            TextView tv = mAwosMap.get( metar.stationId );
-            if ( tv != null ) {
+        TextView tv = mAwosMap.get( metar.stationId );
+        if ( tv != null ) {
+            if ( metar.isValid ) {
                 WxUtils.setColorizedWxDrawable( tv, metar );
+            } else {
+                GuiUtils.setTextViewDrawable( tv, R.drawable.error );
             }
         }
     }
