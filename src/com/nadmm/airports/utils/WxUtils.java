@@ -24,7 +24,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.util.DisplayMetrics;
 import android.widget.TextView;
 
 import com.nadmm.airports.R;
@@ -36,13 +35,13 @@ public class WxUtils {
     static public int getFlightCategoryColor( String flightCategory ) {
         int color = 0;
         if ( flightCategory.equals( "VFR" ) ) {
-            color = Color.argb( 208, 80, 176, 96 );
+            color = Color.argb( 224, 80, 176, 96 );
         } else if ( flightCategory.equals( "MVFR" ) ) {
-            color = Color.argb( 208, 48, 128, 208 );
+            color = Color.argb( 224, 48, 128, 224 );
         } else if ( flightCategory.equals( "IFR" ) ) {
-            color = Color.argb( 208, 208, 64, 48 );
+            color = Color.argb( 224, 240, 32, 16 );
         } else if ( flightCategory.equals( "LIFR" ) ) {
-            color = Color.argb( 208, 208, 48, 128 );
+            color = Color.argb( 224, 240, 48, 128 );
         }
         return color;
     }
@@ -55,17 +54,11 @@ public class WxUtils {
         return d;
     }
 
-    static public void setTextViewDrawable( TextView tv, Drawable d ) {
-        DisplayMetrics dm = tv.getResources().getDisplayMetrics();
-        tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
-        tv.setCompoundDrawablePadding( (int) ( dm.density*6+0.5 ) );
-    }
-
     static public void showColorizedDrawable( TextView tv, String flightCategory, int resid ) {
         // Get a mutable copy of the drawable so each can be set to a different color
         Resources res = tv.getResources();
         Drawable d = getColorizedDrawable( res, flightCategory, resid );
-        setTextViewDrawable( tv, d );
+        GuiUtils.setTextViewDrawable( tv, d );
     }
 
     static public void setFlightCategoryDrawable( TextView tv, Metar metar ) {
@@ -119,7 +112,7 @@ public class WxUtils {
             d2 = getWindBarbDrawable( tv.getContext(), metar );
         }
         Drawable result = GuiUtils.combineDrawables( d1, d2 );
-        setTextViewDrawable( tv, result );
+        GuiUtils.setTextViewDrawable( tv, result );
     }
 
     static public float celsiusToFahrenheit( float tempCelsius ) {

@@ -20,6 +20,7 @@
 package com.nadmm.airports.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -28,6 +29,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.DisplayMetrics;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class GuiUtils {
@@ -80,6 +83,18 @@ public class GuiUtils {
         canvas.rotate( rotation, bmp.getWidth()/2, bmp.getHeight()/2 );
         canvas.drawBitmap( bmp, 0, 0, sPaint );
         return new BitmapDrawable( rotated );
+    }
+
+    static public void setTextViewDrawable( TextView tv, int resid ) {
+        Resources res = tv.getResources();
+        Drawable d = res.getDrawable( resid ).mutate();
+        setTextViewDrawable( tv, d );
+    }
+
+    static public void setTextViewDrawable( TextView tv, Drawable d ) {
+        DisplayMetrics dm = tv.getResources().getDisplayMetrics();
+        tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
+        tv.setCompoundDrawablePadding( (int) ( dm.density*6+0.5 ) );
     }
 
 }
