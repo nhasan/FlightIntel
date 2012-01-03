@@ -340,19 +340,24 @@ public class WxDetailActivity extends ActivityBase {
             addRow( layout, "Temperature",
                     String.format( "%.1f\u00B0C (%.0f\u00B0F)", metar.tempCelsius,
                     WxUtils.celsiusToFahrenheit( metar.tempCelsius ) ) );
-            addSeparator( layout );
-            addRow( layout, "Dew point",
-                    String.format( "%.1f\u00B0C (%.0f\u00B0F)", metar.dewpointCelsius,
-                    WxUtils.celsiusToFahrenheit( metar.dewpointCelsius ) ) );
-            addSeparator( layout );
-            addRow( layout,"Relative humidity", String.format( "%.0f%%",
-                    WxUtils.getRelativeHumidity( metar ) ) );
-
-            long denAlt = WxUtils.getDensityAltitude( metar );
-            if ( denAlt > mElevation ) {
+            if ( metar.dewpointCelsius < Float.MAX_VALUE ) {
                 addSeparator( layout );
-                addRow( layout, "Density altitude",
-                        String.format( "%s ft", decimal.format( denAlt ) ) );
+                addRow( layout, "Dew point",
+                        String.format( "%.1f\u00B0C (%.0f\u00B0F)", metar.dewpointCelsius,
+                        WxUtils.celsiusToFahrenheit( metar.dewpointCelsius ) ) );
+                addSeparator( layout );
+                addRow( layout,"Relative humidity", String.format( "%.0f%%",
+                        WxUtils.getRelativeHumidity( metar ) ) );
+
+                long denAlt = WxUtils.getDensityAltitude( metar );
+                if ( denAlt > mElevation ) {
+                    addSeparator( layout );
+                    addRow( layout, "Density altitude",
+                            String.format( "%s ft", decimal.format( denAlt ) ) );
+                }
+            } else {
+                addSeparator( layout );
+                addRow( layout, "Dew point", "n/a" );
             }
 
             if ( metar.maxTemp6HrCentigrade < Float.MAX_VALUE ) {
