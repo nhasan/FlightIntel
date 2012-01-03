@@ -28,6 +28,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -36,6 +37,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Pair;
 import android.view.Menu;
@@ -257,16 +259,16 @@ public class AirportDetailsActivity extends ActivityBase {
             };
             MatrixCursor matrix = new MatrixCursor( columns );
 
+            // Now find the magnetic declination at this location
+            float declination = GeoUtils.getMagneticDeclination( mLocation );
+
             if ( c.moveToFirst() ) {
-                // Now find the magnetic declination at this location
-                float declination = GeoUtils.getMagneticDeclination( mLocation );
-    
                 AwosData[] awosList = new AwosData[ c.getCount() ];
                 do {
                     AwosData awos = new AwosData( c, declination );
                     awosList[ c.getPosition() ] = awos;
                 } while ( c.moveToNext() );
-    
+
                 // Sort the airport list by distance from current location
                 Arrays.sort( awosList );
 
@@ -326,8 +328,6 @@ public class AirportDetailsActivity extends ActivityBase {
             TextView tv = (TextView) findViewById( R.id.effective_date );
             tv.setText( "Effective date: "
                     +apt.getString( apt.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
-
-            //requestMetars();
         }
 
     }
@@ -340,7 +340,10 @@ public class AirportDetailsActivity extends ActivityBase {
             Intent service = new Intent( AirportDetailsActivity.this, MetarService.class );
             service.setAction( MetarService.ACTION_GET_METAR );
             service.putExtra( MetarService.STATION_ID, icaoCode );
-            if ( !NetworkUtils.isConnectedToWifi( this ) ) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
+            boolean alwaysAutoFetch = prefs.getBoolean(
+                    PreferencesActivity.ALWAYS_AUTO_FETCH_WEATHER, false );
+            if ( !alwaysAutoFetch && !NetworkUtils.isConnectedToWifi( this ) ) {
                 service.putExtra( MetarService.CACHE_ONLY, true );
             }
             startService( service );

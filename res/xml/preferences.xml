@@ -58,20 +58,24 @@
                 android:entryValues="@array/nearby_radius_values"
                 android:defaultValue="30" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Display settings">
+    <PreferenceCategory android:title="Airport details">
         <CheckBoxPreference
                 android:key="extra_runway_data"
                 android:title="Show extra runway data"
                 android:summaryOn="Show extended runway information"
                 android:summaryOff="Show basic runway information"
                 defaultValue="false" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="NOTAMs">
         <CheckBoxPreference
                 android:key="show_gps_notams"
                 android:title="Show GPS NOTAMs"
                 android:summaryOn="GPS NOTAMs will also be shown"
                 android:summaryOff="GPS NOTAMs will not be shown"
+                defaultValue="false" />
+        <CheckBoxPreference
+                android:key="always_auto_fetch_weather"
+                android:title="Always auto-fetch weather"
+                android:summaryOn="Auto-fetch weather on 3G/4G+wifi"
+                android:summaryOff="Auto-fetch weather on wifi only"
                 defaultValue="false" />
     </PreferenceCategory>
 </PreferenceScreen>
