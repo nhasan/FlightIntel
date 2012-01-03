@@ -139,16 +139,25 @@ public class WxDetailActivity extends ActivityBase {
 
             showWxTitle( mCursors );
 
+            TextView tv;
+
             String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
-            TextView tv = (TextView) findViewById( R.id.wx_station_phone );
             if ( phone.length() > 0 ) {
+                tv = (TextView) findViewById( R.id.wx_station_phone );
                 tv.setText( phone );
                 makeClickToCall( tv );
                 tv.setVisibility( View.VISIBLE );
             }
             String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
-            tv = (TextView) findViewById( R.id.wx_station_freq );
             if ( freq.length() > 0 ) {
+                tv = (TextView) findViewById( R.id.wx_station_freq );
+                tv.setText( freq );
+                tv.setVisibility( View.VISIBLE );
+            }
+
+            freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
+            if ( freq.length() > 0 ) {
+                tv = (TextView) findViewById( R.id.wx_station_freq2 );
                 tv.setText( freq );
                 tv.setVisibility( View.VISIBLE );
             }

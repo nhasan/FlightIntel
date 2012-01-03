@@ -554,6 +554,9 @@ public class AirportDetailsActivity extends ActivityBase {
                 }
                 String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
                 String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
+                if ( freq == null || freq.length() == 0 ) {
+                    freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
+                }
                 String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
                 String name = awos.getString( awos.getColumnIndex( Airports.FACILITY_NAME ) );
                 float distance = awos.getFloat( awos.getColumnIndex( "DISTANCE" ) );
