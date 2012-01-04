@@ -103,16 +103,20 @@ public class WxUtils {
     }
 
     static public void setColorizedWxDrawable( TextView tv, Metar metar ) {
-        Resources res = tv.getResources();
-        SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
-        Drawable d1 = getColorizedDrawable( res, metar.flightCategory, sky.getDrawable() );
-        Drawable d2 = null;
-        if ( metar.windDirDegrees > 0 && metar.windDirDegrees < Integer.MAX_VALUE
-                && metar.windSpeedKnots > 0 && metar.windSpeedKnots < Integer.MAX_VALUE ) {
-            d2 = getWindBarbDrawable( tv.getContext(), metar );
+        if ( metar.isValid ) {
+            Resources res = tv.getResources();
+            SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
+            Drawable d1 = getColorizedDrawable( res, metar.flightCategory, sky.getDrawable() );
+            Drawable d2 = null;
+            if ( metar.windDirDegrees > 0 && metar.windDirDegrees < Integer.MAX_VALUE
+                    && metar.windSpeedKnots > 0 && metar.windSpeedKnots < Integer.MAX_VALUE ) {
+                d2 = getWindBarbDrawable( tv.getContext(), metar );
+            }
+            Drawable result = GuiUtils.combineDrawables( d1, d2 );
+            GuiUtils.setTextViewDrawable( tv, result );
+        } else {
+            GuiUtils.setTextViewDrawable( tv, R.drawable.error );
         }
-        Drawable result = GuiUtils.combineDrawables( d1, d2 );
-        GuiUtils.setTextViewDrawable( tv, result );
     }
 
     static public float celsiusToFahrenheit( float tempCelsius ) {
