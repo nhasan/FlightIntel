@@ -73,9 +73,9 @@
                 defaultValue="false" />
         <CheckBoxPreference
                 android:key="always_auto_fetch_weather"
-                android:title="Always auto-fetch weather"
-                android:summaryOn="Auto-fetch weather on 3G/4G+wifi"
-                android:summaryOff="Auto-fetch weather on wifi only"
+                android:title="Auto-fetch wx on 3G/4G"
+                android:summaryOn="Wx will be auto-fetched on 3G/4G+wifi"
+                android:summaryOff="Wx will be auto-fetched on wifi only"
                 defaultValue="false" />
     </PreferenceCategory>
 </PreferenceScreen>
