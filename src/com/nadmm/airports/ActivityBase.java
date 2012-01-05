@@ -275,16 +275,18 @@ public class ActivityBase extends Activity {
         TextView tv = (TextView) findViewById( R.id.wx_station_name );
         String icaoCode = awos.getString( awos.getColumnIndex( Airports.ICAO_CODE ) );
         if ( icaoCode == null || icaoCode.length() == 0 ) {
-            icaoCode = "K"+awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
+            icaoCode = "K"+awos.getString( awos.getColumnIndex( Airports.FAA_CODE ) );
         }
         String stationName = awos.getString( awos.getColumnIndex( Airports.FACILITY_NAME ) );
         String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+        if ( type == null || type.length() == 0 ) {
+            type = "AWOS";
+        }
         tv.setText( icaoCode+" - "+ stationName );
         tv = (TextView) findViewById( R.id.wx_station_info );
         String city = awos.getString( awos.getColumnIndex( Airports.ASSOC_CITY ) );
         String state = awos.getString( awos.getColumnIndex( Airports.ASSOC_STATE ) );
         tv.setText( type+", "+city+", "+state );
-        tv = (TextView) findViewById( R.id.wx_station_info2 );
     }
 
     protected void makeClickToCall( TextView tv ) {
@@ -479,7 +481,7 @@ public class ActivityBase extends Activity {
     protected abstract class CursorAsyncTask extends AsyncTask<String, Void, Cursor[]> {
 
         @Override
-        protected final void onPreExecute() {
+        protected void onPreExecute() {
             setProgressBarIndeterminateVisibility( true );
         }
 

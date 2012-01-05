@@ -87,7 +87,6 @@ public class WxDetailActivity extends ActivityBase {
     @Override
     protected void onResume() {
         super.onResume();
-
         IntentFilter filter = new IntentFilter();
         filter.addAction( MetarService.ACTION_GET_METAR );
         registerReceiver( mReceiver, filter );
@@ -96,7 +95,6 @@ public class WxDetailActivity extends ActivityBase {
     @Override
     protected void onPause() {
         super.onPause();
-
         unregisterReceiver( mReceiver );
     }
 
@@ -111,9 +109,9 @@ public class WxDetailActivity extends ActivityBase {
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Awos.TABLE_NAME+" w LEFT OUTER JOIN "+Airports.TABLE_NAME+" a"
-                    +" ON w."+Awos.WX_SENSOR_IDENT+"=a."+Airports.FAA_CODE );
-            Cursor c = builder.query( db, new String[] { "*" }, Awos.WX_SENSOR_IDENT+"=?",
+            builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+Awos.TABLE_NAME+" w"
+                    +" ON a."+Airports.FAA_CODE+"=w."+Awos.WX_SENSOR_IDENT );
+            Cursor c = builder.query( db, new String[] { "*" }, Airports.FAA_CODE+"=?",
                     new String[] { sensorId }, null, null, null, null );
             cursors[ 0 ] = c;
 
@@ -135,6 +133,10 @@ public class WxDetailActivity extends ActivityBase {
             mContentView = inflate( R.layout.wx_detail_view );
             setContentView( mContentView );
 
+            ImageView iv = (ImageView) findViewById( R.id.wx_refresh );
+            AnimationDrawable refresh = (AnimationDrawable) iv.getDrawable();
+            refresh.start();
+
             mElevation = awos.getInt( awos.getColumnIndex( Airports.ELEVATION_MSL ) );
 
             showWxTitle( mCursors );
@@ -142,29 +144,25 @@ public class WxDetailActivity extends ActivityBase {
             TextView tv;
 
             String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
-            if ( phone.length() > 0 ) {
+            if ( phone != null && phone.length() > 0 ) {
                 tv = (TextView) findViewById( R.id.wx_station_phone );
                 tv.setText( phone );
                 makeClickToCall( tv );
                 tv.setVisibility( View.VISIBLE );
             }
             String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
-            if ( freq.length() > 0 ) {
+            if ( freq != null && freq.length() > 0 ) {
                 tv = (TextView) findViewById( R.id.wx_station_freq );
                 tv.setText( freq );
                 tv.setVisibility( View.VISIBLE );
             }
 
             freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
-            if ( freq.length() > 0 ) {
+            if ( freq != null && freq.length() > 0 ) {
                 tv = (TextView) findViewById( R.id.wx_station_freq2 );
                 tv.setText( freq );
                 tv.setVisibility( View.VISIBLE );
             }
-
-            ImageView iv = (ImageView) findViewById( R.id.wx_refresh );
-            AnimationDrawable refresh = (AnimationDrawable) iv.getDrawable();
-            refresh.start();
 
             Intent service = new Intent( WxDetailActivity.this, MetarService.class );
             service.setAction( MetarService.ACTION_GET_METAR );
