@@ -123,4 +123,12 @@ public class GeoUtils {
         return -1*geoField.getDeclination();
     }
 
+    public static float applyDeclination( float heading, float declination ) {
+        return ( heading+declination+360 )%360;
+    }
+
+    public static long applyDeclination( long heading, float declination ) {
+        return Math.round( heading+declination+360 )%360;
+    }
+
 }
