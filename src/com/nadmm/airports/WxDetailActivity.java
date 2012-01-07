@@ -76,7 +76,7 @@ public class WxDetailActivity extends ActivityBase {
             }
 
         };
-        
+
         Intent intent = getIntent();
         String icaoCode = intent.getStringExtra( MetarService.STATION_ID );
         String sensorId = intent.getStringExtra( Awos.WX_SENSOR_IDENT );
