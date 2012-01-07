@@ -1025,10 +1025,10 @@ public class AirportDetailsActivity extends ActivityBase {
                 crossWind = Math.abs( crossWind );
             }
             if ( crossWind > 0 ) {
-                tv.setText( String.format( "Rwy %s with x-wind %d %s from %s",
+                tv.setText( String.format( "Rwy %s: %d %s x-wind from %s",
                         id, crossWind, crossWind > 1? "knots" : "knot", side ) );
             } else {
-                tv.setText( String.format( "Rwy %s with no x-wind", id, crossWind ) );
+                tv.setText( String.format( "Rwy %s no x-wind", id, crossWind ) );
             }
             tv.setVisibility( View.VISIBLE );
         }
