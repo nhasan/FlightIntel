@@ -22,6 +22,7 @@ package com.nadmm.airports;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.TimeZone;
 
 import android.content.BroadcastReceiver;
@@ -48,7 +49,6 @@ import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableLayout.LayoutParams;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Aff3;
@@ -73,14 +73,22 @@ public class AirportDetailsActivity extends ActivityBase {
 
     private Bundle mExtras;
     private Location mLocation;
+    private float mDeclination;
+    private String mIcaoCode;
     private BroadcastReceiver mReceiver;
-    private HashMap<String, TextView> mAwosMap;
+    private HashSet<TextView> mAwosViews;
+    private HashSet<TextView> mRunwayViews;
+
+    private final String DISTANCE = "DISTANCE";
+    private final String BEARING = "BEARING";
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mAwosMap =new HashMap<String, TextView>();
+        mAwosViews = new HashSet<TextView>();
+        mRunwayViews = new HashSet<TextView>();
+
         mReceiver = new BroadcastReceiver() {
 
             @Override
@@ -130,7 +138,7 @@ public class AirportDetailsActivity extends ActivityBase {
             public float BEARING;
 
             public AwosData( String icaoCode, String id, String type, double lat, double lon,
-                    String freq, String freq2, String phone, String name, float declination ) {
+                    String freq, String freq2, String phone, String name ) {
                 ICAO_CODE = icaoCode;
                 SENSOR_IDENT = id;
                 SENSOR_TYPE = type;
@@ -146,7 +154,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 Location.distanceBetween( mLocation.getLatitude(), mLocation.getLongitude(), 
                         LATITUDE, LONGITUDE, results );
                 DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
-                BEARING = ( results[ 1 ]+declination+360 )%360;
+                BEARING = GeoUtils.applyDeclination( results[ 1 ], mDeclination );
             }
 
             @Override
@@ -172,11 +180,16 @@ public class AirportDetailsActivity extends ActivityBase {
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
 
+            mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+            if ( mIcaoCode == null || mIcaoCode.length() == 0 ) {
+                mIcaoCode = "K"+apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            }
+
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Runways.TABLE_NAME );
             Cursor c = builder.query( db, new String[] { Runways.SITE_NUMBER, Runways.RUNWAY_ID,
                     Runways.RUNWAY_LENGTH, Runways.RUNWAY_WIDTH, Runways.SURFACE_TYPE,
-                    Runways.BASE_END_HEADING },
+                    Runways.BASE_END_HEADING, Runways.BASE_END_ID, Runways.RECIPROCAL_END_ID },
                     Runways.SITE_NUMBER+"=? AND "+Runways.RUNWAY_LENGTH+" > 0",
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 1 ] = c;
@@ -222,7 +235,7 @@ public class AirportDetailsActivity extends ActivityBase {
             mLocation.setAltitude( elev_msl );
 
             // Get the magnetic declination at this location
-            float declination = GeoUtils.getMagneticDeclination( mLocation );
+            mDeclination = GeoUtils.getMagneticDeclination( mLocation );
 
             // Get the bounding box first to do a quick query as a first cut
             double[] box = GeoUtils.getBoundingBox( mLocation, 20 );
@@ -266,7 +279,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     String phone = c.getString( c.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
                     String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
                     AwosData awos = new AwosData( icaoCode, id, type, lat, lon,
-                            freq, freq2, phone, name, declination );
+                            freq, freq2, phone, name );
                     awosList.add( awos );
                 } while ( c.moveToNext() );
             }
@@ -297,7 +310,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     String phone = "";
                     String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
                     AwosData awos = new AwosData( icaoCode, id, type, lat, lon,
-                            freq, freq, phone, name, declination );
+                            freq, freq, phone, name );
                     awosList.add( awos );
                 } while ( c.moveToNext() );
             }
@@ -317,8 +330,8 @@ public class AirportDetailsActivity extends ActivityBase {
                     Awos.SECOND_STATION_FREQUENCY,
                     Awos.STATION_PHONE_NUMBER,
                     Airports.FACILITY_NAME,
-                    "DISTANCE",
-                    "BEARING"
+                    DISTANCE,
+                    BEARING
             };
             MatrixCursor matrix = new MatrixCursor( columns );
 
@@ -383,9 +396,8 @@ public class AirportDetailsActivity extends ActivityBase {
 
     protected void requestMetars() {
         // Now get the METAR if already in the cache
-        String[] icaoCodes = new String[ mAwosMap.size() ];
-        mAwosMap.keySet().toArray( icaoCodes );
-        for ( String icaoCode : icaoCodes ) {
+        for ( TextView tv : mAwosViews ) {
+            String icaoCode = (String) tv.getTag();
             Intent service = new Intent( AirportDetailsActivity.this, MetarService.class );
             service.setAction( MetarService.ACTION_GET_METAR );
             service.putExtra( MetarService.STATION_ID, icaoCode );
@@ -802,7 +814,9 @@ public class AirportDetailsActivity extends ActivityBase {
         layout.setTag( intent );
 
         TextView tv = (TextView) layout.findViewById( R.id.awos_station_name );
-        mAwosMap.put( id, tv );
+        tv.setTag( id );
+        mAwosViews.add( tv );
+
         if ( name != null && name.length() > 0 ) {
             tv.setText( id+" - "+name );
         } else {
@@ -851,13 +865,18 @@ public class AirportDetailsActivity extends ActivityBase {
         int length = c.getInt( c.getColumnIndex( Runways.RUNWAY_LENGTH ) );
         int width = c.getInt( c.getColumnIndex( Runways.RUNWAY_WIDTH ) );
         String surfaceType = c.getString( c.getColumnIndex( Runways.SURFACE_TYPE ) );
+        String baseId = c.getString( c.getColumnIndex( Runways.BASE_END_ID ) );
+        String reciprocalId = c.getString( c.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
 
         int heading = c.getInt( c.getColumnIndex( Runways.BASE_END_HEADING ) );
         if ( heading > 0 ) {
-            heading += GeoUtils.getMagneticDeclination( mLocation );
+            heading = (int) GeoUtils.applyDeclination( heading, mDeclination );
+        } else {
+            // Actual heading is not available, try to deduce it from runway id
+            heading = getRunwayHeading( runwayId );
         }
 
-        TableRow row = (TableRow) inflate( R.layout.runway_detail_item );
+        LinearLayout row = (LinearLayout) inflate( R.layout.runway_detail_item );
         row.setBackgroundResource( resid );
 
         TextView tv = (TextView) row.findViewById( R.id.runway_id );
@@ -869,6 +888,17 @@ public class AirportDetailsActivity extends ActivityBase {
 
         tv = (TextView) row.findViewById( R.id.runway_surface );
         tv.setText( DataUtils.decodeSurfaceType( surfaceType ) );
+
+        if ( !runwayId.startsWith( "H" ) ) {
+            // Save the textview and runway info for later use
+            tv = (TextView) row.findViewById( R.id.runway_wind_info );
+            Bundle tag = new Bundle();
+            tag.putString( Runways.BASE_END_ID, baseId );
+            tag.putString( Runways.RECIPROCAL_END_ID, reciprocalId );
+            tag.putInt( Runways.BASE_END_HEADING, heading );
+            tv.setTag( tag );
+            mRunwayViews.add( tv );
+        }
 
         final Bundle bundle = new Bundle();
         bundle.putString( Runways.SITE_NUMBER, siteNumber );
@@ -885,8 +915,19 @@ public class AirportDetailsActivity extends ActivityBase {
 
         } );
 
-        table.addView( row, new TableLayout.LayoutParams( 
+        table.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected void addRemarkRow( LinearLayout layout, String remark ) {
+        int index = remark.indexOf( ' ' );
+        if ( index != -1 ) {
+            while ( remark.charAt( index ) == ' ' ) {
+                ++index;
+            }
+            remark = remark.substring( index );
+        }
+        addBulletedRow( layout, remark );
     }
 
     protected void setRunwayDrawable( TextView tv, String runwayId, int length, int heading ) {
@@ -915,11 +956,6 @@ public class AirportDetailsActivity extends ActivityBase {
             } else {
                 resid = R.drawable.runway0;
             }
-
-            if ( heading == 0 ) {
-                // Actual heading is not available, try to deduce it from runway id
-                heading = getRunwayHeading( runwayId );
-            }
         }
 
         Drawable rwy = GuiUtils.getRotatedDrawable( this, resid, heading );
@@ -945,21 +981,56 @@ public class AirportDetailsActivity extends ActivityBase {
         return heading;
     }
 
-    protected void addRemarkRow( LinearLayout layout, String remark ) {
-        int index = remark.indexOf( ' ' );
-        if ( index != -1 ) {
-            while ( remark.charAt( index ) == ' ' ) {
-                ++index;
-            }
-            remark = remark.substring( index );
+    protected void showWxInfo( Metar metar ) {
+        if ( metar.stationId == null ) {
+            return;
         }
-        addBulletedRow( layout, remark );
+
+        if ( metar.isValid
+                && mIcaoCode.equals( metar.stationId )
+                && WxUtils.isWindAvailable( metar ) ) {
+            showRunwayWindInfo( metar );
+        }
+
+        for ( TextView tv : mAwosViews ) {
+            String icaoCode = (String) tv.getTag();
+            if ( icaoCode.equals( metar.stationId ) ) {
+                WxUtils.setColorizedWxDrawable( tv, metar, mDeclination );
+                break;
+            }
+        }
     }
 
-    protected void showWxInfo( Metar metar ) {
-        TextView tv = mAwosMap.get( metar.stationId );
-        if ( tv != null ) {
-            WxUtils.setColorizedWxDrawable( tv, metar );
+    protected void showRunwayWindInfo( Metar metar ) {
+        for ( TextView tv : mRunwayViews ) {
+            Bundle tag = (Bundle) tv.getTag();
+            String id = tag.getString( Runways.BASE_END_ID );
+            long rwyHeading = tag.getInt( Runways.BASE_END_HEADING );
+            long windDir = GeoUtils.applyDeclination( metar.windDirDegrees, mDeclination );
+            long headWind = WxUtils.getHeadWindComponent( metar.windSpeedKnots,
+                    windDir, rwyHeading );
+            if ( headWind < 0 ) {
+                // If this is a tail wind, use the other end
+                id = tag.getString( Runways.RECIPROCAL_END_ID );
+                rwyHeading += 180;
+                if ( rwyHeading > 360 ) {
+                    rwyHeading -= 360;
+                }
+            }
+            long crossWind = WxUtils.getCrossWindComponent( metar.windSpeedKnots,
+                    windDir, rwyHeading );
+            String side = "right";
+            if ( crossWind < 0 ) {
+                side = "left";
+                crossWind = Math.abs( crossWind );
+            }
+            if ( crossWind > 0 ) {
+                tv.setText( String.format( "Rwy %s with x-wind %d %s from %s",
+                        id, crossWind, crossWind > 1? "knots" : "knot", side ) );
+            } else {
+                tv.setText( String.format( "Rwy %s with no x-wind", id, crossWind ) );
+            }
+            tv.setVisibility( View.VISIBLE );
         }
     }
 
