@@ -260,7 +260,7 @@ public class WxDetailActivity extends ActivityBase {
 
             addWindRow( layout, metar );
             if ( metar.wshft ) {
-                String s = "Wind shift detected during past hour";
+                String s = "Wind shift of 45\u00B0 or more detected during past hour";
                 if ( metar.fropa ) {
                     s += " due to frontal passage";
                 }
@@ -525,7 +525,7 @@ public class WxDetailActivity extends ActivityBase {
         } else if ( metar.windDirDegrees == 0 ) {
             s.append( String.format( "Winds variable at %d knots", metar.windSpeedKnots ) );
         } else {
-            s.append( String.format( "From %s (%03d\u00B0) at %d knots",
+            s.append( String.format( "From %s (%03d\u00B0 true) at %d knots",
                     GeoUtils.getCardinalDirection( metar.windDirDegrees ),
                     metar.windDirDegrees, metar.windSpeedKnots ) );
             if ( metar.windGustKnots < Integer.MAX_VALUE ) {
