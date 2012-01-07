@@ -70,7 +70,8 @@ public class WxUtils {
         showColorizedDrawable( tv, metar.flightCategory, sky.getDrawable() );
     }
 
-    static public Drawable getWindBarbDrawable( Context context, Metar metar ) {
+    static public Drawable getWindBarbDrawable( Context context, Metar metar,
+            float declination ) {
         Drawable d = null;
         if ( metar.windDirDegrees > 0 && metar.windSpeedKnots > 0 ) {
             int resid = 0;
@@ -97,26 +98,31 @@ public class WxUtils {
             } else {
                 resid = R.drawable.windbarb0;
             }
-            d = GuiUtils.getRotatedDrawable( context, resid, metar.windDirDegrees );
+            d = GuiUtils.getRotatedDrawable( context, resid,
+                    GeoUtils.applyDeclination( metar.windDirDegrees, declination ) );
         }
         return d;
     }
 
-    static public void setColorizedWxDrawable( TextView tv, Metar metar ) {
+    static public void setColorizedWxDrawable( TextView tv, Metar metar, float declination ) {
         if ( metar.isValid ) {
             Resources res = tv.getResources();
             SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
             Drawable d1 = getColorizedDrawable( res, metar.flightCategory, sky.getDrawable() );
             Drawable d2 = null;
-            if ( metar.windDirDegrees > 0 && metar.windDirDegrees < Integer.MAX_VALUE
-                    && metar.windSpeedKnots > 0 && metar.windSpeedKnots < Integer.MAX_VALUE ) {
-                d2 = getWindBarbDrawable( tv.getContext(), metar );
+            if ( isWindAvailable( metar ) ) {
+                d2 = getWindBarbDrawable( tv.getContext(), metar, declination );
             }
             Drawable result = GuiUtils.combineDrawables( d1, d2 );
             GuiUtils.setTextViewDrawable( tv, result );
         } else {
             GuiUtils.setTextViewDrawable( tv, R.drawable.error );
         }
+    }
+
+    static public boolean isWindAvailable( Metar metar ) {
+        return ( metar.windDirDegrees > 0 && metar.windDirDegrees < Integer.MAX_VALUE
+        && metar.windSpeedKnots > 0 && metar.windSpeedKnots < Integer.MAX_VALUE );
     }
 
     static public float celsiusToFahrenheit( float tempCelsius ) {
@@ -191,6 +197,14 @@ public class WxUtils {
         float tvKelvin = getVirtualTemperature( tempCelsius, dewpointCelsius, stationPressureHg );
         float tvRankine = kelvinToRankine( tvKelvin );
         return Math.round( 145366*( 1-Math.pow( 17.326*stationPressureHg/tvRankine, 0.235 ) ) );
+    }
+
+    static public long getHeadWindComponent( long ws, long wd, long rd ) {
+        return Math.round(ws*Math.cos( Math.toRadians( wd-rd ) ) );
+    }
+
+    static public long getCrossWindComponent( long ws, long wd, long rd ) {
+        return Math.round( ws*Math.sin( Math.toRadians( wd-rd ) ) );
     }
 
 }
