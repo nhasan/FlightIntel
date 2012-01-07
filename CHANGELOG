@@ -5,6 +5,8 @@ v2.2.0 (1/7/2012)
 * Use magnetic wind direction for showing wind barb and crosswind calculations 
 * Handle the case when there is no dew point available
 * Show the alternate wx frequency where available
+* Added option to enable wx auto-fetch on 3G/4G (requested by a user)
+* Other fixes
 
 v2.1.0 (1/1/2012)
 =================
