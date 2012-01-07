@@ -1,5 +1,13 @@
+v2.2.0 (1/7/2012)
+=================
+* Workaround a FADDS data issue to show all available weather stations
+* Show usable direction with applicable crosswind for each runway when wx is available on site
+* Use magnetic wind direction for showing wind barb and crosswind calculations 
+* Handle the case when there is no dew point available
+* Show the alternate wx frequency where available
+
 v2.1.0 (1/1/2012)
-===================
+=================
 * Show wind barb in the weather summary icon
 * Show runway graphic with proportional size and runway heading
 * Auto-fetch the weather for an airport if connected to wifi
