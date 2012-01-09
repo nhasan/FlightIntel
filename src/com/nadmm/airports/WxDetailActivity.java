@@ -44,7 +44,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.utils.GuiUtils;
+import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar;
@@ -125,7 +125,7 @@ public class WxDetailActivity extends ActivityBase {
 
             Cursor awos = result[ 0 ];
             if ( !awos.moveToFirst() ) {
-                GuiUtils.showToast( WxDetailActivity.this, "Unable to get weather station info" );
+                UiUtils.showToast( WxDetailActivity.this, "Unable to get weather station info" );
                 finish();
                 return;
             }
@@ -543,7 +543,7 @@ public class WxDetailActivity extends ActivityBase {
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( getWindsDescription( metar ) );
         if ( metar.windDirDegrees > 0 ) {
-            Drawable wind = GuiUtils.getRotatedDrawable( this, R.drawable.windsock,
+            Drawable wind = UiUtils.getRotatedDrawable( this, R.drawable.windsock,
                     metar.windDirDegrees );
             tv.setCompoundDrawablesWithIntrinsicBounds( wind, null, null, null );
             tv.setCompoundDrawablePadding( convertDpToPx( 6 ) );

@@ -33,7 +33,7 @@ import android.util.DisplayMetrics;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class GuiUtils {
+public class UiUtils {
 
     private final static Handler sHandler;
     private final static Paint sPaint = new Paint( Paint.FILTER_BITMAP_FLAG );

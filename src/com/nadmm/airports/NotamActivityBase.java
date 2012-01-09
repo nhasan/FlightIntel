@@ -44,7 +44,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.nadmm.airports.utils.DataUtils;
-import com.nadmm.airports.utils.GuiUtils;
+import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 
 public class NotamActivityBase extends ActivityBase {
@@ -113,7 +113,7 @@ public class NotamActivityBase extends ActivityBase {
         try {
             getNotamsFromFAA( icaoCode, notamFile );
         } catch ( IOException e ) {
-            GuiUtils.showToast( NotamActivityBase.this, e.getMessage() );
+            UiUtils.showToast( NotamActivityBase.this, e.getMessage() );
         }
     }
 

@@ -31,7 +31,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Ils2;
-import com.nadmm.airports.utils.GuiUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class IlsDetailsActivity extends ActivityBase {
 
@@ -83,7 +83,7 @@ public class IlsDetailsActivity extends ActivityBase {
 
             Cursor ils1 = result[ 1 ];
             if ( !ils1.moveToFirst() ) {
-                GuiUtils.showToast( getApplicationContext(), "Unable to find ILS info" );
+                UiUtils.showToast( getApplicationContext(), "Unable to find ILS info" );
                 finish();
                 return;
             }

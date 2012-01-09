@@ -58,7 +58,7 @@ public class WxUtils {
         // Get a mutable copy of the drawable so each can be set to a different color
         Resources res = tv.getResources();
         Drawable d = getColorizedDrawable( res, flightCategory, resid );
-        GuiUtils.setTextViewDrawable( tv, d );
+        UiUtils.setTextViewDrawable( tv, d );
     }
 
     static public void setFlightCategoryDrawable( TextView tv, Metar metar ) {
@@ -98,7 +98,7 @@ public class WxUtils {
             } else {
                 resid = R.drawable.windbarb0;
             }
-            d = GuiUtils.getRotatedDrawable( context, resid,
+            d = UiUtils.getRotatedDrawable( context, resid,
                     GeoUtils.applyDeclination( metar.windDirDegrees, declination ) );
         }
         return d;
@@ -113,10 +113,10 @@ public class WxUtils {
             if ( isWindAvailable( metar ) ) {
                 d2 = getWindBarbDrawable( tv.getContext(), metar, declination );
             }
-            Drawable result = GuiUtils.combineDrawables( d1, d2 );
-            GuiUtils.setTextViewDrawable( tv, result );
+            Drawable result = UiUtils.combineDrawables( d1, d2 );
+            UiUtils.setTextViewDrawable( tv, result );
         } else {
-            GuiUtils.setTextViewDrawable( tv, R.drawable.error );
+            UiUtils.setTextViewDrawable( tv, R.drawable.error );
         }
     }
 

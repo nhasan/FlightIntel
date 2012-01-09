@@ -27,7 +27,7 @@ import android.os.Bundle;
 
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
-import com.nadmm.airports.utils.GuiUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class NavaidNotamActivity extends NotamActivityBase {
 
@@ -76,7 +76,7 @@ public class NavaidNotamActivity extends NotamActivityBase {
             setContentView( R.layout.navaid_notam_view );
 
             if ( result == null ) {
-                GuiUtils.showToast( getApplicationContext(), "Navaid not found" );
+                UiUtils.showToast( getApplicationContext(), "Navaid not found" );
                 finish();
                 return;
             }

@@ -36,7 +36,7 @@ import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.utils.DataUtils;
-import com.nadmm.airports.utils.GuiUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class RunwayDetailsActivity extends ActivityBase {
 
@@ -94,7 +94,7 @@ public class RunwayDetailsActivity extends ActivityBase {
 
             Cursor rwy = result[ 1 ];
             if ( !rwy.moveToFirst() ) {
-                GuiUtils.showToast( getApplicationContext(), "Unable to get runway information" );
+                UiUtils.showToast( getApplicationContext(), "Unable to get runway information" );
                 finish();
                 return;
             }

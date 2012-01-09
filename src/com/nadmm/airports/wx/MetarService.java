@@ -36,7 +36,7 @@ import android.app.IntentService;
 import android.content.Intent;
 
 import com.nadmm.airports.AirportsMain;
-import com.nadmm.airports.utils.GuiUtils;
+import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 
 public class MetarService extends IntentService {
@@ -132,7 +132,7 @@ public class MetarService extends IntentService {
             HttpResponse response = httpClient.execute( target, get );
             int status = response.getStatusLine().getStatusCode();
             if ( status != HttpStatus.SC_OK ) {
-                GuiUtils.showToast( this, "Unable to fetch METAR: "
+                UiUtils.showToast( this, "Unable to fetch METAR: "
                             + response.getStatusLine().getReasonPhrase() );
                 return false;
             }
@@ -148,7 +148,7 @@ public class MetarService extends IntentService {
             out.close();
             return true;
         } catch ( Exception e ) {
-            GuiUtils.showToast( this, "Unable to fetch METAR: "+e.getMessage() );
+            UiUtils.showToast( this, "Unable to fetch METAR: "+e.getMessage() );
             return false;
         }
     }

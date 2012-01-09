@@ -30,7 +30,7 @@ public class NetworkUtils {
                 Context.CONNECTIVITY_SERVICE );
         NetworkInfo network = connMan.getActiveNetworkInfo();
         if ( network == null || !network.isConnected() ) {
-            GuiUtils.showToast( context, "Please check your internet connection" );
+            UiUtils.showToast( context, "Please check your internet connection" );
             return false;
         }
 

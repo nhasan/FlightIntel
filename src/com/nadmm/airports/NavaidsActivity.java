@@ -39,7 +39,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.utils.GuiUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class NavaidsActivity extends ActivityBase {
 
@@ -210,7 +210,7 @@ public class NavaidsActivity extends ActivityBase {
            Cursor vor = result[ 1 ];
            Cursor ndb = result[ 2 ];
            if ( vor == null && ndb == null ) {
-               GuiUtils.showToast( getApplicationContext(), "No navaids found in the vicinity" );
+               UiUtils.showToast( getApplicationContext(), "No navaids found in the vicinity" );
                finish();
                return;
            }

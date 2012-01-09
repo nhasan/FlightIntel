@@ -81,7 +81,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Catalog;
-import com.nadmm.airports.utils.GuiUtils;
+import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 
@@ -1172,6 +1172,6 @@ public final class DownloadActivity extends ListActivity {
     }
 
     void showToast( String msg ) {
-        GuiUtils.showToast( this, msg );
+        UiUtils.showToast( this, msg );
     }
 }

@@ -63,7 +63,7 @@ import com.nadmm.airports.DatabaseManager.Tower7;
 import com.nadmm.airports.DatabaseManager.Wxl;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.utils.GuiUtils;
+import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar;
@@ -958,7 +958,7 @@ public class AirportDetailsActivity extends ActivityBase {
             }
         }
 
-        Drawable rwy = GuiUtils.getRotatedDrawable( this, resid, heading );
+        Drawable rwy = UiUtils.getRotatedDrawable( this, resid, heading );
         tv.setCompoundDrawablesWithIntrinsicBounds( rwy, null, null, null );
         tv.setCompoundDrawablePadding( convertDpToPx( 5 ) );
     }

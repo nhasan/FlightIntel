@@ -33,7 +33,7 @@ import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.Nav2;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.utils.DataUtils;
-import com.nadmm.airports.utils.GuiUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class NavaidDetailsActivity extends ActivityBase {
 
@@ -94,7 +94,7 @@ public class NavaidDetailsActivity extends ActivityBase {
         @Override
         protected void onResult( Cursor[] result ) {
             if ( result == null ) {
-                GuiUtils.showToast( getApplicationContext(), "Navaid not found" );
+                UiUtils.showToast( getApplicationContext(), "Navaid not found" );
                 finish();
                 return;
             }
