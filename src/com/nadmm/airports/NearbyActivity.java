@@ -161,9 +161,11 @@ public class NearbyActivity extends ActivityBase {
 
         @Override
         public void onLocationChanged( Location location ) {
-            mLastLocation = location;
-            NearbyTask task = new NearbyTask();
-            task.execute();
+            if ( GeoUtils.isBetterLocation( location, mLastLocation ) ) {
+                mLastLocation = location;
+                NearbyTask task = new NearbyTask();
+                task.execute();
+            }
         }
 
         @Override
