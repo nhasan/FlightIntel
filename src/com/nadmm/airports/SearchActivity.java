@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ public class SearchActivity extends ActivityBase {
     @Override
     protected void onResume() {
         super.onResume();
-        mFavorites = mDbManager.getFavorites();
+        mFavorites = mDbManager.getAptFavorites();
     }
 
     @Override
@@ -151,11 +151,11 @@ public class SearchActivity extends ActivityBase {
 
         switch ( item.getItemId() ) {
             case R.id.menu_add_favorites:
-                mDbManager.addToFavorites( siteNumber );
+                mDbManager.addToFavoriteAirports( siteNumber );
                 mFavorites.add( siteNumber );
                 break;
             case R.id.menu_remove_favorites:
-                mDbManager.removeFromFavorites( siteNumber );
+                mDbManager.removeFromFavoriteAirports( siteNumber );
                 mFavorites.remove( siteNumber );
                 break;
             case R.id.menu_view_details:

@@ -35,6 +35,8 @@ public class NavaidNotamActivity extends NotamActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setContentView( createContentView( R.layout.navaid_notam_view ) );
+
         Intent intent = getIntent();
         String navaidId = intent.getStringExtra( Nav1.NAVAID_ID );
         String navaidType = intent.getStringExtra( Nav1.NAVAID_TYPE );
@@ -44,14 +46,12 @@ public class NavaidNotamActivity extends NotamActivityBase {
 
     private final class NotamTask extends CursorAsyncTask {
 
-        String mIcaoCode;
-
         @Override
         protected Cursor[] doInBackground( String... params ) {
             Cursor[] result = new Cursor[ 1 ];
             String navaidId = params[ 0 ];
             String navaidType = params[ 1 ];
-            mIcaoCode = "K"+navaidId;
+            String icaoCode = "K"+navaidId;
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
 
@@ -66,25 +66,34 @@ public class NavaidNotamActivity extends NotamActivityBase {
                 return null;
             }
 
-            getNotams( mIcaoCode );
+            getNotams( icaoCode );
 
             return result;
         }
-        
+
         @Override
         protected void onResult( Cursor[] result ) {
-            setContentView( R.layout.navaid_notam_view );
-
-            if ( result == null ) {
-                UiUtils.showToast( getApplicationContext(), "Navaid not found" );
-                finish();
-                return;
-            }
-
-            showNavaidTitle( result[ 0 ] );
-            showNotams( mIcaoCode );
+            showDetails( result );
         }
 
+    }
+
+    protected void showDetails( Cursor[] result ) {
+        if ( result == null ) {
+            UiUtils.showToast( getApplicationContext(), "Navaid not found" );
+            finish();
+            return;
+        }
+
+        Cursor nav1 = result[ 0 ];
+        String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
+        getSupportActionBar().setTitle( id );
+        getSupportActionBar().setSubtitle( getTitle() );
+
+        showNavaidTitle( nav1 );
+        showNotams( "K"+id );
+
+        setContentShown( true );
     }
 
 }

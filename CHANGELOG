@@ -1,3 +1,12 @@
+v2.3.0 ()
+=================
+* Enhanced user interface
+* Mark wx stations as favorites
+* Added favorite wx stations screen
+* Wx can now be refreshed from the airport detail screen
+* Indicate gusting winds when showing runway wind data
+* Show gust factor in the wx detail screen
+
 v2.2.0 (1/7/2012)
 =================
 * Workaround a FADDS data issue to show all available weather stations

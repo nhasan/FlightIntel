@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,30 +21,38 @@ package com.nadmm.airports;
 
 import java.text.NumberFormat;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
 import android.text.format.Time;
 import android.util.Pair;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
+import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableLayout.LayoutParams;
@@ -57,24 +65,95 @@ import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.UiUtils;
 
-public class ActivityBase extends Activity {
+public class ActivityBase extends FragmentActivity {
 
     protected DatabaseManager mDbManager;
+    private MenuItem mRefreshItem;
+    private Drawable mRefreshDrawable;
     private LayoutInflater mInflater;
+    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
         mDbManager = DatabaseManager.instance( this );
         mInflater = getLayoutInflater();
-
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-        setContentView( R.layout.wait_msg );
+        overridePendingTransition( R.anim.fade_in, R.anim.fade_out );
+        super.onCreate( savedInstanceState );
     }
 
-    protected View inflate( int resource ) {
-        return mInflater.inflate( resource, null );
+    @Override
+    protected void onPause() {
+        overridePendingTransition( R.anim.fade_in, R.anim.fade_out );
+        super.onPause();
+    }
+
+    protected View createContentView( int id ) {
+        FrameLayout root = new FrameLayout( this );
+        root.setLayoutParams(new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT ) );
+
+        LinearLayout pframe = new LinearLayout( this );
+        pframe.setId( R.id.INTERNAL_PROGRESS_CONTAINER_ID );
+        pframe.setOrientation( LinearLayout.VERTICAL );
+        pframe.setGravity( Gravity.CENTER );
+
+        ProgressBar progress = new ProgressBar( this, null, android.R.attr.progressBarStyleLarge );
+        pframe.addView( progress, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT ) );
+        root.addView( pframe, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT ) );
+
+        FrameLayout lframe = new FrameLayout( this );
+        lframe.setId( R.id.INTERNAL_FRAGMENT_CONTAINER_ID );
+        lframe.setVisibility( View.GONE );
+
+        View view = inflate( id );
+        lframe.addView( view, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT ) );
+        root.addView( lframe, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT ) );
+
+        return root;
+    }
+
+    protected void setContentShown( boolean shown ) {
+        View progress = findViewById( R.id.INTERNAL_PROGRESS_CONTAINER_ID );
+        View content = findViewById( R.id.INTERNAL_FRAGMENT_CONTAINER_ID );
+        if ( shown ) {
+            progress.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_out ) );
+            content.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_in ) );
+            progress.setVisibility( View.GONE );
+            content.setVisibility( View.VISIBLE );
+        } else {
+            progress.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_in ) );
+            content.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_out ) );
+            progress.setVisibility( View.VISIBLE );
+            content.setVisibility( View.GONE );
+        }
+    }
+
+    protected void addFragment( Class<?> clss ) {
+        String tag = clss.getSimpleName();
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        Fragment f = fm.findFragmentByTag( tag );
+        if ( f == null ) {
+            f = Fragment.instantiate( this, clss.getName() );
+        }
+        ft.add( R.id.fragment_container, f, tag );
+        ft.commit();
+    }
+
+    protected Fragment getFragment( Class<?> clss ) {
+        String tag = clss.getSimpleName();
+        FragmentManager fm = getSupportFragmentManager();
+        return fm.findFragmentByTag( tag );
+    }
+
+    protected View inflate( int id ) {
+        return mInflater.inflate( id, null );
     }
 
     public Cursor getAirportDetails( String siteNumber ) {
@@ -206,11 +285,11 @@ public class ActivityBase extends Activity {
                 CheckBox cb = (CheckBox) v;
                 String siteNumber = (String) cb.getTag();
                 if ( cb.isChecked() ) {
-                    mDbManager.addToFavorites( siteNumber );
+                    mDbManager.addToFavoriteAirports( siteNumber );
                     Toast.makeText( ActivityBase.this, "Added to favorites list",
                             Toast.LENGTH_LONG ).show();
                 } else {
-                    mDbManager.removeFromFavorites( siteNumber );
+                    mDbManager.removeFromFavoriteAirports( siteNumber );
                     Toast.makeText( ActivityBase.this, "Removed from favorites list",
                             Toast.LENGTH_LONG ).show();
                 }
@@ -287,27 +366,33 @@ public class ActivityBase extends Activity {
         String city = awos.getString( awos.getColumnIndex( Airports.ASSOC_CITY ) );
         String state = awos.getString( awos.getColumnIndex( Airports.ASSOC_STATE ) );
         tv.setText( type+", "+city+", "+state );
-    }
 
-    protected void makeClickToCall( TextView tv ) {
-        if ( getPackageManager().hasSystemFeature( PackageManager.FEATURE_TELEPHONY ) ) {
-            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.phone, 0, 0, 0 );
-            tv.setCompoundDrawablePadding( convertDpToPx( 3 ) );
-            tv.setOnClickListener( new OnClickListener() {
+        String facilityId = awos.getString( awos.getColumnIndex( Airports.FAA_CODE ) );
+        CheckBox cb = (CheckBox) findViewById( R.id.airport_star );
+        cb.setChecked( mDbManager.isFavoriteWx( facilityId ) );
+        cb.setTag( facilityId );
+        cb.setOnClickListener( new OnClickListener() {
 
-                @Override
-                public void onClick( View v ) {
-                    TextView tv = (TextView) v;
-                    Intent intent = new Intent( Intent.ACTION_CALL,
-                            Uri.parse( "tel:"+tv.getText().toString() ) );
-                    startActivity( intent );
+            @Override
+            public void onClick( View v ) {
+                CheckBox cb = (CheckBox) v;
+                String facilityId = (String) cb.getTag();
+                if ( cb.isChecked() ) {
+                    mDbManager.addToFavoriteWx( facilityId );
+                    Toast.makeText( ActivityBase.this, "Added to favorites list",
+                            Toast.LENGTH_LONG ).show();
+                } else {
+                    mDbManager.removeFromFavoriteWx( facilityId );
+                    Toast.makeText( ActivityBase.this, "Removed from favorites list",
+                            Toast.LENGTH_LONG ).show();
                 }
+            }
 
-            } );
-        }
+        } );
     }
 
     protected int getSelectorResourceForRow( int curRow, int totRows ) {
+        // TODO: Add more states to the drawables
         if ( totRows == 1 ) {
             return R.drawable.row_selector;
         } else if ( curRow == 0 ) {
@@ -399,7 +484,7 @@ public class ActivityBase extends Activity {
         tv.setText( label );
         tv = (TextView) row.findViewById( R.id.item_value );
         tv.setText( phone );
-        makeClickToCall( tv );
+        UiUtils.makeClickToCall( this, tv );
         table.addView( row, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
@@ -409,7 +494,7 @@ public class ActivityBase extends Activity {
         innerLayout.setOrientation( LinearLayout.HORIZONTAL );
         TextView tv = new TextView( this );
         tv.setGravity( Gravity.LEFT );
-        tv.setPadding( convertDpToPx( 6 ), 2, 2, 2 );
+        tv.setPadding( UiUtils.convertDpToPx( this, 6 ), 2, 2, 2 );
         tv.setText( "\u2022 " );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
@@ -429,22 +514,56 @@ public class ActivityBase extends Activity {
         layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
     }
 
-    public int convertDpToPx( int dp ) {
-        return (int) TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP,
-                dp, getResources().getDisplayMetrics() );
+    public DatabaseManager getDbManager() {
+        return mDbManager;
+    }
+
+    public boolean postRunnable( Runnable r, long delayMillis ) {
+        return mHandler.postDelayed( r, delayMillis );
+    }
+
+    public void startRefreshAnimation() {
+        if ( mRefreshItem != null ) {
+            Resources res = getResources();
+            AnimationDrawable d = (AnimationDrawable) res.getDrawable( R.drawable.ic_popup_sync );
+            mRefreshItem.setIcon( d );
+            d.start();
+        }
+    }
+
+    public void stopRefreshAnimation() {
+        if ( mRefreshItem != null ) {
+            mRefreshItem.setIcon( mRefreshDrawable );
+        }
+    }
+
+    public void setRefreshItemVisible( Boolean visible ) {
+        if ( mRefreshItem != null ) {
+            mRefreshItem.setVisible( visible );
+        }
+    }
+
+    public void setRefreshItemEnabled( Boolean enable ) {
+        if ( mRefreshItem != null ) {
+            mRefreshItem.setVisible( enable );
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate( R.menu.mainmenu, menu );
-        return true;
+        mRefreshItem = menu.findItem( R.id.menu_refresh );
+        mRefreshDrawable = mRefreshItem.getIcon();
+        return super.onCreateOptionsMenu( menu );
     }
 
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
         switch ( item.getItemId() ) {
+        case android.R.id.home:
+            startHomeActivity();
+            return true;
         case R.id.menu_search:
             onSearchRequested();
             return true;
@@ -478,27 +597,29 @@ public class ActivityBase extends Activity {
         }
     }
 
+    protected void startHomeActivity() {
+        Class<?> clss = AirportsMain.getHomeActivity( this );
+        if ( getClass() != clss ) {
+            // Start home activity if it is not the current activity
+            Intent intent = new Intent( this, clss );
+            intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+            startActivity( intent );
+        }
+    }
+
     protected abstract class CursorAsyncTask extends AsyncTask<String, Void, Cursor[]> {
 
         @Override
         protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
         }
 
         @Override
         protected final void onPostExecute( Cursor[] result ) {
             onResult( result );
-
-            for ( Cursor c : result ) {
-                if ( c != null ) {
-                    c.close();
-                }
-            }
-
-            setProgressBarIndeterminateVisibility( false );
         }
 
         protected abstract void onResult( Cursor[] result );
 
     }
+
 }

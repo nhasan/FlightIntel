@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Ils2;
 import com.nadmm.airports.utils.UiUtils;
@@ -38,6 +39,8 @@ public class IlsDetailsActivity extends ActivityBase {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        setContentView( createContentView( R.layout.ils_detail_view ) );
 
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
@@ -79,8 +82,6 @@ public class IlsDetailsActivity extends ActivityBase {
 
         @Override
         protected void onResult( Cursor[] result ) {
-            setContentView( R.layout.ils_detail_view );
-
             Cursor ils1 = result[ 1 ];
             if ( !ils1.moveToFirst() ) {
                 UiUtils.showToast( getApplicationContext(), "Unable to find ILS info" );
@@ -88,17 +89,34 @@ public class IlsDetailsActivity extends ActivityBase {
                 return;
             }
 
-            Cursor apt = result[ 0 ];
-            showAirportTitle( apt );
-            showIlsDetails( result );
-            showLocalizerDetails( result );
-            showGlideslopeDetails( result );
-            showInnerMarkerDetails( result );
-            showMiddleMarkerDetails( result );
-            showOuterMarkerDetails( result );
-            showIlsRemarks( result );
+            showDetails( result );
         }
 
+    }
+
+    protected void showDetails( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        showAirportTitle( apt );
+        showIlsDetails( result );
+        showLocalizerDetails( result );
+        showGlideslopeDetails( result );
+        showInnerMarkerDetails( result );
+        showMiddleMarkerDetails( result );
+        showOuterMarkerDetails( result );
+        showIlsRemarks( result );
+
+        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null  || code.length() == 0 ) {
+            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        }
+        Cursor ils1 = result[ 1 ];
+        String rwyId = ils1.getString( ils1.getColumnIndex( Ils1.RUNWAY_ID ) );
+        String ilsType = ils1.getString( ils1.getColumnIndex( Ils1.ILS_TYPE ) );
+
+        getSupportActionBar().setTitle( code );
+        getSupportActionBar().setSubtitle( ilsType+" - Runway "+rwyId );
+
+        setContentShown( true );
     }
 
     protected void showIlsDetails( Cursor[] result ) {

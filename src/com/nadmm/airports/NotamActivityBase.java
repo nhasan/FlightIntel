@@ -80,7 +80,11 @@ public class NotamActivityBase extends ActivityBase {
                 continue;
             }
             TextView label = new TextView( this );
-            label.setPadding( convertDpToPx( 6 ), convertDpToPx( 12 ), convertDpToPx( 6 ), 0 );
+            label.setPadding(
+                    UiUtils.convertDpToPx( this, 6 ),
+                    UiUtils.convertDpToPx( this, 12 ),
+                    UiUtils.convertDpToPx( this, 6 ),
+                    0 );
             label.setTextAppearance( this, R.style.TextSmall_Bold );
             label.setText( subject );
             content.addView( label, new LinearLayout.LayoutParams(

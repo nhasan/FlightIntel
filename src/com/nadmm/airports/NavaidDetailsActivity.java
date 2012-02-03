@@ -41,6 +41,8 @@ public class NavaidDetailsActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setContentView( createContentView( R.layout.navaid_detail_view ) );
+
         Intent intent = getIntent();
         String navaidId = intent.getStringExtra( Nav1.NAVAID_ID );
         String navaidType = intent.getStringExtra( Nav1.NAVAID_TYPE );
@@ -99,14 +101,23 @@ public class NavaidDetailsActivity extends ActivityBase {
                 return;
             }
 
-            setContentView( R.layout.navaid_detail_view );
-
-            Cursor nav1 = result[ 0 ];
-            showNavaidTitle( nav1 );
-            showNavaidDetails( result );
-            showNavaidRemarks( result );
+            showDetails( result );
         }
 
+    }
+
+    protected void showDetails( Cursor[] result ) {
+        Cursor nav1 = result[ 0 ];
+
+        String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
+        getSupportActionBar().setTitle( id );
+        getSupportActionBar().setSubtitle( getTitle() );
+
+        showNavaidTitle( nav1 );
+        showNavaidDetails( result );
+        showNavaidRemarks( result );
+
+        setContentShown( true );
     }
 
     protected void showNavaidDetails( Cursor[] result ) {

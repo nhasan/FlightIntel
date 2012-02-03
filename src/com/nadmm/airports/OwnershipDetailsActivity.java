@@ -33,12 +33,15 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class OwnershipDetailsActivity extends ActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        setContentView( createContentView( R.layout.ownership_detail_view ) );
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
@@ -69,16 +72,27 @@ public class OwnershipDetailsActivity extends ActivityBase {
 
         @Override
         protected void onResult( Cursor[] result ) {
-            setContentView( R.layout.ownership_detail_view );
-
-            Cursor apt = result[ 0 ];
-            showAirportTitle( apt );
-            showOwnershipType( result );
-            showOwnerInfo( result );
-            showManagerInfo( result );
-            showRemarks( result );
+            showDetails( result );
         }
 
+    }
+
+    protected void showDetails( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        showAirportTitle( apt );
+        showOwnershipType( result );
+        showOwnerInfo( result );
+        showManagerInfo( result );
+        showRemarks( result );
+
+        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null  || code.length() == 0 ) {
+            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        }
+        getSupportActionBar().setTitle( code );
+        getSupportActionBar().setSubtitle( getTitle() );
+
+        setContentShown( true );
     }
 
     protected void showOwnershipType( Cursor[] result ) {
@@ -157,7 +171,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
         TextView tv = new TextView( this );
         tv.setPadding( 0, 1, 0, 1 );
         tv.setText( phone );
-        makeClickToCall( tv );
+        UiUtils.makeClickToCall( this, tv );
         layout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT ) );
     }

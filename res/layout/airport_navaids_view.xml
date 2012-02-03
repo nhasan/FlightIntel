@@ -39,7 +39,7 @@
             <TextView android:id="@+id/detail_navaids_vor_label"
                     style="@style/TextSmall.Bold"
                     android:padding="4dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="0dp"
                     android:text="@string/vor"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
@@ -50,7 +50,7 @@
             <TextView android:id="@+id/detail_navaids_ndb_label"
                     style="@style/TextSmall.Bold"
                     android:padding="4dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="6dp"
                     android:text="@string/ndb"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />

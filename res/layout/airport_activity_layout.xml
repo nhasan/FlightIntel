@@ -19,9 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
  -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_nearby" 
-          android:title="@string/nearby"
-          android:icon="@android:drawable/ic_menu_mylocation" />
-</menu>
-  
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+    <LinearLayout android:id="@+id/activity_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        <include layout="@layout/airport_title_layout" />
+        <LinearLayout android:id="@+id/fragment_container"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+    </LinearLayout>
+</ScrollView>

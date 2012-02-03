@@ -41,6 +41,8 @@ public class AlmanacActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setContentView( createContentView( R.layout.almanac_detail_view ) );
+
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         AlmanacDetailsTask task = new AlmanacDetailsTask();
@@ -59,13 +61,24 @@ public class AlmanacActivity extends ActivityBase {
 
         @Override
         protected void onResult( Cursor[] result ) {
-            setContentView( R.layout.almanac_detail_view );
-
-            Cursor apt = result[ 0 ];
-            showAirportTitle( apt );
-            showSolarInfo( result );
+            showDetails( result );
         }
 
+    }
+
+    protected void showDetails( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        showAirportTitle( apt );
+        showSolarInfo( result );
+
+        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null  || code.length() == 0 ) {
+            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        }
+        getSupportActionBar().setTitle( code );
+        getSupportActionBar().setSubtitle( getTitle() );
+
+        setContentShown( true );
     }
 
     private void showSolarInfo( Cursor[] result ) {
@@ -103,18 +116,30 @@ public class AlmanacActivity extends ActivityBase {
                 format.format( morningTwilight.getTime() ) );
 
         layout = (TableLayout) findViewById( R.id.sunrise_info_layout );
-        format.setTimeZone( local );
-        addRow( layout, "Sunrise (Local)", format.format( sunrise.getTime() ) );
-        addSeparator( layout );
-        format.setTimeZone( utc );
-        addRow( layout, "Sunrise (UTC)", format.format( sunrise.getTime() ) );
+        if ( sunrise != null ) {
+            format.setTimeZone( local );
+            addRow( layout, "Sunrise (Local)", format.format( sunrise.getTime() ) );
+            addSeparator( layout );
+            format.setTimeZone( utc );
+            addRow( layout, "Sunrise (UTC)", format.format( sunrise.getTime() ) );
+        } else {
+            addRow( layout, "Sunrise (Local)", "Sun does not rise" );
+            addSeparator( layout );
+            addRow( layout, "Sunrise (UTC)", "Sun does not rise" );
+        }
 
         layout = (TableLayout) findViewById( R.id.sunset_info_layout );
-        format.setTimeZone( local );
-        addRow( layout, "Sunset (Local)", format.format( sunset.getTime() ) );
-        addSeparator( layout );
-        format.setTimeZone( utc );
-        addRow( layout, "Sunset (UTC)", format.format( sunset.getTime() ) );
+        if ( sunset != null ) {
+            format.setTimeZone( local );
+            addRow( layout, "Sunset (Local)", format.format( sunset.getTime() ) );
+            addSeparator( layout );
+            format.setTimeZone( utc );
+            addRow( layout, "Sunset (UTC)", format.format( sunset.getTime() ) );
+        } else {
+            addRow( layout, "Sunset (Local)", "Sun does not set" );
+            addSeparator( layout );
+            addRow( layout, "Sunset (UTC)", "Sun does not set" );
+        }
 
         layout = (TableLayout) findViewById( R.id.evening_info_layout );
         format.setTimeZone( local );

@@ -33,6 +33,8 @@ public class AirportNotamActivity extends NotamActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setContentView( createContentView( R.layout.airport_notam_view ) );
+
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         NotamTask task = new NotamTask();
@@ -41,8 +43,6 @@ public class AirportNotamActivity extends NotamActivityBase {
 
     private final class NotamTask extends CursorAsyncTask {
 
-        String mIcaoCode;
-
         @Override
         protected Cursor[] doInBackground( String... params ) {
             Cursor[] result = new Cursor[ 1 ];
@@ -50,10 +50,10 @@ public class AirportNotamActivity extends NotamActivityBase {
             Cursor apt = getAirportDetails( siteNumber );
             result[ 0 ] = apt;
 
-            mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-            if ( mIcaoCode == null || mIcaoCode.length() == 0 ) {
+            String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+            if ( icaoCode == null || icaoCode.length() == 0 ) {
                 String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-                mIcaoCode = "K"+faaCode;
+                icaoCode = "K"+faaCode;
             }
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
@@ -61,22 +61,40 @@ public class AirportNotamActivity extends NotamActivityBase {
             boolean showGPS = prefs.getBoolean( PreferencesActivity.KEY_SHOW_GPS_NOTAMS, false );
             if ( showGPS ) {
                 // Also request GPS NOTAMs
-                mIcaoCode += ",KGPS";
+                icaoCode += ",KGPS";
             }
 
-            getNotams( mIcaoCode );
+            getNotams( icaoCode );
 
             return result;
         }
 
         @Override
         protected void onResult( Cursor[] result ) {
-            setContentView( R.layout.airport_notam_view );
-
-            showAirportTitle( result[ 0 ] );
-            showNotams( mIcaoCode );
+            showDetails( result );
         }
 
+    }
+
+    protected void showDetails( Cursor[] result ) {
+        Cursor apt = result [ 0 ];
+        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( icaoCode == null || icaoCode.length() == 0 ) {
+            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            icaoCode = "K"+faaCode;
+        }
+
+        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null  || code.length() == 0 ) {
+            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        }
+        getSupportActionBar().setTitle( code );
+        getSupportActionBar().setSubtitle( getTitle() );
+
+        showAirportTitle( apt );
+        showNotams( icaoCode );
+
+        setContentShown( true );
     }
 
 }

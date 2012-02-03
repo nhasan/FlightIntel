@@ -40,15 +40,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
+import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
+import android.util.Log;
 import android.util.Pair;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
-import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Aff3;
@@ -60,67 +62,43 @@ import com.nadmm.airports.DatabaseManager.Tower1;
 import com.nadmm.airports.DatabaseManager.Tower3;
 import com.nadmm.airports.DatabaseManager.Tower6;
 import com.nadmm.airports.DatabaseManager.Tower7;
+import com.nadmm.airports.DatabaseManager.Tower8;
 import com.nadmm.airports.DatabaseManager.Wxl;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.MetarService;
 
 public class AirportDetailsActivity extends ActivityBase {
 
-    private Bundle mExtras;
-    private Location mLocation;
-    private float mDeclination;
-    private String mIcaoCode;
-    private BroadcastReceiver mReceiver;
-    private HashSet<TextView> mAwosViews;
-    private HashSet<TextView> mRunwayViews;
+    protected Location mLocation;
+    protected float mDeclination;
+    protected String mSiteNumber;
 
-    private final String DISTANCE = "DISTANCE";
-    private final String BEARING = "BEARING";
+    private final static String DISTANCE = "DISTANCE";
+    private final static String BEARING = "BEARING";
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mAwosViews = new HashSet<TextView>();
-        mRunwayViews = new HashSet<TextView>();
-
-        mReceiver = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
-                showWxInfo( metar );
-            }
-
-        };
-
         Intent intent = getIntent();
-        String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
+        mSiteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
+
+        View view = createContentView( R.layout.airport_activity_layout );
+        setContentView( view );
+        setContentShown( false );
+
+        addFragment( AirportDetailsFragment.class );
+    }
+
+    protected AirportDetailsTask startTask() {
         AirportDetailsTask task = new AirportDetailsTask();
-        task.execute( siteNumber );
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction( MetarService.ACTION_GET_METAR );
-        registerReceiver( mReceiver, filter );
-        //Request metar from cache in case user navigates back to this activity
-        requestMetars();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        unregisterReceiver( mReceiver );
+        task.execute( mSiteNumber );
+        return task;
     }
 
     private final class AwosData implements Comparable<AwosData> {
@@ -172,18 +150,25 @@ public class AirportDetailsActivity extends ActivityBase {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
+            Log.d( getClass().getSimpleName(), "doInBackground()" );
             String siteNumber = params[ 0 ];
 
-            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 8 ];
+            DatabaseManager dbManager = getDbManager();
+            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+            Cursor[] cursors = new Cursor[ 9 ];
 
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
 
-            mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-            if ( mIcaoCode == null || mIcaoCode.length() == 0 ) {
-                mIcaoCode = "K"+apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            }
+            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+            double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+            int elev_msl = apt.getInt( apt.getColumnIndex( Airports.ELEVATION_MSL ) );
+
+            mLocation = new Location( "" );
+            mLocation.setLatitude( lat );
+            mLocation.setLongitude( lon );
+            mLocation.setAltitude( elev_msl );
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Runways.TABLE_NAME );
@@ -217,7 +202,6 @@ public class AirportDetailsActivity extends ActivityBase {
             cursors[ 4 ] = c;
 
             if ( !c.moveToFirst() ) {
-                String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Tower6.TABLE_NAME );
                 c = builder.query( db, new String[] { "*" },
@@ -225,14 +209,6 @@ public class AirportDetailsActivity extends ActivityBase {
                         new String[] { faaCode }, null, null, Tower6.ELEMENT_NUMBER, null );
                 cursors[ 5 ] = c;
             }
-
-            double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
-            double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-            int elev_msl = apt.getInt( apt.getColumnIndex( Airports.ELEVATION_MSL ) );
-            mLocation = new Location( "" );
-            mLocation.setLatitude( lat );
-            mLocation.setLongitude( lon );
-            mLocation.setAltitude( elev_msl );
 
             // Get the magnetic declination at this location
             mDeclination = GeoUtils.getMagneticDeclination( mLocation );
@@ -263,10 +239,10 @@ public class AirportDetailsActivity extends ActivityBase {
             builder = new SQLiteQueryBuilder();
             builder.setTables( Awos.TABLE_NAME+" w LEFT JOIN "+Airports.TABLE_NAME+" a"
                     +" ON w."+Awos.SITE_NUMBER+" = a."+Airports.SITE_NUMBER );
+
             c = builder.query( db, new String[] { "w.*, a."+Airports.ICAO_CODE,
                     "a."+Airports.FACILITY_NAME }, selection, selectionArgs,
                     null, null, null, null );
-
             if ( c.moveToFirst() ) {
                 do {
                     String icaoCode = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
@@ -286,19 +262,19 @@ public class AirportDetailsActivity extends ActivityBase {
             c.close();
 
             // Get the stations that are not in AWOS table
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Wxl.TABLE_NAME+" w JOIN "+Airports.TABLE_NAME+" a"
+                    +" ON w."+Wxl.LOCATION_ID+" = a."+Airports.FAA_CODE );
             selection = "("
                     +Wxl.LOC_LATITUDE_DEGREES+">=? AND "+Wxl.LOC_LATITUDE_DEGREES+"<=?"
                     +") AND ("+Wxl.LOC_LONGITUDE_DEGREES+">=? "
                     +(isCrossingMeridian180? "OR " : "AND ")+Wxl.LOC_LONGITUDE_DEGREES+"<=?) "
                     +"AND "+Wxl.LOCATION_ID+" not in ( select "
                     +Awos.WX_SENSOR_IDENT+" from "+Awos.TABLE_NAME+")";
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Wxl.TABLE_NAME+" w JOIN "+Airports.TABLE_NAME+" a"
-                    +" ON w."+Wxl.LOCATION_ID+" = a."+Airports.FAA_CODE );
+
             c = builder.query( db, new String[] { "w.*, a."+Airports.ICAO_CODE,
                     "a."+Airports.FACILITY_NAME }, selection, selectionArgs,
                     null, null, null, null );
-
             if ( c.moveToFirst() ) {
                 do {
                     String icaoCode = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
@@ -361,683 +337,861 @@ public class AirportDetailsActivity extends ActivityBase {
                     new String[] { faa_code }, null, null, null, null );
             cursors[ 7 ] = c;
 
-            // Extras bundle for "Nearby" activity
-            mExtras = new Bundle();
-            String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-            if ( code == null  || code.length() == 0 ) {
-                code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            }
-            mExtras.putString( NearbyActivity.APT_CODE, code );
-            mExtras.putParcelable( NearbyActivity.APT_LOCATION, mLocation );
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Tower8.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" }, Tower8.FACILITY_ID+"=? ",
+                    new String[] { faaCode }, null, null, null, null );
+            cursors[ 8 ] = c;
 
             return cursors;
         }
 
         @Override
         protected void onResult( Cursor[] result ) {
-            setContentView( R.layout.airport_detail_view );
+            AirportDetailsFragment f = (AirportDetailsFragment) getFragment(
+                    AirportDetailsFragment.class );
+            f.onResult( result );
+        }
 
-            Cursor apt = result[ 0 ];
-            showAirportTitle( apt );
-            showCommunicationsDetails( result );
-            showRunwayDetails( result );
-            showAwosDetails( result );
-            showOperationsDetails( result );
-            showRemarks( result );
-            showServicesDetails( result );
-            showOtherDetails( result );
+    }
+
+    public static class AirportDetailsFragment extends FragmentBase {
+
+        private final HashSet<TextView> mAwosViews = new HashSet<TextView>();
+        private final HashSet<TextView> mRunwayViews = new HashSet<TextView>();
+        private BroadcastReceiver mReceiver;
+        private Bundle mExtras;
+        private Location mLocation;
+        private float mDeclination;
+        private String mIcaoCode;
+        private Cursor[] mCursors;
+        AirportDetailsTask mTask;
+        int mWxUpdates = 0;
+
+        @Override
+        public void onCreate( Bundle savedInstanceState ) {
+            super.onCreate( savedInstanceState );
+            mReceiver = new BroadcastReceiver() {
+
+                @Override
+                public void onReceive( Context context, Intent intent ) {
+                    Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
+                    showWxInfo( metar );
+
+                    ++mWxUpdates;
+                    if ( mWxUpdates == mAwosViews.size() ) {
+                        // We have all the wx updates, stop the refresh animation
+                        mWxUpdates = 0;
+                        ( (AirportDetailsActivity) getActivityBase() ).stopRefreshAnimation();
+                    }
+                }
+
+            };
+        }
+
+        @Override
+        public View onCreateView( LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState ) {
+            View view = inflater.inflate( R.layout.airport_detail_view, container, false );
+            return view;
+        }
+
+        @Override
+        public void onActivityCreated( Bundle savedInstanceState ) {
+            super.onActivityCreated( savedInstanceState );
+            AirportDetailsActivity activity = (AirportDetailsActivity) getActivityBase();
+            mTask = activity.startTask();
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            IntentFilter filter = new IntentFilter();
+            filter.addAction( MetarService.ACTION_GET_METAR );
+            getActivityBase().registerReceiver( mReceiver, filter );
+            // Post it for later to allow framework to create the menu
+            getActivityBase().postRunnable( new Runnable() {
+
+                @Override
+                public void run() {
+                    requestMetars( false );
+                }
+
+            }, 1000 );
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            getActivityBase().unregisterReceiver( mReceiver );
+            if ( mTask != null ) {
+                mTask.cancel( true );
+            }
+        }
+
+        public void onResult( Cursor[] result ) {
+            mCursors = result;
+            showDetails();
+            mTask = null;
+        }
+
+        protected void showDetails() {
+            Cursor apt = mCursors[ 0 ];
+
+            double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+            double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+            int elev_msl = apt.getInt( apt.getColumnIndex( Airports.ELEVATION_MSL ) );
+            mLocation = new Location( "" );
+            mLocation.setLatitude( lat );
+            mLocation.setLongitude( lon );
+            mLocation.setAltitude( elev_msl );
+
+            // Get the magnetic declination at this location
+            mDeclination = GeoUtils.getMagneticDeclination( mLocation );
+
+            mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+            if ( mIcaoCode == null || mIcaoCode.length() == 0 ) {
+                mIcaoCode = "K"+apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            }
+
+            // Extras bundle for "Nearby" activity
+            mExtras = new Bundle();
+            String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+            if ( code == null  || code.length() == 0 ) {
+                code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            }
+            
+            mExtras.putString( NearbyActivity.APT_CODE, code );
+            mExtras.putParcelable( NearbyActivity.APT_LOCATION, mLocation );
+
+            getActivityBase().getSupportActionBar().setTitle( code );
+            getActivityBase().getSupportActionBar().setSubtitle( getActivityBase().getTitle() );
+            getActivityBase().showAirportTitle( apt );
+
+            showCommunicationsDetails();
+            showRunwayDetails();
+            showAwosDetails();
+            showOperationsDetails();
+            showRemarks();
+            showServicesDetails();
+            showOtherDetails();
 
             TextView tv = (TextView) findViewById( R.id.effective_date );
             tv.setText( "Effective date: "
                     +apt.getString( apt.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
-        }
 
-    }
+            requestMetars( false );
 
-    protected void requestMetars() {
-        // Now get the METAR if already in the cache
-        for ( TextView tv : mAwosViews ) {
-            String icaoCode = (String) tv.getTag();
-            Intent service = new Intent( AirportDetailsActivity.this, MetarService.class );
-            service.setAction( MetarService.ACTION_GET_METAR );
-            service.putExtra( MetarService.STATION_ID, icaoCode );
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-            boolean alwaysAutoFetch = prefs.getBoolean(
-                    PreferencesActivity.ALWAYS_AUTO_FETCH_WEATHER, false );
-            if ( !alwaysAutoFetch && !NetworkUtils.isConnectedToWifi( this ) ) {
-                service.putExtra( MetarService.CACHE_ONLY, true );
+            for ( Cursor c : mCursors ) {
+                if ( c != null ) {
+                    c.close();
+                }
             }
-            startService( service );
-        }
-    }
+            mCursors = null;
 
-    protected void showCommunicationsDetails( Cursor[] result ) {
-        Cursor apt = result[ 0 ];
-        String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-
-        TableLayout layout = (TableLayout) findViewById( R.id.detail_comm_layout );
-        int row = 0;
-
-        String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
-        if ( ctaf.length() > 0 ) {
-            ++row;
-            addRow( layout, "CTAF", ctaf );
+            getActivityBase().setContentShown( true );
         }
 
-        String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
-        if ( unicom.length() > 0 ) {
-            if ( row > 0 ) {
-                addSeparator( layout );
+        protected void showCommunicationsDetails() {
+            Cursor apt = mCursors[ 0 ];
+            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
+
+            TableLayout layout = (TableLayout) findViewById( R.id.detail_comm_layout );
+            int row = 0;
+
+            String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
+            if ( ctaf.length() > 0 ) {
+                ++row;
+                addRow( layout, "CTAF", ctaf );
             }
-            ++row;
-            addRow( layout, "Unicom", DataUtils.decodeUnicomFreq( unicom ) );
-        }
 
-        Cursor twr1 = result[ 3 ];
-        if ( twr1.moveToFirst() ) {
-            String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
-            if ( !facilityType.equals( "NON-ATCT" ) ) {
+            String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
+            if ( unicom.length() > 0 ) {
                 if ( row > 0 ) {
                     addSeparator( layout );
                 }
-                Intent intent = new Intent( this, CommDetailsActivity.class );
-                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
                 ++row;
-                int resId = getSelectorResourceForRow( row-1, row+1 );
-                addClickableRow( layout, "ATC", intent, resId );
-            } else {
-                String apchRadioCall =  twr1.getString( twr1.getColumnIndex(
-                        Tower1.RADIO_CALL_APCH ) );
-                String depRadioCall =  twr1.getString( twr1.getColumnIndex(
-                        Tower1.RADIO_CALL_DEP ) );
-                Cursor twr7 = result[ 4 ];
-                if ( twr7.moveToFirst() ) {
-                    HashMap<String, ArrayList<Pair<String, String>>> map =
-                        new HashMap<String, ArrayList<Pair<String, String>>>();
-                    do {
-                        String freq = twr7.getString( twr7.getColumnIndex(
-                                Tower7.SATELLITE_AIRPORT_FREQ ) );
-                        String extra = "";
-                        String freqUse = twr7.getString( twr7.getColumnIndex(
-                                Tower7.SATELLITE_AIRPORT_FREQ_USE ) );
-                        int i = 0;
-                        while ( i < freq.length() ) {
-                            char c = freq.charAt( i );
-                            if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
-                                ++i;
-                                continue;
-                            }
-                            extra = freq.substring( i );
-                            freq = freq.substring( 0, i );
-                            break;
-                        }
-                        if ( freqUse.contains( "APCH/" ) ) {
-                            addFrequencyToMap( map, apchRadioCall+" Approach", freq, extra );
-                        } else if ( freqUse.contains( "DEP/" ) ) {
-                            addFrequencyToMap( map, depRadioCall+" Departure", freq, extra );
-                        }
-                        if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC DEL" ) ) {
-                            addFrequencyToMap( map, "Clearance Delivery", freq, extra );
-                        }
-                    } while ( twr7.moveToNext() );
+                addRow( layout, "Unicom", DataUtils.decodeUnicomFreq( unicom ) );
+            }
 
-                    for ( String key : map.keySet() ) {
-                        for ( Pair<String, String> pair : map.get( key ) ) {
+            Cursor twr1 = mCursors[ 3 ];
+            if ( twr1.moveToFirst() ) {
+                String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
+                if ( !facilityType.equals( "NON-ATCT" ) ) {
+                    if ( row > 0 ) {
+                        addSeparator( layout );
+                    }
+                    Intent intent = new Intent( getActivity(), CommDetailsActivity.class );
+                    intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                    ++row;
+                    int resId = getSelectorResourceForRow( row-1, row+1 );
+                    addClickableRow( layout, "ATC", intent, resId );
+                } else {
+                    String apchRadioCall =  twr1.getString( twr1.getColumnIndex(
+                            Tower1.RADIO_CALL_APCH ) );
+                    String depRadioCall =  twr1.getString( twr1.getColumnIndex(
+                            Tower1.RADIO_CALL_DEP ) );
+                    Cursor twr7 = mCursors[ 4 ];
+                    if ( twr7.moveToFirst() ) {
+                        HashMap<String, ArrayList<Pair<String, String>>> map =
+                            new HashMap<String, ArrayList<Pair<String, String>>>();
+                        do {
+                            String freq = twr7.getString( twr7.getColumnIndex(
+                                    Tower7.SATELLITE_AIRPORT_FREQ ) );
+                            String extra = "";
+                            String freqUse = twr7.getString( twr7.getColumnIndex(
+                                    Tower7.SATELLITE_AIRPORT_FREQ_USE ) );
+                            int i = 0;
+                            while ( i < freq.length() ) {
+                                char c = freq.charAt( i );
+                                if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
+                                    ++i;
+                                    continue;
+                                }
+                                extra = freq.substring( i );
+                                freq = freq.substring( 0, i );
+                                break;
+                            }
+                            if ( freqUse.contains( "APCH/" ) ) {
+                                addFrequencyToMap( map, apchRadioCall+" Approach", freq, extra );
+                            } else if ( freqUse.contains( "DEP/" ) ) {
+                                addFrequencyToMap( map, depRadioCall+" Departure", freq, extra );
+                            }
+                            if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC DEL" ) ) {
+                                addFrequencyToMap( map, "Clearance Delivery", freq, extra );
+                            }
+                        } while ( twr7.moveToNext() );
+
+                        for ( String key : map.keySet() ) {
+                            for ( Pair<String, String> pair : map.get( key ) ) {
+                                if ( row > 0 ) {
+                                    addSeparator( layout );
+                                }
+                                addRow( layout, key, pair );
+                                ++row;
+                            }
+                        }
+                    }
+
+                    Cursor aff3 = mCursors[ 7 ];
+                    if ( aff3.moveToFirst() ) {
+                        do {
+                            String artcc = aff3.getString( aff3.getColumnIndex( Aff3.ARTCC_ID ) );
+                            Double freq = aff3.getDouble( aff3.getColumnIndex( Aff3.SITE_FREQUENCY ) );
+                            String alt = aff3.getString( aff3.getColumnIndex( Aff3.FREQ_ALTITUDE ) );
+                            String extra = "("+alt+" altitude)";
+                            String type = aff3.getString( aff3.getColumnIndex( Aff3.FACILITY_TYPE ) );
+                            if ( !type.equals( "ARTCC" ) ) {
+                                extra = aff3.getString( aff3.getColumnIndex( Aff3.SITE_LOCATION ) )
+                                        +" "+type+" "+extra;
+                            }
                             if ( row > 0 ) {
                                 addSeparator( layout );
                             }
-                            addRow( layout, key, pair );
+                            addRow( layout, DataUtils.decodeArtcc( artcc ),
+                                    Pair.create( String.format( "%.3f", freq ), extra ) );
                             ++row;
-                        }
+                        } while ( aff3.moveToNext() );
                     }
                 }
+            }
 
-                Cursor aff3 = result[ 7 ];
-                if ( aff3.moveToFirst() ) {
-                    do {
-                        String artcc = aff3.getString( aff3.getColumnIndex( Aff3.ARTCC_ID ) );
-                        Double freq = aff3.getDouble( aff3.getColumnIndex( Aff3.SITE_FREQUENCY ) );
-                        String alt = aff3.getString( aff3.getColumnIndex( Aff3.FREQ_ALTITUDE ) );
-                        String extra = "("+alt+" altitude)";
-                        String type = aff3.getString( aff3.getColumnIndex( Aff3.FACILITY_TYPE ) );
-                        if ( !type.equals( "ARTCC" ) ) {
-                            extra = aff3.getString( aff3.getColumnIndex( Aff3.SITE_LOCATION ) )
-                                    +" "+type+" "+extra;
+            if ( row > 0 ) {
+                addSeparator( layout );
+            }
+
+            ++row;
+            Intent fss = new Intent( getActivity(), FssCommActivity.class );
+            fss.putExtra( Airports.SITE_NUMBER, siteNumber );
+            int resId = getSelectorResourceForRow( row, row+2 );
+            addClickableRow( layout, "FSS outlets", fss, resId );
+
+            addSeparator( layout );
+
+            ++row;
+            Intent navaids = new Intent( getActivity(), NavaidsActivity.class );
+            navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
+            resId = getSelectorResourceForRow( row, row+1 );
+            addClickableRow( layout, "Navaids", navaids, resId );
+        }
+
+        protected void addFrequencyToMap( HashMap<String, ArrayList<Pair<String, String>>> map,
+                String freqUse, String freq, String extra ) {
+            ArrayList<Pair<String, String>> list = map.get( freqUse );
+            if ( list == null ) {
+                list = new ArrayList<Pair<String, String>>();
+            }
+            list.add( Pair.create( String.format( "%.3f", Double.valueOf( freq ) ), extra.trim() ) );
+            map.put( freqUse, list );
+        }
+
+        protected void showRunwayDetails() {
+            TableLayout rwyLayout = (TableLayout) findViewById( R.id.detail_rwy_layout );
+            TableLayout heliLayout = (TableLayout) findViewById( R.id.detail_heli_layout );
+            TextView tv;
+            int rwyNum = 0;
+            int heliNum = 0;
+
+            Cursor rwy = mCursors[ 1 ];
+            if ( rwy.moveToFirst() ) {
+                int rwyTot = 0;
+                int heliTot = 0;
+                do {
+                    String rwyId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
+                    if ( rwyId.startsWith( "H" ) ) {
+                        ++heliTot;
+                    } else {
+                        ++rwyTot;
+                    }
+                } while ( rwy.moveToNext() );
+
+                rwy.moveToFirst();
+                do {
+                    String rwyId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
+                    if ( rwyId.startsWith( "H" ) ) {
+                        // This is a helipad
+                        if ( heliNum > 0 ) {
+                            addSeparator( heliLayout );
                         }
-                        if ( row > 0 ) {
-                            addSeparator( layout );
+                        int resId = getSelectorResourceForRow( heliNum, heliTot );
+                        addRunwayRow( heliLayout, rwy, resId );
+                        ++heliNum;
+                    } else {
+                        // This is a runway
+                        if ( rwyNum > 0 ) {
+                            addSeparator( rwyLayout );
                         }
-                        addRow( layout, DataUtils.decodeArtcc( artcc ),
-                                Pair.create( String.format( "%.3f", freq ), extra ) );
-                        ++row;
-                    } while ( aff3.moveToNext() );
-                }
+                        int resId = getSelectorResourceForRow( rwyNum, rwyTot );
+                        addRunwayRow( rwyLayout, rwy, resId );
+                        ++rwyNum;
+                    }
+                } while ( rwy.moveToNext() );
+            }
+
+            if ( rwyNum == 0 ) {
+                // No runways so remove the section
+                tv = (TextView) findViewById( R.id.detail_rwy_label );
+                tv.setVisibility( View.GONE );
+                rwyLayout.setVisibility( View.GONE );
+            }
+            if ( heliNum == 0 ) {
+                // No helipads so remove the section
+                tv = (TextView) findViewById( R.id.detail_heli_label );
+                tv.setVisibility( View.GONE );
+                heliLayout.setVisibility( View.GONE );
             }
         }
 
-        if ( row > 0 ) {
-            addSeparator( layout );
-        }
+        protected void showAwosDetails() {
+            TextView label = (TextView) findViewById( R.id.detail_awos_label );
+            TableLayout layout = (TableLayout) findViewById( R.id.detail_awos_layout );
+            Cursor awos = mCursors[ 6 ];
 
-        ++row;
-        Intent fss = new Intent( this, FssCommActivity.class );
-        fss.putExtra( Airports.SITE_NUMBER, siteNumber );
-        int resId = getSelectorResourceForRow( row, row+2 );
-        addClickableRow( layout, "FSS outlets", fss, resId );
-
-        addSeparator( layout );
-
-        ++row;
-        Intent navaids = new Intent( this, NavaidsActivity.class );
-        navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
-        resId = getSelectorResourceForRow( row, row+1 );
-        addClickableRow( layout, "Navaids", navaids, resId );
-    }
-
-    protected void addFrequencyToMap( HashMap<String, ArrayList<Pair<String, String>>> map,
-            String freqUse, String freq, String extra ) {
-        ArrayList<Pair<String, String>> list = map.get( freqUse );
-        if ( list == null ) {
-            list = new ArrayList<Pair<String, String>>();
-        }
-        list.add( Pair.create( String.format( "%.3f", Double.valueOf( freq ) ), extra.trim() ) );
-        map.put( freqUse, list );
-    }
-
-    protected void showRunwayDetails( Cursor[] result ) {
-        TableLayout rwyLayout = (TableLayout) findViewById( R.id.detail_rwy_layout );
-        TableLayout heliLayout = (TableLayout) findViewById( R.id.detail_heli_layout );
-        TextView tv;
-        int rwyNum = 0;
-        int heliNum = 0;
-
-        Cursor rwy = result[ 1 ];
-        if ( rwy.moveToFirst() ) {
-            int rwyTot = 0;
-            int heliTot = 0;
-            do {
-                String rwyId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
-                if ( rwyId.startsWith( "H" ) ) {
-                    ++heliTot;
-                } else {
-                    ++rwyTot;
-                }
-            } while ( rwy.moveToNext() );
-
-            rwy.moveToFirst();
-            do {
-                String rwyId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
-                if ( rwyId.startsWith( "H" ) ) {
-                    // This is a helipad
-                    if ( heliNum > 0 ) {
-                        addSeparator( heliLayout );
+            if ( awos.moveToFirst() ) {
+                do {
+                    String icaoCode = awos.getString( awos.getColumnIndex( Airports.ICAO_CODE ) );
+                    String id = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
+                    if ( icaoCode == null || icaoCode.length() == 0 ) {
+                        icaoCode = "K"+id;
                     }
-                    int resId = getSelectorResourceForRow( heliNum, heliTot );
-                    addRunwayRow( heliLayout, rwy, resId );
-                    ++heliNum;
-                } else {
-                    // This is a runway
-                    if ( rwyNum > 0 ) {
-                        addSeparator( rwyLayout );
+                    String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+                    String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
+                    if ( freq == null || freq.length() == 0 ) {
+                        freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
                     }
-                    int resId = getSelectorResourceForRow( rwyNum, rwyTot );
-                    addRunwayRow( rwyLayout, rwy, resId );
-                    ++rwyNum;
-                }
-            } while ( rwy.moveToNext() );
-        }
+                    String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+                    String name = awos.getString( awos.getColumnIndex( Airports.FACILITY_NAME ) );
+                    float distance = awos.getFloat( awos.getColumnIndex( "DISTANCE" ) );
+                    float bearing = awos.getFloat( awos.getColumnIndex( "BEARING" ) );
+                    if ( awos.getPosition() > 0 ) {
+                        addSeparator( layout );
+                    }
+                    Intent intent = new Intent( getActivity(), WxDetailActivity.class );
+                    intent.putExtra( Awos.WX_SENSOR_IDENT, id );
+                    intent.putExtra( MetarService.STATION_ID, icaoCode );
+                    int resid = getSelectorResourceForRow( awos.getPosition(), awos.getCount() );
+                    addAwosRow( layout, icaoCode, name, type, freq, phone, distance,
+                            bearing, intent, resid );
+                } while ( awos.moveToNext() );
 
-        if ( rwyNum == 0 ) {
-            // No runways so remove the section
-            tv = (TextView) findViewById( R.id.detail_rwy_label );
-            tv.setVisibility( View.GONE );
-            rwyLayout.setVisibility( View.GONE );
-        }
-        if ( heliNum == 0 ) {
-            // No helipads so remove the section
-            tv = (TextView) findViewById( R.id.detail_heli_label );
-            tv.setVisibility( View.GONE );
-            heliLayout.setVisibility( View.GONE );
-        }
-    }
-
-    protected void showAwosDetails( Cursor[] result ) {
-        TextView label = (TextView) findViewById( R.id.detail_awos_label );
-        TableLayout layout = (TableLayout) findViewById( R.id.detail_awos_layout );
-        Cursor awos = result[ 6 ];
-
-        if ( awos.moveToFirst() ) {
-            do {
-                String icaoCode = awos.getString( awos.getColumnIndex( Airports.ICAO_CODE ) );
-                String id = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
-                if ( icaoCode == null || icaoCode.length() == 0 ) {
-                    icaoCode = "K"+id;
-                }
-                String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
-                String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
-                if ( freq == null || freq.length() == 0 ) {
-                    freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
-                }
-                String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
-                String name = awos.getString( awos.getColumnIndex( Airports.FACILITY_NAME ) );
-                float distance = awos.getFloat( awos.getColumnIndex( "DISTANCE" ) );
-                float bearing = awos.getFloat( awos.getColumnIndex( "BEARING" ) );
-                if ( awos.getPosition() > 0 ) {
-                    addSeparator( layout );
-                }
-                Intent intent = new Intent( this, WxDetailActivity.class );
-                intent.putExtra( Awos.WX_SENSOR_IDENT, id );
-                intent.putExtra( MetarService.STATION_ID, icaoCode );
-                int resid = getSelectorResourceForRow( awos.getPosition(), awos.getCount() );
-                addAwosRow( layout, icaoCode, name, type, freq, phone, distance,
-                        bearing, intent, resid );
-            } while ( awos.moveToNext() );
-
-            // Request the metar from cache
-            requestMetars();
-        } else {
-            label.setVisibility( View.GONE );
-            layout.setVisibility( View.GONE );
-        }
-    }
-
-    protected void showOperationsDetails( Cursor[] result ) {
-        Cursor apt = result[ 0 ];
-        TableLayout layout = (TableLayout) findViewById( R.id.detail_operations_layout );
-        String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
-        addRow( layout, "Airport use", DataUtils.decodeFacilityUse( use ) );
-        String timezoneId = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
-        if ( timezoneId.length() > 0 ) {
-            addSeparator( layout );
-            TimeZone tz = TimeZone.getTimeZone( timezoneId );
-            addRow( layout, "Local time zone", DataUtils.getTimeZoneAsString( tz ) );
-        }
-        String activation = apt.getString( apt.getColumnIndex( Airports.ACTIVATION_DATE ) );
-        if ( activation.length() > 0 ) {
-            addSeparator( layout );
-            addRow( layout, "Activation date", activation );
-        }
-        String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
-        addSeparator( layout );
-        addRow( layout, "Control tower", tower.equals( "Y" )? "Yes" : "No" );
-        String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
-        addSeparator( layout );
-        addRow( layout, "Wind indicator", DataUtils.decodeWindIndicator( windIndicator ) );
-        String circle = apt.getString( apt.getColumnIndex( Airports.SEGMENTED_CIRCLE ) );
-        addSeparator( layout );
-        addRow( layout, "Segmented circle", circle.equals( "Y" )? "Yes" : "No" );
-        String beacon = apt.getString( apt.getColumnIndex( Airports.BEACON_COLOR ) );
-        addSeparator( layout );
-        addRow( layout, "Beacon", DataUtils.decodeBeacon( beacon ) );
-        String lighting = apt.getString( apt.getColumnIndex( Airports.LIGHTING_SCHEDULE ) );
-        if ( lighting.length() > 0 ) {
-            addSeparator( layout );
-            addRow( layout, "Lighting schedule", lighting );
-        }
-        String landingFee = apt.getString( apt.getColumnIndex( Airports.LANDING_FEE ) );
-        addSeparator( layout );
-        addRow( layout, "Landing fee", landingFee.equals( "Y" )? "Yes" : "No" );
-        String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
-        if ( dir.length() > 0 ) {
-            int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
-            String year = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_YEAR ) );
-            addSeparator( layout );
-            if ( year.length() > 0 ) {
-                addRow( layout, "Magnetic variation", 
-                        String.format( "%d\u00B0 %s (%s)", variation, dir, year ) );
+                // Request the metar from cache
+                requestMetars( false );
             } else {
-                addRow( layout, "Magnetic variation", 
-                        String.format( "%d\u00B0 %s", variation, dir ) );
+                label.setVisibility( View.GONE );
+                layout.setVisibility( View.GONE );
             }
-        } else {
-            Location location = (Location) mExtras.get( NearbyActivity.APT_LOCATION );
-            int variation = Math.round( GeoUtils.getMagneticDeclination( location ) );
-            dir = ( variation >= 0 )? "W" : "E";
-            addSeparator( layout );
-            addRow( layout, "Magnetic variation", 
-                    String.format( "%d\u00B0 %s (actual)", Math.abs( variation ), dir ) );
         }
-        String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
-        if ( sectional.length() > 0 ) {
+
+        protected void showOperationsDetails() {
+            Cursor apt = mCursors[ 0 ];
+            TableLayout layout = (TableLayout) findViewById( R.id.detail_operations_layout );
+            String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
+            addRow( layout, "Airport use", DataUtils.decodeFacilityUse( use ) );
+            String timezoneId = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
+            if ( timezoneId.length() > 0 ) {
+                addSeparator( layout );
+                TimeZone tz = TimeZone.getTimeZone( timezoneId );
+                addRow( layout, "Local time zone", DataUtils.getTimeZoneAsString( tz ) );
+            }
+            String activation = apt.getString( apt.getColumnIndex( Airports.ACTIVATION_DATE ) );
+            if ( activation.length() > 0 ) {
+                addSeparator( layout );
+                addRow( layout, "Activation date", activation );
+            }
+            String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
             addSeparator( layout );
-            String lat = apt.getString( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
-            String lon = apt.getString( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-            if ( lat.length() > 0 && lon.length() > 0 ) {
-                // Link to the sectional at SkyVector if location is available
-                Uri uri = Uri.parse( String.format(
-                        "http://skyvector.com/?ll=%s,%s&zoom=1", lat, lon ) );
-                Intent intent = new Intent( Intent.ACTION_VIEW, uri );
-                addClickableRow( layout, "Sectional chart", sectional, intent, 
-                        R.drawable.row_selector_middle );
+            addAirspaceRow( layout, mCursors );
+            addRow( layout, "Control tower", tower.equals( "Y" )? "Yes" : "No" );
+            String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
+            addSeparator( layout );
+            addRow( layout, "Wind indicator", DataUtils.decodeWindIndicator( windIndicator ) );
+            String circle = apt.getString( apt.getColumnIndex( Airports.SEGMENTED_CIRCLE ) );
+            addSeparator( layout );
+            addRow( layout, "Segmented circle", circle.equals( "Y" )? "Yes" : "No" );
+            String beacon = apt.getString( apt.getColumnIndex( Airports.BEACON_COLOR ) );
+            addSeparator( layout );
+            addRow( layout, "Beacon", DataUtils.decodeBeacon( beacon ) );
+            String lighting = apt.getString( apt.getColumnIndex( Airports.LIGHTING_SCHEDULE ) );
+            if ( lighting.length() > 0 ) {
+                addSeparator( layout );
+                addRow( layout, "Lighting schedule", lighting );
+            }
+            String landingFee = apt.getString( apt.getColumnIndex( Airports.LANDING_FEE ) );
+            addSeparator( layout );
+            addRow( layout, "Landing fee", landingFee.equals( "Y" )? "Yes" : "No" );
+            String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
+            if ( dir.length() > 0 ) {
+                int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
+                String year = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_YEAR ) );
+                addSeparator( layout );
+                if ( year.length() > 0 ) {
+                    addRow( layout, "Magnetic variation", 
+                            String.format( "%d\u00B0 %s (%s)", variation, dir, year ) );
+                } else {
+                    addRow( layout, "Magnetic variation", 
+                            String.format( "%d\u00B0 %s", variation, dir ) );
+                }
             } else {
-                addRow( layout, "Sectional chart", sectional );
+                Location location = (Location) mExtras.get( NearbyActivity.APT_LOCATION );
+                int variation = Math.round( GeoUtils.getMagneticDeclination( location ) );
+                dir = ( variation >= 0 )? "W" : "E";
+                addSeparator( layout );
+                addRow( layout, "Magnetic variation", 
+                        String.format( "%d\u00B0 %s (actual)", Math.abs( variation ), dir ) );
             }
-        }
-        addSeparator( layout );
-        Intent intent = new Intent( this, AlmanacActivity.class );
-        String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addClickableRow( layout, "Sunset/Sunrise", intent, R.drawable.row_selector_middle );
-        addSeparator( layout );
-        intent = new Intent( this, AirportNotamActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
-    }
-
-    protected void showRemarks( Cursor[] result ) {
-        int row = 0;
-        TextView label = (TextView) findViewById( R.id.detail_remarks_label );
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
-        Cursor rmk = result[ 2 ];
-        if ( rmk.moveToFirst() ) {
-            do {
-                String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
-                addRemarkRow( layout, remark );
-                ++row;
-            } while ( rmk.moveToNext() );
-         }
-
-        Cursor twr1 = result[ 3 ];
-        Cursor twr7 = result[ 4 ];
-        if ( twr1.moveToFirst() ) {
-            String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
-            if ( facilityType.equals( "NON-ATCT" ) && twr7.getCount() == 0 ) {
-                // Show remarks, if any, since there are no frequencies listed
-                Cursor twr6 = result[ 5 ];
-                if ( twr6.moveToFirst() ) {
-                    do {
-                        String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
-                        addBulletedRow( layout, remark );
-                        ++row;
-                    } while ( twr6.moveToNext() );
+            String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
+            if ( sectional.length() > 0 ) {
+                addSeparator( layout );
+                String lat = apt.getString( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+                String lon = apt.getString( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+                if ( lat.length() > 0 && lon.length() > 0 ) {
+                    // Link to the sectional at SkyVector if location is available
+                    Uri uri = Uri.parse( String.format(
+                            "http://skyvector.com/?ll=%s,%s&zoom=1", lat, lon ) );
+                    Intent intent = new Intent( Intent.ACTION_VIEW, uri );
+                    addClickableRow( layout, "Sectional chart", sectional, intent, 
+                            R.drawable.row_selector_middle );
+                } else {
+                    addRow( layout, "Sectional chart", sectional );
                 }
             }
+            addSeparator( layout );
+            Intent intent = new Intent( getActivity(), AlmanacActivity.class );
+            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
+            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addClickableRow( layout, "Sunrise and sunset", intent, R.drawable.row_selector_middle );
+            addSeparator( layout );
+            intent = new Intent( getActivity(), AirportNotamActivity.class );
+            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
         }
 
-        if ( row == 0 ) {
-            label.setVisibility( View.GONE );
-            layout.setVisibility( View.GONE );
-        }
-    }
+        protected void showRemarks() {
+            int row = 0;
+            TextView label = (TextView) findViewById( R.id.detail_remarks_label );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
+            Cursor rmk = mCursors[ 2 ];
+            if ( rmk.moveToFirst() ) {
+                do {
+                    String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
+                    addRemarkRow( layout, remark );
+                    ++row;
+                } while ( rmk.moveToNext() );
+             }
 
-    protected void showServicesDetails( Cursor[] result ) {
-        Cursor apt = result[ 0 ];
-        TableLayout layout = (TableLayout) findViewById( R.id.detail_services_layout );
-        String fuelTypes = DataUtils.decodeFuelTypes( 
-                apt.getString( apt.getColumnIndex( Airports.FUEL_TYPES ) ) );
-        if ( fuelTypes.length() == 0 ) {
-            fuelTypes = "No";
-        }
-        addRow( layout, "Fuel available", fuelTypes );
-        String repair;
-        repair = apt.getString( apt.getColumnIndex( Airports.AIRFRAME_REPAIR_SERVICE ) );
-        if ( repair.length() == 0 ) {
-            repair = "No";
-        }
-        addSeparator( layout );
-        addRow( layout, "Airframe repair", repair );
-        repair = apt.getString( apt.getColumnIndex( Airports.POWER_PLANT_REPAIR_SERVICE ) );
-        if ( repair.length() == 0 ) {
-            repair = "No";
-        }
-        addSeparator( layout );
-        addRow( layout, "Powerplant repair", repair );
-        addSeparator( layout );
-        Intent intent = new Intent( this, ServicesDetailsActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER,
-                apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) ) );
-        addClickableRow( layout, "Other services", intent, R.drawable.row_selector_bottom );
-    }
+            Cursor twr1 = mCursors[ 3 ];
+            Cursor twr7 = mCursors[ 4 ];
+            if ( twr1.moveToFirst() ) {
+                String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
+                if ( facilityType.equals( "NON-ATCT" ) && twr7.getCount() == 0 ) {
+                    // Show remarks, if any, since there are no frequencies listed
+                    Cursor twr6 = mCursors[ 5 ];
+                    if ( twr6.moveToFirst() ) {
+                        do {
+                            String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
+                            addBulletedRow( layout, remark );
+                            ++row;
+                        } while ( twr6.moveToNext() );
+                    }
+                }
+            }
 
-    protected void showOtherDetails( Cursor[] result ) {
-        Cursor apt = result[ 0 ];
-        String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-        TableLayout layout = (TableLayout) findViewById( R.id.detail_other_layout );
-        Intent intent = new Intent( this, OwnershipDetailsActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addClickableRow( layout, "Ownership and contact", intent, R.drawable.row_selector_top );
-        intent = new Intent( this, RemarkDetailsActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addSeparator( layout );
-        addClickableRow( layout, "Additional remarks", intent, R.drawable.row_selector_middle );
-        intent = new Intent( this, AttendanceDetailsActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addSeparator( layout );
-        addClickableRow( layout, "Attendance", intent, R.drawable.row_selector_bottom );
-    }
-
-    protected void addAwosRow( TableLayout table, String id, String name, String type, 
-            String freq, String phone, float distance, float bearing,
-            Intent intent, int resid ) {
-        LinearLayout layout = (LinearLayout) inflate( R.layout.awos_detail_item );
-        layout.setBackgroundResource( resid );
-        layout.setTag( intent );
-
-        TextView tv = (TextView) layout.findViewById( R.id.awos_station_name );
-        tv.setTag( id );
-        mAwosViews.add( tv );
-
-        if ( name != null && name.length() > 0 ) {
-            tv.setText( id+" - "+name );
-        } else {
-            tv.setText( id );
-        }
-
-        if ( freq != null && freq.length() > 0 ) {
-            try {
-                tv = (TextView) layout.findViewById( R.id.awos_freq );
-                tv.setText( String.format( "%.3f", Double.valueOf( freq ) ) );
-            } catch ( NumberFormatException e ) {
+            if ( row == 0 ) {
+                label.setVisibility( View.GONE );
+                layout.setVisibility( View.GONE );
             }
         }
 
-        if ( phone != null && phone.length() > 0 ) {
-            tv = (TextView) layout.findViewById( R.id.awos_phone );
-            tv.setText( phone );
-            makeClickToCall( tv );
+        protected void showServicesDetails() {
+            Cursor apt = mCursors[ 0 ];
+            TableLayout layout = (TableLayout) findViewById( R.id.detail_services_layout );
+            String fuelTypes = DataUtils.decodeFuelTypes( 
+                    apt.getString( apt.getColumnIndex( Airports.FUEL_TYPES ) ) );
+            if ( fuelTypes.length() == 0 ) {
+                fuelTypes = "No";
+            }
+            addRow( layout, "Fuel available", fuelTypes );
+            String repair;
+            repair = apt.getString( apt.getColumnIndex( Airports.AIRFRAME_REPAIR_SERVICE ) );
+            if ( repair.length() == 0 ) {
+                repair = "No";
+            }
+            addSeparator( layout );
+            addRow( layout, "Airframe repair", repair );
+            repair = apt.getString( apt.getColumnIndex( Airports.POWER_PLANT_REPAIR_SERVICE ) );
+            if ( repair.length() == 0 ) {
+                repair = "No";
+            }
+            addSeparator( layout );
+            addRow( layout, "Powerplant repair", repair );
+            addSeparator( layout );
+            Intent intent = new Intent( getActivity(), ServicesDetailsActivity.class );
+            intent.putExtra( Airports.SITE_NUMBER,
+                    apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) ) );
+            addClickableRow( layout, "Other services", intent, R.drawable.row_selector_bottom );
         }
 
-        tv = (TextView) layout.findViewById( R.id.awos_info );
-        if ( distance > 1 ) {
-            tv.setText( String.format( "%s, %.0fNM %s", type, distance,
-                    GeoUtils.getCardinalDirection( bearing ) ) );
-        } else {
-            tv.setText( type+", On-site" );
+        protected void showOtherDetails() {
+            Cursor apt = mCursors[ 0 ];
+            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
+            TableLayout layout = (TableLayout) findViewById( R.id.detail_other_layout );
+            Intent intent = new Intent( getActivity(), OwnershipDetailsActivity.class );
+            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addClickableRow( layout, "Ownership and contact", intent, R.drawable.row_selector_top );
+            intent = new Intent( getActivity(), RemarkDetailsActivity.class );
+            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addSeparator( layout );
+            addClickableRow( layout, "Additional remarks", intent, R.drawable.row_selector_middle );
+            intent = new Intent( getActivity(), AttendanceDetailsActivity.class );
+            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addSeparator( layout );
+            addClickableRow( layout, "Attendance", intent, R.drawable.row_selector_middle );
+            addSeparator( layout );
+            intent = new Intent( getActivity(), NearbyActivity.class );
+            intent.putExtras( mExtras );
+            addClickableRow( layout, "Nearby airports", intent, R.drawable.row_selector_bottom );
         }
 
-        layout.setOnClickListener( new OnClickListener() {
+        protected void addAwosRow( TableLayout table, String id, String name, String type, 
+                String freq, String phone, float distance, float bearing,
+                Intent intent, int resid ) {
+            LinearLayout layout = (LinearLayout) inflate( R.layout.awos_detail_item );
+            layout.setBackgroundResource( resid );
+            layout.setTag( intent );
 
-            @Override
-            public void onClick( View v ) {
-                Intent intent = (Intent) v.getTag();
-                startActivity( intent );
+            TextView tv = (TextView) layout.findViewById( R.id.awos_station_name );
+            tv.setTag( id );
+            mAwosViews.add( tv );
+
+            if ( name != null && name.length() > 0 ) {
+                tv.setText( id+" - "+name );
+            } else {
+                tv.setText( id );
             }
 
-        } );
-
-        table.addView( layout, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addRunwayRow( TableLayout table, Cursor c, int resid ) {
-        String siteNumber = c.getString( c.getColumnIndex( Runways.SITE_NUMBER ) );
-        String runwayId = c.getString( c.getColumnIndex( Runways.RUNWAY_ID ) );
-        int length = c.getInt( c.getColumnIndex( Runways.RUNWAY_LENGTH ) );
-        int width = c.getInt( c.getColumnIndex( Runways.RUNWAY_WIDTH ) );
-        String surfaceType = c.getString( c.getColumnIndex( Runways.SURFACE_TYPE ) );
-        String baseId = c.getString( c.getColumnIndex( Runways.BASE_END_ID ) );
-        String reciprocalId = c.getString( c.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
-
-        int heading = c.getInt( c.getColumnIndex( Runways.BASE_END_HEADING ) );
-        if ( heading > 0 ) {
-            heading = (int) GeoUtils.applyDeclination( heading, mDeclination );
-        } else {
-            // Actual heading is not available, try to deduce it from runway id
-            heading = getRunwayHeading( runwayId );
-        }
-
-        LinearLayout row = (LinearLayout) inflate( R.layout.runway_detail_item );
-        row.setBackgroundResource( resid );
-
-        TextView tv = (TextView) row.findViewById( R.id.runway_id );
-        tv.setText( runwayId );
-        setRunwayDrawable( tv, runwayId, length, heading );
-
-        tv = (TextView) row.findViewById( R.id.runway_size );
-        tv.setText( String.valueOf( length )+"' x "+String.valueOf( width )+"'" );
-
-        tv = (TextView) row.findViewById( R.id.runway_surface );
-        tv.setText( DataUtils.decodeSurfaceType( surfaceType ) );
-
-        if ( !runwayId.startsWith( "H" ) ) {
-            // Save the textview and runway info for later use
-            tv = (TextView) row.findViewById( R.id.runway_wind_info );
-            Bundle tag = new Bundle();
-            tag.putString( Runways.BASE_END_ID, baseId );
-            tag.putString( Runways.RECIPROCAL_END_ID, reciprocalId );
-            tag.putInt( Runways.BASE_END_HEADING, heading );
-            tv.setTag( tag );
-            mRunwayViews.add( tv );
-        }
-
-        final Bundle bundle = new Bundle();
-        bundle.putString( Runways.SITE_NUMBER, siteNumber );
-        bundle.putString( Runways.RUNWAY_ID, runwayId );
-        row.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                Intent intent = new Intent( AirportDetailsActivity.this, 
-                        RunwayDetailsActivity.class );
-                intent.putExtras( bundle );
-                startActivity( intent );
+            if ( freq != null && freq.length() > 0 ) {
+                try {
+                    tv = (TextView) layout.findViewById( R.id.awos_freq );
+                    tv.setText( String.format( "%.3f", Double.valueOf( freq ) ) );
+                } catch ( NumberFormatException e ) {
+                }
             }
 
-        } );
+            if ( phone != null && phone.length() > 0 ) {
+                tv = (TextView) layout.findViewById( R.id.awos_phone );
+                tv.setText( phone );
+                makeClickToCall( tv );
+            }
 
-        table.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
+            tv = (TextView) layout.findViewById( R.id.awos_info );
+            if ( distance > 1 ) {
+                tv.setText( String.format( "%s, %.0fNM %s", type, distance,
+                        GeoUtils.getCardinalDirection( bearing ) ) );
+            } else {
+                tv.setText( type+", On-site" );
+            }
 
-    protected void addRemarkRow( LinearLayout layout, String remark ) {
-        int index = remark.indexOf( ' ' );
-        if ( index != -1 ) {
-            while ( remark.charAt( index ) == ' ' ) {
+            layout.setOnClickListener( new OnClickListener() {
+
+                @Override
+                public void onClick( View v ) {
+                    Intent intent = (Intent) v.getTag();
+                    startActivity( intent );
+                }
+
+            } );
+
+            table.addView( layout, new TableLayout.LayoutParams(
+                    LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        }
+
+        protected void addRunwayRow( TableLayout table, Cursor c, int resid ) {
+            String siteNumber = c.getString( c.getColumnIndex( Runways.SITE_NUMBER ) );
+            String runwayId = c.getString( c.getColumnIndex( Runways.RUNWAY_ID ) );
+            int length = c.getInt( c.getColumnIndex( Runways.RUNWAY_LENGTH ) );
+            int width = c.getInt( c.getColumnIndex( Runways.RUNWAY_WIDTH ) );
+            String surfaceType = c.getString( c.getColumnIndex( Runways.SURFACE_TYPE ) );
+            String baseId = c.getString( c.getColumnIndex( Runways.BASE_END_ID ) );
+            String reciprocalId = c.getString( c.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
+
+            int heading = c.getInt( c.getColumnIndex( Runways.BASE_END_HEADING ) );
+            if ( heading > 0 ) {
+                heading = (int) GeoUtils.applyDeclination( heading, mDeclination );
+            } else {
+                // Actual heading is not available, try to deduce it from runway id
+                heading = getRunwayHeading( runwayId );
+            }
+
+            LinearLayout row = (LinearLayout) inflate( R.layout.runway_detail_item );
+            row.setBackgroundResource( resid );
+
+            TextView tv = (TextView) row.findViewById( R.id.runway_id );
+            tv.setText( runwayId );
+            setRunwayDrawable( tv, runwayId, length, heading );
+
+            tv = (TextView) row.findViewById( R.id.runway_size );
+            tv.setText( String.valueOf( length )+"' x "+String.valueOf( width )+"'" );
+
+            tv = (TextView) row.findViewById( R.id.runway_surface );
+            tv.setText( DataUtils.decodeSurfaceType( surfaceType ) );
+
+            if ( !runwayId.startsWith( "H" ) ) {
+                // Save the textview and runway info for later use
+                tv = (TextView) row.findViewById( R.id.runway_wind_info );
+                Bundle tag = new Bundle();
+                tag.putString( Runways.BASE_END_ID, baseId );
+                tag.putString( Runways.RECIPROCAL_END_ID, reciprocalId );
+                tag.putInt( Runways.BASE_END_HEADING, heading );
+                tv.setTag( tag );
+                mRunwayViews.add( tv );
+            }
+
+            final Bundle bundle = new Bundle();
+            bundle.putString( Runways.SITE_NUMBER, siteNumber );
+            bundle.putString( Runways.RUNWAY_ID, runwayId );
+            row.setOnClickListener( new OnClickListener() {
+
+                @Override
+                public void onClick( View v ) {
+                    Intent intent = new Intent( getActivityBase(), RunwayDetailsActivity.class );
+                    intent.putExtras( bundle );
+                    startActivity( intent );
+                }
+
+            } );
+
+            table.addView( row, new LinearLayout.LayoutParams(
+                    LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        }
+
+        protected void addRemarkRow( LinearLayout layout, String remark ) {
+            int index = remark.indexOf( ' ' );
+            if ( index != -1 ) {
+                while ( remark.charAt( index ) == ' ' ) {
+                    ++index;
+                }
+                remark = remark.substring( index );
+            }
+            addBulletedRow( layout, remark );
+        }
+
+        protected void addAirspaceRow( TableLayout layout, Cursor[] result ) {
+            Cursor twr8 = result[ 8 ];
+            if ( twr8.moveToFirst() ) {
+                String airspace = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_TYPES ) );
+                String value = "";
+                if ( airspace.charAt( 0 ) == 'Y' ) {
+                    value += "Class B";
+                }
+                if ( airspace.charAt( 1 ) == 'Y' ) {
+                    if ( value.length() > 0 ) {
+                        value += ", ";
+                    }
+                    value += "Class C";
+                }
+                if ( airspace.charAt( 2 ) == 'Y' ) {
+                    if ( value.length() > 0 ) {
+                        value += ", ";
+                    }
+                    value += "Class D";
+                }
+                if ( airspace.charAt( 3 ) == 'Y' ) {
+                    if ( value.length() > 0 ) {
+                        value += ", ";
+                    }
+                    value += "Class E";
+                }
+                String hours = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_HOURS ) );
+                if ( hours.length() > 0 ) {
+                    value += " ("+hours+")";
+                }
+                addRow( layout, "Airspace", value );
+                addSeparator( layout );
+            }
+        }
+
+        protected void setRunwayDrawable( TextView tv, String runwayId, int length, int heading ) {
+            int resid = 0;
+            if ( runwayId.startsWith( "H" ) ) {
+                resid = R.drawable.helipad;
+            } else {
+                if ( length > 10000 ) {
+                    resid = R.drawable.runway9;
+                } else if ( length > 9000 ) {
+                    resid = R.drawable.runway8;
+                } else if ( length > 8000 ) {
+                    resid = R.drawable.runway7;
+                } else if ( length > 7000 ) {
+                    resid = R.drawable.runway6;
+                } else if ( length > 6000 ) {
+                    resid = R.drawable.runway5;
+                } else if ( length > 5000 ) {
+                    resid = R.drawable.runway4;
+                } else if ( length > 4000 ) {
+                    resid = R.drawable.runway3;
+                } else if ( length > 3000 ) {
+                    resid = R.drawable.runway2;
+                } else if ( length > 2000 ) {
+                    resid = R.drawable.runway1;
+                } else {
+                    resid = R.drawable.runway0;
+                }
+            }
+
+            Drawable rwy = UiUtils.getRotatedDrawable( getActivity(), resid, heading );
+            tv.setCompoundDrawablesWithIntrinsicBounds( rwy, null, null, null );
+            tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 5 ) );
+        }
+
+        protected int getRunwayHeading( String runwayId ) {
+            int index = 0;
+            while ( index < runwayId.length() ) {
+                if ( !Character.isDigit( runwayId.charAt( index ) ) ) {
+                    break;
+                }
                 ++index;
             }
-            remark = remark.substring( index );
-        }
-        addBulletedRow( layout, remark );
-    }
 
-    protected void setRunwayDrawable( TextView tv, String runwayId, int length, int heading ) {
-        int resid = 0;
-        if ( runwayId.startsWith( "H" ) ) {
-            resid = R.drawable.helipad;
-        } else {
-            if ( length > 10000 ) {
-                resid = R.drawable.runway9;
-            } else if ( length > 9000 ) {
-                resid = R.drawable.runway8;
-            } else if ( length > 8000 ) {
-                resid = R.drawable.runway7;
-            } else if ( length > 7000 ) {
-                resid = R.drawable.runway6;
-            } else if ( length > 6000 ) {
-                resid = R.drawable.runway5;
-            } else if ( length > 5000 ) {
-                resid = R.drawable.runway4;
-            } else if ( length > 4000 ) {
-                resid = R.drawable.runway3;
-            } else if ( length > 3000 ) {
-                resid = R.drawable.runway2;
-            } else if ( length > 2000 ) {
-                resid = R.drawable.runway1;
-            } else {
-                resid = R.drawable.runway0;
+            int heading = 0;
+            try {
+                heading = Integer.valueOf( runwayId.substring( 0, index ) )*10;
+            } catch ( Exception e ) {
+            }
+
+            return heading;
+        }
+
+        protected void requestMetars( boolean force ) {
+            // Now get the METAR if already in the cache
+            SharedPreferences prefs =
+                    PreferenceManager.getDefaultSharedPreferences( getActivityBase() );
+            boolean alwaysAutoFetch = prefs.getBoolean(
+                    PreferencesActivity.ALWAYS_AUTO_FETCH_WEATHER, false );
+            boolean cacheOnly = ( !alwaysAutoFetch 
+                    && !NetworkUtils.isConnectedToWifi( getActivityBase() ) );
+            if ( force || !cacheOnly ) {
+                getActivityBase().startRefreshAnimation();
+            }
+
+            for ( TextView tv : mAwosViews ) {
+                String icaoCode = (String) tv.getTag();
+                Intent service = new Intent( getActivityBase(), MetarService.class );
+                service.setAction( MetarService.ACTION_GET_METAR );
+                service.putExtra( MetarService.STATION_ID, icaoCode );
+                if ( force ) {
+                    service.putExtra( MetarService.FORCE_REFRESH, true );
+                } else if ( cacheOnly ) {
+                    service.putExtra( MetarService.CACHE_ONLY, true );
+                }
+                getActivityBase().startService( service );
             }
         }
 
-        Drawable rwy = UiUtils.getRotatedDrawable( this, resid, heading );
-        tv.setCompoundDrawablesWithIntrinsicBounds( rwy, null, null, null );
-        tv.setCompoundDrawablePadding( convertDpToPx( 5 ) );
-    }
-
-    protected int getRunwayHeading( String runwayId ) {
-        int index = 0;
-        while ( index < runwayId.length() ) {
-            if ( !Character.isDigit( runwayId.charAt( index ) ) ) {
-                break;
+        protected void showWxInfo( Metar metar ) {
+            if ( metar.stationId == null ) {
+                return;
             }
-            ++index;
-        }
 
-        int heading = 0;
-        try {
-            heading = Integer.valueOf( runwayId.substring( 0, index ) )*10;
-        } catch ( Exception e ) {
-        }
-
-        return heading;
-    }
-
-    protected void showWxInfo( Metar metar ) {
-        if ( metar.stationId == null ) {
-            return;
-        }
-
-        if ( metar.isValid
-                && mIcaoCode.equals( metar.stationId )
-                && WxUtils.isWindAvailable( metar ) ) {
-            showRunwayWindInfo( metar );
-        }
-
-        for ( TextView tv : mAwosViews ) {
-            String icaoCode = (String) tv.getTag();
-            if ( icaoCode.equals( metar.stationId ) ) {
-                WxUtils.setColorizedWxDrawable( tv, metar, mDeclination );
-                break;
+            if ( metar.isValid
+                    && mIcaoCode != null
+                    && mIcaoCode.equals( metar.stationId )
+                    && WxUtils.isWindAvailable( metar ) ) {
+                showRunwayWindInfo( metar );
             }
-        }
-    }
 
-    protected void showRunwayWindInfo( Metar metar ) {
-        for ( TextView tv : mRunwayViews ) {
-            Bundle tag = (Bundle) tv.getTag();
-            String id = tag.getString( Runways.BASE_END_ID );
-            long rwyHeading = tag.getInt( Runways.BASE_END_HEADING );
-            long windDir = GeoUtils.applyDeclination( metar.windDirDegrees, mDeclination );
-            long headWind = WxUtils.getHeadWindComponent( metar.windSpeedKnots,
-                    windDir, rwyHeading );
-            if ( headWind < 0 ) {
-                // If this is a tail wind, use the other end
-                id = tag.getString( Runways.RECIPROCAL_END_ID );
-                rwyHeading += 180;
-                if ( rwyHeading > 360 ) {
-                    rwyHeading -= 360;
+            for ( TextView tv : mAwosViews ) {
+                String icaoCode = (String) tv.getTag();
+                if ( icaoCode.equals( metar.stationId ) ) {
+                    WxUtils.setColorizedWxDrawable( tv, metar, mDeclination );
+                    break;
                 }
             }
-            long crossWind = WxUtils.getCrossWindComponent( metar.windSpeedKnots,
-                    windDir, rwyHeading );
-            String side = "right";
-            if ( crossWind < 0 ) {
-                side = "left";
-                crossWind = Math.abs( crossWind );
-            }
-            if ( crossWind > 0 ) {
-                tv.setText( String.format( "Rwy %s: %d %s x-wind from %s",
-                        id, crossWind, crossWind > 1? "knots" : "knot", side ) );
-            } else {
-                tv.setText( String.format( "Rwy %s no x-wind", id, crossWind ) );
-            }
-            tv.setVisibility( View.VISIBLE );
         }
+
+        protected void showRunwayWindInfo( Metar metar ) {
+            for ( TextView tv : mRunwayViews ) {
+                Bundle tag = (Bundle) tv.getTag();
+                String id = tag.getString( Runways.BASE_END_ID );
+                long rwyHeading = tag.getInt( Runways.BASE_END_HEADING );
+                long windDir = GeoUtils.applyDeclination( metar.windDirDegrees, mDeclination );
+                long headWind = WxUtils.getHeadWindComponent( metar.windSpeedKnots,
+                        windDir, rwyHeading );
+
+                if ( headWind < 0 ) {
+                    // If this is a tail wind, use the other end
+                    id = tag.getString( Runways.RECIPROCAL_END_ID );
+                    rwyHeading = ( rwyHeading+180 )%360;
+                }
+                long crossWind = WxUtils.getCrossWindComponent( metar.windSpeedKnots,
+                        windDir, rwyHeading );
+                String side = "right";
+                if ( crossWind < 0 ) {
+                    side = "left";
+                    crossWind = Math.abs( crossWind );
+                }
+                StringBuilder windInfo = new StringBuilder();
+                if ( crossWind > 0 ) {
+                    boolean gusting = ( metar.windGustKnots < Integer.MAX_VALUE );
+                    windInfo.append( String.format( "%d %s%s x-wind from %s",
+                            crossWind, crossWind > 1? "knots" : "knot",
+                            gusting? " gusting" : "" , side ) );
+                } else {
+                    windInfo.append( "no x-wind" );
+                    if ( metar.windGustKnots < Integer.MAX_VALUE ) {
+                        long gustFactor = ( metar.windGustKnots-metar.windSpeedKnots )/2;
+                        windInfo.append( String.format( ", %d knots gust factor", gustFactor ) );
+                    }
+                }
+                tv.setText( String.format( "Rwy %s: %s", id, windInfo.toString() ) );
+                tv.setVisibility( View.VISIBLE );
+            }
+        }
+
     }
 
     @Override
-    public boolean onCreateOptionsMenu( Menu menu ) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate( R.menu.airport_menu, menu );
+    public boolean onPrepareOptionsMenu( Menu menu ) {
+        setRefreshItemVisible( true );
         return true;
     }
 
@@ -1045,10 +1199,10 @@ public class AirportDetailsActivity extends ActivityBase {
     public boolean onOptionsItemSelected( MenuItem item ) {
         // Handle item selection
         switch ( item.getItemId() ) {
-        case R.id.menu_nearby:
-            Intent intent = new Intent( this, NearbyActivity.class );
-            intent.putExtras( mExtras );
-            startActivity( intent );
+        case R.id.menu_refresh:
+            AirportDetailsFragment f = (AirportDetailsFragment) getFragment(
+                    AirportDetailsFragment.class );
+            f.requestMetars( true );
             return true;
         default:
             return super.onOptionsItemSelected( item );

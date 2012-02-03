@@ -57,6 +57,8 @@ public class NavaidsActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setContentView( createContentView( R.layout.airport_navaids_view ) );
+
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         NavaidDetailsTask task = new NavaidDetailsTask();
@@ -205,21 +207,32 @@ public class NavaidsActivity extends ActivityBase {
 
        @Override
        protected void onResult( Cursor[] result ) {
-           setContentView( R.layout.airport_navaids_view );
-
-           Cursor vor = result[ 1 ];
-           Cursor ndb = result[ 2 ];
-           if ( vor == null && ndb == null ) {
-               UiUtils.showToast( getApplicationContext(), "No navaids found in the vicinity" );
-               finish();
-               return;
-           }
-
-           Cursor apt = result[ 0 ];
-           showAirportTitle( apt );
-           showNavaidDetails( result );
+           showDetails( result );
        }
 
+    }
+
+    protected void showDetails( Cursor[] result ) {
+        Cursor vor = result[ 1 ];
+        Cursor ndb = result[ 2 ];
+        if ( vor == null && ndb == null ) {
+            UiUtils.showToast( getApplicationContext(), "No navaids found in the vicinity" );
+            finish();
+            return;
+        }
+
+        Cursor apt = result[ 0 ];
+        showAirportTitle( apt );
+        showNavaidDetails( result );
+
+        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null  || code.length() == 0 ) {
+            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        }
+        getSupportActionBar().setTitle( code );
+        getSupportActionBar().setSubtitle( getTitle() );
+
+        setContentShown( true );
     }
 
     protected void showNavaidDetails( Cursor[] result ) {

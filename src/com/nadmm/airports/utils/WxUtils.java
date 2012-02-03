@@ -46,6 +46,16 @@ public class WxUtils {
         return color;
     }
 
+    static public String getFlightCategoryName( String flightCategory ) {
+        String name = flightCategory;
+        if ( flightCategory.equals( "MVFR" ) ) {
+            name = "Marginal VFR";
+        } else if ( flightCategory.equals( "LIFR" ) ) {
+            name = "Low IFR";
+        }
+        return name;
+    }
+
     static public Drawable getColorizedDrawable( Resources res, String flightCategory,
             int resid ) {
         Drawable d = res.getDrawable( resid ).mutate();

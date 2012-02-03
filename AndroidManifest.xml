@@ -13,12 +13,12 @@
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 
-    <uses-sdk android:minSdkVersion="7" />
+    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="14" />
     
     <application android:icon="@drawable/icon"
             android:label="@string/app_name"
             android:debuggable="false"
-            android:theme="@android:style/Theme.Light">
+            android:theme="@style/Theme.Sherlock.Light.DarkActionBar">
         <activity android:label="@string/app_name" android:name="AirportsMain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,67 +32,67 @@
         <activity android:label="@string/settings"
                   android:name="PreferencesActivity" />
 
-        <activity android:label="@string/browse"
+        <activity android:label="@string/browse_airports"
                   android:name="BrowseActivity" />
 
-        <activity android:label="@string/nearby"
+        <activity android:label="@string/nearby_airports"
                   android:name="NearbyActivity" />
 
         <activity android:label="@string/favorites"
                   android:name="FavoritesActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/airport_details"
                   android:name="AirportDetailsActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/runways"
                   android:name="RunwayDetailsActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/airport_services"
                   android:name="ServicesDetailsActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/airport_owner"
                   android:name="OwnershipDetailsActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/airport_remarks"
                   android:name="RemarkDetailsActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/airport_attendance"
                   android:name="AttendanceDetailsActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/atc_communications"
                   android:name="CommDetailsActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/nearby_navaids"
                   android:name="NavaidsActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
-                  android:name="IlsDetailsActivity" />
-
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/navaid_details"
                   android:name="NavaidDetailsActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/navaid_notams"
+                  android:name=".NavaidNotamActivity" />
+
+        <activity android:label="@string/fss_outlets"
                   android:name="FssCommActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/ils_details"
+                  android:name="IlsDetailsActivity" />
+
+        <activity android:label="@string/sunrise_sunset"
                   android:name="AlmanacActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/airport_notams"
                   android:name=".AirportNotamActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
-                  android:name=".NavaidNotamActivity" />
-        
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+        <activity android:label="@string/weather"
                   android:name=".WxDetailActivity" />
-        
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
+
+        <activity android:label="@string/about"
                   android:name="AboutActivity" />
 
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:name="DisclaimerActivity" />
 
-    	<activity android:launchMode="singleTop" android:name="SearchActivity">
+    	<activity android:launchMode="singleTop" android:name=".SearchActivity">
         	<intent-filter>
             	<action android:name="android.intent.action.SEARCH" />
 	        </intent-filter>

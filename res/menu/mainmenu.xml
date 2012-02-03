@@ -20,18 +20,15 @@
  */
  -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/menu_favorites" 
-	      android:title="@string/favorites"
-	      android:icon="@drawable/ic_menu_star" />
-	<item android:id="@+id/menu_browse" 
-	      android:title="@string/browse"
-	      android:icon="@drawable/ic_menu_browse" />
+    <item android:id="@+id/menu_favorites" 
+          android:title="@string/favorites"
+          android:icon="@drawable/ic_menu_star" />
+    <item android:id="@+id/menu_browse" 
+          android:title="@string/browse"
+          android:icon="@drawable/ic_menu_browse" />
     <item android:id="@+id/menu_nearby" 
           android:title="@string/nearby"
           android:icon="@android:drawable/ic_menu_mylocation" />
-    <item android:id="@+id/menu_search"
-          android:title="@string/search" 
-          android:icon="@android:drawable/ic_menu_search" />
     <item android:id="@+id/menu_download"
           android:title="@string/downloads" 
           android:icon="@android:drawable/ic_menu_save" />
@@ -39,5 +36,15 @@
           android:title="@string/settings"
           android:icon="@android:drawable/ic_menu_preferences" />
     <item android:id="@+id/menu_about"
-          android:title="@string/about" />
+          android:title="@string/about"
+          android:icon="@android:drawable/ic_menu_info_details" />
+    <item android:id="@+id/menu_refresh"
+          android:title="@string/refresh"
+          android:showAsAction="always"
+          android:visible="false"
+          android:icon="@drawable/ic_action_refresh" />
+    <item android:id="@+id/menu_search"
+          android:title="@string/search"
+          android:showAsAction="always" 
+          android:icon="@drawable/ic_action_search" />
 </menu>

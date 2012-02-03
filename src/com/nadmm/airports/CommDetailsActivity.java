@@ -46,6 +46,8 @@ public class CommDetailsActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setContentView( createContentView( R.layout.comm_detail_view ) );
+
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         CommDetailsTask task = new CommDetailsTask();
@@ -106,15 +108,26 @@ public class CommDetailsActivity extends ActivityBase {
 
         @Override
         protected void onResult( Cursor[] result ) {
-            setContentView( R.layout.comm_detail_view );
-  
-            Cursor apt = result[ 0 ];
-            showAirportTitle( apt );
-            showAirportFrequencies( result );
-            showAtcFrequencies( result );
-            showRemarks( result );
+            showDetails( result );
         }
 
+    }
+
+    protected void showDetails( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        showAirportTitle( apt );
+        showAirportFrequencies( result );
+        showAtcFrequencies( result );
+        showRemarks( result );
+
+        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null  || code.length() == 0 ) {
+            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        }
+        getSupportActionBar().setTitle( code );
+        getSupportActionBar().setSubtitle( getTitle() );
+
+        setContentShown( true );
     }
 
     protected void showAirportFrequencies( Cursor[] result ) {

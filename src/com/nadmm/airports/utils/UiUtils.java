@@ -19,7 +19,11 @@
 
 package com.nadmm.airports.utils;
 
+import com.nadmm.airports.R;
+
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,9 +31,13 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +49,34 @@ public class UiUtils {
     static {
         // Make sure to associate with the Looper in the main (Gui) thread
         sHandler = new Handler( Looper.getMainLooper() );
+    }
+
+    public static void makeClickToCall( final Context context, TextView tv ) {
+        if ( context.getPackageManager().hasSystemFeature( PackageManager.FEATURE_TELEPHONY ) ) {
+            if ( tv.getText().length() > 0 ) {
+                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.phone, 0, 0, 0 );
+                tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( context, 3 ) );
+                tv.setOnClickListener( new OnClickListener() {
+    
+                    @Override
+                    public void onClick( View v ) {
+                        TextView tv = (TextView) v;
+                        Intent intent = new Intent( Intent.ACTION_CALL,
+                                Uri.parse( "tel:"+tv.getText().toString() ) );
+                        context.startActivity( intent );
+                    }
+    
+                } );
+            } else {
+                tv.setCompoundDrawablesWithIntrinsicBounds( 0, 0, 0, 0 );
+                tv.setOnClickListener( null );
+            }
+        }
+    }
+
+    public static int convertDpToPx( Context context, int dp ) {
+        return (int) TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP,
+                dp, context.getResources().getDisplayMetrics() );
     }
 
     public static void showToast( final Context context, final String msg ) {

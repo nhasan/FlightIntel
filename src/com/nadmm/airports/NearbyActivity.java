@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,8 +87,8 @@ public class NearbyActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setTitle( "Nearby Airports" );
- 
+        setContentView( createContentView( R.layout.airport_list_view ) );
+
         mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
 
         // Check if an airport location was passed
@@ -122,9 +122,6 @@ public class NearbyActivity extends ActivityBase {
             // We have some location to use
             NearbyTask task = new NearbyTask();
             task.execute();
-        } else {
-            TextView tv = (TextView) findViewById( R.id.wait_msg );
-            tv.setText( R.string.waiting_location );
         }
     }
 
@@ -240,23 +237,16 @@ public class NearbyActivity extends ActivityBase {
 
     private final class NearbyTask extends AsyncTask<Void, Void, Cursor> {
 
-        private int mRadius;
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
-
         @Override
         protected Cursor doInBackground( Void... params ) {
-            mRadius = Integer.valueOf( mPrefs.getString( 
+            int radius = Integer.valueOf( mPrefs.getString( 
                     PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "20" ) );
 
             // Favorites may have changed, get the new list
-            mFavorites = mDbManager.getFavorites();
+            mFavorites = mDbManager.getAptFavorites();
 
             // Get the bounding box first to do a quick query as a first cut
-            double[] box = GeoUtils.getBoundingBox( mLastLocation, mRadius );
+            double[] box = GeoUtils.getBoundingBox( mLastLocation, radius );
 
             double radLatMin = box[ 0 ];
             double radLatMax = box[ 1 ];
@@ -300,7 +290,7 @@ public class NearbyActivity extends ActivityBase {
             // Build a cursor out of the sorted airport list
             MatrixCursor matrix = new MatrixCursor( mDisplayColumns );
             for ( AirportData airport : airports ) {
-                if ( airport.DISTANCE > 0 && airport.DISTANCE <= mRadius ) {
+                if ( airport.DISTANCE > 0 && airport.DISTANCE <= radius ) {
                     MatrixCursor.RowBuilder row = matrix.newRow();
                     row.add( matrix.getPosition() )
                         .add( airport.SITE_NUMBER )
@@ -325,56 +315,57 @@ public class NearbyActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            setProgressBarIndeterminateVisibility( false );
-
-            TextView title = (TextView) findViewById( R.id.airport_list_title );
-            if ( title == null ) {
-                setContentView( R.layout.airport_list_view );
-                title = (TextView) findViewById( R.id.airport_list_title );
-                title.setVisibility( View.VISIBLE );
-            }
-
-            if ( c == null ) {
-                title.setText( "No airports found within the query radius" );
-                return;
-            }
-
-            ListView listView = (ListView) findViewById( R.id.list_view );
-            registerForContextMenu( listView );
-            listView.setOnItemClickListener( new OnItemClickListener() {
-
-                @Override
-                public void onItemClick( AdapterView<?> parent, View view,
-                        int position, long id ) {
-                    Cursor c = mListAdapter.getCursor();
-                    c.moveToPosition( position );
-                    String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-                    Intent intent = new Intent( NearbyActivity.this, AirportDetailsActivity.class );
-                    intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                    startActivity( intent );
-                }
-
-            } );
-
-            if ( mListAdapter == null ) {
-                // No adapter is set yet
-                mListAdapter = new AirportsCursorAdapter( NearbyActivity.this, c );
-                listView.setAdapter( mListAdapter );
-            } else {
-                int position = listView.getFirstVisiblePosition();
-                mListAdapter.changeCursor( c );
-                listView.setSelection( position );
-            }
-
-            String msg = String.valueOf( c.getCount() )+" airports found within "
-                    +String.valueOf( mRadius )+" NM";
-            if ( mRefAirport !=  null ) {
-                msg += " of "+mRefAirport;
-            }
-
-            title.setText( msg );
+            showDetails( c );
         }
 
+    }
+
+    protected void showDetails( Cursor c ) {
+        setContentShown( true );
+
+        TextView title = (TextView) findViewById( R.id.airport_list_title );
+        title.setVisibility( View.VISIBLE );
+
+        int radius = Integer.valueOf( mPrefs.getString( 
+                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "20" ) );
+        int count = ( c==null )? 0 : c.getCount();
+
+        String msg = String.format( "%d airports found within %d NM radius", count, radius );
+        if ( mRefAirport !=  null ) {
+            msg += " of "+mRefAirport;
+        }
+        title.setText( msg );
+
+        if ( count == 0 ) {
+            return;
+        }
+
+        ListView listView = (ListView) findViewById( R.id.list_view );
+        registerForContextMenu( listView );
+        listView.setOnItemClickListener( new OnItemClickListener() {
+
+            @Override
+            public void onItemClick( AdapterView<?> parent, View view,
+                    int position, long id ) {
+                Cursor c = mListAdapter.getCursor();
+                c.moveToPosition( position );
+                String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+                Intent intent = new Intent( NearbyActivity.this, AirportDetailsActivity.class );
+                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                startActivity( intent );
+            }
+
+        } );
+
+        if ( mListAdapter == null ) {
+            // No adapter is set yet
+            mListAdapter = new AirportsCursorAdapter( this, c );
+            listView.setAdapter( mListAdapter );
+        } else {
+            int position = listView.getFirstVisiblePosition();
+            mListAdapter.changeCursor( c );
+            listView.setSelection( position );
+        }
     }
 
     @Override
@@ -412,11 +403,11 @@ public class NearbyActivity extends ActivityBase {
 
         switch ( item.getItemId() ) {
             case R.id.menu_add_favorites:
-                mDbManager.addToFavorites( siteNumber );
+                mDbManager.addToFavoriteAirports( siteNumber );
                 mFavorites.add( siteNumber );
                 break;
             case R.id.menu_remove_favorites:
-                mDbManager.removeFromFavorites( siteNumber );
+                mDbManager.removeFromFavoriteAirports( siteNumber );
                 mFavorites.remove( siteNumber );
                 break;
             case R.id.menu_view_details:

@@ -29,13 +29,14 @@ import android.widget.LinearLayout;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
-import com.nadmm.airports.DatabaseManager.Tower8;
 
 public class RemarkDetailsActivity extends ActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        setContentView( createContentView( R.layout.remarks_detail_view ) );
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
@@ -48,7 +49,7 @@ public class RemarkDetailsActivity extends ActivityBase {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 3 ];
+            Cursor[] cursors = new Cursor[ 2 ];
 
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -66,26 +67,29 @@ public class RemarkDetailsActivity extends ActivityBase {
                     +"'A24', 'A70', 'A75', 'A81', 'A81 1', 'A82')",
                     new String[] { siteNumber }, null, null, Remarks.REMARK_NAME, null );
 
-            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower8.TABLE_NAME );
-            cursors[ 2 ] = builder.query( db, new String[] { "*" },
-                    Tower8.FACILITY_ID+"=? ",
-                    new String[] { faaCode }, null, null, null, null );
-
             return cursors;
         }
 
         @Override
         protected void onResult( Cursor[] result ) {
-            setContentView( R.layout.remarks_detail_view );
-
-            Cursor apt = result[ 0 ];
-            showAirportTitle( apt );
-            showRemarksDetails( result );
-            showAirspaceDetails( result );
+            showDetails( result );
         }
 
+    }
+
+    protected void showDetails( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        showAirportTitle( apt );
+        showRemarksDetails( result );
+
+        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null  || code.length() == 0 ) {
+            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        }
+        getSupportActionBar().setTitle( code );
+        getSupportActionBar().setSubtitle( getTitle() );
+
+        setContentShown( true );
     }
 
     protected void showRemarksDetails( Cursor[] result ) {
@@ -96,43 +100,6 @@ public class RemarkDetailsActivity extends ActivityBase {
                 String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
                 addRemarkRow( layout, remark );
             } while ( rmk.moveToNext() );
-        }
-    }
-
-    protected void showAirspaceDetails( Cursor[] result ) {
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
-
-        Cursor twr8 = result[ 2 ];
-        if ( twr8.moveToFirst() ) {
-            String airspace = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_TYPES ) );
-            String remark = "";
-            if ( airspace.charAt( 0 ) == 'Y' ) {
-                remark += "CLASS B";
-            }
-            if ( airspace.charAt( 1 ) == 'Y' ) {
-                if ( remark.length() > 0 ) {
-                    remark += ", ";
-                }
-                remark += "CLASS C";
-            }
-            if ( airspace.charAt( 2 ) == 'Y' ) {
-                if ( remark.length() > 0 ) {
-                    remark += ", ";
-                }
-                remark += "CLASS D";
-            }
-            if ( airspace.charAt( 3 ) == 'Y' ) {
-                if ( remark.length() > 0 ) {
-                    remark += ", ";
-                }
-                remark += "CLASS E";
-            }
-            remark = "AIRSPACE: "+remark;
-            String hours = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_HOURS ) );
-            if ( hours.length() > 0 ) {
-                remark += " ("+hours+")";
-            }
-            addBulletedRow( layout, remark );
         }
     }
 

@@ -19,14 +19,13 @@
 
 package com.nadmm.airports;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.widget.Button;
 
-public class AboutActivity extends Activity {
+public class AboutActivity extends ActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {

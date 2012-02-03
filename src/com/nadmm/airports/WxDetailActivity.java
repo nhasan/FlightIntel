@@ -29,13 +29,12 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
 import android.text.format.DateFormat;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -44,8 +43,8 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.TimeUtils;
+import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.Metar.Flags;
@@ -56,7 +55,6 @@ import com.nadmm.airports.wx.WxSymbol;
 public class WxDetailActivity extends ActivityBase {
 
     private BroadcastReceiver mReceiver;
-    private View mContentView;
     private Cursor[] mCursors;
     private String mIcaoCode;
     private long mElevation;
@@ -101,6 +99,10 @@ public class WxDetailActivity extends ActivityBase {
     private final class WxDetailTask extends CursorAsyncTask {
 
         @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
         protected Cursor[] doInBackground( String... params ) {
             mIcaoCode = params[ 0 ];
             String sensorId = params[ 1 ];
@@ -120,7 +122,6 @@ public class WxDetailActivity extends ActivityBase {
 
         @Override
         protected void onResult( Cursor[] result ) {
-            // Now request the weather
             mCursors = result;
 
             Cursor awos = result[ 0 ];
@@ -130,12 +131,7 @@ public class WxDetailActivity extends ActivityBase {
                 return;
             }
 
-            mContentView = inflate( R.layout.wx_detail_view );
-            setContentView( mContentView );
-
-            ImageView iv = (ImageView) findViewById( R.id.wx_refresh );
-            AnimationDrawable refresh = (AnimationDrawable) iv.getDrawable();
-            refresh.start();
+            setContentView( createContentView( R.layout.wx_detail_view ) );
 
             mElevation = awos.getInt( awos.getColumnIndex( Airports.ELEVATION_MSL ) );
 
@@ -147,7 +143,7 @@ public class WxDetailActivity extends ActivityBase {
             if ( phone != null && phone.length() > 0 ) {
                 tv = (TextView) findViewById( R.id.wx_station_phone );
                 tv.setText( phone );
-                makeClickToCall( tv );
+                UiUtils.makeClickToCall( WxDetailActivity.this, tv );
                 tv.setVisibility( View.VISIBLE );
             }
             String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
@@ -164,6 +160,7 @@ public class WxDetailActivity extends ActivityBase {
                 tv.setVisibility( View.VISIBLE );
             }
 
+            // Now request the weather
             Intent service = new Intent( WxDetailActivity.this, MetarService.class );
             service.setAction( MetarService.ACTION_GET_METAR );
             service.putExtra( MetarService.STATION_ID, mIcaoCode );
@@ -173,38 +170,11 @@ public class WxDetailActivity extends ActivityBase {
     }
 
     protected void showWeather( Intent intent ) {
-        ImageView iv = (ImageView) findViewById( R.id.wx_refresh );
-        if ( iv == null ) {
-            // We got the broadcast when we are not ready
-            return;
-        }
-
-        AnimationDrawable refresh = (AnimationDrawable) iv.getDrawable();
-
-        iv.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                ImageView iv = (ImageView) findViewById( R.id.wx_refresh );
-                AnimationDrawable refresh = (AnimationDrawable) iv.getDrawable();
-                refresh.start();
-                Intent service = new Intent( WxDetailActivity.this, MetarService.class );
-                service.setAction( MetarService.ACTION_GET_METAR );
-                service.putExtra( MetarService.STATION_ID, mIcaoCode );
-                service.putExtra( MetarService.FORCE_REFRESH, true );
-                startService( service );
-            }
-
-        } );
-
         Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
 
-        LinearLayout layout;
-        TextView tv;
         View detail = findViewById( R.id.wx_detail_layout );
-
-        tv =(TextView) findViewById( R.id.status_msg );
-        layout = (LinearLayout) findViewById( R.id.wx_status_layout );
+        TextView tv =(TextView) findViewById( R.id.status_msg );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.wx_status_layout );
         layout.removeAllViews();
         if ( !metar.isValid ) {
             tv.setVisibility( View.VISIBLE );
@@ -216,7 +186,8 @@ public class WxDetailActivity extends ActivityBase {
             addBulletedRow( layout, "Station is currently out of service" );
             addBulletedRow( layout, "Station has not updated the METAR for more than 3 hours" );
             detail.setVisibility( View.GONE );
-            refresh.stop();
+            stopRefreshAnimation();
+            setContentShown( true );
             return;
         } else {
             tv.setText( "" );
@@ -224,8 +195,6 @@ public class WxDetailActivity extends ActivityBase {
             layout.setVisibility( View.GONE );
             detail.setVisibility( View.VISIBLE );
         }
-
-        Date now = new Date();
 
         if ( metar.stationElevationMeters < Integer.MAX_VALUE ) {
             mElevation = DataUtils.metersToFeet( metar.stationElevationMeters );
@@ -239,11 +208,13 @@ public class WxDetailActivity extends ActivityBase {
                 decimal.format( mElevation ) ) );
 
         tv = (TextView) findViewById( R.id.wx_age );
+        Date now = new Date();
         long age = now.getTime()-metar.observationTime;
         tv.setText( TimeUtils.formatDuration( age )+" old" );
 
-        tv = (TextView) findViewById( R.id.wx_station_info3 );
-        tv.setText( metar.flightCategory+" conditions prevailing" );
+        tv = (TextView) findViewById( R.id.wx_flight_category );
+        tv.setText( WxUtils.getFlightCategoryName( metar.flightCategory )
+                +" conditions prevailing" );
         WxUtils.setFlightCategoryDrawable( tv, metar );
 
         // Raw Text
@@ -515,7 +486,8 @@ public class WxDetailActivity extends ActivityBase {
                 +DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( metar.fetchTime ) ) );
         tv.setVisibility( View.VISIBLE );
 
-        refresh.stop();
+        stopRefreshAnimation();
+        setContentShown( true );
     }
 
     protected String getWindsDescription( Metar metar ) {
@@ -546,7 +518,7 @@ public class WxDetailActivity extends ActivityBase {
             Drawable wind = UiUtils.getRotatedDrawable( this, R.drawable.windsock,
                     metar.windDirDegrees );
             tv.setCompoundDrawablesWithIntrinsicBounds( wind, null, null, null );
-            tv.setCompoundDrawablePadding( convertDpToPx( 6 ) );
+            tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( this, 6 ) );
         }
 
         layout.addView( row, new LinearLayout.LayoutParams(
@@ -572,6 +544,29 @@ public class WxDetailActivity extends ActivityBase {
 
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu( Menu menu ) {
+        setRefreshItemVisible( true );
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+        case R.id.menu_refresh:
+            startRefreshAnimation();
+            Intent service = new Intent( WxDetailActivity.this, MetarService.class );
+            service.setAction( MetarService.ACTION_GET_METAR );
+            service.putExtra( MetarService.STATION_ID, mIcaoCode );
+            service.putExtra( MetarService.FORCE_REFRESH, true );
+            startService( service );
+            return true;
+        default:
+            return super.onOptionsItemSelected( item );
+        }
     }
 
 }

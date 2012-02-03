@@ -136,7 +136,7 @@ public abstract class SkyCondition implements Serializable {
                 }
             };
         } else if ( name.equalsIgnoreCase( "OVX" ) ) {
-            sky = new SkyCondition( name, cloudBase ) {
+            sky = new SkyCondition( name, 0 ) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -149,7 +149,7 @@ public abstract class SkyCondition implements Serializable {
                 }
             };
         } else if ( name.equalsIgnoreCase( "SKM" ) ) {
-            sky = new SkyCondition( name, cloudBase ) {
+            sky = new SkyCondition( name, 0 ) {
                 private static final long serialVersionUID = 1L;
 
                 @Override

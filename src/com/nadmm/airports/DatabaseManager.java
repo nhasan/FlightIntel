@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -396,7 +396,8 @@ public class DatabaseManager {
 
     public static final class Favorites implements BaseColumns {
         public static final String TABLE_NAME = "favorites";
-        public static final String SITE_NUMBER = "SITE_NUMBER";
+        public static final String TYPE = "TYPE";
+        public static final String LOCATION_ID = "LOCATION_ID";
     }
 
     public static DatabaseManager instance( Context context ) {
@@ -454,18 +455,26 @@ public class DatabaseManager {
         return catalogDb.rawQuery( query, null );
     }
 
-    protected ArrayList<String> getFavorites() {
+    public ArrayList<String> getAptFavorites() {
+        return getFavorites( "APT" );
+    }
+
+    public ArrayList<String> getWxFavorites() {
+        return getFavorites( "WX" );
+    }
+
+    private ArrayList<String> getFavorites( String type ) {
         ArrayList<String> favorites = new ArrayList<String>();
         SQLiteDatabase db = getUserDataDb();
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Favorites.TABLE_NAME );
         builder.setDistinct( true );
-        Cursor c = builder.query( db, new String[] { Favorites.SITE_NUMBER }, 
-                null, null, null, null, null );
+        Cursor c = builder.query( db, new String[] { Favorites.LOCATION_ID }, 
+                Favorites.TYPE+"=?", new String[] { type }, null, null, null );
         if ( c.moveToFirst() ) {
             // Build the list of favorites
             do {
-                favorites.add( c.getString( c.getColumnIndex( Favorites.SITE_NUMBER ) ) );
+                favorites.add( c.getString( c.getColumnIndex( Favorites.LOCATION_ID ) ) );
             } while ( c.moveToNext() );
         }
         c.close();
@@ -478,25 +487,55 @@ public class DatabaseManager {
         builder.setTables( Favorites.TABLE_NAME );
         builder.setDistinct( true );
         SQLiteDatabase userDb = getUserDataDb();
-        Cursor c = builder.query( userDb, new String[] { Favorites.SITE_NUMBER }, 
-                Airports.SITE_NUMBER+"=? ",
-                new String[] { siteNumber }, null, null, null, null );
+        Cursor c = builder.query( userDb, new String[] { Favorites.LOCATION_ID }, 
+                Favorites.LOCATION_ID+"=? AND "+Favorites.TYPE+"=?",
+                new String[] { siteNumber, "APT" }, null, null, null, null );
         Boolean isFavorite = c.moveToFirst();
         c.close();
         return isFavorite;
     }
 
-    public long addToFavorites( String siteNumber ) {
+    public long addToFavoriteAirports( String siteNumber ) {
         SQLiteDatabase userDataDb = getUserDataDb();
         ContentValues values = new ContentValues();
-        values.put( Favorites.SITE_NUMBER, siteNumber );
+        values.put( Favorites.TYPE, "APT" );
+        values.put( Favorites.LOCATION_ID, siteNumber );
         return userDataDb.insert( Favorites.TABLE_NAME, null, values );
     }
 
-    public int removeFromFavorites( String siteNumber ) {
+    public int removeFromFavoriteAirports( String siteNumber ) {
         SQLiteDatabase userDataDb = getUserDataDb();
         return userDataDb.delete( Favorites.TABLE_NAME, 
-                Airports.SITE_NUMBER+"=?", new String[] { siteNumber } );
+                Favorites.LOCATION_ID+"=? AND "+Favorites.TYPE+"=?",
+                new String[] { siteNumber, "APT" } );
+    }
+
+    public Boolean isFavoriteWx( String facilityId ) {
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Favorites.TABLE_NAME );
+        builder.setDistinct( true );
+        SQLiteDatabase userDb = getUserDataDb();
+        Cursor c = builder.query( userDb, new String[] { Favorites.LOCATION_ID }, 
+                Favorites.LOCATION_ID+"=? AND "+Favorites.TYPE+"=?",
+                new String[] { facilityId, "WX" }, null, null, null, null );
+        Boolean isFavorite = c.moveToFirst();
+        c.close();
+        return isFavorite;
+    }
+
+    public long addToFavoriteWx( String facilityId ) {
+        SQLiteDatabase userDataDb = getUserDataDb();
+        ContentValues values = new ContentValues();
+        values.put( Favorites.TYPE, "WX" );
+        values.put( Favorites.LOCATION_ID, facilityId );
+        return userDataDb.insert( Favorites.TABLE_NAME, null, values );
+    }
+
+    public int removeFromFavoriteWx( String siteNumber ) {
+        SQLiteDatabase userDataDb = getUserDataDb();
+        return userDataDb.delete( Favorites.TABLE_NAME, 
+                Favorites.LOCATION_ID+"=? AND "+Favorites.TYPE+"=?",
+                new String[] { siteNumber, "WX" } );
     }
 
     private synchronized void openDatabases() {
@@ -587,22 +626,27 @@ public class DatabaseManager {
     public class UserDataDbOpenHelper extends SQLiteOpenHelper {
 
         public UserDataDbOpenHelper( Context context ) {
-            super( context, "userdata.db", null, 1 );
+            super( context, "userdata.db", null, 2 );
         }
 
         @Override
         public void onCreate( SQLiteDatabase db ) {
             Log.i( TAG, "Creating 'favorites' table" );
             db.execSQL( "CREATE TABLE "+Favorites.TABLE_NAME+" ( "
-                    +Favorites.SITE_NUMBER+" TEXT PRIMARY_KEY "
-                    +")" );
+                    +Favorites.TYPE+" TEXT, "
+                    +Favorites.LOCATION_ID+" TEXT"
+                    +" )" );
         }
 
         @Override
         public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
             Log.i( TAG, "Ugrading "+Favorites.TABLE_NAME+" db "+oldVersion+" -> "+newVersion );
-            db.execSQL( "DROP TABLE "+Favorites.TABLE_NAME );
+            String oldTable = Favorites.TABLE_NAME+"_old";
+            db.execSQL( "ALTER TABLE "+Favorites.TABLE_NAME+" RENAME TO "+oldTable );
             onCreate( db );
+            db.execSQL( "INSERT INTO "+Favorites.TABLE_NAME
+                    +" SELECT 'APT', SITE_NUMBER FROM "+oldTable );
+            db.execSQL( "DROP TABLE "+oldTable );
         }
 
     }

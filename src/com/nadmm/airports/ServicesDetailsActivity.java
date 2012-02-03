@@ -34,6 +34,8 @@ public class ServicesDetailsActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setContentView( createContentView( R.layout.services_detail_view ) );
+
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         ServicesDetailsTask task = new ServicesDetailsTask();
@@ -52,14 +54,25 @@ public class ServicesDetailsActivity extends ActivityBase {
 
         @Override
         protected void onResult( Cursor[] result ) {
-            setContentView( R.layout.services_detail_view );
-
-            Cursor apt = result[ 0 ];
-            showAirportTitle( apt );
-            showAirportServices( result );
-            showFaaServices( result );
+            showDetails( result );
         }
 
+    }
+
+    protected void showDetails( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        showAirportTitle( apt );
+        showAirportServices( result );
+        showFaaServices( result );
+
+        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null  || code.length() == 0 ) {
+            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        }
+        getSupportActionBar().setTitle( code );
+        getSupportActionBar().setSubtitle( getTitle() );
+
+        setContentShown( true );
     }
 
     protected void showAirportServices( Cursor[] result ) {

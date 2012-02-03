@@ -46,6 +46,8 @@ public class RunwayDetailsActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setContentView( createContentView( R.layout.runway_detail_view ) );
+
         mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
@@ -87,30 +89,42 @@ public class RunwayDetailsActivity extends ActivityBase {
 
         @Override
         protected void onResult( Cursor[] result ) {
-            setContentView( R.layout.runway_detail_view );
-
-            Cursor apt = result[ 0 ];
-            showAirportTitle( apt );
-
-            Cursor rwy = result[ 1 ];
-            if ( !rwy.moveToFirst() ) {
-                UiUtils.showToast( getApplicationContext(), "Unable to get runway information" );
-                finish();
-                return;
-            }
-
-            String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
-            boolean isHelipad = runwayId.startsWith( "H" );
-
-            if ( isHelipad ) {
-                showHelipadInformation( result );
-            } else {
-                showCommonInformation( result );
-                showBaseEndInformation( result );
-                showReciprocalEndInformation( result );
-            }
+            showDetails( result );
         }
 
+    }
+
+    protected void showDetails( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        showAirportTitle( apt );
+
+        Cursor rwy = result[ 1 ];
+        if ( !rwy.moveToFirst() ) {
+            UiUtils.showToast( getApplicationContext(), "Unable to get runway information" );
+            finish();
+            return;
+        }
+
+        String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
+        boolean isHelipad = runwayId.startsWith( "H" );
+
+        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null  || code.length() == 0 ) {
+            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        }
+        getSupportActionBar().setTitle( code );
+
+        if ( isHelipad ) {
+            getSupportActionBar().setSubtitle( "Helipad "+runwayId );
+            showHelipadInformation( result );
+        } else {
+            getSupportActionBar().setSubtitle( "Runway "+runwayId );
+            showCommonInformation( result );
+            showBaseEndInformation( result );
+            showReciprocalEndInformation( result );
+        }
+
+        setContentShown( true );
     }
 
     protected void showCommonInformation( Cursor[] result ) {

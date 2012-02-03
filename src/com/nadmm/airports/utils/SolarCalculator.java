@@ -49,6 +49,7 @@ public class SolarCalculator {
         double cosineSunLocalHour = getCosineSunLocalHour( sunTrueLongitude, zenith );
 
         if ( cosineSunLocalHour < -1.0 || cosineSunLocalHour > 1.0 ) {
+            // Sun does not rise
             return null;
         }
 
@@ -67,6 +68,7 @@ public class SolarCalculator {
         double cosineSunLocalHour = getCosineSunLocalHour( sunTrueLongitude, zenith );
 
         if ( cosineSunLocalHour < -1.0 || cosineSunLocalHour > 1.0 ) {
+            // Sun does not set
             return null;
         }
 

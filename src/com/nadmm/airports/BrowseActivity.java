@@ -33,7 +33,6 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -80,6 +79,8 @@ public final class BrowseActivity extends ActivityBase {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setContentView( createContentView( R.layout.airport_list_view ) );
+
         Intent intent = getIntent();
         Bundle extra = intent.getExtras();
         if ( extra == null ) {
@@ -90,11 +91,12 @@ public final class BrowseActivity extends ActivityBase {
         if ( !extra.containsKey( Airports.SITE_NUMBER ) ) {
             // Show browse list
             String stateCode = extra.getString( States.STATE_CODE );
+            getSupportActionBar().setTitle( getTitle() );
             if ( stateCode == null ) {
-                setTitle( "Browse Airports - All Locations" );
+                getSupportActionBar().setSubtitle( "All Locations" );
             } else {
                 String stateName = extra.getString( States.STATE_NAME );
-                setTitle( "Browse Airports - "+stateName );
+                getSupportActionBar().setSubtitle( stateName );
             }
             BrowseTask task = new BrowseTask();
             task.execute( extra );
@@ -111,11 +113,6 @@ public final class BrowseActivity extends ActivityBase {
     }
 
     private final class BrowseTask extends AsyncTask<Bundle, Void, Cursor> {
-
-        @Override
-        protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
-        }
 
         @Override
         protected Cursor doInBackground( Bundle... params ) {
@@ -179,33 +176,38 @@ public final class BrowseActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            setContentView( R.layout.airport_list_view );
-            ListView listView = (ListView) findViewById( R.id.list_view );
-            listView.setOnItemClickListener( new OnItemClickListener() {
-
-                @Override
-                public void onItemClick( AdapterView<?> parent, View view,
-                        int position, long id ) {
-                    onListItemClick( position );
-                }
-
-            } );
-
-            if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
-                 mListAdapter = new BrowseCursorAdapter( BrowseActivity.this,
-                        R.layout.browse_all_item, c, R.id.browse_all_section,
-                        BrowseCursorAdapter.STATE_MODE );
-            } else {
-                mListAdapter = new BrowseCursorAdapter( BrowseActivity.this,
-                        R.layout.browse_state_item, c, R.id.browse_state_section,
-                        BrowseCursorAdapter.CITY_MODE );
-                registerForContextMenu( listView );
-            }
-
-            listView.setAdapter( mListAdapter );
-            setProgressBarIndeterminateVisibility( false );
+            showDetails( c );
         }
 
+    }
+
+    protected void showDetails( Cursor c ) {
+        ListView listView = (ListView) findViewById( R.id.list_view );
+        listView.setOnItemClickListener( new OnItemClickListener() {
+
+            @Override
+            public void onItemClick( AdapterView<?> parent, View view,
+                    int position, long id ) {
+                onListItemClick( position );
+            }
+
+        } );
+
+        if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
+             mListAdapter = new BrowseCursorAdapter( this,
+                    R.layout.browse_all_item, c, R.id.browse_all_section,
+                    BrowseCursorAdapter.STATE_MODE );
+        } else {
+            mListAdapter = new BrowseCursorAdapter( this,
+                    R.layout.browse_state_item, c, R.id.browse_state_section,
+                    BrowseCursorAdapter.CITY_MODE );
+            getSupportActionBar().setSubtitle( String.format( "%s  (%d)",
+                    getSupportActionBar().getSubtitle(), c.getCount() ) );
+            registerForContextMenu( listView );
+        }
+
+        listView.setAdapter( mListAdapter );
+        setContentShown( true );
     }
 
     private final class BrowseCursorAdapter extends SectionedCursorAdapter {
@@ -255,13 +257,6 @@ public final class BrowseActivity extends ActivityBase {
             }
         }
 
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu( Menu menu ) {
-        MenuItem browse = menu.findItem( R.id.menu_browse );
-        browse.setEnabled( false );
-        return super.onPrepareOptionsMenu( menu );
     }
 
     protected void onListItemClick( int position ) {
@@ -318,10 +313,10 @@ public final class BrowseActivity extends ActivityBase {
 
         switch ( item.getItemId() ) {
             case R.id.menu_add_favorites:
-                mDbManager.addToFavorites( siteNumber );
+                mDbManager.addToFavoriteAirports( siteNumber );
                 break;
             case R.id.menu_remove_favorites:
-                mDbManager.removeFromFavorites( siteNumber );
+                mDbManager.removeFromFavoriteAirports( siteNumber );
                 break;
             case R.id.menu_view_details:
                 Intent intent = new Intent( this, AirportDetailsActivity.class );
