@@ -606,7 +606,14 @@ public class ActivityBase extends FragmentActivity {
         if ( code == null  || code.length() == 0 ) {
             code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
         }
-        setActionBarTitle( code, subtitle );
+        String title = code;
+        Boolean showAirportName = getResources().getBoolean( R.bool.ActionbarShowAirportName );
+        if ( showAirportName ) {
+            String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
+            title += " - "+name;
+        }
+
+        setActionBarTitle( title, subtitle );
     }
 
     protected void setActionBarTitle( String title ) {
