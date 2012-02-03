@@ -84,7 +84,7 @@
                   android:name=".AirportNotamActivity" />
 
         <activity android:label="@string/weather"
-                  android:name=".WxDetailActivity" />
+                  android:name=".wx.WxDetailActivity" />
 
         <activity android:label="@string/about"
                   android:name="AboutActivity" />

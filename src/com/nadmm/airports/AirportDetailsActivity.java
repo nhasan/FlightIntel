@@ -70,6 +70,7 @@ import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.MetarService;
+import com.nadmm.airports.wx.WxDetailActivity;
 
 public class AirportDetailsActivity extends ActivityBase {
 

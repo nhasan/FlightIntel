@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports;
+package com.nadmm.airports.wx;
 
 import java.text.NumberFormat;
 import java.util.Date;
@@ -39,18 +39,17 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
+import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.WxUtils;
-import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.Metar.Flags;
-import com.nadmm.airports.wx.MetarService;
-import com.nadmm.airports.wx.SkyCondition;
-import com.nadmm.airports.wx.WxSymbol;
 
 public class WxDetailActivity extends ActivityBase {
 

@@ -42,7 +42,7 @@ import com.nadmm.airports.utils.NetworkUtils;
 public class MetarService extends IntentService {
 
     private final String NOAA_HOST = "weather.aero";
-    private final String METAR_PATH = "/dataserver_current/httpparam";
+    private final String METAR_PATH = "/dataserver1_4/httpparam";
     private final String METAR_QUERY = "datasource=metars&requesttype=retrieve" +
     		"&format=xml&compression=gzip&hoursBeforeNow=3" +
     		"&mostRecentForEachStation=constraint&stationString=";
