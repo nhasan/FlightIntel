@@ -86,10 +86,9 @@ public class NavaidNotamActivity extends NotamActivityBase {
         }
 
         Cursor nav1 = result[ 0 ];
-        String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
-        getSupportActionBar().setTitle( id );
-        getSupportActionBar().setSubtitle( getTitle() );
 
+        String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
+        setActionBarTitle( id );
         showNavaidTitle( nav1 );
         showNotams( "K"+id );
 

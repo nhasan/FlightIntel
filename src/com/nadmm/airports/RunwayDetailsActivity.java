@@ -95,9 +95,6 @@ public class RunwayDetailsActivity extends ActivityBase {
     }
 
     protected void showDetails( Cursor[] result ) {
-        Cursor apt = result[ 0 ];
-        showAirportTitle( apt );
-
         Cursor rwy = result[ 1 ];
         if ( !rwy.moveToFirst() ) {
             UiUtils.showToast( getApplicationContext(), "Unable to get runway information" );
@@ -105,20 +102,17 @@ public class RunwayDetailsActivity extends ActivityBase {
             return;
         }
 
+        Cursor apt = result[ 0 ];
+        showAirportTitle( apt );
+
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
         boolean isHelipad = runwayId.startsWith( "H" );
 
-        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-        if ( code == null  || code.length() == 0 ) {
-            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-        }
-        getSupportActionBar().setTitle( code );
-
         if ( isHelipad ) {
-            getSupportActionBar().setSubtitle( "Helipad "+runwayId );
+            setActionBarTitle( apt, "Helipad "+runwayId );
             showHelipadInformation( result );
         } else {
-            getSupportActionBar().setSubtitle( "Runway "+runwayId );
+            setActionBarTitle( apt, "Runway "+runwayId );
             showCommonInformation( result );
             showBaseEndInformation( result );
             showReciprocalEndInformation( result );

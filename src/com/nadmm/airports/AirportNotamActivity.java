@@ -84,13 +84,7 @@ public class AirportNotamActivity extends NotamActivityBase {
             icaoCode = "K"+faaCode;
         }
 
-        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-        if ( code == null  || code.length() == 0 ) {
-            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-        }
-        getSupportActionBar().setTitle( code );
-        getSupportActionBar().setSubtitle( getTitle() );
-
+        setActionBarTitle( apt );
         showAirportTitle( apt );
         showNotams( icaoCode );
 

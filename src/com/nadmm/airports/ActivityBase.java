@@ -597,6 +597,27 @@ public class ActivityBase extends FragmentActivity {
         }
     }
 
+    protected void setActionBarTitle( Cursor c ) {
+        setActionBarTitle( c, getTitle().toString() );
+    }
+
+    protected void setActionBarTitle( Cursor c, String subtitle ) {
+        String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( code == null  || code.length() == 0 ) {
+            code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
+        }
+        setActionBarTitle( code, subtitle );
+    }
+
+    protected void setActionBarTitle( String title ) {
+        setActionBarTitle( title, getTitle().toString() );
+    }
+
+    protected void setActionBarTitle( String title, String subtitle ) {
+        getSupportActionBar().setTitle( title );
+        getSupportActionBar().setSubtitle( subtitle );
+    }
+
     protected void startHomeActivity() {
         Class<?> clss = AirportsMain.getHomeActivity( this );
         if ( getClass() != clss ) {
@@ -616,6 +637,11 @@ public class ActivityBase extends FragmentActivity {
         @Override
         protected final void onPostExecute( Cursor[] result ) {
             onResult( result );
+            for ( Cursor c : result ) {
+                if ( c != null ) {
+                    c.close();
+                }
+            }
         }
 
         protected abstract void onResult( Cursor[] result );

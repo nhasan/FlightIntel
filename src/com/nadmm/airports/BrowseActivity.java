@@ -91,7 +91,6 @@ public final class BrowseActivity extends ActivityBase {
         if ( !extra.containsKey( Airports.SITE_NUMBER ) ) {
             // Show browse list
             String stateCode = extra.getString( States.STATE_CODE );
-            getSupportActionBar().setTitle( getTitle() );
             if ( stateCode == null ) {
                 getSupportActionBar().setSubtitle( "All Locations" );
             } else {

@@ -42,7 +42,6 @@ import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,9 +87,7 @@ public class AirportDetailsActivity extends ActivityBase {
         Intent intent = getIntent();
         mSiteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
 
-        View view = createContentView( R.layout.airport_activity_layout );
-        setContentView( view );
-        setContentShown( false );
+        setContentView( createContentView( R.layout.airport_activity_layout ) );
 
         addFragment( AirportDetailsFragment.class );
     }
@@ -150,7 +147,6 @@ public class AirportDetailsActivity extends ActivityBase {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
-            Log.d( getClass().getSimpleName(), "doInBackground()" );
             String siteNumber = params[ 0 ];
 
             DatabaseManager dbManager = getDbManager();
@@ -364,7 +360,6 @@ public class AirportDetailsActivity extends ActivityBase {
         private Location mLocation;
         private float mDeclination;
         private String mIcaoCode;
-        private Cursor[] mCursors;
         AirportDetailsTask mTask;
         int mWxUpdates = 0;
 
@@ -409,15 +404,6 @@ public class AirportDetailsActivity extends ActivityBase {
             IntentFilter filter = new IntentFilter();
             filter.addAction( MetarService.ACTION_GET_METAR );
             getActivityBase().registerReceiver( mReceiver, filter );
-            // Post it for later to allow framework to create the menu
-            getActivityBase().postRunnable( new Runnable() {
-
-                @Override
-                public void run() {
-                    requestMetars( false );
-                }
-
-            }, 1000 );
         }
 
         @Override
@@ -430,13 +416,12 @@ public class AirportDetailsActivity extends ActivityBase {
         }
 
         public void onResult( Cursor[] result ) {
-            mCursors = result;
-            showDetails();
             mTask = null;
+            showDetails( result );
         }
 
-        protected void showDetails() {
-            Cursor apt = mCursors[ 0 ];
+        protected void showDetails( Cursor[] result ) {
+            Cursor apt = result[ 0 ];
 
             double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
             double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
@@ -456,25 +441,18 @@ public class AirportDetailsActivity extends ActivityBase {
 
             // Extras bundle for "Nearby" activity
             mExtras = new Bundle();
-            String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-            if ( code == null  || code.length() == 0 ) {
-                code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            }
-            
-            mExtras.putString( NearbyActivity.APT_CODE, code );
             mExtras.putParcelable( NearbyActivity.APT_LOCATION, mLocation );
 
-            getActivityBase().getSupportActionBar().setTitle( code );
-            getActivityBase().getSupportActionBar().setSubtitle( getActivityBase().getTitle() );
+            getActivityBase().setActionBarTitle( apt );
             getActivityBase().showAirportTitle( apt );
 
-            showCommunicationsDetails();
-            showRunwayDetails();
-            showAwosDetails();
-            showOperationsDetails();
-            showRemarks();
-            showServicesDetails();
-            showOtherDetails();
+            showCommunicationsDetails( result );
+            showRunwayDetails( result );
+            showAwosDetails( result );
+            showOperationsDetails( result );
+            showRemarks( result );
+            showServicesDetails( result );
+            showOtherDetails( result );
 
             TextView tv = (TextView) findViewById( R.id.effective_date );
             tv.setText( "Effective date: "
@@ -482,18 +460,11 @@ public class AirportDetailsActivity extends ActivityBase {
 
             requestMetars( false );
 
-            for ( Cursor c : mCursors ) {
-                if ( c != null ) {
-                    c.close();
-                }
-            }
-            mCursors = null;
-
             getActivityBase().setContentShown( true );
         }
 
-        protected void showCommunicationsDetails() {
-            Cursor apt = mCursors[ 0 ];
+        protected void showCommunicationsDetails( Cursor[] result ) {
+            Cursor apt = result[ 0 ];
             String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
 
             TableLayout layout = (TableLayout) findViewById( R.id.detail_comm_layout );
@@ -514,7 +485,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 addRow( layout, "Unicom", DataUtils.decodeUnicomFreq( unicom ) );
             }
 
-            Cursor twr1 = mCursors[ 3 ];
+            Cursor twr1 = result[ 3 ];
             if ( twr1.moveToFirst() ) {
                 String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
                 if ( !facilityType.equals( "NON-ATCT" ) ) {
@@ -531,7 +502,7 @@ public class AirportDetailsActivity extends ActivityBase {
                             Tower1.RADIO_CALL_APCH ) );
                     String depRadioCall =  twr1.getString( twr1.getColumnIndex(
                             Tower1.RADIO_CALL_DEP ) );
-                    Cursor twr7 = mCursors[ 4 ];
+                    Cursor twr7 = result[ 4 ];
                     if ( twr7.moveToFirst() ) {
                         HashMap<String, ArrayList<Pair<String, String>>> map =
                             new HashMap<String, ArrayList<Pair<String, String>>>();
@@ -573,7 +544,7 @@ public class AirportDetailsActivity extends ActivityBase {
                         }
                     }
 
-                    Cursor aff3 = mCursors[ 7 ];
+                    Cursor aff3 = result[ 7 ];
                     if ( aff3.moveToFirst() ) {
                         do {
                             String artcc = aff3.getString( aff3.getColumnIndex( Aff3.ARTCC_ID ) );
@@ -625,14 +596,14 @@ public class AirportDetailsActivity extends ActivityBase {
             map.put( freqUse, list );
         }
 
-        protected void showRunwayDetails() {
+        protected void showRunwayDetails( Cursor[] result ) {
             TableLayout rwyLayout = (TableLayout) findViewById( R.id.detail_rwy_layout );
             TableLayout heliLayout = (TableLayout) findViewById( R.id.detail_heli_layout );
             TextView tv;
             int rwyNum = 0;
             int heliNum = 0;
 
-            Cursor rwy = mCursors[ 1 ];
+            Cursor rwy = result[ 1 ];
             if ( rwy.moveToFirst() ) {
                 int rwyTot = 0;
                 int heliTot = 0;
@@ -682,10 +653,10 @@ public class AirportDetailsActivity extends ActivityBase {
             }
         }
 
-        protected void showAwosDetails() {
+        protected void showAwosDetails( Cursor[] result ) {
             TextView label = (TextView) findViewById( R.id.detail_awos_label );
             TableLayout layout = (TableLayout) findViewById( R.id.detail_awos_layout );
-            Cursor awos = mCursors[ 6 ];
+            Cursor awos = result[ 6 ];
 
             if ( awos.moveToFirst() ) {
                 do {
@@ -722,8 +693,8 @@ public class AirportDetailsActivity extends ActivityBase {
             }
         }
 
-        protected void showOperationsDetails() {
-            Cursor apt = mCursors[ 0 ];
+        protected void showOperationsDetails( Cursor[] result ) {
+            Cursor apt = result[ 0 ];
             TableLayout layout = (TableLayout) findViewById( R.id.detail_operations_layout );
             String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
             addRow( layout, "Airport use", DataUtils.decodeFacilityUse( use ) );
@@ -740,7 +711,7 @@ public class AirportDetailsActivity extends ActivityBase {
             }
             String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
             addSeparator( layout );
-            addAirspaceRow( layout, mCursors );
+            addAirspaceRow( layout, result );
             addRow( layout, "Control tower", tower.equals( "Y" )? "Yes" : "No" );
             String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
             addSeparator( layout );
@@ -806,11 +777,11 @@ public class AirportDetailsActivity extends ActivityBase {
             addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
         }
 
-        protected void showRemarks() {
+        protected void showRemarks( Cursor[] result ) {
             int row = 0;
             TextView label = (TextView) findViewById( R.id.detail_remarks_label );
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
-            Cursor rmk = mCursors[ 2 ];
+            Cursor rmk = result[ 2 ];
             if ( rmk.moveToFirst() ) {
                 do {
                     String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
@@ -819,13 +790,13 @@ public class AirportDetailsActivity extends ActivityBase {
                 } while ( rmk.moveToNext() );
              }
 
-            Cursor twr1 = mCursors[ 3 ];
-            Cursor twr7 = mCursors[ 4 ];
+            Cursor twr1 = result[ 3 ];
+            Cursor twr7 = result[ 4 ];
             if ( twr1.moveToFirst() ) {
                 String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
                 if ( facilityType.equals( "NON-ATCT" ) && twr7.getCount() == 0 ) {
                     // Show remarks, if any, since there are no frequencies listed
-                    Cursor twr6 = mCursors[ 5 ];
+                    Cursor twr6 = result[ 5 ];
                     if ( twr6.moveToFirst() ) {
                         do {
                             String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
@@ -842,8 +813,8 @@ public class AirportDetailsActivity extends ActivityBase {
             }
         }
 
-        protected void showServicesDetails() {
-            Cursor apt = mCursors[ 0 ];
+        protected void showServicesDetails( Cursor[] result ) {
+            Cursor apt = result[ 0 ];
             TableLayout layout = (TableLayout) findViewById( R.id.detail_services_layout );
             String fuelTypes = DataUtils.decodeFuelTypes( 
                     apt.getString( apt.getColumnIndex( Airports.FUEL_TYPES ) ) );
@@ -871,8 +842,8 @@ public class AirportDetailsActivity extends ActivityBase {
             addClickableRow( layout, "Other services", intent, R.drawable.row_selector_bottom );
         }
 
-        protected void showOtherDetails() {
-            Cursor apt = mCursors[ 0 ];
+        protected void showOtherDetails( Cursor[] result ) {
+            Cursor apt = result[ 0 ];
             String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
             TableLayout layout = (TableLayout) findViewById( R.id.detail_other_layout );
             Intent intent = new Intent( getActivity(), OwnershipDetailsActivity.class );

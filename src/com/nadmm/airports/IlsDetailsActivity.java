@@ -29,7 +29,6 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Ils2;
 import com.nadmm.airports.utils.UiUtils;
@@ -96,6 +95,11 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
+        Cursor ils1 = result[ 1 ];
+        String rwyId = ils1.getString( ils1.getColumnIndex( Ils1.RUNWAY_ID ) );
+        String ilsType = ils1.getString( ils1.getColumnIndex( Ils1.ILS_TYPE ) );
+
+        setActionBarTitle( apt, ilsType+" - Runway "+rwyId );
         showAirportTitle( apt );
         showIlsDetails( result );
         showLocalizerDetails( result );
@@ -104,17 +108,6 @@ public class IlsDetailsActivity extends ActivityBase {
         showMiddleMarkerDetails( result );
         showOuterMarkerDetails( result );
         showIlsRemarks( result );
-
-        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-        if ( code == null  || code.length() == 0 ) {
-            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-        }
-        Cursor ils1 = result[ 1 ];
-        String rwyId = ils1.getString( ils1.getColumnIndex( Ils1.RUNWAY_ID ) );
-        String ilsType = ils1.getString( ils1.getColumnIndex( Ils1.ILS_TYPE ) );
-
-        getSupportActionBar().setTitle( code );
-        getSupportActionBar().setSubtitle( ilsType+" - Runway "+rwyId );
 
         setContentShown( true );
     }

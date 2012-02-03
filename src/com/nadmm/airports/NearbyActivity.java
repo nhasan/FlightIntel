@@ -62,7 +62,6 @@ public class NearbyActivity extends ActivityBase {
     private Location mLastLocation;
     private SharedPreferences mPrefs;
     private ArrayList<String> mFavorites;
-    private String mRefAirport;
     private AirportsCursorAdapter mListAdapter;
 
     private final String[] mDisplayColumns = new String[] {
@@ -96,7 +95,6 @@ public class NearbyActivity extends ActivityBase {
         Bundle bundle = intent.getExtras();
         if ( bundle != null ) {
             mLastLocation = (Location) bundle.get( APT_LOCATION );
-            mRefAirport = bundle.getString( APT_CODE );
         }
 
         if ( mLastLocation == null ) {
@@ -331,9 +329,6 @@ public class NearbyActivity extends ActivityBase {
         int count = ( c==null )? 0 : c.getCount();
 
         String msg = String.format( "%d airports found within %d NM radius", count, radius );
-        if ( mRefAirport !=  null ) {
-            msg += " of "+mRefAirport;
-        }
         title.setText( msg );
 
         if ( count == 0 ) {

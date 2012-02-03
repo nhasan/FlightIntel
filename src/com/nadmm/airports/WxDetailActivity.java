@@ -55,13 +55,14 @@ import com.nadmm.airports.wx.WxSymbol;
 public class WxDetailActivity extends ActivityBase {
 
     private BroadcastReceiver mReceiver;
-    private Cursor[] mCursors;
     private String mIcaoCode;
     private long mElevation;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        setContentView( createContentView( R.layout.wx_detail_view ) );
 
         mReceiver = new BroadcastReceiver() {
 
@@ -99,10 +100,6 @@ public class WxDetailActivity extends ActivityBase {
     private final class WxDetailTask extends CursorAsyncTask {
 
         @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
         protected Cursor[] doInBackground( String... params ) {
             mIcaoCode = params[ 0 ];
             String sensorId = params[ 1 ];
@@ -122,20 +119,16 @@ public class WxDetailActivity extends ActivityBase {
 
         @Override
         protected void onResult( Cursor[] result ) {
-            mCursors = result;
-
             Cursor awos = result[ 0 ];
             if ( !awos.moveToFirst() ) {
-                UiUtils.showToast( WxDetailActivity.this, "Unable to get weather station info" );
+                UiUtils.showToast( getApplicationContext(), "Unable to get weather station info" );
                 finish();
                 return;
             }
 
-            setContentView( createContentView( R.layout.wx_detail_view ) );
-
             mElevation = awos.getInt( awos.getColumnIndex( Airports.ELEVATION_MSL ) );
 
-            showWxTitle( mCursors );
+            showWxTitle( result );
 
             TextView tv;
 

@@ -68,15 +68,10 @@ public class AlmanacActivity extends ActivityBase {
 
     protected void showDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
+
+        setActionBarTitle( apt );
         showAirportTitle( apt );
         showSolarInfo( result );
-
-        String code = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-        if ( code == null  || code.length() == 0 ) {
-            code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-        }
-        getSupportActionBar().setTitle( code );
-        getSupportActionBar().setSubtitle( getTitle() );
 
         setContentShown( true );
     }

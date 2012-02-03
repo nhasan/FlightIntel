@@ -110,9 +110,7 @@ public class NavaidDetailsActivity extends ActivityBase {
         Cursor nav1 = result[ 0 ];
 
         String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
-        getSupportActionBar().setTitle( id );
-        getSupportActionBar().setSubtitle( getTitle() );
-
+        setActionBarTitle( id );
         showNavaidTitle( nav1 );
         showNavaidDetails( result );
         showNavaidRemarks( result );
