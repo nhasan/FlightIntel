@@ -31,7 +31,6 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Ils2;
-import com.nadmm.airports.utils.UiUtils;
 
 public class IlsDetailsActivity extends ActivityBase {
 
@@ -81,13 +80,6 @@ public class IlsDetailsActivity extends ActivityBase {
 
         @Override
         protected void onResult( Cursor[] result ) {
-            Cursor ils1 = result[ 1 ];
-            if ( !ils1.moveToFirst() ) {
-                UiUtils.showToast( getApplicationContext(), "Unable to find ILS info" );
-                finish();
-                return;
-            }
-
             showDetails( result );
         }
 
@@ -95,19 +87,24 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        Cursor ils1 = result[ 1 ];
-        String rwyId = ils1.getString( ils1.getColumnIndex( Ils1.RUNWAY_ID ) );
-        String ilsType = ils1.getString( ils1.getColumnIndex( Ils1.ILS_TYPE ) );
-
-        setActionBarTitle( apt, ilsType+" - Runway "+rwyId );
         showAirportTitle( apt );
-        showIlsDetails( result );
-        showLocalizerDetails( result );
-        showGlideslopeDetails( result );
-        showInnerMarkerDetails( result );
-        showMiddleMarkerDetails( result );
-        showOuterMarkerDetails( result );
-        showIlsRemarks( result );
+
+        Cursor ils1 = result[ 1 ];
+        if ( ils1.moveToFirst() ) {
+            String rwyId = ils1.getString( ils1.getColumnIndex( Ils1.RUNWAY_ID ) );
+            String ilsType = ils1.getString( ils1.getColumnIndex( Ils1.ILS_TYPE ) );
+            setActionBarTitle( apt, ilsType+" - Runway "+rwyId );
+            showIlsDetails( result );
+            showLocalizerDetails( result );
+            showGlideslopeDetails( result );
+            showInnerMarkerDetails( result );
+            showMiddleMarkerDetails( result );
+            showOuterMarkerDetails( result );
+            showIlsRemarks( result );
+        } else {
+            setActionBarTitle( apt, "" );
+            setContentMsg( "ILS details not found" );
+        }
 
         setContentShown( true );
     }
