@@ -90,6 +90,11 @@ public class ActivityBase extends FragmentActivity {
     }
 
     protected View createContentView( int id ) {
+        View view = inflate( id );
+        return createContentView( view );
+    }
+
+    protected View createContentView( View view ) {
         FrameLayout root = new FrameLayout( this );
         root.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT ) );
@@ -109,7 +114,6 @@ public class ActivityBase extends FragmentActivity {
         lframe.setId( R.id.INTERNAL_FRAGMENT_CONTAINER_ID );
         lframe.setVisibility( View.GONE );
 
-        View view = inflate( id );
         lframe.addView( view, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT ) );
         root.addView( lframe, new FrameLayout.LayoutParams(
@@ -132,6 +136,14 @@ public class ActivityBase extends FragmentActivity {
             progress.setVisibility( View.VISIBLE );
             content.setVisibility( View.GONE );
         }
+    }
+
+    protected void setContentMsg( String msg ) {
+        TextView tv = new TextView( this );
+        tv.setGravity( Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL );
+        tv.setPadding( 12, 8, 12, 8 );
+        tv.setText( msg );
+        setContentView( createContentView( tv ) );
     }
 
     protected void addFragment( Class<?> clss ) {

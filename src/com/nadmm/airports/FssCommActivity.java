@@ -28,7 +28,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableLayout.LayoutParams;
@@ -251,12 +250,7 @@ public class FssCommActivity extends ActivityBase {
                         LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
             } while ( com.moveToNext() );
         } else {
-            TextView tv = new TextView( this );
-            tv.setGravity( Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL );
-            tv.setPadding( 12, 8, 12, 8 );
-            tv.setText( String.format( "No FSS communication outlets found within %dNM radius.",
-                    RADIUS ) );
-            setContentView( tv );
+            setContentMsg( String.format( "No FSS outlets found within %dNM radius.", RADIUS ) );
         }
     }
 

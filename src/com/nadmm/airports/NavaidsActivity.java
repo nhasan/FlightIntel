@@ -39,9 +39,10 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.utils.UiUtils;
 
 public class NavaidsActivity extends ActivityBase {
+
+    private final int RADIUS = 40;
 
     private final String[] mNavColumns = new String[] {
             Nav1.NAVAID_ID,
@@ -137,7 +138,7 @@ public class NavaidsActivity extends ActivityBase {
 
             // Get the navaid within 40nm radius
             // Get the bounding box first to do a quick query as a first cut
-            double[] box = GeoUtils.getBoundingBox( location, 40 );
+            double[] box = GeoUtils.getBoundingBox( location, RADIUS );
 
             double radLatMin = box[ 0 ];
             double radLatMax = box[ 1 ];
@@ -213,18 +214,17 @@ public class NavaidsActivity extends ActivityBase {
     }
 
     protected void showDetails( Cursor[] result ) {
-        Cursor vor = result[ 1 ];
-        Cursor ndb = result[ 2 ];
-        if ( vor == null && ndb == null ) {
-            UiUtils.showToast( getApplicationContext(), "No navaids found in the vicinity" );
-            finish();
-            return;
-        }
-
         Cursor apt = result[ 0 ];
         setActionBarTitle( apt );
-        showAirportTitle( apt );
-        showNavaidDetails( result );
+
+        Cursor vor = result[ 1 ];
+        Cursor ndb = result[ 2 ];
+        if ( vor != null || ndb != null ) {
+            showAirportTitle( apt );
+            showNavaidDetails( result );
+        } else {
+            setContentMsg( String.format( "No navaids found within %dNM radius.", RADIUS ) );
+        }
 
         setContentShown( true );
     }
