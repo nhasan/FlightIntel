@@ -81,12 +81,12 @@
 	            android:layout_height="wrap_content">
 	        <CheckBox android:id="@+id/airport_star"
 	                style="?android:attr/starStyle"
-	                android:paddingBottom="6dp"
+	                android:paddingBottom="5dp"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content" />
 	        <ImageView android:id="@+id/airport_map"
 	                android:src="@android:drawable/ic_dialog_map"
-	                android:paddingTop="6dp"
+	                android:paddingTop="5dp"
 	                android:tint="#ff909090"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content" />
