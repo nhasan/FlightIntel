@@ -685,9 +685,6 @@ public class AirportDetailsActivity extends ActivityBase {
                     addAwosRow( layout, icaoCode, name, type, freq, phone, distance,
                             bearing, intent, resid );
                 } while ( awos.moveToNext() );
-
-                // Request the metar from cache
-                requestMetars( false );
             } else {
                 label.setVisibility( View.GONE );
                 layout.setVisibility( View.GONE );
@@ -1074,6 +1071,10 @@ public class AirportDetailsActivity extends ActivityBase {
         }
 
         protected void requestMetars( boolean force ) {
+            if ( mAwosViews.size() == 0 ) {
+                return;
+            }
+
             // Now get the METAR if already in the cache
             SharedPreferences prefs =
                     PreferenceManager.getDefaultSharedPreferences( getActivityBase() );
