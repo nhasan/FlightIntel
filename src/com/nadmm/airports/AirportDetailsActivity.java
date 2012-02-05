@@ -707,6 +707,9 @@ public class AirportDetailsActivity extends ActivityBase {
                 addSeparator( layout );
                 addRow( layout, "Activation date", activation );
             }
+            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            addSeparator( layout );
+            addRow( layout, "FAA code", faaCode );
             String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
             addSeparator( layout );
             addAirspaceRow( layout, result );
