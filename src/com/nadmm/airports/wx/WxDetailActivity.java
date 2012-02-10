@@ -36,7 +36,6 @@ import android.support.v4.view.MenuItem;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.nadmm.airports.ActivityBase;
@@ -503,39 +502,27 @@ public class WxDetailActivity extends ActivityBase {
     }
 
     protected void addWindRow( LinearLayout layout, Metar metar ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
+        View row = addRow( layout, getWindsDescription( metar ) );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
-        tv.setText( getWindsDescription( metar ) );
         if ( metar.windDirDegrees > 0 ) {
             Drawable wind = UiUtils.getRotatedDrawable( this, R.drawable.windsock,
                     metar.windDirDegrees );
             tv.setCompoundDrawablesWithIntrinsicBounds( wind, null, null, null );
             tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( this, 6 ) );
         }
-
-        layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
     protected void addSkyConditionRow( LinearLayout layout, SkyCondition sky,
             String flightCategory ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
+        View row = addRow( layout, sky.toString() );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
-        tv.setText( sky.toString() );
         WxUtils.showColorizedDrawable( tv, flightCategory, sky.getDrawable() );
-
-        layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
     protected void addWeatherRow( LinearLayout layout, WxSymbol wx, String flightCategory ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
+        View row = addRow( layout, wx.toString() );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
-        tv.setText( wx.toString() );
         WxUtils.showColorizedDrawable( tv, flightCategory, wx.getDrawable() );
-
-        layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
     @Override

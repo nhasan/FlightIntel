@@ -451,8 +451,9 @@ public class ActivityBase extends FragmentActivity {
     }
 
     protected View addRow( LinearLayout layout, String label ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
+        LinearLayout row = (LinearLayout) inflate( R.layout.airport_detail_item );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setSingleLine( false );
         tv.setText( label );
         tv = (TextView) row.findViewById( R.id.item_value );
         tv.setVisibility( View.GONE );
@@ -462,8 +463,9 @@ public class ActivityBase extends FragmentActivity {
     }
 
     protected View addRow( LinearLayout layout, String label, String value ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
+        LinearLayout row = (LinearLayout) inflate( R.layout.airport_detail_item );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setSingleLine( false );
         tv.setText( label );
         tv = (TextView) row.findViewById( R.id.item_value );
         tv.setText( value );
@@ -501,8 +503,9 @@ public class ActivityBase extends FragmentActivity {
     }
 
     protected View addPhoneRow( TableLayout table, String label, final String phone ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
+        LinearLayout row = (LinearLayout) inflate( R.layout.airport_detail_item );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setSingleLine( false );
         tv.setText( label );
         tv = (TextView) row.findViewById( R.id.item_value );
         tv.setText( phone );
