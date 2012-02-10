@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.nadmm.airports"
-      android:versionCode="232"
-      android:versionName="2.3.2" >
+      android:versionCode="240"
+      android:versionName="2.4.0" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -47,7 +47,7 @@
         <activity android:label="@string/runways"
                   android:name="RunwayDetailsActivity" />
 
-        <activity android:label="@string/airport_services"
+        <activity android:label="@string/other_services"
                   android:name="ServicesDetailsActivity" />
 
         <activity android:label="@string/airport_owner"
