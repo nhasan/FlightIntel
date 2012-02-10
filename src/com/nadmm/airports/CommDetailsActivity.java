@@ -31,14 +31,17 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
+import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Aff3;
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.AtcPhones;
 import com.nadmm.airports.DatabaseManager.Tower1;
 import com.nadmm.airports.DatabaseManager.Tower3;
 import com.nadmm.airports.DatabaseManager.Tower6;
 import com.nadmm.airports.DatabaseManager.Tower7;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class CommDetailsActivity extends ActivityBase {
 
@@ -59,7 +62,7 @@ public class CommDetailsActivity extends ActivityBase {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 6 ];
+            Cursor[] cursors = new Cursor[ 11 ];
             
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -95,13 +98,60 @@ public class CommDetailsActivity extends ActivityBase {
                     new String[] { siteNumber }, null, null, null, null );
             cursors[ 4 ] = c;
 
-            String faa_code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
             builder = new SQLiteQueryBuilder();
             builder.setTables( Aff3.TABLE_NAME );
             c = builder.query( db, new String[] { "*" },
                     Aff3.IFR_FACILITY_ID+"=?",
-                    new String[] { faa_code }, null, null, null, null );
+                    new String[] { faaCode }, null, null, null, null );
             cursors[ 5 ] = c;
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( AtcPhones.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" },
+                    "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
+                    new String[] { "MAIN", "MAIN" }, null, null, null, null );
+            cursors[ 6 ] = c;
+
+            String faaRegion = apt.getString( apt.getColumnIndex( Airports.REGION_CODE ) );
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( AtcPhones.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" },
+                    "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
+                    new String[] { "REGION", faaRegion }, null, null, null, null );
+            cursors[ 7 ] = c;
+
+            String artccId = apt.getString( apt.getColumnIndex( Airports.BOUNDARY_ARTCC_ID ) );
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( AtcPhones.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" },
+                    "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
+                    new String[] { "ARTCC", artccId }, null, null, null, null );
+            cursors[ 8 ] = c;
+
+            Cursor twr1 = cursors[ 1 ];
+            if ( twr1.moveToFirst() ) {
+                String apch = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_APCH ) );
+                String tracon = DataUtils.getTraconId( apch );
+                if ( tracon.length() == 0 ) {
+                    String dep = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP ) );
+                    tracon = DataUtils.getTraconId( dep );
+                }
+                if ( tracon.length() > 0 ) {
+                    builder = new SQLiteQueryBuilder();
+                    builder.setTables( AtcPhones.TABLE_NAME );
+                    c = builder.query( db, new String[] { "*" },
+                            "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
+                            new String[] { "TRACON", tracon }, null, null, null, null );
+                    cursors[ 9 ] = c;
+                }
+            }
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( AtcPhones.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" },
+                    "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
+                    new String[] { "ATCT", faaCode }, null, null, null, null );
+            cursors[ 10 ] = c;
 
             return cursors;
         }
@@ -120,6 +170,7 @@ public class CommDetailsActivity extends ActivityBase {
         showAirportTitle( apt );
         showAirportFrequencies( result );
         showAtcFrequencies( result );
+        showAtcPhones( result );
         showRemarks( result );
 
         setContentShown( true );
@@ -190,18 +241,20 @@ public class CommDetailsActivity extends ActivityBase {
             } while ( twr3.moveToNext() );
 
             TableLayout layout = (TableLayout) findViewById( R.id.airport_comm_details );
-            int row = 0;
-            for ( String key : map.keySet() ) {
-                for ( Pair<String, String> pair : map.get( key ) ) {
-                    if ( row > 0 ) {
-                        addSeparator( layout );
+            if ( !map.isEmpty() ) {
+                int row = 0;
+                for ( String key : map.keySet() ) {
+                    for ( Pair<String, String> pair : map.get( key ) ) {
+                        if ( row > 0 ) {
+                            addSeparator( layout );
+                        }
+                        addRow( layout, key, pair );
+                        ++row;
                     }
-                    addRow( layout, key, pair );
-                    ++row;
                 }
+            } else {
+                layout.setVisibility( View.GONE );
             }
-        } else {
-            finish();
         }
     }
 
@@ -307,8 +360,8 @@ public class CommDetailsActivity extends ActivityBase {
             } while ( aff3.moveToNext() );
         }
 
+        TableLayout layout = (TableLayout) findViewById( R.id.atc_comm_details );
         if ( !map.isEmpty() ) {
-            TableLayout layout = (TableLayout) findViewById( R.id.atc_comm_details );
             int row = 0;
             for ( String key : map.keySet() ) {
                 for ( Pair<String, String> pair : map.get( key ) ) {
@@ -320,19 +373,72 @@ public class CommDetailsActivity extends ActivityBase {
                 }
             }
         } else {
-            TableLayout layout = (TableLayout) findViewById( R.id.atc_comm_details );
             layout.setVisibility( View.GONE );
         }
     }
 
-    protected void addFrequencyToMap( HashMap<String, ArrayList<Pair<String, String>>> map,
-            String key, String freq, String extra ) {
-        ArrayList<Pair<String, String>> list = map.get( key );
-        if ( list == null ) {
-            list = new ArrayList<Pair<String, String>>();
+    protected void showAtcPhones( Cursor[] result ) {
+        TableLayout layout = (TableLayout) findViewById( R.id.atc_phones_details );
+
+        Cursor main = result[ 6 ];
+        if ( main.moveToFirst() ) {
+            String phone = main.getString( main.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
+            View row = addRow( layout, "Command center", phone );
+            TextView tv = (TextView) row.findViewById( R.id.item_value );
+            UiUtils.makeClickToCall( this, tv );
         }
-        list.add( Pair.create( String.format( "%.3f", Double.valueOf( freq ) ), extra.trim() ) );
-        map.put( key, list );
+
+        Cursor region = result[ 7 ];
+        if ( region.moveToFirst() ) {
+            String facility = region.getString( region.getColumnIndex( AtcPhones.FACILITY_ID ) );
+            String phone = region.getString( region.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
+            addSeparator( layout );
+            View row = addRow( layout, DataUtils.decodeFaaRegion( facility )+" region", phone );
+            TextView tv = (TextView) row.findViewById( R.id.item_value );
+            UiUtils.makeClickToCall( this, tv );
+        }
+
+        Cursor artcc = result[ 8 ];
+        if ( artcc.moveToFirst() ) {
+            String facility = artcc.getString( artcc.getColumnIndex( AtcPhones.FACILITY_ID ) );
+            String phone = artcc.getString( artcc.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
+            addSeparator( layout );
+            View row = addRow( layout, DataUtils.decodeArtcc( facility ), phone, 
+                    "Regional duty office", "(24 Hr)" );
+            TextView tv = (TextView) row.findViewById( R.id.item_value );
+            UiUtils.makeClickToCall( this, tv );
+            phone = artcc.getString( artcc.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
+            String hours = artcc.getString( artcc.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
+            addSeparator( layout );
+            row = addRow( layout, DataUtils.decodeArtcc( facility ), phone,
+                    "Business office", "("+hours+")" );
+            tv = (TextView) row.findViewById( R.id.item_value );
+            UiUtils.makeClickToCall( this, tv );
+        }
+
+        Cursor tracon = result[ 9 ];
+        if ( tracon != null && tracon.moveToFirst() ) {
+            String faaCode = tracon.getString( tracon.getColumnIndex( AtcPhones.FACILITY_ID ) );
+            String phone = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
+            String hours = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
+            addSeparator( layout );
+            String name = DataUtils.getTraconName( faaCode );
+            View row = addRow( layout, name+" TRACON", phone, "Business office", "("+hours+")" );
+            TextView tv = (TextView) row.findViewById( R.id.item_value );
+            UiUtils.makeClickToCall( this, tv );
+        }
+
+        Cursor atct = result[ 10 ];
+        if ( atct.moveToFirst() ) {
+            Cursor tower1 = result[ 1 ];
+            String name = tower1.getString( tower1.getColumnIndex( Tower1.RADIO_CALL_TOWER ) );
+            String phone = atct.getString( atct.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
+            String hours = atct.getString( atct.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
+            addSeparator( layout );
+            View row = addRow( layout, name+" Tower", phone, "Business office", "("+hours+")" );
+            TextView tv = (TextView) row.findViewById( R.id.item_value );
+            UiUtils.makeClickToCall( this, tv );
+        }
     }
 
     protected void showRemarks( Cursor[] result ) {
@@ -347,9 +453,19 @@ public class CommDetailsActivity extends ActivityBase {
                 String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
                 addBulletedRow( layout, remark );
             } while ( twr6.moveToNext() );
-        } else {
-            layout.setVisibility( View.GONE );
         }
+        addBulletedRow( layout, "Facilities can be contacted by phone through the"
+        		+" regional duty officer during non-business hours." );
+    }
+
+    protected void addFrequencyToMap( HashMap<String, ArrayList<Pair<String, String>>> map,
+            String key, String freq, String extra ) {
+        ArrayList<Pair<String, String>> list = map.get( key );
+        if ( list == null ) {
+            list = new ArrayList<Pair<String, String>>();
+        }
+        list.add( Pair.create( String.format( "%.3f", Double.valueOf( freq ) ), extra.trim() ) );
+        map.put( key, list );
     }
 
 }

@@ -377,6 +377,15 @@ public class DatabaseManager {
         public static final String WX_SERVICE_TYPES = "WX_SERVICE_TYPES";
     }
 
+    public static final class AtcPhones implements BaseColumns {
+        public static final String TABLE_NAME = "atcphones";
+        public static final String FACILITY_ID = "FACILITY_ID";
+        public static final String FACILITY_TYPE = "FACILITY_TYPE";
+        public static final String DUTY_OFFICE_PHONE = "DUTY_OFFICE_PHONE";
+        public static final String BUSINESS_HOURS = "BUSINESS_HOURS";
+        public static final String BUSINESS_PHONE = "BUSINESS_PHONE";
+    }
+
     public static final class Catalog implements BaseColumns {
         public static final String TABLE_NAME = "catalog";
         public static final String TYPE = "TYPE";
