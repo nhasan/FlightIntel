@@ -224,12 +224,17 @@ public class FssCommActivity extends ActivityBase {
                 LinearLayout layout = (LinearLayout) inflate( R.layout.fss_detail_item );
                 TextView tv = (TextView) layout.findViewById( R.id.fss_comm_name );
                 if ( navId.length() > 0 ) {
-                    tv.setText( navId+" - "+navName+" "+navType+" - "+navFreq );
+                    tv.setText( navName+" "+navType );
                 } else {
                     tv.setText( outletId+" - "+outletCall+" outlet" );
                 }
                 TableLayout table = (TableLayout) layout.findViewById( R.id.fss_comm_details );
                 addRow( table, "Call", fssName+" Radio" );
+                if ( navId.length() > 0 ) {
+                    addSeparator( table );
+                    addRow( table, navId, navFreq+"T" );
+                }
+
                 int i =0;
                 while ( i < freqs.length() ) {
                     addSeparator( table );
