@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@ use DBI;
 use LWP::Simple;
 use JSON;
 
-my $dbfile = "fadds.db";
 my $FADDS_BASE = shift @ARGV;
+my $dbfile = shift @ARGV;
 
 my $site_number;
 my $latitude;
@@ -34,7 +34,7 @@ my $tz;
 
 my $geonames_url = "http://api.geonames.org/timezoneJSON?";
 
-my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
+my $dbh = DBI->connect( "dbi:SQLite:dbname=$FADDS_BASE/$dbfile", "", "" );
 
 my $update_airports_tz = "update airports set TIMEZONE_ID=? where SITE_NUMBER=?";
 my $sth_upd = $dbh->prepare( $update_airports_tz );

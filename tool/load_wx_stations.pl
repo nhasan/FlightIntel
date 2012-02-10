@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@ use XML::Twig;
 use Text::Autoformat;
 
 my $reTrim = qr/^\s+|\s+$/;
-my $FADDS_BASE = shift @ARGV;
-my $STATIONS_FILE = "$FADDS_BASE/wx_stations.txt";
+my $BASE_DIR = shift @ARGV;
+my $STATIONS_FILE = "$BASE_DIR/wx_stations.txt";
 my $wx_url = "http://weather.aero/dataserver1_4/httpparam?"
         ."dataSource=stations&requestType=retrieve&format=xml&stationString=~us,~ca";
 my $count = 0;
