@@ -240,8 +240,11 @@ public class CommDetailsActivity extends ActivityBase {
                 }
             } while ( twr3.moveToNext() );
 
-            TableLayout layout = (TableLayout) findViewById( R.id.airport_comm_details );
             if ( !map.isEmpty() ) {
+                TextView tv = (TextView) findViewById( R.id.airport_comm_label );
+                tv.setVisibility( View.VISIBLE );
+                TableLayout layout = (TableLayout) findViewById( R.id.airport_comm_details );
+                layout.setVisibility( View.VISIBLE );
                 int row = 0;
                 for ( String key : map.keySet() ) {
                     for ( Pair<String, String> pair : map.get( key ) ) {
@@ -252,8 +255,6 @@ public class CommDetailsActivity extends ActivityBase {
                         ++row;
                     }
                 }
-            } else {
-                layout.setVisibility( View.GONE );
             }
         }
     }
@@ -360,8 +361,11 @@ public class CommDetailsActivity extends ActivityBase {
             } while ( aff3.moveToNext() );
         }
 
-        TableLayout layout = (TableLayout) findViewById( R.id.atc_comm_details );
         if ( !map.isEmpty() ) {
+            TextView tv = (TextView) findViewById( R.id.atc_comm_label );
+            tv.setVisibility( View.VISIBLE );
+            TableLayout layout = (TableLayout) findViewById( R.id.atc_comm_details );
+            layout.setVisibility( View.VISIBLE );
             int row = 0;
             for ( String key : map.keySet() ) {
                 for ( Pair<String, String> pair : map.get( key ) ) {
@@ -372,8 +376,6 @@ public class CommDetailsActivity extends ActivityBase {
                     ++row;
                 }
             }
-        } else {
-            layout.setVisibility( View.GONE );
         }
     }
 
