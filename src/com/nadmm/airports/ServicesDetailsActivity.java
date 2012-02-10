@@ -66,6 +66,7 @@ public class ServicesDetailsActivity extends ActivityBase {
         showAirportTitle( apt );
         showAirportServices( result );
         showFaaServices( result );
+        showFssServices( result );
 
         setContentShown( true );
     }
@@ -105,24 +106,14 @@ public class ServicesDetailsActivity extends ActivityBase {
     protected void showFaaServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         TableLayout layout = (TableLayout) findViewById( R.id.detail_faa_services_layout );
-        String region = apt.getString( apt.getColumnIndex( Airports.REGION_CODE ) );
-        if ( region.length() > 0 ) {
-            addRow( layout, "FAA region", DataUtils.decodeFaaRegion( region ) );
+        String faaRegion = apt.getString( apt.getColumnIndex( Airports.REGION_CODE ) );
+        if ( faaRegion.length() > 0 ) {
+            addRow( layout, "FAA region", DataUtils.decodeFaaRegion( faaRegion ) );
             addSeparator( layout );
         }
         String artccId = apt.getString( apt.getColumnIndex( Airports.BOUNDARY_ARTCC_ID ) );
         String artccName = apt.getString( apt.getColumnIndex( Airports.BOUNDARY_ARTCC_NAME ) );
         addRow( layout, "ARTCC", artccId+" ("+artccName+")" );
-        addSeparator( layout );
-        String fssId = apt.getString( apt.getColumnIndex( Airports.FSS_ID ) );
-        String fssName = apt.getString( apt.getColumnIndex( Airports.FSS_NAME ) );
-        addRow( layout, "Flight service", fssId+" ("+fssName+")" );
-        addSeparator( layout );
-        String fssPhone = apt.getString( apt.getColumnIndex( Airports.FSS_LOCAL_PHONE ) );
-        if ( fssPhone.length() == 0 ) {
-            fssPhone = apt.getString( apt.getColumnIndex( Airports.FSS_TOLLFREE_PHONE ) );
-        }
-        addPhoneRow( layout, "FSS phone", fssPhone );
         addSeparator( layout );
         String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
         String notamFacility = apt.getString( apt.getColumnIndex( Airports.NOTAM_FACILITY_ID ) );
@@ -133,6 +124,34 @@ public class ServicesDetailsActivity extends ActivityBase {
         addSeparator( layout );
         String notamD = apt.getString( apt.getColumnIndex( Airports.NOTAM_D_AVAILABLE ) );
         addRow( layout, "NOTAM D available", notamD.equals( "Y" )? "Yes" : "No" );
+    }
+
+    protected void showFssServices( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        TableLayout layout = (TableLayout) findViewById( R.id.detail_fss_services_layout );
+        String fssId = apt.getString( apt.getColumnIndex( Airports.FSS_ID ) );
+        String fssName = apt.getString( apt.getColumnIndex( Airports.FSS_NAME ) );
+        addRow( layout, "Flight service", fssId+" ("+fssName+")" );
+        addSeparator( layout );
+        String fssPhone = apt.getString( apt.getColumnIndex( Airports.FSS_LOCAL_PHONE ) );
+        if ( fssPhone.length() == 0 ) {
+            fssPhone = apt.getString( apt.getColumnIndex( Airports.FSS_TOLLFREE_PHONE ) );
+        }
+        addPhoneRow( layout, "FSS phone", fssPhone );
+        String state = apt.getString( apt.getColumnIndex( Airports.ASSOC_STATE ) );
+        if ( !state.equals( "AK" ) ) {
+            addSeparator( layout );
+            addPhoneRow( layout, "TIBS", "1-877-4TIBS-WX" );
+            addSeparator( layout );
+            addPhoneRow( layout, "Clearance delivery", "1-888-766-8287" );
+            String faaRegion = apt.getString( apt.getColumnIndex( Airports.REGION_CODE ) );
+            if ( faaRegion.equals( "AEA" ) ) {
+                addSeparator( layout );
+                addPhoneRow( layout, "DC SFRA & FRZ", "1-866-225-7410" );
+            }
+            addSeparator( layout );
+            addPhoneRow( layout, "Lifeguard flights", "1-877-LIF-GRD3" );
+        }
     }
 
 }
