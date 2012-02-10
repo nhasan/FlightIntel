@@ -50,6 +50,7 @@
     <string name="waiting_location">Waiting for location\u2026</string>
     <string name="airport_communications">Communications</string>
     <string name="airport_services">Airport Services</string>
+    <string name="other_services">Other Services</string>
     <string name="weather_stations">Weather Stations</string>
     <string name="airport_owner">Ownership and Contact</string>
     <string name="airport_manager">Airport Manager</string>
@@ -57,6 +58,7 @@
     <string name="airport_remarks">Airport Remarks</string>
     <string name="airport_attendance">Airport Attendance</string>
     <string name="atc_communications">ATC Communications</string>
+    <string name="atc_phones">ATC Phone Numbers</string>
     <string name="sunrise_sunset">Sunrise and Sunset</string>
     <string name="runways">Runways</string>
     <string name="helipads">Helipads</string>
@@ -73,6 +75,7 @@
     <string name="middlemarker">Middle Marker</string>
     <string name="outermarker">Outer Marker</string>
     <string name="faa_services">FAA Services</string>
+    <string name="fss_services">FSS Services</string>
     <string name="airport_operations">Airport Operations</string>
     <string name="general_info">General information</string>
     <string name="agree">I Agree</string>
