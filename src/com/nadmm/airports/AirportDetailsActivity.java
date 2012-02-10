@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -347,7 +347,9 @@ public class AirportDetailsActivity extends ActivityBase {
         protected void onResult( Cursor[] result ) {
             AirportDetailsFragment f = (AirportDetailsFragment) getFragment(
                     AirportDetailsFragment.class );
-            f.onResult( result );
+            if ( f != null ) {
+                f.onResult( result );
+            }
         }
 
     }
@@ -486,87 +488,14 @@ public class AirportDetailsActivity extends ActivityBase {
                 addRow( layout, "Unicom", DataUtils.decodeUnicomFreq( unicom ) );
             }
 
-            Cursor twr1 = result[ 3 ];
-            if ( twr1.moveToFirst() ) {
-                String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
-                if ( !facilityType.equals( "NON-ATCT" ) ) {
-                    if ( row > 0 ) {
-                        addSeparator( layout );
-                    }
-                    Intent intent = new Intent( getActivity(), CommDetailsActivity.class );
-                    intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                    ++row;
-                    int resId = getSelectorResourceForRow( row-1, row+1 );
-                    addClickableRow( layout, "ATC", intent, resId );
-                } else {
-                    String apchRadioCall =  twr1.getString( twr1.getColumnIndex(
-                            Tower1.RADIO_CALL_APCH ) );
-                    String depRadioCall =  twr1.getString( twr1.getColumnIndex(
-                            Tower1.RADIO_CALL_DEP ) );
-                    Cursor twr7 = result[ 4 ];
-                    if ( twr7.moveToFirst() ) {
-                        HashMap<String, ArrayList<Pair<String, String>>> map =
-                            new HashMap<String, ArrayList<Pair<String, String>>>();
-                        do {
-                            String freq = twr7.getString( twr7.getColumnIndex(
-                                    Tower7.SATELLITE_AIRPORT_FREQ ) );
-                            String extra = "";
-                            String freqUse = twr7.getString( twr7.getColumnIndex(
-                                    Tower7.SATELLITE_AIRPORT_FREQ_USE ) );
-                            int i = 0;
-                            while ( i < freq.length() ) {
-                                char c = freq.charAt( i );
-                                if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
-                                    ++i;
-                                    continue;
-                                }
-                                extra = freq.substring( i );
-                                freq = freq.substring( 0, i );
-                                break;
-                            }
-                            if ( freqUse.contains( "APCH/" ) ) {
-                                addFrequencyToMap( map, apchRadioCall+" Approach", freq, extra );
-                            } else if ( freqUse.contains( "DEP/" ) ) {
-                                addFrequencyToMap( map, depRadioCall+" Departure", freq, extra );
-                            }
-                            if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC DEL" ) ) {
-                                addFrequencyToMap( map, "Clearance Delivery", freq, extra );
-                            }
-                        } while ( twr7.moveToNext() );
-
-                        for ( String key : map.keySet() ) {
-                            for ( Pair<String, String> pair : map.get( key ) ) {
-                                if ( row > 0 ) {
-                                    addSeparator( layout );
-                                }
-                                addRow( layout, key, pair );
-                                ++row;
-                            }
-                        }
-                    }
-
-                    Cursor aff3 = result[ 7 ];
-                    if ( aff3.moveToFirst() ) {
-                        do {
-                            String artcc = aff3.getString( aff3.getColumnIndex( Aff3.ARTCC_ID ) );
-                            Double freq = aff3.getDouble( aff3.getColumnIndex( Aff3.SITE_FREQUENCY ) );
-                            String alt = aff3.getString( aff3.getColumnIndex( Aff3.FREQ_ALTITUDE ) );
-                            String extra = "("+alt+" altitude)";
-                            String type = aff3.getString( aff3.getColumnIndex( Aff3.FACILITY_TYPE ) );
-                            if ( !type.equals( "ARTCC" ) ) {
-                                extra = aff3.getString( aff3.getColumnIndex( Aff3.SITE_LOCATION ) )
-                                        +" "+type+" "+extra;
-                            }
-                            if ( row > 0 ) {
-                                addSeparator( layout );
-                            }
-                            addRow( layout, DataUtils.decodeArtcc( artcc ),
-                                    Pair.create( String.format( "%.3f", freq ), extra ) );
-                            ++row;
-                        } while ( aff3.moveToNext() );
-                    }
-                }
+            if ( row > 0 ) {
+                addSeparator( layout );
             }
+            Intent intent = new Intent( getActivity(), CommDetailsActivity.class );
+            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+            ++row;
+            int resId = getSelectorResourceForRow( row-1, row+1 );
+            addClickableRow( layout, "ATC", intent, resId );
 
             if ( row > 0 ) {
                 addSeparator( layout );
@@ -575,7 +504,7 @@ public class AirportDetailsActivity extends ActivityBase {
             ++row;
             Intent fss = new Intent( getActivity(), FssCommActivity.class );
             fss.putExtra( Airports.SITE_NUMBER, siteNumber );
-            int resId = getSelectorResourceForRow( row, row+2 );
+            resId = getSelectorResourceForRow( row, row+2 );
             addClickableRow( layout, "FSS outlets", fss, resId );
 
             addSeparator( layout );
@@ -710,9 +639,19 @@ public class AirportDetailsActivity extends ActivityBase {
             String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
             addSeparator( layout );
             addRow( layout, "FAA code", faaCode );
-            String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
+            Cursor twr8 = result[ 8 ];
+            if ( twr8.moveToFirst() ) {
+                String airspace = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_TYPES ) );
+                String value = DataUtils.decodeAirspace( airspace );
+                String hours = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_HOURS ) );
+                if ( hours.length() > 0 ) {
+                    value += " ("+hours+")";
+                }
+                addSeparator( layout );
+                addRow( layout, "Airspace", value );
+            }
             addSeparator( layout );
-            addAirspaceRow( layout, result );
+            String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
             addRow( layout, "Control tower", tower.equals( "Y" )? "Yes" : "No" );
             String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
             addSeparator( layout );
@@ -867,11 +806,11 @@ public class AirportDetailsActivity extends ActivityBase {
         protected void addAwosRow( TableLayout table, String id, String name, String type, 
                 String freq, String phone, float distance, float bearing,
                 Intent intent, int resid ) {
-            LinearLayout layout = (LinearLayout) inflate( R.layout.awos_detail_item );
+            LinearLayout layout = (LinearLayout) inflate( R.layout.airport_detail_item );
             layout.setBackgroundResource( resid );
             layout.setTag( intent );
 
-            TextView tv = (TextView) layout.findViewById( R.id.awos_station_name );
+            TextView tv = (TextView) layout.findViewById( R.id.item_label );
             tv.setTag( id );
             mAwosViews.add( tv );
 
@@ -883,24 +822,26 @@ public class AirportDetailsActivity extends ActivityBase {
 
             if ( freq != null && freq.length() > 0 ) {
                 try {
-                    tv = (TextView) layout.findViewById( R.id.awos_freq );
+                    tv = (TextView) layout.findViewById( R.id.item_value );
                     tv.setText( String.format( "%.3f", Double.valueOf( freq ) ) );
                 } catch ( NumberFormatException e ) {
                 }
             }
 
-            if ( phone != null && phone.length() > 0 ) {
-                tv = (TextView) layout.findViewById( R.id.awos_phone );
-                tv.setText( phone );
-                makeClickToCall( tv );
-            }
-
-            tv = (TextView) layout.findViewById( R.id.awos_info );
+            tv = (TextView) layout.findViewById( R.id.item_extra_label );
+            tv.setVisibility( View.VISIBLE );
             if ( distance > 1 ) {
                 tv.setText( String.format( "%s, %.0fNM %s", type, distance,
                         GeoUtils.getCardinalDirection( bearing ) ) );
             } else {
                 tv.setText( type+", On-site" );
+            }
+
+            if ( phone != null && phone.length() > 0 ) {
+                tv = (TextView) layout.findViewById( R.id.item_extra_value );
+                tv.setVisibility( View.VISIBLE );
+                tv.setText( phone );
+                makeClickToCall( tv );
             }
 
             layout.setOnClickListener( new OnClickListener() {
@@ -987,41 +928,6 @@ public class AirportDetailsActivity extends ActivityBase {
             addBulletedRow( layout, remark );
         }
 
-        protected void addAirspaceRow( TableLayout layout, Cursor[] result ) {
-            Cursor twr8 = result[ 8 ];
-            if ( twr8.moveToFirst() ) {
-                String airspace = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_TYPES ) );
-                String value = "";
-                if ( airspace.charAt( 0 ) == 'Y' ) {
-                    value += "Class B";
-                }
-                if ( airspace.charAt( 1 ) == 'Y' ) {
-                    if ( value.length() > 0 ) {
-                        value += ", ";
-                    }
-                    value += "Class C";
-                }
-                if ( airspace.charAt( 2 ) == 'Y' ) {
-                    if ( value.length() > 0 ) {
-                        value += ", ";
-                    }
-                    value += "Class D";
-                }
-                if ( airspace.charAt( 3 ) == 'Y' ) {
-                    if ( value.length() > 0 ) {
-                        value += ", ";
-                    }
-                    value += "Class E";
-                }
-                String hours = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_HOURS ) );
-                if ( hours.length() > 0 ) {
-                    value += " ("+hours+")";
-                }
-                addRow( layout, "Airspace", value );
-                addSeparator( layout );
-            }
-        }
-
         protected void setRunwayDrawable( TextView tv, String runwayId, int length, int heading ) {
             int resid = 0;
             if ( runwayId.startsWith( "H" ) ) {
@@ -1082,7 +988,7 @@ public class AirportDetailsActivity extends ActivityBase {
             SharedPreferences prefs =
                     PreferenceManager.getDefaultSharedPreferences( getActivityBase() );
             boolean alwaysAutoFetch = prefs.getBoolean(
-                    PreferencesActivity.ALWAYS_AUTO_FETCH_WEATHER, false );
+                    PreferencesActivity.KEY_ALWAYS_AUTO_FETCH_WEATHER, false );
             boolean cacheOnly = ( !alwaysAutoFetch 
                     && !NetworkUtils.isConnectedToWifi( getActivityBase() ) );
             if ( force || !cacheOnly ) {
