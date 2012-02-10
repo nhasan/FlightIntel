@@ -161,7 +161,7 @@ public class FavoriteWxFragment extends ListFragment {
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences( activity );
         boolean alwaysAutoFetch = prefs.getBoolean(
-                PreferencesActivity.ALWAYS_AUTO_FETCH_WEATHER, false );
+                PreferencesActivity.KEY_ALWAYS_AUTO_FETCH_WEATHER, false );
         boolean cacheOnly = ( !alwaysAutoFetch 
                 && !NetworkUtils.isConnectedToWifi( activity ) );
 
