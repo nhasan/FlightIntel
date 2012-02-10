@@ -53,7 +53,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView;
@@ -149,11 +148,11 @@ public class ActivityBase extends FragmentActivity {
     protected void addFragment( Class<?> clss ) {
         String tag = clss.getSimpleName();
         FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
         Fragment f = fm.findFragmentByTag( tag );
         if ( f == null ) {
             f = Fragment.instantiate( this, clss.getName() );
         }
+        FragmentTransaction ft = fm.beginTransaction();
         ft.add( R.id.fragment_container, f, tag );
         ft.commit();
     }
@@ -416,57 +415,29 @@ public class ActivityBase extends FragmentActivity {
         }
     }
 
-    protected void addRow( TableLayout table, String label, String text ) {
-        RelativeLayout row = (RelativeLayout) inflate( R.layout.airport_detail_item );
+    protected View addRow( TableLayout table, String label ) {
+        return addRow( table, label, "" );
+    }
+
+    protected View addRow( TableLayout table, String label, String value ) {
+        LinearLayout row = (LinearLayout) inflate( R.layout.airport_detail_item );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( label );
-        tv = (TextView) row.findViewById( R.id.item_value );
-        tv.setText( text );
+        if ( value != null && value.length() > 0 ) {
+            tv = (TextView) row.findViewById( R.id.item_value );
+            tv.setText( value );
+        }
         table.addView( row, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
     }
 
-    protected void addRow( LinearLayout layout, String text ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
-        tv.setText( text );
-        tv = (TextView) row.findViewById( R.id.item_value );
-        tv.setVisibility( View.GONE );
-        layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addRow( LinearLayout layout, String label, String text ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
-        tv.setText( label );
-        tv = (TextView) row.findViewById( R.id.item_value );
-        tv.setText( text );
-        layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addRow( TableLayout table, String label, Pair<String, String> values ) {
-        RelativeLayout layout = (RelativeLayout) inflate( R.layout.airport_detail_item );
-        TextView tv = (TextView) layout.findViewById( R.id.item_label );
-        tv.setText( label );
-        tv = (TextView) layout.findViewById( R.id.item_value );
-        tv.setText( values.first );
-        tv = (TextView) layout.findViewById( R.id.item_extra_value );
-        if ( values.second.length() > 0 ) {
-            tv.setText( values.second );
-            tv.setVisibility( View.VISIBLE );
-        }
-        table.addView( layout, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addClickableRow( TableLayout table, String label,
+    protected View addClickableRow( TableLayout table, String label,
             final Intent intent, int resid ) {
-        addClickableRow( table, label, null, intent, resid );
+        return addClickableRow( table, label, null, intent, resid );
     }
 
-    protected void addClickableRow( TableLayout table, String label, String value,
+    protected View addClickableRow( TableLayout table, String label, String value,
             final Intent intent, int resid ) {
         LinearLayout row = (LinearLayout) inflate( R.layout.clickable_detail_item );
         row.setBackgroundResource( resid );
@@ -477,20 +448,75 @@ public class ActivityBase extends FragmentActivity {
             tv = (TextView) row.findViewById( R.id.item_value );
             tv.setText( value );
         }
-        row.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                startActivity( intent );
-            }
-
-        } );
-
         table.addView( row, new TableLayout.LayoutParams( 
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+
+        UiUtils.makeClickable( this, row, intent, resid );
+
+        return row;
     }
 
-    protected void addPhoneRow( TableLayout table, String label, final String phone ) {
+    protected View addRow( LinearLayout layout, String label ) {
+        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( label );
+        tv = (TextView) row.findViewById( R.id.item_value );
+        tv.setVisibility( View.GONE );
+        layout.addView( row, new LinearLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
+    }
+
+    protected View addRow( LinearLayout layout, String label, String value ) {
+        LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( label );
+        tv = (TextView) row.findViewById( R.id.item_value );
+        tv.setText( value );
+        layout.addView( row, new LinearLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
+    }
+
+    protected View addRow( TableLayout table, String label, Pair<String, String> values ) {
+        LinearLayout row = (LinearLayout) inflate( R.layout.airport_detail_item );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( label );
+        tv = (TextView) row.findViewById( R.id.item_value );
+        tv.setText( values.first );
+        tv = (TextView) row.findViewById( R.id.item_extra_value );
+        if ( values.second.length() > 0 ) {
+            tv.setText( values.second );
+            tv.setVisibility( View.VISIBLE );
+        }
+        table.addView( row, new TableLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
+    }
+
+    protected View addRow( TableLayout table, String label1, String value1,
+            String label2, String value2 ) {
+        LinearLayout row = (LinearLayout) inflate( R.layout.airport_detail_item );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( label1 );
+        tv = (TextView) row.findViewById( R.id.item_value );
+        tv.setText( value1 );
+        if ( label2.length() > 0 ) {
+            tv = (TextView) row.findViewById( R.id.item_extra_label );
+            tv.setText( label2 );
+            tv.setVisibility( View.VISIBLE );
+        }
+        if ( value2.length() > 0 ) {
+            tv = (TextView) row.findViewById( R.id.item_extra_value );
+            tv.setText( value2 );
+            tv.setVisibility( View.VISIBLE );
+        }
+        table.addView( row, new TableLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
+    }
+
+    protected View addPhoneRow( TableLayout table, String label, final String phone ) {
         LinearLayout row = (LinearLayout) inflate( R.layout.simple_row_item );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( label );
@@ -499,6 +525,7 @@ public class ActivityBase extends FragmentActivity {
         UiUtils.makeClickToCall( this, tv );
         table.addView( row, new TableLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
     }
 
     protected void addBulletedRow( LinearLayout layout, String text ) {
@@ -515,7 +542,7 @@ public class ActivityBase extends FragmentActivity {
         tv.setPadding( 2, 2, 12, 2 );
         tv.setText( text );
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f ) );
+                0, LayoutParams.WRAP_CONTENT, 1f ) );
         layout.addView( innerLayout, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
