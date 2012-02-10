@@ -97,7 +97,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
                 apt.getString( apt.getColumnIndex( Airports.OWNERSHIP_TYPE ) ) );
         String use = DataUtils.decodeFacilityUse(
                 apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) ) );
-        addRow( layout, ownership+" / "+use );
+        addSimpleRow( layout, ownership+" / "+use );
     }
 
     protected void showOwnerInfo( Cursor[] result ) {
@@ -105,11 +105,11 @@ public class OwnershipDetailsActivity extends ActivityBase {
         String text;
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_owner_layout );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_NAME ) );
-        addRow( layout, text );
+        addSimpleRow( layout, text );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_ADDRESS ) );
-        addRow( layout, text );
+        addSimpleRow( layout, text );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_CITY_STATE_ZIP ) );
-        addRow( layout, text );
+        addSimpleRow( layout, text );
         layout = (LinearLayout) findViewById( R.id.detail_owner_phone_layout );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_PHONE ) );
         if ( text.length() > 0 ) {
@@ -125,11 +125,11 @@ public class OwnershipDetailsActivity extends ActivityBase {
         String text;
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_manager_layout );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_NAME ) );
-        addRow( layout, text );
+        addSimpleRow( layout, text );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_ADDRESS ) );
-        addRow( layout, text );
+        addSimpleRow( layout, text );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_CITY_STATE_ZIP ) );
-        addRow( layout, text );
+        addSimpleRow( layout, text );
 
         layout = (LinearLayout) findViewById( R.id.detail_manager_phone_layout );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_PHONE ) );
@@ -152,6 +152,14 @@ public class OwnershipDetailsActivity extends ActivityBase {
             String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
             addRemarkRow( layout, remark );
         } while ( rmk.moveToNext() );
+    }
+
+    protected void addSimpleRow( LinearLayout layout, String text ) {
+        TextView tv = new TextView( this );
+        tv.setText( text );
+        tv.setPadding( 0, 1, 0, 1 );
+        layout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
     protected void addPhoneRow( LinearLayout layout, final String phone ) {
