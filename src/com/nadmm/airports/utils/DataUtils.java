@@ -23,6 +23,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 public final class DataUtils {
@@ -67,6 +69,34 @@ public final class DataUtils {
         sMorseCodes.put( "8", DASH+DASH+DASH+DOT+DOT );
         sMorseCodes.put( "9", DASH+DASH+DASH+DASH+DOT );
         sMorseCodes.put( "0", DASH+DASH+DASH+DASH+DASH );
+    }
+
+    public static String decodePhoneNumber( String phone ) {
+        int i = 0;
+        StringBuilder builder = new StringBuilder();
+        while ( i < phone.length() ) {
+            char c = phone.charAt( i++ );
+            if ( "ABC".indexOf( c ) >= 0 ) {
+                builder.append( '2' );
+            } else if ( "DEF".indexOf( c ) >= 0 ) {
+                builder.append( '3' );
+            } else if ( "GHI".indexOf( c ) >= 0 ) {
+                builder.append( '4' );
+            } else if ( "JKL".indexOf( c ) >= 0 ) {
+                builder.append( '5' );
+            } else if ( "MNO".indexOf( c ) >= 0 ) {
+                builder.append( '6' );
+            } else if ( "PQRS".indexOf( c ) >= 0 ) {
+                builder.append( '7' );
+            } else if ( "TUV".indexOf( c ) >= 0 ) {
+                builder.append( '8' );
+            } else if ( "WXYZ".indexOf( c ) >= 0 ) {
+                builder.append( '9' );
+            } else {
+                builder.append( c );
+            }
+        }
+        return builder.toString();
     }
 
     public static String getMorseCode( String text ) {
@@ -660,7 +690,33 @@ public final class DataUtils {
         // Should never reach here
         return "";
     }
-    
+
+    public static String decodeAirspace( String airspace ) {
+        String value = "";
+        if ( airspace.charAt( 0 ) == 'Y' ) {
+            value += "Class B";
+        }
+        if ( airspace.charAt( 1 ) == 'Y' ) {
+            if ( value.length() > 0 ) {
+                value += ", ";
+            }
+            value += "Class C";
+        }
+        if ( airspace.charAt( 2 ) == 'Y' ) {
+            if ( value.length() > 0 ) {
+                value += ", ";
+            }
+            value += "Class D";
+        }
+        if ( airspace.charAt( 3 ) == 'Y' ) {
+            if ( value.length() > 0 ) {
+                value += ", ";
+            }
+            value += "Class E";
+        }
+        return value;
+    }
+
     public static boolean isDirectionalNavaid( String type ) {
         return type.equals( "VOR" )
             || type.equals( "VOR/DME" ) 
@@ -776,6 +832,32 @@ public final class DataUtils {
         } else {
             return "Other";
         }
+    }
+
+    private static final Map<String, String> sTracons = new HashMap<String, String>();
+    static {
+        sTracons.put( "A80", "Atlanta" );
+        sTracons.put( "C90", "Chicago" );
+        sTracons.put( "D10", "Regional" );
+        sTracons.put( "D01", "Denver" );
+        sTracons.put( "I90", "Houston" );
+        sTracons.put( "N90", "New York" );
+        sTracons.put( "NCT", "Norcal" );
+        sTracons.put( "PCT", "Potomac" );
+        sTracons.put( "SCT", "Socal" );
+    }
+
+    public static String getTraconId( String name ) {
+        for ( Entry<String, String> entry : sTracons.entrySet() ) {
+            if ( name.equals( entry.getValue() ) ) {
+                return entry.getKey();
+            }
+        }
+        return "";
+    }
+
+    public static String getTraconName( String id ) {
+        return sTracons.get( id );
     }
 
     public static long metersToFeet( float meters ) {
