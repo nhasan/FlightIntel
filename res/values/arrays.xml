@@ -40,4 +40,14 @@
         <item>favorite</item>
         <item>nearby</item>
     </string-array>
+    <string-array name="phone_tap_entries">
+        <item>Do nothing</item>
+        <item>Dial the number</item>
+        <item>Call the number</item>
+    </string-array>
+    <string-array name="phone_tap_values">
+        <item>ignore</item>
+        <item>dial</item>
+        <item>call</item>
+    </string-array>
 </resources>

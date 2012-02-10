@@ -78,4 +78,12 @@
                 android:summaryOff="Wx will be auto-fetched on wifi only"
                 defaultValue="false" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="Miscellaneous">
+        <ListPreference
+                android:key="phone_tap_action"
+                android:title="Phone number taps"
+                android:entries="@array/phone_tap_entries"
+                android:entryValues="@array/phone_tap_values"
+                android:defaultValue="dial" />
+    </PreferenceCategory>
 </PreferenceScreen>
