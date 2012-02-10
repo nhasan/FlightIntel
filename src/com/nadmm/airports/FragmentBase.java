@@ -26,9 +26,6 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
-import android.widget.TextView;
-
-import com.nadmm.airports.utils.UiUtils;
 
 public class FragmentBase extends Fragment {
 
@@ -46,10 +43,6 @@ public class FragmentBase extends Fragment {
 
     public ActivityBase getActivityBase() {
         return mActivity;
-    }
-
-    protected void makeClickToCall( TextView tv ) {
-        UiUtils.makeClickToCall( mActivity, tv );
     }
 
     protected int getSelectorResourceForRow( int curRow, int totRows ) {

@@ -841,7 +841,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 tv = (TextView) layout.findViewById( R.id.item_extra_value );
                 tv.setVisibility( View.VISIBLE );
                 tv.setText( phone );
-                makeClickToCall( tv );
+                UiUtils.makeClickToCall( getActivity(), tv );
             }
 
             layout.setOnClickListener( new OnClickListener() {
