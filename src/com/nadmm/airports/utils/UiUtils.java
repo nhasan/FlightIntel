@@ -19,10 +19,12 @@
 
 package com.nadmm.airports.utils;
 
+import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -34,6 +36,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
@@ -51,9 +54,19 @@ public class UiUtils {
         sHandler = new Handler( Looper.getMainLooper() );
     }
 
+    protected static String getPhoneNumber( TextView tv ) {
+        return DataUtils.decodePhoneNumber( tv.getText().toString() );
+    }
+
     public static void makeClickToCall( final Context context, TextView tv ) {
-        if ( context.getPackageManager().hasSystemFeature( PackageManager.FEATURE_TELEPHONY ) ) {
+        PackageManager pm = context.getPackageManager();
+        boolean hasTelephony = pm.hasSystemFeature( PackageManager.FEATURE_TELEPHONY );
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( context );
+        String tapAction = prefs.getString( PreferencesActivity.KEY_PHONE_TAP_ACTION, "dial" );
+        if ( hasTelephony && !tapAction.equals( "ignore" ) ) {
             if ( tv.getText().length() > 0 ) {
+                final String action =
+                        tapAction.equals( "call" )? Intent.ACTION_CALL : Intent.ACTION_DIAL;
                 tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.phone, 0, 0, 0 );
                 tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( context, 3 ) );
                 tv.setOnClickListener( new OnClickListener() {
@@ -61,17 +74,30 @@ public class UiUtils {
                     @Override
                     public void onClick( View v ) {
                         TextView tv = (TextView) v;
-                        Intent intent = new Intent( Intent.ACTION_CALL,
-                                Uri.parse( "tel:"+tv.getText().toString() ) );
+                        Intent intent = new Intent( action,
+                                Uri.parse( "tel:"+getPhoneNumber( tv ) ) );
                         context.startActivity( intent );
                     }
-    
+
                 } );
             } else {
                 tv.setCompoundDrawablesWithIntrinsicBounds( 0, 0, 0, 0 );
                 tv.setOnClickListener( null );
             }
         }
+    }
+
+    public static void makeClickable( final Context context , View view,
+            final Intent intent, int resid ) {
+        view.setBackgroundResource( resid );
+        view.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                context.startActivity( intent );
+            }
+
+        } );
     }
 
     public static int convertDpToPx( Context context, int dp ) {
