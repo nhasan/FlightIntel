@@ -29,16 +29,14 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.LinearLayout;
 import android.widget.TableLayout;
-import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class NavaidsActivity extends ActivityBase {
 
@@ -284,68 +282,28 @@ public class NavaidsActivity extends ActivityBase {
 
     protected void addDirectionalNavaidRow( TableLayout table, String navaidId,
             String name, String type, String freq, int radial, float distance, int resid ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.navaid_detail_item );
-        row.setBackgroundResource( resid );
-
-        TextView tv = (TextView) row.findViewById( R.id.navaid_name );
-        tv.setText( navaidId+"      "+DataUtils.getMorseCode( navaidId ));
-        tv = (TextView) row.findViewById( R.id.navaid_freq );
-        tv.setText( freq );
-        tv = (TextView) row.findViewById( R.id.navaid_info );
-        tv.setText( name+" "+type );
-        tv = (TextView) row.findViewById( R.id.navaid_radial );
-        tv.setText( String.format( "r%03d/%.1fNM", radial, distance ) );
+        String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
+        String label2 = name+" "+type;
+        String value2 = String.format( "r%03d/%.1fNM", radial, distance );
+        View row = addRow( table, label1, freq, label2, value2 );
 
         Intent intent = new Intent( NavaidsActivity.this, NavaidDetailsActivity.class );
         intent.putExtra( Nav1.NAVAID_ID, navaidId );
         intent.putExtra( Nav1.NAVAID_TYPE, type );
-        row.setTag( intent );
-
-        row.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                Intent intent = (Intent) v.getTag();
-                startActivity( intent );
-            }
-
-        } );
-
-        table.addView( row, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        UiUtils.makeClickable( this, row, intent, resid );
     }
 
     protected void addNonDirectionalNavaidRow( TableLayout table, String navaidId,
             String name, String type, String freq, int heading, float distance, int resid ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.navaid_detail_item );
-        row.setBackgroundResource( resid );
-
-        TextView tv = (TextView) row.findViewById( R.id.navaid_name );
-        tv.setText( navaidId+"      "+DataUtils.getMorseCode( navaidId ));
-        tv = (TextView) row.findViewById( R.id.navaid_freq );
-        tv.setText( freq );
-        tv = (TextView) row.findViewById( R.id.navaid_info );
-        tv.setText( name+" "+type );
-        tv = (TextView) row.findViewById( R.id.navaid_radial );
-        tv.setText( String.format( "%03d\u00B0M/%.1fNM", heading, distance ) );
+        String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
+        String label2 = name+" "+type;
+        String value2 = String.format( "%03d\u00B0M/%.1fNM", heading, distance );
+        View row = addRow( table, label1, freq, label2, value2 );
 
         Intent intent = new Intent( NavaidsActivity.this, NavaidDetailsActivity.class );
         intent.putExtra( Nav1.NAVAID_ID, navaidId );
         intent.putExtra( Nav1.NAVAID_TYPE, type );
-        row.setTag( intent );
-
-        row.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                Intent intent = (Intent) v.getTag();
-                startActivity( intent );
-            }
-
-        } );
-
-        table.addView( row, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+        UiUtils.makeClickable( this, row, intent, resid );
     }
 
 }
