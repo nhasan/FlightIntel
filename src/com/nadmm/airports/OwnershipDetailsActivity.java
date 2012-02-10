@@ -154,14 +154,6 @@ public class OwnershipDetailsActivity extends ActivityBase {
         } while ( rmk.moveToNext() );
     }
 
-    protected void addRow( LinearLayout layout, String text ) {
-        TextView tv = new TextView( this );
-        tv.setText( text );
-        tv.setPadding( 0, 1, 0, 1 );
-        layout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
     protected void addPhoneRow( LinearLayout layout, final String phone ) {
         TextView tv = new TextView( this );
         tv.setPadding( 0, 1, 0, 1 );
