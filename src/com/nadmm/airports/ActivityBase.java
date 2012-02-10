@@ -88,6 +88,10 @@ public class ActivityBase extends FragmentActivity {
         super.onPause();
     }
 
+    public DatabaseManager getDbManager() {
+        return mDbManager;
+    }
+
     protected View createContentView( int id ) {
         View view = inflate( id );
         return createContentView( view );
@@ -416,20 +420,11 @@ public class ActivityBase extends FragmentActivity {
     }
 
     protected View addRow( TableLayout table, String label ) {
-        return addRow( table, label, "" );
+        return addRow( table, label, "", "", "" );
     }
 
     protected View addRow( TableLayout table, String label, String value ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.airport_detail_item );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
-        tv.setText( label );
-        if ( value != null && value.length() > 0 ) {
-            tv = (TextView) row.findViewById( R.id.item_value );
-            tv.setText( value );
-        }
-        table.addView( row, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-        return row;
+        return addRow( table, label, value, "", "" );
     }
 
     protected View addClickableRow( TableLayout table, String label,
@@ -440,7 +435,6 @@ public class ActivityBase extends FragmentActivity {
     protected View addClickableRow( TableLayout table, String label, String value,
             final Intent intent, int resid ) {
         LinearLayout row = (LinearLayout) inflate( R.layout.clickable_detail_item );
-        row.setBackgroundResource( resid );
 
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( label );
@@ -479,19 +473,7 @@ public class ActivityBase extends FragmentActivity {
     }
 
     protected View addRow( TableLayout table, String label, Pair<String, String> values ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.airport_detail_item );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
-        tv.setText( label );
-        tv = (TextView) row.findViewById( R.id.item_value );
-        tv.setText( values.first );
-        tv = (TextView) row.findViewById( R.id.item_extra_value );
-        if ( values.second.length() > 0 ) {
-            tv.setText( values.second );
-            tv.setVisibility( View.VISIBLE );
-        }
-        table.addView( row, new TableLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
-        return row;
+        return addRow( table, label, "", values.first, values.second );
     }
 
     protected View addRow( TableLayout table, String label1, String value1,
@@ -499,14 +481,16 @@ public class ActivityBase extends FragmentActivity {
         LinearLayout row = (LinearLayout) inflate( R.layout.airport_detail_item );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( label1 );
-        tv = (TextView) row.findViewById( R.id.item_value );
-        tv.setText( value1 );
-        if ( label2.length() > 0 ) {
+        if ( value1 != null && value1.length() > 0 ) {
+            tv = (TextView) row.findViewById( R.id.item_value );
+            tv.setText( value1 );
+        }
+        if ( label2 != null && label2.length() > 0 ) {
             tv = (TextView) row.findViewById( R.id.item_extra_label );
             tv.setText( label2 );
             tv.setVisibility( View.VISIBLE );
         }
-        if ( value2.length() > 0 ) {
+        if ( value2 != null && value2.length() > 0 ) {
             tv = (TextView) row.findViewById( R.id.item_extra_value );
             tv.setText( value2 );
             tv.setVisibility( View.VISIBLE );
@@ -551,10 +535,6 @@ public class ActivityBase extends FragmentActivity {
         View separator = new View( this );
         separator.setBackgroundColor( Color.LTGRAY );
         layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
-    }
-
-    public DatabaseManager getDbManager() {
-        return mDbManager;
     }
 
     public boolean postRunnable( Runnable r, long delayMillis ) {
