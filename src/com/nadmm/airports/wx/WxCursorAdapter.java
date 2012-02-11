@@ -127,7 +127,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 if ( metar.wxList.size() > 0 ) {
                     for ( WxSymbol wx : metar.wxList ) {
                         info.append( ", " );
-                        info.append( wx.toString() );
+                        info.append( wx.toString().toLowerCase() );
                     }
                 }
                 if ( metar.windGustKnots < Integer.MAX_VALUE ) {
