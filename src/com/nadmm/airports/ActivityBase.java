@@ -200,10 +200,10 @@ public class ActivityBase extends FragmentActivity {
         }
 
         int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
-        if ( version < 62 ) {
+        if ( version < 64 ) {
             c.close();
             Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "ATTENTION: The app version requires latest data update" );
+            download.putExtra( "MSG", "ATTENTION: This app version requires latest data update" );
             c.close();
             return download;
         }
