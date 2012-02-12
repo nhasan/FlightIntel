@@ -98,12 +98,12 @@ public class FavoriteWxFragment extends ListFragment {
 
     @Override
     public void onResume() {
-        super.onResume();
         ActivityBase activity = (ActivityBase) getActivity();
         IntentFilter filter = new IntentFilter();
         filter.addAction( MetarService.ACTION_GET_METAR );
         activity.registerReceiver( mReceiver, filter );
         startTask();
+        super.onResume();
     }
 
     @Override
