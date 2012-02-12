@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Ils2;
+import com.nadmm.airports.utils.CursorAsyncTask;
 
 public class IlsDetailsActivity extends ActivityBase {
 

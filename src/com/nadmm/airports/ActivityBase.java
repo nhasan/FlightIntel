@@ -30,7 +30,6 @@ import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -655,26 +654,6 @@ public class ActivityBase extends FragmentActivity {
             intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
             startActivity( intent );
         }
-    }
-
-    protected abstract class CursorAsyncTask extends AsyncTask<String, Void, Cursor[]> {
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-        @Override
-        protected final void onPostExecute( Cursor[] result ) {
-            onResult( result );
-            for ( Cursor c : result ) {
-                if ( c != null ) {
-                    c.close();
-                }
-            }
-        }
-
-        protected abstract void onResult( Cursor[] result );
-
     }
 
 }

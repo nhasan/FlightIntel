@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 
 public class ServicesDetailsActivity extends ActivityBase {

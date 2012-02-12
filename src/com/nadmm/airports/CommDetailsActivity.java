@@ -40,6 +40,7 @@ import com.nadmm.airports.DatabaseManager.Tower1;
 import com.nadmm.airports.DatabaseManager.Tower3;
 import com.nadmm.airports.DatabaseManager.Tower6;
 import com.nadmm.airports.DatabaseManager.Tower7;
+import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.UiUtils;
 

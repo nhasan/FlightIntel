@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Com;
 import com.nadmm.airports.DatabaseManager.Nav1;
+import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.GeoUtils;
 
 public class FssCommActivity extends ActivityBase {

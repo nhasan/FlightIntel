@@ -27,6 +27,7 @@ import android.os.Bundle;
 
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.UiUtils;
 
 public class NavaidNotamActivity extends NotamActivityBase {

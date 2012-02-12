@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.utils.CursorAsyncTask;
 
 public class AirportNotamActivity extends NotamActivityBase {
 

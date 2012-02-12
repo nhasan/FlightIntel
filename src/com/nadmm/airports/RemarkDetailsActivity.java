@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
+import com.nadmm.airports.utils.CursorAsyncTask;
 
 public class RemarkDetailsActivity extends ActivityBase {
 
