@@ -94,7 +94,7 @@ public class ActivityBase extends FragmentActivity {
         return createContentView( view );
     }
 
-    protected View createContentView( View view ) {
+    public View createContentView( View view ) {
         FrameLayout root = new FrameLayout( this );
         root.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT ) );
@@ -122,9 +122,9 @@ public class ActivityBase extends FragmentActivity {
         return root;
     }
 
-    protected void setContentShown( boolean shown ) {
-        View progress = findViewById( R.id.INTERNAL_PROGRESS_CONTAINER_ID );
-        View content = findViewById( R.id.INTERNAL_FRAGMENT_CONTAINER_ID );
+    public void setContentShown( View view, boolean shown ) {
+        View progress = view.findViewById( R.id.INTERNAL_PROGRESS_CONTAINER_ID );
+        View content = view.findViewById( R.id.INTERNAL_FRAGMENT_CONTAINER_ID );
         if ( shown ) {
             progress.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_out ) );
             content.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_in ) );
@@ -136,6 +136,11 @@ public class ActivityBase extends FragmentActivity {
             progress.setVisibility( View.VISIBLE );
             content.setVisibility( View.GONE );
         }
+    }
+
+    protected void setContentShown( boolean shown ) {
+        View root = findViewById( android.R.id.content );
+        setContentShown( root, shown );
     }
 
     protected void setContentMsg( String msg ) {
