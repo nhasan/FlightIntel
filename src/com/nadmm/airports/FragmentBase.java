@@ -20,6 +20,8 @@
 package com.nadmm.airports;
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.AnimationDrawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.SupportActivity;
 import android.view.View;
@@ -41,6 +43,14 @@ public class FragmentBase extends Fragment {
 
     public ActivityBase getActivityBase() {
         return mActivity;
+    }
+
+    protected View createContentView( View view ) {
+        return mActivity.createContentView( view );
+    }
+
+    protected void setContentShown( boolean shown ) {
+        mActivity.setContentShown( getView(), shown );
     }
 
     protected int getSelectorResourceForRow( int curRow, int totRows ) {
@@ -93,6 +103,22 @@ public class FragmentBase extends Fragment {
 
     protected View inflate( int id ) {
         return mActivity.inflate( id );
+    }
+
+    protected void startRefreshAnimation() {
+        mActivity.startRefreshAnimation();
+    }
+
+    protected void stopRefreshAnimation() {
+        mActivity.stopRefreshAnimation();
+    }
+
+    protected void setRefreshItemVisible( Boolean visible ) {
+        mActivity.setRefreshItemVisible( visible );
+    }
+
+    protected void setRefreshItemEnabled( Boolean enable ) {
+        mActivity.setRefreshItemEnabled( enable );
     }
 
 }
