@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.utils.CursorAsyncTask;
@@ -106,7 +105,7 @@ public class ServicesDetailsActivity extends ActivityBase {
 
     protected void showFaaServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        TableLayout layout = (TableLayout) findViewById( R.id.detail_faa_services_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_faa_services_layout );
         String faaRegion = apt.getString( apt.getColumnIndex( Airports.REGION_CODE ) );
         if ( faaRegion.length() > 0 ) {
             addRow( layout, "FAA region", DataUtils.decodeFaaRegion( faaRegion ) );
@@ -129,7 +128,7 @@ public class ServicesDetailsActivity extends ActivityBase {
 
     protected void showFssServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        TableLayout layout = (TableLayout) findViewById( R.id.detail_fss_services_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_fss_services_layout );
         String fssId = apt.getString( apt.getColumnIndex( Airports.FSS_ID ) );
         String fssName = apt.getString( apt.getColumnIndex( Airports.FSS_NAME ) );
         addRow( layout, "Flight service", fssId+" ("+fssName+")" );

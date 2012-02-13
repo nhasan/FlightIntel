@@ -29,13 +29,13 @@
             android:orientation="vertical">
         <include layout="@layout/airport_title_layout" />
         <LinearLayout android:id="@+id/detail_content_layout"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:paddingLeft="12dp"
                 android:paddingTop="5dp"
                 android:paddingRight="12dp"
                 android:paddingBottom="12dp"
-                android:orientation="vertical">
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
             <TextView android:id="@+id/detail_navaids_vor_label"
                     style="@style/TextSmall.Bold"
                     android:padding="4dp"
@@ -43,7 +43,8 @@
                     android:text="@string/vor"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
-            <TableLayout android:id="@+id/detail_navaids_vor_layout"
+            <LinearLayout android:id="@+id/detail_navaids_vor_layout"
+                    android:orientation="vertical"
                     android:background="@drawable/rounded_rectangle"
                     android:layout_marginBottom="6dp"
                     android:layout_width="fill_parent"
@@ -55,7 +56,8 @@
                     android:text="@string/ndb"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
-            <TableLayout android:id="@+id/detail_navaids_ndb_layout"
+            <LinearLayout android:id="@+id/detail_navaids_ndb_layout"
+                    android:orientation="vertical"
                     android:background="@drawable/rounded_rectangle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />

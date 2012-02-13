@@ -22,10 +22,8 @@ package com.nadmm.airports;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.SupportActivity;
-import android.util.Pair;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 
 public class FragmentBase extends Fragment {
 
@@ -49,34 +47,31 @@ public class FragmentBase extends Fragment {
         return mActivity.getSelectorResourceForRow( curRow, totRows );
     }
 
-    protected void addRow( TableLayout table, String label, String text ) {
-        mActivity.addRow( table, label, text );
+    protected View addRow( LinearLayout layout, String value ) {
+        return mActivity.addRow( layout, value );
     }
 
-    protected void addRow( LinearLayout layout, String text ) {
-        mActivity.addRow( layout, text );
+    protected View addRow( LinearLayout layout, String label, String value ) {
+        return mActivity.addRow( layout, label, value );
     }
 
-    protected void addRow( LinearLayout layout, String label, String text ) {
-        mActivity.addRow( layout, label, text );
+    protected View addRow( LinearLayout layout, String label, String value1, String value2 ) {
+        return mActivity.addRow( layout, label, value1, value2 );
     }
 
-    protected void addRow( TableLayout table, String label, Pair<String, String> values ) {
-        mActivity.addRow( table, label, values );
+    protected View addRow( LinearLayout layout, String label1, String value1,
+            String label2, String value2 ) {
+        return mActivity.addRow( layout, label1, value1, label2, value2 );
     }
 
-    protected void addClickableRow( TableLayout table, String label,
+    protected View addClickableRow( LinearLayout layout, String label,
             final Intent intent, int resid ) {
-        mActivity.addClickableRow( table, label, null, intent, resid );
+        return mActivity.addClickableRow( layout, label, null, intent, resid );
     }
 
-    protected void addClickableRow( TableLayout table, String label, String value,
+    protected View addClickableRow( LinearLayout layout, String label, String value,
             final Intent intent, int resid ) {
-        mActivity.addClickableRow( table, label, value, intent, resid );
-    }
-
-    protected void addPhoneRow( TableLayout table, String label, final String phone ) {
-        mActivity.addPhoneRow( table, label, phone );
+        return mActivity.addClickableRow( layout, label, value, intent, resid );
     }
 
     protected void addBulletedRow( LinearLayout layout, String text ) {

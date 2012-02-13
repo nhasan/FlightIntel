@@ -30,7 +30,6 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Aff3;
@@ -244,7 +243,7 @@ public class CommDetailsActivity extends ActivityBase {
             if ( !map.isEmpty() ) {
                 TextView tv = (TextView) findViewById( R.id.airport_comm_label );
                 tv.setVisibility( View.VISIBLE );
-                TableLayout layout = (TableLayout) findViewById( R.id.airport_comm_details );
+                LinearLayout layout = (LinearLayout) findViewById( R.id.airport_comm_details );
                 layout.setVisibility( View.VISIBLE );
                 int row = 0;
                 for ( String key : map.keySet() ) {
@@ -252,7 +251,7 @@ public class CommDetailsActivity extends ActivityBase {
                         if ( row > 0 ) {
                             addSeparator( layout );
                         }
-                        addRow( layout, key, pair );
+                        addRow( layout, key, pair.first, pair.second );
                         ++row;
                     }
                 }
@@ -365,7 +364,7 @@ public class CommDetailsActivity extends ActivityBase {
         if ( !map.isEmpty() ) {
             TextView tv = (TextView) findViewById( R.id.atc_comm_label );
             tv.setVisibility( View.VISIBLE );
-            TableLayout layout = (TableLayout) findViewById( R.id.atc_comm_details );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.atc_comm_details );
             layout.setVisibility( View.VISIBLE );
             int row = 0;
             for ( String key : map.keySet() ) {
@@ -373,7 +372,7 @@ public class CommDetailsActivity extends ActivityBase {
                     if ( row > 0 ) {
                         addSeparator( layout );
                     }
-                    addRow( layout, key, pair );
+                    addRow( layout, key, pair.first, pair.second );
                     ++row;
                 }
             }
@@ -381,7 +380,7 @@ public class CommDetailsActivity extends ActivityBase {
     }
 
     protected void showAtcPhones( Cursor[] result ) {
-        TableLayout layout = (TableLayout) findViewById( R.id.atc_phones_details );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.atc_phones_details );
 
         Cursor main = result[ 6 ];
         if ( main.moveToFirst() ) {

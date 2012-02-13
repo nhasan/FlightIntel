@@ -27,8 +27,8 @@
         android:layout_height="wrap_content">
     <LinearLayout
             android:orientation="horizontal"
-            android:paddingLeft="4dp"
             android:paddingRight="4dp"
+            android:paddingLeft="4dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
         <TextView android:id="@+id/item_label"
@@ -50,8 +50,8 @@
     </LinearLayout>
     <LinearLayout
             android:orientation="horizontal"
-            android:paddingLeft="4dp"
             android:paddingRight="4dp"
+            android:paddingLeft="4dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
         <TextView android:id="@+id/item_extra_label"

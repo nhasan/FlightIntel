@@ -29,7 +29,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TableLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -231,7 +231,7 @@ public class NavaidsActivity extends ActivityBase {
     protected void showNavaidDetails( Cursor[] result ) {
         Cursor vor = result[ 1 ];
         if ( vor != null && vor.moveToFirst() ) {
-            TableLayout layout = (TableLayout) findViewById( R.id.detail_navaids_vor_layout );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_vor_layout );
             do {
                 if ( vor.getPosition() > 0 ) {
                     addSeparator( layout );
@@ -250,7 +250,7 @@ public class NavaidsActivity extends ActivityBase {
                         distance, resid );
             } while ( vor.moveToNext() );
         } else {
-            TableLayout layout = (TableLayout) findViewById( R.id.detail_navaids_vor_layout );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_vor_layout );
             layout.setVisibility( View.GONE );
             TextView tv = (TextView) findViewById( R.id.detail_navaids_vor_label );
             tv.setVisibility( View.GONE );
@@ -258,7 +258,7 @@ public class NavaidsActivity extends ActivityBase {
 
         Cursor ndb = result[ 2 ];
         if ( ndb != null && ndb.moveToFirst() ) {
-            TableLayout layout = (TableLayout) findViewById( R.id.detail_navaids_ndb_layout );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_ndb_layout );
             do {
                 if ( ndb.getPosition() > 0 ) {
                     addSeparator( layout );
@@ -274,14 +274,14 @@ public class NavaidsActivity extends ActivityBase {
                         distance, resid );
             } while ( ndb.moveToNext() );
         } else {
-            TableLayout layout = (TableLayout) findViewById( R.id.detail_navaids_ndb_layout );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_ndb_layout );
             layout.setVisibility( View.GONE );
             TextView tv = (TextView) findViewById( R.id.detail_navaids_ndb_label );
             tv.setVisibility( View.GONE );
         }
     }
 
-    protected void addDirectionalNavaidRow( TableLayout table, String navaidId,
+    protected void addDirectionalNavaidRow( LinearLayout table, String navaidId,
             String name, String type, String freq, int radial, float distance, int resid ) {
         String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
         String label2 = name+" "+type;
@@ -294,7 +294,7 @@ public class NavaidsActivity extends ActivityBase {
         UiUtils.makeClickable( this, row, intent, resid );
     }
 
-    protected void addNonDirectionalNavaidRow( TableLayout table, String navaidId,
+    protected void addNonDirectionalNavaidRow( LinearLayout table, String navaidId,
             String name, String type, String freq, int heading, float distance, int resid ) {
         String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
         String label2 = name+" "+type;

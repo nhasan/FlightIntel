@@ -26,7 +26,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 
 import com.nadmm.airports.DatabaseManager.Com;
 import com.nadmm.airports.DatabaseManager.Nav1;
@@ -121,7 +120,7 @@ public class NavaidDetailsActivity extends ActivityBase {
 
     protected void showNavaidDetails( Cursor[] result ) {
         Cursor nav1 = result[ 0 ];
-        TableLayout layout = (TableLayout) findViewById( R.id.navaid_details );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_details );
         String navaidClass = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_CLASS ) );
         String navaidType = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_TYPE ) );
         addRow( layout, "Class", navaidClass );

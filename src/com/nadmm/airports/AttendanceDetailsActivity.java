@@ -26,8 +26,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableLayout.LayoutParams;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Attendance;
@@ -105,7 +104,7 @@ public class AttendanceDetailsActivity extends ActivityBase {
                 String[] parts = schedule.split( "/" );
                 if ( parts.length == 3 ) {
                     addSpacing( layout );
-                    TableLayout table = (TableLayout) inflate( R.layout.attendance_detail_item );
+                    LinearLayout table = (LinearLayout) inflate( R.layout.attendance_detail_item );
                     addRow( table, "Months", parts[ 0 ] );
                     addSeparator( table );
                     addRow( table, "Days", parts[ 1 ] );

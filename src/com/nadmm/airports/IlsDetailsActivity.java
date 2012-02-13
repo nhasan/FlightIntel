@@ -26,7 +26,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Ils1;
@@ -115,7 +114,7 @@ public class IlsDetailsActivity extends ActivityBase {
         TextView tv = (TextView) findViewById( R.id.rwy_ils_label );
         String rwyId = ils1.getString( ils1.getColumnIndex( Ils1.RUNWAY_ID ) );
         tv.setText( "Runway "+rwyId );
-        TableLayout layout = (TableLayout) findViewById( R.id.rwy_ils_details );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_ils_details );
         String ilsType = ils1.getString( ils1.getColumnIndex( Ils1.ILS_TYPE ) );
         addRow( layout, "Type", ilsType );
         addSeparator( layout );
@@ -130,7 +129,7 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showLocalizerDetails( Cursor result[] ) {
         Cursor ils1 = result[ 1 ];
-        TableLayout layout = (TableLayout) findViewById( R.id.rwy_loc_details );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_loc_details );
         String locType = ils1.getString( ils1.getColumnIndex( Ils1.LOCALIZER_TYPE ) );
         addRow( layout, "Type", locType );
         addSeparator( layout );
@@ -146,7 +145,7 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showGlideslopeDetails( Cursor result[] ) {
         Cursor ils1 = result[ 1 ];
-        TableLayout layout = (TableLayout) findViewById( R.id.rwy_gs_details );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_gs_details );
         String gsType = ils1.getString( ils1.getColumnIndex( Ils1.GLIDE_SLOPE_TYPE ) );
         if ( gsType.length() > 0 ) {
             addRow( layout, "Type", gsType );
@@ -165,7 +164,7 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showInnerMarkerDetails( Cursor result[] ) {
         Cursor ils1 = result[ 1 ];
-        TableLayout layout = (TableLayout) findViewById( R.id.rwy_im_details );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_im_details );
         String imType = ils1.getString( ils1.getColumnIndex( Ils1.INNER_MARKER_TYPE ) );
         if ( imType.length() > 0 ) {
             addRow( layout, "Type", imType );
@@ -181,7 +180,7 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showMiddleMarkerDetails( Cursor result[] ) {
         Cursor ils1 = result[ 1 ];
-        TableLayout layout = (TableLayout) findViewById( R.id.rwy_mm_details );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_mm_details );
         String mmType = ils1.getString( ils1.getColumnIndex( Ils1.MIDDLE_MARKER_TYPE ) );
         if ( mmType.length() > 0 ) {
             addRow( layout, "Type", mmType );
@@ -212,7 +211,7 @@ public class IlsDetailsActivity extends ActivityBase {
 
     protected void showOuterMarkerDetails( Cursor result[] ) {
         Cursor ils1 = result[ 1 ];
-        TableLayout layout = (TableLayout) findViewById( R.id.rwy_om_details );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_om_details );
         String omType = ils1.getString( ils1.getColumnIndex( Ils1.OUTER_MARKER_TYPE ) );
         if ( omType.length() > 0 ) {
             addRow( layout, "Type", omType );

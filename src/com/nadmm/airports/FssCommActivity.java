@@ -29,8 +29,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableLayout.LayoutParams;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -229,7 +228,7 @@ public class FssCommActivity extends ActivityBase {
                 } else {
                     tv.setText( outletId+" - "+outletCall+" outlet" );
                 }
-                TableLayout table = (TableLayout) layout.findViewById( R.id.fss_comm_details );
+                LinearLayout table = (LinearLayout) layout.findViewById( R.id.fss_comm_details );
                 addRow( table, "Call", fssName+" Radio" );
                 if ( navId.length() > 0 ) {
                     addSeparator( table );
