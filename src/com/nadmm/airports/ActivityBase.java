@@ -428,12 +428,19 @@ public class ActivityBase extends FragmentActivity {
         return row;
     }
 
+    protected View addClickableRow( LinearLayout layout, String label1, String value1,
+            String label2, String value2, final Intent intent, int resid ) {
+        View row = addRow( layout, label1, value1, label2, value2 );
+        UiUtils.makeClickable( this, row, intent, resid );
+        return row;
+    }
+
     protected View addRow( LinearLayout layout, String label ) {
         return addRow( layout, label, null );
     }
 
     protected View addRow( LinearLayout layout, String label, String value ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.airport_simple_item );
+        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item2 );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( label );
         tv = (TextView) row.findViewById( R.id.item_value );
@@ -448,15 +455,29 @@ public class ActivityBase extends FragmentActivity {
     }
 
     protected View addRow( LinearLayout layout, String label, String value1, String value2 ) {
-        View row = addRow( layout, label, value1, "", value2 );
-        View v = row.findViewById( R.id.item_extra_value );
-        v.setLayoutParams( new LinearLayout.LayoutParams( 0, LayoutParams.FILL_PARENT, 1 ) );
+        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item3 );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( label );
+        tv = (TextView) row.findViewById( R.id.item_value );
+        if ( value1 != null && value1.length() > 0 ) {
+            tv.setText( value1 );
+        } else {
+            tv.setVisibility( View.GONE );
+        }
+        tv = (TextView) row.findViewById( R.id.item_extra_value );
+        if ( value2 != null && value2.length() > 0 ) {
+            tv.setText( value2 );
+        } else {
+            tv.setVisibility( View.GONE );
+        }
+        layout.addView( row, new LinearLayout.LayoutParams(
+                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
         return row;
     }
 
     protected View addRow( LinearLayout layout, String label1, String value1,
             String label2, String value2 ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.airport_detail_item );
+        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item4 );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( label1 );
         tv = (TextView) row.findViewById( R.id.item_value );

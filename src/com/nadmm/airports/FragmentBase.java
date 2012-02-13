@@ -74,6 +74,11 @@ public class FragmentBase extends Fragment {
         return mActivity.addClickableRow( layout, label, value, intent, resid );
     }
 
+    protected View addClickableRow( LinearLayout layout, String label1, String value1,
+            String label2, String value2, final Intent intent, int resid ) {
+        return mActivity.addClickableRow( layout, label1, value1, label2, value2, intent, resid );
+    }
+
     protected void addBulletedRow( LinearLayout layout, String text ) {
         mActivity.addBulletedRow( layout, text );
     }

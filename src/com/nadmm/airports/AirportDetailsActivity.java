@@ -802,59 +802,35 @@ public class AirportDetailsActivity extends ActivityBase {
             addClickableRow( layout, "Nearby airports", intent, R.drawable.row_selector_bottom );
         }
 
-        protected void addAwosRow( LinearLayout table, String id, String name, String type, 
+        protected void addAwosRow( LinearLayout layout, String id, String name, String type, 
                 String freq, String phone, float distance, float bearing,
-                Intent intent, int resid ) {
-            LinearLayout layout = (LinearLayout) inflate( R.layout.airport_detail_item );
-            layout.setBackgroundResource( resid );
-            layout.setTag( intent );
-
-            TextView tv = (TextView) layout.findViewById( R.id.item_label );
-            tv.setTag( id );
-            mAwosViews.add( tv );
-
+                final Intent intent, int resid ) {
+            String label1 = id;
             if ( name != null && name.length() > 0 ) {
-                tv.setText( id+" - "+name );
-            } else {
-                tv.setText( id );
+                label1 += " - "+name;
             }
-
+            String value1 = "";
             if ( freq != null && freq.length() > 0 ) {
                 try {
-                    tv = (TextView) layout.findViewById( R.id.item_value );
-                    tv.setText( String.format( "%.3f", Double.valueOf( freq ) ) );
+                    value1 = String.format( "%.3f", Double.valueOf( freq ) );
                 } catch ( NumberFormatException e ) {
                 }
             }
-
-            tv = (TextView) layout.findViewById( R.id.item_extra_label );
-            tv.setVisibility( View.VISIBLE );
+            String label2 = type;
             if ( distance > 1 ) {
-                tv.setText( String.format( "%s, %.0fNM %s", type, distance,
-                        GeoUtils.getCardinalDirection( bearing ) ) );
+                label2 += String.format( ", %.0fNM %s", distance,
+                        GeoUtils.getCardinalDirection( bearing ) );
             } else {
-                tv.setText( type+", On-site" );
+                label2 += ", On-site";
             }
+            String value2 = phone;
 
-            if ( phone != null && phone.length() > 0 ) {
-                tv = (TextView) layout.findViewById( R.id.item_extra_value );
-                tv.setVisibility( View.VISIBLE );
-                tv.setText( phone );
-                UiUtils.makeClickToCall( getActivity(), tv );
-            }
+            View row = addClickableRow( layout, label1, value1, label2, value2, intent, resid );
 
-            layout.setOnClickListener( new OnClickListener() {
-
-                @Override
-                public void onClick( View v ) {
-                    Intent intent = (Intent) v.getTag();
-                    startActivity( intent );
-                }
-
-            } );
-
-            table.addView( layout, new LinearLayout.LayoutParams(
-                    LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+            TextView tv = (TextView) row.findViewById( R.id.item_label );
+            mAwosViews.add( tv );
+            tv = (TextView) row.findViewById( R.id.item_extra_value );
+            UiUtils.makeClickToCall( getActivity(), tv );
         }
 
         protected void addRunwayRow( LinearLayout table, Cursor c, int resid ) {
