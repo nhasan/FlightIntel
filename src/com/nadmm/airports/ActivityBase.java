@@ -164,8 +164,8 @@ public class ActivityBase extends FragmentActivity {
         return fm.findFragmentByTag( tag );
     }
 
-    protected View inflate( int id ) {
-        return mInflater.inflate( id, null );
+    protected View inflate( int resId ) {
+        return mInflater.inflate( resId, null );
     }
 
     public Cursor getAirportDetails( String siteNumber ) {
@@ -505,8 +505,6 @@ public class ActivityBase extends FragmentActivity {
         View row = addRow( layout, label, phone );
         TextView tv = (TextView) row.findViewById( R.id.item_value );
         UiUtils.makeClickToCall( this, tv );
-        layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
         return row;
     }
 

@@ -221,37 +221,37 @@ public class FssCommActivity extends ActivityBase {
                 float bearing  = com.getFloat( com.getColumnIndex( BEARING ) );
                 float distance  = com.getFloat( com.getColumnIndex( DISTANCE ) );
 
-                LinearLayout layout = (LinearLayout) inflate( R.layout.fss_detail_item );
-                TextView tv = (TextView) layout.findViewById( R.id.fss_comm_name );
+                LinearLayout item = (LinearLayout) inflate( R.layout.fss_detail_item );
+                TextView tv = (TextView) item.findViewById( R.id.fss_comm_name );
                 if ( navId.length() > 0 ) {
-                    tv.setText( navName+" "+navType );
+                    tv.setText( navId+" - "+navName+" "+navType );
                 } else {
                     tv.setText( outletId+" - "+outletCall+" outlet" );
                 }
-                LinearLayout table = (LinearLayout) layout.findViewById( R.id.fss_comm_details );
-                addRow( table, "Call", fssName+" Radio" );
+                LinearLayout layout = (LinearLayout) item.findViewById( R.id.fss_comm_details );
+                addRow( layout, "Call", fssName+" Radio" );
                 if ( navId.length() > 0 ) {
-                    addSeparator( table );
-                    addRow( table, navId, navFreq+"T" );
+                    addSeparator( layout );
+                    addRow( layout, navId, navFreq+"T" );
                 }
 
                 int i =0;
                 while ( i < freqs.length() ) {
-                    addSeparator( table );
+                    addSeparator( layout );
                     int end = Math.min( i+9, freqs.length() );
                     String freq = freqs.substring( i, end ).trim();
-                    addRow( table, outletType, freq );
+                    addRow( layout, outletType, freq );
                     i = end;
                 }
-                addSeparator( table );
+                addSeparator( layout );
                 if ( distance < 1.0 ) {
-                    addRow( table, "Distance", "On-site" );
+                    addRow( layout, "Distance", "On-site" );
                 } else {
-                    addRow( table, "Distance", String.format( "%.0fNM %s", distance,
+                    addRow( layout, "Distance", String.format( "%.0fNM %s", distance,
                         GeoUtils.getCardinalDirection( bearing ) ) );
                 }
 
-                detailLayout.addView( layout, new LinearLayout.LayoutParams(
+                detailLayout.addView( item, new LinearLayout.LayoutParams(
                         LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
             } while ( com.moveToNext() );
         } else {
