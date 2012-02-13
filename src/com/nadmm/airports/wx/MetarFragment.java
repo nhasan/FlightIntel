@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ public class MetarFragment extends FragmentBase {
         Bundle args = getArguments();
         String icaoCode = args.getString( MetarService.STATION_ID );
         String sensorId = args.getString( Awos.WX_SENSOR_IDENT );
-        WxDetailTask task = new WxDetailTask();
+        MetarDetailTask task = new MetarDetailTask();
         task.execute( icaoCode, sensorId );
     }
 
@@ -75,17 +75,7 @@ public class MetarFragment extends FragmentBase {
         return createContentView( view );
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    private final class WxDetailTask extends CursorAsyncTask {
+    private final class MetarDetailTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -93,7 +83,7 @@ public class MetarFragment extends FragmentBase {
             String sensorId = params[ 1 ];
 
             Cursor[] cursors = new Cursor[ 1 ];
-            SQLiteDatabase db = getActivityBase().getDbManager().getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = getDbManager().getDatabase( DatabaseManager.DB_FADDS );
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+Awos.TABLE_NAME+" w"
