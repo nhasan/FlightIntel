@@ -59,6 +59,8 @@ public class MetarFragment extends FragmentBase {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setHasOptionsMenu( true );
+
         Bundle args = getArguments();
         String icaoCode = args.getString( MetarService.STATION_ID );
         String sensorId = args.getString( Awos.WX_SENSOR_IDENT );
@@ -70,7 +72,7 @@ public class MetarFragment extends FragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.wx_detail_view, container, false );
-        return view;
+        return createContentView( view );
     }
 
     @Override
@@ -166,8 +168,8 @@ public class MetarFragment extends FragmentBase {
             addBulletedRow( layout, "Station is currently out of service" );
             addBulletedRow( layout, "Station has not updated the METAR for more than 3 hours" );
             detail.setVisibility( View.GONE );
-            //wxDetailActivity.stopRefreshAnimation();
-            //wxDetailActivity.setContentShown( true );
+            stopRefreshAnimation();
+            setContentShown( true );
             return;
         } else {
             tv.setText( "" );
@@ -466,8 +468,8 @@ public class MetarFragment extends FragmentBase {
                 +DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( metar.fetchTime ) ) );
         tv.setVisibility( View.VISIBLE );
 
-        //wxDetailActivity.stopRefreshAnimation();
-        //wxDetailActivity.setContentShown( true );
+        stopRefreshAnimation();
+        setContentShown( true );
     }
 
     protected String getWindsDescription( Metar metar ) {
@@ -516,7 +518,7 @@ public class MetarFragment extends FragmentBase {
 
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
-        //wxDetailActivity.setRefreshItemVisible( true );
+        setRefreshItemVisible( true );
     }
 
     @Override
@@ -524,7 +526,7 @@ public class MetarFragment extends FragmentBase {
         // Handle item selection
         switch ( item.getItemId() ) {
         case R.id.menu_refresh:
-            //wxDetailActivity.startRefreshAnimation();
+            startRefreshAnimation();
             Intent service = new Intent( getActivity(), MetarService.class );
             service.setAction( MetarService.ACTION_GET_METAR );
             service.putExtra( MetarService.STATION_ID, mIcaoCode );
