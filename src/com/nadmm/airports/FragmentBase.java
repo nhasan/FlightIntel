@@ -20,8 +20,6 @@
 package com.nadmm.airports;
 
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.AnimationDrawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.SupportActivity;
 import android.view.View;
