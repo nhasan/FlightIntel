@@ -123,10 +123,12 @@ public class FavoriteWxFragment extends ListFragment {
     public void onListItemClick( ListView l, View view, int position, long id ) {
         Cursor c = (Cursor) l.getItemAtPosition( position );
         String icaoCode = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
-        String stationId = c.getString( c.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
+        String sensorId = c.getString( c.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
         Intent intent = new Intent( getActivity(), WxDetailActivity.class );
-        intent.putExtra( MetarService.STATION_ID, icaoCode );
-        intent.putExtra( Awos.WX_SENSOR_IDENT, stationId );
+        Bundle args = new Bundle();
+        args.putString( MetarService.STATION_ID, icaoCode );
+        args.putString( Awos.WX_SENSOR_IDENT, sensorId );
+        intent.putExtras( args );
         startActivity( intent );
     }
 
