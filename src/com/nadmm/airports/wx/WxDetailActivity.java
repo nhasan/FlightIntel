@@ -45,8 +45,10 @@ public class WxDetailActivity extends ActivityBase {
 
             @Override
             public void onReceive( Context context, Intent intent ) {
-                MetarFragment metar = (MetarFragment) mTabsAdapter.getItem( 0 );
-                metar.onReceiveResult( intent );
+                if ( intent.getAction().equals( MetarService.ACTION_GET_METAR ) ) {
+                    MetarFragment metar = (MetarFragment) mTabsAdapter.getItem( 0 );
+                    metar.onReceiveResult( intent );
+                }
             }
 
         };
@@ -57,6 +59,7 @@ public class WxDetailActivity extends ActivityBase {
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
         mTabsAdapter.addTab( "METAR", MetarFragment.class, args );
+        mTabsAdapter.addTab( "TAF", TafFragment.class, args );
 
         TabPageIndicator tabIndicator = (TabPageIndicator) findViewById( R.id.page_titles );
         tabIndicator.setViewPager( pager );
