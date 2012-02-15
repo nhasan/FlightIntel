@@ -395,6 +395,7 @@ public class AirportDetailsActivity extends ActivityBase {
             IntentFilter filter = new IntentFilter();
             filter.addAction( MetarService.ACTION_GET_METAR );
             getActivityBase().registerReceiver( mReceiver, filter );
+            requestMetars( false );
         }
 
         @Override
