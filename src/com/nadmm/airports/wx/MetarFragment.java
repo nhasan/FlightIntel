@@ -27,6 +27,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
@@ -40,6 +41,7 @@ import android.widget.TextView;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
@@ -52,8 +54,8 @@ import com.nadmm.airports.wx.Metar.Flags;
 
 public class MetarFragment extends FragmentBase {
 
-    private String mIcaoCode;
-    private long mElevation;
+    protected long mElevation;
+    protected Location mLocation;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -63,9 +65,8 @@ public class MetarFragment extends FragmentBase {
 
         Bundle args = getArguments();
         String icaoCode = args.getString( MetarService.STATION_ID );
-        String sensorId = args.getString( Awos.WX_SENSOR_IDENT );
         MetarDetailTask task = new MetarDetailTask();
-        task.execute( icaoCode, sensorId );
+        task.execute( icaoCode );
     }
 
     @Override
@@ -79,69 +80,64 @@ public class MetarFragment extends FragmentBase {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
-            mIcaoCode = params[ 0 ];
-            String sensorId = params[ 1 ];
+            String icaoCode = params[ 0 ];
 
-            Cursor[] cursors = new Cursor[ 1 ];
+            Cursor[] cursors = new Cursor[ 2 ];
             SQLiteDatabase db = getDbManager().getDatabase( DatabaseManager.DB_FADDS );
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+Awos.TABLE_NAME+" w"
-                    +" ON a."+Airports.FAA_CODE+"=w."+Awos.WX_SENSOR_IDENT );
-            Cursor c = builder.query( db, new String[] { "*" }, Airports.FAA_CODE+"=?",
-                    new String[] { sensorId }, null, null, null, null );
+            builder.setTables( Wxs.TABLE_NAME );
+            Cursor c = builder.query( db, new String[] { "*" }, Wxs.STATION_ID+"=?",
+                    new String[] { icaoCode }, null, null, null, null );
             cursors[ 0 ] = c;
+
+            String[] wxColumns = new String[] {
+                    Awos.WX_SENSOR_IDENT,
+                    Awos.WX_SENSOR_TYPE,
+                    Awos.STATION_FREQUENCY,
+                    Awos.SECOND_STATION_FREQUENCY,
+                    Awos.STATION_PHONE_NUMBER,
+                    Airports.ASSOC_CITY,
+                    Airports.ASSOC_STATE
+            };
+            String selection = "a."+Airports.ICAO_CODE+"=?";
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Airports.TABLE_NAME+" a"
+                    +" LEFT JOIN "+Awos.TABLE_NAME+" w"
+                    +" ON a."+Airports.FAA_CODE+" = w."+Awos.WX_SENSOR_IDENT );
+            c = builder.query( db, wxColumns, selection, new String[] { icaoCode },
+                    null, null, null, null );
+            cursors[ 1 ] = c;
 
             return cursors;
         }
 
         @Override
         protected void onResult( Cursor[] result ) {
-            Cursor awos = result[ 0 ];
-            if ( !awos.moveToFirst() ) {
+            Cursor wxs = result[ 0 ];
+            if ( !wxs.moveToFirst() ) {
                 UiUtils.showToast( getActivity().getApplicationContext(),
                         "Unable to get weather station info" );
                 getActivity().finish();
                 return;
             }
 
-            mElevation = awos.getInt( awos.getColumnIndex( Airports.ELEVATION_MSL ) );
+            mLocation = new Location( "" );
+            float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+            float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+            mLocation.setLatitude( lat );
+            mLocation.setLongitude( lon );
 
+            // Show the weather station info
             getActivityBase().showWxTitle( result );
 
-            TextView tv;
-
-            String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
-            if ( phone != null && phone.length() > 0 ) {
-                tv = (TextView) findViewById( R.id.wx_station_phone );
-                tv.setText( phone );
-                UiUtils.makeClickToCall( getActivity(), tv );
-                tv.setVisibility( View.VISIBLE );
-            }
-            String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
-            if ( freq != null && freq.length() > 0 ) {
-                tv = (TextView) findViewById( R.id.wx_station_freq );
-                tv.setText( freq );
-                tv.setVisibility( View.VISIBLE );
-            }
-
-            freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
-            if ( freq != null && freq.length() > 0 ) {
-                tv = (TextView) findViewById( R.id.wx_station_freq2 );
-                tv.setText( freq );
-                tv.setVisibility( View.VISIBLE );
-            }
-
             // Now request the weather
-            Intent service = new Intent( getActivity(), MetarService.class );
-            service.setAction( MetarService.ACTION_GET_METAR );
-            service.putExtra( MetarService.STATION_ID, mIcaoCode );
-            getActivity().startService( service );
+            requestMetar( false );
         }
 
     }
 
-    protected void showWeather( Intent intent ) {
+    protected void showMetar( Intent intent ) {
         Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
 
         View detail = findViewById( R.id.wx_detail_layout );
@@ -486,8 +482,9 @@ public class MetarFragment extends FragmentBase {
         View row = addRow( layout, getWindsDescription( metar ) );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         if ( metar.windDirDegrees > 0 ) {
+            float declination = GeoUtils.getMagneticDeclination( mLocation );
             Drawable wind = UiUtils.getRotatedDrawable( getActivity(), R.drawable.windsock,
-                    metar.windDirDegrees );
+                    GeoUtils.applyDeclination( metar.windDirDegrees, declination ) );
             tv.setCompoundDrawablesWithIntrinsicBounds( wind, null, null, null );
             tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 6 ) );
         }
@@ -506,6 +503,16 @@ public class MetarFragment extends FragmentBase {
         WxUtils.showColorizedDrawable( tv, flightCategory, wx.getDrawable() );
     }
 
+    protected void requestMetar( boolean refresh ) {
+        Bundle args = getArguments();
+        String icaoCode = args.getString( MetarService.STATION_ID );
+        Intent service = new Intent( getActivity(), MetarService.class );
+        service.setAction( MetarService.ACTION_GET_METAR );
+        service.putExtra( MetarService.STATION_ID, icaoCode );
+        service.putExtra( MetarService.FORCE_REFRESH, refresh );
+        getActivity().startService( service );
+    }
+
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
         setRefreshItemVisible( true );
@@ -517,11 +524,7 @@ public class MetarFragment extends FragmentBase {
         switch ( item.getItemId() ) {
         case R.id.menu_refresh:
             startRefreshAnimation();
-            Intent service = new Intent( getActivity(), MetarService.class );
-            service.setAction( MetarService.ACTION_GET_METAR );
-            service.putExtra( MetarService.STATION_ID, mIcaoCode );
-            service.putExtra( MetarService.FORCE_REFRESH, true );
-            getActivity().startService( service );
+            requestMetar( true );
             return true;
         default:
             return super.onOptionsItemSelected( item );
@@ -529,7 +532,7 @@ public class MetarFragment extends FragmentBase {
     }
 
     public void onReceiveResult( Intent intent ) {
-        showWeather( intent );
+        showMetar( intent );
     }
 
 }
