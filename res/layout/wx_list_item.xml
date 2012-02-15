@@ -28,6 +28,8 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold"
             android:paddingLeft="4dp"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:gravity="left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -77,6 +79,8 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:paddingLeft="4dp"
             android:gravity="left"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:visibility="gone"
             android:layout_below="@id/wx_station_info2_layout"
             android:layout_width="wrap_content"
