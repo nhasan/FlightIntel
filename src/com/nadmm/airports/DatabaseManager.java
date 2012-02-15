@@ -377,6 +377,19 @@ public class DatabaseManager {
         public static final String WX_SERVICE_TYPES = "WX_SERVICE_TYPES";
     }
 
+    public static final class Wxs implements BaseColumns {
+        public static final String TABLE_NAME = "wxs";
+        public static final String STATION_ID = "STATION_ID";
+        public static final String STATION_WMO_ID = "STATION_WMO_ID";
+        public static final String STATION_NAME = "STATION_NAME";
+        public static final String STATION_LATITUDE_DEGREES = "STATION_LATITUDE_DEGREES";
+        public static final String STATION_LONGITUDE_DEGREES = "STATION_LONGITUDE_DEGREES";
+        public static final String STATION_STATE = "STATION_STATE";
+        public static final String STATION_COUNTRY = "STATION_COUNTRY";
+        public static final String STATION_ELEVATOIN_METER = "STATION_ELEVATION_METER";
+        public static final String STATION_SITE_TYPES = "STATION_SITE_TYPES";
+    }
+
     public static final class AtcPhones implements BaseColumns {
         public static final String TABLE_NAME = "atcphones";
         public static final String FACILITY_ID = "FACILITY_ID";
