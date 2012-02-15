@@ -60,6 +60,7 @@ import com.nadmm.airports.DatabaseManager.Awos;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.UiUtils;
 
@@ -366,40 +367,60 @@ public class ActivityBase extends FragmentActivity {
     }
 
     public void showWxTitle( Cursor[] cursors ) {
-        Cursor awos = cursors[ 0 ];
+        Cursor wxs = cursors[ 0 ];
+        Cursor awos = cursors[ 1 ];
 
         TextView tv = (TextView) findViewById( R.id.wx_station_name );
-        String icaoCode = awos.getString( awos.getColumnIndex( Airports.ICAO_CODE ) );
-        if ( icaoCode == null || icaoCode.length() == 0 ) {
-            icaoCode = "K"+awos.getString( awos.getColumnIndex( Airports.FAA_CODE ) );
-        }
-        String stationName = awos.getString( awos.getColumnIndex( Airports.FACILITY_NAME ) );
-        String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
-        if ( type == null || type.length() == 0 ) {
-            type = "AWOS";
-        }
+        String icaoCode = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
+        String stationName = wxs.getString( wxs.getColumnIndex( Wxs.STATION_NAME ) );
         tv.setText( icaoCode+" - "+ stationName );
         tv = (TextView) findViewById( R.id.wx_station_info );
-        String city = awos.getString( awos.getColumnIndex( Airports.ASSOC_CITY ) );
-        String state = awos.getString( awos.getColumnIndex( Airports.ASSOC_STATE ) );
-        tv.setText( type+", "+city+", "+state );
+        if ( awos.moveToFirst() ) {
+            String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+            if ( type == null || type.length() == 0 ) {
+                type = "ASOS/AWOS";
+            }
+            String city = awos.getString( awos.getColumnIndex( Airports.ASSOC_CITY ) );
+            String state = awos.getString( awos.getColumnIndex( Airports.ASSOC_STATE ) );
+            tv.setText( type+", "+city+", "+state );
+            String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+            if ( phone != null && phone.length() > 0 ) {
+                tv = (TextView) findViewById( R.id.wx_station_phone );
+                tv.setText( phone );
+                UiUtils.makeClickToCall( this, tv );
+                tv.setVisibility( View.VISIBLE );
+            }
+            String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
+            if ( freq != null && freq.length() > 0 ) {
+                tv = (TextView) findViewById( R.id.wx_station_freq );
+                tv.setText( freq );
+                tv.setVisibility( View.VISIBLE );
+            }
 
-        String facilityId = awos.getString( awos.getColumnIndex( Airports.FAA_CODE ) );
+            freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
+            if ( freq != null && freq.length() > 0 ) {
+                tv = (TextView) findViewById( R.id.wx_station_freq2 );
+                tv.setText( freq );
+                tv.setVisibility( View.VISIBLE );
+            }
+        } else {
+            tv.setText( "ASOS/AWOS" );
+        }
         CheckBox cb = (CheckBox) findViewById( R.id.airport_star );
-        cb.setChecked( mDbManager.isFavoriteWx( facilityId ) );
-        cb.setTag( facilityId );
+        cb.setChecked( mDbManager.isFavoriteWx( icaoCode ) );
+        cb.setTag( icaoCode );
         cb.setOnClickListener( new OnClickListener() {
 
             @Override
             public void onClick( View v ) {
                 CheckBox cb = (CheckBox) v;
-                String facilityId = (String) cb.getTag();
+                String icaoCode = (String) cb.getTag();
                 if ( cb.isChecked() ) {
-                    mDbManager.addToFavoriteWx( facilityId );
+                    mDbManager.addToFavoriteWx( icaoCode );
                     Toast.makeText( ActivityBase.this, "Added to favorites list",
                             Toast.LENGTH_LONG ).show();
                 } else {
-                    mDbManager.removeFromFavoriteWx( facilityId );
+                    mDbManager.removeFromFavoriteWx( icaoCode );
                     Toast.makeText( ActivityBase.this, "Removed from favorites list",
                             Toast.LENGTH_LONG ).show();
                 }
