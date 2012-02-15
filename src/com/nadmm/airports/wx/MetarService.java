@@ -36,8 +36,8 @@ import android.app.IntentService;
 import android.content.Intent;
 
 import com.nadmm.airports.AirportsMain;
-import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class MetarService extends IntentService {
 
