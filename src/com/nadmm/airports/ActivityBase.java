@@ -512,15 +512,17 @@ public class ActivityBase extends FragmentActivity {
         } else {
             tv.setVisibility( View.GONE );
         }
+        tv = (TextView) row.findViewById( R.id.item_extra_label );
         if ( label2 != null && label2.length() > 0 ) {
-            tv = (TextView) row.findViewById( R.id.item_extra_label );
             tv.setText( label2 );
-            tv.setVisibility( View.VISIBLE );
+        } else {
+            tv.setVisibility( View.GONE );
         }
+        tv = (TextView) row.findViewById( R.id.item_extra_value );
         if ( value2 != null && value2.length() > 0 ) {
-            tv = (TextView) row.findViewById( R.id.item_extra_value );
             tv.setText( value2 );
-            tv.setVisibility( View.VISIBLE );
+        } else {
+            tv.setVisibility( View.GONE );
         }
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
