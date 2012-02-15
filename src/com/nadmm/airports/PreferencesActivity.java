@@ -40,6 +40,7 @@ public class PreferencesActivity extends PreferenceActivity
     public static final String KEY_ALWAYS_AUTO_FETCH_WEATHER = "always_auto_fetch_weather";
     public static final String KEY_DISCLAIMER_AGREED = "disclaimer_agreed";
     public static final String KEY_PHONE_TAP_ACTION = "phone_tap_action";
+    public static final String KEY_WX_FAV_MIGRATED = "wx_fav_migrated";
 
     private SharedPreferences mSharedPrefs;
 
