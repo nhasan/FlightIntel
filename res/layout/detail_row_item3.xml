@@ -52,6 +52,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:gravity="right"
             android:paddingTop="2dp"
+            android:paddingRight="4dp"
             android:paddingLeft="4dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
