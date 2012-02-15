@@ -365,18 +365,6 @@ public class DatabaseManager {
         public static final String FSS_NAME = "FSS_NAME";
     }
 
-    public static final class Wxl implements BaseColumns {
-        public static final String TABLE_NAME = "wxl";
-        public static final String LOCATION_ID = "LOCATION_ID";
-        public static final String LOC_LATITUDE_DEGREES = "LOC_LATITUDE_DEGREES";
-        public static final String LOC_LONGITUDE_DEGREES = "LOC_LONGITUDE_DEGREES";
-        public static final String ASSOC_CITY = "ASSOC_CITY";
-        public static final String ASSOC_STATE = "ASSOC_STATE";
-        public static final String LOC_ELEVATION_FEET = "LOC_ELEVATION_FEET";
-        public static final String LOC_ELEVATION_ACCURACY = "LOC_ELEVATION_ACCURACY";
-        public static final String WX_SERVICE_TYPES = "WX_SERVICE_TYPES";
-    }
-
     public static final class Wxs implements BaseColumns {
         public static final String TABLE_NAME = "wxs";
         public static final String STATION_ID = "STATION_ID";
