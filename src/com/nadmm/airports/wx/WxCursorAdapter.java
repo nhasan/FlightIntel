@@ -37,7 +37,6 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
-import com.nadmm.airports.utils.WxUtils;
 
 public final class WxCursorAdapter extends ResourceCursorAdapter {
 
@@ -64,11 +63,11 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             tv.setText( name );
         }
 
-        String icaoCode = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
+        String stationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
         tv = (TextView) view.findViewById( R.id.wx_station_id );
-        tv.setText( icaoCode );
+        tv.setText( stationId );
 
-        view.setTag( icaoCode );
+        view.setTag( stationId );
 
         StringBuilder info = new StringBuilder();
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
@@ -115,59 +114,61 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             UiUtils.makeClickToCall( context, tv );
         }
 
-        Metar metar = mStationWx.get( icaoCode );
-        if ( metar != null )
-        {
-            showMetarInfo( view, c, metar );
-        }
+        Metar metar = mStationWx.get( stationId );
+        showMetarInfo( view, c, metar );
     }
 
     protected void showMetarInfo( View view, Cursor c, Metar metar ) {
-        if ( metar.isValid ) {
-            // We have METAR for this station
-            double lat = c.getDouble(
-                    c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-            double lon = c.getDouble(
-                    c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-            Location location = new Location( "" );
-            location.setLatitude( lat );
-            location.setLongitude( lon );
-            float declination = GeoUtils.getMagneticDeclination( location );
-
-            TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
-            WxUtils.setColorizedWxDrawable( tv, metar, declination );
-
-            StringBuilder info = new StringBuilder();
-            if ( metar.wxList.size() > 0 ) {
-                for ( WxSymbol wx : metar.wxList ) {
-                    info.append( ", " );
-                    info.append( wx.toString().toLowerCase() );
+        if ( metar != null ) {
+            if ( metar.isValid ) {
+                // We have METAR for this station
+                double lat = c.getDouble(
+                        c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+                double lon = c.getDouble(
+                        c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+                Location location = new Location( "" );
+                location.setLatitude( lat );
+                location.setLongitude( lon );
+                float declination = GeoUtils.getMagneticDeclination( location );
+    
+                TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
+                WxUtils.setColorizedWxDrawable( tv, metar, declination );
+    
+                StringBuilder info = new StringBuilder();
+                if ( metar.wxList.size() > 0 ) {
+                    for ( WxSymbol wx : metar.wxList ) {
+                        info.append( ", " );
+                        info.append( wx.toString().toLowerCase() );
+                    }
                 }
+                if ( metar.windGustKnots < Integer.MAX_VALUE ) {
+                    info.append( ", gusting winds" );
+                } else if ( metar.windSpeedKnots > 0 && metar.windDirDegrees == 0 ) {
+                    info.append( ", variable winds" );
+                } else if ( metar.windSpeedKnots > 10 ) {
+                    info.append( ", strong winds" );
+                }
+                if ( info.length() == 0 ) {
+                    info.append( ", no significant weather" );
+                }
+                info.insert( 0, metar.flightCategory );
+    
+                tv = (TextView) view.findViewById( R.id.wx_station_wx );
+                tv.setVisibility( View.VISIBLE );
+                tv.setText( info.toString() );
+    
+                Date now = new Date();
+                long age = now.getTime()-metar.observationTime;
+                tv = (TextView) view.findViewById( R.id.wx_report_age );
+                tv.setVisibility( View.VISIBLE );
+                tv.setText( TimeUtils.formatDuration( age )+" old" );
+            } else {
+                TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
+                WxUtils.setColorizedWxDrawable( tv, metar, 0 );
             }
-            if ( metar.windGustKnots < Integer.MAX_VALUE ) {
-                info.append( ", gusting winds" );
-            } else if ( metar.windSpeedKnots > 0 && metar.windDirDegrees == 0 ) {
-                info.append( ", variable winds" );
-            } else if ( metar.windSpeedKnots > 10 ) {
-                info.append( ", strong winds" );
-            }
-            if ( info.length() == 0 ) {
-                info.append( ", no significant weather" );
-            }
-            info.insert( 0, metar.flightCategory );
-
-            tv = (TextView) view.findViewById( R.id.wx_station_wx );
-            tv.setVisibility( View.VISIBLE );
-            tv.setText( info.toString() );
-
-            Date now = new Date();
-            long age = now.getTime()-metar.observationTime;
-            tv = (TextView) view.findViewById( R.id.wx_report_age );
-            tv.setVisibility( View.VISIBLE );
-            tv.setText( TimeUtils.formatDuration( age )+" old" );
         } else {
             TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
-            WxUtils.setColorizedWxDrawable( tv, metar, 0 );
+            UiUtils.setTextViewDrawable( tv, null );
         }
     }
 
