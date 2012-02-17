@@ -35,7 +35,7 @@ public class WxUtils {
     static public int getFlightCategoryColor( String flightCategory ) {
         int color = 0;
         if ( flightCategory.equals( "VFR" ) ) {
-            color = Color.argb( 255, 0, 160, 208 );
+            color = Color.argb( 255, 0, 144, 224 );
         } else if ( flightCategory.equals( "MVFR" ) ) {
             color = Color.argb( 255, 0, 160, 32 );
         } else if ( flightCategory.equals( "IFR" ) ) {
