@@ -70,6 +70,7 @@ import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.MetarService;
+import com.nadmm.airports.wx.NoaaService;
 import com.nadmm.airports.wx.WxDetailActivity;
 
 public class AirportDetailsActivity extends ActivityBase {
@@ -361,7 +362,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
                 @Override
                 public void onReceive( Context context, Intent intent ) {
-                    Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
+                    Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
                     showWxInfo( metar );
 
                     ++mWxUpdates;
@@ -393,7 +394,7 @@ public class AirportDetailsActivity extends ActivityBase {
         public void onResume() {
             super.onResume();
             IntentFilter filter = new IntentFilter();
-            filter.addAction( MetarService.ACTION_GET_METAR );
+            filter.addAction( NoaaService.ACTION_GET_METAR );
             getActivityBase().registerReceiver( mReceiver, filter );
             requestMetars( false );
         }
@@ -598,7 +599,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     }
                     Intent intent = new Intent( getActivity(), WxDetailActivity.class );
                     Bundle args = new Bundle();
-                    args.putString( MetarService.STATION_ID, icaoCode );
+                    args.putString( NoaaService.STATION_ID, icaoCode );
                     args.putString( Awos.WX_SENSOR_IDENT, sensorId );
                     intent.putExtras( args );
                     int resid = getSelectorResourceForRow( awos.getPosition(), awos.getCount() );
@@ -966,12 +967,12 @@ public class AirportDetailsActivity extends ActivityBase {
             for ( TextView tv : mAwosViews ) {
                 String icaoCode = (String) tv.getTag();
                 Intent service = new Intent( getActivityBase(), MetarService.class );
-                service.setAction( MetarService.ACTION_GET_METAR );
-                service.putExtra( MetarService.STATION_ID, icaoCode );
+                service.setAction( NoaaService.ACTION_GET_METAR );
+                service.putExtra( NoaaService.STATION_ID, icaoCode );
                 if ( force ) {
-                    service.putExtra( MetarService.FORCE_REFRESH, true );
+                    service.putExtra( NoaaService.FORCE_REFRESH, true );
                 } else if ( cacheOnly ) {
-                    service.putExtra( MetarService.CACHE_ONLY, true );
+                    service.putExtra( NoaaService.CACHE_ONLY, true );
                 }
                 getActivityBase().startService( service );
             }
