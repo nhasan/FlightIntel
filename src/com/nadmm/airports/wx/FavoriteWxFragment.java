@@ -65,7 +65,7 @@ public class FavoriteWxFragment extends ListFragment {
 
         @Override
         public void onReceive( Context context, Intent intent ) {
-            Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
+            Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
             mStationWx.put( metar.stationId, metar );
 
             ListView l =getListView();
@@ -116,7 +116,7 @@ public class FavoriteWxFragment extends ListFragment {
     @Override
     public void onResume() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction( MetarService.ACTION_GET_METAR );
+        filter.addAction( NoaaService.ACTION_GET_METAR );
         getActivity().registerReceiver( mReceiver, filter );
         startTask();
         super.onResume();
@@ -141,7 +141,7 @@ public class FavoriteWxFragment extends ListFragment {
         String icaoCode = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
         Intent intent = new Intent( getActivity(), WxDetailActivity.class );
         Bundle args = new Bundle();
-        args.putString( MetarService.STATION_ID, icaoCode );
+        args.putString( NoaaService.STATION_ID, icaoCode );
         intent.putExtras( args );
         startActivity( intent );
     }
@@ -187,13 +187,13 @@ public class FavoriteWxFragment extends ListFragment {
 
         for ( String icaoCode : mStationWx.keySet() ) {
             Intent service = new Intent( activity, MetarService.class );
-            service.setAction( MetarService.ACTION_GET_METAR );
-            service.putExtra( MetarService.STATION_ID, icaoCode );
+            service.setAction( NoaaService.ACTION_GET_METAR );
+            service.putExtra( NoaaService.STATION_ID, icaoCode );
             if ( force ) {
-                service.putExtra( MetarService.FORCE_REFRESH, true );
+                service.putExtra( NoaaService.FORCE_REFRESH, true );
             }
             else if ( cacheOnly ) {
-                service.putExtra( MetarService.CACHE_ONLY, true );
+                service.putExtra( NoaaService.CACHE_ONLY, true );
             }
             activity.startService( service );
         }
