@@ -57,7 +57,7 @@ public class MetarService extends NoaaService {
 
     @Override
     protected void onHandleIntent( Intent intent ) {
-        if ( intent.getAction().equals( ACTION_GET_METAR ) ) {
+        if ( !intent.getAction().equals( ACTION_GET_METAR ) ) {
             return;
         }
 
@@ -87,14 +87,15 @@ public class MetarService extends NoaaService {
     }
 
     protected boolean fetchMetarFromNOAA( String stationId, File xml ) {
+        boolean result = false;
         try {
             URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, DATASERVER_PATH,
                     METAR_QUERY+stationId, null );
-            return fetchFromNOAA( uri, xml );
+            result = fetchFromNOAA( uri, xml );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "Unable to fetch METAR: "+e.getMessage() );
         }
-        return false;
+        return result;
     }
 
 }
