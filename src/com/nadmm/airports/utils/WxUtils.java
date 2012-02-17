@@ -37,11 +37,11 @@ public class WxUtils {
         if ( flightCategory.equals( "VFR" ) ) {
             color = Color.argb( 255, 0, 160, 208 );
         } else if ( flightCategory.equals( "MVFR" ) ) {
-            color = Color.argb( 255, 0, 192, 80 );
+            color = Color.argb( 255, 0, 160, 32 );
         } else if ( flightCategory.equals( "IFR" ) ) {
-            color = Color.argb( 255, 224, 48, 00 );
+            color = Color.argb( 255, 192, 32, 00 );
         } else if ( flightCategory.equals( "LIFR" ) ) {
-            color = Color.argb( 255, 200, 16, 144 );
+            color = Color.argb( 255, 200, 0, 160 );
         }
         return color;
     }
