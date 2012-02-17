@@ -965,10 +965,10 @@ public class AirportDetailsActivity extends ActivityBase {
             }
 
             for ( TextView tv : mAwosViews ) {
-                String icaoCode = (String) tv.getTag();
+                String stationId = (String) tv.getTag();
                 Intent service = new Intent( getActivityBase(), MetarService.class );
                 service.setAction( NoaaService.ACTION_GET_METAR );
-                service.putExtra( NoaaService.STATION_ID, icaoCode );
+                service.putExtra( NoaaService.STATION_ID, stationId );
                 if ( force ) {
                     service.putExtra( NoaaService.FORCE_REFRESH, true );
                 } else if ( cacheOnly ) {
