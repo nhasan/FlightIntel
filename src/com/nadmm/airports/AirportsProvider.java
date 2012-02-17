@@ -34,7 +34,6 @@ import android.net.Uri;
 import android.net.Uri.Builder;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
-import android.util.Log;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.utils.AirportsCursorHelper;
