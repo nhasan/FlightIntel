@@ -64,7 +64,7 @@ public class MetarFragment extends FragmentBase {
         setHasOptionsMenu( true );
 
         Bundle args = getArguments();
-        String icaoCode = args.getString( MetarService.STATION_ID );
+        String icaoCode = args.getString( NoaaService.STATION_ID );
         MetarDetailTask task = new MetarDetailTask();
         task.execute( icaoCode );
     }
@@ -138,7 +138,12 @@ public class MetarFragment extends FragmentBase {
     }
 
     protected void showMetar( Intent intent ) {
-        Metar metar = (Metar) intent.getSerializableExtra( MetarService.RESULT );
+        if ( getActivity() == null ) {
+            // Not ready to do this yet
+            return;
+        }
+
+        Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
 
         View detail = findViewById( R.id.wx_detail_layout );
         TextView tv =(TextView) findViewById( R.id.status_msg );
@@ -505,11 +510,11 @@ public class MetarFragment extends FragmentBase {
 
     protected void requestMetar( boolean refresh ) {
         Bundle args = getArguments();
-        String icaoCode = args.getString( MetarService.STATION_ID );
+        String icaoCode = args.getString( NoaaService.STATION_ID );
         Intent service = new Intent( getActivity(), MetarService.class );
-        service.setAction( MetarService.ACTION_GET_METAR );
-        service.putExtra( MetarService.STATION_ID, icaoCode );
-        service.putExtra( MetarService.FORCE_REFRESH, refresh );
+        service.setAction( NoaaService.ACTION_GET_METAR );
+        service.putExtra( NoaaService.STATION_ID, icaoCode );
+        service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
     }
 
