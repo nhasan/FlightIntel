@@ -1037,6 +1037,51 @@ public abstract class WxSymbol implements Serializable, Cloneable {
                 return "Volcanic ash";
             }
         };
+
+        new WxSymbol( "NSW" ) {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public int getDrawable() {
+                return 0;
+            }
+
+            @Override
+            protected String getDescription() {
+                return "fair weather";
+            }
+        };
+    }
+
+    public static void parseWxSymbols( ArrayList<WxSymbol> wxList, String wxString ) {
+        String[] groups = wxString.split( "\\s+" );
+        ArrayList<String> names = WxSymbol.getNames();
+        for ( String group : groups ) {
+            int offset = 0;
+            String intensity = "";
+            if ( group.charAt( offset ) == '+' || group.charAt( offset ) == '-' ) {
+                intensity = group.substring( offset, offset+1 );
+                ++offset;
+            }
+            while ( offset < group.length() ) {
+                WxSymbol wx = null;
+                for  ( String name : names  ) {
+                    if ( group.substring( offset ).startsWith( name ) ) {
+                        wx = WxSymbol.get( name, intensity );
+                        intensity = "";
+                        wxList.add( wx );
+                        offset += wx.name().length();
+                        break;
+                    }
+                }
+
+                if ( wx == null ) {
+                    // No match found, skip to next character and try again
+                    ++offset;
+                }
+            }
+        }
     }
 
 }
