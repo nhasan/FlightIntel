@@ -116,8 +116,8 @@ public class AirportsProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, 
-            String[] selectionArgs, String sortOrder) {
+    public Cursor query( Uri uri, String[] projection, String selection, 
+            String[] selectionArgs, String sortOrder ) {
         if ( selectionArgs == null ) {
             throw new IllegalArgumentException(
                 "selectionArgs must be provided for the Uri: " + uri);
@@ -133,11 +133,9 @@ public class AirportsProvider extends ContentProvider {
             builder.appendQueryParameter( "limit", limit );
         }
 
-        uri = builder.build();
-
         String query = selectionArgs[ 0 ].toUpperCase().trim();
-        Log.v( TAG, "Search="+uri.toString()+", query="+query );
 
+        uri = builder.build();
         switch ( sUriMatcher.match( uri ) ) {
             case SEARCH_SUGGEST:
                 return suggestAirports( uri, query );
