@@ -22,7 +22,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="2dp"
+        android:paddingTop="4dp"
         android:paddingBottom="8dp"
         android:orientation="vertical">
     <TextView android:id="@+id/list_section"
