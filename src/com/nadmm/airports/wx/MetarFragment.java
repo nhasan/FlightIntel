@@ -64,9 +64,9 @@ public class MetarFragment extends FragmentBase {
         setHasOptionsMenu( true );
 
         Bundle args = getArguments();
-        String icaoCode = args.getString( NoaaService.STATION_ID );
+        String stationId = args.getString( NoaaService.STATION_ID );
         MetarDetailTask task = new MetarDetailTask();
-        task.execute( icaoCode );
+        task.execute( stationId );
     }
 
     @Override
@@ -80,7 +80,7 @@ public class MetarFragment extends FragmentBase {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
-            String icaoCode = params[ 0 ];
+            String stationId = params[ 0 ];
 
             Cursor[] cursors = new Cursor[ 2 ];
             SQLiteDatabase db = getDbManager().getDatabase( DatabaseManager.DB_FADDS );
@@ -88,7 +88,7 @@ public class MetarFragment extends FragmentBase {
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Wxs.TABLE_NAME );
             Cursor c = builder.query( db, new String[] { "*" }, Wxs.STATION_ID+"=?",
-                    new String[] { icaoCode }, null, null, null, null );
+                    new String[] { stationId }, null, null, null, null );
             cursors[ 0 ] = c;
 
             String[] wxColumns = new String[] {
@@ -105,7 +105,7 @@ public class MetarFragment extends FragmentBase {
             builder.setTables( Airports.TABLE_NAME+" a"
                     +" LEFT JOIN "+Awos.TABLE_NAME+" w"
                     +" ON a."+Airports.FAA_CODE+" = w."+Awos.WX_SENSOR_IDENT );
-            c = builder.query( db, wxColumns, selection, new String[] { icaoCode },
+            c = builder.query( db, wxColumns, selection, new String[] { stationId },
                     null, null, null, null );
             cursors[ 1 ] = c;
 
