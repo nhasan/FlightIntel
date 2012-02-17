@@ -21,7 +21,6 @@ package com.nadmm.airports.wx;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -51,36 +50,6 @@ public final class MetarParser {
 
             xmlReader.parse( input );
         } catch ( Exception e ) {
-        }
-    }
-
-    protected void parseWxGroups( Metar metar, String wxString ) {
-        String[] groups = wxString.split( "\\s+" );
-        ArrayList<String> names = WxSymbol.getNames();
-        for ( String group : groups ) {
-            int offset = 0;
-            String intensity = "";
-            if ( group.charAt( offset ) == '+' || group.charAt( offset ) == '-' ) {
-                intensity = group.substring( offset, offset+1 );
-                ++offset;
-            }
-            while ( offset < group.length() ) {
-                WxSymbol wx = null;
-                for  ( String name : names  ) {
-                    if ( group.substring( offset ).startsWith( name ) ) {
-                        wx = WxSymbol.get( name, intensity );
-                        intensity = "";
-                        metar.wxList.add( wx );
-                        offset += wx.name().length();
-                        break;
-                    }
-                }
-
-                if ( wx == null ) {
-                    // No match found, skip to next character and try again
-                    ++offset;
-                }
-            }
         }
     }
 
@@ -209,7 +178,7 @@ public final class MetarParser {
                     metar.flags.add( Flags.FreezingRainSensorOff ) ;
                 }
             } else if ( qName.equalsIgnoreCase( "wx_string" ) ) {
-                parseWxGroups( metar, text.toString() );
+                WxSymbol.parseWxSymbols( metar.wxList, text.toString() );
             } else if ( qName.equalsIgnoreCase( "flight_category" ) ) {
                 metar.flightCategory = text.toString();
             } else if ( qName.equalsIgnoreCase( "three_hr_pressure_tendency_mb" ) ) {
