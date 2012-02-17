@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports.utils;
+package com.nadmm.airports.wx;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -27,8 +27,8 @@ import android.graphics.drawable.Drawable;
 import android.widget.TextView;
 
 import com.nadmm.airports.R;
-import com.nadmm.airports.wx.Metar;
-import com.nadmm.airports.wx.SkyCondition;
+import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class WxUtils {
 
