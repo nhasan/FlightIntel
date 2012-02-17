@@ -118,6 +118,8 @@ public final class Metar implements Serializable {
 
     public Metar() {
         isValid = false;
+        observationTime = 0;
+        fetchTime = 0;
         tempCelsius = Float.MAX_VALUE;
         dewpointCelsius = Float.MAX_VALUE;
         windDirDegrees = Integer.MAX_VALUE;
