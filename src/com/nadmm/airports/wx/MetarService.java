@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,44 +20,22 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URI;
-import java.util.Date;
-import java.util.zip.GZIPInputStream;
 
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIUtils;
-import org.apache.http.impl.client.DefaultHttpClient;
 
-import android.app.IntentService;
 import android.content.Intent;
 
 import com.nadmm.airports.AirportsMain;
-import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.UiUtils;
 
-public class MetarService extends IntentService {
+public class MetarService extends NoaaService {
 
-    private final String NOAA_HOST = "weather.aero";
-    private final String METAR_PATH = "/dataserver1_4/httpparam";
-    private final String METAR_QUERY = "datasource=metars&requesttype=retrieve" +
-    		"&format=xml&compression=gzip&hoursBeforeNow=3" +
-    		"&mostRecentForEachStation=constraint&stationString=";
-
-    private final File METAR_DIR = new File( 
+    private final String METAR_QUERY = "datasource=metars&requesttype=retrieve"
+    		+"&format=xml&compression=gzip&hoursBeforeNow=3&mostRecent=true&stationString=";
+    private final File METAR_DIR = new File(
             AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/metar" );
-
-    private static final int MSECS_PER_MINUTE = 60*1000;
-    private static final int METAR_CACHE_MAX_AGE = 30*MSECS_PER_MINUTE;
-
-    public static final String STATION_ID = "STATION_ID";
-    public static final String CACHE_ONLY = "CACHE_ONLY";
-    public static final String FORCE_REFRESH = "FORCE_REFRESH";
-    public static final String RESULT ="RESULT";
-    public static final String ACTION_GET_METAR = "flightintel.intent.action.GET_METAR";
+    private final int METAR_CACHE_MAX_AGE = 30*MSECS_PER_MINUTE;
 
     protected MetarParser mParser;
 
@@ -73,24 +51,27 @@ public class MetarService extends IntentService {
         if ( !METAR_DIR.exists() ) {
             METAR_DIR.mkdirs();
         }
-
         // Remove any old METAR files from cache first
-        cleanupMetarCache();
+        cleanupCache( METAR_DIR, METAR_CACHE_MAX_AGE );
     }
 
     @Override
     protected void onHandleIntent( Intent intent ) {
+        if ( intent.getAction().equals( ACTION_GET_METAR ) ) {
+            return;
+        }
+
         // Get request parameters
         String stationId = intent.getStringExtra( STATION_ID );
         boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
         boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-        Metar metar = new Metar();
-
         File xml = new File( METAR_DIR, "METAR_"+stationId+".xml" );
         if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
             fetchMetarFromNOAA( stationId, xml );
         }
+
+        Metar metar = new Metar();
 
         if ( xml.exists() ) {
             metar.stationId = stationId;
@@ -105,52 +86,15 @@ public class MetarService extends IntentService {
         sendBroadcast( result );
     }
 
-    protected void cleanupMetarCache() {
-        // Delete all METAR files that are older
-        Date now = new Date();
-        File[] files = METAR_DIR.listFiles();
-        for ( File file : files ) {
-            long age = now.getTime()-file.lastModified();
-            if ( age > METAR_CACHE_MAX_AGE ) {
-                file.delete();
-            }
-        }
-    }
-
     protected boolean fetchMetarFromNOAA( String stationId, File xml ) {
-        if ( !NetworkUtils.isNetworkAvailable( this ) ) {
-            return false;
-        }
-
         try {
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            HttpHost target = new HttpHost( NOAA_HOST, 80 );
-            URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, METAR_PATH,
+            URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, DATASERVER_PATH,
                     METAR_QUERY+stationId, null );
-            HttpGet get = new HttpGet( uri );
-
-            HttpResponse response = httpClient.execute( target, get );
-            int status = response.getStatusLine().getStatusCode();
-            if ( status != HttpStatus.SC_OK ) {
-                UiUtils.showToast( this, "Unable to fetch METAR: "
-                            + response.getStatusLine().getReasonPhrase() );
-                return false;
-            }
-
-            byte[] buffer = new byte[ 4096 ];
-            int count;
-            FileOutputStream out = new FileOutputStream( xml );
-            GZIPInputStream in = new GZIPInputStream( response.getEntity().getContent() );
-            while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
-                out.write( buffer, 0, count );
-            }
-            in.close();
-            out.close();
-            return true;
+            return fetchFromNOAA( uri, xml );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "Unable to fetch METAR: "+e.getMessage() );
-            return false;
         }
+        return false;
     }
 
 }
