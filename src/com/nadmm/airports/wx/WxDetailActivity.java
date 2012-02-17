@@ -45,7 +45,7 @@ public class WxDetailActivity extends ActivityBase {
 
             @Override
             public void onReceive( Context context, Intent intent ) {
-                if ( intent.getAction().equals( MetarService.ACTION_GET_METAR ) ) {
+                if ( intent.getAction().equals( NoaaService.ACTION_GET_METAR ) ) {
                     MetarFragment metar = (MetarFragment) mTabsAdapter.getItem( 0 );
                     metar.onReceiveResult( intent );
                 }
@@ -82,7 +82,7 @@ public class WxDetailActivity extends ActivityBase {
     public void onResume() {
         super.onResume();
         IntentFilter filter = new IntentFilter();
-        filter.addAction( MetarService.ACTION_GET_METAR );
+        filter.addAction( NoaaService.ACTION_GET_METAR );
         registerReceiver( mReceiver, filter );
     }
 
