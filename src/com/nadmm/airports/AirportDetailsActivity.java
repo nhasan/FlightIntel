@@ -67,11 +67,11 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.UiUtils;
-import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.MetarService;
 import com.nadmm.airports.wx.NoaaService;
 import com.nadmm.airports.wx.WxDetailActivity;
+import com.nadmm.airports.wx.WxUtils;
 
 public class AirportDetailsActivity extends ActivityBase {
 
