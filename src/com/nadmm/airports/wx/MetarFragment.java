@@ -22,7 +22,10 @@ package com.nadmm.airports.wx;
 import java.text.NumberFormat;
 import java.util.Date;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -49,30 +52,54 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
-import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar.Flags;
 
 public class MetarFragment extends FragmentBase {
 
     protected long mElevation;
     protected Location mLocation;
+    protected CursorAsyncTask mTask;
+    protected BroadcastReceiver mReceiver;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
         setHasOptionsMenu( true );
+
+        mReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive( Context context, Intent intent ) {
+                onReceiveResult( intent );
+            }
+
+        };
+    }
+
+    @Override
+    public void onResume() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction( NoaaService.ACTION_GET_METAR );
+        getActivity().registerReceiver( mReceiver, filter );
 
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
-        MetarDetailTask task = new MetarDetailTask();
-        task.execute( stationId );
+        mTask = new MetarDetailTask();
+        mTask.execute( stationId );
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        mTask.cancel( true );
+        getActivity().unregisterReceiver( mReceiver );
+        super.onPause();
     }
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.wx_detail_view, container, false );
+        View view = inflater.inflate( R.layout.metar_detail_view, container, false );
         return createContentView( view );
     }
 
@@ -87,6 +114,7 @@ public class MetarFragment extends FragmentBase {
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Wxs.TABLE_NAME );
+            String selection = Wxs.STATION_ID+"=?";
             Cursor c = builder.query( db, new String[] { "*" }, Wxs.STATION_ID+"=?",
                     new String[] { stationId }, null, null, null, null );
             cursors[ 0 ] = c;
@@ -100,11 +128,11 @@ public class MetarFragment extends FragmentBase {
                     Airports.ASSOC_CITY,
                     Airports.ASSOC_STATE
             };
-            String selection = "a."+Airports.ICAO_CODE+"=?";
             builder = new SQLiteQueryBuilder();
             builder.setTables( Airports.TABLE_NAME+" a"
                     +" LEFT JOIN "+Awos.TABLE_NAME+" w"
                     +" ON a."+Airports.FAA_CODE+" = w."+Awos.WX_SENSOR_IDENT );
+            selection = "a."+Airports.ICAO_CODE+"=?";
             c = builder.query( db, wxColumns, selection, new String[] { stationId },
                     null, null, null, null );
             cursors[ 1 ] = c;
@@ -137,6 +165,10 @@ public class MetarFragment extends FragmentBase {
 
     }
 
+    public void onReceiveResult( Intent intent ) {
+        showMetar( intent );
+    }
+
     protected void showMetar( Intent intent ) {
         if ( getActivity() == null ) {
             // Not ready to do this yet
@@ -146,8 +178,8 @@ public class MetarFragment extends FragmentBase {
         Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
 
         View detail = findViewById( R.id.wx_detail_layout );
-        TextView tv =(TextView) findViewById( R.id.status_msg );
         LinearLayout layout = (LinearLayout) findViewById( R.id.wx_status_layout );
+        TextView tv =(TextView) findViewById( R.id.status_msg );
         layout.removeAllViews();
         if ( !metar.isValid ) {
             tv.setVisibility( View.VISIBLE );
@@ -169,16 +201,7 @@ public class MetarFragment extends FragmentBase {
             detail.setVisibility( View.VISIBLE );
         }
 
-        if ( metar.stationElevationMeters < Integer.MAX_VALUE ) {
-            mElevation = DataUtils.metersToFeet( metar.stationElevationMeters );
-        } else {
-            metar.stationElevationMeters = DataUtils.feetToMeters( mElevation );
-        }
-
         NumberFormat decimal = NumberFormat.getNumberInstance();
-        tv = (TextView) findViewById( R.id.wx_station_info2 );
-        tv.setText( String.format( "Located at %s' MSL elevation",
-                decimal.format( mElevation ) ) );
 
         tv = (TextView) findViewById( R.id.wx_age );
         Date now = new Date();
@@ -510,10 +533,10 @@ public class MetarFragment extends FragmentBase {
 
     protected void requestMetar( boolean refresh ) {
         Bundle args = getArguments();
-        String icaoCode = args.getString( NoaaService.STATION_ID );
+        String stationId = args.getString( NoaaService.STATION_ID );
         Intent service = new Intent( getActivity(), MetarService.class );
         service.setAction( NoaaService.ACTION_GET_METAR );
-        service.putExtra( NoaaService.STATION_ID, icaoCode );
+        service.putExtra( NoaaService.STATION_ID, stationId );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
     }
@@ -534,10 +557,6 @@ public class MetarFragment extends FragmentBase {
         default:
             return super.onOptionsItemSelected( item );
         }
-    }
-
-    public void onReceiveResult( Intent intent ) {
-        showMetar( intent );
     }
 
 }
