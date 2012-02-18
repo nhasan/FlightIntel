@@ -185,10 +185,10 @@ public class FavoriteWxFragment extends ListFragment {
             activity.startRefreshAnimation();
         }
 
-        for ( String icaoCode : mStationWx.keySet() ) {
+        for ( String stationId : mStationWx.keySet() ) {
             Intent service = new Intent( activity, MetarService.class );
             service.setAction( NoaaService.ACTION_GET_METAR );
-            service.putExtra( NoaaService.STATION_ID, icaoCode );
+            service.putExtra( NoaaService.STATION_ID, stationId );
             if ( force ) {
                 service.putExtra( NoaaService.FORCE_REFRESH, true );
             }
