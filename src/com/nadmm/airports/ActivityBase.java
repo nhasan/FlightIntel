@@ -56,11 +56,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Awos;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
-import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.UiUtils;
 
@@ -364,73 +362,6 @@ public class ActivityBase extends FragmentActivity {
             tv = (TextView) root.findViewById( R.id.navaid_morse3 );
             tv.setText( DataUtils.getMorseCode( id.substring( 2, 3 ) ) );
         }
-    }
-
-    public void showWxTitle( Cursor[] cursors ) {
-        Cursor wxs = cursors[ 0 ];
-        Cursor awos = cursors[ 1 ];
-
-        TextView tv = (TextView) findViewById( R.id.wx_station_name );
-        String icaoCode = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
-        String stationName = wxs.getString( wxs.getColumnIndex( Wxs.STATION_NAME ) );
-        tv.setText( icaoCode+" - "+ stationName );
-        tv = (TextView) findViewById( R.id.wx_station_info );
-        if ( awos.moveToFirst() ) {
-            String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
-            if ( type == null || type.length() == 0 ) {
-                type = "ASOS/AWOS";
-            }
-            String city = awos.getString( awos.getColumnIndex( Airports.ASSOC_CITY ) );
-            String state = awos.getString( awos.getColumnIndex( Airports.ASSOC_STATE ) );
-            tv.setText( type+", "+city+", "+state );
-            String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
-            if ( phone != null && phone.length() > 0 ) {
-                tv = (TextView) findViewById( R.id.wx_station_phone );
-                tv.setText( phone );
-                UiUtils.makeClickToCall( this, tv );
-                tv.setVisibility( View.VISIBLE );
-            }
-            String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
-            if ( freq != null && freq.length() > 0 ) {
-                tv = (TextView) findViewById( R.id.wx_station_freq );
-                tv.setText( freq );
-                tv.setVisibility( View.VISIBLE );
-            }
-            freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
-            if ( freq != null && freq.length() > 0 ) {
-                tv = (TextView) findViewById( R.id.wx_station_freq2 );
-                tv.setText( freq );
-                tv.setVisibility( View.VISIBLE );
-            }
-            int elev = wxs.getInt( wxs.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
-            NumberFormat decimal = NumberFormat.getNumberInstance();
-            tv = (TextView) findViewById( R.id.wx_station_info2 );
-            tv.setText( String.format( "Located at %s' MSL elevation",
-                    decimal.format( DataUtils.feetToMeters( elev ) ) ) );
-        } else {
-            tv.setText( "ASOS/AWOS" );
-        }
-        CheckBox cb = (CheckBox) findViewById( R.id.airport_star );
-        cb.setChecked( mDbManager.isFavoriteWx( icaoCode ) );
-        cb.setTag( icaoCode );
-        cb.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                CheckBox cb = (CheckBox) v;
-                String icaoCode = (String) cb.getTag();
-                if ( cb.isChecked() ) {
-                    mDbManager.addToFavoriteWx( icaoCode );
-                    Toast.makeText( ActivityBase.this, "Added to favorites list",
-                            Toast.LENGTH_LONG ).show();
-                } else {
-                    mDbManager.removeFromFavoriteWx( icaoCode );
-                    Toast.makeText( ActivityBase.this, "Removed from favorites list",
-                            Toast.LENGTH_LONG ).show();
-                }
-            }
-
-        } );
     }
 
     protected int getSelectorResourceForRow( int curRow, int totRows ) {

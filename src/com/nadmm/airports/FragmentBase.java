@@ -19,11 +19,24 @@
 
 package com.nadmm.airports;
 
+import java.text.NumberFormat;
+
+import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.UiUtils;
+
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.SupportActivity;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class FragmentBase extends Fragment {
 
@@ -53,6 +66,75 @@ public class FragmentBase extends Fragment {
 
     protected int getSelectorResourceForRow( int curRow, int totRows ) {
         return mActivity.getSelectorResourceForRow( curRow, totRows );
+    }
+
+    public void showWxTitle( Cursor[] cursors ) {
+        Cursor wxs = cursors[ 0 ];
+        Cursor awos = cursors[ 1 ];
+
+        View root = getView();
+
+        TextView tv = (TextView) root.findViewById( R.id.wx_station_name );
+        String icaoCode = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
+        String stationName = wxs.getString( wxs.getColumnIndex( Wxs.STATION_NAME ) );
+        tv.setText( icaoCode+" - "+ stationName );
+        tv = (TextView) root.findViewById( R.id.wx_station_info );
+        if ( awos.moveToFirst() ) {
+            String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+            if ( type == null || type.length() == 0 ) {
+                type = "ASOS/AWOS";
+            }
+            String city = awos.getString( awos.getColumnIndex( Airports.ASSOC_CITY ) );
+            String state = awos.getString( awos.getColumnIndex( Airports.ASSOC_STATE ) );
+            tv.setText( type+", "+city+", "+state );
+            String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+            if ( phone != null && phone.length() > 0 ) {
+                tv = (TextView) root.findViewById( R.id.wx_station_phone );
+                tv.setText( phone );
+                UiUtils.makeClickToCall( getActivity(), tv );
+                tv.setVisibility( View.VISIBLE );
+            }
+            String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
+            if ( freq != null && freq.length() > 0 ) {
+                tv = (TextView) root.findViewById( R.id.wx_station_freq );
+                tv.setText( freq );
+                tv.setVisibility( View.VISIBLE );
+            }
+            freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
+            if ( freq != null && freq.length() > 0 ) {
+                tv = (TextView) root.findViewById( R.id.wx_station_freq2 );
+                tv.setText( freq );
+                tv.setVisibility( View.VISIBLE );
+            }
+            int elev = wxs.getInt( wxs.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
+            NumberFormat decimal = NumberFormat.getNumberInstance();
+            tv = (TextView) root.findViewById( R.id.wx_station_info2 );
+            tv.setText( String.format( "Located at %s' MSL elevation",
+                    decimal.format( DataUtils.metersToFeet( elev ) ) ) );
+        } else {
+            tv.setText( "ASOS/AWOS" );
+        }
+        CheckBox cb = (CheckBox) root.findViewById( R.id.airport_star );
+        cb.setChecked( getDbManager().isFavoriteWx( icaoCode ) );
+        cb.setTag( icaoCode );
+        cb.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                CheckBox cb = (CheckBox) v;
+                String icaoCode = (String) cb.getTag();
+                if ( cb.isChecked() ) {
+                    getDbManager().addToFavoriteWx( icaoCode );
+                    Toast.makeText( getActivity(), "Added to favorites list",
+                            Toast.LENGTH_SHORT ).show();
+                } else {
+                    getDbManager().removeFromFavoriteWx( icaoCode );
+                    Toast.makeText( getActivity(), "Removed from favorites list",
+                            Toast.LENGTH_SHORT ).show();
+                }
+            }
+
+        } );
     }
 
     protected View addRow( LinearLayout layout, String value ) {

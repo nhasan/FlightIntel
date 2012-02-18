@@ -48,7 +48,6 @@ import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
-import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
@@ -157,7 +156,7 @@ public class MetarFragment extends FragmentBase {
             mLocation.setLongitude( lon );
 
             // Show the weather station info
-            getActivityBase().showWxTitle( result );
+            showWxTitle( result );
 
             // Now request the weather
             requestMetar( false );
