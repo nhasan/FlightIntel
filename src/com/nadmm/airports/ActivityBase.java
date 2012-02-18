@@ -396,13 +396,17 @@ public class ActivityBase extends FragmentActivity {
                 tv.setText( freq );
                 tv.setVisibility( View.VISIBLE );
             }
-
             freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
             if ( freq != null && freq.length() > 0 ) {
                 tv = (TextView) findViewById( R.id.wx_station_freq2 );
                 tv.setText( freq );
                 tv.setVisibility( View.VISIBLE );
             }
+            int elev = wxs.getInt( wxs.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
+            NumberFormat decimal = NumberFormat.getNumberInstance();
+            tv = (TextView) findViewById( R.id.wx_station_info2 );
+            tv.setText( String.format( "Located at %s' MSL elevation",
+                    decimal.format( DataUtils.feetToMeters( elev ) ) ) );
         } else {
             tv.setText( "ASOS/AWOS" );
         }
