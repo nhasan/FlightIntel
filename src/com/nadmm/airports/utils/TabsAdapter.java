@@ -76,10 +76,10 @@ public class TabsAdapter extends FragmentPagerAdapter implements
     @Override
     public Fragment getItem( int position ) {
         TabInfo info = mTabs.get( position );
-        if ( info.getFragment() == null ) {
+        if ( info.fragment == null ) {
             info.fragment = Fragment.instantiate( mContext, info.clss.getName(), info.args );
         }
-        return info.getFragment();
+        return info.fragment;
     }
 
     @Override
