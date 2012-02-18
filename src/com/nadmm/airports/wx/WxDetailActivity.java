@@ -20,10 +20,7 @@
 package com.nadmm.airports.wx;
 
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 
@@ -34,27 +31,13 @@ import com.viewpagerindicator.TabPageIndicator;
 
 public class WxDetailActivity extends ActivityBase {
 
-    private BroadcastReceiver mReceiver;
     TabsAdapter mTabsAdapter;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         setContentView( R.layout.fragment_view_pager_layout );
 
-        mReceiver = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                if ( intent.getAction().equals( NoaaService.ACTION_GET_METAR ) ) {
-                    MetarFragment metar = (MetarFragment) mTabsAdapter.getItem( 0 );
-                    metar.onReceiveResult( intent );
-                }
-            }
-
-        };
-
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
-
         mTabsAdapter = new TabsAdapter( this, pager );
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
@@ -76,20 +59,6 @@ public class WxDetailActivity extends ActivityBase {
         super.onSaveInstanceState( outState );
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
         outState.putInt( "wxtab", pager.getCurrentItem() );
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction( NoaaService.ACTION_GET_METAR );
-        registerReceiver( mReceiver, filter );
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        unregisterReceiver( mReceiver );
     }
 
 }
