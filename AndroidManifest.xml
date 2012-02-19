@@ -109,5 +109,6 @@
 		          android:syncable="false" />
 
 		<service android:name=".wx.MetarService" />
-	</application>
+        <service android:name=".wx.TafService" />
+        	</application>
 </manifest>
