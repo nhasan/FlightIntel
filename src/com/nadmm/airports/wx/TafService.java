@@ -24,10 +24,10 @@ import java.net.URI;
 
 import org.apache.http.client.utils.URIUtils;
 
+import android.content.Intent;
+
 import com.nadmm.airports.AirportsMain;
 import com.nadmm.airports.utils.UiUtils;
-
-import android.content.Intent;
 
 public class TafService extends NoaaService {
 
@@ -39,8 +39,8 @@ public class TafService extends NoaaService {
 
     protected TafParser mParser;
 
-    public TafService( String name ) {
-        super( name );
+    public TafService() {
+        super( "TafService" );
         mParser = new TafParser();
     }
 
@@ -57,7 +57,7 @@ public class TafService extends NoaaService {
 
     @Override
     protected void onHandleIntent( Intent intent ) {
-        if ( intent.getAction().equals( ACTION_GET_TAF ) ) {
+        if ( !intent.getAction().equals( ACTION_GET_TAF ) ) {
             return;
         }
 
