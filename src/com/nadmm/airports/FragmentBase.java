@@ -178,7 +178,7 @@ public class FragmentBase extends Fragment {
     }
 
     protected View findViewById( int id ) {
-        return mActivity.findViewById( id );
+        return getView().findViewById( id );
     }
 
     protected View inflate( int id ) {
