@@ -1049,7 +1049,7 @@ public abstract class WxSymbol implements Serializable, Cloneable {
 
             @Override
             protected String getDescription() {
-                return "fair weather";
+                return "No significant weather";
             }
         };
     }
