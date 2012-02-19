@@ -153,32 +153,9 @@ public final class Metar implements Serializable {
         fropa = false;
     }
 
-    public void computeFlightCategory() {
-        int ceiling = 12000;
-        for ( SkyCondition sky : skyConditions ) {
-            // Ceiling is defined as the lowest layer aloft reported as broken or overcast;
-            // or the vertical visibility into an indefinite ceiling
-            if ( sky.name().equals( "BKN" ) 
-                    || sky.name().equals( "OVC" ) 
-                    || sky.name().equals( "OVX" ) ) {
-                ceiling =sky.getCloudBase();
-                break;
-            }
-        }
-        if ( ceiling < 500 || visibilitySM < 1.0 ) {
-            flightCategory = "LIFR";
-        } else if ( ceiling < 1000 || visibilitySM < 3.0 ) {
-            flightCategory = "IFR";
-        } else if ( ceiling <= 3000 || visibilitySM <= 5.0 ) {
-            flightCategory = "MVFR";
-        } else {
-            flightCategory = "VFR";
-        }
-    }
-
     public void setMissingFields() {
         if ( flightCategory == null ) {
-            computeFlightCategory();
+            flightCategory = WxUtils.computeFlightCategory( skyConditions, visibilitySM );
         }
         if ( vertVisibilityFeet < Integer.MAX_VALUE ) {
             // Check to see if we have an OVX layer, if not add it
@@ -192,6 +169,9 @@ public final class Metar implements Serializable {
             if ( !found ) {
                 skyConditions.add( SkyCondition.create( "OVX", 0 ) );
             }
+        }
+        if ( wxList.isEmpty() ) {
+            wxList.add( WxSymbol.get( "NSW", "" ) );
         }
         if ( skyConditions.isEmpty() ) {
             // Sky condition is not available in the METAR
