@@ -25,6 +25,7 @@ import java.net.URI;
 import org.apache.http.client.utils.URIUtils;
 
 import android.content.Intent;
+import android.text.format.DateUtils;
 
 import com.nadmm.airports.AirportsMain;
 import com.nadmm.airports.utils.UiUtils;
@@ -35,7 +36,7 @@ public class TafService extends NoaaService {
             +"&format=xml&compression=gzip&hoursBeforeNow=6&mostRecent=true&stationString=";
     private final File TAF_DIR = new File(
             AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/taf" );
-    private final int TAF_CACHE_MAX_AGE = 3*60*MSECS_PER_MINUTE;
+    private final long TAF_CACHE_MAX_AGE = 3*DateUtils.HOUR_IN_MILLIS;
 
     protected TafParser mParser;
 
