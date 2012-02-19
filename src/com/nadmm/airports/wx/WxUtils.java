@@ -19,6 +19,8 @@
 
 package com.nadmm.airports.wx;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -215,6 +217,33 @@ public class WxUtils {
 
     static public long getCrossWindComponent( long ws, long wd, long rd ) {
         return Math.round( ws*Math.sin( Math.toRadians( wd-rd ) ) );
+    }
+
+    static public String computeFlightCategory( ArrayList<SkyCondition> skyConditions,
+            float visibilitySM ) {
+        String flightCategory = "";
+        int ceiling = 12000;
+        for ( SkyCondition sky : skyConditions ) {
+            // Ceiling is defined as the lowest layer aloft reported as broken or overcast;
+            // or the vertical visibility into an indefinite ceiling
+            if ( sky.name().equals( "BKN" ) 
+                    || sky.name().equals( "OVC" ) 
+                    || sky.name().equals( "OVX" ) ) {
+                ceiling =sky.getCloudBase();
+                break;
+            }
+        }
+        if ( ceiling < 500 || visibilitySM < 1.0 ) {
+            flightCategory = "LIFR";
+        } else if ( ceiling < 1000 || visibilitySM < 3.0 ) {
+            flightCategory = "IFR";
+        } else if ( ceiling <= 3000 || visibilitySM <= 5.0 ) {
+            flightCategory = "MVFR";
+        } else {
+            flightCategory = "VFR";
+        }
+
+        return flightCategory;
     }
 
 }
