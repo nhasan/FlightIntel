@@ -221,14 +221,14 @@ public class FssCommActivity extends ActivityBase {
                 float bearing  = com.getFloat( com.getColumnIndex( BEARING ) );
                 float distance  = com.getFloat( com.getColumnIndex( DISTANCE ) );
 
-                LinearLayout item = (LinearLayout) inflate( R.layout.fss_detail_item );
-                TextView tv = (TextView) item.findViewById( R.id.fss_comm_name );
+                LinearLayout item = (LinearLayout) inflate( R.layout.grouped_detail_item );
+                TextView tv = (TextView) item.findViewById( R.id.group_name );
                 if ( navId.length() > 0 ) {
                     tv.setText( navId+" - "+navName+" "+navType );
                 } else {
                     tv.setText( outletId+" - "+outletCall+" outlet" );
                 }
-                LinearLayout layout = (LinearLayout) item.findViewById( R.id.fss_comm_details );
+                LinearLayout layout = (LinearLayout) item.findViewById( R.id.group_details );
                 addRow( layout, "Call", fssName+" Radio" );
                 if ( navId.length() > 0 ) {
                     addSeparator( layout );
