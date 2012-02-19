@@ -94,7 +94,6 @@
     <string name="pressure">Pressure</string>
     <string name="precipitation">Precipitation</string>
     <string name="flight_category">Flight Category</string>
-    <string name="metar_error">Unable to get METAR for this station</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>
