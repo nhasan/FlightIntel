@@ -164,6 +164,16 @@ public class MetarFragment extends FragmentBase {
 
     }
 
+    protected void requestMetar( boolean refresh ) {
+        Bundle args = getArguments();
+        String stationId = args.getString( NoaaService.STATION_ID );
+        Intent service = new Intent( getActivity(), MetarService.class );
+        service.setAction( NoaaService.ACTION_GET_METAR );
+        service.putExtra( NoaaService.STATION_ID, stationId );
+        service.putExtra( NoaaService.FORCE_REFRESH, refresh );
+        getActivity().startService( service );
+    }
+
     public void onReceiveResult( Intent intent ) {
         showMetar( intent );
     }
@@ -183,7 +193,7 @@ public class MetarFragment extends FragmentBase {
         if ( !metar.isValid ) {
             tv.setVisibility( View.VISIBLE );
             layout.setVisibility( View.VISIBLE );
-            tv.setText( R.string.metar_error );
+            tv.setText( "Unable to get METAR for this location." );
             addRow( layout, "This could be due to the following reasons:" );
             addBulletedRow( layout, "Network connection is not available" );
             addBulletedRow( layout, "ADDS does not publish METAR for this station" );
@@ -528,16 +538,6 @@ public class MetarFragment extends FragmentBase {
         View row = addRow( layout, wx.toString() );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         WxUtils.showColorizedDrawable( tv, flightCategory, wx.getDrawable() );
-    }
-
-    protected void requestMetar( boolean refresh ) {
-        Bundle args = getArguments();
-        String stationId = args.getString( NoaaService.STATION_ID );
-        Intent service = new Intent( getActivity(), MetarService.class );
-        service.setAction( NoaaService.ACTION_GET_METAR );
-        service.putExtra( NoaaService.STATION_ID, stationId );
-        service.putExtra( NoaaService.FORCE_REFRESH, refresh );
-        getActivity().startService( service );
     }
 
     @Override
