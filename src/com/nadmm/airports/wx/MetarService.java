@@ -25,6 +25,7 @@ import java.net.URI;
 import org.apache.http.client.utils.URIUtils;
 
 import android.content.Intent;
+import android.text.format.DateUtils;
 
 import com.nadmm.airports.AirportsMain;
 import com.nadmm.airports.utils.UiUtils;
@@ -35,7 +36,7 @@ public class MetarService extends NoaaService {
     		+"&format=xml&compression=gzip&hoursBeforeNow=3&mostRecent=true&stationString=";
     private final File METAR_DIR = new File(
             AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/metar" );
-    private final int METAR_CACHE_MAX_AGE = 30*MSECS_PER_MINUTE;
+    private final long METAR_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
     protected MetarParser mParser;
 

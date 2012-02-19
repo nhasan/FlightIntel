@@ -40,7 +40,6 @@ public abstract class NoaaService extends IntentService {
 
     protected final String NOAA_HOST = "weather.aero";
     protected final String DATASERVER_PATH = "/dataserver1_4/httpparam";
-    protected static final int MSECS_PER_MINUTE = 60*1000;
     public static final String STATION_ID = "STATION_ID";
     public static final String CACHE_ONLY = "CACHE_ONLY";
     public static final String FORCE_REFRESH = "FORCE_REFRESH";
