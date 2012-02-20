@@ -161,6 +161,19 @@ public abstract class SkyCondition implements Serializable {
                     return R.drawable.skm;
                 }
             };
+        } else if ( name.equalsIgnoreCase( "NSC" ) ) {
+            sky = new SkyCondition( name, 0 ) {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public String toString() {
+                    return String.format( "No significant clouds" );
+                }
+
+                public int getDrawable() {
+                    return R.drawable.skm;
+                }
+            };
         }
 
         return sky;
