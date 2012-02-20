@@ -20,20 +20,16 @@
 package com.nadmm.airports.utils;
 
 import java.util.Date;
-import java.util.Formatter;
 
 import android.content.Context;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
-import android.text.format.Time;
 
 public class TimeUtils {
     
     private static final int SECONDS_PER_MINUTE = 60;
     private static final int SECONDS_PER_HOUR = 60 * 60;
     private static final int SECONDS_PER_DAY = 24 * 60 * 60;
-
-    private static final Formatter sFormatter = new Formatter();
 
     public static CharSequence formatLongDateTime( long time ) {
         return DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( time ) );
