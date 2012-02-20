@@ -20,7 +20,7 @@
  */
  -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners android:radius="4dp" />
-    <stroke android:width="1dp" android:color="#ffdcdcd8" />
-    <solid android:color="#ffe8e8e0" />
+    <corners android:radius="3dp" />
+    <stroke android:width="1dp" android:color="#ffdcdccc" />
+    <solid android:color="#ffe8e8d8" />
 </shape>
