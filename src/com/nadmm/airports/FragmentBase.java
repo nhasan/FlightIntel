@@ -73,6 +73,9 @@ public class FragmentBase extends Fragment {
         Cursor awos = cursors[ 1 ];
 
         View root = getView();
+        if ( root == null ) {
+            return;
+        }
 
         TextView tv = (TextView) root.findViewById( R.id.wx_station_name );
         String icaoCode = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
