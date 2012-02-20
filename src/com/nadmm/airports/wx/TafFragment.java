@@ -46,7 +46,6 @@ import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
-import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.wx.Taf.Forecast;
@@ -302,6 +301,7 @@ public class TafFragment extends FragmentBase {
         decimal.setMinimumFractionDigits( 0 );
 
         layout = (LinearLayout) findViewById( R.id.taf_summary_layout );
+        layout.removeAllViews();
         String fcstType;
         if ( taf.rawText.startsWith( "TAF AMD " ) ) {
             fcstType = "Amendment";
@@ -425,7 +425,7 @@ public class TafFragment extends FragmentBase {
             }
 
             for ( TurbulenceCondition turbulence : forecast.turbulenceConditions ) {
-                String value = DataUtils.decodeTurbulenceIntensity( turbulence.intensity );
+                String value = WxUtils.decodeTurbulenceIntensity( turbulence.intensity );
                 String height;
                 if ( turbulence.minAltitudeFeetAGL < Integer.MAX_VALUE
                         && turbulence.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
@@ -440,7 +440,7 @@ public class TafFragment extends FragmentBase {
                 }
 
                 if ( turbulence.intensity > 0 ) {
-                    String frequency = DataUtils.decodeTurbulenceFrequency( turbulence.intensity );
+                    String frequency = WxUtils.decodeTurbulenceFrequency( turbulence.intensity );
                     if ( frequency.length() > 0 ) {
                         height = frequency+", "+height;
                     }
@@ -453,7 +453,7 @@ public class TafFragment extends FragmentBase {
             }
 
             for ( IcingCondition icing : forecast.icingConditions ) {
-                String value = DataUtils.decodeIcingIntensity( icing.intensity );
+                String value = WxUtils.decodeIcingIntensity( icing.intensity );
                 String height;
                 if ( icing.minAltitudeFeetAGL < Integer.MAX_VALUE
                         && icing.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
