@@ -303,9 +303,9 @@ public class TafFragment extends FragmentBase {
 
         layout = (LinearLayout) findViewById( R.id.taf_summary_layout );
         String fcstType;
-        if ( taf.rawText.contains( " AMD " ) ) {
+        if ( taf.rawText.startsWith( "TAF AMD " ) ) {
             fcstType = "Amendment";
-        } else if ( taf.rawText.contains( " COR " ) ) {
+        } else if ( taf.rawText.startsWith( "TAF COR " ) ) {
             fcstType = "Correction";
         } else {
             fcstType = "Normal";
@@ -317,7 +317,7 @@ public class TafFragment extends FragmentBase {
         addRow( layout, "Valid from", TimeUtils.formatDateUTC( getActivity(), taf.validTimeFrom ) );
         addSeparator( layout );
         addRow( layout, "Valid to", TimeUtils.formatDateUTC( getActivity(), taf.validTimeTo ) );
-        if ( taf.remarks != null && taf.remarks.length() > 0 ) {
+        if ( taf.remarks != null && taf.remarks.length() > 0 && !taf.remarks.equals( "AMD" ) ) {
             addSeparator( layout );
             addRow( layout, "\u2022 "+taf.remarks );
         }
@@ -341,6 +341,15 @@ public class TafFragment extends FragmentBase {
 
             if ( forecast.probability < Integer.MAX_VALUE ) {
                 addRow( fcst_layout, "Probability", String.format( "%d%%", forecast.probability ) );
+            }
+
+            if ( forecast.changeIndicator != null
+                    && forecast.changeIndicator.equals( "BECMG" ) ) {
+                if ( fcst_layout.getChildCount() > 0 ) {
+                    addSeparator( fcst_layout );
+                }
+                addRow( fcst_layout, "Becoming at",
+                        TimeUtils.formatDateUTC( getActivity(), forecast.timeBecoming ) );
             }
 
             if ( forecast.windSpeedKnots < Integer.MAX_VALUE ) {
@@ -417,20 +426,26 @@ public class TafFragment extends FragmentBase {
 
             for ( TurbulenceCondition turbulence : forecast.turbulenceConditions ) {
                 String value = DataUtils.decodeTurbulenceIntensity( turbulence.intensity );
-                String frequency = DataUtils.decodeTurbulenceFrequency( turbulence.intensity );
                 String height;
                 if ( turbulence.minAltitudeFeetAGL < Integer.MAX_VALUE
                         && turbulence.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
                     height = String.format( "%s to %s ft AGL",
                             decimal.format( turbulence.minAltitudeFeetAGL ),
                             decimal.format( turbulence.maxAltitudeFeetAGL ) );
-                } else {
+                } else if ( turbulence.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
                     height = String.format( "Surface to %s ft AGL",
                             decimal.format( turbulence.maxAltitudeFeetAGL ) );
+                } else {
+                    height = "";
                 }
-                if ( frequency.length() > 0 ) {
-                    height = frequency+", "+height;
+
+                if ( turbulence.intensity > 0 ) {
+                    String frequency = DataUtils.decodeTurbulenceFrequency( turbulence.intensity );
+                    if ( frequency.length() > 0 ) {
+                        height = frequency+", "+height;
+                    }
                 }
+
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }
@@ -445,10 +460,13 @@ public class TafFragment extends FragmentBase {
                     height = String.format( "Between %s to %s ft AGL",
                             decimal.format( icing.minAltitudeFeetAGL ),
                             decimal.format( icing.maxAltitudeFeetAGL ) );
-                } else {
+                } else if ( icing.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
                     height = String.format( "Surface to %s ft AGL",
                             decimal.format( icing.maxAltitudeFeetAGL ) );
+                } else {
+                    height = "";
                 }
+
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }

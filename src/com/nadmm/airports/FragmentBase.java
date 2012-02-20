@@ -81,8 +81,8 @@ public class FragmentBase extends Fragment {
         String icaoCode = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
         String stationName = wxs.getString( wxs.getColumnIndex( Wxs.STATION_NAME ) );
         tv.setText( icaoCode+" - "+ stationName );
-        tv = (TextView) root.findViewById( R.id.wx_station_info );
         if ( awos.moveToFirst() ) {
+            tv = (TextView) root.findViewById( R.id.wx_station_info );
             String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
             if ( type == null || type.length() == 0 ) {
                 type = "ASOS/AWOS";
@@ -90,6 +90,7 @@ public class FragmentBase extends Fragment {
             String city = awos.getString( awos.getColumnIndex( Airports.ASSOC_CITY ) );
             String state = awos.getString( awos.getColumnIndex( Airports.ASSOC_STATE ) );
             tv.setText( type+", "+city+", "+state );
+
             String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
             if ( phone != null && phone.length() > 0 ) {
                 tv = (TextView) root.findViewById( R.id.wx_station_phone );
@@ -97,26 +98,30 @@ public class FragmentBase extends Fragment {
                 UiUtils.makeClickToCall( getActivity(), tv );
                 tv.setVisibility( View.VISIBLE );
             }
+
             String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
             if ( freq != null && freq.length() > 0 ) {
                 tv = (TextView) root.findViewById( R.id.wx_station_freq );
                 tv.setText( freq );
                 tv.setVisibility( View.VISIBLE );
             }
+
             freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
             if ( freq != null && freq.length() > 0 ) {
                 tv = (TextView) root.findViewById( R.id.wx_station_freq2 );
                 tv.setText( freq );
                 tv.setVisibility( View.VISIBLE );
             }
-            int elev = wxs.getInt( wxs.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
-            NumberFormat decimal = NumberFormat.getNumberInstance();
-            tv = (TextView) root.findViewById( R.id.wx_station_info2 );
-            tv.setText( String.format( "Located at %s' MSL elevation",
-                    decimal.format( DataUtils.metersToFeet( elev ) ) ) );
         } else {
+            tv = (TextView) root.findViewById( R.id.wx_station_info );
             tv.setText( "ASOS/AWOS" );
         }
+        int elev = wxs.getInt( wxs.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
+        NumberFormat decimal = NumberFormat.getNumberInstance();
+        tv = (TextView) root.findViewById( R.id.wx_station_info2 );
+        tv.setText( String.format( "Located at %s' MSL elevation",
+                decimal.format( DataUtils.metersToFeet( elev ) ) ) );
+
         CheckBox cb = (CheckBox) root.findViewById( R.id.airport_star );
         cb.setChecked( getDbManager().isFavoriteWx( icaoCode ) );
         cb.setTag( icaoCode );

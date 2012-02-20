@@ -181,6 +181,13 @@ public class TafParser {
                     forecast.timeTo = time.toMillis( true );
                 } catch ( TimeFormatException e ) {
                 }
+            } else if ( qName.equalsIgnoreCase( "time_becoming" ) ) {
+                try {
+                    Time time = new Time();
+                    time.parse3339( text.toString() );
+                    forecast.timeBecoming = time.toMillis( true );
+                } catch ( TimeFormatException e ) {
+                }
             } else if ( qName.equalsIgnoreCase( "change_indicator" ) ) {
                 forecast.changeIndicator = text.toString();
             } else if ( qName.equalsIgnoreCase( "probability" ) ) {
