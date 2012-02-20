@@ -223,6 +223,8 @@ public class TafFragment extends FragmentBase {
                 tv.setVisibility( View.VISIBLE );
                 tv.setText( String.format( "No wx station with TAF was found near %s"
                         +" within %dNM radius", stationId, TAF_RADIUS ) );
+                View title = findViewById( R.id.wx_title_layout );
+                title.setVisibility( View.GONE );
                 stopRefreshAnimation();
                 setContentShown( true );
                 return;
@@ -317,7 +319,7 @@ public class TafFragment extends FragmentBase {
         addRow( layout, "Valid to", TimeUtils.formatDateUTC( getActivity(), taf.validTimeTo ) );
         if ( taf.remarks != null && taf.remarks.length() > 0 ) {
             addSeparator( layout );
-            addRow( layout, taf.remarks );
+            addRow( layout, "\u2022 "+taf.remarks );
         }
 
         LinearLayout fcst_top_layout = (LinearLayout) findViewById( R.id.taf_forecasts_layout );
@@ -363,8 +365,16 @@ public class TafFragment extends FragmentBase {
             }
 
             if ( forecast.visibilitySM < Float.MAX_VALUE ) {
-                String value = forecast.visibilitySM > 6? "6SM or more"
-                        : decimal.format( forecast.visibilitySM )+"SM";
+                String value = forecast.visibilitySM > 6? "6 or more statute miles"
+                        : decimal.format( forecast.visibilitySM )+" statues miles";
+                if ( fcst_layout.getChildCount() > 0 ) {
+                    addSeparator( fcst_layout );
+                }
+                addRow( fcst_layout, "Visibility", value );
+            }
+
+            if ( forecast.vertVisibilityFeet < Integer.MAX_VALUE ) {
+                String value = decimal.format( forecast.vertVisibilityFeet )+" ft AGL vertical";
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }
@@ -388,7 +398,7 @@ public class TafFragment extends FragmentBase {
             if ( forecast.windShearSpeedKnots < Integer.MAX_VALUE ) {
                 String shear = String.format( "%s (%03d\u00B0 true) at %d knots",
                         GeoUtils.getCardinalDirection( forecast.windShearDirDegrees ),
-                        forecast.windShearDirDegrees );
+                        forecast.windShearDirDegrees, forecast.windShearSpeedKnots );
                 String height = String.format( "%s ft AGL",
                         decimal.format( forecast.windShearHeightFeetAGL ) );
                 if ( fcst_layout.getChildCount() > 0 ) {

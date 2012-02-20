@@ -201,7 +201,7 @@ public class TafParser {
                 forecast.visibilitySM = Float.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "altim_in_hg" ) ) {
                 forecast.altimeterHg = Float.valueOf( text.toString() );
-            } else if ( qName.equalsIgnoreCase( "virt_vis_ft" ) ) {
+            } else if ( qName.equalsIgnoreCase( "vert_vis_ft" ) ) {
                 forecast.vertVisibilityFeet = Integer.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "valid_time" ) ) {
                 try {
