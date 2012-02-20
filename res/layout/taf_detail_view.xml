@@ -67,8 +67,14 @@
                     android:paddingRight="12dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
+            <LinearLayout android:id="@+id/taf_summary_layout"
+                    android:orientation="vertical"
+                    android:background="@drawable/rounded_rectangle"
+                    android:layout_marginTop="16dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
             <LinearLayout android:id="@+id/taf_forecasts_layout"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="6dp"
                     android:orientation="vertical"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
