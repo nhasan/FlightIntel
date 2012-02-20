@@ -219,9 +219,7 @@ public class WxUtils {
         return Math.round( ws*Math.sin( Math.toRadians( wd-rd ) ) );
     }
 
-    static public String computeFlightCategory( ArrayList<SkyCondition> skyConditions,
-            float visibilitySM ) {
-        String flightCategory = "";
+    static public int getCeiling( ArrayList<SkyCondition> skyConditions ) {
         int ceiling = 12000;
         for ( SkyCondition sky : skyConditions ) {
             // Ceiling is defined as the lowest layer aloft reported as broken or overcast;
@@ -229,10 +227,17 @@ public class WxUtils {
             if ( sky.name().equals( "BKN" ) 
                     || sky.name().equals( "OVC" ) 
                     || sky.name().equals( "OVX" ) ) {
-                ceiling =sky.getCloudBase();
+                ceiling = sky.getCloudBase();
                 break;
             }
         }
+        return ceiling;
+    }
+
+    static public String computeFlightCategory( ArrayList<SkyCondition> skyConditions,
+            float visibilitySM ) {
+        String flightCategory = "";
+        int ceiling = getCeiling( skyConditions );
         if ( ceiling < 500 || visibilitySM < 1.0 ) {
             flightCategory = "LIFR";
         } else if ( ceiling < 1000 || visibilitySM < 3.0 ) {
