@@ -1,3 +1,8 @@
+v2.5.0 (2/20/2012)
+==================
+* Added TAF display. Shows TAF from nearest station within 25NM redius if not on-site.
+* Lots of fixes and small improvements.
+
 v2.4.0 (2/10/2012)
 ==================
 * Show ATC phone numbers
