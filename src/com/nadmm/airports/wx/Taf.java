@@ -124,6 +124,7 @@ public class Taf implements Serializable  {
     public long validTimeFrom;
     public long validTimeTo;
     public float stationElevationMeters;
+    public String remarks;
     public ArrayList<Forecast> forecasts;
 
     public Taf() {
