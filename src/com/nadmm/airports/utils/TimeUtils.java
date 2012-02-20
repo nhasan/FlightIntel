@@ -50,30 +50,19 @@ public class TimeUtils {
     }
 
     public static String formatDateUTC( Context context, long millis ) {
-        StringBuilder sb = (StringBuilder) sFormatter.out();
-        sb.setLength( 0 );
-        DateUtils.formatDateRange( context, sFormatter, millis, millis,
-                DateUtils.FORMAT_24HOUR
-                | DateUtils.FORMAT_SHOW_DATE
-                | DateUtils.FORMAT_SHOW_TIME
-                | DateUtils.FORMAT_NO_YEAR
-                | DateUtils.FORMAT_ABBREV_ALL,
-                Time.TIMEZONE_UTC );
-        return sb.toString()+" UTC";
+        return formatDateRangeUTC( context, millis, millis );
     }
 
     public static String formatDateRangeUTC( Context context,
             long startMillis, long endMillis ) {
-        StringBuilder sb = (StringBuilder) sFormatter.out();
-        sb.setLength( 0 );
-        DateUtils.formatDateRange( context, sFormatter, startMillis, endMillis,
+        String s = DateUtils.formatDateRange( context, startMillis, endMillis,
                 DateUtils.FORMAT_24HOUR
                 | DateUtils.FORMAT_SHOW_DATE
                 | DateUtils.FORMAT_SHOW_TIME
                 | DateUtils.FORMAT_NO_YEAR
-                | DateUtils.FORMAT_ABBREV_ALL,
-                Time.TIMEZONE_UTC );
-        return sb.toString()+" UTC";
+                | DateUtils.FORMAT_ABBREV_ALL
+                | DateUtils.FORMAT_UTC );
+        return s+" UTC";
     }
 
     public static String formatDuration( long duration ) {
