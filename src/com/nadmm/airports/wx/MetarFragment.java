@@ -278,17 +278,13 @@ public class MetarFragment extends FragmentBase {
         // Weather
         layout = (LinearLayout) findViewById( R.id.wx_weather_layout );
         layout.removeAllViews();
-        if ( metar.wxList != null && !metar.wxList.isEmpty() ) {
-            int row = 0;
-            for ( WxSymbol wx : metar.wxList ) {
-                if ( row > 0 ) {
-                    addSeparator( layout );
-                }
-                addWeatherRow( layout, wx, metar.flightCategory );
-                ++row;
+        int row = 0;
+        for ( WxSymbol wx : metar.wxList ) {
+            if ( row > 0 ) {
+                addSeparator( layout );
             }
-        } else {
-            addRow( layout, "No significant weather observed at this time" );
+            addWeatherRow( layout, wx, metar.flightCategory );
+            ++row;
         }
 
         // Sky Conditions
@@ -414,7 +410,7 @@ public class MetarFragment extends FragmentBase {
         tv = (TextView) findViewById( R.id.wx_precip_label );
         layout = (LinearLayout) findViewById( R.id.wx_precip_layout );
         layout.removeAllViews();
-        int row = 0;
+        row = 0;
         if ( metar.precipInches < Float.MAX_VALUE ) {
             if ( row > 0 ) {
                 addSeparator( layout );
@@ -536,8 +532,10 @@ public class MetarFragment extends FragmentBase {
 
     protected void addWeatherRow( LinearLayout layout, WxSymbol wx, String flightCategory ) {
         View row = addRow( layout, wx.toString() );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
-        WxUtils.showColorizedDrawable( tv, flightCategory, wx.getDrawable() );
+        if ( wx.getDrawable() != 0 ) {
+            TextView tv = (TextView) row.findViewById( R.id.item_label );
+            WxUtils.showColorizedDrawable( tv, flightCategory, wx.getDrawable() );
+        }
     }
 
     @Override
