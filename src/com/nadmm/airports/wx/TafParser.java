@@ -32,19 +32,20 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import android.text.format.Time;
+import android.util.Log;
 import android.util.TimeFormatException;
 
 public class TafParser {
 
     public void parse( File xml, Taf taf ) {
         try {
+            taf.fetchTime = xml.lastModified();
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
             XMLReader xmlReader = parser.getXMLReader();
             TafHandler handler = new TafHandler( taf );
             xmlReader.setContentHandler( handler );
             InputSource input = new InputSource( new FileReader( xml ) );
-
             xmlReader.parse( input );
         } catch ( Exception e ) {
         }
@@ -70,7 +71,8 @@ public class TafParser {
         @Override
         public void startElement( String uri, String localName, String qName,
                 Attributes attributes ) throws SAXException {
-            if ( qName.equalsIgnoreCase( "metar" ) ) {
+            Log.d( qName, "startElement()" );
+            if ( qName.equalsIgnoreCase( "taf" ) ) {
             } else if ( qName.equals( "forecast" ) ) {
                 forecast = new Taf.Forecast();
             } else if ( qName.equals( "temperature" ) ) {
@@ -114,13 +116,14 @@ public class TafParser {
                 }
                 forecast.icingConditions.add( icing );
             } else {
-                text.delete( 0, text.length() );
+                text.setLength( 0 );
             }
         }
 
         @Override
         public void endElement( String uri, String localName, String qName )
                 throws SAXException {
+            Log.d( qName, "endElement()" );
             if ( qName.equalsIgnoreCase( "raw_text" ) ) {
                 taf.rawText = text.toString();
             } else if ( qName.equalsIgnoreCase( "issue_time" ) ) {
@@ -153,28 +156,35 @@ public class TafParser {
                 }
             } else if ( qName.equalsIgnoreCase( "elevation_m" ) ) {
                 taf.stationElevationMeters = Float.valueOf( text.toString() );
+            } else if ( qName.equalsIgnoreCase( "remarks" ) ) {
+                taf.remarks = text.toString();
             } else if ( qName.equalsIgnoreCase( "forecast" ) ) {
+                if ( forecast.wxList.isEmpty() ) {
+                    forecast.wxList.add( WxSymbol.get( "NSW", "" ) );
+                }
                 taf.forecasts.add( forecast );
             } else if ( qName.equalsIgnoreCase( "temperature" ) ) {
                 forecast.temperatures.add( temperature );
             } else if ( qName.equalsIgnoreCase( "wx_string" ) ) {
                 WxSymbol.parseWxSymbols( forecast.wxList, text.toString() );
-            } else if ( qName.equalsIgnoreCase( "forecast_time_from" ) ) {
+            } else if ( qName.equalsIgnoreCase( "fcst_time_from" ) ) {
                 try {
                     Time time = new Time();
                     time.parse3339( text.toString() );
-                    taf.validTimeTo = time.toMillis( true );
+                    forecast.timeFrom = time.toMillis( true );
                 } catch ( TimeFormatException e ) {
                 }
-            } else if ( qName.equalsIgnoreCase( "forecast_time_to" ) ) {
+            } else if ( qName.equalsIgnoreCase( "fcst_time_to" ) ) {
                 try {
                     Time time = new Time();
                     time.parse3339( text.toString() );
-                    taf.validTimeTo = time.toMillis( true );
+                    forecast.timeTo = time.toMillis( true );
                 } catch ( TimeFormatException e ) {
                 }
             } else if ( qName.equalsIgnoreCase( "change_indicator" ) ) {
                 forecast.changeIndicator = text.toString();
+            } else if ( qName.equalsIgnoreCase( "probability" ) ) {
+                forecast.probability = Integer.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "wind_dir_degrees" ) ) {
                 forecast.windDirDegrees = Integer.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "wind_speed_kt" ) ) {
