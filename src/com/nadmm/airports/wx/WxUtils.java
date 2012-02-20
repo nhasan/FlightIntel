@@ -251,4 +251,59 @@ public class WxUtils {
         return flightCategory;
     }
 
+    public static String decodeTurbulenceFrequency( int intensity ) {
+        switch ( intensity ) {
+        case 2:
+        case 4:
+        case 6:
+        case 8:
+            return "Occasional";
+        case 3:
+        case 5:
+        case 7:
+        case 9:
+            return "Frequent";
+        default:
+            return "";
+        }
+    }
+
+    public static String decodeTurbulenceIntensity( int intensity ) {
+        switch ( intensity ) {
+        case 1:
+            return "Light turbulence";
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            return "Moderate turbulence";
+        case 6:
+        case 7:
+        case 8:
+        case 9:
+            return "Severe turbulence";
+        default:
+            return "No turbulence";
+        }
+    }
+
+    public static String decodeIcingIntensity( int icing ) {
+        switch ( icing ) {
+        case 1:
+        case 2:
+        case 3:
+            return "Light icing";
+        case 4:
+        case 5:
+        case 6:
+            return "Moderate icing";
+        case 7:
+        case 8:
+        case 9:
+            return "Severe icing";
+        default:
+            return "No icing";
+        }
+    }
+
 }
