@@ -32,7 +32,6 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import android.text.format.Time;
-import android.util.Log;
 import android.util.TimeFormatException;
 
 public class TafParser {
@@ -71,7 +70,6 @@ public class TafParser {
         @Override
         public void startElement( String uri, String localName, String qName,
                 Attributes attributes ) throws SAXException {
-            Log.d( qName, "startElement()" );
             if ( qName.equalsIgnoreCase( "taf" ) ) {
             } else if ( qName.equals( "forecast" ) ) {
                 forecast = new Taf.Forecast();
@@ -123,7 +121,6 @@ public class TafParser {
         @Override
         public void endElement( String uri, String localName, String qName )
                 throws SAXException {
-            Log.d( qName, "endElement()" );
             if ( qName.equalsIgnoreCase( "raw_text" ) ) {
                 taf.rawText = text.toString();
             } else if ( qName.equalsIgnoreCase( "issue_time" ) ) {
