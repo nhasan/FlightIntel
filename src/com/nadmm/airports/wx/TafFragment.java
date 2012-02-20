@@ -1,0 +1,478 @@
+/*
+ * FlightIntel for Pilots
+ *
+ * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+
+package com.nadmm.airports.wx;
+
+import java.text.NumberFormat;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.location.Location;
+import android.os.Bundle;
+import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.nadmm.airports.DatabaseManager;
+import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.R;
+import com.nadmm.airports.utils.CursorAsyncTask;
+import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.utils.TimeUtils;
+import com.nadmm.airports.wx.Taf.Forecast;
+import com.nadmm.airports.wx.Taf.IcingCondition;
+import com.nadmm.airports.wx.Taf.TurbulenceCondition;
+
+public class TafFragment extends FragmentBase {
+
+    private final int TAF_RADIUS = 25;
+
+    protected Location mLocation;
+    protected CursorAsyncTask mTask;
+    protected BroadcastReceiver mReceiver;
+    protected String mStationId;
+
+    @Override
+    public void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+        setHasOptionsMenu( true );
+
+        mReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive( Context context, Intent intent ) {
+                onReceiveResult( intent );
+            }
+
+        };
+    }
+
+    @Override
+    public void onResume() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction( NoaaService.ACTION_GET_TAF );
+        getActivity().registerReceiver( mReceiver, filter );
+
+        Bundle args = getArguments();
+        String stationId = args.getString( NoaaService.STATION_ID );
+        mTask = new TafDetailTask();
+        mTask.execute( stationId );
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        mTask.cancel( true );
+        getActivity().unregisterReceiver( mReceiver );
+        super.onPause();
+    }
+
+    @Override
+    public View onCreateView( LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState ) {
+        View view = inflater.inflate( R.layout.taf_detail_view, container, false );
+        return createContentView( view );
+    }
+
+    private final class TafDetailTask extends CursorAsyncTask {
+
+        @Override
+        protected Cursor[] doInBackground( String... params ) {
+            String stationId = params[ 0 ];
+
+            Cursor[] cursors = new Cursor[ 2 ];
+            SQLiteDatabase db = getDbManager().getDatabase( DatabaseManager.DB_FADDS );
+
+            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+            builder.setTables( Wxs.TABLE_NAME );
+            String selection = Wxs.STATION_ID+"=?";
+            Cursor c = builder.query( db, new String[] { "*" }, selection,
+                    new String[] { stationId }, null, null, null, null );
+            c.moveToFirst();
+            String siteTypes = c.getString( c.getColumnIndex( Wxs.STATION_SITE_TYPES ) );
+            if ( !siteTypes.contains( "TAF" ) ) {
+                // There is no TAF available at this station, search for the nearest
+                double lat = c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+                double lon = c.getDouble( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+                Location location = new Location( "" );
+                location.setLatitude( lat );
+                location.setLongitude( lon );
+                c.close();
+
+                // Get the bounding box first to do a quick query as a first cut
+                double[] box = GeoUtils.getBoundingBox( location, TAF_RADIUS );
+                double radLatMin = box[ 0 ];
+                double radLatMax = box[ 1 ];
+                double radLonMin = box[ 2 ];
+                double radLonMax = box[ 3 ];
+                // Check if 180th Meridian lies within the bounding Box
+                boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
+
+                selection = "("
+                    +Wxs.STATION_LATITUDE_DEGREES+">=? AND "+Wxs.STATION_LATITUDE_DEGREES+"<=?"
+                    +") AND ("+Wxs.STATION_LONGITUDE_DEGREES+">=? "
+                    +(isCrossingMeridian180? "OR " : "AND ")+Wxs.STATION_LONGITUDE_DEGREES+"<=?)";
+                String[] selectionArgs = {
+                        String.valueOf( Math.toDegrees( radLatMin ) ), 
+                        String.valueOf( Math.toDegrees( radLatMax ) ),
+                        String.valueOf( Math.toDegrees( radLonMin ) ),
+                        String.valueOf( Math.toDegrees( radLonMax ) )
+                        };
+                c = builder.query( db, new String[] { "*" }, selection, selectionArgs,
+                        null, null, null, null );
+                stationId = "";
+                if ( c.moveToFirst() ) {
+                    float distance = Float.MAX_VALUE;
+                    do {
+                        siteTypes = c.getString( c.getColumnIndex( Wxs.STATION_SITE_TYPES ) );
+                        if ( !siteTypes.contains( "TAF" ) ) {
+                            continue;
+                        }
+                        // Get the location of this station
+                        float[] results = new float[ 2 ];
+                        Location.distanceBetween(
+                                location.getLatitude(),
+                                location.getLongitude(), 
+                                c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) ),
+                                c.getDouble( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) ),
+                                results );
+                        results[ 0 ] /= GeoUtils.METERS_PER_NAUTICAL_MILE;
+                        if ( results[ 0 ] <= TAF_RADIUS && results[ 0 ] < distance ) {
+                            stationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
+                            distance = results[ 0 ];
+                        }
+                    } while ( c.moveToNext() );
+                }
+            }
+
+            if ( stationId.length() > 0 ) {
+                // We have the station with TAF
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Wxs.TABLE_NAME );
+                selection = Wxs.STATION_ID+"=?";
+                c = builder.query( db, new String[] { "*" }, selection,
+                        new String[] { stationId }, null, null, null, null );
+                cursors[ 0 ] = c;
+
+                String[] wxColumns = new String[] {
+                        Awos.WX_SENSOR_IDENT,
+                        Awos.WX_SENSOR_TYPE,
+                        Awos.STATION_FREQUENCY,
+                        Awos.SECOND_STATION_FREQUENCY,
+                        Awos.STATION_PHONE_NUMBER,
+                        Airports.ASSOC_CITY,
+                        Airports.ASSOC_STATE
+                };
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Airports.TABLE_NAME+" a"
+                        +" LEFT JOIN "+Awos.TABLE_NAME+" w"
+                        +" ON a."+Airports.FAA_CODE+" = w."+Awos.WX_SENSOR_IDENT );
+                selection = "a."+Airports.ICAO_CODE+"=?";
+                c = builder.query( db, wxColumns, selection, new String[] { stationId },
+                        null, null, null, null );
+                cursors[ 1 ] = c;
+            }
+
+            return cursors;
+        }
+
+        @Override
+        protected void onResult( Cursor[] result ) {
+            Cursor wxs = result[ 0 ];
+            if ( wxs == null || !wxs.moveToFirst() ) {
+                // No station with TAF was found nearby
+                Bundle args = getArguments();
+                String stationId = args.getString( NoaaService.STATION_ID );
+
+                View detail = findViewById( R.id.wx_detail_layout );
+                detail.setVisibility( View.GONE );
+                LinearLayout layout = (LinearLayout) findViewById( R.id.wx_status_layout );
+                layout.removeAllViews();
+                layout.setVisibility( View.GONE );
+                TextView tv =(TextView) findViewById( R.id.status_msg );
+                tv.setVisibility( View.VISIBLE );
+                tv.setText( String.format( "No wx station with TAF was found near %s"
+                        +" within %dNM radius", stationId, TAF_RADIUS ) );
+                stopRefreshAnimation();
+                setContentShown( true );
+                return;
+            }
+
+            mLocation = new Location( "" );
+            float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+            float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+            mLocation.setLatitude( lat );
+            mLocation.setLongitude( lon );
+
+            // Show the weather station info
+            showWxTitle( result );
+
+            // Now request the weather
+            mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
+            requestTaf( mStationId, false );
+        }
+
+    }
+
+    protected void requestTaf( String stationId, boolean refresh ) {
+        Intent service = new Intent( getActivity(), TafService.class );
+        service.setAction( NoaaService.ACTION_GET_TAF );
+        service.putExtra( NoaaService.STATION_ID, stationId );
+        service.putExtra( NoaaService.FORCE_REFRESH, refresh );
+        getActivity().startService( service );
+    }
+
+    public void onReceiveResult( Intent intent ) {
+        showTaf( intent );
+    }
+
+    protected void showTaf( Intent intent ) {
+        if ( getActivity() == null ) {
+            // Not ready to do this yet
+            return;
+        }
+
+        Taf taf = (Taf) intent.getSerializableExtra( NoaaService.RESULT );
+
+        View detail = findViewById( R.id.wx_detail_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.wx_status_layout );
+        TextView tv =(TextView) findViewById( R.id.status_msg );
+        layout.removeAllViews();
+        if ( !taf.isValid ) {
+            tv.setVisibility( View.VISIBLE );
+            layout.setVisibility( View.VISIBLE );
+            tv.setText( "Unable to get TAF for this location." );
+            addRow( layout, "This could be due to the following reasons:" );
+            addBulletedRow( layout, "Network connection is not available" );
+            addBulletedRow( layout, "ADDS does not publish TAF for this station" );
+            addBulletedRow( layout, "Station is currently out of service" );
+            addBulletedRow( layout, "Station has not updated the TAF for more than 12 hours" );
+            detail.setVisibility( View.GONE );
+            stopRefreshAnimation();
+            setContentShown( true );
+            return;
+        } else {
+            tv.setText( "" );
+            tv.setVisibility( View.GONE );
+            layout.setVisibility( View.GONE );
+            detail.setVisibility( View.VISIBLE );
+        }
+
+        tv = (TextView) findViewById( R.id.wx_age );
+        tv.setText( TimeUtils.formatElapsedTime( taf.issueTime ) );
+
+        // Raw Text
+        tv = (TextView) findViewById( R.id.wx_raw_taf );
+        tv.setText( taf.rawText.replaceAll( "(FM|BECMG|TEMPO|PROB)", "\n    $1" ) );
+
+        NumberFormat decimal = NumberFormat.getNumberInstance();
+        decimal.setMaximumFractionDigits( 2 );
+        decimal.setMinimumFractionDigits( 0 );
+
+        layout = (LinearLayout) findViewById( R.id.taf_summary_layout );
+        String fcstType;
+        if ( taf.rawText.contains( " AMD " ) ) {
+            fcstType = "Amendment";
+        } else if ( taf.rawText.contains( " COR " ) ) {
+            fcstType = "Correction";
+        } else {
+            fcstType = "Normal";
+        }
+        addRow( layout, "Forecast type", fcstType );
+        addSeparator( layout );
+        addRow( layout, "Issued at", TimeUtils.formatDateUTC( getActivity(), taf.issueTime ) );
+        addSeparator( layout );
+        addRow( layout, "Valid from", TimeUtils.formatDateUTC( getActivity(), taf.validTimeFrom ) );
+        addSeparator( layout );
+        addRow( layout, "Valid to", TimeUtils.formatDateUTC( getActivity(), taf.validTimeTo ) );
+        if ( taf.remarks != null && taf.remarks.length() > 0 ) {
+            addSeparator( layout );
+            addRow( layout, taf.remarks );
+        }
+
+        LinearLayout fcst_top_layout = (LinearLayout) findViewById( R.id.taf_forecasts_layout );
+        fcst_top_layout.removeAllViews();
+
+        for ( Forecast forecast : taf.forecasts ) {
+            LinearLayout grp_layout = (LinearLayout) inflate( R.layout.grouped_detail_item );
+
+            tv = (TextView) grp_layout.findViewById( R.id.group_name );
+            if ( forecast.changeIndicator != null ) {
+                tv.setText( forecast.changeIndicator+" "+TimeUtils.formatDateRangeUTC(
+                        getActivity(), forecast.timeFrom, forecast.timeTo ) );
+            } else {
+                tv.setText( TimeUtils.formatDateRangeUTC( getActivity(),
+                        forecast.timeFrom, forecast.timeTo ) );
+            }
+
+            LinearLayout fcst_layout = (LinearLayout) grp_layout.findViewById( R.id.group_details );
+
+            if ( forecast.probability < Integer.MAX_VALUE ) {
+                addRow( fcst_layout, "Probability", String.format( "%d%%", forecast.probability ) );
+            }
+
+            if ( forecast.windSpeedKnots < Integer.MAX_VALUE ) {
+                String wind;
+                if ( forecast.windDirDegrees == 0 && forecast.windSpeedKnots == 0 ) {
+                    wind = "Calm";
+                } else if ( forecast.windDirDegrees == 0 ) {
+                    wind = String.format( "Variable at %d knots", forecast.windSpeedKnots );
+                } else {
+                    wind = String.format( "%s (%03d\u00B0 true) at %d knots",
+                            GeoUtils.getCardinalDirection( forecast.windDirDegrees ),
+                            forecast.windDirDegrees, forecast.windSpeedKnots );
+                }
+                String gust = "";
+                if ( forecast.windGustKnots < Integer.MAX_VALUE ) {
+                    gust = String.format( "Gusting to %d knots", forecast.windGustKnots );
+                }
+                if ( fcst_layout.getChildCount() > 0 ) {
+                    addSeparator( fcst_layout );
+                }
+                addRow( fcst_layout, "Winds", wind, gust );
+            }
+
+            if ( forecast.visibilitySM < Float.MAX_VALUE ) {
+                String value = forecast.visibilitySM > 6? "6SM or more"
+                        : decimal.format( forecast.visibilitySM )+"SM";
+                if ( fcst_layout.getChildCount() > 0 ) {
+                    addSeparator( fcst_layout );
+                }
+                addRow( fcst_layout, "Visibility", value );
+            }
+
+            for ( WxSymbol wx : forecast.wxList ) {
+                if ( fcst_layout.getChildCount() > 0 ) {
+                    addSeparator( fcst_layout );
+                }
+                addRow( fcst_layout, "Weather", wx.toString() );
+            }
+
+            for ( SkyCondition sky : forecast.skyConditions ) {
+                if ( fcst_layout.getChildCount() > 0 ) {
+                    addSeparator( fcst_layout );
+                }
+                addRow( fcst_layout, "Clouds", sky.toString() );
+            }
+
+            if ( forecast.windShearSpeedKnots < Integer.MAX_VALUE ) {
+                String shear = String.format( "%s (%03d\u00B0 true) at %d knots",
+                        GeoUtils.getCardinalDirection( forecast.windShearDirDegrees ),
+                        forecast.windShearDirDegrees );
+                String height = String.format( "%s ft AGL",
+                        decimal.format( forecast.windShearHeightFeetAGL ) );
+                if ( fcst_layout.getChildCount() > 0 ) {
+                    addSeparator( fcst_layout );
+                }
+                addRow( fcst_layout, "Wind shear", shear, height );
+            }
+
+            if ( forecast.altimeterHg < Float.MAX_VALUE ) {
+                if ( fcst_layout.getChildCount() > 0 ) {
+                    addSeparator( fcst_layout );
+                }
+                addRow( fcst_layout, "Altimeter", String.format( "%.2f\" Hg (%.1f mb)",
+                        forecast.altimeterHg, WxUtils.hgToMillibar( forecast.altimeterHg ) ) );
+            }
+
+            for ( TurbulenceCondition turbulence : forecast.turbulenceConditions ) {
+                String value = DataUtils.decodeTurbulenceIntensity( turbulence.intensity );
+                String frequency = DataUtils.decodeTurbulenceFrequency( turbulence.intensity );
+                String height;
+                if ( turbulence.minAltitudeFeetAGL < Integer.MAX_VALUE
+                        && turbulence.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
+                    height = String.format( "%s to %s ft AGL",
+                            decimal.format( turbulence.minAltitudeFeetAGL ),
+                            decimal.format( turbulence.maxAltitudeFeetAGL ) );
+                } else {
+                    height = String.format( "Surface to %s ft AGL",
+                            decimal.format( turbulence.maxAltitudeFeetAGL ) );
+                }
+                if ( frequency.length() > 0 ) {
+                    height = frequency+", "+height;
+                }
+                if ( fcst_layout.getChildCount() > 0 ) {
+                    addSeparator( fcst_layout );
+                }
+                addRow( fcst_layout, "Turbulence", value, height );
+            }
+
+            for ( IcingCondition icing : forecast.icingConditions ) {
+                String value = DataUtils.decodeIcingIntensity( icing.intensity );
+                String height;
+                if ( icing.minAltitudeFeetAGL < Integer.MAX_VALUE
+                        && icing.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
+                    height = String.format( "Between %s to %s ft AGL",
+                            decimal.format( icing.minAltitudeFeetAGL ),
+                            decimal.format( icing.maxAltitudeFeetAGL ) );
+                } else {
+                    height = String.format( "Surface to %s ft AGL",
+                            decimal.format( icing.maxAltitudeFeetAGL ) );
+                }
+                if ( fcst_layout.getChildCount() > 0 ) {
+                    addSeparator( fcst_layout );
+                }
+                addRow( fcst_layout, "Icing", value, height );
+            }
+
+            fcst_top_layout.addView( grp_layout, LayoutParams.FILL_PARENT,
+                    LayoutParams.WRAP_CONTENT );
+        }
+
+        tv = (TextView) findViewById( R.id.wx_fetch_time );
+        tv.setText( "Fetched on "+TimeUtils.formatLongDateTime( taf.fetchTime )  );
+        tv.setVisibility( View.VISIBLE );
+
+        stopRefreshAnimation();
+        setContentShown( true );
+    }
+
+    @Override
+    public void onPrepareOptionsMenu( Menu menu ) {
+        setRefreshItemVisible( true );
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+        case R.id.menu_refresh:
+            startRefreshAnimation();
+            requestTaf( mStationId, true );
+            return true;
+        default:
+            return super.onOptionsItemSelected( item );
+        }
+    }
+
+}
