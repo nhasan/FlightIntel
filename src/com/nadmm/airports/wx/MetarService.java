@@ -69,7 +69,7 @@ public class MetarService extends NoaaService {
 
         File xml = new File( METAR_DIR, "METAR_"+stationId+".xml" );
         if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
-            fetchMetarFromNOAA( stationId, xml );
+            fetchMetarFromNoaa( stationId, xml );
         }
 
         Metar metar = new Metar();
@@ -87,12 +87,12 @@ public class MetarService extends NoaaService {
         sendBroadcast( result );
     }
 
-    protected boolean fetchMetarFromNOAA( String stationId, File xml ) {
+    protected boolean fetchMetarFromNoaa( String stationId, File xml ) {
         boolean result = false;
         try {
             URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, DATASERVER_PATH,
                     METAR_QUERY+stationId, null );
-            result = fetchFromNOAA( uri, xml );
+            result = fetchFromNoaa( uri, xml );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "Unable to fetch METAR: "+e.getMessage() );
         }

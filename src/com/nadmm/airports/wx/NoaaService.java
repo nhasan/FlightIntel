@@ -47,6 +47,7 @@ public abstract class NoaaService extends IntentService {
 
     public static final String ACTION_GET_METAR = "flightintel.intent.action.GET_METAR";
     public static final String ACTION_GET_TAF = "flightintel.intent.action.GET_TAF";
+    public static final String ACTION_GET_PIREP = "flightintel.intent.action.GET_PIREP";
 
     public NoaaService( String name ) {
         super( name );
@@ -64,7 +65,7 @@ public abstract class NoaaService extends IntentService {
         }
     }
 
-    protected boolean fetchFromNOAA( URI uri, File xml ) 
+    protected boolean fetchFromNoaa( URI uri, File xml ) 
             throws Exception {
         if ( !NetworkUtils.isNetworkAvailable( this ) ) {
             return false;

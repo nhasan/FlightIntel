@@ -69,7 +69,7 @@ public class TafService extends NoaaService {
 
         File xml = new File( TAF_DIR, "TAF_"+stationId+".xml" );
         if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
-            fetchMetarFromNOAA( stationId, xml );
+            fetchMetarFromNoaa( stationId, xml );
         }
 
         Taf taf = new Taf();
@@ -87,11 +87,11 @@ public class TafService extends NoaaService {
         sendBroadcast( result );
     }
 
-    protected boolean fetchMetarFromNOAA( String stationId, File xml ) {
+    protected boolean fetchMetarFromNoaa( String stationId, File xml ) {
         try {
             URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, DATASERVER_PATH,
                     TAF_QUERY+stationId, null );
-            return fetchFromNOAA( uri, xml );
+            return fetchFromNoaa( uri, xml );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "Unable to fetch TAF: "+e.getMessage() );
         }
