@@ -41,13 +41,12 @@ public final class MetarParser {
     public void parse( File xml, Metar metar ) {
         try {
             metar.fetchTime = xml.lastModified();
+            InputSource input = new InputSource( new FileReader( xml ) );
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
-            XMLReader xmlReader = parser.getXMLReader();
             MetarHandler handler = new MetarHandler( metar );
+            XMLReader xmlReader = parser.getXMLReader();
             xmlReader.setContentHandler( handler );
-            InputSource input = new InputSource( new FileReader( xml ) );
-
             xmlReader.parse( input );
         } catch ( Exception e ) {
         }
@@ -88,7 +87,7 @@ public final class MetarParser {
 
     protected final class MetarHandler extends DefaultHandler {
 
-        protected Metar metar;
+        private Metar metar;
         private StringBuilder text = new StringBuilder();
 
         public MetarHandler( Metar metar ) {
@@ -107,11 +106,12 @@ public final class MetarParser {
             if ( qName.equalsIgnoreCase( "metar" ) ) {
             } else if ( qName.equalsIgnoreCase( "sky_condition" ) ) {
                 String name = attributes.getValue( "sky_cover" );
-                int cloudBase = 0;
-                if ( attributes.getIndex( "cloud_base_ft_agl" ) >= 0 ) {
-                    cloudBase = Integer.valueOf( attributes.getValue( "cloud_base_ft_agl" ) );
+                int cloudBaseAGL = 0;
+                String attr = attributes.getValue( "cloud_base_ft_agl" );
+                if ( attr != null ) {
+                    cloudBaseAGL = Integer.valueOf( attr );
                 }
-                SkyCondition skyCondition = SkyCondition.create( name, cloudBase );
+                SkyCondition skyCondition = SkyCondition.create( name, cloudBaseAGL );
                 metar.skyConditions.add( skyCondition );
             } else {
                 text.delete( 0, text.length() );
