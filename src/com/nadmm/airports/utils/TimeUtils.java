@@ -35,16 +35,6 @@ public class TimeUtils {
         return DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( time ) );
     }
 
-    public static CharSequence formatElapsedTime( long time ) {
-        Date now = new Date();
-        return formatElapsedTime( now.getTime(), time );
-    }
-
-    public static CharSequence formatElapsedTime( long time1, long time2 ) {
-        long age = time1-time2;
-        return formatDuration( age )+" old";
-    }
-
     public static String formatDateUTC( Context context, long millis ) {
         return formatDateRangeUTC( context, millis, millis );
     }
@@ -59,6 +49,16 @@ public class TimeUtils {
                 | DateUtils.FORMAT_ABBREV_ALL
                 | DateUtils.FORMAT_UTC );
         return s+" UTC";
+    }
+
+    public static CharSequence formatElapsedTime( long time ) {
+        Date now = new Date();
+        return formatElapsedTime( now.getTime(), time );
+    }
+
+    public static CharSequence formatElapsedTime( long time1, long time2 ) {
+        long age = time1-time2;
+        return formatDuration( age )+" old";
     }
 
     public static String formatDuration( long duration ) {
