@@ -43,6 +43,7 @@ public class WxDetailActivity extends ActivityBase {
         Bundle args = intent.getExtras();
         mTabsAdapter.addTab( "METAR", MetarFragment.class, args );
         mTabsAdapter.addTab( "TAF", TafFragment.class, args );
+        mTabsAdapter.addTab( "PIREP", PirepFragment.class, args );
 
         TabPageIndicator tabIndicator = (TabPageIndicator) findViewById( R.id.page_titles );
         tabIndicator.setViewPager( pager );
