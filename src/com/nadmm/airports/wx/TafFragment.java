@@ -70,7 +70,7 @@ public class TafFragment extends FragmentBase {
 
             @Override
             public void onReceive( Context context, Intent intent ) {
-                onReceiveResult( intent );
+                showTaf( intent );
             }
 
         };
@@ -173,6 +173,7 @@ public class TafFragment extends FragmentBase {
                     } while ( c.moveToNext() );
                 }
             }
+            c.close();
 
             if ( stationId.length() > 0 ) {
                 // We have the station with TAF
@@ -251,10 +252,6 @@ public class TafFragment extends FragmentBase {
         service.putExtra( NoaaService.STATION_ID, stationId );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
-    }
-
-    public void onReceiveResult( Intent intent ) {
-        showTaf( intent );
     }
 
     protected void showTaf( Intent intent ) {
