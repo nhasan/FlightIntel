@@ -161,7 +161,7 @@ public final class Metar implements Serializable {
             // Check to see if we have an OVX layer, if not add it
             boolean found = false;
             for ( SkyCondition sky : skyConditions ) {
-                if ( sky.name().equals( "OVX" ) ) {
+                if ( sky.getSkyCover().equals( "OVX" ) ) {
                     found = true;
                     break;
                 }
