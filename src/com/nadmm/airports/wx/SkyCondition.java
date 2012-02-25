@@ -29,58 +29,58 @@ public abstract class SkyCondition implements Serializable {
     private static final long serialVersionUID = 1L;
     private static NumberFormat sDecimal = NumberFormat.getNumberInstance();
 
+    protected String mSkyCover;
     protected int mCloudBaseAGL;
-    protected String mName;
 
     private SkyCondition() {
     }
 
-    private SkyCondition( String name, int cloudBase ) {
-        mName = name;
-        mCloudBaseAGL = cloudBase;
+    private SkyCondition( String skyCover, int cloudBaseAGL ) {
+        mSkyCover = skyCover;
+        mCloudBaseAGL = cloudBaseAGL;
     }
 
     public abstract int getDrawable();
 
-    public String name() {
-        return mName;
+    public String getSkyCover() {
+        return mSkyCover;
     }
 
-    public int getCloudBase() {
+    public int getCloudBaseAGL() {
         return mCloudBaseAGL;
     }
 
-    static public SkyCondition create( String name, int cloudBase ) {
+    static public SkyCondition create( String skyCover, int cloudBaseAGL ) {
         SkyCondition sky = null;
 
-        if ( name.equalsIgnoreCase( "CLR" ) ) {
-            sky = new SkyCondition( name, 0 ) {
+        if ( skyCover.equalsIgnoreCase( "CLR" ) ) {
+            sky = new SkyCondition( skyCover, 0 ) {
                 private static final long serialVersionUID = 1L;
-    
+
                 @Override
                 public String toString() {
                     return String.format( "Sky clear below 12,000 ft AGL" );
                 }
-    
+
                 public int getDrawable() {
                     return R.drawable.clr;
                 }
             };
-        } else if ( name.equalsIgnoreCase( "SKC" ) ) {
-            sky = new SkyCondition( name, 0 ) {
+        } else if ( skyCover.equalsIgnoreCase( "SKC" ) ) {
+            sky = new SkyCondition( skyCover, 0 ) {
                 private static final long serialVersionUID = 1L;
-    
+
                 @Override
                 public String toString() {
                     return "Sky clear";
                 }
-    
+
                 public int getDrawable() {
                     return R.drawable.skc;
                 }
             };
-        } else if ( name.equalsIgnoreCase( "FEW" ) ) {
-            sky = new SkyCondition( name, cloudBase ) {
+        } else if ( skyCover.equalsIgnoreCase( "FEW" ) ) {
+            sky = new SkyCondition( skyCover, cloudBaseAGL ) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -93,8 +93,8 @@ public abstract class SkyCondition implements Serializable {
                     return R.drawable.few;
                 }
             };
-        } else if ( name.equalsIgnoreCase( "SCT" ) ) {
-            sky = new SkyCondition( name, cloudBase ) {
+        } else if ( skyCover.equalsIgnoreCase( "SCT" ) ) {
+            sky = new SkyCondition( skyCover, cloudBaseAGL ) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -107,8 +107,8 @@ public abstract class SkyCondition implements Serializable {
                     return R.drawable.sct;
                 }
             };
-        } else if ( name.equalsIgnoreCase( "BKN" ) ) {
-            sky = new SkyCondition( name, cloudBase ) {
+        } else if ( skyCover.equalsIgnoreCase( "BKN" ) ) {
+            sky = new SkyCondition( skyCover, cloudBaseAGL ) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -121,8 +121,8 @@ public abstract class SkyCondition implements Serializable {
                     return R.drawable.bkn;
                 }
             };
-        } else if ( name.equalsIgnoreCase( "OVC" ) ) {
-            sky = new SkyCondition( name, cloudBase ) {
+        } else if ( skyCover.equalsIgnoreCase( "OVC" ) ) {
+            sky = new SkyCondition( skyCover, cloudBaseAGL ) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -135,8 +135,8 @@ public abstract class SkyCondition implements Serializable {
                     return R.drawable.ovc;
                 }
             };
-        } else if ( name.equalsIgnoreCase( "OVX" ) ) {
-            sky = new SkyCondition( name, 0 ) {
+        } else if ( skyCover.equalsIgnoreCase( "OVX" ) ) {
+            sky = new SkyCondition( skyCover, 0 ) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -148,8 +148,8 @@ public abstract class SkyCondition implements Serializable {
                     return R.drawable.ovx;
                 }
             };
-        } else if ( name.equalsIgnoreCase( "SKM" ) ) {
-            sky = new SkyCondition( name, 0 ) {
+        } else if ( skyCover.equalsIgnoreCase( "SKM" ) ) {
+            sky = new SkyCondition( skyCover, 0 ) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -161,8 +161,8 @@ public abstract class SkyCondition implements Serializable {
                     return R.drawable.skm;
                 }
             };
-        } else if ( name.equalsIgnoreCase( "NSC" ) ) {
-            sky = new SkyCondition( name, 0 ) {
+        } else if ( skyCover.equalsIgnoreCase( "NSC" ) ) {
+            sky = new SkyCondition( skyCover, 0 ) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
