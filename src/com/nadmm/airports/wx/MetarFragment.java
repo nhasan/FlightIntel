@@ -69,7 +69,7 @@ public class MetarFragment extends FragmentBase {
 
             @Override
             public void onReceive( Context context, Intent intent ) {
-                onReceiveResult( intent );
+                showMetar( intent );
             }
 
         };
@@ -172,10 +172,6 @@ public class MetarFragment extends FragmentBase {
         service.putExtra( NoaaService.STATION_ID, stationId );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
-    }
-
-    public void onReceiveResult( Intent intent ) {
-        showMetar( intent );
     }
 
     protected void showMetar( Intent intent ) {
