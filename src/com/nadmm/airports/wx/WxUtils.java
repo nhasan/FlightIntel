@@ -224,10 +224,10 @@ public class WxUtils {
         for ( SkyCondition sky : skyConditions ) {
             // Ceiling is defined as the lowest layer aloft reported as broken or overcast;
             // or the vertical visibility into an indefinite ceiling
-            if ( sky.name().equals( "BKN" ) 
-                    || sky.name().equals( "OVC" ) 
-                    || sky.name().equals( "OVX" ) ) {
-                ceiling = sky.getCloudBase();
+            if ( sky.getSkyCover().equals( "BKN" )
+                    || sky.getSkyCover().equals( "OVC" )
+                    || sky.getSkyCover().equals( "OVX" ) ) {
+                ceiling = sky.getCloudBaseAGL();
                 break;
             }
         }
