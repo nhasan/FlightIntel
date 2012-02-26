@@ -26,6 +26,9 @@ public class GeoUtils {
 
     public static final float METERS_PER_STATUTE_MILE = (float) 1609.344;
     public static final float METERS_PER_NAUTICAL_MILE = (float) 1852.0;
+    public static final float STATUTE_MILES_PER_NAUTICAL_MILES = (float) 1.151;
+    public static final float NAUTICAL_MILES_PER_STATUTE_MILES = (float) 0.869;
+
     // Earth's radius at major semi-axis in nautical miles
     private static final double WGS84_a = (6378137.0/METERS_PER_NAUTICAL_MILE);
     // Earth's radius at minor semi-axis in nautical miles

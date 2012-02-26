@@ -55,7 +55,7 @@ import com.nadmm.airports.wx.Pirep.TurbulenceCondition;
 
 public class PirepFragment extends FragmentBase {
 
-    private final int PIREP_RADIUS = 50;
+    private final int PIREP_RADIUS_NM = 50;
     private final int PIREP_HOURS_BEFORE = 3;
 
     protected Location mLocation;
@@ -179,7 +179,8 @@ public class PirepFragment extends FragmentBase {
         Intent service = new Intent( getActivity(), PirepService.class );
         service.setAction( NoaaService.ACTION_GET_PIREP );
         service.putExtra( NoaaService.STATION_ID, mStationId );
-        service.putExtra( PirepService.PIREP_RADIUS, PIREP_RADIUS );
+        service.putExtra( PirepService.PIREP_RADIUS_SM, 
+                PIREP_RADIUS_NM*GeoUtils.STATUTE_MILES_PER_NAUTICAL_MILES );
         service.putExtra( PirepService.PIREP_HOURS_BEFORE, PIREP_HOURS_BEFORE );
         service.putExtra( PirepService.PIREP_LOCATION, mLocation );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
@@ -193,7 +194,7 @@ public class PirepFragment extends FragmentBase {
         if ( !pirep.entries.isEmpty() ) {
             TextView tv = (TextView) findViewById( R.id.pirep_title_msg );
             tv.setText( String.format( "%d PIREPs reported within %dNM of %s in last %d hours",
-                    pirep.entries.size(), PIREP_RADIUS, mStationId, PIREP_HOURS_BEFORE ) );
+                    pirep.entries.size(), PIREP_RADIUS_NM, mStationId, PIREP_HOURS_BEFORE ) );
             for ( PirepEntry entry : pirep.entries ) {
                 showPirepEntry( layout, entry );
             }
@@ -204,7 +205,7 @@ public class PirepFragment extends FragmentBase {
         } else {
             TextView tv = (TextView) findViewById( R.id.pirep_title_msg );
             tv.setText( String.format( "No PIREPs reported within %dNM of %s in last %d hours",
-                    PIREP_RADIUS, mStationId, PIREP_HOURS_BEFORE ) );
+                    PIREP_RADIUS_NM, mStationId, PIREP_HOURS_BEFORE ) );
         }
 
         stopRefreshAnimation();

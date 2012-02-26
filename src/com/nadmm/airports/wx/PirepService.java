@@ -39,7 +39,7 @@ public class PirepService extends NoaaService {
             AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/pirep" );
     private final long PIREP_CACHE_MAX_AGE = 1*DateUtils.HOUR_IN_MILLIS;
 
-    public static final String PIREP_RADIUS = "PIREP_RADIUS";
+    public static final String PIREP_RADIUS_SM = "PIREP_RADIUS_SM";
     public static final String PIREP_LOCATION = "PIREP_LOCATION";
     public static final String PIREP_HOURS_BEFORE = "PIREP_HOURS_BEFORE";
 
@@ -93,7 +93,7 @@ public class PirepService extends NoaaService {
 
     protected boolean fetchPirepFromNoaa( Intent intent, File xml ) {
         try {
-            int radius = intent.getIntExtra( PIREP_RADIUS, 100 );
+            int radius = intent.getIntExtra( PIREP_RADIUS_SM, 100 );
             int hoursBefore = intent.getIntExtra( PIREP_HOURS_BEFORE, 3 );
             Location location = intent.getParcelableExtra( PIREP_LOCATION );
             String query = String.format( "%s&hoursBeforeNow=%d&radialDistance=%d;%.2f,%.2f",
