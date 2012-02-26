@@ -202,7 +202,7 @@ public class PirepFragment extends FragmentBase {
             tv.setText( "Fetched on "+TimeUtils.formatLongDateTime( pirep.fetchTime )  );
             tv.setVisibility( View.VISIBLE );
         } else {
-            TextView tv = (TextView) findViewById( R.id.pirep_status_msg );
+            TextView tv = (TextView) findViewById( R.id.pirep_title_msg );
             tv.setText( String.format( "No PIREPs reported within %dNM of %s in last %d hours",
                     PIREP_RADIUS, mStationId, PIREP_HOURS_BEFORE ) );
         }
