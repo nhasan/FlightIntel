@@ -193,24 +193,26 @@ public class ActivityBase extends FragmentActivity {
     protected Intent checkData() {
         Cursor c = mDbManager.getCurrentFromCatalog();
         if ( !c.moveToFirst() ) {
-            c.close();
             Intent download = new Intent( this, DownloadActivity.class );
             download.putExtra( "MSG", "Please install the data before using the app" );
             c.close();
             return download;
         }
 
-        int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
-        if ( version < 64 ) {
-            c.close();
-            Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "ATTENTION: This app version requires latest data update" );
-            c.close();
-            return download;
-        }
-
         // Check if we have any expired data. If yes, then redirect to download activity
         do {
+            String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
+            if ( type.equals( "FADDS" ) ) {
+                int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
+                if ( version < 64 ) {
+                    Intent download = new Intent( this, DownloadActivity.class );
+                    download.putExtra( "MSG", "ATTENTION: This app version requires"
+                    		+" latest data update" );
+                    c.close();
+                    return download;
+                }
+            }
+
             int age = c.getInt( c.getColumnIndex( "age" ) );
             if ( age <= 0 ) {
                 // We have some expired data
@@ -221,7 +223,6 @@ public class ActivityBase extends FragmentActivity {
             }
 
             // Try to make sure we can open the databases
-            String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
             SQLiteDatabase db = mDbManager.getDatabase( type );
             if ( db == null ) {
                 Intent download = new Intent( this, DownloadActivity.class );
