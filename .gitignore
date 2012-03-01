@@ -1,6 +1,7 @@
 *.db
 *.zip
 *.txt
+*.xml
 .settings
 bin/
 gen/
