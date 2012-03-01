@@ -48,7 +48,9 @@ public class DatabaseManager {
             = new File( Environment.getExternalStorageDirectory(), 
                     "Android/data/"+DownloadActivity.class.getPackage().getName() );
     public static File DATABASE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/databases" );
+
     public static final String DB_FADDS = "FADDS";
+    public static final String DB_DTPP = "DTPP";
 
     private static final Object sLock = new Object();
     private static DatabaseManager sInstance = null;
@@ -385,6 +387,27 @@ public class DatabaseManager {
         public static final String DUTY_OFFICE_PHONE = "DUTY_OFFICE_PHONE";
         public static final String BUSINESS_HOURS = "BUSINESS_HOURS";
         public static final String BUSINESS_PHONE = "BUSINESS_PHONE";
+    }
+
+    public static final class Cycle implements BaseColumns {
+        public static final String TABLE_NAME = "cycle";
+        public static final String TPP_CYCLE = "TPP_CYCLE";
+        public static final String FROM_DATE = "FROM_DATE";
+        public static final String TO_DATE = "TO_DATE";
+    }
+
+    public static final class Dtpp implements BaseColumns {
+        public static final String TABLE_NAME = "dtpp";
+        public static final String TPP_VOLUME = "TPP_VOLUME";
+        public static final String FAA_CODE = "FAA_CODE";
+        public static final String CHART_SEQ = "CHART_SEQ";
+        public static final String CHART_CODE = "CHART_CODE";
+        public static final String CHART_NAME = "CHART_NAME";
+        public static final String USER_ACTION = "USER_ACTION";
+        public static final String PDF_NAME = "PDF_NAME";
+        public static final String FAANFD18_CODE = "FAANFD18_CODE";
+        public static final String MILITARY_USE = "MILITARY_USE";
+        public static final String COPTER_USE = "COPTER_USE";
     }
 
     public static final class Catalog implements BaseColumns {
