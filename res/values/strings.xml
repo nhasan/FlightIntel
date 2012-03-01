@@ -94,6 +94,7 @@
     <string name="pressure">Pressure</string>
     <string name="precipitation">Precipitation</string>
     <string name="flight_category">Flight Category</string>
+    <string name="instrument_procedures">Instrument Procedures</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>
