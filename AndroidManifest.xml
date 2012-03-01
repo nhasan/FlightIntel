@@ -87,7 +87,7 @@
                   android:name=".wx.WxDetailActivity" />
 
         <activity android:label="@string/instrument_procedures"
-                  android:name=".DtppActivity" />
+                  android:name=".dtpp.DtppActivity" />
 
         <activity android:label="@string/about"
                   android:name="AboutActivity" />
