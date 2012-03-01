@@ -31,9 +31,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import android.location.Location;
 import android.text.format.Time;
 import android.util.TimeFormatException;
 
+import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.wx.Pirep.IcingCondition;
 import com.nadmm.airports.wx.Pirep.PirepEntry;
 import com.nadmm.airports.wx.Pirep.SkyCondition;
@@ -41,8 +43,15 @@ import com.nadmm.airports.wx.Pirep.TurbulenceCondition;
 
 public class PirepParser {
 
-    public void parse( File xml, Pirep pirep ) {
+    Location mLocation;
+    int mRadiusNM;
+    float mDeclination;
+
+    public void parse( File xml, Pirep pirep, Location location, int radiusNM ) {
         try {
+            mLocation = location;
+            mRadiusNM = radiusNM;
+            mDeclination = GeoUtils.getMagneticDeclination( location );
             pirep.fetchTime = xml.lastModified();
             InputSource input = new InputSource( new FileReader( xml ) );
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -75,7 +84,7 @@ public class PirepParser {
         public void startElement( String uri, String localName, String qName,
                 Attributes attributes ) throws SAXException {
             if ( qName.equalsIgnoreCase( "AircraftReport" ) ) {
-                entry = pirep.newEntry();
+                entry = new PirepEntry();
             } else if ( qName.equalsIgnoreCase( "sky_condition" ) ) {
                 String skyCover = attributes.getValue( "sky_cover" );
                 int cloudBaseMSL = Integer.MAX_VALUE;
@@ -168,7 +177,20 @@ public class PirepParser {
             } else if ( qName.equalsIgnoreCase( "vert_gust_kt" ) ) {
                 entry.vertGustKnots = Integer.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "AircraftReport" ) ) {
-                entry.isValid = true;
+                Location reportLocation = new Location( "" );
+                reportLocation.setLatitude( entry.latitude );
+                reportLocation.setLongitude( entry.longitude );
+
+                float[] results = new float[ 2 ];
+                Location.distanceBetween( mLocation.getLatitude(), mLocation.getLongitude(),
+                        reportLocation.getLatitude(), reportLocation.getLongitude(), results );
+
+                entry.distanceNM = (long) (results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE);
+                if ( entry.distanceNM <= mRadiusNM ) {
+                    entry.bearing = ( results[ 1 ]+mDeclination+360 )%360;
+                    entry.isValid = true;
+                    pirep.entries.add( entry );
+                }
             }
         }
 

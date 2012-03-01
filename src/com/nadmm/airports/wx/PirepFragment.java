@@ -63,7 +63,6 @@ public class PirepFragment extends FragmentBase {
     protected BroadcastReceiver mReceiver;
     protected String mStationId;
     protected NumberFormat mDecimal;
-    protected float mDeclination;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -166,8 +165,6 @@ public class PirepFragment extends FragmentBase {
             mLocation.setLatitude( lat );
             mLocation.setLongitude( lon );
 
-            mDeclination = GeoUtils.getMagneticDeclination( mLocation );
-
             // Now request the weather
             mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
             requestPirep( false );
@@ -179,8 +176,7 @@ public class PirepFragment extends FragmentBase {
         Intent service = new Intent( getActivity(), PirepService.class );
         service.setAction( NoaaService.ACTION_GET_PIREP );
         service.putExtra( NoaaService.STATION_ID, mStationId );
-        service.putExtra( PirepService.PIREP_RADIUS_SM, 
-                PIREP_RADIUS_NM*GeoUtils.STATUTE_MILES_PER_NAUTICAL_MILES );
+        service.putExtra( PirepService.PIREP_RADIUS_NM, PIREP_RADIUS_NM );
         service.putExtra( PirepService.PIREP_HOURS_BEFORE, PIREP_HOURS_BEFORE );
         service.putExtra( PirepService.PIREP_LOCATION, mLocation );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
@@ -213,23 +209,13 @@ public class PirepFragment extends FragmentBase {
     }
 
     protected void showPirepEntry( LinearLayout layout, PirepEntry entry ) {
-        Location reportLocation = new Location( "" );
-        reportLocation.setLatitude( entry.latitude );
-        reportLocation.setLongitude( entry.longitude );
-
-        float[] results = new float[ 2 ];
-        Location.distanceBetween( mLocation.getLatitude(), mLocation.getLongitude(),
-                reportLocation.getLatitude(), reportLocation.getLongitude(), results );
-        long distance = (long) (results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE);
-        float bearing = ( results[ 1 ]+mDeclination+360 )%360;
-        String dir = GeoUtils.getCardinalDirection( bearing );
-
         LinearLayout item = (LinearLayout) inflate( R.layout.pirep_detail_item );
         TextView tv = (TextView) item.findViewById( R.id.pirep_name );
-        if ( distance > 0 ) {
-            tv.setText( String.format( "%s (%dNM %s)",
+        if ( entry.distanceNM > 0 ) {
+            String dir = GeoUtils.getCardinalDirection( entry.bearing );
+            tv.setText( String.format( "%s (%.0fNM %s)",
                     TimeUtils.formatDateUTC( getActivity(), entry.observationTime ),
-                    distance, dir ) );
+                    entry.distanceNM, dir ) );
         } else {
             tv.setText( String.format( "%s (On-site)",
                     TimeUtils.formatDateUTC( getActivity(), entry.observationTime ) ) );

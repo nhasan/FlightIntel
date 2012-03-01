@@ -29,6 +29,7 @@ import android.location.Location;
 import android.text.format.DateUtils;
 
 import com.nadmm.airports.AirportsMain;
+import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 public class PirepService extends NoaaService {
@@ -39,7 +40,7 @@ public class PirepService extends NoaaService {
             AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/pirep" );
     private final long PIREP_CACHE_MAX_AGE = 1*DateUtils.HOUR_IN_MILLIS;
 
-    public static final String PIREP_RADIUS_SM = "PIREP_RADIUS_SM";
+    public static final String PIREP_RADIUS_NM = "PIREP_RADIUS_NM";
     public static final String PIREP_LOCATION = "PIREP_LOCATION";
     public static final String PIREP_HOURS_BEFORE = "PIREP_HOURS_BEFORE";
 
@@ -78,9 +79,11 @@ public class PirepService extends NoaaService {
         }
 
         Pirep pirep = new Pirep();
+        Location location = intent.getParcelableExtra( PIREP_LOCATION );
+        int radiusNM = intent.getIntExtra( PIREP_RADIUS_NM, 50 );
 
         if ( xml.exists() ) {
-            mParser.parse( xml, pirep );
+            mParser.parse( xml, pirep, location, radiusNM );
         }
 
         // Broadcast the result
@@ -93,11 +96,12 @@ public class PirepService extends NoaaService {
 
     protected boolean fetchPirepFromNoaa( Intent intent, File xml ) {
         try {
-            int radius = intent.getIntExtra( PIREP_RADIUS_SM, 100 );
+            int radiusNM = intent.getIntExtra( PIREP_RADIUS_NM, 50 );
             int hoursBefore = intent.getIntExtra( PIREP_HOURS_BEFORE, 3 );
             Location location = intent.getParcelableExtra( PIREP_LOCATION );
-            String query = String.format( "%s&hoursBeforeNow=%d&radialDistance=%d;%.2f,%.2f",
-                    PIREP_QUERY_BASE, hoursBefore, radius,
+            String query = String.format( "%s&hoursBeforeNow=%d&radialDistance=%.0f;%.2f,%.2f",
+                    PIREP_QUERY_BASE, hoursBefore,
+                    radiusNM*GeoUtils.STATUTE_MILES_PER_NAUTICAL_MILES,
                     location.getLongitude(), location.getLatitude() );
             URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, DATASERVER_PATH, query, null );
             return fetchFromNoaa( uri, xml );

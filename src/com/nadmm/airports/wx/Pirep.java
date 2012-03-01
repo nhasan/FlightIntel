@@ -114,7 +114,7 @@ public class Pirep implements Serializable {
         }
     }
 
-    public class PirepEntry implements Serializable {
+    static public class PirepEntry implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public boolean isValid;
@@ -125,6 +125,8 @@ public class Pirep implements Serializable {
         public String aircraftRef;
         public float latitude;
         public float longitude;
+        public float distanceNM;
+        public float bearing;
         public int altitudeFeetMSL;
         public int visibilitySM;
         public int tempCelsius;
@@ -143,6 +145,8 @@ public class Pirep implements Serializable {
             observationTime = 0;
             latitude = 0;
             longitude = 0;
+            distanceNM = 0;
+            bearing = 0;
             altitudeFeetMSL = Integer.MAX_VALUE;
             visibilitySM = Integer.MAX_VALUE;
             tempCelsius = Integer.MAX_VALUE;
@@ -163,12 +167,6 @@ public class Pirep implements Serializable {
     public Pirep() {
         fetchTime = 0;
         entries = new ArrayList<PirepEntry>();
-    }
-
-    public PirepEntry newEntry() {
-        PirepEntry entry = new PirepEntry();
-        entries.add( entry );
-        return entry;
     }
 
 }
