@@ -54,6 +54,7 @@ import android.widget.TextView;
 import com.nadmm.airports.DatabaseManager.Aff3;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.DatabaseManager.Dtpp;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.DatabaseManager.Tower1;
@@ -156,7 +157,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
             DatabaseManager dbManager = getDbManager();
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 9 ];
+            Cursor[] cursors = new Cursor[ 10 ];
 
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -329,6 +330,15 @@ public class AirportDetailsActivity extends ActivityBase {
                     new String[] { faaCode }, null, null, null, null );
             cursors[ 8 ] = c;
 
+            db = dbManager.getDatabase( DatabaseManager.DB_DTPP );
+            if ( db != null ) {
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Dtpp.TABLE_NAME );
+                c = builder.query( db, new String[] { "*" }, Dtpp.FAA_CODE+"=? ",
+                        new String[] { faaCode }, null, null, null, null );
+                cursors[ 9 ] = c;
+            }
+
             return cursors;
         }
 
@@ -443,6 +453,7 @@ public class AirportDetailsActivity extends ActivityBase {
             showRunwayDetails( result );
             showAwosDetails( result );
             showOperationsDetails( result );
+            showTppDetails( result );
             showRemarks( result );
             showServicesDetails( result );
             showOtherDetails( result );
@@ -704,6 +715,21 @@ public class AirportDetailsActivity extends ActivityBase {
             intent = new Intent( getActivity(), AirportNotamActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
             addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
+        }
+
+        protected void showTppDetails( Cursor[] result ) {
+            Cursor apt = result[ 0 ];
+            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
+            Cursor dtpp = result[ 9 ];
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_ifr_layout );
+            if ( dtpp != null && dtpp.moveToFirst() ) {
+                Intent intent = new Intent( getActivity(), DtppActivity.class );
+                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                addClickableRow( layout, "Instrument procedures", intent,
+                        R.drawable.row_selector );
+            } else {
+                addRow( layout, "No instrument procedures found" );
+            }
         }
 
         protected void showRemarks( Cursor[] result ) {
