@@ -717,6 +717,42 @@ public final class DataUtils {
         return value;
     }
 
+    public static String decodeChartCode( String chartCode ) {
+        if ( chartCode.equalsIgnoreCase( "APD" ) ) {
+            return "Airport Diagram (APD)";
+        } else if ( chartCode.equalsIgnoreCase( "MIN" ) ) {
+            return "Minimums (MIN)";
+        } else if ( chartCode.equalsIgnoreCase( "STAR" ) ) {
+            return "Terminal Arrivals (STAR)";
+        } else if ( chartCode.equalsIgnoreCase( "IAP" ) ) {
+            return "Approach Procedures (IAP)";
+        } else if ( chartCode.equalsIgnoreCase( "DP" ) ) {
+            return "Departure Procedures (DP)";
+        } else if ( chartCode.equalsIgnoreCase( "DPO" ) ) {
+            return "Obstacle Departures (DPO)";
+        } else if ( chartCode.equalsIgnoreCase( "LAH" ) ) {
+            return "LAHSO Operations (LAH)";
+        } else if ( chartCode.equalsIgnoreCase( "HOT" ) ) {
+            return "Airport Hot Spots (HOT)";
+        } else {
+            return "Other";
+        }
+    }
+
+    public static String decodeUserAction( String userAction ) {
+        if ( userAction != null && userAction.length() > 0 ) {
+            char change = userAction.charAt( 0 );
+            if ( change == 'C' ) {
+                return "Changed";
+            } else if ( change == 'A' ) {
+                return "Added";
+            } else if ( change == 'D' ) {
+                return "Deleted";
+            }
+        }
+        return "";
+    }
+
     public static boolean isDirectionalNavaid( String type ) {
         return type.equals( "VOR" )
             || type.equals( "VOR/DME" ) 
