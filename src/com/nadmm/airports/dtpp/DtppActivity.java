@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports;
+package com.nadmm.airports.dtpp;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,9 +33,12 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Cycle;
 import com.nadmm.airports.DatabaseManager.Dtpp;
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.TimeUtils;
@@ -61,7 +64,7 @@ public class DtppActivity extends ActivityBase {
             String siteNumber = params[ 0 ];
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] result = new Cursor[ 10 ];
+            Cursor[] result = new Cursor[ 11 ];
 
             Cursor apt = getAirportDetails( siteNumber );
             result[ 0 ] = apt;
@@ -76,7 +79,14 @@ public class DtppActivity extends ActivityBase {
                     null, null, null, null, null, null );
             result[ 1 ] = c;
 
-            int index = 2;
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Dtpp.TABLE_NAME );
+            c = builder.query( db, new String[] { Dtpp.TPP_VOLUME },
+                    Dtpp.FAA_CODE+"=?",
+                    new String[] { faaCode }, Dtpp.TPP_VOLUME, null, null, null );
+            result[ 2 ] = c;
+
+            int index = 3;
             for ( String chartCode : new String[] { "APD", "MIN", "STAR", "IAP",
                     "DP", "DPO", "LAH", "HOT" } ) {
                 builder = new SQLiteQueryBuilder();
@@ -136,12 +146,21 @@ public class DtppActivity extends ActivityBase {
         } else {
             tv.setText( String.format( "Chart Cycle %s (Expired)", tppCycle ) );
         }
-        addRow( layout, "Valid "+TimeUtils.formatDateRangeUTC( this,
+
+        Cursor dtpp = result[ 2 ];
+        if ( dtpp.moveToFirst() ) {
+            String tppVolume = dtpp.getString( 0 );
+            addRow( layout, "Volume", tppVolume );
+            addSeparator( layout );
+        }
+
+        addRow( layout, "Valid", TimeUtils.formatDateRangeUTC( this,
                 fromDate.getTime(), toDate.getTime() ) );
+
         topLayout.addView( item, new LinearLayout.LayoutParams( LayoutParams.FILL_PARENT,
                 LayoutParams.WRAP_CONTENT ) );
 
-        int index = 2;
+        int index = 3;
         while ( index < result.length ) {
             showCharts( topLayout, result[ index ] );
             ++index;
