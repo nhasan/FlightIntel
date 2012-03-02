@@ -205,8 +205,4 @@ public class FragmentBase extends Fragment {
         mActivity.setRefreshItemVisible( visible );
     }
 
-    protected void setRefreshItemEnabled( Boolean enable ) {
-        mActivity.setRefreshItemEnabled( enable );
-    }
-
 }

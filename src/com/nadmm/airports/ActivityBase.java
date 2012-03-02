@@ -522,12 +522,6 @@ public class ActivityBase extends FragmentActivity {
         }
     }
 
-    public void setRefreshItemEnabled( Boolean enable ) {
-        if ( mRefreshItem != null ) {
-            mRefreshItem.setVisible( enable );
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
         MenuInflater inflater = getMenuInflater();
