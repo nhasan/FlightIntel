@@ -114,5 +114,6 @@
 		<service android:name=".wx.MetarService" />
         <service android:name=".wx.TafService" />
         <service android:name=".wx.PirepService" />
+        <service android:name=".dtpp.DtppService" />
     </application>
 </manifest>
