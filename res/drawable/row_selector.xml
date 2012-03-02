@@ -29,7 +29,7 @@
                 android:endColor="#ff4da6ff"
                 android:centerY="0.5"
                 android:angle="270" />
-            <corners android:radius="8dp" />
+            <corners android:radius="3dp" />
        </shape>
     </item>
 </selector>
