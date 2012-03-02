@@ -19,14 +19,12 @@
 
 package com.nadmm.airports.utils;
 
-import com.nadmm.airports.PreferencesActivity;
-import com.nadmm.airports.R;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -43,6 +41,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.nadmm.airports.PreferencesActivity;
+import com.nadmm.airports.R;
 
 public class UiUtils {
 
@@ -157,6 +158,20 @@ public class UiUtils {
         DisplayMetrics dm = tv.getResources().getDisplayMetrics();
         tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
         tv.setCompoundDrawablePadding( (int) ( dm.density*6+0.5 ) );
+    }
+
+    static public int getRowSelectorForCursor( Cursor c ) {
+        int resid;
+        if ( c.getCount() == 1 ) {
+            resid = R.drawable.row_selector;
+        } else if ( c.getPosition() == 0 ) {
+            resid = R.drawable.row_selector_top;
+        } else if ( c.getPosition() == c.getCount()-1 ) {
+            resid = R.drawable.row_selector_bottom;
+        } else {
+            resid = R.drawable.row_selector_middle;
+        }
+        return resid;
     }
 
 }
