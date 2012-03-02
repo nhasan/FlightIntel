@@ -19,9 +19,13 @@
 
 package com.nadmm.airports.utils;
 
+import com.nadmm.airports.PreferencesActivity;
+
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 
 public class NetworkUtils {
 
@@ -42,6 +46,16 @@ public class NetworkUtils {
                 Context.CONNECTIVITY_SERVICE );
         NetworkInfo network = connMan.getActiveNetworkInfo();
         return ( network != null && network.getType() == ConnectivityManager.TYPE_WIFI );
+    }
+
+    public static boolean useCacheContentOnly( Context context ) {
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences( context );
+        boolean alwaysAutoFetch = prefs.getBoolean(
+                PreferencesActivity.KEY_AUTO_DOWNLOAD_ON_3G, false );
+        boolean cacheOnly = ( !alwaysAutoFetch 
+                && !NetworkUtils.isConnectedToWifi( context ) );
+        return cacheOnly;
     }
 
 }
