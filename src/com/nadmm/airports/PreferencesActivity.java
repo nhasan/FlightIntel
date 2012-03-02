@@ -37,7 +37,7 @@ public class PreferencesActivity extends PreferenceActivity
     public static final String KEY_LOCATION_NEARBY_RADIUS = "location_nearby_radius";
     public static final String KEY_SHOW_EXTRA_RUNWAY_DATA = "extra_runway_data";
     public static final String KEY_SHOW_GPS_NOTAMS = "show_gps_notams";
-    public static final String KEY_ALWAYS_AUTO_FETCH_WEATHER = "always_auto_fetch_weather";
+    public static final String KEY_AUTO_DOWNLOAD_ON_3G = "auto_download_on_3G";
     public static final String KEY_DISCLAIMER_AGREED = "disclaimer_agreed";
     public static final String KEY_PHONE_TAP_ACTION = "phone_tap_action";
     public static final String KEY_WX_FAV_MIGRATED = "wx_fav_migrated";

@@ -72,10 +72,10 @@
                 android:summaryOff="GPS NOTAMs will not be shown"
                 defaultValue="false" />
         <CheckBoxPreference
-                android:key="always_auto_fetch_weather"
-                android:title="Auto-fetch wx on 3G/4G"
-                android:summaryOn="Wx will be auto-fetched on 3G/4G+wifi"
-                android:summaryOff="Wx will be auto-fetched on wifi only"
+                android:key="auto_download_on_3G"
+                android:title="Auto-download content on 3G/4G"
+                android:summaryOn="Auto-download content on 3G/4G+wifi"
+                android:summaryOff="Auto-download content on wifi only"
                 defaultValue="false" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Miscellaneous">
