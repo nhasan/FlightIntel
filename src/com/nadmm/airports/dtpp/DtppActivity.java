@@ -19,16 +19,23 @@
 
 package com.nadmm.airports.dtpp;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -42,8 +49,14 @@ import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.TimeUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class DtppActivity extends ActivityBase {
+
+    protected HashMap<String, View> mDtppMap = new HashMap<String, View>();
+    protected String mTppCycle;
+    protected BroadcastReceiver mReceiver;
+    protected IntentFilter mFilter;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -51,10 +64,33 @@ public class DtppActivity extends ActivityBase {
 
         setContentView( createContentView( R.layout.dtpp_detail_view ) );
 
+        mFilter = new IntentFilter();
+        mFilter.addAction( DtppService.ACTION_CHECK_CHART );
+        mFilter.addAction( DtppService.ACTION_GET_CHART );
+
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive( Context context, Intent intent ) {
+                handleDtppBroadcast( intent );
+            }
+        };
+
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         DtppTask task = new DtppTask();
         task.execute( siteNumber );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerReceiver( mReceiver, mFilter );
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterReceiver( mReceiver );
     }
 
     private final class DtppTask extends CursorAsyncTask {
@@ -103,11 +139,9 @@ public class DtppActivity extends ActivityBase {
         @Override
         protected void onResult( Cursor[] result ) {
             Cursor apt = result[ 0 ];
-
             setActionBarTitle( apt );
             showAirportTitle( apt );
             showAPD( result );
-
             setContentShown( true );
         }
 
@@ -118,7 +152,7 @@ public class DtppActivity extends ActivityBase {
 
         Cursor cycle = result[ 1 ];
         cycle.moveToFirst();
-        String tppCycle = cycle.getString( cycle.getColumnIndex( Cycle.TPP_CYCLE ) );
+        mTppCycle = cycle.getString( cycle.getColumnIndex( Cycle.TPP_CYCLE ) );
         String from = cycle.getString( cycle.getColumnIndex( Cycle.FROM_DATE ) );
         String to = cycle.getString( cycle.getColumnIndex( Cycle.TO_DATE ) );
 
@@ -142,9 +176,9 @@ public class DtppActivity extends ActivityBase {
         TextView tv = (TextView) item.findViewById( R.id.group_name );
         LinearLayout layout = (LinearLayout) item.findViewById( R.id.group_details );
         if ( !expired ) {
-            tv.setText( String.format( "Chart Cycle %s", tppCycle ) );
+            tv.setText( String.format( "Chart Cycle %s", mTppCycle ) );
         } else {
-            tv.setText( String.format( "Chart Cycle %s (Expired)", tppCycle ) );
+            tv.setText( String.format( "Chart Cycle %s (Expired)", mTppCycle ) );
         }
 
         Cursor dtpp = result[ 2 ];
@@ -165,35 +199,103 @@ public class DtppActivity extends ActivityBase {
             showCharts( topLayout, result[ index ] );
             ++index;
         }
+        showOther( topLayout );
     }
 
     protected void showCharts( LinearLayout layout, Cursor c ) {
-        if ( c.moveToFirst() )
-        {
+        if ( c.moveToFirst() ) {
             String chartCode = c.getString( c.getColumnIndex( Dtpp.CHART_CODE ) );
             LinearLayout item = (LinearLayout) inflate( R.layout.grouped_detail_item );
             TextView tv = (TextView) item.findViewById( R.id.group_name );
             LinearLayout grpLayout = (LinearLayout) item.findViewById( R.id.group_details );
             tv.setText( DataUtils.decodeChartCode( chartCode ) );
             do {
-                addChartRow( grpLayout, c, false );
+                String chartName = c.getString( c.getColumnIndex( Dtpp.CHART_NAME ) );
+                String pdfName = c.getString( c.getColumnIndex( Dtpp.PDF_NAME ) );
+                String userAction = c.getString( c.getColumnIndex( Dtpp.USER_ACTION ) );
+                int resid = UiUtils.getRowSelectorForCursor( c );
+                addChartRow( grpLayout, chartName, pdfName, userAction, resid );
             } while ( c.moveToNext() );
             layout.addView( item, new LinearLayout.LayoutParams( LayoutParams.FILL_PARENT,
                     LayoutParams.WRAP_CONTENT ) );
         }
     }
 
-    protected View addChartRow( LinearLayout layout, Cursor c, boolean available ) {
-        String chartName = c.getString( c.getColumnIndex( Dtpp.CHART_NAME ) );
-        String userAction = c.getString( c.getColumnIndex( Dtpp.USER_ACTION ) );
+
+    protected void showOther( LinearLayout layout ) {
+        LinearLayout item = (LinearLayout) inflate( R.layout.grouped_detail_item );
+        TextView tv = (TextView) item.findViewById( R.id.group_name );
+        LinearLayout grpLayout = (LinearLayout) item.findViewById( R.id.group_details );
+        tv.setText( "Other" );
+        addChartRow( grpLayout, "Airport Diagram Legend", "legendAD.pdf", "",
+                R.drawable.row_selector_top );
+        addSeparator( grpLayout );
+        addChartRow( grpLayout, "Legends & General Information", "frntmatter.pdf", "",
+                R.drawable.row_selector_bottom );
+        layout.addView( item, new LinearLayout.LayoutParams( LayoutParams.FILL_PARENT,
+                LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected View addChartRow( LinearLayout layout, String chartName, final String pdfName,
+            String userAction, int resid ) {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
         }
-        View view = addRow( layout, chartName, DataUtils.decodeUserAction( userAction ) );
+        View row = addRow( layout, chartName, DataUtils.decodeUserAction( userAction ) );
+
         if ( !userAction.equals( "D" ) ) {
-            showChartAvailability( view, available );
+            row.setBackgroundResource( resid );
+            row.setOnClickListener( new OnClickListener() {
+
+                @Override
+                public void onClick( View v ) {
+                    getTppChart( pdfName );
+                }
+
+            } );
+            showChartAvailability( row, false );
+            mDtppMap.put( pdfName, row );
+            checkTppChart( pdfName );
         }
-        return view;
+
+        return row;
+    }
+
+    protected void checkTppChart( String pdfName ) {
+        Intent service = new Intent( this, DtppService.class );
+        service.setAction( DtppService.ACTION_CHECK_CHART );
+        service.putExtra( DtppService.TPP_CYCLE, mTppCycle );
+        service.putExtra( DtppService.PDF_NAME, pdfName );
+        startService( service );
+    }
+
+    protected void getTppChart( String pdfName ) {
+        setRefreshItemVisible( true );
+        startRefreshAnimation();
+        Intent service = new Intent( this, DtppService.class );
+        service.setAction( DtppService.ACTION_GET_CHART );
+        service.putExtra( DtppService.TPP_CYCLE, mTppCycle );
+        service.putExtra( DtppService.PDF_NAME, pdfName );
+        startService( service );
+    }
+
+    protected void handleDtppBroadcast( Intent intent ) {
+        String action = intent.getAction();
+        String pdfName = intent.getStringExtra( DtppService.PDF_NAME );
+        String result = intent.getStringExtra( DtppService.RESULT );
+        if ( result != null ) {
+            // PDF chart is available on the device
+            View view = mDtppMap.get( pdfName );
+            showChartAvailability( view, true );
+            if ( action.equals( DtppService.ACTION_GET_CHART ) ) {
+                stopRefreshAnimation();
+                setRefreshItemVisible( false );
+                Intent viewChart = new Intent( Intent.ACTION_VIEW );
+                Uri pdf = Uri.fromFile( new File( result) );
+                viewChart.setDataAndType( pdf, "application/pdf" );
+                startActivity( viewChart );
+            }
+        }
     }
 
     protected void showChartAvailability( View view, boolean available ) {
