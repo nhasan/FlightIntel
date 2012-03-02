@@ -66,12 +66,10 @@ public class MetarFragment extends FragmentBase {
         setHasOptionsMenu( true );
 
         mReceiver = new BroadcastReceiver() {
-
             @Override
             public void onReceive( Context context, Intent intent ) {
                 showMetar( intent );
             }
-
         };
     }
 
