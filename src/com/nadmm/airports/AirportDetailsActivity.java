@@ -29,7 +29,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -38,7 +37,6 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
@@ -981,12 +979,7 @@ public class AirportDetailsActivity extends ActivityBase {
             }
 
             // Now get the METAR if already in the cache
-            SharedPreferences prefs =
-                    PreferenceManager.getDefaultSharedPreferences( getActivityBase() );
-            boolean alwaysAutoFetch = prefs.getBoolean(
-                    PreferencesActivity.KEY_ALWAYS_AUTO_FETCH_WEATHER, false );
-            boolean cacheOnly = ( !alwaysAutoFetch 
-                    && !NetworkUtils.isConnectedToWifi( getActivityBase() ) );
+            boolean cacheOnly = NetworkUtils.useCacheContentOnly( getActivity() );
             if ( force || !cacheOnly ) {
                 getActivityBase().startRefreshAnimation();
             }
