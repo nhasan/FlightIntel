@@ -48,10 +48,13 @@ import com.nadmm.airports.DatabaseManager.Dtpp;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 public class DtppActivity extends ActivityBase {
+
+    private final String MIME_TYPE_PDF = "application/pdf";
 
     protected HashMap<String, View> mDtppMap = new HashMap<String, View>();
     protected String mTppCycle;
@@ -290,11 +293,23 @@ public class DtppActivity extends ActivityBase {
             if ( action.equals( DtppService.ACTION_GET_CHART ) ) {
                 stopRefreshAnimation();
                 setRefreshItemVisible( false );
-                Intent viewChart = new Intent( Intent.ACTION_VIEW );
-                Uri pdf = Uri.fromFile( new File( result) );
-                viewChart.setDataAndType( pdf, "application/pdf" );
-                startActivity( viewChart );
+                startPDFIntent( result );
             }
+        }
+    }
+
+    protected void startPDFIntent( String path ) {
+        if ( SystemUtils.canDisplayMimeType( this, MIME_TYPE_PDF ) ) {
+            Intent viewChart = new Intent( Intent.ACTION_VIEW );
+            Uri pdf = Uri.fromFile( new File( path ) );
+            viewChart.setDataAndType( pdf, MIME_TYPE_PDF );
+            startActivity( viewChart );
+        } else {
+            UiUtils.showToast( this, "No PDF viewer app was found. Please install from Market" );
+            Intent market = new Intent( Intent.ACTION_VIEW );
+            Uri uri = Uri.parse( "market://details?id=org.ebookdroid" );
+            market.setData( uri );
+            startActivity( market );
         }
     }
 
