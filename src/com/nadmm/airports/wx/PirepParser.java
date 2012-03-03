@@ -36,6 +36,7 @@ import android.text.format.Time;
 import android.util.TimeFormatException;
 
 import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.wx.Pirep.Flags;
 import com.nadmm.airports.wx.Pirep.IcingCondition;
 import com.nadmm.airports.wx.Pirep.PirepEntry;
 import com.nadmm.airports.wx.Pirep.SkyCondition;
@@ -160,6 +161,9 @@ public class PirepParser {
                 WxSymbol.parseWxSymbols( entry.wxList, text.toString() );
             } else if ( qName.equalsIgnoreCase( "aircraft_ref" ) ) {
                 entry.aircraftRef = text.toString();
+                if ( entry.aircraftRef.equals( "UNKN" ) ) {
+                    entry.aircraftRef = "Unknown";
+                }
             } else if ( qName.equalsIgnoreCase( "latitude" ) ) {
                 entry.latitude = Float.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "longitude" ) ) {
@@ -176,20 +180,34 @@ public class PirepParser {
                 entry.windSpeedKnots = Integer.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "vert_gust_kt" ) ) {
                 entry.vertGustKnots = Integer.valueOf( text.toString() );
+            } else if ( qName.equalsIgnoreCase( "mid_point_assumed" ) ) {
+                if ( text.toString().equalsIgnoreCase( "true" ) ) {
+                    entry.flags.add( Flags.MidPointAssumed );
+                }
+            } else if ( qName.equalsIgnoreCase( "no_flt_lvl" ) ) {
+                if ( text.toString().equalsIgnoreCase( "true" ) ) {
+                    entry.flags.add( Flags.NoFlightLevel );
+                }
+            } else if ( qName.equalsIgnoreCase( "above_ground_level_indicated" ) ) {
+                if ( text.toString().equalsIgnoreCase( "true" ) ) {
+                    entry.flags.add( Flags.AglIndicated );
+                }
             } else if ( qName.equalsIgnoreCase( "AircraftReport" ) ) {
-                Location reportLocation = new Location( "" );
-                reportLocation.setLatitude( entry.latitude );
-                reportLocation.setLongitude( entry.longitude );
-
-                float[] results = new float[ 2 ];
-                Location.distanceBetween( mLocation.getLatitude(), mLocation.getLongitude(),
-                        reportLocation.getLatitude(), reportLocation.getLongitude(), results );
-
-                entry.distanceNM = (long) (results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE);
-                if ( entry.distanceNM <= mRadiusNM ) {
-                    entry.bearing = ( results[ 1 ]+mDeclination+360 )%360;
-                    entry.isValid = true;
-                    pirep.entries.add( entry );
+                if ( !entry.flags.contains( Flags.BadLocation ) ) {
+                    Location reportLocation = new Location( "" );
+                    reportLocation.setLatitude( entry.latitude );
+                    reportLocation.setLongitude( entry.longitude );
+    
+                    float[] results = new float[ 2 ];
+                    Location.distanceBetween( mLocation.getLatitude(), mLocation.getLongitude(),
+                            reportLocation.getLatitude(), reportLocation.getLongitude(), results );
+    
+                    entry.distanceNM = (long) (results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE);
+                    if ( entry.distanceNM <= mRadiusNM ) {
+                        entry.bearing = ( results[ 1 ]+mDeclination+360 )%360;
+                        entry.isValid = true;
+                        pirep.entries.add( entry );
+                    }
                 }
             }
         }

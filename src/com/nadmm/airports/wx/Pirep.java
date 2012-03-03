@@ -75,7 +75,7 @@ public class Pirep implements Serializable {
         }
     }
 
-    public enum QualityControlFlags {
+    public enum Flags {
         MidPointAssumed {
             @Override
             public String toString() {
@@ -133,7 +133,7 @@ public class Pirep implements Serializable {
         public int windDirDegrees;
         public int windSpeedKnots;
         public int vertGustKnots;
-        ArrayList<QualityControlFlags> flags;
+        ArrayList<Flags> flags;
         ArrayList<SkyCondition> skyConditions;
         ArrayList<WxSymbol> wxList;
         ArrayList<TurbulenceCondition> turbulenceConditions;
@@ -153,7 +153,7 @@ public class Pirep implements Serializable {
             windDirDegrees = Integer.MAX_VALUE;
             windSpeedKnots = Integer.MAX_VALUE;
             vertGustKnots = Integer.MAX_VALUE;
-            flags = new ArrayList<QualityControlFlags>();
+            flags = new ArrayList<Flags>();
             skyConditions = new ArrayList<SkyCondition>();
             wxList = new ArrayList<WxSymbol>();
             turbulenceConditions = new ArrayList<TurbulenceCondition>();

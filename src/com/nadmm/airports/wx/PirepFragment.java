@@ -48,6 +48,7 @@ import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
+import com.nadmm.airports.wx.Pirep.Flags;
 import com.nadmm.airports.wx.Pirep.IcingCondition;
 import com.nadmm.airports.wx.Pirep.PirepEntry;
 import com.nadmm.airports.wx.Pirep.SkyCondition;
@@ -211,7 +212,10 @@ public class PirepFragment extends FragmentBase {
     protected void showPirepEntry( LinearLayout layout, PirepEntry entry ) {
         LinearLayout item = (LinearLayout) inflate( R.layout.pirep_detail_item );
         TextView tv = (TextView) item.findViewById( R.id.pirep_name );
-        if ( entry.distanceNM > 0 ) {
+        if ( entry.flags.contains( Flags.BadLocation ) ) {
+            tv.setText( String.format( "%s (No location)",
+                    TimeUtils.formatDateUTC( getActivity(), entry.observationTime ) ) );
+        } else if ( entry.distanceNM > 0 ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
             tv.setText( String.format( "%s (%.0fNM %s)",
                     TimeUtils.formatDateUTC( getActivity(), entry.observationTime ),
@@ -232,7 +236,15 @@ public class PirepFragment extends FragmentBase {
 
         if ( entry.altitudeFeetMSL < Integer.MAX_VALUE ) {
             addSeparator( details );
-            addRow( details, "Altitude", mDecimal.format( entry.altitudeFeetMSL )+" ft MSL" );
+            if ( entry.flags.contains( Flags.MidPointAssumed ) ) {
+                addRow( details, "Altitude", mDecimal.format( entry.altitudeFeetMSL )+" ft MSL",
+                        "(Mid-point altitude)" );
+            } else if ( entry.flags.contains( Flags.NoFlightLevel ) ) {
+                addRow( details, "Altitude", mDecimal.format( entry.altitudeFeetMSL )+" ft MSL",
+                        "(Assumed altitude)" );
+            } else {
+                addRow( details, "Altitude", mDecimal.format( entry.altitudeFeetMSL )+" ft MSL" );
+            }
         }
 
         if ( entry.visibilitySM < Integer.MAX_VALUE ) {
