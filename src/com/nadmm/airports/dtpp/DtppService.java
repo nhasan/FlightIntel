@@ -74,6 +74,9 @@ public class DtppService extends IntentService {
 
         File cycleDir = new File( DTPP_DIR, tppCycle );
         if ( !cycleDir.exists() ) {
+            // A new cycle has begun, cleanup any old cycles
+            cleanupOldCycles();
+            // Create the directory for the new cycle
             cycleDir.mkdir();
         }
         File pdfFile = new File( cycleDir, pdfName );
@@ -151,4 +154,16 @@ public class DtppService extends IntentService {
         }
     }
 
+    protected void cleanupOldCycles() {
+        File[] cycles = DTPP_DIR.listFiles();
+        for ( File cycle : cycles ) {
+            // First delete all the charts within the cycle directory
+            File[] charts = cycle.listFiles();
+            for ( File chart : charts ) {
+                chart.delete();
+            }
+            // Now delete the cycle directory itself
+            cycle.delete();
+        }
+    }
 }
