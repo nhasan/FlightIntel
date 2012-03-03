@@ -251,7 +251,8 @@ public class AirportDetailsActivity extends ActivityBase {
                     +"x."+Wxs.STATION_LATITUDE_DEGREES+"<=?"
                     +") AND (x."+Wxs.STATION_LONGITUDE_DEGREES+">=? "
                     +(isCrossingMeridian180? "OR " : "AND ")
-                    +"x."+Wxs.STATION_LONGITUDE_DEGREES+"<=?)";
+                    +"x."+Wxs.STATION_LONGITUDE_DEGREES+"<=?) AND "
+                    +"w."+Awos.COMMISSIONING_STATUS+"='Y'";
             builder = new SQLiteQueryBuilder();
             builder.setTables( Wxs.TABLE_NAME+" x"
                     +" LEFT JOIN "+Airports.TABLE_NAME+" a"

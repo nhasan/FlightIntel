@@ -129,7 +129,7 @@ public class MetarFragment extends FragmentBase {
             builder.setTables( Airports.TABLE_NAME+" a"
                     +" LEFT JOIN "+Awos.TABLE_NAME+" w"
                     +" ON a."+Airports.FAA_CODE+" = w."+Awos.WX_SENSOR_IDENT );
-            selection = "a."+Airports.ICAO_CODE+"=?";
+            selection = "a."+Airports.ICAO_CODE+"=? AND w."+Awos.COMMISSIONING_STATUS+"='Y'";
             c = builder.query( db, wxColumns, selection, new String[] { stationId },
                     null, null, null, null );
             cursors[ 1 ] = c;
