@@ -29,8 +29,8 @@ import java.util.zip.GZIPInputStream;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.IntentService;
 
@@ -49,8 +49,13 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_TAF = "flightintel.intent.action.GET_TAF";
     public static final String ACTION_GET_PIREP = "flightintel.intent.action.GET_PIREP";
 
+    private HttpClient mHttpClient;
+    private HttpHost mTarget;
+
     public NoaaService( String name ) {
         super( name );
+        mHttpClient = NetworkUtils.getHttpClient();
+        mTarget = new HttpHost( NOAA_HOST, 80 );
     }
 
     protected void cleanupCache( File dir, long maxAge ) {
@@ -71,11 +76,9 @@ public abstract class NoaaService extends IntentService {
             return false;
         }
 
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpHost target = new HttpHost( NOAA_HOST, 80 );
         HttpGet get = new HttpGet( uri );
 
-        HttpResponse response = httpClient.execute( target, get );
+        HttpResponse response = mHttpClient.execute( mTarget, get );
         int status = response.getStatusLine().getStatusCode();
         if ( status != HttpStatus.SC_OK ) {
             throw new Exception( response.getStatusLine().getReasonPhrase() );
