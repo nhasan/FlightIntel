@@ -19,13 +19,23 @@
 
 package com.nadmm.airports.utils;
 
-import com.nadmm.airports.PreferencesActivity;
+import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
+
+import com.nadmm.airports.PreferencesActivity;
 
 public class NetworkUtils {
 
@@ -56,6 +66,15 @@ public class NetworkUtils {
         boolean cacheOnly = ( !alwaysAutoFetch 
                 && !NetworkUtils.isConnectedToWifi( context ) );
         return cacheOnly;
+    }
+
+    public static HttpClient getHttpClient() {
+        HttpParams params = new BasicHttpParams();
+        SchemeRegistry registry = new SchemeRegistry();
+        registry.register( new Scheme( "http", PlainSocketFactory.getSocketFactory(), 80 ) );
+        ClientConnectionManager cm = new ThreadSafeClientConnManager( params, registry );
+        HttpClient client = new DefaultHttpClient( cm, params );
+        return client;
     }
 
 }
