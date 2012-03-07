@@ -22,6 +22,7 @@ package com.nadmm.airports.dtpp;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -34,9 +35,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -57,9 +60,12 @@ public class DtppActivity extends ActivityBase {
     private final String MIME_TYPE_PDF = "application/pdf";
 
     protected HashMap<String, View> mDtppMap = new HashMap<String, View>();
+    protected ArrayList<String> mPendingCharts = new ArrayList<String>();
     protected String mTppCycle;
     protected BroadcastReceiver mReceiver;
     protected IntentFilter mFilter;
+    protected String mFaaCode;
+    protected String mTppVolume;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -77,6 +83,17 @@ public class DtppActivity extends ActivityBase {
                 handleDtppBroadcast( intent );
             }
         };
+
+        Button btnDownload = (Button) findViewById( R.id.btnDownload );
+        btnDownload.setOnClickListener( new OnClickListener() {
+            
+            @Override
+            public void onClick( View v ) {
+                setRefreshItemVisible( true );
+                startRefreshAnimation();
+                getAptCharts();
+            }
+        } );
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
@@ -108,7 +125,7 @@ public class DtppActivity extends ActivityBase {
             Cursor apt = getAirportDetails( siteNumber );
             result[ 0 ] = apt;
 
-            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            mFaaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
 
             db = mDbManager.getDatabase( DatabaseManager.DB_DTPP );
 
@@ -122,8 +139,11 @@ public class DtppActivity extends ActivityBase {
             builder.setTables( Dtpp.TABLE_NAME );
             c = builder.query( db, new String[] { Dtpp.TPP_VOLUME },
                     Dtpp.FAA_CODE+"=?",
-                    new String[] { faaCode }, Dtpp.TPP_VOLUME, null, null, null );
+                    new String[] { mFaaCode }, Dtpp.TPP_VOLUME, null, null, null );
             result[ 2 ] = c;
+
+            c.moveToFirst();
+            mTppVolume = c.getString( c.getColumnIndex( Dtpp.TPP_VOLUME ) );
 
             int index = 3;
             for ( String chartCode : new String[] { "APD", "MIN", "STAR", "IAP",
@@ -132,7 +152,7 @@ public class DtppActivity extends ActivityBase {
                 builder.setTables( Dtpp.TABLE_NAME );
                 c = builder.query( db, new String[] { "*" },
                         Dtpp.FAA_CODE+"=? AND "+Dtpp.CHART_CODE+"=?",
-                        new String[] { faaCode, chartCode }, null, null, null, null );
+                        new String[] { mFaaCode, chartCode }, null, null, null, null );
                 result[ index++ ] = c;
             }
 
@@ -224,7 +244,6 @@ public class DtppActivity extends ActivityBase {
         }
     }
 
-
     protected void showOther( LinearLayout layout ) {
         LinearLayout item = (LinearLayout) inflate( R.layout.grouped_detail_item );
         TextView tv = (TextView) item.findViewById( R.id.group_name );
@@ -252,29 +271,36 @@ public class DtppActivity extends ActivityBase {
 
                 @Override
                 public void onClick( View v ) {
-                    getTppChart( pdfName );
+                    String path = (String) v.getTag();
+                    if ( path == null ) {
+                        setRefreshItemVisible( true );
+                        startRefreshAnimation();
+                        getTppChart( pdfName );
+                    } else {
+                        startPDFIntent( path );
+                    }
                 }
 
             } );
             showChartAvailability( row, false );
             mDtppMap.put( pdfName, row );
-            checkTppChart( pdfName );
+            checkTppChart( pdfName, false );
         }
 
         return row;
     }
 
-    protected void checkTppChart( String pdfName ) {
+    protected void checkTppChart( String pdfName, boolean download ) {
         Intent service = new Intent( this, DtppService.class );
         service.setAction( DtppService.ACTION_CHECK_CHART );
         service.putExtra( DtppService.TPP_CYCLE, mTppCycle );
         service.putExtra( DtppService.PDF_NAME, pdfName );
+        service.putExtra( DtppService.DOWNLOAD_IF_MISSING, download );
         startService( service );
     }
 
     protected void getTppChart( String pdfName ) {
-        setRefreshItemVisible( true );
-        startRefreshAnimation();
+        mPendingCharts.add( pdfName );
         Intent service = new Intent( this, DtppService.class );
         service.setAction( DtppService.ACTION_GET_CHART );
         service.putExtra( DtppService.TPP_CYCLE, mTppCycle );
@@ -282,18 +308,52 @@ public class DtppActivity extends ActivityBase {
         startService( service );
     }
 
+    protected void getAptCharts() {
+        for ( String pdfName : mDtppMap.keySet() ) {
+            View v = mDtppMap.get( pdfName );
+            if ( v.getTag() == null ) {
+                checkTppChart( pdfName, true );
+            }
+        }
+    }
+
     protected void handleDtppBroadcast( Intent intent ) {
         String action = intent.getAction();
         String pdfName = intent.getStringExtra( DtppService.PDF_NAME );
-        String result = intent.getStringExtra( DtppService.RESULT );
-        if ( result != null ) {
-            // PDF chart is available on the device
+        boolean result = intent.getBooleanExtra( DtppService.RESULT, false );
+
+        if ( result ) {
             View view = mDtppMap.get( pdfName );
             showChartAvailability( view, true );
+            // Save the PDF chart path for later use
+            String path = intent.getStringExtra( DtppService.PDF_PATH );
+            view.setTag( path );
+            Log.d( pdfName, path );
+
             if ( action.equals( DtppService.ACTION_GET_CHART ) ) {
-                stopRefreshAnimation();
-                setRefreshItemVisible( false );
-                startPDFIntent( result );
+                startPDFIntent( path );
+            }
+        }
+
+        mPendingCharts.remove( pdfName );
+        if ( mPendingCharts.isEmpty() ) {
+            // There are no pending requests, hide the spinner
+            stopRefreshAnimation();
+            setRefreshItemVisible( false );
+
+            // Check if we have all the charts for this airport
+            boolean all = true;
+            for ( String key : mDtppMap.keySet() ) {
+                // Check if PDF path is set for this chart
+                if ( mDtppMap.get( key ).getTag() == null ) {
+                    all = false;
+                    break;
+                }
+            }
+            if ( all ) {
+                // All charts are available, hide the download button
+                Button btnDownload = (Button) findViewById( R.id.btnDownload );
+                btnDownload.setVisibility( View.GONE );
             }
         }
     }
@@ -305,7 +365,7 @@ public class DtppActivity extends ActivityBase {
             viewChart.setDataAndType( pdf, MIME_TYPE_PDF );
             startActivity( viewChart );
         } else {
-            UiUtils.showToast( this, "No PDF viewer app was found. Please install from Market" );
+            UiUtils.showToast( this, "FlightIntel: No PDF viewer app was found." );
             Intent market = new Intent( Intent.ACTION_VIEW );
             Uri uri = Uri.parse( "market://details?id=org.ebookdroid" );
             market.setData( uri );

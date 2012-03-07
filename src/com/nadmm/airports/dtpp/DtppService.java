@@ -29,13 +29,19 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 
 import com.nadmm.airports.AirportsMain;
+import com.nadmm.airports.DatabaseManager;
+import com.nadmm.airports.DatabaseManager.Dtpp;
+import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 public class DtppService extends IntentService {
@@ -43,18 +49,32 @@ public class DtppService extends IntentService {
     public static final String ACTION_GET_CHART = "flightintel.intent.action.GET_CHART";
     public static final String ACTION_CHECK_CHART = "flightintel.intent.action.CHECK_CHART";
 
+    public static final String OP_MODE = "OP_MODE";
+    public static final String FAA_CODE = "FAA_CODE";
+    public static final String TPP_VOLUME = "TPP_VOLUME";
     public static final String TPP_CYCLE = "TPP_CYCLE";
     public static final String PDF_NAME = "PDF_NAME";
-    public static final String GET_IF_MISSING = "GET_IF_MISSING";
+    public static final String DOWNLOAD_IF_MISSING = "DOWNLOAD_IF_MISSING";
+    public static final String PDF_PATH = "PDF_PATH";
     public static final String RESULT = "RESULT";
 
+    public static final String OP_MODE_SINGLE = "OP_MODE_SINGLE";
+    public static final String OP_MODE_APT = "OP_MODE_APT";
+    public static final String OP_MODE_VOLUME = "OP_MODE_VOLUME";
+
+    private final String DTPP_HOST = "aeronav.faa.gov";
     private final File DTPP_DIR = new File(
             AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/dtpp" );
 
-    private final HttpHost mTarget = new HttpHost( "aeronav.faa.gov", 80 );
+    private final HttpClient mHttpClient;
+    private final HttpHost mTarget;
+    private final DatabaseManager mDbManager;
 
     public DtppService() {
         super( "DtppService" );
+        mHttpClient = NetworkUtils.getHttpClient();
+        mTarget = new HttpHost( DTPP_HOST, 80 );
+        mDbManager= DatabaseManager.instance( this );
     }
 
     @Override
@@ -68,10 +88,7 @@ public class DtppService extends IntentService {
 
     @Override
     protected void onHandleIntent( Intent intent ) {
-        String action = intent.getAction();
         String tppCycle = intent.getStringExtra( TPP_CYCLE );
-        String pdfName = intent.getStringExtra( PDF_NAME );
-
         File cycleDir = new File( DTPP_DIR, tppCycle );
         if ( !cycleDir.exists() ) {
             // A new cycle has begun, cleanup any old cycles
@@ -79,28 +96,194 @@ public class DtppService extends IntentService {
             // Create the directory for the new cycle
             cycleDir.mkdir();
         }
-        File pdfFile = new File( cycleDir, pdfName );
 
-        boolean download = false;
+        String action = intent.getAction();
+        String opMode = OP_MODE_SINGLE;
         if ( action.equals( ACTION_GET_CHART ) ) {
-            download = true;
+            if ( opMode.equals( OP_MODE_SINGLE ) ) {
+                getSingleChart( intent );
+            } else if ( opMode.equals( OP_MODE_APT ) ) {
+                getAllChartsForAirport( intent );
+            } else if ( opMode.equals( OP_MODE_VOLUME ) ) {
+                getAllChartsForVolume( intent );
+            }
         } else if ( action.equals( ACTION_CHECK_CHART ) ) {
-            download = intent.getBooleanExtra( GET_IF_MISSING, false );
+            if ( opMode.equals( OP_MODE_SINGLE ) ) {
+                checkSingleChart( intent );
+            } else if ( opMode.equals( OP_MODE_APT ) ) {
+            } else if ( opMode.equals( OP_MODE_VOLUME ) ) {
+            }
+        }
+    }
+
+    protected void getSingleChart( Intent intent ) {
+        String tppCycle = intent.getStringExtra( TPP_CYCLE );
+        String pdfName = intent.getStringExtra( PDF_NAME );
+
+        File cycleDir = new File( DTPP_DIR, tppCycle );
+        File pdfFile = new File( cycleDir, pdfName );
+        if ( !pdfFile.exists() ) {
+            downloadChart( tppCycle, pdfFile );
         }
 
+        // Broadcast the result
+        Intent result = new Intent();
+        result.setAction( ACTION_GET_CHART );
+        result.putExtra( OP_MODE, OP_MODE_SINGLE );
+        result.putExtra( TPP_CYCLE, tppCycle );
+        result.putExtra( PDF_NAME, pdfName );
+        result.putExtra( RESULT, pdfFile.exists() );
+        if ( pdfFile.exists() ) {
+            result.putExtra( PDF_PATH, pdfFile.getAbsolutePath() );
+        }
+        sendBroadcast( result );
+    }
+
+    protected void checkSingleChart( Intent intent ) {
+        String tppCycle = intent.getStringExtra( TPP_CYCLE );
+        String pdfName = intent.getStringExtra( PDF_NAME );
+        boolean download = intent.getBooleanExtra( DOWNLOAD_IF_MISSING, false );
+
+        File cycleDir = new File( DTPP_DIR, tppCycle );
+        File pdfFile = new File( cycleDir, pdfName );
         if ( download && !pdfFile.exists() ) {
             downloadChart( tppCycle, pdfFile );
         }
 
         // Broadcast the result
         Intent result = new Intent();
-        result.setAction( action );
+        result.setAction( ACTION_CHECK_CHART );
+        result.putExtra( OP_MODE, OP_MODE_SINGLE );
         result.putExtra( TPP_CYCLE, tppCycle );
         result.putExtra( PDF_NAME, pdfName );
+        result.putExtra( RESULT, pdfFile.exists() );
         if ( pdfFile.exists() ) {
-            result.putExtra( RESULT, pdfFile.getAbsolutePath() );
+            result.putExtra( PDF_PATH, pdfFile.getAbsolutePath() );
         }
         sendBroadcast( result );
+    }
+
+    protected void getAllChartsForAirport( Intent intent ) {
+        String tppCycle = intent.getStringExtra( TPP_CYCLE );
+        String faaCode = intent.getStringExtra( FAA_CODE );
+
+        SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_DTPP );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Dtpp.TABLE_NAME );
+        Cursor c = builder.query( db, new String[] { Dtpp.PDF_NAME },
+                Dtpp.FAA_CODE+"=?", new String[] { faaCode }, null, null, null, null );
+
+
+        boolean ok = downloadCharts( tppCycle, c );
+
+        // Broadcast the result
+        Intent result = new Intent();
+        result.setAction( ACTION_GET_CHART );
+        result.putExtra( OP_MODE, OP_MODE_APT );
+        result.putExtra( TPP_CYCLE, tppCycle );
+        result.putExtra( RESULT, ok );
+        sendBroadcast( result );
+    }
+
+    protected void checkAllChartsForAirport( Intent intent ) {
+        String tppCycle = intent.getStringExtra( TPP_CYCLE );
+        String faaCode = intent.getStringExtra( FAA_CODE );
+
+        SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_DTPP );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Dtpp.TABLE_NAME );
+        Cursor c = builder.query( db, new String[] { Dtpp.PDF_NAME },
+                Dtpp.FAA_CODE+"=?", new String[] { faaCode }, null, null, null, null );
+
+
+        boolean ok = checkCharts( tppCycle, c );
+
+        // Broadcast the result
+        Intent result = new Intent();
+        result.setAction( ACTION_CHECK_CHART );
+        result.putExtra( OP_MODE, OP_MODE_APT );
+        result.putExtra( TPP_CYCLE, tppCycle );
+        result.putExtra( RESULT, ok );
+        sendBroadcast( result );
+    }
+
+    protected void getAllChartsForVolume( Intent intent ) {
+        String tppCycle = intent.getStringExtra( TPP_CYCLE );
+        String tppVolume = intent.getStringExtra( TPP_VOLUME );
+
+        SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_DTPP );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Dtpp.TABLE_NAME );
+        Cursor c = builder.query( db, new String[] { Dtpp.PDF_NAME },
+                Dtpp.TPP_VOLUME+"=?", new String[] { tppVolume }, null, null, null, null );
+
+        boolean ok = downloadCharts( tppCycle, c );
+
+        // Broadcast the result
+        Intent result = new Intent();
+        result.setAction( ACTION_GET_CHART );
+        result.putExtra( OP_MODE, OP_MODE_VOLUME );
+        result.putExtra( TPP_CYCLE, tppCycle );
+        result.putExtra( RESULT, ok );
+        sendBroadcast( result );
+    }
+
+    protected void checkAllChartsForVolume( Intent intent ) {
+        String tppCycle = intent.getStringExtra( TPP_CYCLE );
+        String tppVolume = intent.getStringExtra( TPP_VOLUME );
+
+        SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_DTPP );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Dtpp.TABLE_NAME );
+        Cursor c = builder.query( db, new String[] { Dtpp.PDF_NAME },
+                Dtpp.TPP_VOLUME+"=?", new String[] { tppVolume }, null, null, null, null );
+
+        boolean ok = checkCharts( tppCycle, c );
+
+        // Broadcast the result
+        Intent result = new Intent();
+        result.setAction( ACTION_CHECK_CHART );
+        result.putExtra( OP_MODE, OP_MODE_VOLUME );
+        result.putExtra( TPP_CYCLE, tppCycle );
+        result.putExtra( RESULT, ok );
+        sendBroadcast( result );
+    }
+
+    protected boolean downloadCharts( String tppCycle, Cursor c )
+    {
+        boolean ok = true;
+        if ( c.moveToFirst() ) {
+            do {
+                String pdfName = c.getString( c.getColumnIndex( Dtpp.PDF_NAME ) );
+                File cycleDir = new File( DTPP_DIR, tppCycle );
+                File pdfFile = new File( cycleDir, pdfName );
+                if ( !pdfFile.exists() ) {
+                    downloadChart( tppCycle, pdfFile );
+                }
+                if ( !pdfFile.exists() ) {
+                    ok = false;
+                    break;
+                }
+            } while ( c.moveToNext() );
+        }
+        return ok;
+    }
+
+    protected boolean checkCharts( String tppCycle, Cursor c )
+    {
+        boolean ok = true;
+        File cycleDir = new File( DTPP_DIR, tppCycle );
+        if ( c.moveToFirst() ) {
+            do {
+                String pdfName = c.getString( c.getColumnIndex( Dtpp.PDF_NAME ) );
+                File pdfFile = new File( cycleDir, pdfName );
+                if ( !pdfFile.exists() ) {
+                    ok = false;
+                    break;
+                }
+            } while ( c.moveToNext() );
+        }
+        return ok;
     }
 
     protected void downloadChart( String tppCycle, File pdfFile ) {
@@ -108,7 +291,6 @@ public class DtppService extends IntentService {
         FileOutputStream out = null;
 
         try {
-            DefaultHttpClient httpClient = new DefaultHttpClient();
             String path;
             if ( pdfFile.getName().equals( "legendAD.pdf" ) ) {
                 path = "/content/aeronav/online/pdf_files/legendAD.pdf";
@@ -118,7 +300,7 @@ public class DtppService extends IntentService {
             URI uri = new URI( path );
             HttpGet get = new HttpGet( uri );
 
-            HttpResponse response = httpClient.execute( mTarget, get );
+            HttpResponse response = mHttpClient.execute( mTarget, get );
             if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK ) {
                 return;
             }
@@ -130,11 +312,9 @@ public class DtppService extends IntentService {
 
             byte[] buffer = new byte[ 16*1024 ];
             int count;
-            int total = 0;
 
             while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
                 out.write( buffer, 0, count );
-                total += count;
             }
         } catch ( Exception e ) {
             UiUtils.showToast( getApplicationContext(), e.getMessage() );
