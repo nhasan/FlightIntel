@@ -195,7 +195,7 @@ public class PirepFragment extends FragmentBase {
             for ( PirepEntry entry : pirep.entries ) {
                 showPirepEntry( layout, entry );
             }
-    
+
             tv = (TextView) findViewById( R.id.wx_fetch_time );
             tv.setText( "Fetched on "+TimeUtils.formatLongDateTime( pirep.fetchTime )  );
             tv.setVisibility( View.VISIBLE );
@@ -213,8 +213,10 @@ public class PirepFragment extends FragmentBase {
         LinearLayout item = (LinearLayout) inflate( R.layout.pirep_detail_item );
         TextView tv = (TextView) item.findViewById( R.id.pirep_name );
         if ( entry.flags.contains( Flags.BadLocation ) ) {
-            tv.setText( String.format( "%s (No location)",
-                    TimeUtils.formatDateUTC( getActivity(), entry.observationTime ) ) );
+            String dir = GeoUtils.getCardinalDirection( entry.bearing );
+            tv.setText( String.format( "%s (%.0fNM %s approx.)",
+                    TimeUtils.formatDateUTC( getActivity(), entry.observationTime ),
+                    entry.distanceNM, dir ) );
         } else if ( entry.distanceNM > 0 ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
             tv.setText( String.format( "%s (%.0fNM %s)",
@@ -229,17 +231,14 @@ public class PirepFragment extends FragmentBase {
         tv.setText( entry.rawText );
 
         LinearLayout details = (LinearLayout) item.findViewById( R.id.pirep_details );
-        
+
         addRow( details, "Type", entry.reportType );
         addSeparator( details );
         addRow( details, "Aircraft", entry.aircraftRef );
 
         if ( entry.altitudeFeetMSL < Integer.MAX_VALUE ) {
             addSeparator( details );
-            if ( entry.flags.contains( Flags.MidPointAssumed ) ) {
-                addRow( details, "Altitude", mDecimal.format( entry.altitudeFeetMSL )+" ft MSL",
-                        "(Mid-point altitude)" );
-            } else if ( entry.flags.contains( Flags.NoFlightLevel ) ) {
+            if ( entry.flags.contains( Flags.NoFlightLevel ) ) {
                 addRow( details, "Altitude", mDecimal.format( entry.altitudeFeetMSL )+" ft MSL",
                         "(Assumed altitude)" );
             } else {
