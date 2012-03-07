@@ -81,9 +81,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Catalog;
-import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
+import com.nadmm.airports.utils.UiUtils;
 
 public final class DownloadActivity extends ListActivity {
     private static final String TAG = DownloadActivity.class.getName();
@@ -840,7 +840,7 @@ public final class DownloadActivity extends ListActivity {
 
                 Log.i( TAG, "Opened file "+zipFile.getCanonicalPath()+" for writing" );
 
-                byte[] buffer = new byte[ 64*1024 ];
+                byte[] buffer = new byte[ 16*1024 ];
                 int count;
                 int total = 0;
 
@@ -966,8 +966,8 @@ public final class DownloadActivity extends ListActivity {
             values.put( Catalog.TYPE, data.type );
             values.put( Catalog.DESCRIPTION, data.desc );
             values.put( Catalog.VERSION, data.version );
-            values.put( Catalog.START_DATE, data.start.format3339( true ) );
-            values.put( Catalog.END_DATE, data.end.format3339( true ) );
+            values.put( Catalog.START_DATE, data.start.format3339( false ) );
+            values.put( Catalog.END_DATE, data.end.format3339( false ) );
             values.put( Catalog.DB_NAME, data.dbName );
             values.put( Catalog.INSTALL_DATE, now.format3339( false ) );
 
