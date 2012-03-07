@@ -74,7 +74,7 @@ public class DtppActivity extends ActivityBase {
         setContentView( createContentView( R.layout.dtpp_detail_view ) );
 
         mFilter = new IntentFilter();
-        mFilter.addAction( DtppService.ACTION_CHECK_CHART );
+        mFilter.addAction( DtppService.ACTION_CHECK_CHARTS );
         mFilter.addAction( DtppService.ACTION_GET_CHART );
 
         mReceiver = new BroadcastReceiver() {
@@ -223,6 +223,13 @@ public class DtppActivity extends ActivityBase {
             ++index;
         }
         showOther( topLayout );
+
+        // Check the chart availability
+        for ( String pdfName : mDtppMap.keySet() ) {
+            Log.d( "Checking", pdfName );
+            mPendingCharts.add( pdfName );
+        }
+        checkTppCharts( mPendingCharts, false );
     }
 
     protected void showCharts( LinearLayout layout, Cursor c ) {
@@ -284,17 +291,16 @@ public class DtppActivity extends ActivityBase {
             } );
             showChartAvailability( row, false );
             mDtppMap.put( pdfName, row );
-            checkTppChart( pdfName, false );
         }
 
         return row;
     }
 
-    protected void checkTppChart( String pdfName, boolean download ) {
+    protected void checkTppCharts( ArrayList<String> pdfNames, boolean download ) {
         Intent service = new Intent( this, DtppService.class );
-        service.setAction( DtppService.ACTION_CHECK_CHART );
+        service.setAction( DtppService.ACTION_CHECK_CHARTS );
         service.putExtra( DtppService.TPP_CYCLE, mTppCycle );
-        service.putExtra( DtppService.PDF_NAME, pdfName );
+        service.putExtra( DtppService.PDF_NAMES, pdfNames );
         service.putExtra( DtppService.DOWNLOAD_IF_MISSING, download );
         startService( service );
     }
@@ -312,9 +318,11 @@ public class DtppActivity extends ActivityBase {
         for ( String pdfName : mDtppMap.keySet() ) {
             View v = mDtppMap.get( pdfName );
             if ( v.getTag() == null ) {
-                checkTppChart( pdfName, true );
+                Log.d( "Requesting", pdfName );
+                mPendingCharts.add( pdfName );
             }
         }
+        checkTppCharts( mPendingCharts, true );
     }
 
     protected void handleDtppBroadcast( Intent intent ) {
@@ -322,13 +330,13 @@ public class DtppActivity extends ActivityBase {
         String pdfName = intent.getStringExtra( DtppService.PDF_NAME );
         boolean result = intent.getBooleanExtra( DtppService.RESULT, false );
 
+        Log.d( "Response", pdfName );
         if ( result ) {
             View view = mDtppMap.get( pdfName );
             showChartAvailability( view, true );
             // Save the PDF chart path for later use
             String path = intent.getStringExtra( DtppService.PDF_PATH );
             view.setTag( path );
-            Log.d( pdfName, path );
 
             if ( action.equals( DtppService.ACTION_GET_CHART ) ) {
                 startPDFIntent( path );
@@ -337,6 +345,7 @@ public class DtppActivity extends ActivityBase {
 
         mPendingCharts.remove( pdfName );
         if ( mPendingCharts.isEmpty() ) {
+            Log.d( "Response", "ALL DONE" );
             // There are no pending requests, hide the spinner
             stopRefreshAnimation();
             setRefreshItemVisible( false );
