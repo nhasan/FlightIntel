@@ -633,19 +633,6 @@ public final class DownloadActivity extends ListActivity {
 
             Collections.sort( mAvailableData );
 
-            Iterator<DataInfo> it = mAvailableData.iterator();
-            while ( it.hasNext() ) {
-                DataInfo dataFile = it.next();
-                Log.i( TAG, "==== Data File Info ====" );
-                Log.i( TAG, "type="+dataFile.type );
-                Log.i( TAG, "desc="+dataFile.desc );
-                Log.i( TAG, "version="+dataFile.version );
-                Log.i( TAG, "filename="+dataFile.fileName );
-                Log.i( TAG, "size="+dataFile.size );
-                Log.i( TAG, "start="+dataFile.start.format3339( true ) );
-                Log.i( TAG, "end="+dataFile.end.format3339( true ) );
-            }
-
             try {
                 in.close();
             } catch ( IOException e ) {
