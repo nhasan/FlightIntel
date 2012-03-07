@@ -673,13 +673,15 @@ public class DatabaseManager {
 
         @Override
         public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
-            Log.i( TAG, "Ugrading "+Favorites.TABLE_NAME+" db "+oldVersion+" -> "+newVersion );
-            String oldTable = Favorites.TABLE_NAME+"_old";
-            db.execSQL( "ALTER TABLE "+Favorites.TABLE_NAME+" RENAME TO "+oldTable );
-            onCreate( db );
-            db.execSQL( "INSERT INTO "+Favorites.TABLE_NAME
-                    +" SELECT 'APT', SITE_NUMBER FROM "+oldTable );
-            db.execSQL( "DROP TABLE "+oldTable );
+            if ( oldVersion == 1 && newVersion == 2 ) {
+                Log.i( TAG, "Ugrading "+Favorites.TABLE_NAME+" db "+oldVersion+" -> "+newVersion );
+                String oldTable = Favorites.TABLE_NAME+"_old";
+                db.execSQL( "ALTER TABLE "+Favorites.TABLE_NAME+" RENAME TO "+oldTable );
+                onCreate( db );
+                db.execSQL( "INSERT INTO "+Favorites.TABLE_NAME
+                        +" SELECT 'APT', SITE_NUMBER FROM "+oldTable );
+                db.execSQL( "DROP TABLE "+oldTable );
+            }
         }
 
     }
