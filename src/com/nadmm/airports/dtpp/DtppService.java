@@ -159,20 +159,18 @@ public class DtppService extends IntentService {
             HttpGet get = new HttpGet( uri );
 
             HttpResponse response = mHttpClient.execute( mTarget, get );
-            if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK ) {
-                return;
-            }
+            if ( response.getStatusLine().getStatusCode() == HttpStatus.SC_OK ) {
+                out = new FileOutputStream( pdfFile );
 
-            out = new FileOutputStream( pdfFile );
+                HttpEntity entity = response.getEntity();
+                in = entity.getContent();
 
-            HttpEntity entity = response.getEntity();
-            in = entity.getContent();
+                byte[] buffer = new byte[ 16*1024 ];
+                int count;
 
-            byte[] buffer = new byte[ 16*1024 ];
-            int count;
-
-            while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
-                out.write( buffer, 0, count );
+                while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
+                    out.write( buffer, 0, count );
+                }
             }
         } catch ( Exception e ) {
             UiUtils.showToast( getApplicationContext(), e.getMessage() );
