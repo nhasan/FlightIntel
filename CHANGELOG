@@ -2,7 +2,8 @@ v3.0.0 (3/9/2012)
 =================
 * d-TPP instrument procedures aka "Approach charts"
 * Improved PIREP parsing and display
-* Improved network performance when downloading wx and charts 
+* Improved network performance when downloading wx and charts
+* Fixed a bug with favorite wx tab where spinner was shown indefinitely
 
 v2.6.0 (2/25/2012)
 ==================
