@@ -35,7 +35,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -66,6 +65,7 @@ public class DtppActivity extends ActivityBase {
     protected IntentFilter mFilter;
     protected String mFaaCode;
     protected String mTppVolume;
+    protected boolean mExpired = false;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -89,8 +89,6 @@ public class DtppActivity extends ActivityBase {
             
             @Override
             public void onClick( View v ) {
-                setRefreshItemVisible( true );
-                startRefreshAnimation();
                 getAptCharts();
             }
         } );
@@ -189,30 +187,27 @@ public class DtppActivity extends ActivityBase {
         } catch ( ParseException e1 ) {
         }
 
-        boolean expired = false;
         Date now = new Date();
         if ( now.getTime() > toDate.getTime() ) {
-            expired = true;
+            mExpired = true;
         }
 
         LinearLayout item = (LinearLayout) inflate( R.layout.grouped_detail_item );
         TextView tv = (TextView) item.findViewById( R.id.group_name );
         LinearLayout layout = (LinearLayout) item.findViewById( R.id.group_details );
-        if ( !expired ) {
-            tv.setText( String.format( "Chart Cycle %s", mTppCycle ) );
-        } else {
-            tv.setText( String.format( "Chart Cycle %s (Expired)", mTppCycle ) );
-        }
+        tv.setText( String.format( "Chart Cycle %s", mTppCycle ) );
 
         Cursor dtpp = result[ 2 ];
-        if ( dtpp.moveToFirst() ) {
-            String tppVolume = dtpp.getString( 0 );
-            addRow( layout, "Volume", tppVolume );
-            addSeparator( layout );
-        }
-
+        dtpp.moveToFirst();
+        String tppVolume = dtpp.getString( 0 );
+        addRow( layout, "Volume", tppVolume );
+        addSeparator( layout );
         addRow( layout, "Valid", TimeUtils.formatDateRangeUTC( this,
                 fromDate.getTime(), toDate.getTime() ) );
+        if ( mExpired ) {
+            addSeparator( layout );
+            addRow( layout, "This chart cycle has expired." );
+        }
 
         topLayout.addView( item, new LinearLayout.LayoutParams( LayoutParams.FILL_PARENT,
                 LayoutParams.WRAP_CONTENT ) );
@@ -226,7 +221,6 @@ public class DtppActivity extends ActivityBase {
 
         // Check the chart availability
         for ( String pdfName : mDtppMap.keySet() ) {
-            Log.d( "Checking", pdfName );
             mPendingCharts.add( pdfName );
         }
         checkTppCharts( mPendingCharts, false );
@@ -280,8 +274,6 @@ public class DtppActivity extends ActivityBase {
                 public void onClick( View v ) {
                     String path = (String) v.getTag();
                     if ( path == null ) {
-                        setRefreshItemVisible( true );
-                        startRefreshAnimation();
                         getTppChart( pdfName );
                     } else {
                         startPDFIntent( path );
@@ -297,6 +289,8 @@ public class DtppActivity extends ActivityBase {
     }
 
     protected void checkTppCharts( ArrayList<String> pdfNames, boolean download ) {
+        setRefreshItemVisible( true );
+        startRefreshAnimation();
         Intent service = new Intent( this, DtppService.class );
         service.setAction( DtppService.ACTION_CHECK_CHARTS );
         service.putExtra( DtppService.TPP_CYCLE, mTppCycle );
@@ -306,6 +300,8 @@ public class DtppActivity extends ActivityBase {
     }
 
     protected void getTppChart( String pdfName ) {
+        setRefreshItemVisible( true );
+        startRefreshAnimation();
         mPendingCharts.add( pdfName );
         Intent service = new Intent( this, DtppService.class );
         service.setAction( DtppService.ACTION_GET_CHART );
@@ -318,7 +314,6 @@ public class DtppActivity extends ActivityBase {
         for ( String pdfName : mDtppMap.keySet() ) {
             View v = mDtppMap.get( pdfName );
             if ( v.getTag() == null ) {
-                Log.d( "Requesting", pdfName );
                 mPendingCharts.add( pdfName );
             }
         }
@@ -330,7 +325,6 @@ public class DtppActivity extends ActivityBase {
         String pdfName = intent.getStringExtra( DtppService.PDF_NAME );
         boolean result = intent.getBooleanExtra( DtppService.RESULT, false );
 
-        Log.d( "Response", pdfName );
         if ( result ) {
             View view = mDtppMap.get( pdfName );
             showChartAvailability( view, true );
@@ -345,7 +339,6 @@ public class DtppActivity extends ActivityBase {
 
         mPendingCharts.remove( pdfName );
         if ( mPendingCharts.isEmpty() ) {
-            Log.d( "Response", "ALL DONE" );
             // There are no pending requests, hide the spinner
             stopRefreshAnimation();
             setRefreshItemVisible( false );
@@ -373,6 +366,9 @@ public class DtppActivity extends ActivityBase {
             Uri pdf = Uri.fromFile( new File( path ) );
             viewChart.setDataAndType( pdf, MIME_TYPE_PDF );
             startActivity( viewChart );
+            if ( mExpired ) {
+                UiUtils.showToast( this, "This chart has expired!" );
+            }
         } else {
             UiUtils.showToast( this, "FlightIntel: No PDF viewer app was found." );
             Intent market = new Intent( Intent.ACTION_VIEW );
