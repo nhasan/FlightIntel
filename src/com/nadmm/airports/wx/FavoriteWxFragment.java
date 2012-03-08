@@ -23,18 +23,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.Menu;
@@ -46,9 +43,7 @@ import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos;
-import com.nadmm.airports.DatabaseManager.Favorites;
 import com.nadmm.airports.DatabaseManager.Wxs;
-import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NetworkUtils;
 
@@ -68,7 +63,7 @@ public class FavoriteWxFragment extends ListFragment {
             Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
             mStationWx.put( metar.stationId, metar );
 
-            ListView l =getListView();
+            ListView l = getListView();
             int first = l.getFirstVisiblePosition();
 
             int pos = 0;
@@ -228,9 +223,6 @@ public class FavoriteWxFragment extends ListFragment {
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
 
             ArrayList<String> favorites = dbManager.getWxFavorites();
-            if ( favorites.size() == 0 ) {
-                return null;
-            }
 
             String selectionList = "";
             for (String stationId : favorites ) {
@@ -238,54 +230,8 @@ public class FavoriteWxFragment extends ListFragment {
                     selectionList += ", ";
                 }
                 selectionList += "'"+stationId+"'";
-            };
-
-            SharedPreferences prefs =
-                    PreferenceManager.getDefaultSharedPreferences( getActivity() );
-            boolean migrated = prefs.getBoolean( PreferencesActivity.KEY_WX_FAV_MIGRATED, false );
-            if ( !migrated ) {
-                //Migrate the favorite wx station ids from FAA code to ICAO code
-                favorites.clear();
-                SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-                builder.setTables( Airports.TABLE_NAME );
-                String selection = Airports.FAA_CODE+" in ("+selectionList+")";
-                Cursor c = builder.query( db, new String[] { Airports.ICAO_CODE },
-                        selection, null, null, null, null );
-                if ( c.moveToFirst() ) {
-                    try {
-                        SQLiteDatabase userDb = dbManager.getUserDataDb();
-                        ContentValues values = new ContentValues();
-                        do {
-                            // Insert new rows with ICAO code
-                            String icaoCode = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
-                            favorites.add( icaoCode );
-                            values.put( Favorites.TYPE, "WX" );
-                            values.put( Favorites.LOCATION_ID, icaoCode );
-                            userDb.insertOrThrow( Favorites.TABLE_NAME, null, values );
-                        } while ( c.moveToNext() );
-                        // Delete the old rows with FAA code
-                        selection = Favorites.LOCATION_ID+" in ("+selectionList+")";
-                        userDb.delete( Favorites.TABLE_NAME, selection, null );
-                    } catch ( Exception e ) {
-                    }
-                }
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean( PreferencesActivity.KEY_WX_FAV_MIGRATED, true );
-                editor.commit();
-
-                // No rebuild the favorites list
-                selectionList = "";
-                for (String stationId : favorites ) {
-                    if ( selectionList.length() > 0 ) {
-                        selectionList += ", ";
-                    }
-                    selectionList += "'"+stationId+"'";
-                };
-            }
-
-            for (String stationId : favorites ) {
                 mStationWx.put( stationId, null );
-            }
+            };
 
             String selection = Wxs.STATION_ID+" in ("+selectionList+")";
 
