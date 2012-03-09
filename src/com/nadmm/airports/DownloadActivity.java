@@ -501,6 +501,7 @@ public final class DownloadActivity extends ListActivity {
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 HttpHost target = new HttpHost( HOST, PORT );
                 URI uri = new URI( PATH+"/"+MANIFEST+"?unused="+now.toString() );
+                Log.d( target.toHostString(), uri.toASCIIString() );
                 HttpGet get = new HttpGet( uri );
 
                 HttpResponse response = httpClient.execute( target, get );
@@ -804,6 +805,7 @@ public final class DownloadActivity extends ListActivity {
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 HttpHost target = new HttpHost( HOST, PORT );
                 URI uri = new URI( PATH+"/"+data.fileName+"?unused="+now.toString() );
+                Log.d( target.toHostString(), uri.toASCIIString() );
                 HttpGet get = new HttpGet( uri );
 
                 HttpResponse response = httpClient.execute( target, get );
