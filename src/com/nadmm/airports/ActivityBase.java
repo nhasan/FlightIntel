@@ -199,6 +199,8 @@ public class ActivityBase extends FragmentActivity {
             return download;
         }
 
+        boolean dtppFound = false;
+
         // Check if we have any expired data. If yes, then redirect to download activity
         do {
             String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
@@ -211,6 +213,8 @@ public class ActivityBase extends FragmentActivity {
                     c.close();
                     return download;
                 }
+            } else if ( type.equals( "DTPP" ) ) {
+                dtppFound = true;
             }
 
             int age = c.getInt( c.getColumnIndex( "age" ) );
@@ -231,8 +235,13 @@ public class ActivityBase extends FragmentActivity {
                 return download;
             }
         } while ( c.moveToNext() );
-
         c.close();
+
+        if ( !dtppFound ) {
+            Intent download = new Intent( this, DownloadActivity.class );
+            download.putExtra( "MSG", "Please download d-TPP database first" );
+            return download;
+        }
 
         return null;
     }
