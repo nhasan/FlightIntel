@@ -45,15 +45,12 @@ public class DtppService extends IntentService {
     public static final String ACTION_GET_CHART = "flightintel.intent.action.GET_CHART";
     public static final String ACTION_CHECK_CHARTS = "flightintel.intent.action.CHECK_CHARTS";
 
-    public static final String OP_MODE = "OP_MODE";
-    public static final String FAA_CODE = "FAA_CODE";
     public static final String TPP_VOLUME = "TPP_VOLUME";
     public static final String TPP_CYCLE = "TPP_CYCLE";
     public static final String PDF_NAME = "PDF_NAME";
     public static final String PDF_NAMES = "PDF_NAMES";
     public static final String DOWNLOAD_IF_MISSING = "DOWNLOAD_IF_MISSING";
     public static final String PDF_PATH = "PDF_PATH";
-    public static final String RESULT = "RESULT";
 
     private final String DTPP_HOST = "aeronav.faa.gov";
     private final File DTPP_DIR = new File(
@@ -114,7 +111,6 @@ public class DtppService extends IntentService {
             result.setAction( ACTION_CHECK_CHARTS );
             result.putExtra( TPP_CYCLE, tppCycle );
             result.putExtra( PDF_NAME, pdfName );
-            result.putExtra( RESULT, pdfFile.exists() );
             if ( pdfFile.exists() ) {
                 result.putExtra( PDF_PATH, pdfFile.getAbsolutePath() );
             }
@@ -137,7 +133,6 @@ public class DtppService extends IntentService {
         result.setAction( ACTION_GET_CHART );
         result.putExtra( TPP_CYCLE, tppCycle );
         result.putExtra( PDF_NAME, pdfName );
-        result.putExtra( RESULT, pdfFile.exists() );
         if ( pdfFile.exists() ) {
             result.putExtra( PDF_PATH, pdfFile.getAbsolutePath() );
         }
@@ -165,7 +160,7 @@ public class DtppService extends IntentService {
                 HttpEntity entity = response.getEntity();
                 in = entity.getContent();
 
-                byte[] buffer = new byte[ 16*1024 ];
+                byte[] buffer = new byte[ 32*1024 ];
                 int count;
 
                 while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
@@ -193,10 +188,12 @@ public class DtppService extends IntentService {
     protected void cleanupOldCycles() {
         File[] cycles = DTPP_DIR.listFiles();
         for ( File cycle : cycles ) {
-            // First delete all the charts within the cycle directory
-            File[] charts = cycle.listFiles();
-            for ( File chart : charts ) {
-                chart.delete();
+            if ( cycle.isDirectory() ) {
+                // First delete all the charts within this cycle directory
+                File[] charts = cycle.listFiles();
+                for ( File chart : charts ) {
+                    chart.delete();
+                }
             }
             // Now delete the cycle directory itself
             cycle.delete();

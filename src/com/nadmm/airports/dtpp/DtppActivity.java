@@ -58,7 +58,7 @@ public class DtppActivity extends ActivityBase {
 
     private final String MIME_TYPE_PDF = "application/pdf";
 
-    protected HashMap<String, View> mDtppMap = new HashMap<String, View>();
+    protected HashMap<String, View> mDtppRowMap = new HashMap<String, View>();
     protected ArrayList<String> mPendingCharts = new ArrayList<String>();
     protected String mTppCycle;
     protected BroadcastReceiver mReceiver;
@@ -177,6 +177,7 @@ public class DtppActivity extends ActivityBase {
         String from = cycle.getString( cycle.getColumnIndex( Cycle.FROM_DATE ) );
         String to = cycle.getString( cycle.getColumnIndex( Cycle.TO_DATE ) );
 
+        // PArse chart cycle effective dates
         SimpleDateFormat df = new SimpleDateFormat( "HHmm'Z' MM/dd/yy" );
         df.setTimeZone( java.util.TimeZone.getTimeZone( "UTC" ) );
         Date fromDate = null;
@@ -187,6 +188,7 @@ public class DtppActivity extends ActivityBase {
         } catch ( ParseException e1 ) {
         }
 
+        // Determine if chart cycle has expired
         Date now = new Date();
         if ( now.getTime() > toDate.getTime() ) {
             mExpired = true;
@@ -206,7 +208,7 @@ public class DtppActivity extends ActivityBase {
                 fromDate.getTime(), toDate.getTime() ) );
         if ( mExpired ) {
             addSeparator( layout );
-            addRow( layout, "This chart cycle has expired." );
+            addRow( layout, "WARNING: This chart cycle has expired." );
         }
 
         topLayout.addView( item, new LinearLayout.LayoutParams( LayoutParams.FILL_PARENT,
@@ -220,7 +222,7 @@ public class DtppActivity extends ActivityBase {
         showOther( topLayout );
 
         // Check the chart availability
-        for ( String pdfName : mDtppMap.keySet() ) {
+        for ( String pdfName : mDtppRowMap.keySet() ) {
             mPendingCharts.add( pdfName );
         }
         checkTppCharts( mPendingCharts, false );
@@ -264,6 +266,7 @@ public class DtppActivity extends ActivityBase {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
         }
+
         View row = addRow( layout, chartName, DataUtils.decodeUserAction( userAction ) );
 
         if ( !userAction.equals( "D" ) ) {
@@ -276,13 +279,13 @@ public class DtppActivity extends ActivityBase {
                     if ( path == null ) {
                         getTppChart( pdfName );
                     } else {
-                        startPDFIntent( path );
+                        startPDFViewer( path );
                     }
                 }
 
             } );
             showChartAvailability( row, false );
-            mDtppMap.put( pdfName, row );
+            mDtppRowMap.put( pdfName, row );
         }
 
         return row;
@@ -311,9 +314,10 @@ public class DtppActivity extends ActivityBase {
     }
 
     protected void getAptCharts() {
-        for ( String pdfName : mDtppMap.keySet() ) {
-            View v = mDtppMap.get( pdfName );
+        for ( String pdfName : mDtppRowMap.keySet() ) {
+            View v = mDtppRowMap.get( pdfName );
             if ( v.getTag() == null ) {
+                // This PDF is not available on the device
                 mPendingCharts.add( pdfName );
             }
         }
@@ -323,17 +327,17 @@ public class DtppActivity extends ActivityBase {
     protected void handleDtppBroadcast( Intent intent ) {
         String action = intent.getAction();
         String pdfName = intent.getStringExtra( DtppService.PDF_NAME );
-        boolean result = intent.getBooleanExtra( DtppService.RESULT, false );
+        String path = intent.getStringExtra( DtppService.PDF_PATH );
 
-        if ( result ) {
-            View view = mDtppMap.get( pdfName );
+        if ( path != null ) {
+            // The chart PDF is available on the device
+            View view = mDtppRowMap.get( pdfName );
             showChartAvailability( view, true );
             // Save the PDF chart path for later use
-            String path = intent.getStringExtra( DtppService.PDF_PATH );
             view.setTag( path );
 
             if ( action.equals( DtppService.ACTION_GET_CHART ) ) {
-                startPDFIntent( path );
+                startPDFViewer( path );
             }
         }
 
@@ -345,9 +349,10 @@ public class DtppActivity extends ActivityBase {
 
             // Check if we have all the charts for this airport
             boolean all = true;
-            for ( String key : mDtppMap.keySet() ) {
-                // Check if PDF path is set for this chart
-                if ( mDtppMap.get( key ).getTag() == null ) {
+            for ( String key : mDtppRowMap.keySet() ) {
+                View v = mDtppRowMap.get( key );
+                if ( v.getTag() == null ) {
+                    // This PDF is not available on the device
                     all = false;
                     break;
                 }
@@ -360,17 +365,19 @@ public class DtppActivity extends ActivityBase {
         }
     }
 
-    protected void startPDFIntent( String path ) {
+    protected void startPDFViewer( String path ) {
         if ( SystemUtils.canDisplayMimeType( this, MIME_TYPE_PDF ) ) {
+            // Fire an intent to view the PDF chart
             Intent viewChart = new Intent( Intent.ACTION_VIEW );
             Uri pdf = Uri.fromFile( new File( path ) );
             viewChart.setDataAndType( pdf, MIME_TYPE_PDF );
             startActivity( viewChart );
             if ( mExpired ) {
-                UiUtils.showToast( this, "This chart has expired!" );
+                UiUtils.showToast( this, "WARNING: This chart has expired!" );
             }
         } else {
-            UiUtils.showToast( this, "FlightIntel: No PDF viewer app was found." );
+            // No PDF viewer is installed, send user to Play Store
+            UiUtils.showToast( this, "Please install a PDF viewer app first" );
             Intent market = new Intent( Intent.ACTION_VIEW );
             Uri uri = Uri.parse( "market://details?id=org.ebookdroid" );
             market.setData( uri );
