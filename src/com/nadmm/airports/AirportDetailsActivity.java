@@ -243,7 +243,8 @@ public class AirportDetailsActivity extends ActivityBase {
                     Awos.WX_SENSOR_TYPE,
                     Awos.STATION_FREQUENCY,
                     Awos.SECOND_STATION_FREQUENCY,
-                    Awos.STATION_PHONE_NUMBER
+                    Awos.STATION_PHONE_NUMBER,
+                    Awos.COMMISSIONING_STATUS
             };
 
             String selection = "("
@@ -251,8 +252,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     +"x."+Wxs.STATION_LATITUDE_DEGREES+"<=?"
                     +") AND (x."+Wxs.STATION_LONGITUDE_DEGREES+">=? "
                     +(isCrossingMeridian180? "OR " : "AND ")
-                    +"x."+Wxs.STATION_LONGITUDE_DEGREES+"<=?) AND "
-                    +"w."+Awos.COMMISSIONING_STATUS+"='Y'";
+                    +"x."+Wxs.STATION_LONGITUDE_DEGREES+"<=?)";
             builder = new SQLiteQueryBuilder();
             builder.setTables( Wxs.TABLE_NAME+" x"
                     +" LEFT JOIN "+Airports.TABLE_NAME+" a"
@@ -263,6 +263,11 @@ public class AirportDetailsActivity extends ActivityBase {
                     null, null, null, null );
             if ( c.moveToFirst() ) {
                 do {
+                    String status = c.getString( c.getColumnIndex( Awos.COMMISSIONING_STATUS ) );
+                    if ( status != null && status.equals( "N" ) ) {
+                        // Skip the inactive station
+                        continue;
+                    }
                     String icaoCode = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
                     String name = c.getString( c.getColumnIndex( Wxs.STATION_NAME ) );
                     lat = c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
