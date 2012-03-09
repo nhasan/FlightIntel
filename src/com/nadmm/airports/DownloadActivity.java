@@ -827,7 +827,7 @@ public final class DownloadActivity extends ListActivity {
 
                 Log.i( TAG, "Opened file "+zipFile.getCanonicalPath()+" for writing" );
 
-                byte[] buffer = new byte[ 16*1024 ];
+                byte[] buffer = new byte[ 32*1024 ];
                 int count;
                 int total = 0;
 
@@ -900,7 +900,7 @@ public final class DownloadActivity extends ListActivity {
                 File dbFile = new File( DatabaseManager.DATABASE_DIR, data.dbName );
                 out = new FileOutputStream( dbFile );
 
-                byte[] buffer = new byte[ 16*1024 ];
+                byte[] buffer = new byte[ 32*1024 ];
                 int len = buffer.length;
                 int count;
                 int total = 0;
