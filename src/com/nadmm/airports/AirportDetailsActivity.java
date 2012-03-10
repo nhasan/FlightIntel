@@ -64,6 +64,7 @@ import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.dtpp.DtppActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.UiUtils;
@@ -883,7 +884,8 @@ public class AirportDetailsActivity extends ActivityBase {
             setRunwayDrawable( tv, runwayId, length, heading );
 
             tv = (TextView) row.findViewById( R.id.runway_size );
-            tv.setText( String.valueOf( length )+"' x "+String.valueOf( width )+"'" );
+            tv.setText( String.format( "%s x %s",
+                    FormatUtils.formatFeet( length ), FormatUtils.formatFeet( width ) ) );
 
             tv = (TextView) row.findViewById( R.id.runway_surface );
             tv.setText( DataUtils.decodeSurfaceType( surfaceType ) );

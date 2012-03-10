@@ -60,6 +60,7 @@ import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 public class ActivityBase extends FragmentActivity {
@@ -254,8 +255,7 @@ public class ActivityBase extends FragmentActivity {
             code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
         }
         String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
-        String title = code + " - " + name;
-        tv.setText( title );
+        tv.setText( String.format( "%s - %s", code, name ) );
         tv = (TextView) root.findViewById( R.id.airport_info );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
         String type = DataUtils.decodeLandingFaclityType( siteNumber );
@@ -264,26 +264,28 @@ public class ActivityBase extends FragmentActivity {
         if ( state == null ) {
             state = c.getString( c.getColumnIndex( Airports.ASSOC_COUNTY ) );
         }
-        String info = type+", "+city+", "+state;
-        tv.setText( info );
+        tv.setText( String.format( "%s, %s, %s", type, city, state ) );
         tv = (TextView) root.findViewById( R.id.airport_info2 );
         int distance = c.getInt( c.getColumnIndex( Airports.DISTANCE_FROM_CITY_NM ) );
         String dir = c.getString( c.getColumnIndex( Airports.DIRECTION_FROM_CITY ) );
         String status = c.getString( c.getColumnIndex( Airports.STATUS_CODE ) );
-        tv.setText( DataUtils.decodeStatus( status )+", "
-                +String.valueOf( distance )+" miles "+dir+" of city center" );
+        tv.setText( String.format( "%s, %d miles %s of city center",
+                DataUtils.decodeStatus( status ), distance, dir ) );
         tv = (TextView) root.findViewById( R.id.airport_info3 );
-        int elev_msl = c.getInt( c.getColumnIndex( Airports.ELEVATION_MSL ) );
-        NumberFormat decimal = NumberFormat.getNumberInstance();
-        String info2 = decimal.format( elev_msl )+"' MSL elevation, ";
+        float elev_msl = c.getFloat( c.getColumnIndex( Airports.ELEVATION_MSL ) );
+        StringBuilder info2 = new StringBuilder();
+        info2.append( FormatUtils.formatFeet( elev_msl ) );
+        info2.append( " MSL elevation - " );
         int tpa_agl = c.getInt( c.getColumnIndex( Airports.PATTERN_ALTITUDE_AGL ) );
         String est = "";
         if ( tpa_agl == 0 ) {
             tpa_agl = 1000;
             est = " (est.)";
         }
-        info2 += decimal.format( elev_msl+tpa_agl)+"' MSL TPA"+est;
-        tv.setText( info2 );
+        info2.append( FormatUtils.formatFeet( Math.round( elev_msl+tpa_agl ) ) );
+        info2.append( " MSL TPA" );
+        info2.append( est );
+        tv.setText( info2.toString() );
 
         String s = c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) );
         Time endDate = new Time();
@@ -349,19 +351,20 @@ public class ActivityBase extends FragmentActivity {
         String name = c.getString( c.getColumnIndex( Nav1.NAVAID_NAME ) );
         String type = c.getString( c.getColumnIndex( Nav1.NAVAID_TYPE ) );
         TextView tv = (TextView) root.findViewById( R.id.navaid_name );
-        tv.setText( id+" - "+name+" "+type );
+        tv.setText( String.format( "%s - %s %s", id, name, type ) );
         String city = c.getString( c.getColumnIndex( Nav1.ASSOC_CITY ) );
         String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );        
         tv = (TextView) root.findViewById( R.id.navaid_info );
-        tv.setText( city+", "+state );
+        tv.setText( String.format( "%s, %s", city, state ) );
         String use = c.getString( c.getColumnIndex( Nav1.PUBLIC_USE ) );
         int elev_msl = c.getInt( c.getColumnIndex( Nav1.ELEVATION_MSL ) );
-        String info2 = use.equals( "Y" )? "Public use" : "Private use";
-        info2 += ", ";
-        NumberFormat decimal = NumberFormat.getNumberInstance();
-        info2 += decimal.format( elev_msl )+"' MSL elevation";
+        StringBuilder info2 = new StringBuilder();
+        info2.append( use.equals( "Y" )? "Public use" : "Private use" );
+        info2.append( ", " );
+        info2.append( FormatUtils.formatFeet( elev_msl ) );
+        info2.append( " MSL elevation" );
         tv = (TextView) root.findViewById( R.id.navaid_info2 );
-        tv.setText( info2 );
+        tv.setText( info2.toString() );
         tv = (TextView) root.findViewById( R.id.navaid_morse1 );
         tv.setText( DataUtils.getMorseCode( id.substring( 0, 1 ) ) );
         if ( id.length() > 1 ) {
