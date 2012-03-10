@@ -240,7 +240,8 @@ public class DtppActivity extends ActivityBase {
                 String pdfName = c.getString( c.getColumnIndex( Dtpp.PDF_NAME ) );
                 String userAction = c.getString( c.getColumnIndex( Dtpp.USER_ACTION ) );
                 int resid = UiUtils.getRowSelectorForCursor( c );
-                addChartRow( grpLayout, chartName, pdfName, userAction, resid );
+                String faanfd18 = c.getString( c.getColumnIndex( Dtpp.FAANFD18_CODE ) );
+                addChartRow( grpLayout, chartName, pdfName, userAction, faanfd18, resid );
             } while ( c.moveToNext() );
             layout.addView( item, new LinearLayout.LayoutParams( LayoutParams.FILL_PARENT,
                     LayoutParams.WRAP_CONTENT ) );
@@ -252,22 +253,27 @@ public class DtppActivity extends ActivityBase {
         TextView tv = (TextView) item.findViewById( R.id.group_name );
         LinearLayout grpLayout = (LinearLayout) item.findViewById( R.id.group_details );
         tv.setText( "Other" );
-        addChartRow( grpLayout, "Airport Diagram Legend", "legendAD.pdf", "",
+        addChartRow( grpLayout, "Airport Diagram Legend", "legendAD.pdf", "", "",
                 R.drawable.row_selector_top );
         addSeparator( grpLayout );
-        addChartRow( grpLayout, "Legends & General Information", "frntmatter.pdf", "",
+        addChartRow( grpLayout, "Legends & General Information", "frntmatter.pdf", "", "",
                 R.drawable.row_selector_bottom );
         layout.addView( item, new LinearLayout.LayoutParams( LayoutParams.FILL_PARENT,
                 LayoutParams.WRAP_CONTENT ) );
     }
 
     protected View addChartRow( LinearLayout layout, String chartName, final String pdfName,
-            String userAction, int resid ) {
+            String userAction, String faanfd18, int resid ) {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
         }
 
-        View row = addRow( layout, chartName, DataUtils.decodeUserAction( userAction ) );
+        View row;
+        if ( userAction.length() > 0 ) {
+            row= addRow( layout, chartName, DataUtils.decodeUserAction( userAction ) );
+        } else {
+            row= addRow( layout, chartName, faanfd18 );
+        }
 
         if ( !userAction.equals( "D" ) ) {
             row.setBackgroundResource( resid );
