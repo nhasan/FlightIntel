@@ -19,8 +19,6 @@
 
 package com.nadmm.airports.wx;
 
-import java.text.NumberFormat;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -46,6 +44,7 @@ import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
+import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.wx.Taf.Forecast;
@@ -60,6 +59,7 @@ public class TafFragment extends FragmentBase {
     protected CursorAsyncTask mTask;
     protected BroadcastReceiver mReceiver;
     protected String mStationId;
+    protected Forecast mLastForecast;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -291,11 +291,7 @@ public class TafFragment extends FragmentBase {
 
         // Raw Text
         tv = (TextView) findViewById( R.id.wx_raw_taf );
-        tv.setText( taf.rawText.replaceAll( "(FM|BECMG|TEMPO|PROB)", "\n    $1" ) );
-
-        NumberFormat decimal = NumberFormat.getNumberInstance();
-        decimal.setMaximumFractionDigits( 2 );
-        decimal.setMinimumFractionDigits( 0 );
+        tv.setText( taf.rawText.replaceAll( "(FM|BECMG|TEMPO)", "\n    $1" ) );
 
         layout = (LinearLayout) findViewById( R.id.taf_summary_layout );
         layout.removeAllViews();
@@ -322,17 +318,35 @@ public class TafFragment extends FragmentBase {
         LinearLayout fcst_top_layout = (LinearLayout) findViewById( R.id.taf_forecasts_layout );
         fcst_top_layout.removeAllViews();
 
+        StringBuilder sb = new StringBuilder();
         for ( Forecast forecast : taf.forecasts ) {
             LinearLayout grp_layout = (LinearLayout) inflate( R.layout.grouped_detail_item );
 
-            tv = (TextView) grp_layout.findViewById( R.id.group_name );
-            if ( forecast.changeIndicator != null ) {
-                tv.setText( forecast.changeIndicator+" "+TimeUtils.formatDateRangeUTC(
-                        getActivity(), forecast.timeFrom, forecast.timeTo ) );
+            // Keep track of forecast conditions across all change groups
+            if ( forecast.changeIndicator == null || forecast.changeIndicator.equals( "FM" ) ) {
+                mLastForecast = forecast;
             } else {
-                tv.setText( TimeUtils.formatDateRangeUTC( getActivity(),
-                        forecast.timeFrom, forecast.timeTo ) );
+                if ( forecast.visibilitySM < Float.MAX_VALUE ) {
+                    mLastForecast.visibilitySM = forecast.visibilitySM;
+                }
+                if ( forecast.skyConditions.size() > 0 ) {
+                    mLastForecast.skyConditions = forecast.skyConditions;
+                }
             }
+
+            String flightCategory = WxUtils.computeFlightCategory( mLastForecast.skyConditions,
+                    mLastForecast.visibilitySM );
+            sb.setLength( 0 );
+            sb.append( flightCategory );
+            sb.append( " " );
+            if ( forecast.changeIndicator != null ) {
+                sb.append( forecast.changeIndicator );
+                sb.append( " " );
+            }
+            sb.append( TimeUtils.formatDateRangeUTC(
+                    getActivity(), forecast.timeFrom, forecast.timeTo ) );
+            tv = (TextView) grp_layout.findViewById( R.id.group_name );
+            tv.setText( sb.toString() );
 
             LinearLayout fcst_layout = (LinearLayout) grp_layout.findViewById( R.id.group_details );
 
@@ -372,7 +386,8 @@ public class TafFragment extends FragmentBase {
 
             if ( forecast.visibilitySM < Float.MAX_VALUE ) {
                 String value = forecast.visibilitySM > 6? "6 or more statute miles"
-                        : decimal.format( forecast.visibilitySM )+" statues miles";
+                        : String.format( "%s statues miles",
+                                FormatUtils.formatNumber( forecast.visibilitySM ) );
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }
@@ -380,7 +395,8 @@ public class TafFragment extends FragmentBase {
             }
 
             if ( forecast.vertVisibilityFeet < Integer.MAX_VALUE ) {
-                String value = decimal.format( forecast.vertVisibilityFeet )+" ft AGL vertical";
+                String value = String.format( "%s ft AGL vertical",
+                        FormatUtils.formatNumber( forecast.vertVisibilityFeet ) );
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }
@@ -406,7 +422,7 @@ public class TafFragment extends FragmentBase {
                         GeoUtils.getCardinalDirection( forecast.windShearDirDegrees ),
                         forecast.windShearDirDegrees, forecast.windShearSpeedKnots );
                 String height = String.format( "%s ft AGL",
-                        decimal.format( forecast.windShearHeightFeetAGL ) );
+                        FormatUtils.formatNumber( forecast.windShearHeightFeetAGL ) );
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }
@@ -427,11 +443,11 @@ public class TafFragment extends FragmentBase {
                 if ( turbulence.minAltitudeFeetAGL < Integer.MAX_VALUE
                         && turbulence.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
                     height = String.format( "%s to %s ft AGL",
-                            decimal.format( turbulence.minAltitudeFeetAGL ),
-                            decimal.format( turbulence.maxAltitudeFeetAGL ) );
+                            FormatUtils.formatNumber( turbulence.minAltitudeFeetAGL ),
+                            FormatUtils.formatNumber( turbulence.maxAltitudeFeetAGL ) );
                 } else if ( turbulence.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
                     height = String.format( "Surface to %s ft AGL",
-                            decimal.format( turbulence.maxAltitudeFeetAGL ) );
+                            FormatUtils.formatNumber( turbulence.maxAltitudeFeetAGL ) );
                 } else {
                     height = "";
                 }
@@ -455,11 +471,11 @@ public class TafFragment extends FragmentBase {
                 if ( icing.minAltitudeFeetAGL < Integer.MAX_VALUE
                         && icing.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
                     height = String.format( "Between %s to %s ft AGL",
-                            decimal.format( icing.minAltitudeFeetAGL ),
-                            decimal.format( icing.maxAltitudeFeetAGL ) );
+                            FormatUtils.formatNumber( icing.minAltitudeFeetAGL ),
+                            FormatUtils.formatNumber( icing.maxAltitudeFeetAGL ) );
                 } else if ( icing.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
                     height = String.format( "Surface to %s ft AGL",
-                            decimal.format( icing.maxAltitudeFeetAGL ) );
+                            FormatUtils.formatNumber( icing.maxAltitudeFeetAGL ) );
                 } else {
                     height = "";
                 }

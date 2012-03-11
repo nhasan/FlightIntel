@@ -48,6 +48,7 @@ import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
+import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
@@ -370,12 +371,13 @@ public class MetarFragment extends FragmentBase {
             tv.setVisibility( View.VISIBLE );
             layout.setVisibility( View.VISIBLE );
 
-            addRow( layout, "Altimeter", String.format( "%.2f\" Hg (%.1f mb)",
-                    metar.altimeterHg, WxUtils.hgToMillibar( metar.altimeterHg ) ) );
+            addRow( layout, "Altimeter", String.format( "%.2f\" Hg (%s mb)",
+                    metar.altimeterHg,
+                    FormatUtils.formatNumber( WxUtils.hgToMillibar( metar.altimeterHg ) ) ) );
             if ( metar.seaLevelPressureMb < Float.MAX_VALUE ) {
                 addSeparator( layout );
-                addRow( layout, "Sea level pressure",
-                        String.format( "%.1f mb", metar.seaLevelPressureMb ) );
+                addRow( layout, "Sea level pressure", String.format( "%s mb",
+                        FormatUtils.formatNumber( metar.seaLevelPressureMb ) ) );
             }
             long presAlt = WxUtils.getPressureAltitude( metar );
             if ( presAlt > mElevation ) {
