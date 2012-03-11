@@ -827,24 +827,32 @@ public class AirportDetailsActivity extends ActivityBase {
         protected void addAwosRow( LinearLayout layout, String id, String name, String type, 
                 String freq, String phone, float distance, float bearing,
                 final Intent intent, int resid ) {
-            String label1 = id;
+            StringBuilder sb = new StringBuilder();
+            sb.append( id );
             if ( name != null && name.length() > 0 ) {
-                label1 += " - "+name;
+                sb.append( " - " );
+                sb.append( name );
             }
-            String value1 = "";
+            String label1 = sb.toString();
+
+            sb.setLength( 0 );
             if ( freq != null && freq.length() > 0 ) {
                 try {
-                    value1 = String.format( "%.3f", Double.valueOf( freq ) );
+                    sb.append( String.format( "%.3f", Double.valueOf( freq ) ) );
                 } catch ( NumberFormatException e ) {
                 }
             }
-            String label2 = type;
+            String value1 = sb.toString();
+
+            sb.setLength( 0 );
+            sb.append( type );
             if ( distance >= 2.5 ) {
-                label2 += String.format( ", %.0fNM %s", distance,
-                        GeoUtils.getCardinalDirection( bearing ) );
+                sb.append( String.format( ", %.0fNM %s", distance,
+                        GeoUtils.getCardinalDirection( bearing ) ) );
             } else {
-                label2 += ", On-site";
+                sb.append( ", On-site" );
             }
+            String label2 = sb.toString();
             String value2 = phone;
 
             View row = addClickableRow( layout, label1, value1, label2, value2, intent, resid );
