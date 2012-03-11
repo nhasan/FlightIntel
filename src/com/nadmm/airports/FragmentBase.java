@@ -19,14 +19,6 @@
 
 package com.nadmm.airports;
 
-import java.text.NumberFormat;
-
-import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Awos;
-import com.nadmm.airports.DatabaseManager.Wxs;
-import com.nadmm.airports.utils.DataUtils;
-import com.nadmm.airports.utils.UiUtils;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.app.Fragment;
@@ -37,6 +29,13 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.FormatUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class FragmentBase extends Fragment {
 
@@ -80,7 +79,7 @@ public class FragmentBase extends Fragment {
         TextView tv = (TextView) root.findViewById( R.id.wx_station_name );
         String icaoCode = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
         String stationName = wxs.getString( wxs.getColumnIndex( Wxs.STATION_NAME ) );
-        tv.setText( icaoCode+" - "+ stationName );
+        tv.setText( String.format( "%s - %s", icaoCode, stationName ) );
         if ( awos.moveToFirst() ) {
             tv = (TextView) root.findViewById( R.id.wx_station_info );
             String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
@@ -89,7 +88,7 @@ public class FragmentBase extends Fragment {
             }
             String city = awos.getString( awos.getColumnIndex( Airports.ASSOC_CITY ) );
             String state = awos.getString( awos.getColumnIndex( Airports.ASSOC_STATE ) );
-            tv.setText( type+", "+city+", "+state );
+            tv.setText( String.format( "%s, %s, %s", type, city, state ) );
 
             String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
             if ( phone != null && phone.length() > 0 ) {
@@ -117,10 +116,9 @@ public class FragmentBase extends Fragment {
             tv.setText( "ASOS/AWOS" );
         }
         int elev = wxs.getInt( wxs.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
-        NumberFormat decimal = NumberFormat.getNumberInstance();
         tv = (TextView) root.findViewById( R.id.wx_station_info2 );
-        tv.setText( String.format( "Located at %s' MSL elevation",
-                decimal.format( DataUtils.metersToFeet( elev ) ) ) );
+        tv.setText( String.format( "Located at %s MSL elevation",
+                FormatUtils.formatFeet( DataUtils.metersToFeet( elev ) ) ) );
 
         CheckBox cb = (CheckBox) root.findViewById( R.id.airport_star );
         cb.setChecked( getDbManager().isFavoriteWx( icaoCode ) );
