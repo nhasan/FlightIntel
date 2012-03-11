@@ -271,19 +271,15 @@ public class ActivityBase extends FragmentActivity {
                 DataUtils.decodeStatus( status ), distance, dir ) );
         tv = (TextView) root.findViewById( R.id.airport_info3 );
         float elev_msl = c.getFloat( c.getColumnIndex( Airports.ELEVATION_MSL ) );
-        StringBuilder info2 = new StringBuilder();
-        info2.append( FormatUtils.formatFeet( elev_msl ) );
-        info2.append( " MSL elevation - " );
         int tpa_agl = c.getInt( c.getColumnIndex( Airports.PATTERN_ALTITUDE_AGL ) );
         String est = "";
         if ( tpa_agl == 0 ) {
             tpa_agl = 1000;
             est = " (est.)";
         }
-        info2.append( FormatUtils.formatFeet( Math.round( elev_msl+tpa_agl ) ) );
-        info2.append( " MSL TPA" );
-        info2.append( est );
-        tv.setText( info2.toString() );
+        tv.setText( String.format( "%s MSL elevation - %s MSL TPA %s",
+                FormatUtils.formatFeet( elev_msl ),
+                FormatUtils.formatFeet( elev_msl+tpa_agl ), est ) );
 
         String s = c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) );
         Time endDate = new Time();
@@ -356,13 +352,10 @@ public class ActivityBase extends FragmentActivity {
         tv.setText( String.format( "%s, %s", city, state ) );
         String use = c.getString( c.getColumnIndex( Nav1.PUBLIC_USE ) );
         int elev_msl = c.getInt( c.getColumnIndex( Nav1.ELEVATION_MSL ) );
-        StringBuilder info2 = new StringBuilder();
-        info2.append( use.equals( "Y" )? "Public use" : "Private use" );
-        info2.append( ", " );
-        info2.append( FormatUtils.formatFeet( elev_msl ) );
-        info2.append( " MSL elevation" );
         tv = (TextView) root.findViewById( R.id.navaid_info2 );
-        tv.setText( info2.toString() );
+        tv.setText( String.format( "%s, %s MSL elevation",
+                use.equals( "Y" )? "Public use" : "Private use",
+                FormatUtils.formatFeet( elev_msl ) ) );
         tv = (TextView) root.findViewById( R.id.navaid_morse1 );
         tv.setText( DataUtils.getMorseCode( id.substring( 0, 1 ) ) );
         if ( id.length() > 1 ) {
