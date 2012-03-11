@@ -24,14 +24,21 @@ import java.text.DecimalFormat;
 public class FormatUtils {
 
     private static DecimalFormat sFeetFormat;
+    private static DecimalFormat sNumberFormat;
 
     static {
         sFeetFormat = new DecimalFormat();
-        sFeetFormat.applyPattern( "#,##0.#''");
+        sFeetFormat.applyPattern( "#,##0.# ft" );
+        sNumberFormat = new DecimalFormat();
+        sNumberFormat.applyPattern( "#,##0.##" );
     }
 
     public static String formatFeet( float value ) {
         return sFeetFormat.format( value );
+    }
+
+    public static String formatNumber( float value ) {
+        return sNumberFormat.format( value );
     }
 
 }
