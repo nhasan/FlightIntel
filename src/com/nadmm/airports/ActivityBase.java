@@ -19,8 +19,6 @@
 
 package com.nadmm.airports;
 
-import java.text.NumberFormat;
-
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
