@@ -784,20 +784,20 @@ public final class DataUtils {
 
     public static String getApproachLightSystemDescription( String als ) {
         if ( als.equals( "ALSAF" ) ) {
-            return "3,000' high intensity approach lighting system with centerline "
+            return "3,000 ft high intensity approach lighting system with centerline "
                     +"sequence flashers";
         } else if ( als.equals( "ALSF1" ) ) {
-            return "Standard 2,400' high intensity approach lighting system with "
+            return "Standard 2,400 ft high intensity approach lighting system with "
                     +"sequenced flashers, CAT I";
         } else if ( als.equals( "ALSF2" ) ) {
-            return "Standard 2,400' high intensity approach lighting system with "
+            return "Standard 2,400 ft high intensity approach lighting system with "
                     +"sequenced flashers, CAT II or III";
         } else if ( als.equals( "MALS" ) ) {
-            return "1,400' medium intensity approach lighting system";
+            return "1,400 ft medium intensity approach lighting system";
         } else if ( als.equals( "MALSF" ) ) {
-            return "1,400' medium intensity approach lighting system with sequenced flashers";
+            return "1,400 ft medium intensity approach lighting system with sequenced flashers";
         } else if ( als.equals( "MALSR" ) ) {
-            return "1,400' medium intensity approach lighting system with runway alignment "
+            return "1,400 ft medium intensity approach lighting system with runway alignment "
                     +"indicator lights";
         } else if ( als.equals( "SSALS" ) ) {
             return "Simplified short approach lighting system";
