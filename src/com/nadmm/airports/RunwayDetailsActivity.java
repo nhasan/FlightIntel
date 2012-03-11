@@ -19,8 +19,6 @@
 
 package com.nadmm.airports;
 
-import java.text.DecimalFormat;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -337,9 +335,7 @@ public class RunwayDetailsActivity extends ActivityBase {
         Float elevation = rwy.getFloat( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_RUNWAY_ELEVATION ) );
         if ( elevation != null && elevation > 0 ) {
-            DecimalFormat format = new DecimalFormat();
-            format.applyPattern( "#,##0.#''");
-            addRow( layout, "Elevation", format.format( elevation ) );
+            addRow( layout, "Elevation", FormatUtils.formatFeet( elevation ) );
             addSeparator( layout );
         }
         String rhPattern = rwy.getString( rwy.getColumnIndex(
