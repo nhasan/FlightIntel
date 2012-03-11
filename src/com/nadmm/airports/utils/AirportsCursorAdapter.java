@@ -30,6 +30,8 @@ import com.nadmm.airports.R;
 
 public class AirportsCursorAdapter extends SectionedCursorAdapter {
 
+    private StringBuilder mStringBuilder = new StringBuilder();
+
     public AirportsCursorAdapter( Context context, Cursor c ) {
         super( context, R.layout.airport_list_item, c, R.id.list_section );
     }
@@ -54,7 +56,7 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
         String state_name = c.getString( c.getColumnIndex( States.STATE_NAME ) );
         tv = (TextView) view.findViewById( R.id.location );
-        tv.setText( city+", "+state_name );
+        tv.setText( String.format( "%s, %s", city, state_name ) );
 
         if ( c.getColumnIndex( Airports.DISTANCE ) >= 0 
                 && c.getColumnIndex( Airports.BEARING ) >= 0 ) {
@@ -62,14 +64,10 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
             float distance = c.getFloat( c.getColumnIndex( Airports.DISTANCE ) );
             float bearing = c.getFloat( c.getColumnIndex( Airports.BEARING ) );
             tv = (TextView) view.findViewById( R.id.distance );
-            tv.setText( String.format( "%.1f NM %s, ",
-                    distance, GeoUtils.getCardinalDirection( bearing ) ) );
-            tv = (TextView) view.findViewById( R.id.bearing );
-            tv.setText( String.format( "initial course %.0f\u00B0 M", bearing ) );
+            tv.setText( String.format( "%.1f NM %s, initial course %.0f\u00B0 M",
+                    distance, GeoUtils.getCardinalDirection( bearing ), bearing ) );
         } else {
             tv = (TextView) view.findViewById( R.id.distance );
-            tv.setVisibility( View.GONE );
-            tv = (TextView) view.findViewById( R.id.bearing );
             tv.setVisibility( View.GONE );
         }
 
@@ -77,19 +75,33 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
         String type = DataUtils.decodeLandingFaclityType( siteNumber );
         String fuel = c.getString( c.getColumnIndex( Airports.FUEL_TYPES ) );
-        String elev = c.getString( c.getColumnIndex( Airports.ELEVATION_MSL ) );
+        float elev = c.getFloat( c.getColumnIndex( Airports.ELEVATION_MSL ) );
         String ctaf = c.getString( c.getColumnIndex( Airports.CTAF_FREQ ) );
         String unicom = c.getString( c.getColumnIndex( Airports.UNICOM_FREQS ) );
         String status = c.getString( c.getColumnIndex( Airports.STATUS_CODE ) );
+        mStringBuilder.setLength( 0 );
         if ( status.equals( "O" ) ) {
-            tv.setText( type+", "+elev+"' MSL"
-                    +( ctaf != null && ctaf.length() > 0? ", "+ctaf : 
-                        (unicom != null && unicom.length() > 0? ", "+unicom : "") )
-                    +( fuel != null && fuel.length() > 0? 
-                            ", "+DataUtils.decodeFuelTypes( fuel ) : "" ) );
+            mStringBuilder.append( type );
+            mStringBuilder.append( ", " );
+            mStringBuilder.append( FormatUtils.formatFeet( elev ) );
+            mStringBuilder.append( " MSL" );
+            if ( ctaf != null && ctaf.length() > 0 ) {
+                mStringBuilder.append( ", " );
+                mStringBuilder.append( ctaf );
+            } else if ( unicom != null && unicom.length() > 0 ) {
+                mStringBuilder.append( ", " );
+                mStringBuilder.append( unicom );
+            }
+            if ( fuel != null && fuel.length() > 0 ) {
+                mStringBuilder.append( ", " );
+                mStringBuilder.append( DataUtils.decodeFuelTypes( fuel ) );
+            }
         } else {
-            tv.setText( type+", "+DataUtils.decodeStatus( status ) );
+            mStringBuilder.append( type );
+            mStringBuilder.append( ", " );
+            mStringBuilder.append( DataUtils.decodeStatus( status ) );
         }
+        tv.setText( mStringBuilder.toString() );
     }
 
 }
