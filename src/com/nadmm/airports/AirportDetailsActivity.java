@@ -666,9 +666,10 @@ public class AirportDetailsActivity extends ActivityBase {
                 addRow( layout, "Airspace", value, hours );
             }
             String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
-            String hours = "";
+            String towerValue;
             if ( tower.equals( "Y" ) ) {
                 Cursor att = result[ 9 ];
+                String hours = null;
                 if ( att.moveToFirst() ) {
                     String schedule = att.getString( att.getColumnIndex(
                             Attendance.ATTENDANCE_SCHEDULE ) );
@@ -680,9 +681,16 @@ public class AirportDetailsActivity extends ActivityBase {
                         }
                     }
                 }
+                if ( hours == null || hours.length() == 0 ) {
+                    towerValue = String.format( "Yes", hours );
+                } else {
+                    towerValue = String.format( "Yes (%s)", hours );
+                }
+            } else {
+                towerValue = String.format( "No" );
             }
             addSeparator( layout );
-            addRow( layout, "Control tower", tower.equals( "Y" )? "Yes" : "No", hours );
+            addRow( layout, "Control tower", towerValue );
             String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
             addSeparator( layout );
             addRow( layout, "Wind indicator", DataUtils.decodeWindIndicator( windIndicator ) );
