@@ -824,7 +824,7 @@ public final class DataUtils {
         String tzName = tz.getDisplayName( tz.inDaylightTime( now ), TimeZone.SHORT );
         DateFormat tzFormat = new SimpleDateFormat( "'(UTC'Z')'" );
         tzFormat.setTimeZone( tz );
-        return tzName+" "+tzFormat.format( now );
+        return String.format( "%s %s", tzName, tzFormat.format( now ) );
     }
 
     public static String[] getNotamSubjects() {
