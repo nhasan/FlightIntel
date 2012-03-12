@@ -51,6 +51,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Aff3;
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Attendance;
 import com.nadmm.airports.DatabaseManager.Awos;
 import com.nadmm.airports.DatabaseManager.Dtpp;
 import com.nadmm.airports.DatabaseManager.Remarks;
@@ -157,7 +158,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
             DatabaseManager dbManager = getDbManager();
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 10 ];
+            Cursor[] cursors = new Cursor[ 11 ];
 
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -336,13 +337,21 @@ public class AirportDetailsActivity extends ActivityBase {
                     new String[] { faaCode }, null, null, null, null );
             cursors[ 8 ] = c;
 
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Attendance.TABLE_NAME );
+            c = builder.query( db,
+                    new String[] { Attendance.ATTENDANCE_SCHEDULE },
+                    Attendance.SITE_NUMBER+"=?", new String[] { siteNumber },
+                    null, null, Attendance.SEQUENCE_NUMBER, null );
+            cursors[ 9 ] = c;
+
             db = dbManager.getDatabase( DatabaseManager.DB_DTPP );
             if ( db != null ) {
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Dtpp.TABLE_NAME );
                 c = builder.query( db, new String[] { "*" }, Dtpp.FAA_CODE+"=? ",
                         new String[] { faaCode }, null, null, null, null );
-                cursors[ 9 ] = c;
+                cursors[ 10 ] = c;
             }
 
             return cursors;
@@ -634,6 +643,9 @@ public class AirportDetailsActivity extends ActivityBase {
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_operations_layout );
             String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
             addRow( layout, "Airport use", DataUtils.decodeFacilityUse( use ) );
+            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+            addSeparator( layout );
+            addRow( layout, "FAA code", faaCode );
             String timezoneId = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
             if ( timezoneId.length() > 0 ) {
                 addSeparator( layout );
@@ -645,9 +657,6 @@ public class AirportDetailsActivity extends ActivityBase {
                 addSeparator( layout );
                 addRow( layout, "Activation date", activation );
             }
-            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            addSeparator( layout );
-            addRow( layout, "FAA code", faaCode );
             Cursor twr8 = result[ 8 ];
             if ( twr8.moveToFirst() ) {
                 String airspace = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_TYPES ) );
@@ -656,9 +665,24 @@ public class AirportDetailsActivity extends ActivityBase {
                 addSeparator( layout );
                 addRow( layout, "Airspace", value, hours );
             }
-            addSeparator( layout );
             String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
-            addRow( layout, "Control tower", tower.equals( "Y" )? "Yes" : "No" );
+            String hours = "";
+            if ( tower.equals( "Y" ) ) {
+                Cursor att = result[ 9 ];
+                if ( att.moveToFirst() ) {
+                    String schedule = att.getString( att.getColumnIndex(
+                            Attendance.ATTENDANCE_SCHEDULE ) );
+                    String[] parts = schedule.split( "/" );
+                    if ( parts.length == 3 ) {
+                        hours = parts[ 2 ];
+                        if ( hours.equals( "ALL" ) ) {
+                            hours = "24 Hours";
+                        }
+                    }
+                }
+            }
+            addSeparator( layout );
+            addRow( layout, "Control tower", tower.equals( "Y" )? "Yes" : "No", hours );
             String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
             addSeparator( layout );
             addRow( layout, "Wind indicator", DataUtils.decodeWindIndicator( windIndicator ) );
@@ -726,7 +750,7 @@ public class AirportDetailsActivity extends ActivityBase {
         protected void showTppDetails( Cursor[] result ) {
             Cursor apt = result[ 0 ];
             String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-            Cursor dtpp = result[ 9 ];
+            Cursor dtpp = result[ 10 ];
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_ifr_layout );
             if ( dtpp != null && dtpp.moveToFirst() ) {
                 Intent intent = new Intent( getActivity(), DtppActivity.class );
