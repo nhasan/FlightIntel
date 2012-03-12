@@ -147,13 +147,13 @@ public final class DataUtils {
 
     public static String decodeOwnershipType( String ownership ) {
         if ( ownership.equals( "PU" ) ) {
-            return "Publicly owned";
+            return "Public owned";
         } else if ( ownership.equals( "PR" ) ) {
-            return "Privately owned";
+            return "Private owned";
         } else if ( ownership.equals( "MA" ) ) {
             return "Airforce owned";
         } else if ( ownership.equals( "MN" ) ) {
-            return "Navy Owned";
+            return "Navy owned";
         } else if ( ownership.equals( "MR" ) ) {
             return "Army owned";
         } else {
@@ -163,11 +163,11 @@ public final class DataUtils {
 
     public static String decodeFacilityUse( String use ) {
         if ( use.equals( "PU" ) ) {
-            return "Open to the public";
+            return "Public use";
         } else if ( use.equals( "PR" ) ) {
             return "Private Use";
         } else {
-            return "Unknown use";
+            return "Unknown";
         }
     }
 
