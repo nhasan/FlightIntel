@@ -54,9 +54,11 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
         }
         tv.setText( code );
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
-        String state_name = c.getString( c.getColumnIndex( States.STATE_NAME ) );
+        String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );
+        String use = c.getString( c.getColumnIndex( Airports.FACILITY_USE ) );
         tv = (TextView) view.findViewById( R.id.location );
-        tv.setText( String.format( "%s, %s", city, state_name ) );
+        tv.setText( String.format( "%s, %s, %s", city, state,
+                DataUtils.decodeFacilityUse( use ) ) );
 
         if ( c.getColumnIndex( Airports.DISTANCE ) >= 0 
                 && c.getColumnIndex( Airports.BEARING ) >= 0 ) {

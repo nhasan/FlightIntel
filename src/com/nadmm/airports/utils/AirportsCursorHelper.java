@@ -46,6 +46,7 @@ public class AirportsCursorHelper {
             Airports.UNICOM_FREQS,
             Airports.ELEVATION_MSL,
             Airports.STATUS_CODE,
+            Airports.FACILITY_USE,
             Airports.REF_LATTITUDE_DEGREES,
             Airports.REF_LONGITUDE_DEGREES,
             States.STATE_NAME

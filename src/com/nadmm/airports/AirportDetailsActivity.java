@@ -642,7 +642,7 @@ public class AirportDetailsActivity extends ActivityBase {
             Cursor apt = result[ 0 ];
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_operations_layout );
             String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
-            addRow( layout, "Airport use", DataUtils.decodeFacilityUse( use ) );
+            addRow( layout, "Operation", DataUtils.decodeFacilityUse( use ) );
             String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
             addSeparator( layout );
             addRow( layout, "FAA code", faaCode );
