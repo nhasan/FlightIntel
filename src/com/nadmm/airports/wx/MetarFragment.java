@@ -371,7 +371,7 @@ public class MetarFragment extends FragmentBase {
             tv.setVisibility( View.VISIBLE );
             layout.setVisibility( View.VISIBLE );
 
-            addRow( layout, "Altimeter", String.format( "%.2f\" Hg (%s mb)",
+            addRow( layout, "Altimeter", String.format( "%.2f in Hg (%s mb)",
                     metar.altimeterHg,
                     FormatUtils.formatNumber( WxUtils.hgToMillibar( metar.altimeterHg ) ) ) );
             if ( metar.seaLevelPressureMb < Float.MAX_VALUE ) {
