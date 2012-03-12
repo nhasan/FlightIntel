@@ -31,7 +31,6 @@ import android.widget.LinearLayout.LayoutParams;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Attendance;
 import com.nadmm.airports.DatabaseManager.Remarks;
-import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 public class AttendanceDetailsActivity extends ActivityBase {
@@ -62,14 +61,14 @@ public class AttendanceDetailsActivity extends ActivityBase {
             builder.setTables( Attendance.TABLE_NAME );
             cursors[ 1 ] = builder.query( db,
                     new String[] { Attendance.ATTENDANCE_SCHEDULE },
-                    Runways.SITE_NUMBER+"=? ", new String[] { siteNumber }, 
+                    Attendance.SITE_NUMBER+"=?", new String[] { siteNumber }, 
                     null, null, Attendance.SEQUENCE_NUMBER, null );
 
             builder = new SQLiteQueryBuilder();
             builder.setTables( Remarks.TABLE_NAME );
             cursors[ 2 ] = builder.query( db,
                     new String[] { Remarks.REMARK_TEXT },
-                    Runways.SITE_NUMBER+"=? "
+                    Attendance.SITE_NUMBER+"=? "
                     +"AND substr("+Remarks.REMARK_NAME+", 1, 3)='A17'",
                     new String[] { siteNumber }, null, null, null, null );
 
@@ -102,17 +101,19 @@ public class AttendanceDetailsActivity extends ActivityBase {
                 String schedule = att.getString(
                         att.getColumnIndex( Attendance.ATTENDANCE_SCHEDULE ) );
                 String[] parts = schedule.split( "/" );
+                addSpacing( layout );
+                LinearLayout table = (LinearLayout) inflate( R.layout.attendance_detail_item );
                 if ( parts.length == 3 ) {
-                    addSpacing( layout );
-                    LinearLayout table = (LinearLayout) inflate( R.layout.attendance_detail_item );
                     addRow( table, "Months", parts[ 0 ] );
                     addSeparator( table );
                     addRow( table, "Days", parts[ 1 ] );
                     addSeparator( table );
                     addRow( table, "Hours", parts[ 2 ] );
-                    layout.addView( table, 1, new LinearLayout.LayoutParams(
-                            LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+                } else {
+                    addRow( table, "Attendance", schedule );
                 }
+                layout.addView( table, 1, new LinearLayout.LayoutParams(
+                        LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
             } while ( att.moveToNext() );
         }
     }
