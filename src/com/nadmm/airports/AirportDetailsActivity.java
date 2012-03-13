@@ -670,7 +670,7 @@ public class AirportDetailsActivity extends ActivityBase {
             if ( tower.equals( "Y" ) ) {
                 Cursor att = result[ 9 ];
                 String hours = null;
-                if ( att.moveToFirst() ) {
+                if ( att.moveToFirst() && att.getCount() == 1 ) {
                     String schedule = att.getString( att.getColumnIndex(
                             Attendance.ATTENDANCE_SCHEDULE ) );
                     String[] parts = schedule.split( "/" );
@@ -682,7 +682,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     }
                 }
                 if ( hours == null || hours.length() == 0 ) {
-                    towerValue = String.format( "Yes", hours );
+                    towerValue = "Yes";
                 } else {
                     towerValue = String.format( "Yes (%s)", hours );
                 }
@@ -743,6 +743,29 @@ public class AirportDetailsActivity extends ActivityBase {
                 } else {
                     addRow( layout, "Sectional chart", sectional );
                 }
+            }
+            String intlEntry = apt.getString( apt.getColumnIndex( Airports.INTL_ENTRY_AIRPORT ) );
+            if ( intlEntry != null && intlEntry.equals( "Y" ) ) {
+                addSeparator( layout );
+                addRow( layout, "Intl. entry", "Yes" );
+            }
+            String customs = apt.getString( apt.getColumnIndex(
+                    Airports.CUSTOMS_LANDING_RIGHTS_AIRPORT ) );
+            if ( customs != null && customs.equals( "Y" ) ) {
+                addSeparator( layout );
+                addRow( layout, "Customs landing rights", "Yes" );
+            }
+            String jointUse = apt.getString( apt.getColumnIndex(
+                    Airports.CIVIL_MILITARY_JOINT_USE ) );
+            if ( jointUse != null && jointUse.equals( "Y" ) ) {
+                addSeparator( layout );
+                addRow( layout, "Civil/military joint use", "Yes" );
+            }
+            String militaryRights = apt.getString( apt.getColumnIndex(
+                    Airports.MILITARY_LANDING_RIGHTS ) );
+            if ( militaryRights != null && militaryRights.equals( "Y" ) ) {
+                addSeparator( layout );
+                addRow( layout, "Military landing rights", "Yes" );
             }
             addSeparator( layout );
             Intent intent = new Intent( getActivity(), AlmanacActivity.class );
