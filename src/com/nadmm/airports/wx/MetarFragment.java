@@ -205,8 +205,6 @@ public class MetarFragment extends FragmentBase {
             detail.setVisibility( View.VISIBLE );
         }
 
-        NumberFormat decimal = NumberFormat.getNumberInstance();
-
         tv = (TextView) findViewById( R.id.wx_age );
         Date now = new Date();
         long age = now.getTime()-metar.observationTime;
@@ -258,12 +256,12 @@ public class MetarFragment extends FragmentBase {
                 decimal2.setMaximumFractionDigits( 2 );
                 decimal2.setMinimumFractionDigits( 0 );
                 addRow( layout, String.format( "%s statute miles horizontal visibility",
-                        decimal.format( metar.visibilitySM ) ) );
+                        FormatUtils.formatNumber( metar.visibilitySM ) ) );
             }
             if ( metar.vertVisibilityFeet < Integer.MAX_VALUE ) {
                 addSeparator( layout );
-                addRow( layout, String.format( "%s ft AGL vertical visibility",
-                        decimal.format( metar.vertVisibilityFeet ) ) );
+                addRow( layout, String.format( "%s AGL vertical visibility",
+                        FormatUtils.formatFeet( metar.vertVisibilityFeet ) ) );
             }
         } else {
             tv.setVisibility( View.GONE );
@@ -326,8 +324,7 @@ public class MetarFragment extends FragmentBase {
                 long denAlt = WxUtils.getDensityAltitude( metar );
                 if ( denAlt > mElevation ) {
                     addSeparator( layout );
-                    addRow( layout, "Density altitude",
-                            String.format( "%s ft", decimal.format( denAlt ) ) );
+                    addRow( layout, "Density altitude", FormatUtils.formatFeet( denAlt ) );
                 }
             } else {
                 addSeparator( layout );
@@ -371,9 +368,9 @@ public class MetarFragment extends FragmentBase {
             tv.setVisibility( View.VISIBLE );
             layout.setVisibility( View.VISIBLE );
 
-            addRow( layout, "Altimeter", String.format( "%.2f in Hg (%s mb)",
-                    metar.altimeterHg,
-                    FormatUtils.formatNumber( WxUtils.hgToMillibar( metar.altimeterHg ) ) ) );
+            float altimeterMb = WxUtils.hgToMillibar( metar.altimeterHg );
+            addRow( layout, "Altimeter", String.format( "%.2f\" Hg (%s mb)",
+                    metar.altimeterHg, FormatUtils.formatNumber( altimeterMb ) ) );
             if ( metar.seaLevelPressureMb < Float.MAX_VALUE ) {
                 addSeparator( layout );
                 addRow( layout, "Sea level pressure", String.format( "%s mb",
@@ -382,8 +379,7 @@ public class MetarFragment extends FragmentBase {
             long presAlt = WxUtils.getPressureAltitude( metar );
             if ( presAlt > mElevation ) {
                 addSeparator( layout );
-                addRow( layout, "Pressure altitude",
-                        String.format( "%s ft", decimal.format( presAlt ) ) );
+                addRow( layout, "Pressure altitude", FormatUtils.formatFeet( presAlt ) );
             }
             if ( metar.pressureTend3HrMb < Float.MAX_VALUE ) {
                 addSeparator( layout );
