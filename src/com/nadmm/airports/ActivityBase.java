@@ -207,8 +207,7 @@ public class ActivityBase extends FragmentActivity {
                 int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
                 if ( version < 64 ) {
                     Intent download = new Intent( this, DownloadActivity.class );
-                    download.putExtra( "MSG", "ATTENTION: This app version requires"
-                    		+" latest data update" );
+                    download.putExtra( "MSG", "This app version requires latest data update" );
                     c.close();
                     return download;
                 }
@@ -238,7 +237,7 @@ public class ActivityBase extends FragmentActivity {
 
         if ( !dtppFound ) {
             Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "Please download d-TPP database first" );
+            download.putExtra( "MSG", "Please download the current d-TPP database" );
             return download;
         }
 
