@@ -747,7 +747,7 @@ public class AirportDetailsActivity extends ActivityBase {
             String intlEntry = apt.getString( apt.getColumnIndex( Airports.INTL_ENTRY_AIRPORT ) );
             if ( intlEntry != null && intlEntry.equals( "Y" ) ) {
                 addSeparator( layout );
-                addRow( layout, "Intl. entry", "Yes" );
+                addRow( layout, "Intl. port of entry", "Yes" );
             }
             String customs = apt.getString( apt.getColumnIndex(
                     Airports.CUSTOMS_LANDING_RIGHTS_AIRPORT ) );
