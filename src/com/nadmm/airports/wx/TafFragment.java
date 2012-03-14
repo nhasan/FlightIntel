@@ -305,11 +305,11 @@ public class TafFragment extends FragmentBase {
         }
         addRow( layout, "Forecast type", fcstType );
         addSeparator( layout );
-        addRow( layout, "Issued at", TimeUtils.formatDateUTC( getActivity(), taf.issueTime ) );
+        addRow( layout, "Issued at", TimeUtils.formatDateTime( getActivity(), taf.issueTime ) );
         addSeparator( layout );
-        addRow( layout, "Valid from", TimeUtils.formatDateUTC( getActivity(), taf.validTimeFrom ) );
+        addRow( layout, "Valid from", TimeUtils.formatDateTime( getActivity(), taf.validTimeFrom ) );
         addSeparator( layout );
-        addRow( layout, "Valid to", TimeUtils.formatDateUTC( getActivity(), taf.validTimeTo ) );
+        addRow( layout, "Valid to", TimeUtils.formatDateTime( getActivity(), taf.validTimeTo ) );
         if ( taf.remarks != null && taf.remarks.length() > 0 && !taf.remarks.equals( "AMD" ) ) {
             addSeparator( layout );
             addRow( layout, "\u2022 "+taf.remarks );
@@ -343,7 +343,7 @@ public class TafFragment extends FragmentBase {
                 sb.append( forecast.changeIndicator );
                 sb.append( " " );
             }
-            sb.append( TimeUtils.formatDateRangeUTC(
+            sb.append( TimeUtils.formatDateRange(
                     getActivity(), forecast.timeFrom, forecast.timeTo ) );
             tv = (TextView) grp_layout.findViewById( R.id.group_name );
             tv.setText( sb.toString() );
@@ -359,8 +359,8 @@ public class TafFragment extends FragmentBase {
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }
-                addRow( fcst_layout, "Becoming at",
-                        TimeUtils.formatDateUTC( getActivity(), forecast.timeBecoming ) );
+                addRow( fcst_layout, "Becoming at", TimeUtils.formatDateTime(
+                        getActivity(), forecast.timeBecoming ) );
             }
 
             if ( forecast.windSpeedKnots < Integer.MAX_VALUE ) {

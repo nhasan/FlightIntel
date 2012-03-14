@@ -215,16 +215,16 @@ public class PirepFragment extends FragmentBase {
         if ( entry.flags.contains( Flags.BadLocation ) ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
             tv.setText( String.format( "%s (%.0fNM %s approx.)",
-                    TimeUtils.formatDateUTC( getActivity(), entry.observationTime ),
+                    TimeUtils.formatDateTime( getActivity(), entry.observationTime ),
                     entry.distanceNM, dir ) );
         } else if ( entry.distanceNM > 0 ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
             tv.setText( String.format( "%s (%.0fNM %s)",
-                    TimeUtils.formatDateUTC( getActivity(), entry.observationTime ),
+                    TimeUtils.formatDateTime( getActivity(), entry.observationTime ),
                     entry.distanceNM, dir ) );
         } else {
             tv.setText( String.format( "%s (On-site)",
-                    TimeUtils.formatDateUTC( getActivity(), entry.observationTime ) ) );
+                    TimeUtils.formatDateTime( getActivity(), entry.observationTime ) ) );
         }
 
         tv = (TextView) item.findViewById( R.id.wx_raw_pirep );

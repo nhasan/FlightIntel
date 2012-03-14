@@ -204,7 +204,7 @@ public class DtppActivity extends ActivityBase {
         String tppVolume = dtpp.getString( 0 );
         addRow( layout, "Volume", tppVolume );
         addSeparator( layout );
-        addRow( layout, "Valid", TimeUtils.formatDateRangeUTC( this,
+        addRow( layout, "Valid", TimeUtils.formatDateRange( this,
                 fromDate.getTime(), toDate.getTime() ) );
         if ( mExpired ) {
             addSeparator( layout );
