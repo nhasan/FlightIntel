@@ -71,12 +71,6 @@
                 android:summaryOn="GPS NOTAMs will also be shown"
                 android:summaryOff="GPS NOTAMs will not be shown"
                 defaultValue="false" />
-        <CheckBoxPreference
-                android:key="auto_download_on_3G"
-                android:title="Auto-download content on 3G/4G"
-                android:summaryOn="Auto-download content on 3G/4G+wifi"
-                android:summaryOff="Auto-download content on wifi only"
-                defaultValue="false" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Miscellaneous">
         <ListPreference
@@ -86,4 +80,16 @@
                 android:entryValues="@array/phone_tap_values"
                 android:defaultValue="dial" />
     </PreferenceCategory>
+    <CheckBoxPreference
+            android:key="auto_download_on_3G"
+            android:title="Auto-download content on 3G/4G"
+            android:summaryOn="Auto-download content on 3G/4G+wifi"
+            android:summaryOff="Auto-download content on wifi only"
+            defaultValue="false" />
+    <CheckBoxPreference
+            android:key="show_local_time"
+            android:title="Use local timezone"
+            android:summaryOn="Local time will be shown"
+            android:summaryOff="UTC time will be shown"
+            defaultValue="false" />
 </PreferenceScreen>
