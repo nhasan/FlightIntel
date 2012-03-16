@@ -50,6 +50,7 @@
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_freq"
             android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textStyle="bold"
             android:paddingRight="6dp"
             android:gravity="right"
             android:layout_toRightOf="@id/wx_station_info"
