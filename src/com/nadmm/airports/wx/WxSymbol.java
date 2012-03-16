@@ -31,20 +31,20 @@ public abstract class WxSymbol implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
 
     private static Map<String, WxSymbol> sWxSymbolsMap = new HashMap<String, WxSymbol>();
-    private static ArrayList<String> sSymbolNames = new ArrayList<String>();
+    private static ArrayList<String> sSymbols = new ArrayList<String>();
 
     private WxSymbol() {}
 
-    private WxSymbol( String name )
+    private WxSymbol( String symbol )
     {
         mIntensity = "";
-        mName = name;
-        sSymbolNames.add( name );
-        sWxSymbolsMap.put( name, this );
+        mSymbol = symbol;
+        sSymbols.add( symbol );
+        sWxSymbolsMap.put( symbol, this );
     }
 
-    public String name() {
-        return mName;
+    public String getSymbol() {
+        return mSymbol;
     }
 
     @Override
@@ -79,15 +79,15 @@ public abstract class WxSymbol implements Serializable, Cloneable {
         return symbol;
     }
 
-    public static ArrayList<String> getNames() {
-        return sSymbolNames;
+    public static ArrayList<String> getSymbols() {
+        return sSymbols;
     }
 
     abstract public int getDrawable();
     abstract protected String getDescription();
 
     protected String mIntensity;
-    protected String mName;
+    protected String mSymbol;
 
     static {
         new WxSymbol( "BCFG" ) {
@@ -1049,14 +1049,14 @@ public abstract class WxSymbol implements Serializable, Cloneable {
 
             @Override
             protected String getDescription() {
-                return "Fair weather";
+                return "No significant weather";
             }
         };
     }
 
     public static void parseWxSymbols( ArrayList<WxSymbol> wxList, String wxString ) {
         String[] groups = wxString.split( "\\s+" );
-        ArrayList<String> names = WxSymbol.getNames();
+        ArrayList<String> names = WxSymbol.getSymbols();
         for ( String group : groups ) {
             int offset = 0;
             String intensity = "";
@@ -1071,7 +1071,7 @@ public abstract class WxSymbol implements Serializable, Cloneable {
                         wx = WxSymbol.get( name, intensity );
                         intensity = "";
                         wxList.add( wx );
-                        offset += wx.name().length();
+                        offset += wx.getSymbol().length();
                         break;
                     }
                 }
