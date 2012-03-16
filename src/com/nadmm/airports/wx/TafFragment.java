@@ -385,9 +385,8 @@ public class TafFragment extends FragmentBase {
             }
 
             if ( forecast.visibilitySM < Float.MAX_VALUE ) {
-                String value = forecast.visibilitySM > 6? "6 or more statute miles"
-                        : String.format( "%s statues miles",
-                                FormatUtils.formatNumber( forecast.visibilitySM ) );
+                String value = forecast.visibilitySM > 6? "6+ SM"
+                        : FormatUtils.formatVisibility( forecast.visibilitySM );
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }
@@ -395,12 +394,11 @@ public class TafFragment extends FragmentBase {
             }
 
             if ( forecast.vertVisibilityFeet < Integer.MAX_VALUE ) {
-                String value = String.format( "%s ft AGL vertical",
-                        FormatUtils.formatNumber( forecast.vertVisibilityFeet ) );
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }
-                addRow( fcst_layout, "Visibility", value );
+                addRow( fcst_layout, "Visibility",
+                        FormatUtils.formatFeetAgl( forecast.vertVisibilityFeet ) );
             }
 
             for ( WxSymbol wx : forecast.wxList ) {
@@ -421,8 +419,7 @@ public class TafFragment extends FragmentBase {
                 String shear = String.format( "%s (%03d\u00B0 true) at %d knots",
                         GeoUtils.getCardinalDirection( forecast.windShearDirDegrees ),
                         forecast.windShearDirDegrees, forecast.windShearSpeedKnots );
-                String height = String.format( "%s ft AGL",
-                        FormatUtils.formatNumber( forecast.windShearHeightFeetAGL ) );
+                String height = FormatUtils.formatFeetAgl( forecast.windShearHeightFeetAGL );
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }
@@ -433,56 +430,27 @@ public class TafFragment extends FragmentBase {
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }
-                addRow( fcst_layout, "Altimeter", String.format( "%.2f\" Hg (%.1f mb)",
-                        forecast.altimeterHg, WxUtils.hgToMillibar( forecast.altimeterHg ) ) );
+                addRow( fcst_layout, "Altimeter",
+                        FormatUtils.formatAltimeter( forecast.altimeterHg ) );
             }
 
             for ( TurbulenceCondition turbulence : forecast.turbulenceConditions ) {
-                String value = WxUtils.decodeTurbulenceIntensity( turbulence.intensity );
-                String height;
-                if ( turbulence.minAltitudeFeetAGL < Integer.MAX_VALUE
-                        && turbulence.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
-                    height = String.format( "%s to %s ft AGL",
-                            FormatUtils.formatNumber( turbulence.minAltitudeFeetAGL ),
-                            FormatUtils.formatNumber( turbulence.maxAltitudeFeetAGL ) );
-                } else if ( turbulence.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
-                    height = String.format( "Surface to %s ft AGL",
-                            FormatUtils.formatNumber( turbulence.maxAltitudeFeetAGL ) );
-                } else {
-                    height = "";
-                }
-
-                if ( turbulence.intensity > 0 ) {
-                    String frequency = WxUtils.decodeTurbulenceFrequency( turbulence.intensity );
-                    if ( frequency.length() > 0 ) {
-                        height = frequency+", "+height;
-                    }
-                }
-
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }
+                String value = WxUtils.decodeTurbulenceIntensity( turbulence.intensity );
+                String height = FormatUtils.formatFeetRangeAgl(
+                        turbulence.minAltitudeFeetAGL, turbulence.maxAltitudeFeetAGL );
                 addRow( fcst_layout, "Turbulence", value, height );
             }
 
             for ( IcingCondition icing : forecast.icingConditions ) {
-                String value = WxUtils.decodeIcingIntensity( icing.intensity );
-                String height;
-                if ( icing.minAltitudeFeetAGL < Integer.MAX_VALUE
-                        && icing.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
-                    height = String.format( "Between %s to %s ft AGL",
-                            FormatUtils.formatNumber( icing.minAltitudeFeetAGL ),
-                            FormatUtils.formatNumber( icing.maxAltitudeFeetAGL ) );
-                } else if ( icing.maxAltitudeFeetAGL < Integer.MAX_VALUE ) {
-                    height = String.format( "Surface to %s ft AGL",
-                            FormatUtils.formatNumber( icing.maxAltitudeFeetAGL ) );
-                } else {
-                    height = "";
-                }
-
                 if ( fcst_layout.getChildCount() > 0 ) {
                     addSeparator( fcst_layout );
                 }
+                String value = WxUtils.decodeIcingIntensity( icing.intensity );
+                String height = FormatUtils.formatFeetRangeAgl(
+                        icing.minAltitudeFeetAGL, icing.maxAltitudeFeetAGL );
                 addRow( fcst_layout, "Icing", value, height );
             }
 

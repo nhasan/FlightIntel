@@ -19,8 +19,6 @@
 
 package com.nadmm.airports.wx;
 
-import java.text.NumberFormat;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager;
@@ -46,6 +45,7 @@ import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
+import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.wx.Pirep.Flags;
@@ -63,16 +63,11 @@ public class PirepFragment extends FragmentBase {
     protected CursorAsyncTask mTask;
     protected BroadcastReceiver mReceiver;
     protected String mStationId;
-    protected NumberFormat mDecimal;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setHasOptionsMenu( true );
-
-        mDecimal = NumberFormat.getNumberInstance();
-        mDecimal.setMaximumFractionDigits( 2 );
-        mDecimal.setMinimumFractionDigits( 0 );
 
         mReceiver = new BroadcastReceiver() {
 
@@ -190,42 +185,40 @@ public class PirepFragment extends FragmentBase {
 
         if ( !pirep.entries.isEmpty() ) {
             TextView tv = (TextView) findViewById( R.id.pirep_title_msg );
-            tv.setText( String.format( "%d PIREPs reported within %dNM of %s in last %d hours",
+            tv.setText( String.format( "%d PIREPs reported within %d NM of %s during last %d hours",
                     pirep.entries.size(), PIREP_RADIUS_NM, mStationId, PIREP_HOURS_BEFORE ) );
             for ( PirepEntry entry : pirep.entries ) {
                 showPirepEntry( layout, entry );
             }
-
-            tv = (TextView) findViewById( R.id.wx_fetch_time );
-            tv.setText( "Fetched on "+TimeUtils.formatLongDateTime( pirep.fetchTime )  );
-            tv.setVisibility( View.VISIBLE );
         } else {
             TextView tv = (TextView) findViewById( R.id.pirep_title_msg );
-            tv.setText( String.format( "No PIREPs reported within %dNM of %s in last %d hours",
+            tv.setText( String.format( "No PIREPs reported within %d NM of %s in last %d hours",
                     PIREP_RADIUS_NM, mStationId, PIREP_HOURS_BEFORE ) );
         }
+
+        TextView tv = (TextView) findViewById( R.id.wx_fetch_time );
+        tv.setText( "Fetched on "+TimeUtils.formatLongDateTime( pirep.fetchTime )  );
+        tv.setVisibility( View.VISIBLE );
 
         stopRefreshAnimation();
         setContentShown( true );
     }
 
     protected void showPirepEntry( LinearLayout layout, PirepEntry entry ) {
-        LinearLayout item = (LinearLayout) inflate( R.layout.pirep_detail_item );
+        RelativeLayout item = (RelativeLayout) inflate( R.layout.pirep_detail_item );
         TextView tv = (TextView) item.findViewById( R.id.pirep_name );
+        String time = TimeUtils.formatDateTime( getActivity(), entry.observationTime );
         if ( entry.flags.contains( Flags.BadLocation ) ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
-            tv.setText( String.format( "%s (%.0fNM %s approx.)",
-                    TimeUtils.formatDateTime( getActivity(), entry.observationTime ),
-                    entry.distanceNM, dir ) );
+            tv.setText( String.format( "%s (%.0fNM %s approx.)", time, entry.distanceNM, dir ) );
         } else if ( entry.distanceNM > 0 ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
-            tv.setText( String.format( "%s (%.0fNM %s)",
-                    TimeUtils.formatDateTime( getActivity(), entry.observationTime ),
-                    entry.distanceNM, dir ) );
+            tv.setText( String.format( "%s (%.0fNM %s)", time, entry.distanceNM, dir ) );
         } else {
-            tv.setText( String.format( "%s (On-site)",
-                    TimeUtils.formatDateTime( getActivity(), entry.observationTime ) ) );
+            tv.setText( String.format( "%s (0 NM)", time ) );
         }
+        tv = (TextView) item.findViewById( R.id.pirep_age );
+        tv.setText( TimeUtils.formatElapsedTime( entry.observationTime ) );
 
         tv = (TextView) item.findViewById( R.id.wx_raw_pirep );
         tv.setText( entry.rawText );
@@ -239,23 +232,22 @@ public class PirepFragment extends FragmentBase {
         if ( entry.altitudeFeetMSL < Integer.MAX_VALUE ) {
             addSeparator( details );
             if ( entry.flags.contains( Flags.NoFlightLevel ) ) {
-                addRow( details, "Altitude", mDecimal.format( entry.altitudeFeetMSL )+" ft MSL",
-                        "(Assumed altitude)" );
+                addRow( details, "Altitude",
+                        FormatUtils.formatFeetMsl( entry.altitudeFeetMSL ), "(Approximate)" );
             } else {
-                addRow( details, "Altitude", mDecimal.format( entry.altitudeFeetMSL )+" ft MSL" );
+                addRow( details, "Altitude",
+                        FormatUtils.formatFeetMsl( entry.altitudeFeetMSL ) );
             }
         }
 
         if ( entry.visibilitySM < Integer.MAX_VALUE ) {
             addSeparator( details );
-            addRow( details, "Visibility", mDecimal.format( entry.visibilitySM )+"SM" );
+            addRow( details, "Visibility", FormatUtils.formatVisibility( entry.visibilitySM ) );
         }
 
         if ( entry.tempCelsius < Integer.MAX_VALUE ) {
             addSeparator( details );
-            addRow( details, "Temperature",
-                    String.format( "%d\u00B0C (%.0f\u00B0F)", entry.tempCelsius,
-                    WxUtils.celsiusToFahrenheit( entry.tempCelsius ) ) );
+            addRow( details, "Temperature", FormatUtils.formatTemperature( entry.tempCelsius ) );
         }
 
         if ( entry.windSpeedKnots < Integer.MAX_VALUE ) {
@@ -293,17 +285,7 @@ public class PirepFragment extends FragmentBase {
 
     protected void addSkyConditionRow( LinearLayout details, SkyCondition sky ) {
         StringBuilder sb = new StringBuilder();
-        if ( sky.baseFeetMSL < Integer.MAX_VALUE
-                && sky.topFeetMSL == Integer.MAX_VALUE ) {
-            sb.append( mDecimal.format( sky.baseFeetMSL )+" ft MSL and above" );
-        } else if ( sky.baseFeetMSL == Integer.MAX_VALUE
-                && sky.topFeetMSL < Integer.MAX_VALUE ) {
-            sb.append( mDecimal.format( sky.topFeetMSL )+" ft MSL and below" );
-        } else if ( sky.baseFeetMSL < Integer.MAX_VALUE
-                && sky.topFeetMSL < Integer.MAX_VALUE ) {
-            sb.append( mDecimal.format( sky.baseFeetMSL )+" ft" 
-                    +" to "+mDecimal.format( sky.topFeetMSL )+" ft MSL" );
-        }
+        sb.append( FormatUtils.formatFeetRangeMsl( sky.baseFeetMSL, sky.topFeetMSL ) );
         String extra = sb.toString();
         addSeparator( details );
         addRow( details, "Sky cover", sky.skyCover, extra );
@@ -328,17 +310,8 @@ public class PirepFragment extends FragmentBase {
         }
         String value = sb.toString();
         sb.setLength( 0 );
-        if ( turbulence.baseFeetMSL < Integer.MAX_VALUE
-                && turbulence.topFeetMSL == Integer.MAX_VALUE ) {
-            sb.append( mDecimal.format( turbulence.baseFeetMSL )+" ft MSL and above" );
-        } else if ( turbulence.baseFeetMSL == Integer.MAX_VALUE
-                && turbulence.topFeetMSL < Integer.MAX_VALUE ) {
-            sb.append( mDecimal.format( turbulence.topFeetMSL )+" ft MSL and below" );
-        } else if ( turbulence.baseFeetMSL < Integer.MAX_VALUE
-                && turbulence.topFeetMSL < Integer.MAX_VALUE ) {
-            sb.append( mDecimal.format( turbulence.baseFeetMSL )+" ft" 
-                    +" to "+mDecimal.format( turbulence.topFeetMSL )+" ft MSL" );
-        }
+        sb.append( FormatUtils.formatFeetRangeMsl(
+                turbulence.baseFeetMSL, turbulence.topFeetMSL ) );
         String extra = sb.toString();
         addSeparator( details );
         addRow( details, "Turbulence", value, extra );
@@ -357,17 +330,7 @@ public class PirepFragment extends FragmentBase {
         }
         String value = sb.toString();
         sb.setLength( 0 );
-        if ( icing.baseFeetMSL < Integer.MAX_VALUE
-                && icing.topFeetMSL == Integer.MAX_VALUE ) {
-            sb.append( mDecimal.format( icing.baseFeetMSL )+" ft MSL and above" );
-        } else if ( icing.baseFeetMSL == Integer.MAX_VALUE
-                && icing.topFeetMSL < Integer.MAX_VALUE ) {
-            sb.append( mDecimal.format( icing.topFeetMSL )+" ft MSL and below" );
-        } else if ( icing.baseFeetMSL < Integer.MAX_VALUE
-                && icing.topFeetMSL < Integer.MAX_VALUE ) {
-            sb.append( mDecimal.format( icing.baseFeetMSL )+" ft" 
-                    +" to "+mDecimal.format( icing.topFeetMSL )+" ft MSL" );
-        }
+        sb.append( FormatUtils.formatFeetRangeMsl( icing.baseFeetMSL, icing.topFeetMSL ) );
         String extra = sb.toString();
         addSeparator( details );
         addRow( details, "Icing", value, extra );

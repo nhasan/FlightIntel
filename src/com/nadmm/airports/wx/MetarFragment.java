@@ -20,7 +20,6 @@
 package com.nadmm.airports.wx;
 
 import java.text.NumberFormat;
-import java.util.Date;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,7 +33,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -206,9 +204,7 @@ public class MetarFragment extends FragmentBase {
         }
 
         tv = (TextView) findViewById( R.id.wx_age );
-        Date now = new Date();
-        long age = now.getTime()-metar.observationTime;
-        tv.setText( TimeUtils.formatDuration( age )+" old" );
+        tv.setText( TimeUtils.formatElapsedTime( metar.observationTime ) );
 
         tv = (TextView) findViewById( R.id.wx_flight_category );
         tv.setText( WxUtils.getFlightCategoryName( metar.flightCategory )
@@ -229,12 +225,13 @@ public class MetarFragment extends FragmentBase {
 
             addWindRow( layout, metar );
             if ( metar.wshft ) {
-                String s = "Wind shift of 45\u00B0 or more detected during past hour";
+                StringBuilder sb = new StringBuilder();
+                sb.append( "Wind shift of 45\u00B0 or more detected during past hour" );
                 if ( metar.fropa ) {
-                    s += " due to frontal passage";
+                    sb.append( " due to frontal passage" );
                 }
                 addSeparator( layout );
-                addRow( layout, s );
+                addRow( layout, sb.toString() );
             }
         } else {
             tv.setVisibility( View.GONE );
@@ -255,13 +252,13 @@ public class MetarFragment extends FragmentBase {
                 NumberFormat decimal2 = NumberFormat.getNumberInstance();
                 decimal2.setMaximumFractionDigits( 2 );
                 decimal2.setMinimumFractionDigits( 0 );
-                addRow( layout, String.format( "%s statute miles horizontal visibility",
+                addRow( layout, String.format( "%s statute miles horizontal",
                         FormatUtils.formatNumber( metar.visibilitySM ) ) );
             }
             if ( metar.vertVisibilityFeet < Integer.MAX_VALUE ) {
                 addSeparator( layout );
-                addRow( layout, String.format( "%s AGL vertical visibility",
-                        FormatUtils.formatFeet( metar.vertVisibilityFeet ) ) );
+                addRow( layout, String.format( "%s vertical",
+                        FormatUtils.formatFeetAgl( metar.vertVisibilityFeet ) ) );
             }
         } else {
             tv.setVisibility( View.GONE );
@@ -310,13 +307,11 @@ public class MetarFragment extends FragmentBase {
             layout.setVisibility( View.VISIBLE );
 
             addRow( layout, "Temperature",
-                    String.format( "%.1f\u00B0C (%.0f\u00B0F)", metar.tempCelsius,
-                    WxUtils.celsiusToFahrenheit( metar.tempCelsius ) ) );
+                    FormatUtils.formatTemperature( metar.tempCelsius ) );
             if ( metar.dewpointCelsius < Float.MAX_VALUE ) {
                 addSeparator( layout );
                 addRow( layout, "Dew point",
-                        String.format( "%.1f\u00B0C (%.0f\u00B0F)", metar.dewpointCelsius,
-                        WxUtils.celsiusToFahrenheit( metar.dewpointCelsius ) ) );
+                        FormatUtils.formatTemperature( metar.dewpointCelsius ) );
                 addSeparator( layout );
                 addRow( layout,"Relative humidity", String.format( "%.0f%%",
                         WxUtils.getRelativeHumidity( metar ) ) );
@@ -333,27 +328,23 @@ public class MetarFragment extends FragmentBase {
 
             if ( metar.maxTemp6HrCentigrade < Float.MAX_VALUE ) {
                 addSeparator( layout );
-                addRow( layout, "6-hour maximum", String.format( "%.1f\u00B0C (%.0f\u00B0F)",
-                        metar.maxTemp6HrCentigrade,
-                        WxUtils.celsiusToFahrenheit( metar.maxTemp6HrCentigrade ) ) );
+                addRow( layout, "6-hour maximum",
+                        FormatUtils.formatTemperature( metar.maxTemp6HrCentigrade ) );
             }
             if ( metar.minTemp6HrCentigrade < Float.MAX_VALUE ) {
                 addSeparator( layout );
-                addRow( layout, "6-hour minimum", String.format( "%.1f\u00B0C (%.0f\u00B0F)",
-                        metar.minTemp6HrCentigrade,
-                        WxUtils.celsiusToFahrenheit( metar.minTemp6HrCentigrade ) ) );
+                addRow( layout, "6-hour minimum",
+                        FormatUtils.formatTemperature( metar.minTemp6HrCentigrade ) );
             }
             if ( metar.maxTemp24HrCentigrade < Float.MAX_VALUE ) {
                 addSeparator( layout );
-                addRow( layout, "24-hour maximum", String.format( "%.1f\u00B0C (%.0f\u00B0F)",
-                        metar.maxTemp24HrCentigrade,
-                        WxUtils.celsiusToFahrenheit( metar.maxTemp24HrCentigrade ) ) );
+                addRow( layout, "24-hour maximum",
+                        FormatUtils.formatTemperature( metar.maxTemp24HrCentigrade ) );
             }
             if ( metar.minTemp24HrCentigrade < Float.MAX_VALUE ) {
                 addSeparator( layout );
-                addRow( layout, "24-hour minimum", String.format( "%.1f\u00B0C (%.0f\u00B0F)",
-                        metar.minTemp24HrCentigrade,
-                        WxUtils.celsiusToFahrenheit( metar.minTemp24HrCentigrade ) ) );
+                addRow( layout, "24-hour minimum",
+                        FormatUtils.formatTemperature( metar.minTemp24HrCentigrade ) );
             }
         } else {
             tv.setVisibility( View.GONE );
@@ -368,9 +359,8 @@ public class MetarFragment extends FragmentBase {
             tv.setVisibility( View.VISIBLE );
             layout.setVisibility( View.VISIBLE );
 
-            float altimeterMb = WxUtils.hgToMillibar( metar.altimeterHg );
-            addRow( layout, "Altimeter", String.format( "%.2f\" Hg (%s mb)",
-                    metar.altimeterHg, FormatUtils.formatNumber( altimeterMb ) ) );
+            addRow( layout, "Altimeter",
+                    FormatUtils.formatAltimeter( metar.altimeterHg ) );
             if ( metar.seaLevelPressureMb < Float.MAX_VALUE ) {
                 addSeparator( layout );
                 addRow( layout, "Sea level pressure", String.format( "%s mb",
@@ -407,39 +397,39 @@ public class MetarFragment extends FragmentBase {
             if ( row > 0 ) {
                 addSeparator( layout );
             }
-            addRow( layout, "1-hour precipitation", String.format( "%.2f'",
-                    metar.precipInches ) );
+            addRow( layout, "1-hour precipitation",
+                    String.format( "%.2f\"", metar.precipInches ) );
             ++row;
         }
         if ( metar.precip3HrInches < Float.MAX_VALUE ) {
             if ( row > 0 ) {
                 addSeparator( layout );
             }
-            addRow( layout, "3-hour precipitation", String.format( "%.2f'",
-                    metar.precip3HrInches ) );
+            addRow( layout, "3-hour precipitation",
+                    String.format( "%.2f\"", metar.precip3HrInches ) );
             ++row;
         }
         if ( metar.precip6HrInches < Float.MAX_VALUE ) {
             if ( row > 0 ) {
                 addSeparator( layout );
             }
-            addRow( layout, "6-hour precipitation", String.format( "%.2f'",
-                    metar.precip6HrInches ) );
+            addRow( layout, "6-hour precipitation",
+                    String.format( "%.2f\"", metar.precip6HrInches ) );
             ++row;
         }
         if ( metar.precip24HrInches < Float.MAX_VALUE ) {
             if ( row > 0 ) {
                 addSeparator( layout );
             }
-            addRow( layout, "24-hour precipitation", String.format( "%.2f'",
-                    metar.precip24HrInches ) );
+            addRow( layout, "24-hour precipitation",
+                    String.format( "%.2f\"", metar.precip24HrInches ) );
             ++row;
         }
         if ( metar.snowInches < Float.MAX_VALUE ) {
             if ( row > 0 ) {
                 addSeparator( layout );
             }
-            addRow( layout, "Snow depth", String.format( "%.0f'", metar.snowInches ) );
+            addRow( layout, "Snow depth", String.format( "%.0f\"", metar.snowInches ) );
             ++row;
         }
         if ( metar.snincr ) {
@@ -475,8 +465,7 @@ public class MetarFragment extends FragmentBase {
         }
 
         tv = (TextView) findViewById( R.id.wx_fetch_time );
-        tv.setText( "Fetched on "
-                +DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( metar.fetchTime ) ) );
+        tv.setText( "Fetched on "+TimeUtils.formatLongDateTime( metar.fetchTime )  );
         tv.setVisibility( View.VISIBLE );
 
         stopRefreshAnimation();
