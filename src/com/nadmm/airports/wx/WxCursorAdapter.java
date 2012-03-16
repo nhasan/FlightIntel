@@ -19,7 +19,6 @@
 
 package com.nadmm.airports.wx;
 
-import java.util.Date;
 import java.util.HashMap;
 
 import android.content.Context;
@@ -34,6 +33,7 @@ import com.nadmm.airports.DatabaseManager.Awos;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
@@ -90,7 +90,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         if ( freq != null && freq.length() > 0 ) {
             try {
                 tv = (TextView) view.findViewById( R.id.wx_station_freq );
-                tv.setText( String.format( "%.3f", Double.valueOf( freq ) ) );
+                tv.setText( FormatUtils.formatFreq( Float.valueOf( freq ) ) );
             } catch ( NumberFormatException e ) {
             }
         }
@@ -103,7 +103,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         info.append( type );
         info.append( ", " );
         int elevation = c.getInt( c.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
-        info.append( String.format( "%d' MSL", DataUtils.metersToFeet( elevation ) ) );
+        info.append( FormatUtils.formatFeetMsl( DataUtils.metersToFeet( elevation ) ) );
         tv = (TextView) view.findViewById( R.id.wx_station_info2 );
         tv.setText( info.toString() );
 
@@ -135,10 +135,13 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 WxUtils.setColorizedWxDrawable( tv, metar, declination );
     
                 StringBuilder info = new StringBuilder();
+                info.append( metar.flightCategory );
                 if ( metar.wxList.size() > 0 ) {
                     for ( WxSymbol wx : metar.wxList ) {
-                        info.append( ", " );
-                        info.append( wx.toString().toLowerCase() );
+                        if ( !wx.getSymbol().equals( "NSW" ) ) {
+                            info.append( ", " );
+                            info.append( wx.toString().toLowerCase() );
+                        }
                     }
                 }
                 if ( metar.windGustKnots < Integer.MAX_VALUE ) {
@@ -147,21 +150,19 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                     info.append( ", variable winds" );
                 } else if ( metar.windSpeedKnots > 10 ) {
                     info.append( ", strong winds" );
+                } else if ( metar.windSpeedKnots > 0 ) {
+                    info.append( ", light winds" );
+                } else {
+                    info.append( ", calm winds" );
                 }
-                if ( info.length() == 0 ) {
-                    info.append( ", no significant weather" );
-                }
-                info.insert( 0, metar.flightCategory );
     
                 tv = (TextView) view.findViewById( R.id.wx_station_wx );
                 tv.setVisibility( View.VISIBLE );
                 tv.setText( info.toString() );
     
-                Date now = new Date();
-                long age = now.getTime()-metar.observationTime;
                 tv = (TextView) view.findViewById( R.id.wx_report_age );
                 tv.setVisibility( View.VISIBLE );
-                tv.setText( TimeUtils.formatDuration( age )+" old" );
+                tv.setText( TimeUtils.formatElapsedTime( metar.observationTime ) );
             } else {
                 TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
                 WxUtils.setColorizedWxDrawable( tv, metar, 0 );
