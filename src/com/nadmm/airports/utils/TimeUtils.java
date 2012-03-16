@@ -20,21 +20,21 @@
 package com.nadmm.airports.utils;
 
 import java.util.Date;
+import java.util.Formatter;
 import java.util.TimeZone;
-
-import com.nadmm.airports.PreferencesActivity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
+import android.text.format.Time;
+
+import com.nadmm.airports.PreferencesActivity;
 
 public class TimeUtils {
     
-    private static final int SECONDS_PER_MINUTE = 60;
-    private static final int SECONDS_PER_HOUR = 60 * 60;
-    private static final int SECONDS_PER_DAY = 24 * 60 * 60;
+    private static Formatter mFormatter = new Formatter( new StringBuilder() );
 
     public static CharSequence formatLongDateTime( long time ) {
         return DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( time ) );
@@ -61,47 +61,60 @@ public class TimeUtils {
     }
 
     public static String formatDateTimeUTC( Context context, long millis ) {
-        String s = DateUtils.formatDateTime( context, millis,
+        StringBuilder sb = (StringBuilder) mFormatter.out();
+        sb.setLength( 0 );
+        Formatter f = DateUtils.formatDateRange( context, mFormatter, millis, millis,
                 DateUtils.FORMAT_24HOUR
                 | DateUtils.FORMAT_SHOW_DATE
                 | DateUtils.FORMAT_SHOW_TIME
                 | DateUtils.FORMAT_NO_YEAR
-                | DateUtils.FORMAT_ABBREV_ALL
-                | DateUtils.FORMAT_UTC );
-        return s+" UTC";
+                | DateUtils.FORMAT_ABBREV_ALL,
+                Time.TIMEZONE_UTC );
+        return f.toString()+" UTC";
     }
 
     public static String formatDateTimeLocal( Context context, long millis ) {
-        String s = DateUtils.formatDateTime( context, millis,
+        StringBuilder sb = (StringBuilder) mFormatter.out();
+        sb.setLength( 0 );
+        Formatter f = DateUtils.formatDateRange( context, mFormatter, millis, millis,
                 DateUtils.FORMAT_24HOUR
                 | DateUtils.FORMAT_SHOW_DATE
                 | DateUtils.FORMAT_SHOW_TIME
                 | DateUtils.FORMAT_NO_YEAR
                 | DateUtils.FORMAT_ABBREV_ALL );
-        return s+" Local";
+        return String.format( "%s %s", f.toString(), getLocalTimeZoneName() );
     }
 
     public static String formatDateRangeUTC( Context context,
             long startMillis, long endMillis ) {
-        String s = DateUtils.formatDateRange( context, startMillis, endMillis,
+        StringBuilder sb = (StringBuilder) mFormatter.out();
+        sb.setLength( 0 );
+        Formatter f = DateUtils.formatDateRange( context, mFormatter, startMillis, endMillis,
                 DateUtils.FORMAT_24HOUR
                 | DateUtils.FORMAT_SHOW_DATE
                 | DateUtils.FORMAT_SHOW_TIME
                 | DateUtils.FORMAT_NO_YEAR
-                | DateUtils.FORMAT_ABBREV_ALL
-                | DateUtils.FORMAT_UTC );
-        return s+" UTC";
+                | DateUtils.FORMAT_ABBREV_ALL,
+                Time.TIMEZONE_UTC );
+        return f.toString()+" UTC";
     }
 
     public static String formatDateRangeLocal( Context context,
             long startMillis, long endMillis ) {
-        String s = DateUtils.formatDateRange( context, startMillis, endMillis,
+        StringBuilder sb = (StringBuilder) mFormatter.out();
+        sb.setLength( 0 );
+        Formatter f = DateUtils.formatDateRange( context, mFormatter, startMillis, endMillis,
                 DateUtils.FORMAT_24HOUR
                 | DateUtils.FORMAT_SHOW_DATE
                 | DateUtils.FORMAT_SHOW_TIME
                 | DateUtils.FORMAT_NO_YEAR
                 | DateUtils.FORMAT_ABBREV_ALL );
-        return s+" Local";
+        return String.format( "%s %s", f.toString(), getLocalTimeZoneName() );
+    }
+
+    public static String getLocalTimeZoneName() {
+        TimeZone tz = TimeZone.getDefault();
+        return tz.getDisplayName( tz.inDaylightTime( new Date() ), TimeZone.SHORT );
     }
 
     public static CharSequence formatElapsedTime( long time ) {
@@ -110,41 +123,8 @@ public class TimeUtils {
     }
 
     public static CharSequence formatElapsedTime( long time1, long time2 ) {
-        long age = time1-time2;
-        return formatDuration( age )+" old";
-    }
-
-    public static String formatDuration( long duration ) {
-        StringBuilder builder = new StringBuilder();
-        int seconds = (int) Math.floor( duration/1000 );
-        int days = 0, hours = 0, minutes = 0;
-
-        if ( seconds > SECONDS_PER_DAY ) {
-            days = seconds/SECONDS_PER_DAY;
-            seconds -= days*SECONDS_PER_DAY;
-            builder.append( days );
-            builder.append( "d" );
-        }
-        if ( seconds > SECONDS_PER_HOUR ) {
-            hours = seconds/SECONDS_PER_HOUR;
-            seconds -= hours*SECONDS_PER_HOUR;
-            if ( builder.length() > 0 ) {
-                builder.append( " " );
-            }
-            builder.append( hours );
-            builder.append( "h" );
-        }
-        if ( seconds > SECONDS_PER_MINUTE ) {
-            minutes = seconds/SECONDS_PER_MINUTE;
-            seconds -= minutes*SECONDS_PER_MINUTE;
-            if ( builder.length() > 0 ) {
-                builder.append( " " );
-            }
-            builder.append( minutes );
-            builder.append( "m" );
-        }
-
-        return builder.toString();
+        return DateUtils.getRelativeTimeSpanString( time2, time1,
+                DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE );
     }
 
 }
