@@ -20,14 +20,13 @@
 package com.nadmm.airports.wx;
 
 import java.io.Serializable;
-import java.text.NumberFormat;
 
 import com.nadmm.airports.R;
+import com.nadmm.airports.utils.FormatUtils;
 
 public abstract class SkyCondition implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private static NumberFormat sDecimal = NumberFormat.getNumberInstance();
 
     protected String mSkyCover;
     protected int mCloudBaseAGL;
@@ -85,8 +84,8 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    return String.format( "Few clouds at %s ft AGL",
-                            sDecimal.format( mCloudBaseAGL ) );
+                    return String.format( "Few clouds at %s",
+                            FormatUtils.formatFeetAgl( mCloudBaseAGL ) );
                 }
 
                 public int getDrawable() {
@@ -99,8 +98,8 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    return String.format( "Scattered clouds at %s ft AGL",
-                            sDecimal.format( mCloudBaseAGL ) );
+                    return String.format( "Scattered clouds at %s",
+                            FormatUtils.formatFeetAgl( mCloudBaseAGL ) );
                 }
 
                 public int getDrawable() {
@@ -113,8 +112,8 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    return String.format( "Broken clouds at %s ft AGL",
-                            sDecimal.format( mCloudBaseAGL ) );
+                    return String.format( "Broken clouds at %s",
+                            FormatUtils.formatFeetAgl( mCloudBaseAGL ) );
                 }
 
                 public int getDrawable() {
@@ -127,8 +126,8 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    return String.format( "Overcast clouds at %s ft AGL",
-                            sDecimal.format( mCloudBaseAGL ) );
+                    return String.format( "Overcast clouds at %s",
+                            FormatUtils.formatFeetAgl( mCloudBaseAGL ) );
                 }
 
                 public int getDrawable() {
