@@ -77,6 +77,7 @@ public class NearbyActivity extends ActivityBase {
             Airports.UNICOM_FREQS,
             Airports.ELEVATION_MSL,
             Airports.STATUS_CODE,
+            Airports.FACILITY_USE,
             States.STATE_NAME,
             Airports.DISTANCE,
             Airports.BEARING
@@ -191,6 +192,7 @@ public class NearbyActivity extends ActivityBase {
         public String CTAF_FREQ;
         public String ELEVATION_MSL;
         public String STATUS_CODE;
+        public String FACILITY_USE;
         public String STATE_NAME;
         public float DISTANCE;
         public float BEARING;
@@ -207,6 +209,7 @@ public class NearbyActivity extends ActivityBase {
             UNICOM_FREQ = c.getString( c.getColumnIndex( Airports.UNICOM_FREQS ) );
             CTAF_FREQ = c.getString( c.getColumnIndex( Airports.CTAF_FREQ ) );
             STATUS_CODE = c.getString( c.getColumnIndex( Airports.STATUS_CODE ) );
+            FACILITY_USE = c.getString( c.getColumnIndex( Airports.FACILITY_USE ) );
             STATE_NAME = c.getString( c.getColumnIndex( States.STATE_NAME ) );
 
             // Now calculate the distance to this airport
@@ -302,6 +305,7 @@ public class NearbyActivity extends ActivityBase {
                         .add( airport.UNICOM_FREQ )
                         .add( airport.ELEVATION_MSL )
                         .add( airport.STATUS_CODE )
+                        .add( airport.FACILITY_USE )
                         .add( airport.STATE_NAME )
                         .add( airport.DISTANCE )
                         .add( airport.BEARING );
