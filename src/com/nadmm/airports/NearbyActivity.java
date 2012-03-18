@@ -35,6 +35,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuInflater;
@@ -102,23 +103,20 @@ public class NearbyActivity extends ActivityBase {
             // No location was passed, initialize the location service to get a fix
             mLocationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
             mLocationListener = new AirportsLocationListener();
-            boolean useGps = mPrefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
-            String provider = useGps? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
 
             // Get the last known location to use a starting point
-            mLastLocation = mLocationManager.getLastKnownLocation( provider );
-            if ( mLastLocation != null ) {
-                // Use the last known location if it is no more than 5 minutes old
-                long elapsed = System.currentTimeMillis()-mLastLocation.getTime();
-                if ( elapsed > 5*60*DateUtils.SECOND_IN_MILLIS ) {
-                    // This location is too old, discard
-                    mLastLocation = null;
-                }
+            mLastLocation = mLocationManager.getLastKnownLocation( LocationManager.GPS_PROVIDER );
+            if ( mLastLocation == null ) {
+                // Try to get last location from network provider
+                mLastLocation = mLocationManager.getLastKnownLocation(
+                        LocationManager.NETWORK_PROVIDER );
             }
         }
 
         if ( mLastLocation != null ) {
             // We have some location to use
+            Log.d( "INITIAL", mLastLocation.getProvider() );
+            Log.d( "INITIAL", String.valueOf( mLastLocation.getAccuracy() ) );
             NearbyTask task = new NearbyTask();
             task.execute();
         }
@@ -128,11 +126,15 @@ public class NearbyActivity extends ActivityBase {
     protected void onResume() {
         super.onResume();
         if ( mLocationManager != null ) {
+            mLocationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
+                    30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
+                    mLocationListener );
             boolean useGps = mPrefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
-            String provider = useGps? 
-                    LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
-            mLocationManager.requestLocationUpdates( provider, 30*DateUtils.SECOND_IN_MILLIS,
-                    0.25f*GeoUtils.METERS_PER_STATUTE_MILE, mLocationListener );
+            if ( useGps ) {
+                mLocationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
+                        30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
+                        mLocationListener );
+            }
         }
     }
 
@@ -158,9 +160,14 @@ public class NearbyActivity extends ActivityBase {
         @Override
         public void onLocationChanged( Location location ) {
             if ( GeoUtils.isBetterLocation( location, mLastLocation ) ) {
+                Log.d( "BETTER", location.getProvider() );
+                Log.d( "BETTER", String.valueOf( location.getAccuracy() ) );
                 mLastLocation = location;
                 NearbyTask task = new NearbyTask();
                 task.execute();
+            } else {
+                Log.d( "WORSE", location.getProvider() );
+                Log.d( "WORSE", String.valueOf( location.getAccuracy() ) );
             }
         }
 

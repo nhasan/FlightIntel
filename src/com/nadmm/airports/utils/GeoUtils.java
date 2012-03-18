@@ -182,7 +182,6 @@ public class GeoUtils {
         return false;
     }
 
-    /** Checks whether two providers are the same */
     private static boolean isSameProvider( String provider1, String provider2 ) {
         if ( provider1 == null ) {
           return provider2 == null;
