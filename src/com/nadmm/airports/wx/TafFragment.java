@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager;
@@ -320,7 +321,7 @@ public class TafFragment extends FragmentBase {
 
         StringBuilder sb = new StringBuilder();
         for ( Forecast forecast : taf.forecasts ) {
-            LinearLayout grp_layout = (LinearLayout) inflate( R.layout.grouped_detail_item );
+            RelativeLayout grp_layout = (RelativeLayout) inflate( R.layout.grouped_detail_item );
 
             // Keep track of forecast conditions across all change groups
             if ( forecast.changeIndicator == null || forecast.changeIndicator.equals( "FM" ) ) {

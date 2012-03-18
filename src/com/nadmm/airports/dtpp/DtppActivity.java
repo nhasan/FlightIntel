@@ -40,6 +40,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.ActivityBase;
@@ -194,7 +195,7 @@ public class DtppActivity extends ActivityBase {
             mExpired = true;
         }
 
-        LinearLayout item = (LinearLayout) inflate( R.layout.grouped_detail_item );
+        RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
         TextView tv = (TextView) item.findViewById( R.id.group_name );
         LinearLayout layout = (LinearLayout) item.findViewById( R.id.group_details );
         tv.setText( String.format( "Chart Cycle %s", mTppCycle ) );
@@ -231,7 +232,7 @@ public class DtppActivity extends ActivityBase {
     protected void showCharts( LinearLayout layout, Cursor c ) {
         if ( c.moveToFirst() ) {
             String chartCode = c.getString( c.getColumnIndex( Dtpp.CHART_CODE ) );
-            LinearLayout item = (LinearLayout) inflate( R.layout.grouped_detail_item );
+            RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
             TextView tv = (TextView) item.findViewById( R.id.group_name );
             LinearLayout grpLayout = (LinearLayout) item.findViewById( R.id.group_details );
             tv.setText( DataUtils.decodeChartCode( chartCode ) );
@@ -249,7 +250,7 @@ public class DtppActivity extends ActivityBase {
     }
 
     protected void showOther( LinearLayout layout ) {
-        LinearLayout item = (LinearLayout) inflate( R.layout.grouped_detail_item );
+        RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
         TextView tv = (TextView) item.findViewById( R.id.group_name );
         LinearLayout grpLayout = (LinearLayout) item.findViewById( R.id.group_details );
         tv.setText( "Other" );
