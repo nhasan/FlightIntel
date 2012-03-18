@@ -79,17 +79,27 @@
                 android:entries="@array/phone_tap_entries"
                 android:entryValues="@array/phone_tap_values"
                 android:defaultValue="dial" />
+        <CheckBoxPreference
+                android:key="auto_download_on_3G"
+                android:title="Auto-download content on 3G/4G"
+                android:summaryOn="Auto-download content on 3G/4G+wifi"
+                android:summaryOff="Auto-download content on wifi only"
+                defaultValue="false" />
+        <CheckBoxPreference
+                android:key="show_local_time"
+                android:title="Use local timezone"
+                android:summaryOn="Local time will be shown"
+                android:summaryOff="UTC time will be shown"
+                defaultValue="false" />
     </PreferenceCategory>
-    <CheckBoxPreference
-            android:key="auto_download_on_3G"
-            android:title="Auto-download content on 3G/4G"
-            android:summaryOn="Auto-download content on 3G/4G+wifi"
-            android:summaryOff="Auto-download content on wifi only"
-            defaultValue="false" />
-    <CheckBoxPreference
-            android:key="show_local_time"
-            android:title="Use local timezone"
-            android:summaryOn="Local time will be shown"
-            android:summaryOff="UTC time will be shown"
-            defaultValue="false" />
+    <PreferenceCategory android:title="Crash Reports">
+        <CheckBoxPreference android:key="acra.disable"
+                android:title="Disable crash reporting"
+                android:summaryOn="Do not send crash reports"
+                android:summaryOff="Send crash reports automatically"
+                android:defaultValue="false"/>
+        <EditTextPreference android:key="acra.user.email"
+                android:title="Your email address"
+                android:summary="Send your email address to the developer"/>
+    </PreferenceCategory>
 </PreferenceScreen>
