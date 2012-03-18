@@ -36,7 +36,7 @@ public class TafService extends NoaaService {
             +"&format=xml&compression=gzip&hoursBeforeNow=6&mostRecent=true&stationString=";
     private final File TAF_DIR = new File(
             AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/taf" );
-    private final long TAF_CACHE_MAX_AGE = 3*DateUtils.HOUR_IN_MILLIS;
+    private final long TAF_CACHE_MAX_AGE = 2*DateUtils.HOUR_IN_MILLIS;
 
     protected TafParser mParser;
 
