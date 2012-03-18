@@ -1,9 +1,13 @@
-v3.1.0 (3/16/2012)
+v3.1.0 (3/18/2012)
 ==================
 * Show control tower working hours when available
-* Show additional airport ops info like military and customs when appropriate
+* Show additional airport info
 * Added an option to show times in local timezone instead of UTC
 * Show flight category for each TAF forecast group
+* Added crash reporting using ACRA
+* Improved PIREP display
+* Lots of other fixes and improvements
+* Show computer code (NFD18) for charts
 
 v3.0.1 (3/9/2012)
 =================
