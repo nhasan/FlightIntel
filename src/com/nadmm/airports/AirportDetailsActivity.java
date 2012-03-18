@@ -21,7 +21,6 @@ package com.nadmm.airports;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TimeZone;
 
@@ -40,7 +39,6 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -532,16 +530,6 @@ public class AirportDetailsActivity extends ActivityBase {
             addClickableRow( layout, "Navaids", navaids, resId );
         }
 
-        protected void addFrequencyToMap( HashMap<String, ArrayList<Pair<String, String>>> map,
-                String freqUse, String freq, String extra ) {
-            ArrayList<Pair<String, String>> list = map.get( freqUse );
-            if ( list == null ) {
-                list = new ArrayList<Pair<String, String>>();
-            }
-            list.add( Pair.create( String.format( "%.3f", Double.valueOf( freq ) ), extra.trim() ) );
-            map.put( freqUse, list );
-        }
-
         protected void showRunwayDetails( Cursor[] result ) {
             LinearLayout rwyLayout = (LinearLayout) findViewById( R.id.detail_rwy_layout );
             LinearLayout heliLayout = (LinearLayout) findViewById( R.id.detail_heli_layout );
@@ -747,7 +735,7 @@ public class AirportDetailsActivity extends ActivityBase {
             String intlEntry = apt.getString( apt.getColumnIndex( Airports.INTL_ENTRY_AIRPORT ) );
             if ( intlEntry != null && intlEntry.equals( "Y" ) ) {
                 addSeparator( layout );
-                addRow( layout, "Intl. port of entry", "Yes" );
+                addRow( layout, "International entry", "Yes" );
             }
             String customs = apt.getString( apt.getColumnIndex(
                     Airports.CUSTOMS_LANDING_RIGHTS_AIRPORT ) );
@@ -893,7 +881,7 @@ public class AirportDetailsActivity extends ActivityBase {
             sb.setLength( 0 );
             if ( freq != null && freq.length() > 0 ) {
                 try {
-                    sb.append( String.format( "%.3f", Double.valueOf( freq ) ) );
+                    sb.append( FormatUtils.formatFreq( Float.valueOf( freq ) ) );
                 } catch ( NumberFormatException e ) {
                 }
             }
@@ -902,7 +890,7 @@ public class AirportDetailsActivity extends ActivityBase {
             sb.setLength( 0 );
             sb.append( type );
             if ( distance >= 2.5 ) {
-                sb.append( String.format( ", %.0fNM %s", distance,
+                sb.append( String.format( ", %.0f NM %s", distance,
                         GeoUtils.getCardinalDirection( bearing ) ) );
             } else {
                 sb.append( ", On-site" );
