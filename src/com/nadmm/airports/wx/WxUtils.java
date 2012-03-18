@@ -73,8 +73,20 @@ public class WxUtils {
         UiUtils.setTextViewDrawable( tv, d );
     }
 
-    static public void setFlightCategoryDrawable( TextView tv, Metar metar ) {
-        showColorizedDrawable( tv, metar.flightCategory, R.drawable.circle );
+    static public void setFlightCategoryDrawable( TextView tv, String flightCategory ) {
+        int resid = 0;
+        if ( flightCategory.equals( "VFR" ) ) {
+            resid = R.drawable.vfr;
+        } else if ( flightCategory.equals( "MVFR" ) ) {
+            resid = R.drawable.mvfr;
+        } else if ( flightCategory.equals( "IFR" ) ) {
+            resid = R.drawable.ifr;
+        } else if ( flightCategory.equals( "LIFR" ) ) {
+            resid = R.drawable.lifr;
+        }
+        if ( resid != 0 ) {
+            UiUtils.setTextViewDrawable( tv, resid );
+        }
     }
 
     static public void setColorizedCeilingDrawable( TextView tv, Metar metar ) {
