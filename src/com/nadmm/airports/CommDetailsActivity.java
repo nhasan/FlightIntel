@@ -41,6 +41,7 @@ import com.nadmm.airports.DatabaseManager.Tower6;
 import com.nadmm.airports.DatabaseManager.Tower7;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 public class CommDetailsActivity extends ActivityBase {
@@ -466,7 +467,7 @@ public class CommDetailsActivity extends ActivityBase {
         if ( list == null ) {
             list = new ArrayList<Pair<String, String>>();
         }
-        list.add( Pair.create( String.format( "%.3f", Double.valueOf( freq ) ), extra.trim() ) );
+        list.add( Pair.create( FormatUtils.formatFreq( Float.valueOf( freq ) ), extra.trim() ) );
         map.put( key, list );
     }
 
