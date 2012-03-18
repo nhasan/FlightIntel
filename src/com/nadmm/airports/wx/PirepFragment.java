@@ -210,10 +210,10 @@ public class PirepFragment extends FragmentBase {
         String time = TimeUtils.formatDateTime( getActivity(), entry.observationTime );
         if ( entry.flags.contains( Flags.BadLocation ) ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
-            tv.setText( String.format( "%s (%.0fNM %s approx.)", time, entry.distanceNM, dir ) );
+            tv.setText( String.format( "%s (%.0f NM %s approx.)", time, entry.distanceNM, dir ) );
         } else if ( entry.distanceNM > 0 ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
-            tv.setText( String.format( "%s (%.0fNM %s)", time, entry.distanceNM, dir ) );
+            tv.setText( String.format( "%s (%.0f NM %s)", time, entry.distanceNM, dir ) );
         } else {
             tv.setText( String.format( "%s (0 NM)", time ) );
         }
