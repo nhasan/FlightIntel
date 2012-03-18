@@ -30,6 +30,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -221,13 +222,22 @@ public class FssCommActivity extends ActivityBase {
                 float bearing  = com.getFloat( com.getColumnIndex( BEARING ) );
                 float distance  = com.getFloat( com.getColumnIndex( DISTANCE ) );
 
-                LinearLayout item = (LinearLayout) inflate( R.layout.grouped_detail_item );
+                RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
                 TextView tv = (TextView) item.findViewById( R.id.group_name );
                 if ( navId.length() > 0 ) {
                     tv.setText( navId+" - "+navName+" "+navType );
                 } else {
                     tv.setText( outletId+" - "+outletCall+" outlet" );
                 }
+
+                tv = (TextView) item.findViewById( R.id.group_extra );
+                if ( distance < 1.0 ) {
+                    tv.setText( "On-site" );
+                } else {
+                    tv.setText( String.format( "%.0f NM %s", distance,
+                        GeoUtils.getCardinalDirection( bearing ) ) );
+                }
+
                 LinearLayout layout = (LinearLayout) item.findViewById( R.id.group_details );
                 addRow( layout, "Call", fssName+" Radio" );
                 if ( navId.length() > 0 ) {
@@ -243,19 +253,12 @@ public class FssCommActivity extends ActivityBase {
                     addRow( layout, outletType, freq );
                     i = end;
                 }
-                addSeparator( layout );
-                if ( distance < 1.0 ) {
-                    addRow( layout, "Distance", "On-site" );
-                } else {
-                    addRow( layout, "Distance", String.format( "%.0fNM %s", distance,
-                        GeoUtils.getCardinalDirection( bearing ) ) );
-                }
 
                 detailLayout.addView( item, new LinearLayout.LayoutParams(
                         LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
             } while ( com.moveToNext() );
         } else {
-            setContentMsg( String.format( "No FSS outlets found within %dNM radius.", RADIUS ) );
+            setContentMsg( String.format( "No FSS outlets found within %d NM radius.", RADIUS ) );
         }
     }
 
