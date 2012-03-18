@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Ils2;
 import com.nadmm.airports.utils.CursorAsyncTask;
+import com.nadmm.airports.utils.FormatUtils;
 
 public class IlsDetailsActivity extends ActivityBase {
 
@@ -151,7 +152,7 @@ public class IlsDetailsActivity extends ActivityBase {
             addRow( layout, "Type", gsType );
             addSeparator( layout );
             Double gsAngle = ils1.getDouble( ils1.getColumnIndex( Ils1.GLIDE_SLOPE_ANGLE ) );
-            addRow( layout, "Angle", String.format( "%.02f\u00B0", gsAngle ) );
+            addRow( layout, "Glide angle", String.format( "%.02f\u00B0", gsAngle ) );
             addSeparator( layout );
             String gsFreq = ils1.getString( ils1.getColumnIndex( Ils1.GLIDE_SLOPE_FREQUENCY ) );
             addRow( layout, "Frequency", gsFreq );
@@ -170,7 +171,7 @@ public class IlsDetailsActivity extends ActivityBase {
             addRow( layout, "Type", imType );
             addSeparator( layout );
             int imDistance = ils1.getInt( ils1.getColumnIndex( Ils1.INNER_MARKER_DISTANCE ) );
-            addRow( layout, "Distance", String.format( "%d'", imDistance ) );
+            addRow( layout, "Distance", FormatUtils.formatFeet( imDistance ) );
         } else {
             TextView tv = (TextView) findViewById( R.id.rwy_im_label );
             tv.setVisibility( View.GONE );
@@ -201,7 +202,7 @@ public class IlsDetailsActivity extends ActivityBase {
                 addSeparator( layout );
             }
             int mmDistance = ils1.getInt( ils1.getColumnIndex( Ils1.MIDDLE_MARKER_DISTANCE ) );
-            addRow( layout, "Distance", String.format( "%d'", mmDistance ) );
+            addRow( layout, "Distance", FormatUtils.formatFeet( mmDistance ) );
         } else {
             TextView tv = (TextView) findViewById( R.id.rwy_mm_label );
             tv.setVisibility( View.GONE );
@@ -232,7 +233,7 @@ public class IlsDetailsActivity extends ActivityBase {
                 addSeparator( layout );
             }
             int omDistance = ils1.getInt( ils1.getColumnIndex( Ils1.OUTER_MARKER_DISTANCE ) );
-            addRow( layout, "Distance", String.format( "%d'", omDistance ) );
+            addRow( layout, "Distance", FormatUtils.formatFeet( omDistance ) );
         } else {
             TextView tv = (TextView) findViewById( R.id.rwy_om_label );
             tv.setVisibility( View.GONE );
