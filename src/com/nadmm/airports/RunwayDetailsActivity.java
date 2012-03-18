@@ -174,6 +174,20 @@ public class RunwayDetailsActivity extends ActivityBase {
                     DataUtils.calculateMagneticHeading( heading, variation ) ) );
             addSeparator( layout );
         }
+        String ilsType = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ILS_TYPE ) );
+        if ( ilsType.length() > 0 ) {
+            String siteNumber = apt.getString( apt.getColumnIndex(
+                    Airports.SITE_NUMBER ) );
+            Bundle args = new Bundle();
+            args.putString( Ils1.SITE_NUMBER, siteNumber );
+            args.putString( Ils1.RUNWAY_ID, runwayId );
+            args.putString( Ils1.ILS_TYPE, ilsType );
+            Intent intent = new Intent( this, IlsDetailsActivity.class );
+            intent.putExtras( args );
+            addClickableRow( layout, "Instrument approach", ilsType, intent, 
+                    R.drawable.row_selector_middle );
+            addSeparator( layout );
+        }
         Float elevation = rwy.getFloat( rwy.getColumnIndex( Runways.BASE_END_RUNWAY_ELEVATION ) );
         if ( elevation != null && elevation > 0 ) {
             addRow( layout, "Elevation", FormatUtils.formatFeet( elevation ) );
@@ -203,20 +217,6 @@ public class RunwayDetailsActivity extends ActivityBase {
         if ( apchLights.length() > 0 ) {
             addSeparator( layout );
             addRow( layout, "Approach lights", apchLights );
-        }
-        String ilsType = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ILS_TYPE ) );
-        if ( ilsType.length() > 0 ) {
-            String siteNumber = apt.getString( apt.getColumnIndex(
-                    Airports.SITE_NUMBER ) );
-            Bundle args = new Bundle();
-            args.putString( Ils1.SITE_NUMBER, siteNumber );
-            args.putString( Ils1.RUNWAY_ID, runwayId );
-            args.putString( Ils1.ILS_TYPE, ilsType );
-            Intent intent = new Intent( this, IlsDetailsActivity.class );
-            intent.putExtras( args );
-            addSeparator( layout );
-            addClickableRow( layout, "Instrument approach", ilsType, intent, 
-                    R.drawable.row_selector_top );
         }
         String markings = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_MARKING_TYPE ) );
         String condition = rwy.getString( rwy.getColumnIndex(
@@ -332,6 +332,20 @@ public class RunwayDetailsActivity extends ActivityBase {
                     DataUtils.calculateMagneticHeading( heading, variation ) ) );
             addSeparator( layout );
         }
+        String ilsType = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ILS_TYPE ) );
+        if ( ilsType.length() > 0 ) {
+            String siteNumber = apt.getString( apt.getColumnIndex(
+                    Airports.SITE_NUMBER ) );
+            Bundle args = new Bundle();
+            args.putString( Ils1.SITE_NUMBER, siteNumber );
+            args.putString( Ils1.RUNWAY_ID, runwayId );
+            args.putString( Ils1.ILS_TYPE, ilsType );
+            Intent intent = new Intent( this, IlsDetailsActivity.class );
+            intent.putExtras( args );
+            addClickableRow( layout, "Instrument approach", ilsType, intent, 
+                    R.drawable.row_selector_middle );
+            addSeparator( layout );
+        }
         Float elevation = rwy.getFloat( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_RUNWAY_ELEVATION ) );
         if ( elevation != null && elevation > 0 ) {
@@ -363,20 +377,6 @@ public class RunwayDetailsActivity extends ActivityBase {
         if ( apchLights.length() > 0 ) {
             addSeparator( layout );
             addRow( layout, "Approach lights", apchLights );
-        }
-        String ilsType = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ILS_TYPE ) );
-        if ( ilsType.length() > 0 ) {
-            String siteNumber = apt.getString( apt.getColumnIndex(
-                    Airports.SITE_NUMBER ) );
-            Bundle args = new Bundle();
-            args.putString( Ils1.SITE_NUMBER, siteNumber );
-            args.putString( Ils1.RUNWAY_ID, runwayId );
-            args.putString( Ils1.ILS_TYPE, ilsType );
-            Intent intent = new Intent( this, IlsDetailsActivity.class );
-            intent.putExtras( args );
-            addSeparator( layout );
-            addClickableRow( layout, "Instrument approach", ilsType, intent, 
-                    R.drawable.row_selector_top );
         }
         String markings = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_MARKING_TYPE ) );
