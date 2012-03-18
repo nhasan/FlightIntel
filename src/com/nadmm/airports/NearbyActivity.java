@@ -35,7 +35,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuInflater;
@@ -115,8 +114,6 @@ public class NearbyActivity extends ActivityBase {
 
         if ( mLastLocation != null ) {
             // We have some location to use
-            Log.d( "INITIAL", mLastLocation.getProvider() );
-            Log.d( "INITIAL", String.valueOf( mLastLocation.getAccuracy() ) );
             NearbyTask task = new NearbyTask();
             task.execute();
         }
@@ -160,14 +157,9 @@ public class NearbyActivity extends ActivityBase {
         @Override
         public void onLocationChanged( Location location ) {
             if ( GeoUtils.isBetterLocation( location, mLastLocation ) ) {
-                Log.d( "BETTER", location.getProvider() );
-                Log.d( "BETTER", String.valueOf( location.getAccuracy() ) );
                 mLastLocation = location;
                 NearbyTask task = new NearbyTask();
                 task.execute();
-            } else {
-                Log.d( "WORSE", location.getProvider() );
-                Log.d( "WORSE", String.valueOf( location.getAccuracy() ) );
             }
         }
 
