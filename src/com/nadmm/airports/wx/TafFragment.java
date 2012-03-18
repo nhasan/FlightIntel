@@ -334,11 +334,7 @@ public class TafFragment extends FragmentBase {
                 }
             }
 
-            String flightCategory = WxUtils.computeFlightCategory( mLastForecast.skyConditions,
-                    mLastForecast.visibilitySM );
             sb.setLength( 0 );
-            sb.append( flightCategory );
-            sb.append( " " );
             if ( forecast.changeIndicator != null ) {
                 sb.append( forecast.changeIndicator );
                 sb.append( " " );
@@ -347,6 +343,9 @@ public class TafFragment extends FragmentBase {
                     getActivity(), forecast.timeFrom, forecast.timeTo ) );
             tv = (TextView) grp_layout.findViewById( R.id.group_name );
             tv.setText( sb.toString() );
+            String flightCategory = WxUtils.computeFlightCategory( mLastForecast.skyConditions,
+                    mLastForecast.visibilitySM );
+            WxUtils.setFlightCategoryDrawable( tv, flightCategory );
 
             LinearLayout fcst_layout = (LinearLayout) grp_layout.findViewById( R.id.group_details );
 
