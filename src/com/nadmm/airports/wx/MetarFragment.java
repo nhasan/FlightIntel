@@ -203,13 +203,11 @@ public class MetarFragment extends FragmentBase {
             detail.setVisibility( View.VISIBLE );
         }
 
+        tv = (TextView) findViewById( R.id.wx_station_info2 );
+        WxUtils.setFlightCategoryDrawable( tv, metar.flightCategory );
+
         tv = (TextView) findViewById( R.id.wx_age );
         tv.setText( TimeUtils.formatElapsedTime( metar.observationTime ) );
-
-        tv = (TextView) findViewById( R.id.wx_flight_category );
-        tv.setText( WxUtils.getFlightCategoryName( metar.flightCategory )
-                +" conditions prevailing" );
-        WxUtils.setFlightCategoryDrawable( tv, metar );
 
         // Raw Text
         tv = (TextView) findViewById( R.id.wx_raw_metar );
