@@ -20,7 +20,6 @@
 package com.nadmm.airports.utils;
 
 import java.util.Date;
-import java.util.Formatter;
 import java.util.TimeZone;
 
 import android.content.Context;
@@ -28,14 +27,11 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
-import android.text.format.Time;
 
 import com.nadmm.airports.PreferencesActivity;
 
 public class TimeUtils {
     
-    private static Formatter mFormatter = new Formatter( new StringBuilder() );
-
     public static CharSequence formatLongDateTime( long time ) {
         return DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( time ) );
     }
@@ -61,55 +57,47 @@ public class TimeUtils {
     }
 
     public static String formatDateTimeUTC( Context context, long millis ) {
-        StringBuilder sb = (StringBuilder) mFormatter.out();
-        sb.setLength( 0 );
-        Formatter f = DateUtils.formatDateRange( context, mFormatter, millis, millis,
+        String s = DateUtils.formatDateRange( context, millis, millis,
                 DateUtils.FORMAT_24HOUR
                 | DateUtils.FORMAT_SHOW_DATE
                 | DateUtils.FORMAT_SHOW_TIME
                 | DateUtils.FORMAT_NO_YEAR
-                | DateUtils.FORMAT_ABBREV_ALL,
-                Time.TIMEZONE_UTC );
-        return f.toString()+" UTC";
+                | DateUtils.FORMAT_ABBREV_ALL
+                | DateUtils.FORMAT_UTC );
+        return String.format( "%s UTC", s );
     }
 
     public static String formatDateTimeLocal( Context context, long millis ) {
-        StringBuilder sb = (StringBuilder) mFormatter.out();
-        sb.setLength( 0 );
-        Formatter f = DateUtils.formatDateRange( context, mFormatter, millis, millis,
+        String s = DateUtils.formatDateRange( context, millis, millis,
                 DateUtils.FORMAT_24HOUR
                 | DateUtils.FORMAT_SHOW_DATE
                 | DateUtils.FORMAT_SHOW_TIME
                 | DateUtils.FORMAT_NO_YEAR
                 | DateUtils.FORMAT_ABBREV_ALL );
-        return String.format( "%s %s", f.toString(), getLocalTimeZoneName() );
+        return String.format( "%s %s", s, getLocalTimeZoneName() );
     }
 
     public static String formatDateRangeUTC( Context context,
             long startMillis, long endMillis ) {
-        StringBuilder sb = (StringBuilder) mFormatter.out();
-        sb.setLength( 0 );
-        Formatter f = DateUtils.formatDateRange( context, mFormatter, startMillis, endMillis,
+        String s = DateUtils.formatDateRange( context, startMillis, endMillis,
                 DateUtils.FORMAT_24HOUR
                 | DateUtils.FORMAT_SHOW_DATE
                 | DateUtils.FORMAT_SHOW_TIME
                 | DateUtils.FORMAT_NO_YEAR
-                | DateUtils.FORMAT_ABBREV_ALL,
-                Time.TIMEZONE_UTC );
-        return f.toString()+" UTC";
+                | DateUtils.FORMAT_ABBREV_ALL
+                | DateUtils.FORMAT_UTC );
+        return String.format( "%s UTC", s );
     }
 
     public static String formatDateRangeLocal( Context context,
             long startMillis, long endMillis ) {
-        StringBuilder sb = (StringBuilder) mFormatter.out();
-        sb.setLength( 0 );
-        Formatter f = DateUtils.formatDateRange( context, mFormatter, startMillis, endMillis,
+        String s = DateUtils.formatDateRange( context, startMillis, endMillis,
                 DateUtils.FORMAT_24HOUR
                 | DateUtils.FORMAT_SHOW_DATE
                 | DateUtils.FORMAT_SHOW_TIME
                 | DateUtils.FORMAT_NO_YEAR
                 | DateUtils.FORMAT_ABBREV_ALL );
-        return String.format( "%s %s", f.toString(), getLocalTimeZoneName() );
+        return String.format( "%s %s", s, getLocalTimeZoneName() );
     }
 
     public static String getLocalTimeZoneName() {
