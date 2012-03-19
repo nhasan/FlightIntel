@@ -1,3 +1,7 @@
+v3.1.1 (3/18/2012)
+=================
+* Do not use anyting beyond API7. Fixes crashes on Android 2.1 and 2.2 devices.
+
 v3.1.0 (3/18/2012)
 ==================
 * Show control tower working hours when available
