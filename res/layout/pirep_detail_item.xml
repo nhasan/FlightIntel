@@ -28,7 +28,10 @@
             style="@style/TextSmall.Bold"
             android:ellipsize="end"
             android:textAppearance="?android:attr/textAppearanceSmall" 
-            android:padding="4dp"
+            android:paddingLeft="4dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingRight="0dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/pirep_age"
