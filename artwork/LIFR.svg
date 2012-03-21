@@ -15,9 +15,9 @@
    version="1.1"
    inkscape:version="0.48.2 r9819"
    sodipodi:docname="LIFR.svg"
-   inkscape:export-filename="/home/nhasan/android/workspace/Airports/res/drawable-mdpi/ifr.png"
-   inkscape:export-xdpi="3.625777"
-   inkscape:export-ydpi="3.625777">
+   inkscape:export-filename="/home/nhasan/android/workspace/Airports/res/drawable-xhdpi/lifr.png"
+   inkscape:export-xdpi="7.251554"
+   inkscape:export-ydpi="7.251554">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -27,9 +27,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.49497475"
-     inkscape:cx="-413.22746"
-     inkscape:cy="74.554216"
+     inkscape:zoom="0.7"
+     inkscape:cx="40.806992"
+     inkscape:cy="90.669864"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
