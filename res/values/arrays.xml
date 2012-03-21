@@ -30,16 +30,6 @@
         <item>30</item>
         <item>50</item>
     </string-array>
-    <string-array name="startup_activity_entries">
-        <item>Browse airports</item>
-        <item>Favorite airports</item>
-        <item>Nearby airports</item>
-    </string-array>
-    <string-array name="startup_activity_values">
-        <item>browse</item>
-        <item>favorite</item>
-        <item>nearby</item>
-    </string-array>
     <string-array name="phone_tap_entries">
         <item>Do nothing</item>
         <item>Dial the number</item>
