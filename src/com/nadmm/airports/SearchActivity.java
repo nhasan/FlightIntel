@@ -19,19 +19,12 @@
 
 package com.nadmm.airports;
 
-import java.util.ArrayList;
-
 import android.app.SearchManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
@@ -42,8 +35,6 @@ import com.nadmm.airports.utils.AirportsCursorAdapter;
 
 public class SearchActivity extends ActivityBase {
 
-    private ArrayList<String> mFavorites;
-
     private CursorAdapter mListAdapter = null;
 
     @Override
@@ -51,12 +42,6 @@ public class SearchActivity extends ActivityBase {
         super.onCreate( savedInstanceState );
 
         handleIntent( getIntent() );
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mFavorites = mDbManager.getAptFavorites();
     }
 
     @Override
@@ -89,7 +74,6 @@ public class SearchActivity extends ActivityBase {
 
         setContentView( R.layout.airport_list_view );
         ListView listView = (ListView) findViewById( R.id.list_view );
-        registerForContextMenu( listView );
         listView.setOnItemClickListener( new OnItemClickListener() {
 
             @Override
@@ -110,62 +94,6 @@ public class SearchActivity extends ActivityBase {
         title.setVisibility( View.VISIBLE );
         title.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
                 count, count, query ) );
-    }
-
-    @Override
-    public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
-        super.onCreateContextMenu( menu, v, menuInfo );
-
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        Cursor c = mListAdapter.getCursor();
-        int pos = c.getPosition();
-        c.moveToPosition( info.position );
-        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-        String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
-        if ( code == null || code.length() == 0 ) {
-            code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );            
-        }
-        String facilityName = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
-        c.moveToPosition( pos );
-
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate( R.menu.airport_list_context_menu, menu );
-        menu.setHeaderTitle( code+" - "+facilityName );
-
-        // Show either "Add" or "Remove" entry depending on the context
-        if ( mFavorites.contains( siteNumber ) ) {
-            menu.removeItem( R.id.menu_add_favorites );
-        } else {
-            menu.removeItem( R.id.menu_remove_favorites );
-        }
-    }
-
-    @Override
-    public boolean onContextItemSelected( MenuItem item ) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        Cursor c = mListAdapter.getCursor();
-        int pos = c.getPosition();
-        c.moveToPosition( info.position );
-        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-        c.moveToPosition( pos );
-
-        switch ( item.getItemId() ) {
-            case R.id.menu_add_favorites:
-                mDbManager.addToFavoriteAirports( siteNumber );
-                mFavorites.add( siteNumber );
-                break;
-            case R.id.menu_remove_favorites:
-                mDbManager.removeFromFavoriteAirports( siteNumber );
-                mFavorites.remove( siteNumber );
-                break;
-            case R.id.menu_view_details:
-                Intent intent = new Intent( this, AirportDetailsActivity.class );
-                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                startActivity( intent );
-                break;
-            default:
-        }
-        return super.onContextItemSelected( item );
     }
 
 }
