@@ -22,7 +22,6 @@ package com.nadmm.airports;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
@@ -30,9 +29,6 @@ public class PreferencesActivity extends PreferenceActivity
             implements OnSharedPreferenceChangeListener {
 
     public static final String KEY_STARTUP_CHECK_EXPIRED_DATA = "startup_check_expired_data";
-    public static final String KEY_STARTUP_SHOW_ACTIVITY = "startup_show_activity";
-    public static final String KEY_SEARCH_LIMITED_RESULT = "search_limited_result";
-    public static final String KEY_SEARCH_RESULT_LIMIT = "search_result_limit";
     public static final String KEY_LOCATION_USE_GPS = "location_use_gps";
     public static final String KEY_LOCATION_NEARBY_RADIUS = "location_nearby_radius";
     public static final String KEY_SHOW_EXTRA_RUNWAY_DATA = "extra_runway_data";
@@ -57,8 +53,6 @@ public class PreferencesActivity extends PreferenceActivity
     protected void onResume() {
         super.onResume();
         // Initialize the preference screen
-        onSharedPreferenceChanged( mSharedPrefs, KEY_STARTUP_SHOW_ACTIVITY );
-        onSharedPreferenceChanged( mSharedPrefs, KEY_SEARCH_RESULT_LIMIT );
         onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
         onSharedPreferenceChanged( mSharedPrefs, KEY_PHONE_TAP_ACTION );
 
@@ -76,31 +70,9 @@ public class PreferencesActivity extends PreferenceActivity
     @Override
     public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
         Preference pref = findPreference( key );
-        if ( key.equals( KEY_STARTUP_SHOW_ACTIVITY ) ) {
-            String value = mSharedPrefs.getString( KEY_STARTUP_SHOW_ACTIVITY, "browse" );
-            if ( value.equals( "browse" ) ) {
-                pref.setSummary( "Show 'Browse' screen at startup" );
-            } else if ( value.equals( "favorite" ) ) {
-                pref.setSummary( "Show 'Favorites' screen at startup" );
-            } else if ( value.equals( "nearby" ) ) {
-                pref.setSummary( "Show 'Nearby' screen at startup" );
-            }
-        } else if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
+       if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
             String radius = mSharedPrefs.getString( key, "20" );
             pref.setSummary( "Show airports within a radius of "+radius+ " NM" );
-        } else if ( key.equals( KEY_SEARCH_RESULT_LIMIT ) ) {
-            String value = mSharedPrefs.getString( key, "20" );
-            int limit;
-            try {
-                // Try to parse the user input as a number
-                limit = Integer.valueOf( value );
-            } catch ( NumberFormatException e ) {
-                // User entered an invalid number, reset to the default value
-                limit = 20;
-                EditTextPreference textPref = (EditTextPreference)pref;
-                textPref.setText( String.valueOf( limit ) );
-            }
-            pref.setSummary( "Limit results to "+limit+" entries" );
         } else if ( key.equals( KEY_PHONE_TAP_ACTION ) ) {
             String value = mSharedPrefs.getString( KEY_PHONE_TAP_ACTION, "dial" );
             if ( value.equals( "ignore" ) ) {

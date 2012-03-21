@@ -21,29 +21,6 @@
  -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Startup settings">
-        <ListPreference
-            android:key="startup_show_activity"
-            android:title="Startup screen"
-            android:entries="@array/startup_activity_entries"
-            android:entryValues="@array/startup_activity_values"
-            android:defaultValue="browse" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="Search settings">
-        <CheckBoxPreference
-                android:key="search_limited_result"
-                android:title="Show limited results"
-                android:summaryOn="Show only limited results for a search"
-                android:summaryOff="Show all results for a search (slower)"
-                android:defaultValue="true" />
-        <EditTextPreference
-                android:key="search_result_limit"
-                android:title="Search result limit"
-                android:dependency="search_limited_result"
-                android:numeric="integer"
-                android:maxLength="3"
-                android:defaultValue="25" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="Location settings">
         <CheckBoxPreference
                 android:key="location_use_gps"
