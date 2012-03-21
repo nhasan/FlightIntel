@@ -19,7 +19,6 @@
 
 package com.nadmm.airports;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -55,24 +54,8 @@ public class AirportsMain extends ActivityBase {
             return;
         }
 
-        Class<?> clss = getHomeActivity( this );
-        intent = new Intent( this, clss );
-        startActivity( intent );
+        startHomeActivity();
         finish();
     }
 
-    public static Class<?> getHomeActivity( Context context ) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( context );
-        String startupActivity = prefs.getString( 
-                PreferencesActivity.KEY_STARTUP_SHOW_ACTIVITY,  "browse" );
-        Class<?> clss;
-        if ( startupActivity.equals( "favorite" ) ) {
-            clss = FavoritesActivity.class;
-        } else if ( startupActivity.equals( "nearby" ) ) {
-            clss = NearbyActivity.class;
-        } else {
-            clss = BrowseActivity.class;
-        }
-        return clss;
-    }
 }
