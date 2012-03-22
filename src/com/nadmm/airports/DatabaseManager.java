@@ -459,33 +459,36 @@ public class DatabaseManager {
         return mUserDataDbHelper.getWritableDatabase();
     }
 
-    public void close() {
-        Log.i( TAG, "Closing databases..." );
+    @Override
+    protected void finalize() {
         mCatalogDbHelper.close();
+        mUserDataDbHelper.close();
         closeDatabases();
     }
 
     public Cursor getCurrentFromCatalog() {
-        SQLiteDatabase catalogDb = getCatalogDb();
-        String query = "SELECT *,"
-            +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now', 'localtime') as age"
-            +" FROM "+Catalog.TABLE_NAME+" c1"
-            +" WHERE "+Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
-                +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
-                +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE
-                +" AND strftime('%s', c2."+Catalog.START_DATE
-                +") <= strftime('%s', 'now', 'localtime') )";
-        Log.i( TAG, query );
-        return catalogDb.rawQuery( query, null );
+        try {
+            SQLiteDatabase db = getCatalogDb();
+            String query = "SELECT *,"
+                +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now', 'localtime') as age"
+                +" FROM "+Catalog.TABLE_NAME+" c1"
+                +" WHERE "+Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
+                    +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
+                    +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE
+                    +" AND strftime('%s', c2."+Catalog.START_DATE
+                    +") <= strftime('%s', 'now', 'localtime') )";
+            return db.rawQuery( query, null );
+        } catch ( Exception e ) {
+        }
+        return null;
     }
 
     public Cursor getAllFromCatalog() {
-        SQLiteDatabase catalogDb = getCatalogDb();
+        SQLiteDatabase db = getCatalogDb();
         String query = "SELECT *,"
             +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now', 'localtime') as age"
             +" FROM "+Catalog.TABLE_NAME;
-        Log.i( TAG, query );
-        return catalogDb.rawQuery( query, null );
+        return db.rawQuery( query, null );
     }
 
     public ArrayList<String> getAptFavorites() {
@@ -573,23 +576,25 @@ public class DatabaseManager {
 
     private synchronized void openDatabases() {
         Cursor c = getCurrentFromCatalog();
-        if ( c.moveToFirst() ) {
-            do {
-                String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
-                File dbName = new File( DATABASE_DIR, 
-                        c.getString( c.getColumnIndex( Catalog.DB_NAME ) ) );
-                Log.i( TAG, "Opening db type="+type+", path="+dbName.getPath() );
-                SQLiteDatabase db = null;
-                try {
-                    db = SQLiteDatabase.openDatabase( dbName.getPath(), null,
-                            SQLiteDatabase.OPEN_READONLY );
-                    mDatabases.put( type, db );
-                } catch ( SQLiteException e ) {
-                    Log.i( TAG, "Unable to open db type="+type );
-                }
-            } while ( c.moveToNext() );
+        if ( c != null ) {
+            if ( c.moveToFirst() ) {
+                do {
+                    String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
+                    File dbName = new File( DATABASE_DIR,
+                            c.getString( c.getColumnIndex( Catalog.DB_NAME ) ) );
+                    Log.i( TAG, "Opening db type="+type+", path="+dbName.getPath() );
+                    SQLiteDatabase db = null;
+                    try {
+                        db = SQLiteDatabase.openDatabase( dbName.getPath(), null,
+                                SQLiteDatabase.OPEN_READONLY );
+                        mDatabases.put( type, db );
+                    } catch ( SQLiteException e ) {
+                        Log.i( TAG, "Unable to open db type="+type );
+                    }
+                } while ( c.moveToNext() );
+            }
+            c.close();
         }
-        c.close();
     }
 
     public SQLiteDatabase getDatabase( String type ) {
