@@ -25,14 +25,11 @@ import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.SharedPreferences;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.net.Uri.Builder;
-import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -49,7 +46,7 @@ public class AirportsProvider extends ContentProvider {
     public static final String DIR_MIME_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
                                                   + "/vnd.nadmm.airports";
     public static final String ITEM_MIME_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
-                                                + "/vnd.nadmm.airports";
+                                                + "/vnd.nadmm.airport";
 
     private static final int SEARCH_AIRPORTS = 0;
     private static final int GET_AIRPORT = 1;
@@ -122,19 +119,7 @@ public class AirportsProvider extends ContentProvider {
                 "selectionArgs must be provided for the Uri: " + uri);
         }
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( getContext() );
-        Builder builder= uri.buildUpon();
-
-        // Get the row limit for the number of search result returned
-        if ( prefs.getBoolean( PreferencesActivity.KEY_SEARCH_LIMITED_RESULT, true ) ) {
-            // Search result limit is set
-            String limit = prefs.getString( PreferencesActivity.KEY_SEARCH_RESULT_LIMIT, "20" );
-            builder.appendQueryParameter( "limit", limit );
-        }
-
         String query = selectionArgs[ 0 ].toUpperCase().trim();
-
-        uri = builder.build();
         switch ( sUriMatcher.match( uri ) ) {
             case SEARCH_SUGGEST:
                 return suggestAirports( uri, query );
