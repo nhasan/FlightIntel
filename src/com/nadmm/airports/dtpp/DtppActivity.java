@@ -26,8 +26,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -51,6 +53,7 @@ import com.nadmm.airports.DatabaseManager.Dtpp;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
@@ -321,6 +324,31 @@ public class DtppActivity extends ActivityBase {
     }
 
     protected void getAptCharts() {
+        if ( !NetworkUtils.isConnectedToWifi( this ) ) {
+            AlertDialog.Builder builder = new AlertDialog.Builder( this );
+            builder.setMessage( "You are not connected to a wifi network.\n"
+                    +"Continue download?" )
+                   .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick( DialogInterface dialog, int id ) {
+                            getMissingCharts();
+                        }
+                   } )
+                   .setNegativeButton( "No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick( DialogInterface dialog, int id ) {
+                        }
+                   } );
+            AlertDialog alert = builder.create();
+            alert.show();
+            return;
+        }
+        else {
+            getMissingCharts();
+        }
+    }
+
+    protected void getMissingCharts() {
         for ( String pdfName : mDtppRowMap.keySet() ) {
             View v = mDtppRowMap.get( pdfName );
             if ( v.getTag() == null ) {
@@ -328,6 +356,8 @@ public class DtppActivity extends ActivityBase {
                 mPendingCharts.add( pdfName );
             }
         }
+        UiUtils.showToast( this, String.format( "Downloading %d charts in the background",
+                mPendingCharts.size() ) );
         checkTppCharts( mPendingCharts, true );
     }
 
@@ -372,6 +402,17 @@ public class DtppActivity extends ActivityBase {
         }
     }
 
+    protected void showChartAvailability( View view, boolean available ) {
+        TextView tv = (TextView) view.findViewById( R.id.item_label );
+        if ( available ) {
+            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.btn_check_on_holo_light,
+                    0, 0, 0 );
+        } else {
+            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.btn_check_off_holo_light,
+                    0, 0, 0 );
+        }
+    }
+
     protected void startPDFViewer( String path ) {
         if ( SystemUtils.canDisplayMimeType( this, MIME_TYPE_PDF ) ) {
             // Fire an intent to view the PDF chart
@@ -389,17 +430,6 @@ public class DtppActivity extends ActivityBase {
             Uri uri = Uri.parse( "market://details?id=org.ebookdroid" );
             market.setData( uri );
             startActivity( market );
-        }
-    }
-
-    protected void showChartAvailability( View view, boolean available ) {
-        TextView tv = (TextView) view.findViewById( R.id.item_label );
-        if ( available ) {
-            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.btn_check_on_holo_light,
-                    0, 0, 0 );
-        } else {
-            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.btn_check_off_holo_light,
-                    0, 0, 0 );
         }
     }
 
