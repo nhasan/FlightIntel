@@ -19,6 +19,8 @@
 
 package com.nadmm.airports;
 
+import java.util.ArrayList;
+
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -72,9 +74,19 @@ public class ActivityBase extends FragmentActivity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         mDbManager = DatabaseManager.instance( this );
-        mInflater = getLayoutInflater();
-        overridePendingTransition( R.anim.fade_in, R.anim.fade_out );
-        super.onCreate( savedInstanceState );
+        SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+        if ( db == null ) {
+            // Make sure database is available and usable
+            Intent intent = checkData();
+            if ( intent != null ) {
+                startActivity( intent );
+                finish();
+            }
+        } else {
+            mInflater = getLayoutInflater();
+            overridePendingTransition( R.anim.fade_in, R.anim.fade_out );
+            super.onCreate( savedInstanceState );
+        }
     }
 
     @Override
@@ -173,9 +185,6 @@ public class ActivityBase extends FragmentActivity {
 
     public Cursor getAirportDetails( String siteNumber ) {
         SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
-        if ( db == null ) {
-            return null;
-        }
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
@@ -601,7 +610,13 @@ public class ActivityBase extends FragmentActivity {
     }
 
     protected void startHomeActivity() {
-        Class<?> clss = AirportsMain.getHomeActivity( this );
+        ArrayList<String> fav = mDbManager.getAptFavorites();
+        Class<?> clss;
+        if ( fav.size() > 0 ) {
+            clss = FavoritesActivity.class;
+        } else {
+            clss = BrowseActivity.class;
+        }
         if ( getClass() != clss ) {
             // Start home activity if it is not the current activity
             Intent intent = new Intent( this, clss );
