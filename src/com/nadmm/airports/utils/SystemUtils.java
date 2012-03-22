@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.Environment;
 
 public class SystemUtils {
 
@@ -35,6 +36,17 @@ public class SystemUtils {
         List<ResolveInfo> list = pm.queryIntentActivities( intent,
                 PackageManager.MATCH_DEFAULT_ONLY );
         return !list.isEmpty();
+    }
+
+    public static boolean isExternalStorageAvailable() {
+        String state = Environment.getExternalStorageState();
+        if ( !Environment.MEDIA_MOUNTED.equals( state ) ) {
+            return false;
+        }
+        else if ( Environment.MEDIA_MOUNTED_READ_ONLY.equals( state ) ) {
+            return false;
+        }
+        return true;
     }
 
 }
