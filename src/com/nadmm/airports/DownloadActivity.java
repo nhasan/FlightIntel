@@ -42,7 +42,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -61,19 +60,17 @@ import android.sax.Element;
 import android.sax.EndElementListener;
 import android.sax.EndTextElementListener;
 import android.sax.RootElement;
+import android.support.v4.view.Menu;
+import android.support.v4.view.Window;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
 import android.text.format.Time;
 import android.util.Log;
 import android.util.TimeFormatException;
 import android.util.Xml;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -83,9 +80,10 @@ import android.widget.Toast;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
+import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 
-public final class DownloadActivity extends ListActivity {
+public final class DownloadActivity extends ActivityBase {
     private static final String TAG = DownloadActivity.class.getName();
     //private static final String HOST = "10.0.2.2";
     //private static final String HOST = "192.168.1.117";
@@ -147,6 +145,7 @@ public final class DownloadActivity extends ListActivity {
     private DownloadTask mDownloadTask;
     private AtomicBoolean mStop;
     private Handler mHandler;
+    private ListView mListView;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -158,13 +157,13 @@ public final class DownloadActivity extends ListActivity {
         mHandler = new Handler();
 
         requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
-        setContentView( R.layout.download_list_view );
-        
+        setContentView( createContentView( R.layout.download_list_view ) );
+
         // Add the footer view
-        View footer = getLayoutInflater().inflate( R.layout.download_footer, null );
-        ListView listView = getListView();
-        listView.addFooterView( footer );
-        listView.setFooterDividersEnabled( true );
+        View footer = inflate( R.layout.download_footer );
+        mListView = (ListView) findViewById( android.R.id.list );
+        mListView.addFooterView( footer );
+        mListView.setFooterDividersEnabled( true );
 
         Button btnDownload = (Button) findViewById( R.id.btnDownload );
         btnDownload.setOnClickListener(
@@ -230,29 +229,18 @@ public final class DownloadActivity extends ListActivity {
     }
 
     private void download() {
-        String state = Environment.getExternalStorageState();
-        if ( !Environment.MEDIA_MOUNTED.equals( state ) ) {
+        if ( SystemUtils.isExternalStorageAvailable() ) {
+            mHandler.post( new Runnable() {
+
+                @Override
+                public void run() {
+                    mDownloadTask = new DownloadTask( DownloadActivity.this );
+                    mDownloadTask.execute();
+                }
+            } );
+        } else {
             showToast( "External storage is not available" );
-            return;
         }
-        else if ( Environment.MEDIA_MOUNTED_READ_ONLY.equals( state ) ) {
-            showToast( "External storage is not writable" );
-            return;
-        }
-
-        startDownload();
-    }
-
-    private void startDownload() {
-        mHandler.post( new Runnable() {
-
-            @Override
-            public void run() {
-                mDownloadTask = new DownloadTask( DownloadActivity.this );
-                mDownloadTask.execute();
-            }
-
-        } );
     }
 
     private final class ProgressTracker {
@@ -281,9 +269,10 @@ public final class DownloadActivity extends ListActivity {
         public void setProgress( int progress ) {
             progressBar.setProgress( progress );
             if ( progress < progressBar.getMax() ) {
-                statusText.setText( Formatter.formatShortFileSize( DownloadActivity.this, progress )
-                    +" of "
-                    +Formatter.formatShortFileSize( DownloadActivity.this, progressBar.getMax() ) );
+                Context context = DownloadActivity.this;
+                statusText.setText( String.format( "%s of %s",
+                    Formatter.formatShortFileSize( context, progress ),
+                    Formatter.formatShortFileSize( context, progressBar.getMax() ) ) );
             } else {
                 msgText.setText( R.string.install_done );
                 statusText.setVisibility( View.GONE );
@@ -680,7 +669,8 @@ public final class DownloadActivity extends ListActivity {
     protected void updateDownloadList() {
         Cursor c = createCursor();
         DownloadListAdapter adapter = new DownloadListAdapter( this, c );
-        setListAdapter( adapter );
+        mListView.setAdapter( adapter );
+        setContentShown( true );
 
         if ( c.getCount() == 0 ) {
             TextView empty = (TextView) findViewById( android.R.id.empty );
@@ -771,15 +761,14 @@ public final class DownloadActivity extends ListActivity {
 
             if ( result == 0 ) {
                 // Start the download of the next data file
-                mActivity.startDownload();
+                mActivity.download();
             }
         }
 
         protected ProgressTracker getTrackerForType( String type ) {
-            ListView lv = getListView();
-            int count = lv.getChildCount();
+            int count = mListView.getChildCount();
             for ( int i=0; i<count; ++i) {
-                ProgressTracker tracker = (ProgressTracker) lv.getChildAt( i ).getTag();
+                ProgressTracker tracker = (ProgressTracker) mListView.getChildAt( i ).getTag();
                 if ( tracker != null && type.equals( tracker.type ) ) {
                     return tracker;
                 }
@@ -989,7 +978,6 @@ public final class DownloadActivity extends ListActivity {
         AlertDialog alert = builder.create();
         alert.show();
         return;
-        
     }
 
     private final class DeleteDataTask extends AsyncTask<Void, Void, Integer> {
@@ -1084,33 +1072,13 @@ public final class DownloadActivity extends ListActivity {
         c.close();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        mDbManager.close();
-        Log.i( TAG, "onPause() called" );
-    }
-
-    public void onResume() {
-        super.onResume();
-        Log.i( TAG, "onResume called" );
-    }
-
     public void onStop() {
         super.onStop();
-        Log.i( TAG, "onStop called" );
 
         if ( mDownloadTask != null ) {
             Log.i( TAG, "Stopping download thread" );
             mStop.set( true );
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu( Menu menu ) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate( R.menu.mainmenu, menu );
-        return true;
     }
 
     @Override
@@ -1127,40 +1095,8 @@ public final class DownloadActivity extends ListActivity {
         return super.onPrepareOptionsMenu( menu );
     }
 
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_search:
-            onSearchRequested();
-            return true;
-        case R.id.menu_browse:
-            Intent browse = new Intent( this, BrowseActivity.class );
-            browse.putExtras( new Bundle() );
-            startActivity( browse );
-            return true;
-        case R.id.menu_nearby:
-            Intent nearby = new Intent( this, NearbyActivity.class );
-            startActivity( nearby );
-            return true;
-        case R.id.menu_favorites:
-            Intent favorites = new Intent( this, FavoritesActivity.class );
-            startActivity( favorites );
-            return true;
-        case R.id.menu_settings:
-            Intent settings = new Intent( this, PreferencesActivity.class  );
-            startActivity( settings );
-            return true;
-        case R.id.menu_about:
-            Intent about = new Intent( this, AboutActivity.class );
-            startActivity( about );
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
-        }
-    }
-
     void showToast( String msg ) {
         UiUtils.showToast( this, msg );
     }
+
 }
