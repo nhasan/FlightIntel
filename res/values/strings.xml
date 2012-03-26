@@ -37,7 +37,7 @@
     <string name="download_noinstall">No installed data</string>
     <string name="download_noupdate">None available</string>
     <string name="download_all">Download all</string>
-    <string name="download_delete_all">Delete all installed data</string>
+    <string name="delete_all">Delete all</string>
     <string name="download_expired">Expired</string>
     <string name="download_error">Unable to contact update server</string>
     <string name="downloading">Downloading\u2026</string>
