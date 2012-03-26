@@ -44,8 +44,8 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.nadmm.airports.utils.DataUtils;
-import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class NotamActivityBase extends ActivityBase {
 
