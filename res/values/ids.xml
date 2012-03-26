@@ -17,4 +17,7 @@
 <resources>
     <item type="id" name="INTERNAL_PROGRESS_CONTAINER_ID" />
     <item type="id" name="INTERNAL_FRAGMENT_CONTAINER_ID" />
+    <item type="id" name="DTPP_CHART_CODE" />
+    <item type="id" name="DTPP_PDF_PATH" />
+    <item type="id" name="DTPP_USER_ACTION" />
 </resources>
