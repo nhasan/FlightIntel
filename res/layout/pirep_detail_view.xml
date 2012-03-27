@@ -32,22 +32,26 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" 
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
-        <LinearLayout android:id="@+id/pirep_entries_layout"
+        <LinearLayout android:id="@+id/pirep_top_layout"
                 android:paddingLeft="12dp"
                 android:paddingTop="0dp"
                 android:paddingRight="12dp"
                 android:paddingBottom="12dp"
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
-        <TextView android:id="@+id/wx_fetch_time"
-                style="@style/TextSmall"
-                android:singleLine="true"
-                android:paddingBottom="8dp"
-                android:textAppearance="?android:attr/textAppearanceSmall" 
-                android:gravity="center"
-                android:visibility="gone"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
+            <LinearLayout android:id="@+id/pirep_entries_layout"
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/wx_fetch_time"
+                    style="@style/TextSmall"
+                    android:singleLine="true"
+                    android:padding="8dp"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

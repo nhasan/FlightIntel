@@ -72,7 +72,7 @@
                     style="@style/TextSmall.Bold"
                     android:visibility="gone"
                     android:padding="2dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="6dp"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
             <LinearLayout android:id="@+id/wx_wind_layout"
@@ -194,6 +194,6 @@
                     android:visibility="gone"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
-            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

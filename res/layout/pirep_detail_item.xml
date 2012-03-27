@@ -20,8 +20,8 @@
  */
  -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:paddingTop="0dp"
-        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="0dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/pirep_name"
@@ -39,6 +39,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall" 
             android:padding="4dp"
             android:gravity="right"
+            android:singleLine="true"
             android:layout_alignParentRight="true"
             android:layout_toRightOf="@id/pirep_name"
             android:layout_width="wrap_content"
