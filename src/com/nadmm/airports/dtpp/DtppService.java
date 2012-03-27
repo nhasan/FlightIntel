@@ -44,6 +44,7 @@ public class DtppService extends IntentService {
 
     public static final String ACTION_GET_CHART = "flightintel.intent.action.GET_CHART";
     public static final String ACTION_CHECK_CHARTS = "flightintel.intent.action.CHECK_CHARTS";
+    public static final String ACTION_DELETE_CHARTS = "flightintel.intent.action.DELETE_CHARTS";
 
     public static final String TPP_VOLUME = "TPP_VOLUME";
     public static final String TPP_CYCLE = "TPP_CYCLE";
@@ -79,9 +80,7 @@ public class DtppService extends IntentService {
         String tppCycle = intent.getStringExtra( TPP_CYCLE );
         File cycleDir = new File( DTPP_DIR, tppCycle );
         if ( !cycleDir.exists() ) {
-            // A new cycle has begun, cleanup any old cycles
             cleanupOldCycles();
-            // Create the directory for the new cycle
             cycleDir.mkdir();
         }
 
@@ -90,6 +89,8 @@ public class DtppService extends IntentService {
             getChart( intent );
         } else if ( action.equals( ACTION_CHECK_CHARTS ) ) {
             checkCharts( intent );
+        } else if ( action.equals( ACTION_DELETE_CHARTS ) ) {
+            deleteCharts( intent );
         }
     }
 
@@ -105,34 +106,45 @@ public class DtppService extends IntentService {
             if ( download && !pdfFile.exists() ) {
                 downloadChart( tppCycle, pdfFile );
             }
-
-            // Broadcast the result
-            Intent result = new Intent();
-            result.setAction( ACTION_CHECK_CHARTS );
-            result.putExtra( TPP_CYCLE, tppCycle );
-            result.putExtra( PDF_NAME, pdfName );
-            if ( pdfFile.exists() ) {
-                result.putExtra( PDF_PATH, pdfFile.getAbsolutePath() );
-            }
-            sendBroadcast( result );
+            sendResult( ACTION_CHECK_CHARTS, tppCycle, pdfFile );
         }
     }
 
     protected void getChart( Intent intent ) {
         String tppCycle = intent.getStringExtra( TPP_CYCLE );
-        String pdfName = intent.getStringExtra( PDF_NAME );
+        ArrayList<String> pdfNames = intent.getStringArrayListExtra( PDF_NAMES );
 
         File cycleDir = new File( DTPP_DIR, tppCycle );
-        File pdfFile = new File( cycleDir, pdfName );
-        if ( !pdfFile.exists() ) {
-            downloadChart( tppCycle, pdfFile );
-        }
 
-        // Broadcast the result
+        for ( String pdfName : pdfNames ) {
+            File pdfFile = new File( cycleDir, pdfName );
+            if ( !pdfFile.exists() ) {
+                downloadChart( tppCycle, pdfFile );
+            }
+            sendResult( ACTION_GET_CHART, tppCycle, pdfFile );
+        }
+    }
+
+    protected void deleteCharts( Intent intent ) {
+        String tppCycle = intent.getStringExtra( TPP_CYCLE );
+        ArrayList<String> pdfNames = intent.getStringArrayListExtra( PDF_NAMES );
+
+        File cycleDir = new File( DTPP_DIR, tppCycle );
+
+        for ( String pdfName : pdfNames ) {
+            File pdfFile = new File( cycleDir, pdfName );
+            if ( pdfFile.exists() ) {
+                pdfFile.delete();
+            }
+            sendResult( ACTION_CHECK_CHARTS, tppCycle, pdfFile );
+        }
+    }
+
+    protected void sendResult( String action, String tppCycle, File pdfFile ) {
         Intent result = new Intent();
-        result.setAction( ACTION_GET_CHART );
+        result.setAction( action );
         result.putExtra( TPP_CYCLE, tppCycle );
-        result.putExtra( PDF_NAME, pdfName );
+        result.putExtra( PDF_NAME, pdfFile.getName() );
         if ( pdfFile.exists() ) {
             result.putExtra( PDF_PATH, pdfFile.getAbsolutePath() );
         }

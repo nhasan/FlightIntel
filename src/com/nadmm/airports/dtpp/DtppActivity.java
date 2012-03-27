@@ -70,6 +70,7 @@ public class DtppActivity extends ActivityBase {
     protected String mFaaCode;
     protected String mTppVolume;
     protected boolean mExpired = false;
+    protected OnClickListener mOnClickListener;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -88,12 +89,32 @@ public class DtppActivity extends ActivityBase {
             }
         };
 
+        mOnClickListener = new OnClickListener() {
+            @Override
+            public void onClick( View v ) {
+                String path = (String) v.getTag( R.id.DTPP_PDF_PATH );
+                String pdfName = (String) v.getTag( R.id.DTPP_PDF_NAME );
+                if ( path == null ) {
+                    getTppChart( pdfName );
+                } else {
+                    startPDFViewer( path );
+                }
+            }
+        };
+
         Button btnDownload = (Button) findViewById( R.id.btnDownload );
         btnDownload.setOnClickListener( new OnClickListener() {
-            
             @Override
             public void onClick( View v ) {
                 getAptCharts();
+            }
+        } );
+
+        Button btnDelete = (Button) findViewById( R.id.btnDelete );
+        btnDelete.setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick( View v ) {
+                checkDelete();
             }
         } );
 
@@ -166,13 +187,13 @@ public class DtppActivity extends ActivityBase {
             Cursor apt = result[ 0 ];
             setActionBarTitle( apt );
             showAirportTitle( apt );
-            showAPD( result );
+            showDtppCharts( result );
             setContentShown( true );
         }
 
     }
 
-    protected void showAPD( Cursor[] result ) {
+    protected void showDtppCharts( Cursor[] result ) {
         LinearLayout topLayout = (LinearLayout) findViewById( R.id.dtpp_detail_layout );
 
         Cursor cycle = result[ 1 ];
@@ -181,7 +202,7 @@ public class DtppActivity extends ActivityBase {
         String from = cycle.getString( cycle.getColumnIndex( Cycle.FROM_DATE ) );
         String to = cycle.getString( cycle.getColumnIndex( Cycle.TO_DATE ) );
 
-        // PArse chart cycle effective dates
+        // Parse chart cycle effective dates
         SimpleDateFormat df = new SimpleDateFormat( "HHmm'Z' MM/dd/yy" );
         df.setTimeZone( java.util.TimeZone.getTimeZone( "UTC" ) );
         Date fromDate = null;
@@ -215,59 +236,59 @@ public class DtppActivity extends ActivityBase {
             addRow( layout, "WARNING: This chart cycle has expired." );
         }
 
-        topLayout.addView( item, new LinearLayout.LayoutParams( LayoutParams.FILL_PARENT,
+        topLayout.addView( item, new LinearLayout.LayoutParams( LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT ) );
 
         int index = 3;
         while ( index < result.length ) {
-            showCharts( topLayout, result[ index ] );
+            showChartGroup( topLayout, result[ index ] );
             ++index;
         }
-        showOther( topLayout );
+        showOtherCharts( topLayout );
 
         // Check the chart availability
+        ArrayList<String> pdfNames = new ArrayList<String>();
         for ( String pdfName : mDtppRowMap.keySet() ) {
-            mPendingCharts.add( pdfName );
+            pdfNames.add( pdfName );
         }
-        checkTppCharts( mPendingCharts, false );
+        checkTppCharts( pdfNames, false );
     }
 
-    protected void showCharts( LinearLayout layout, Cursor c ) {
+    protected void showChartGroup( LinearLayout layout, Cursor c ) {
         if ( c.moveToFirst() ) {
             String chartCode = c.getString( c.getColumnIndex( Dtpp.CHART_CODE ) );
             RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
             TextView tv = (TextView) item.findViewById( R.id.group_name );
-            LinearLayout grpLayout = (LinearLayout) item.findViewById( R.id.group_details );
             tv.setText( DataUtils.decodeChartCode( chartCode ) );
+            LinearLayout group = (LinearLayout) item.findViewById( R.id.group_details );
             do {
                 String chartName = c.getString( c.getColumnIndex( Dtpp.CHART_NAME ) );
                 String pdfName = c.getString( c.getColumnIndex( Dtpp.PDF_NAME ) );
                 String userAction = c.getString( c.getColumnIndex( Dtpp.USER_ACTION ) );
                 int resid = UiUtils.getRowSelectorForCursor( c );
                 String faanfd18 = c.getString( c.getColumnIndex( Dtpp.FAANFD18_CODE ) );
-                addChartRow( grpLayout, chartName, pdfName, userAction, faanfd18, resid );
+                addChartRow( group, chartCode, chartName, pdfName, userAction, faanfd18, resid );
             } while ( c.moveToNext() );
-            layout.addView( item, new LinearLayout.LayoutParams( LayoutParams.FILL_PARENT,
+            layout.addView( item, new LinearLayout.LayoutParams( LayoutParams.MATCH_PARENT,
                     LayoutParams.WRAP_CONTENT ) );
         }
     }
 
-    protected void showOther( LinearLayout layout ) {
+    protected void showOtherCharts( LinearLayout layout ) {
         RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
         TextView tv = (TextView) item.findViewById( R.id.group_name );
-        LinearLayout grpLayout = (LinearLayout) item.findViewById( R.id.group_details );
+        LinearLayout group = (LinearLayout) item.findViewById( R.id.group_details );
         tv.setText( "Other" );
-        addChartRow( grpLayout, "Airport Diagram Legend", "legendAD.pdf", "", "",
+        addChartRow( group, "", "Airport Diagram Legend", "legendAD.pdf", "", "",
                 R.drawable.row_selector_top );
-        addSeparator( grpLayout );
-        addChartRow( grpLayout, "Legends & General Information", "frntmatter.pdf", "", "",
+        addChartRow( group, "", "Legends & General Information", "frntmatter.pdf", "", "",
                 R.drawable.row_selector_bottom );
-        layout.addView( item, new LinearLayout.LayoutParams( LayoutParams.FILL_PARENT,
+        layout.addView( item, new LinearLayout.LayoutParams( LayoutParams.MATCH_PARENT,
                 LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected View addChartRow( LinearLayout layout, String chartName, final String pdfName,
-            String userAction, String faanfd18, int resid ) {
+    protected View addChartRow( LinearLayout layout, String chartCode, String chartName,
+            String pdfName, String userAction, String faanfd18, int resid ) {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
         }
@@ -281,33 +302,22 @@ public class DtppActivity extends ActivityBase {
 
         if ( !userAction.equals( "D" ) ) {
             row.setBackgroundResource( resid );
-            row.setOnClickListener( new OnClickListener() {
-
-                @Override
-                public void onClick( View v ) {
-                    String path = (String) v.getTag();
-                    if ( path == null ) {
-                        getTppChart( pdfName );
-                    } else {
-                        startPDFViewer( path );
-                    }
-                }
-
-            } );
+            row.setOnClickListener( mOnClickListener );
+            row.setTag( R.id.DTPP_CHART_CODE, chartCode );
+            row.setTag( R.id.DTPP_PDF_NAME, pdfName );
             showChartAvailability( row, false );
             mDtppRowMap.put( pdfName, row );
         }
 
+        row.setTag( R.id.DTPP_USER_ACTION, userAction );
         return row;
     }
 
     protected void checkTppCharts( ArrayList<String> pdfNames, boolean download ) {
         setRefreshItemVisible( true );
         startRefreshAnimation();
-        Intent service = new Intent( this, DtppService.class );
-        service.setAction( DtppService.ACTION_CHECK_CHARTS );
-        service.putExtra( DtppService.TPP_CYCLE, mTppCycle );
-        service.putExtra( DtppService.PDF_NAMES, pdfNames );
+        mPendingCharts = pdfNames;
+        Intent service = makeServiceIntent( DtppService.ACTION_CHECK_CHARTS );
         service.putExtra( DtppService.DOWNLOAD_IF_MISSING, download );
         startService( service );
     }
@@ -316,11 +326,139 @@ public class DtppActivity extends ActivityBase {
         setRefreshItemVisible( true );
         startRefreshAnimation();
         mPendingCharts.add( pdfName );
-        Intent service = new Intent( this, DtppService.class );
-        service.setAction( DtppService.ACTION_GET_CHART );
-        service.putExtra( DtppService.TPP_CYCLE, mTppCycle );
-        service.putExtra( DtppService.PDF_NAME, pdfName );
+        Intent service = makeServiceIntent( DtppService.ACTION_GET_CHART );
         startService( service );
+    }
+
+    protected void deleteCharts() {
+        for ( String pdfName : mDtppRowMap.keySet() ) {
+            View v = mDtppRowMap.get( pdfName );
+            String userAction = (String) v.getTag( R.id.DTPP_USER_ACTION );
+            String chartCode = (String) v.getTag( R.id.DTPP_CHART_CODE );
+            String path = (String) v.getTag( R.id.DTPP_PDF_PATH );
+            if ( !userAction.equals( "D" ) && chartCode.length() > 0 && path != null ) {
+                mPendingCharts.add( pdfName );
+            }
+        }
+        setRefreshItemVisible( true );
+        startRefreshAnimation();
+        Intent service = makeServiceIntent( DtppService.ACTION_DELETE_CHARTS );
+        startService( service );
+    }
+
+    protected Intent makeServiceIntent( String action ) {
+        Intent service = new Intent( this, DtppService.class );
+        service.setAction( action );
+        service.putExtra( DtppService.TPP_CYCLE, mTppCycle );
+        service.putExtra( DtppService.PDF_NAMES, mPendingCharts );
+        return service;
+    }
+
+    protected void getMissingCharts() {
+        ArrayList<String> pdfNames = new ArrayList<String>();
+        for ( String pdfName : mDtppRowMap.keySet() ) {
+            View v = mDtppRowMap.get( pdfName );
+            String userAction = (String) v.getTag( R.id.DTPP_USER_ACTION );
+            String path = (String) v.getTag( R.id.DTPP_PDF_PATH );
+            // Skip deleted and downloaded charts
+            if ( !userAction.equals( "D" ) && path == null ) {
+                // This PDF is not available on the device
+                pdfNames.add( pdfName );
+            }
+        }
+        UiUtils.showToast( this, String.format( "Downloading %d charts in the background",
+                pdfNames.size() ) );
+        checkTppCharts( pdfNames, true );
+    }
+
+    protected void handleDtppBroadcast( Intent intent ) {
+        String action = intent.getAction();
+        String pdfName = intent.getStringExtra( DtppService.PDF_NAME );
+        String path = intent.getStringExtra( DtppService.PDF_PATH );
+
+        View view = mDtppRowMap.get( pdfName );
+        if ( path != null ) {
+            showChartAvailability( view, true );
+            view.setTag( R.id.DTPP_PDF_PATH, path );
+            if ( action.equals( DtppService.ACTION_GET_CHART ) ) {
+                startPDFViewer( path );
+            }
+        } else {
+            showChartAvailability( view, false );
+            view.setTag( R.id.DTPP_PDF_PATH, null );
+        }
+
+        mPendingCharts.remove( pdfName );
+        if ( mPendingCharts.isEmpty() ) {
+            // There are no pending requests, hide the spinner
+            stopRefreshAnimation();
+            setRefreshItemVisible( false );
+
+            updateButtonState();
+        }
+    }
+
+    protected void showChartAvailability( View view, boolean available ) {
+        TextView tv = (TextView) view.findViewById( R.id.item_label );
+        if ( available ) {
+            tv.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.btn_check_on_holo_light, 0, 0, 0 );
+        } else {
+            tv.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.btn_check_off_holo_light, 0, 0, 0 );
+        }
+    }
+
+    protected void updateButtonState() {
+        // Check if we have all the charts for this airport
+        boolean all = true;
+        boolean none = true;
+        for ( String key : mDtppRowMap.keySet() ) {
+            View v = mDtppRowMap.get( key );
+            String path = (String) v.getTag( R.id.DTPP_PDF_PATH );
+            String chartCode = (String) v.getTag( R.id.DTPP_CHART_CODE );
+            if ( chartCode.length() > 0 ) {
+                if ( path == null ) {
+                    all = false;
+                } else {
+                    none = false;
+                }
+            }
+        }
+
+        Button btnDownload = (Button) findViewById( R.id.btnDownload );
+        if ( all ) {
+            btnDownload.setVisibility( View.GONE );
+        } else {
+            btnDownload.setVisibility( View.VISIBLE );
+        }
+
+        Button btnDelete = (Button) findViewById( R.id.btnDelete );
+        if ( none ) {
+            btnDelete.setVisibility( View.GONE );
+        } else {
+            btnDelete.setVisibility( View.VISIBLE );
+        }
+    }
+
+    protected void startPDFViewer( String path ) {
+        if ( SystemUtils.canDisplayMimeType( this, MIME_TYPE_PDF ) ) {
+            // Fire an intent to view the PDF chart
+            Intent viewChart = new Intent( Intent.ACTION_VIEW );
+            Uri pdf = Uri.fromFile( new File( path ) );
+            viewChart.setDataAndType( pdf, MIME_TYPE_PDF );
+            startActivity( viewChart );
+            if ( mExpired ) {
+                UiUtils.showToast( this, "WARNING: This chart has expired!" );
+            }
+        } else {
+            // No PDF viewer is installed, send user to Play Store
+            UiUtils.showToast( this, "Please install a PDF viewer app first" );
+            Intent market = new Intent( Intent.ACTION_VIEW );
+            Uri uri = Uri.parse( "market://details?id=org.ebookdroid" );
+            market.setData( uri );
+            startActivity( market );
+        }
     }
 
     protected void getAptCharts() {
@@ -348,89 +486,22 @@ public class DtppActivity extends ActivityBase {
         }
     }
 
-    protected void getMissingCharts() {
-        for ( String pdfName : mDtppRowMap.keySet() ) {
-            View v = mDtppRowMap.get( pdfName );
-            if ( v.getTag() == null ) {
-                // This PDF is not available on the device
-                mPendingCharts.add( pdfName );
-            }
-        }
-        UiUtils.showToast( this, String.format( "Downloading %d charts in the background",
-                mPendingCharts.size() ) );
-        checkTppCharts( mPendingCharts, true );
-    }
-
-    protected void handleDtppBroadcast( Intent intent ) {
-        String action = intent.getAction();
-        String pdfName = intent.getStringExtra( DtppService.PDF_NAME );
-        String path = intent.getStringExtra( DtppService.PDF_PATH );
-
-        if ( path != null ) {
-            // The chart PDF is available on the device
-            View view = mDtppRowMap.get( pdfName );
-            showChartAvailability( view, true );
-            // Save the PDF chart path for later use
-            view.setTag( path );
-
-            if ( action.equals( DtppService.ACTION_GET_CHART ) ) {
-                startPDFViewer( path );
-            }
-        }
-
-        mPendingCharts.remove( pdfName );
-        if ( mPendingCharts.isEmpty() ) {
-            // There are no pending requests, hide the spinner
-            stopRefreshAnimation();
-            setRefreshItemVisible( false );
-
-            // Check if we have all the charts for this airport
-            boolean all = true;
-            for ( String key : mDtppRowMap.keySet() ) {
-                View v = mDtppRowMap.get( key );
-                if ( v.getTag() == null ) {
-                    // This PDF is not available on the device
-                    all = false;
-                    break;
-                }
-            }
-            if ( all ) {
-                // All charts are available, hide the download button
-                Button btnDownload = (Button) findViewById( R.id.btnDownload );
-                btnDownload.setVisibility( View.GONE );
-            }
-        }
-    }
-
-    protected void showChartAvailability( View view, boolean available ) {
-        TextView tv = (TextView) view.findViewById( R.id.item_label );
-        if ( available ) {
-            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.btn_check_on_holo_light,
-                    0, 0, 0 );
-        } else {
-            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.btn_check_off_holo_light,
-                    0, 0, 0 );
-        }
-    }
-
-    protected void startPDFViewer( String path ) {
-        if ( SystemUtils.canDisplayMimeType( this, MIME_TYPE_PDF ) ) {
-            // Fire an intent to view the PDF chart
-            Intent viewChart = new Intent( Intent.ACTION_VIEW );
-            Uri pdf = Uri.fromFile( new File( path ) );
-            viewChart.setDataAndType( pdf, MIME_TYPE_PDF );
-            startActivity( viewChart );
-            if ( mExpired ) {
-                UiUtils.showToast( this, "WARNING: This chart has expired!" );
-            }
-        } else {
-            // No PDF viewer is installed, send user to Play Store
-            UiUtils.showToast( this, "Please install a PDF viewer app first" );
-            Intent market = new Intent( Intent.ACTION_VIEW );
-            Uri uri = Uri.parse( "market://details?id=org.ebookdroid" );
-            market.setData( uri );
-            startActivity( market );
-        }
+    protected void checkDelete() {
+        AlertDialog.Builder builder = new AlertDialog.Builder( this );
+        builder.setMessage( "Delete all downloaded charts for this airport?" )
+               .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick( DialogInterface dialog, int id ) {
+                        deleteCharts();
+                    }
+               } )
+               .setNegativeButton( "No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick( DialogInterface dialog, int id ) {
+                    }
+               } );
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
 }

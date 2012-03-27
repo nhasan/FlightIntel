@@ -20,4 +20,5 @@
     <item type="id" name="DTPP_CHART_CODE" />
     <item type="id" name="DTPP_PDF_PATH" />
     <item type="id" name="DTPP_USER_ACTION" />
+    <item type="id" name="DTPP_PDF_NAME" />
 </resources>
