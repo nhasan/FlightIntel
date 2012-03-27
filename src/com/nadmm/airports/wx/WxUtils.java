@@ -130,14 +130,15 @@ public class WxUtils {
 
     static public void setColorizedWxDrawable( TextView tv, Metar metar, float declination ) {
         if ( metar.isValid ) {
-            Resources res = tv.getResources();
+            Context context = tv.getContext();
+            Resources res = context.getResources();
             SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
             Drawable d1 = getColorizedDrawable( res, metar.flightCategory, sky.getDrawable() );
             Drawable d2 = null;
             if ( isWindAvailable( metar ) ) {
                 d2 = getWindBarbDrawable( tv.getContext(), metar, declination );
             }
-            Drawable result = UiUtils.combineDrawables( d1, d2 );
+            Drawable result = UiUtils.combineDrawables( context, d1, d2 );
             UiUtils.setTextViewDrawable( tv, result );
         } else {
             UiUtils.setTextViewDrawable( tv, R.drawable.error );

@@ -105,7 +105,7 @@ public class UiUtils {
         } );
     }
 
-    public static Drawable combineDrawables( Drawable d1, Drawable d2 ) {
+    public static Drawable combineDrawables( Context context, Drawable d1, Drawable d2 ) {
         // Assumes both d1 & d2 are same size and square shaped
         int w = d1.getIntrinsicWidth();
         int h = d1.getIntrinsicHeight();
@@ -121,7 +121,7 @@ public class UiUtils {
             d2.draw( canvas );
         }
 
-        return new BitmapDrawable( result );
+        return new BitmapDrawable( context.getResources(), result );
     }
 
     public static Drawable getRotatedDrawable( Context context, int resid, float rotation ) {
@@ -132,7 +132,7 @@ public class UiUtils {
         canvas.setDensity( Bitmap.DENSITY_NONE );
         canvas.rotate( rotation, bmp.getWidth()/2, bmp.getHeight()/2 );
         canvas.drawBitmap( bmp, 0, 0, sPaint );
-        return new BitmapDrawable( rotated );
+        return new BitmapDrawable( context.getResources(), rotated );
     }
 
     static public void setTextViewDrawable( TextView tv, int resid ) {
