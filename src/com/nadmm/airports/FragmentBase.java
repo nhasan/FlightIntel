@@ -160,6 +160,10 @@ public class FragmentBase extends Fragment {
         return mActivity.addRow( layout, label1, value1, label2, value2 );
     }
 
+    protected View addClickableRow( LinearLayout layout, View row, Intent intent, int resid ) {
+        return mActivity.addClickableRow( layout, row, intent, resid );
+    }
+
     protected View addClickableRow( LinearLayout layout, String label,
             final Intent intent, int resid ) {
         return mActivity.addClickableRow( layout, label, null, intent, resid );

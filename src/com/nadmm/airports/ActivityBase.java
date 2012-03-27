@@ -396,6 +396,15 @@ public class ActivityBase extends FragmentActivity {
         }
     }
 
+    protected View addClickableRow( LinearLayout layout, View row, Intent intent, int resid ) {
+        row.setBackgroundResource( resid );
+        row.setTag( intent );
+        row.setOnClickListener( mOnClickListener );
+        layout.addView( row, new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
+    }
+
     protected View addClickableRow( LinearLayout layout, String label,
             Intent intent, int resid ) {
         return addClickableRow( layout, label, null, intent, resid );

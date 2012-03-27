@@ -41,9 +41,7 @@ import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -910,7 +908,7 @@ public class AirportDetailsActivity extends ActivityBase {
             }
         }
 
-        protected void addRunwayRow( LinearLayout table, Cursor c, int resid ) {
+        protected void addRunwayRow( LinearLayout layout, Cursor c, int resid ) {
             String siteNumber = c.getString( c.getColumnIndex( Runways.SITE_NUMBER ) );
             String runwayId = c.getString( c.getColumnIndex( Runways.RUNWAY_ID ) );
             int length = c.getInt( c.getColumnIndex( Runways.RUNWAY_LENGTH ) );
@@ -952,22 +950,13 @@ public class AirportDetailsActivity extends ActivityBase {
                 mRunwayViews.add( tv );
             }
 
-            final Bundle bundle = new Bundle();
+            Bundle bundle = new Bundle();
             bundle.putString( Runways.SITE_NUMBER, siteNumber );
             bundle.putString( Runways.RUNWAY_ID, runwayId );
-            row.setOnClickListener( new OnClickListener() {
+            Intent intent = new Intent( getActivityBase(), RunwayDetailsActivity.class );
+            intent.putExtras( bundle );
 
-                @Override
-                public void onClick( View v ) {
-                    Intent intent = new Intent( getActivityBase(), RunwayDetailsActivity.class );
-                    intent.putExtras( bundle );
-                    startActivity( intent );
-                }
-
-            } );
-
-            table.addView( row, new LinearLayout.LayoutParams(
-                    LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+            addClickableRow( layout, row, intent, resid );
         }
 
         protected void addRemarkRow( LinearLayout layout, String remark ) {
