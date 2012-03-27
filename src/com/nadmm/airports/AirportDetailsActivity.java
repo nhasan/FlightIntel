@@ -967,7 +967,7 @@ public class AirportDetailsActivity extends ActivityBase {
             } );
 
             table.addView( row, new LinearLayout.LayoutParams(
-                    LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+                    LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
         }
 
         protected void addRemarkRow( LinearLayout layout, String remark ) {

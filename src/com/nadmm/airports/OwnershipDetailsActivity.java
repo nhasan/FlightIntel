@@ -160,7 +160,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
         tv.setText( text );
         tv.setPadding( 0, 1, 0, 1 );
         layout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
     protected void addPhoneRow( LinearLayout layout, final String phone ) {

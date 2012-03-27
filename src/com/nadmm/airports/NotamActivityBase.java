@@ -45,6 +45,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 public class NotamActivityBase extends ActivityBase {
@@ -88,7 +89,7 @@ public class NotamActivityBase extends ActivityBase {
             label.setTextAppearance( this, R.style.TextSmall_Bold );
             label.setText( subject );
             content.addView( label, new LinearLayout.LayoutParams(
-                    LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+                    LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
             addSeparator( content );
             ArrayList<String> list = notams.get( subject );
             for ( String notam : list ) {
@@ -102,7 +103,8 @@ public class NotamActivityBase extends ActivityBase {
         title1.setText( getResources().getQuantityString( R.plurals.notams_found, count, count ) );
         TextView title2 = (TextView) findViewById( R.id.notam_title2 );
         Date lastModified = new Date( notamFile.lastModified() );
-        title2.setText( "Last updated at "+ lastModified.toLocaleString() );
+        title2.setText( "Last updated at "+ TimeUtils.formatDateTime(
+                this, lastModified.getTime() ) );
     }
 
     protected void getNotams( String icaoCode ) {

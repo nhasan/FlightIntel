@@ -255,7 +255,7 @@ public class FssCommActivity extends ActivityBase {
                 }
 
                 detailLayout.addView( item, new LinearLayout.LayoutParams(
-                        LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+                        LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
             } while ( com.moveToNext() );
         } else {
             setContentMsg( String.format( "No FSS outlets found within %d NM radius.", RADIUS ) );
