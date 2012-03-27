@@ -24,8 +24,8 @@ import java.util.HashMap;
 import android.content.Context;
 import android.database.Cursor;
 import android.location.Location;
+import android.support.v4.widget.ResourceCursorAdapter;
 import android.view.View;
-import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -43,7 +43,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
     private HashMap<String, Metar> mStationWx;
 
     public WxCursorAdapter( Context context, Cursor c ) {
-        super( context, R.layout.wx_list_item, c );
+        super( context, R.layout.wx_list_item, c, 0 );
     }
 
     public void setMetars( HashMap<String, Metar> wx ) {
