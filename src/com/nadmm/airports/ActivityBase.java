@@ -107,7 +107,7 @@ public class ActivityBase extends FragmentActivity {
     public View createContentView( View view ) {
         FrameLayout root = new FrameLayout( this );
         root.setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT ) );
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT ) );
 
         LinearLayout pframe = new LinearLayout( this );
         pframe.setId( R.id.INTERNAL_PROGRESS_CONTAINER_ID );
@@ -118,16 +118,16 @@ public class ActivityBase extends FragmentActivity {
         pframe.addView( progress, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT ) );
         root.addView( pframe, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT ) );
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT ) );
 
         FrameLayout lframe = new FrameLayout( this );
         lframe.setId( R.id.INTERNAL_FRAGMENT_CONTAINER_ID );
         lframe.setVisibility( View.GONE );
 
         lframe.addView( view, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT ) );
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT ) );
         root.addView( lframe, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT ) );
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT ) );
 
         return root;
     }
@@ -423,7 +423,7 @@ public class ActivityBase extends FragmentActivity {
             tv.setVisibility( View.GONE );
         }
         layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
         return row;
     }
 
@@ -444,7 +444,7 @@ public class ActivityBase extends FragmentActivity {
             tv.setVisibility( View.GONE );
         }
         layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
         return row;
     }
 
@@ -472,7 +472,7 @@ public class ActivityBase extends FragmentActivity {
             tv.setVisibility( View.GONE );
         }
         layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
         return row;
     }
 
@@ -499,13 +499,13 @@ public class ActivityBase extends FragmentActivity {
         innerLayout.addView( tv, new LinearLayout.LayoutParams(
                 0, LayoutParams.WRAP_CONTENT, 1f ) );
         layout.addView( innerLayout, new LinearLayout.LayoutParams(
-                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
     protected void addSeparator( LinearLayout layout ) {
         View separator = new View( this );
         separator.setBackgroundColor( Color.LTGRAY );
-        layout.addView( separator, new LayoutParams( LayoutParams.FILL_PARENT, 1 ) );
+        layout.addView( separator, new LayoutParams( LayoutParams.MATCH_PARENT, 1 ) );
     }
 
     public boolean postRunnable( Runnable r, long delayMillis ) {
