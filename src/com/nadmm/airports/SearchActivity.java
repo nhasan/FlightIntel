@@ -23,10 +23,10 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
