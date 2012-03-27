@@ -88,19 +88,6 @@ public class UiUtils {
         }
     }
 
-    public static void makeClickable( final Context context , View view,
-            final Intent intent, int resid ) {
-        view.setBackgroundResource( resid );
-        view.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                context.startActivity( intent );
-            }
-
-        } );
-    }
-
     public static int convertDpToPx( Context context, int dp ) {
         return (int) TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP,
                 dp, context.getResources().getDisplayMetrics() );

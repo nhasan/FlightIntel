@@ -70,6 +70,13 @@ public class ActivityBase extends FragmentActivity {
     private Drawable mRefreshDrawable;
     private LayoutInflater mInflater;
     private Handler mHandler = new Handler();
+    private final OnClickListener mOnClickListener = new OnClickListener() {
+        @Override
+        public void onClick( View v ) {
+            Intent intent = (Intent) v.getTag();
+            startActivity( intent );
+        }
+    };
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -390,21 +397,25 @@ public class ActivityBase extends FragmentActivity {
     }
 
     protected View addClickableRow( LinearLayout layout, String label,
-            final Intent intent, int resid ) {
+            Intent intent, int resid ) {
         return addClickableRow( layout, label, null, intent, resid );
     }
 
     protected View addClickableRow( LinearLayout layout, String label, String value,
-            final Intent intent, int resid ) {
+            Intent intent, int resid ) {
         View row = addRow( layout, label+"...", value );
-        UiUtils.makeClickable( this, row, intent, resid );
+        row.setBackgroundResource( resid );
+        row.setTag( intent );
+        row.setOnClickListener( mOnClickListener );
         return row;
     }
 
     protected View addClickableRow( LinearLayout layout, String label1, String value1,
-            String label2, String value2, final Intent intent, int resid ) {
+            String label2, String value2, Intent intent, int resid ) {
         View row = addRow( layout, label1, value1, label2, value2 );
-        UiUtils.makeClickable( this, row, intent, resid );
+        row.setBackgroundResource( resid );
+        row.setTag( intent );
+        row.setOnClickListener( mOnClickListener );
         return row;
     }
 

@@ -37,7 +37,6 @@ import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.utils.UiUtils;
 
 public class NavaidsActivity extends ActivityBase {
 
@@ -286,12 +285,11 @@ public class NavaidsActivity extends ActivityBase {
         String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
         String label2 = name+" "+type;
         String value2 = String.format( "r%03d/%.1fNM", radial, distance );
-        View row = addRow( table, label1, freq, label2, value2 );
-
         Intent intent = new Intent( NavaidsActivity.this, NavaidDetailsActivity.class );
         intent.putExtra( Nav1.NAVAID_ID, navaidId );
         intent.putExtra( Nav1.NAVAID_TYPE, type );
-        UiUtils.makeClickable( this, row, intent, resid );
+
+        addClickableRow( table, label1, freq, label2, value2, intent, resid );
     }
 
     protected void addNonDirectionalNavaidRow( LinearLayout table, String navaidId,
@@ -299,12 +297,11 @@ public class NavaidsActivity extends ActivityBase {
         String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
         String label2 = name+" "+type;
         String value2 = String.format( "%03d\u00B0M/%.1fNM", heading, distance );
-        View row = addRow( table, label1, freq, label2, value2 );
-
         Intent intent = new Intent( NavaidsActivity.this, NavaidDetailsActivity.class );
         intent.putExtra( Nav1.NAVAID_ID, navaidId );
         intent.putExtra( Nav1.NAVAID_TYPE, type );
-        UiUtils.makeClickable( this, row, intent, resid );
+
+        addClickableRow( table, label1, freq, label2, value2, intent, resid );
     }
 
 }
