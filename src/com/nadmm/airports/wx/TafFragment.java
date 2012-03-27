@@ -316,8 +316,8 @@ public class TafFragment extends FragmentBase {
             addRow( layout, "\u2022 "+taf.remarks );
         }
 
-        LinearLayout fcst_top_layout = (LinearLayout) findViewById( R.id.taf_forecasts_layout );
-        fcst_top_layout.removeAllViews();
+        LinearLayout topLayout = (LinearLayout) findViewById( R.id.taf_forecasts_layout );
+        topLayout.removeAllViews();
 
         StringBuilder sb = new StringBuilder();
         for ( Forecast forecast : taf.forecasts ) {
@@ -454,12 +454,11 @@ public class TafFragment extends FragmentBase {
                 addRow( fcst_layout, "Icing", value, height );
             }
 
-            fcst_top_layout.addView( grp_layout, LayoutParams.FILL_PARENT,
-                    LayoutParams.WRAP_CONTENT );
+            topLayout.addView( grp_layout, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
         }
 
         tv = (TextView) findViewById( R.id.wx_fetch_time );
-        tv.setText( "Fetched on "+TimeUtils.formatLongDateTime( taf.fetchTime )  );
+        tv.setText( "Fetched on "+TimeUtils.formatDateTime( getActivity(), taf.fetchTime )  );
         tv.setVisibility( View.VISIBLE );
 
         stopRefreshAnimation();

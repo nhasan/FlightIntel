@@ -197,7 +197,7 @@ public class PirepFragment extends FragmentBase {
         }
 
         TextView tv = (TextView) findViewById( R.id.wx_fetch_time );
-        tv.setText( "Fetched on "+TimeUtils.formatLongDateTime( pirep.fetchTime )  );
+        tv.setText( "Fetched on "+TimeUtils.formatDateTime( getActivity(), pirep.fetchTime )  );
         tv.setVisibility( View.VISIBLE );
 
         stopRefreshAnimation();
@@ -280,7 +280,7 @@ public class PirepFragment extends FragmentBase {
             addIcingRow( details, icing );
         }
 
-        layout.addView( item, LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT );
+        layout.addView( item, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
     }
 
     protected void addSkyConditionRow( LinearLayout details, SkyCondition sky ) {

@@ -463,7 +463,7 @@ public class MetarFragment extends FragmentBase {
         }
 
         tv = (TextView) findViewById( R.id.wx_fetch_time );
-        tv.setText( "Fetched on "+TimeUtils.formatLongDateTime( metar.fetchTime )  );
+        tv.setText( "Fetched on "+TimeUtils.formatDateTime( getActivity(), metar.fetchTime )  );
         tv.setVisibility( View.VISIBLE );
 
         stopRefreshAnimation();
