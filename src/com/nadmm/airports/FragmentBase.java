@@ -35,7 +35,6 @@ import com.nadmm.airports.DatabaseManager.Awos;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
-import com.nadmm.airports.utils.UiUtils;
 
 public class FragmentBase extends Fragment {
 
@@ -94,7 +93,7 @@ public class FragmentBase extends Fragment {
             if ( phone != null && phone.length() > 0 ) {
                 tv = (TextView) root.findViewById( R.id.wx_station_phone );
                 tv.setText( phone );
-                UiUtils.makeClickToCall( getActivity(), tv );
+                makeClickToCall( tv );
                 tv.setVisibility( View.VISIBLE );
             }
 
@@ -185,6 +184,10 @@ public class FragmentBase extends Fragment {
 
     protected void addSeparator( LinearLayout layout ) {
         mActivity.addSeparator( layout );
+    }
+
+    protected void makeClickToCall( TextView tv ) {
+        mActivity.makeClickToCall( tv );
     }
 
     protected View findViewById( int id ) {
