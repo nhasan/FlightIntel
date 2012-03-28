@@ -111,7 +111,6 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         String phone = c.getString( c.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
         if ( phone != null && phone.length() > 0 ) {
             tv.setText( phone );
-            UiUtils.makeClickToCall( context, tv );
         }
 
         Metar metar = mStationWx.get( stationId );
