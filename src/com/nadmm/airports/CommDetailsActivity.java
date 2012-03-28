@@ -42,7 +42,6 @@ import com.nadmm.airports.DatabaseManager.Tower7;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
-import com.nadmm.airports.utils.UiUtils;
 
 public class CommDetailsActivity extends ActivityBase {
 
@@ -386,9 +385,7 @@ public class CommDetailsActivity extends ActivityBase {
         Cursor main = result[ 6 ];
         if ( main.moveToFirst() ) {
             String phone = main.getString( main.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
-            View row = addRow( layout, "Command center", phone );
-            TextView tv = (TextView) row.findViewById( R.id.item_value );
-            UiUtils.makeClickToCall( this, tv );
+            addPhoneRow( layout, "Command center", phone );
         }
 
         Cursor region = result[ 7 ];
@@ -396,9 +393,7 @@ public class CommDetailsActivity extends ActivityBase {
             String facility = region.getString( region.getColumnIndex( AtcPhones.FACILITY_ID ) );
             String phone = region.getString( region.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
             addSeparator( layout );
-            View row = addRow( layout, DataUtils.decodeFaaRegion( facility )+" region", phone );
-            TextView tv = (TextView) row.findViewById( R.id.item_value );
-            UiUtils.makeClickToCall( this, tv );
+            addPhoneRow( layout, DataUtils.decodeFaaRegion( facility )+" region", phone );
         }
 
         Cursor artcc = result[ 8 ];
@@ -406,17 +401,13 @@ public class CommDetailsActivity extends ActivityBase {
             String facility = artcc.getString( artcc.getColumnIndex( AtcPhones.FACILITY_ID ) );
             String phone = artcc.getString( artcc.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
             addSeparator( layout );
-            View row = addRow( layout, DataUtils.decodeArtcc( facility ), phone, 
+            addPhoneRow( layout, DataUtils.decodeArtcc( facility ), phone, 
                     "Regional duty office", "(24 Hr)" );
-            TextView tv = (TextView) row.findViewById( R.id.item_value );
-            UiUtils.makeClickToCall( this, tv );
             phone = artcc.getString( artcc.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
             String hours = artcc.getString( artcc.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
             addSeparator( layout );
-            row = addRow( layout, DataUtils.decodeArtcc( facility ), phone,
+            addPhoneRow( layout, DataUtils.decodeArtcc( facility ), phone,
                     "Business office", "("+hours+")" );
-            tv = (TextView) row.findViewById( R.id.item_value );
-            UiUtils.makeClickToCall( this, tv );
         }
 
         Cursor tracon = result[ 9 ];
@@ -426,9 +417,7 @@ public class CommDetailsActivity extends ActivityBase {
             String hours = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
             addSeparator( layout );
             String name = DataUtils.getTraconName( faaCode );
-            View row = addRow( layout, name+" TRACON", phone, "Business office", "("+hours+")" );
-            TextView tv = (TextView) row.findViewById( R.id.item_value );
-            UiUtils.makeClickToCall( this, tv );
+            addPhoneRow( layout, name+" TRACON", phone, "Business office", "("+hours+")" );
         }
 
         Cursor atct = result[ 10 ];
@@ -438,9 +427,7 @@ public class CommDetailsActivity extends ActivityBase {
             String phone = atct.getString( atct.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
             String hours = atct.getString( atct.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
             addSeparator( layout );
-            View row = addRow( layout, name+" Tower", phone, "Business office", "("+hours+")" );
-            TextView tv = (TextView) row.findViewById( R.id.item_value );
-            UiUtils.makeClickToCall( this, tv );
+            addPhoneRow( layout, name+" Tower", phone, "Business office", "("+hours+")" );
         }
     }
 
