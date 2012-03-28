@@ -20,9 +20,6 @@
 package com.nadmm.airports.utils;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -31,18 +28,13 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 
 public class UiUtils {
@@ -53,39 +45,6 @@ public class UiUtils {
     static {
         // Make sure to associate with the Looper in the main (Gui) thread
         sHandler = new Handler( Looper.getMainLooper() );
-    }
-
-    protected static String getPhoneNumber( TextView tv ) {
-        return DataUtils.decodePhoneNumber( tv.getText().toString() );
-    }
-
-    public static void makeClickToCall( final Context context, TextView tv ) {
-        PackageManager pm = context.getPackageManager();
-        boolean hasTelephony = pm.hasSystemFeature( PackageManager.FEATURE_TELEPHONY );
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( context );
-        String tapAction = prefs.getString( PreferencesActivity.KEY_PHONE_TAP_ACTION, "dial" );
-        if ( hasTelephony && !tapAction.equals( "ignore" ) ) {
-            if ( tv.getText().length() > 0 ) {
-                final String action =
-                        tapAction.equals( "call" )? Intent.ACTION_CALL : Intent.ACTION_DIAL;
-                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.phone, 0, 0, 0 );
-                tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( context, 3 ) );
-                tv.setOnClickListener( new OnClickListener() {
-    
-                    @Override
-                    public void onClick( View v ) {
-                        TextView tv = (TextView) v;
-                        Intent intent = new Intent( action,
-                                Uri.parse( "tel:"+getPhoneNumber( tv ) ) );
-                        context.startActivity( intent );
-                    }
-
-                } );
-            } else {
-                tv.setCompoundDrawablesWithIntrinsicBounds( 0, 0, 0, 0 );
-                tv.setOnClickListener( null );
-            }
-        }
     }
 
     public static int convertDpToPx( Context context, int dp ) {
@@ -151,9 +110,9 @@ public class UiUtils {
         int resid;
         if ( c.getCount() == 1 ) {
             resid = R.drawable.row_selector;
-        } else if ( c.getPosition() == 0 ) {
+        } else if ( c.isFirst() ) {
             resid = R.drawable.row_selector_top;
-        } else if ( c.getPosition() == c.getCount()-1 ) {
+        } else if ( c.isLast() ) {
             resid = R.drawable.row_selector_bottom;
         } else {
             resid = R.drawable.row_selector_middle;

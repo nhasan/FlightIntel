@@ -22,6 +22,8 @@ package com.nadmm.airports;
 import java.util.ArrayList;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -32,6 +34,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -70,12 +73,24 @@ public class ActivityBase extends FragmentActivity {
     private Drawable mRefreshDrawable;
     private LayoutInflater mInflater;
     private Handler mHandler = new Handler();
-    private final OnClickListener mOnClickListener = new OnClickListener() {
+    private final OnClickListener mOnRowClickListener = new OnClickListener() {
         @Override
         public void onClick( View v ) {
             Intent intent = (Intent) v.getTag();
             startActivity( intent );
         }
+    };
+    private final OnClickListener mOnPhoneClickListener = new OnClickListener() {
+        
+        @Override
+        public void onClick( View v ) {
+            TextView tv = (TextView) v;
+            String action = (String) tv.getTag();
+            String phone = DataUtils.decodePhoneNumber( tv.getText().toString() );
+            Intent intent = new Intent( action, Uri.parse( "tel:"+phone ) );
+            startActivity( intent );
+        }
+
     };
 
     @Override
@@ -396,10 +411,14 @@ public class ActivityBase extends FragmentActivity {
         }
     }
 
-    protected View addClickableRow( LinearLayout layout, View row, Intent intent, int resid ) {
+    protected void makeRowClickable( View row, Intent intent, int resid ) {
         row.setBackgroundResource( resid );
         row.setTag( intent );
-        row.setOnClickListener( mOnClickListener );
+        row.setOnClickListener( mOnRowClickListener );
+    }
+
+    protected View addClickableRow( LinearLayout layout, View row, Intent intent, int resid ) {
+        makeRowClickable( row, intent, resid );
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
         return row;
@@ -413,18 +432,14 @@ public class ActivityBase extends FragmentActivity {
     protected View addClickableRow( LinearLayout layout, String label, String value,
             Intent intent, int resid ) {
         View row = addRow( layout, label+"...", value );
-        row.setBackgroundResource( resid );
-        row.setTag( intent );
-        row.setOnClickListener( mOnClickListener );
+        makeRowClickable( row, intent, resid );
         return row;
     }
 
     protected View addClickableRow( LinearLayout layout, String label1, String value1,
             String label2, String value2, Intent intent, int resid ) {
         View row = addRow( layout, label1, value1, label2, value2 );
-        row.setBackgroundResource( resid );
-        row.setTag( intent );
-        row.setOnClickListener( mOnClickListener );
+        makeRowClickable( row, intent, resid );
         return row;
     }
 
@@ -496,10 +511,18 @@ public class ActivityBase extends FragmentActivity {
         return row;
     }
 
-    protected View addPhoneRow( LinearLayout layout, String label, final String phone ) {
+    protected View addPhoneRow( LinearLayout layout, String label, String phone ) {
         View row = addRow( layout, label, phone );
         TextView tv = (TextView) row.findViewById( R.id.item_value );
-        UiUtils.makeClickToCall( this, tv );
+        makeClickToCall( tv );
+        return row;
+    }
+
+    protected View addPhoneRow( LinearLayout layout, String label, String phone,
+            String label2, String value2 ) {
+        View row = addRow( layout, label, phone, label2, value2 );
+        TextView tv = (TextView) row.findViewById( R.id.item_value );
+        makeClickToCall( tv );
         return row;
     }
 
@@ -526,6 +549,26 @@ public class ActivityBase extends FragmentActivity {
         View separator = new View( this );
         separator.setBackgroundColor( Color.LTGRAY );
         layout.addView( separator, new LayoutParams( LayoutParams.MATCH_PARENT, 1 ) );
+    }
+
+    protected void makeClickToCall( TextView tv ) {
+        PackageManager pm = getPackageManager();
+        boolean hasTelephony = pm.hasSystemFeature( PackageManager.FEATURE_TELEPHONY );
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
+        String tapAction = prefs.getString( PreferencesActivity.KEY_PHONE_TAP_ACTION, "dial" );
+        if ( hasTelephony && !tapAction.equals( "ignore" ) ) {
+            if ( tv.getText().length() > 0 ) {
+                String action = tapAction.equals( "call" )?
+                        Intent.ACTION_CALL : Intent.ACTION_DIAL;
+                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.phone, 0, 0, 0 );
+                tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( this, 3 ) );
+                tv.setTag( action );
+                tv.setOnClickListener( mOnPhoneClickListener );
+            } else {
+                tv.setCompoundDrawablesWithIntrinsicBounds( 0, 0, 0, 0 );
+                tv.setOnClickListener( null );
+            }
+        }
     }
 
     public boolean postRunnable( Runnable r, long delayMillis ) {
