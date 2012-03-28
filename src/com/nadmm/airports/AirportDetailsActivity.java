@@ -904,7 +904,7 @@ public class AirportDetailsActivity extends ActivityBase {
             // Make phone number clickable
             tv = (TextView) row.findViewById( R.id.item_extra_value );
             if ( tv.getText().length() > 0 ) {
-                UiUtils.makeClickToCall( getActivity(), tv );
+                makeClickToCall( tv );
             }
         }
 
