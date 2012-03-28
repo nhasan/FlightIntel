@@ -34,7 +34,6 @@ import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
-import com.nadmm.airports.utils.UiUtils;
 
 public class OwnershipDetailsActivity extends ActivityBase {
 
@@ -167,7 +166,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
         TextView tv = new TextView( this );
         tv.setPadding( 0, 1, 0, 1 );
         tv.setText( phone );
-        UiUtils.makeClickToCall( this, tv );
+        makeClickToCall( tv );
         layout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT ) );
     }
