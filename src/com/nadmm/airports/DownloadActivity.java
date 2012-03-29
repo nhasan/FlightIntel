@@ -1003,11 +1003,9 @@ public final class DownloadActivity extends ActivityBase {
             if ( cursor.moveToFirst() ) {
                 do {
                     int _id = cursor.getInt( cursor.getColumnIndex( Catalog._ID ) );
-                    String type = cursor.getString( cursor.getColumnIndex( Catalog.TYPE ) );
                     String dbName = cursor.getString( cursor.getColumnIndex( Catalog.DB_NAME ) );
 
                     // Delete the db file on the external device
-                    Log.i( TAG, "Deleting _id="+_id+" type="+type+" dbName="+dbName );
                     File file = new File( DatabaseManager.DATABASE_DIR, dbName );
                     if ( file.delete() ) {
                         // Now delete the catalog entry for the file
@@ -1057,9 +1055,7 @@ public final class DownloadActivity extends ActivityBase {
                 if ( end.compareTo( today ) < 0 ) {
                     // This database has expired, remove it
                     Integer _id = c.getInt( c.getColumnIndex( Catalog._ID ) );
-                    String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
                     String dbName = c.getString( c.getColumnIndex( Catalog.DB_NAME ) );
-                    Log.i( TAG, "Deleting _id="+_id+" type="+type+" dbName="+dbName );
                     File file = new File( DatabaseManager.DATABASE_DIR, dbName );
                     if ( file.delete() ) {
                         // Now delete the catalog entry for the file
