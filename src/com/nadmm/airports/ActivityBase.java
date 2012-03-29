@@ -96,19 +96,9 @@ public class ActivityBase extends FragmentActivity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         mDbManager = DatabaseManager.instance( this );
-        SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
-        if ( db == null ) {
-            // Make sure database is available and usable
-            Intent intent = checkData();
-            if ( intent != null ) {
-                startActivity( intent );
-                finish();
-            }
-        } else {
-            mInflater = getLayoutInflater();
-            overridePendingTransition( R.anim.fade_in, R.anim.fade_out );
-            super.onCreate( savedInstanceState );
-        }
+        mInflater = getLayoutInflater();
+        overridePendingTransition( R.anim.fade_in, R.anim.fade_out );
+        super.onCreate( savedInstanceState );
     }
 
     @Override
