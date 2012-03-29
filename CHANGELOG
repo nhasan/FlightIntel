@@ -1,3 +1,8 @@
+v3.1.2 (3/28/2012)
+=================
+* Add option to delete charts manually
+* Stability and performance fixes
+
 v3.1.1 (3/18/2012)
 =================
 * Do not use anyting beyond API7. Fixes crashes on Android 2.1 and 2.2 devices.
