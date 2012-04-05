@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@ sub capitalize($$$)
 {
     my ( $string, $offset, $len ) = @_;
     $string = autoformat( substr( $string, $offset, $len ), { case => 'highlight' } );
-    $string =~ s/\s+(Ak|Al|Ar|As|Az|Ca|Co|Cq|Ct|Dc|De|Fl|Ga|Gu|Hi|Ia|Id|Il|In|Ks|Ky|La|Ma|Md|Me|Mi|Mn|Mo|Mq|Ms|Mt|Nc|Nd|Ne|Nh|Nj|Nm|Nv|Ny|Oh|Ok|Or|Pa|Pr|Ri|Sc|Sd|Tn|Tx|Ut|Va|Vi|Vt|Wa|Wi|Wv|Wy|Artcc|Llc|Norcal|Socal)\s+/ \U$1\E /g;
+    $string =~ s/\s+(Ak|Al|Ar|As|Az|Ca|Co|Cq|Ct|Dc|De|Fl|Ga|Gu|Hi|Ia|Id|Il|In|Ks|Ky|La|Ma|Md|Me|Mi|Mn|Mo|Mq|Ms|Mt|Nc|Nd|Ne|Nh|Nj|Nm|Nv|Ny|Oh|Ok|Or|Pa|Pr|Ri|Sc|Sd|Tn|Tx|Ut|Va|Vi|Vt|Wa|Wi|Wv|Wy|Artcc|Llc|Norcal|Socal|Ifr|Vfr|Dot|Us|Usaf)\s+/ \U$1\E /g;
     $string =~ s/$reTrim//g;
     return $string;
 }
@@ -167,7 +167,7 @@ my $create_airports_table = "CREATE TABLE airports ("
         ."REF_LATTITUDE_DEGREES REAL, "
         ."REF_LONGITUDE_DEGREES REAL, "
         ."REF_METHOD TEXT, "
-        ."ELEVATION_MSL INTEGER, "
+        ."ELEVATION_MSL REAL, "
         ."ELEVATION_METHOD TEXT, "
         ."MAGNETIC_VARIATION_DEGREES INTEGER, "
         ."MAGNETIC_VARIATION_DIRECTION TEXT, "
@@ -197,12 +197,29 @@ my $create_airports_table = "CREATE TABLE airports ("
         ."BOTTLED_O2_AVAILABLE TEXT, "
         ."BULK_O2_AVAILABLE TEXT, "
         ."LIGHTING_SCHEDULE TEXT, "
+        ."BEACON_LIGHTING_SCHEDULE TEXT, "
         ."TOWER_ON_SITE TEXT, "
         ."UNICOM_FREQS TEXT, "
         ."CTAF_FREQ TEXT, "
         ."SEGMENTED_CIRCLE TEXT, "
         ."BEACON_COLOR TEXT, "
         ."LANDING_FEE TEXT, "
+        ."MEDICAL_USE TEXT, "
+        ."SINGLE_ENGINE_COUNT INTEGER, "
+        ."MULTI_ENGINE_COUNT INTEGER, "
+        ."JET_ENGINE_COUNT INTEGER, "
+        ."HELI_COUNT INTEGER, "
+        ."GLIDERS_COUNT INTEGER, "
+        ."MILITARY_COUNT INTEGER, "
+        ."ULTRA_LIGHT_COUNT INTEGER, "
+        ."ANNUAL_COMMERCIAL_OPS INTEGER, "
+        ."ANNUAL_COMMUTER_OPS INTEGER, "
+        ."ANNUAL_AIRTAXI_OPS INTEGER, "
+        ."ANNUAL_GA_LOCAL_OPS INTEGER, "
+        ."ANNUAL_GA_ININERANT_OPS INTEGER, "
+        ."ANNUAL_MILITARY_OPS INTEGER, "
+        ."OPS_REFERENCE_DATE TEXT, "
+        ."CONTRACT_FUEL_AVAILABLE TEXT, "
         ."STORAGE_FACILITY TEXT, "
         ."OTHER_SERVICES TEXT, "
         ."WIND_INDICATOR TEXT, "
@@ -263,25 +280,43 @@ my $insert_airports_record = "INSERT INTO airports ("
         ."BOTTLED_O2_AVAILABLE, "
         ."BULK_O2_AVAILABLE, "
         ."LIGHTING_SCHEDULE, "
+        ."BEACON_LIGHTING_SCHEDULE, "
         ."TOWER_ON_SITE, "
         ."UNICOM_FREQS, "
         ."CTAF_FREQ, "
         ."SEGMENTED_CIRCLE, "
         ."BEACON_COLOR, "
         ."LANDING_FEE, "
+        ."MEDICAL_USE, "
+        ."SINGLE_ENGINE_COUNT, "
+        ."MULTI_ENGINE_COUNT, "
+        ."JET_ENGINE_COUNT, "
+        ."HELI_COUNT, "
+        ."GLIDERS_COUNT, "
+        ."MILITARY_COUNT, "
+        ."ULTRA_LIGHT_COUNT, "
+        ."ANNUAL_COMMERCIAL_OPS, "
+        ."ANNUAL_COMMUTER_OPS, "
+        ."ANNUAL_AIRTAXI_OPS, "
+        ."ANNUAL_GA_LOCAL_OPS, "
+        ."ANNUAL_GA_ININERANT_OPS, "
+        ."ANNUAL_MILITARY_OPS, "
+        ."OPS_REFERENCE_DATE, "
+        ."CONTRACT_FUEL_AVAILABLE, "
         ."STORAGE_FACILITY, "
         ."OTHER_SERVICES, "
         ."WIND_INDICATOR, "
         ."ICAO_CODE, "
         ."TIMEZONE_ID"
         .") VALUES ("
-        ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ? ,?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?)";
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 my $create_runways_table = "CREATE TABLE runways ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -298,7 +333,6 @@ my $create_runways_table = "CREATE TABLE runways ("
         ."BASE_END_RIGHT_TRAFFIC TEXT, "
         ."BASE_END_MARKING_TYPE TEXT, "
         ."BASE_END_MARKING_CONDITION TEXT, "
-        ."BASE_END_ARRESTING_DEVICE_TYPE TEXT, "
         ."BASE_END_RUNWAY_ELEVATION REAL, "
         ."BASE_END_THRESHOLD_CROSSING_HEIGHT INTEGER, "
         ."BASE_END_GLIDE_ANGLE REAL, "
@@ -322,7 +356,6 @@ my $create_runways_table = "CREATE TABLE runways ("
         ."RECIPROCAL_END_RIGHT_TRAFFIC TEXT, "
         ."RECIPROCAL_END_MARKING_TYPE TEXT, "
         ."RECIPROCAL_END_MARKING_CONDITION TEXT, "
-        ."RECIPROCAL_END_ARRESTING_DEVICE_TYPE TEXT, "
         ."RECIPROCAL_END_RUNWAY_ELEVATION REAL, "
         ."RECIPROCAL_END_THRESHOLD_CROSSING_HEIGHT INTEGER, "
         ."RECIPROCAL_END_GLIDE_ANGLE REAL, "
@@ -372,7 +405,6 @@ my $insert_runways_record = "INSERT INTO runways ("
         ."BASE_END_RIGHT_TRAFFIC, "
         ."BASE_END_MARKING_TYPE, "
         ."BASE_END_MARKING_CONDITION, "
-        ."BASE_END_ARRESTING_DEVICE_TYPE, "
         ."BASE_END_RUNWAY_ELEVATION, "
         ."BASE_END_THRESHOLD_CROSSING_HEIGHT, "
         ."BASE_END_GLIDE_ANGLE, "
@@ -396,7 +428,6 @@ my $insert_runways_record = "INSERT INTO runways ("
         ."RECIPROCAL_END_RIGHT_TRAFFIC, "
         ."RECIPROCAL_END_MARKING_TYPE, "
         ."RECIPROCAL_END_MARKING_CONDITION, "
-        ."RECIPROCAL_END_ARRESTING_DEVICE_TYPE, "
         ."RECIPROCAL_END_RUNWAY_ELEVATION, "
         ."RECIPROCAL_END_THRESHOLD_CROSSING_HEIGHT, "
         ."RECIPROCAL_END_GLIDE_ANGLE, "
@@ -437,8 +468,7 @@ my $insert_runways_record = "INSERT INTO runways ("
         ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?)";
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?)";
  
 my $create_attendance_table = "CREATE TABLE attendance ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -468,6 +498,23 @@ my $insert_remarks_record = "INSERT INTO remarks ("
         ."REMARK_TEXT"
         .") VALUES ("
         ."?, ?, ?"
+        .")";
+
+my $create_ars_table = "CREATE TABLE ars ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."SITE_NUMBER TEXT, "
+        ."RUNWAY_ID TEXT, "
+        ."RUNWAY_END_ID TEXT, "
+        ."ARRESTING_DEVICE TEXT"
+        .");";
+
+my $insert_ars_record = "INSERT INTO ars ("
+        ."SITE_NUMBER, "
+        ."RUNWAY_ID, "
+        ."RUNWAY_END_ID, "
+        ."ARRESTING_DEVICE"
+        .") VALUES ("
+        ."?, ?, ?, ?"
         .")";
 
 my $create_tower1_table = "CREATE TABLE tower1 ("
@@ -555,32 +602,73 @@ my $insert_tower8_record = "INSERT INTO tower8 ("
         ."?, ?, ?"
         .");";
 
-my $create_awos_table = "CREATE TABLE awos ("
+my $create_tower9_table = "CREATE TABLE tower9 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."FACILITY_ID TEXT, "
+        ."ATIS_SERIAL_NO INTEGER, "
+        ."ATIS_HOURS TEXT, "
+        ."ATIS_PURPOSE TEXT, "
+        ."ATIS_PHONE TEXT"
+        .");";
+
+my $insert_tower9_record = "INSERT INTO tower9 ("
+        ."FACILITY_ID, "
+        ."ATIS_SERIAL_NO, "
+        ."ATIS_HOURS, "
+        ."ATIS_PURPOSE, "
+        ."ATIS_PHONE"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?"
+        .");";
+
+my $create_awos1_table = "CREATE TABLE awos1 ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."WX_SENSOR_IDENT TEXT, "
         ."WX_SENSOR_TYPE TEXT, "
         ."COMMISSIONING_STATUS TEXT, "
+        ."COMMISSIONING_DATE TEXT, "
+        ."NAVAID_FLAG TEXT, "
         ."STATION_LATTITUDE_DEGREES REAL, "
         ."STATION_LONGITUDE_DEGREES REAL, "
+        ."STATION_ELEVATION REAL, "
+        ."ELEVATION_METHOD TEXT, "
         ."STATION_FREQUENCY TEXT, "
         ."SECOND_STATION_FREQUENCY TEXT, "
         ."STATION_PHONE_NUMBER TEXT, "
         ."SITE_NUMBER TEXT"
         .");";
 
-my $insert_awos_record = "INSERT INTO awos ("
+my $insert_awos1_record = "INSERT INTO awos1 ("
         ."WX_SENSOR_IDENT, "
         ."WX_SENSOR_TYPE, "
         ."COMMISSIONING_STATUS, "
+        ."COMMISSIONING_DATE, "
+        ."NAVAID_FLAG, "
         ."STATION_LATTITUDE_DEGREES, "
         ."STATION_LONGITUDE_DEGREES, "
+        ."STATION_ELEVATION, "
+        ."ELEVATION_METHOD, "
         ."STATION_FREQUENCY, "
         ."SECOND_STATION_FREQUENCY, "
         ."STATION_PHONE_NUMBER, "
         ."SITE_NUMBER"
         .") VALUES ("
-        ."?, ?, ?, ?, ?, ?, ?, ?, ?"
-        .")";
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?)";
+
+my $create_awos2_table = "CREATE TABLE awos2 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."WX_SENSOR_IDENT TEXT, "
+        ."WX_SENSOR_TYPE TEXT, "
+        ."WX_STATION_REMARKS TEXT"
+        .");";
+
+my $insert_awos2_record = "INSERT INTO awos2 ("
+        ."WX_SENSOR_IDENT, "
+        ."WX_SENSOR_TYPE, "
+        ."WX_STATION_REMARKS"
+        .") VALUES ("
+        ."?, ?, ?)";
 
 my $create_nav1_table = "CREATE TABLE nav1 ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -594,13 +682,14 @@ my $create_nav1_table = "CREATE TABLE nav1 ("
         ."OPERATING_HOURS TEXT, "
         ."REF_LATTITUDE_DEGREES REAL, "
         ."REF_LONGITUDE_DEGREES REAL, "
-        ."ELEVATION_MSL INTEGER, "
+        ."ELEVATION_MSL REAL, "
         ."MAGNETIC_VARIATION_DEGREES INTEGER, "
         ."MAGNETIC_VARIATION_DIRECTION TEXT, "
         ."MAGNETIC_VARIATION_YEAR TEXT, "
         ."VOICE_FEATURE TEXT, "
         ."POWER_OUTPUT TEXT, "
         ."AUTOMATIC_VOICE_IDENT TEXT, "
+        ."RADIO_VOICE_CALL TEXT, "
         ."TACAN_CHANNEL TEXT, "
         ."NAVAID_FREQUENCY TEXT, "
         ."FANMARKER_TYPE TEXT, "
@@ -625,6 +714,7 @@ my $insert_nav1_record = "INSERT INTO nav1 ("
         ."VOICE_FEATURE, "
         ."POWER_OUTPUT, "
         ."AUTOMATIC_VOICE_IDENT, "
+        ."RADIO_VOICE_CALL, "
         ."TACAN_CHANNEL, "
         ."NAVAID_FREQUENCY, "
         ."FANMARKER_TYPE, "
@@ -632,7 +722,7 @@ my $insert_nav1_record = "INSERT INTO nav1 ("
         .") VALUES ("
         ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-        ."?)";
+        ."?, ?)";
 
 my $create_nav2_table = "CREATE TABLE nav2 ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -654,61 +744,137 @@ my $create_ils1_table = "CREATE TABLE ils1 ("
         ."SITE_NUMBER TEXT, "
         ."RUNWAY_ID TEXT, "
         ."ILS_TYPE TEXT, "
+        ."ILS_ID TEXT, "
         ."ILS_CATEGORY TEXT, "
-        ."ILS_MAGNETIC_BEARING TEXT, "
-        ."LOCALIZER_TYPE TEXT, "
-        ."LOCALIZER_ID TEXT, "
-        ."LOCALIZER_FREQUENCY TEXT, "
-        ."LOCALIZER_COURSE_WIDTH TEXT, "
-        ."GLIDE_SLOPE_TYPE TEXT, "
-        ."GLIDE_SLOPE_ANGLE TEXT, "
-        ."GLIDE_SLOPE_FREQUENCY TEXT, "
-        ."INNER_MARKER_TYPE TEXT, "
-        ."INNER_MARKER_DISTANCE TEXT, "
-        ."MIDDLE_MARKER_TYPE TEXT, "
-        ."MIDDLE_MARKER_ID TEXT, "
-        ."MIDDLE_MARKER_NAME TEXT, "
-        ."MIDDLE_MARKER_FREQUENCY TEXT, "
-        ."MIDDLE_MARKER_DISTANCE TEXT, "
-        ."OUTER_MARKER_TYPE TEXT, "
-        ."OUTER_MARKER_ID TEXT, "
-        ."OUTER_MARKER_NAME TEXT, "
-        ."OUTER_MARKER_FREQUENCY TEXT, "
-        ."OUTER_MARKER_DISTANCE TEXT"
+        ."ILS_MAGNETIC_BEARING REAL"
         .")";
 
 my $insert_ils1_record = "INSERT INTO ils1 ("
         ."SITE_NUMBER, "
         ."RUNWAY_ID, "
         ."ILS_TYPE, "
+        ."ILS_ID, "
         ."ILS_CATEGORY, "
-        ."ILS_MAGNETIC_BEARING, "
-        ."LOCALIZER_TYPE, "
-        ."LOCALIZER_ID, "
+        ."ILS_MAGNETIC_BEARING"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?)";
+
+my $create_ils2_table = "CREATE TABLE ils2 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."SITE_NUMBER TEXT, "
+        ."RUNWAY_ID TEXT, "
+        ."ILS_TYPE TEXT, "
+        ."OPERATIONAL_STATUS TEXT, "
+        ."OPERATIONAL_EFFECTIVE_DATE TEXT, "
+        ."LOCALIZER_FREQUENCY TEXT, "
+        ."LOCALIZER_BACK_COURSE_STATUS TEXT, "
+        ."LOCALIZER_COURSE_WIDTH TEXT, "
+        ."LOCALIZER_COURSE_WIDTH_THRESHOLD TEXT"
+        .")";
+
+my $insert_ils2_record = "INSERT INTO ils2 ("
+        ."SITE_NUMBER, "
+        ."RUNWAY_ID, "
+        ."ILS_TYPE, "
+        ."OPERATIONAL_STATUS, "
+        ."OPERATIONAL_EFFECTIVE_DATE, "
         ."LOCALIZER_FREQUENCY, "
+        ."LOCALIZER_BACK_COURSE_STATUS, "
         ."LOCALIZER_COURSE_WIDTH, "
+        ."LOCALIZER_COURSE_WIDTH_THRESHOLD"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?"
+        .")";
+
+my $create_ils3_table = "CREATE TABLE ils3 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."SITE_NUMBER TEXT, "
+        ."RUNWAY_ID TEXT, "
+        ."ILS_TYPE TEXT, "
+        ."OPERATIONAL_STATUS TEXT, "
+        ."OPERATIONAL_EFFECTIVE_DATE TEXT, "
+        ."GLIDE_SLOPE_TYPE TEXT, "
+        ."GLIDE_SLOPE_ANGLE TEXT, "
+        ."GLIDE_SLOPE_FREQUENCY TEXT"
+        .")";
+
+my $insert_ils3_record = "INSERT INTO ils3 ("
+        ."SITE_NUMBER, "
+        ."RUNWAY_ID, "
+        ."ILS_TYPE, "
+        ."OPERATIONAL_STATUS, "
+        ."OPERATIONAL_EFFECTIVE_DATE, "
         ."GLIDE_SLOPE_TYPE, "
         ."GLIDE_SLOPE_ANGLE, "
-        ."GLIDE_SLOPE_FREQUENCY, "
-        ."INNER_MARKER_TYPE, "
-        ."INNER_MARKER_DISTANCE, "
-        ."MIDDLE_MARKER_TYPE, "
-        ."MIDDLE_MARKER_ID, "
-        ."MIDDLE_MARKER_NAME, "
-        ."MIDDLE_MARKER_FREQUENCY, "
-        ."MIDDLE_MARKER_DISTANCE, "
-        ."OUTER_MARKER_TYPE, "
-        ."OUTER_MARKER_ID, "
-        ."OUTER_MARKER_NAME, "
-        ."OUTER_MARKER_FREQUENCY, "
-        ."OUTER_MARKER_DISTANCE"
+        ."GLIDE_SLOPE_FREQUENCY"
         .") VALUES ("
-        ."?, ?, ?, ?, ?, ?, ?, ?,"
-        ."?, ?, ?, ?, ?, ?, ?, ?,"
         ."?, ?, ?, ?, ?, ?, ?, ?"
         .")";
 
-my $create_ils2_table = "CREATE TABLE ils2 ("
+my $create_ils4_table = "CREATE TABLE ils4 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."SITE_NUMBER TEXT, "
+        ."RUNWAY_ID TEXT, "
+        ."ILS_TYPE TEXT, "
+        ."OPERATIONAL_STATUS TEXT, "
+        ."OPERATIONAL_EFFECTIVE_DATE TEXT, "
+        ."DME_CHANNEL TEXT"
+        .")";
+
+my $insert_ils4_record = "INSERT INTO ils4 ("
+        ."SITE_NUMBER, "
+        ."RUNWAY_ID, "
+        ."ILS_TYPE, "
+        ."OPERATIONAL_STATUS, "
+        ."OPERATIONAL_EFFECTIVE_DATE, "
+        ."DME_CHANNEL"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?"
+        .")";
+
+my $create_ils5_table = "CREATE TABLE ils5 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."SITE_NUMBER TEXT, "
+        ."RUNWAY_ID TEXT, "
+        ."ILS_TYPE TEXT, "
+        ."MARKER_TYPE TEXT, "
+        ."OPERATIONAL_STATUS TEXT, "
+        ."OPERATIONAL_EFFECTIVE_DATE TEXT, "
+        ."MARKER_DISTANCE TEXT, "
+        ."MARKER_DISTANCE_CENTERLINE TEXT, "
+        ."MARKER_DIRECTION_CENTERLINE TEXT, "
+        ."MARKER_ELEVATION_MSL REAL, "
+        ."MARKER_FACILITY_TYPE TEXT, "
+        ."MARKER_BEACON_ID TEXT, "
+        ."MARKER_BEACON_NAME TEXT, "
+        ."MARKER_BEACON_FREQUENCY TEXT, "
+        ."MARKER_NAVAID_ID TEXT, "
+        ."MARKER_SERVICE TEXT"
+        .")";
+
+my $insert_ils5_record = "INSERT INTO ils5 ("
+        ."SITE_NUMBER, "
+        ."RUNWAY_ID, "
+        ."ILS_TYPE, "
+        ."MARKER_TYPE, "
+        ."OPERATIONAL_STATUS, "
+        ."OPERATIONAL_EFFECTIVE_DATE, "
+        ."MARKER_DISTANCE, "
+        ."MARKER_DISTANCE_CENTERLINE, "
+        ."MARKER_DIRECTION_CENTERLINE, "
+        ."MARKER_ELEVATION_MSL, "
+        ."MARKER_FACILITY_TYPE, "
+        ."MARKER_BEACON_ID, "
+        ."MARKER_BEACON_NAME, "
+        ."MARKER_BEACON_FREQUENCY, "
+        ."MARKER_NAVAID_ID, "
+        ."MARKER_SERVICE"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+        ."?, ?, ?, ?, ?, ?"
+        .")";
+
+my $create_ils6_table = "CREATE TABLE ils6 ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."SITE_NUMBER TEXT, "
         ."RUNWAY_ID TEXT, "
@@ -716,7 +882,7 @@ my $create_ils2_table = "CREATE TABLE ils2 ("
         ."ILS_REMARKS TEXT"
         .")";
 
-my $insert_ils2_record = "INSERT INTO ils2 ("
+my $insert_ils6_record = "INSERT INTO ils6 ("
         ."SITE_NUMBER, "
         ."RUNWAY_ID, "
         ."ILS_TYPE, "
@@ -731,7 +897,8 @@ my $create_aff1_table = "CREATE TABLE aff1 ("
         ."ARTCC_NAME TEXT, "
         ."SITE_LOCATION TEXT, "
         ."FACILITY_TYPE TEXT, "
-        ."SITE_STATE_CODE TEXT"
+        ."ARTCC_LATTITUDE_DEGREES REAL, "
+        ."ARTCC_LONGITUDE_DEGREES REAL"
         .")";
 
 my $insert_aff1_record = "INSERT INTO aff1 ("
@@ -739,9 +906,10 @@ my $insert_aff1_record = "INSERT INTO aff1 ("
         ."ARTCC_NAME, "
         ."SITE_LOCATION, "
         ."FACILITY_TYPE, "
-        ."SITE_STATE_CODE"
+        ."ARTCC_LATTITUDE_DEGREES, "
+        ."ARTCC_LONGITUDE_DEGREES"
         .") VALUES ("
-        ."?, ?, ?, ?, ?"
+        ."?, ?, ?, ?, ?, ?"
         .")";
 
 my $create_aff2_table = "CREATE TABLE aff2 ("
@@ -879,6 +1047,10 @@ $dbh->do( "DROP TABLE IF EXISTS remarks" );
 $dbh->do( $create_remarks_table );
 $dbh->do( "CREATE INDEX idx_rmk_site_number on remarks ( SITE_NUMBER );" );
 
+$dbh->do( "DROP TABLE IF EXISTS ars" );
+$dbh->do( $create_ars_table );
+$dbh->do( "CREATE INDEX idx_ars_site_number on ars ( SITE_NUMBER );" );
+
 $dbh->do( "DROP TABLE IF EXISTS tower1" );
 $dbh->do( $create_tower1_table );
 $dbh->do( "CREATE INDEX idx_twr1_site_number on tower1 ( SITE_NUMBER );" );
@@ -899,9 +1071,17 @@ $dbh->do( "DROP TABLE IF EXISTS tower8" );
 $dbh->do( $create_tower8_table );
 $dbh->do( "CREATE INDEX idx_twr8_facility_id on tower8 ( FACILITY_ID );" );
 
-$dbh->do( "DROP TABLE IF EXISTS awos" );
-$dbh->do( $create_awos_table );
-$dbh->do( "CREATE INDEX idx_awos_site_number on awos ( SITE_NUMBER );" );
+$dbh->do( "DROP TABLE IF EXISTS tower9" );
+$dbh->do( $create_tower9_table );
+$dbh->do( "CREATE INDEX idx_twr9_facility_id on tower9 ( FACILITY_ID );" );
+
+$dbh->do( "DROP TABLE IF EXISTS awos1" );
+$dbh->do( $create_awos1_table );
+$dbh->do( "CREATE INDEX idx_awos1_sensor_ident on awos1 ( WX_SENSOR_IDENT );" );
+
+$dbh->do( "DROP TABLE IF EXISTS awos2" );
+$dbh->do( $create_awos2_table );
+$dbh->do( "CREATE INDEX idx_awos2_sensor_ident on awos2 ( WX_SENSOR_IDENT );" );
 
 $dbh->do( "DROP TABLE IF EXISTS nav1" );
 $dbh->do( $create_nav1_table );
@@ -918,6 +1098,22 @@ $dbh->do( "CREATE INDEX idx_ils1_runway_id on ils1 ( SITE_NUMBER, RUNWAY_ID );" 
 $dbh->do( "DROP TABLE IF EXISTS ils2" );
 $dbh->do( $create_ils2_table );
 $dbh->do( "CREATE INDEX idx_ils2_runway_id on ils2 ( SITE_NUMBER, RUNWAY_ID );" );
+
+$dbh->do( "DROP TABLE IF EXISTS ils3" );
+$dbh->do( $create_ils3_table );
+$dbh->do( "CREATE INDEX idx_ils3_runway_id on ils3 ( SITE_NUMBER, RUNWAY_ID );" );
+
+$dbh->do( "DROP TABLE IF EXISTS ils4" );
+$dbh->do( $create_ils4_table );
+$dbh->do( "CREATE INDEX idx_ils4_runway_id on ils4 ( SITE_NUMBER, RUNWAY_ID );" );
+
+$dbh->do( "DROP TABLE IF EXISTS ils5" );
+$dbh->do( $create_ils5_table );
+$dbh->do( "CREATE INDEX idx_ils5_runway_id on ils5 ( SITE_NUMBER, RUNWAY_ID );" );
+
+$dbh->do( "DROP TABLE IF EXISTS ils6" );
+$dbh->do( $create_ils6_table );
+$dbh->do( "CREATE INDEX idx_ils6_runway_id on ils2 ( SITE_NUMBER, RUNWAY_ID );" );
 
 $dbh->do( "DROP TABLE IF EXISTS aff1" );
 $dbh->do( $create_aff1_table );
@@ -947,16 +1143,23 @@ my $sth_apt = $dbh->prepare( $insert_airports_record );
 my $sth_rwy = $dbh->prepare( $insert_runways_record );
 my $sth_att = $dbh->prepare( $insert_attendance_record );
 my $sth_rmk = $dbh->prepare( $insert_remarks_record );
+my $sth_ars = $dbh->prepare( $insert_ars_record );
 my $sth_twr1 = $dbh->prepare( $insert_tower1_record );
 my $sth_twr3 = $dbh->prepare( $insert_tower3_record );
 my $sth_twr6 = $dbh->prepare( $insert_tower6_record );
 my $sth_twr7 = $dbh->prepare( $insert_tower7_record );
 my $sth_twr8 = $dbh->prepare( $insert_tower8_record );
-my $sth_awos = $dbh->prepare( $insert_awos_record );
+my $sth_twr9 = $dbh->prepare( $insert_tower9_record );
+my $sth_awos1 = $dbh->prepare( $insert_awos1_record );
+my $sth_awos2 = $dbh->prepare( $insert_awos2_record );
 my $sth_nav1 = $dbh->prepare( $insert_nav1_record );
 my $sth_nav2 = $dbh->prepare( $insert_nav2_record );
 my $sth_ils1 = $dbh->prepare( $insert_ils1_record );
 my $sth_ils2 = $dbh->prepare( $insert_ils2_record );
+my $sth_ils3 = $dbh->prepare( $insert_ils3_record );
+my $sth_ils4 = $dbh->prepare( $insert_ils4_record );
+my $sth_ils5 = $dbh->prepare( $insert_ils5_record );
+my $sth_ils6 = $dbh->prepare( $insert_ils6_record );
 my $sth_aff1 = $dbh->prepare( $insert_aff1_record );
 my $sth_aff2 = $dbh->prepare( $insert_aff2_record );
 my $sth_aff3 = $dbh->prepare( $insert_aff3_record );
@@ -989,8 +1192,8 @@ while ( my $line = <APT_FILE> )
 
     if ( $type eq "APT" )
     {
-        my $own = substrim( $line,  175,  2 );
-        my $use = substrim( $line,  177,  2 );
+        my $own = substrim( $line,  183,  2 );
+        my $use = substrim( $line,  185,  2 );
 
         # Skip the private use airports
         next if ( $own eq "PR" && $use eq "PR" );
@@ -1018,123 +1221,157 @@ while ( my $line = <APT_FILE> )
         #FACILITY_NAME
         $sth_apt->bind_param(  9, capitalize( $line, 133, 42 ) );
         #OWNERSHIP_TYPE
-        $sth_apt->bind_param( 10, substrim( $line,  175,  2 ) );
+        $sth_apt->bind_param( 10, substrim( $line,  183,  2 ) );
         #FACILITY_USE
-        $sth_apt->bind_param( 11, substrim( $line,  177,  2 ) );
+        $sth_apt->bind_param( 11, substrim( $line,  185,  2 ) );
         #OWNER_NAME
-        $sth_apt->bind_param( 12, capitalize( $line, 179, 35 ) );
+        $sth_apt->bind_param( 12, capitalize( $line, 187, 35 ) );
         #OWNER_ADDRESS
-        $sth_apt->bind_param( 13, capitalize( $line, 214, 72 ) );
+        $sth_apt->bind_param( 13, capitalize( $line, 222, 72 ) );
         #OWNER_CITY_STATE_ZIP
-        $sth_apt->bind_param( 14, capitalize( $line, 286, 45 ) );
+        $sth_apt->bind_param( 14, capitalize( $line, 294, 45 ) );
         #OWNER_PHONE
-        $sth_apt->bind_param( 15, substrim( $line,  331, 16 ) );
+        $sth_apt->bind_param( 15, substrim( $line,  339, 16 ) );
         #MANAGER_NAME
-        $sth_apt->bind_param( 16, capitalize( $line, 347, 35 ) );
+        $sth_apt->bind_param( 16, capitalize( $line, 355, 35 ) );
         #MANAGER_ADDRESS
-        $sth_apt->bind_param( 17, capitalize( $line, 382, 72 ) );
+        $sth_apt->bind_param( 17, capitalize( $line, 390, 72 ) );
         #MANAGER_CITY_STATE_ZIP
-        $sth_apt->bind_param( 18, capitalize( $line, 454, 45 ) );
+        $sth_apt->bind_param( 18, capitalize( $line, 462, 45 ) );
         #MANAGER_PHONE
-        $sth_apt->bind_param( 19, substrim( $line,  499, 16 ) );
+        $sth_apt->bind_param( 19, substrim( $line,  507, 16 ) );
         #REF_LATTITUDE_DEGREES
-        my $lattitude = substrim( $line,  530, 11 )/3600.0;
-        if ( substr( $line, 541, 1 ) eq "S" )
+        my $lattitude = substrim( $line,  538, 11 )/3600.0;
+        if ( substr( $line, 549, 1 ) eq "S" )
         {
             $lattitude *= -1;
         }
         $sth_apt->bind_param( 20, $lattitude );
         #REF_LONGITUDE_DEGREES
-        my $longitude = substrim( $line,  557, 11 )/3600.0;
-        if ( substr( $line, 568, 1 ) eq "W" )
+        my $longitude = substrim( $line,  565, 11 )/3600.0;
+        if ( substr( $line, 576, 1 ) eq "W" )
         {
             $longitude *= -1;
         }
         $sth_apt->bind_param( 21, $longitude );
         #REF_METHOD
-        $sth_apt->bind_param( 22, substrim( $line,  569,  1 ) );
+        $sth_apt->bind_param( 22, substrim( $line,  577,  1 ) );
         #ELEVATION_MSL
-        $sth_apt->bind_param( 23, substrim( $line,  570,  5 ) );
+        $sth_apt->bind_param( 23, substrim( $line,  578,  5 ) );
         #ELEVATION_METHOD
-        $sth_apt->bind_param( 24, substrim( $line,  575,  1 ) );
+        $sth_apt->bind_param( 24, substrim( $line,  585,  1 ) );
         #MAGNETIC_VARIATION_DEGREES
-        $sth_apt->bind_param( 25, substrim( $line,  576,  2 ) );
+        $sth_apt->bind_param( 25, substrim( $line,  586,  2 ) );
         #MAGNETIC_VARIATION_DIRECTION
-        $sth_apt->bind_param( 26, substrim( $line,  578,  1 ) );
+        $sth_apt->bind_param( 26, substrim( $line,  588,  1 ) );
         #MAGNETIC_VARIATION_YEAR
-        $sth_apt->bind_param( 27, substrim( $line,  579,  4 ) );
+        $sth_apt->bind_param( 27, substrim( $line,  589,  4 ) );
         #PATTERN_ALTITUDE_AGL
-        $sth_apt->bind_param( 28, substrim( $line,  583,  4 ) );
+        $sth_apt->bind_param( 28, substrim( $line,  593,  4 ) );
         #SECTIONAL_CHART
-        $sth_apt->bind_param( 29, capitalize( $line,  587, 30 ) );
+        $sth_apt->bind_param( 29, capitalize( $line,  597, 30 ) );
         #DISTANCE_FROM_CITY_NM
-        $sth_apt->bind_param( 30, substrim( $line,  617,  2 ) );
+        $sth_apt->bind_param( 30, substrim( $line,  627,  2 ) );
         #DIRECTION_FROM_CITY
-        $sth_apt->bind_param( 31, substrim( $line,  619,  3 ) );
+        $sth_apt->bind_param( 31, substrim( $line,  629,  3 ) );
         #BOUNDARY_ARTCC_ID
-        $sth_apt->bind_param( 32, substrim( $line,  627,  4 ) );
+        $sth_apt->bind_param( 32, substrim( $line,  637,  4 ) );
         #BOUNDARY_ARTCC_NAME
-        $sth_apt->bind_param( 33, capitalize( $line,  634, 30 ) );
+        $sth_apt->bind_param( 33, capitalize( $line,  644, 30 ) );
         #FSS_ON_SITE
-        $sth_apt->bind_param( 34, substrim( $line,  701,  1 ) );
+        $sth_apt->bind_param( 34, substrim( $line,  711,  1 ) );
         #FSS_ID
-        $sth_apt->bind_param( 35, substrim( $line,  702,  4 ) );
+        $sth_apt->bind_param( 35, substrim( $line,  712,  4 ) );
         #FSS_NAME
-        $sth_apt->bind_param( 36, capitalize( $line,  706, 30 ) );
+        $sth_apt->bind_param( 36, capitalize( $line,  716, 30 ) );
         #FSS_LOCAL_PHONE
-        $sth_apt->bind_param( 37, substrim( $line,  736, 16 ) );
+        $sth_apt->bind_param( 37, substrim( $line,  746, 16 ) );
         #FSS_TOLLFREE_PHONE
-        $sth_apt->bind_param( 38, substrim( $line,  752, 16 ) );
+        $sth_apt->bind_param( 38, substrim( $line,  762, 16 ) );
         #NOTAM_FACILITY_ID
-        $sth_apt->bind_param( 39, substrim( $line,  818,  4 ) );
+        $sth_apt->bind_param( 39, substrim( $line,  828,  4 ) );
         #NOTAM_D_AVAILABLE
-        $sth_apt->bind_param( 40, substrim( $line,  822,  1 ) );
+        $sth_apt->bind_param( 40, substrim( $line,  832,  1 ) );
         #ACTIVATION_DATE
-        $sth_apt->bind_param( 41, substrim( $line,  823,  7 ) );
+        $sth_apt->bind_param( 41, substrim( $line,  833,  7 ) );
         #STATUS_CODE
-        $sth_apt->bind_param( 42, substrim( $line,  830,  2 ) );
+        $sth_apt->bind_param( 42, substrim( $line,  840,  2 ) );
         #INTL_ENTRY_AIRPORT
-        $sth_apt->bind_param( 43, substrim( $line,  867,  1 ) );
+        $sth_apt->bind_param( 43, substrim( $line,  877,  1 ) );
         #CUSTOMS_LANDING_RIGHTS_AIRPORT
-        $sth_apt->bind_param( 44, substrim( $line,  868,  1 ) );
+        $sth_apt->bind_param( 44, substrim( $line,  878,  1 ) );
         #CIVIL_MILITARY_JOINT_USE
-        $sth_apt->bind_param( 45, substrim( $line,  869,  1 ) );
+        $sth_apt->bind_param( 45, substrim( $line,  879,  1 ) );
         #MILITARY_LANDING_RIGHTS
-        $sth_apt->bind_param( 46, substrim( $line,  870,  1 ) );
+        $sth_apt->bind_param( 46, substrim( $line,  880,  1 ) );
         #FUEL_TYPES
-        $sth_apt->bind_param( 47, substrim( $line,  914, 40 ) );
+        $sth_apt->bind_param( 47, substrim( $line,  900, 40 ) );
         #AIRFRAME_REPAIR_SERVICE
-        $sth_apt->bind_param( 48, capitalize( $line,  954,  5 ) );
+        $sth_apt->bind_param( 48, capitalize( $line,  940,  5 ) );
         #POWER_PLANT_REPAIR_SERVICE
-        $sth_apt->bind_param( 49, capitalize( $line,  959,  5 ) );
+        $sth_apt->bind_param( 49, capitalize( $line,  945,  5 ) );
         #BOTTLED_O2_AVAILABLE
-        $sth_apt->bind_param( 50, substrim( $line,  964,  8 ) );
+        $sth_apt->bind_param( 50, substrim( $line,  950,  8 ) );
         #BULK_O2_AVAILABLE
-        $sth_apt->bind_param( 51, substrim( $line,  972,  8 ) );
+        $sth_apt->bind_param( 51, substrim( $line,  958,  8 ) );
         #LIGHTING_SCHEDULE
-        $sth_apt->bind_param( 52, capitalize( $line,  980,  9 ) );
+        $sth_apt->bind_param( 52, substrim( $line,  966,  7 ) );
+        #BEACON_LIGHTING_SCHEDULE
+        $sth_apt->bind_param( 53, substrim( $line,  973,  7 ) );
         #TOWER_ON_SITE
-        $sth_apt->bind_param( 53, substrim( $line,  989,  1 ) );
+        $sth_apt->bind_param( 54, substrim( $line,  980,  1 ) );
         #UNICOM_FREQS
-        $sth_apt->bind_param( 54, substrim( $line,  990, 42 ) );
+        $sth_apt->bind_param( 55, substrim( $line,  981, 7 ) );
         #CTAF_FREQ
-        $sth_apt->bind_param( 55, substrim( $line, 1032,  7 ) );
+        $sth_apt->bind_param( 56, substrim( $line, 988,  7 ) );
         #SEGMENTED_CIRCLE
-        $sth_apt->bind_param( 56, substrim( $line, 1039,  4 ) );
+        $sth_apt->bind_param( 57, substrim( $line, 995,  4 ) );
         #BEACON_COLOR
-        $sth_apt->bind_param( 57, substrim( $line, 1043,  3 ) );
+        $sth_apt->bind_param( 58, substrim( $line, 999,  3 ) );
         #LANDING_FEE
-        $sth_apt->bind_param( 58, substrim( $line, 1046,  1 ) );
+        $sth_apt->bind_param( 59, substrim( $line, 1002,  1 ) );
+        #MEDICAL_USE
+        $sth_apt->bind_param( 60, substrim( $line, 1003,  1 ) );
+        #SINGLE_ENGINE_COUNT
+        $sth_apt->bind_param( 61, substrim( $line, 1004,  3 ) );
+        #MULTI_ENGINE_COUNT
+        $sth_apt->bind_param( 62, substrim( $line, 1007,  3 ) );
+        #JET_ENGINE_COUNT
+        $sth_apt->bind_param( 63, substrim( $line, 1010,  3 ) );
+        #HELI_COUNT
+        $sth_apt->bind_param( 64, substrim( $line, 1013,  3 ) );
+        #GLIDERS_COUNT
+        $sth_apt->bind_param( 65, substrim( $line, 1016,  3 ) );
+        #MILITARY_COUNT
+        $sth_apt->bind_param( 66, substrim( $line, 1019,  3 ) );
+        #ULTRA_LIGHT_COUNT
+        $sth_apt->bind_param( 67, substrim( $line, 1022,  3 ) );
+        #ANNUAL_COMMERCIAL_OPS
+        $sth_apt->bind_param( 68, substrim( $line, 1025,  6 ) );
+        #ANNUAL_COMMUTER_OPS
+        $sth_apt->bind_param( 69, substrim( $line, 1031,  6 ) );
+        #ANNUAL_AIRTAXI_OPS
+        $sth_apt->bind_param( 70, substrim( $line, 1037,  6 ) );
+        #ANNUAL_GA_LOCAL_OPS
+        $sth_apt->bind_param( 71, substrim( $line, 1043,  6 ) );
+        #ANNUAL_GA_ININERANT_OPS
+        $sth_apt->bind_param( 72, substrim( $line, 1049,  6 ) );
+        #ANNUAL_MILITARY_OPS
+        $sth_apt->bind_param( 73, substrim( $line, 1055,  6 ) );
+        #OPS_REFERENCE_DATE
+        $sth_apt->bind_param( 74, substrim( $line, 1061, 10 ) );
+        #CONTRACT_FUEL_AVAILABLE
+        $sth_apt->bind_param( 75, substrim( $line, 1123,  1 ) );
         #STORAGE_FACILITY
-        $sth_apt->bind_param( 59, substrim( $line, 1168, 12 ) );
+        $sth_apt->bind_param( 76, substrim( $line, 1124, 12 ) );
         #OTHER_SERVICES
-        $sth_apt->bind_param( 60, substrim( $line, 1180, 71 ) );
+        $sth_apt->bind_param( 77, substrim( $line, 1136, 71 ) );
         #WIND_INDICATOR
-        $sth_apt->bind_param( 61, substrim( $line, 1251,  3 ) );
+        $sth_apt->bind_param( 78, substrim( $line, 1207,  3 ) );
         #ICAO_CODE
-        $sth_apt->bind_param( 62, substrim( $line, 1254,  7 ) );
+        $sth_apt->bind_param( 79, substrim( $line, 1210,  7 ) );
         #TIMEZONE_ID
-        $sth_apt->bind_param( 63, "" );
+        $sth_apt->bind_param( 80, "" );
 
         $sth_apt->execute();
     }
@@ -1168,122 +1405,118 @@ while ( my $line = <APT_FILE> )
         $sth_rwy->bind_param( 12, substrim( $line,   82,  5 ) );
         #BASE_END_MARKING_CONDITION
         $sth_rwy->bind_param( 13, substrim( $line,   87,  1 ) );
-        #BASE_END_ARRESTING_DEVICE_TYPE
-        $sth_rwy->bind_param( 14, substrim( $line,   88,  6 ) );
         #BASE_END_RUNWAY_ELEVATION
-        $sth_rwy->bind_param( 15, substrim( $line,  148,  7 ) );
+        $sth_rwy->bind_param( 14, substrim( $line,  142,  7 ) );
         #BASE_END_THRESHOLD_CROSSING_HEIGHT
-        $sth_rwy->bind_param( 16, substrim( $line,  155,  3 ) );
+        $sth_rwy->bind_param( 15, substrim( $line,  149,  3 ) );
         #BASE_END_GLIDE_ANGLE
-        $sth_rwy->bind_param( 17, substrim( $line,  158,  4 ) );
+        $sth_rwy->bind_param( 16, substrim( $line,  152,  4 ) );
         #BASE_END_DISPLACED_THRESHOLD_LENGTH
-        $sth_rwy->bind_param( 18, substrim( $line,  223,  4 ) );
+        $sth_rwy->bind_param( 17, substrim( $line,  217,  4 ) );
         #BASE_END_TDZ_ELEVATION
-        $sth_rwy->bind_param( 19, substrim( $line,  227,  7 ) );
+        $sth_rwy->bind_param( 18, substrim( $line,  221,  7 ) );
         #BASE_END_VISUAL_GLIDE_SLOPE
-        $sth_rwy->bind_param( 20, substrim( $line,  234,  5 ) );
+        $sth_rwy->bind_param( 19, substrim( $line,  228,  5 ) );
         #BASE_END_RVR_LOCATIONS
-        $sth_rwy->bind_param( 21, substrim( $line,  239,  3 ) );
+        $sth_rwy->bind_param( 20, substrim( $line,  233,  3 ) );
         #BASE_END_APCH_LIGHT_SYSTEM
-        $sth_rwy->bind_param( 22, substrim( $line,  243,  8 ) );
+        $sth_rwy->bind_param( 21, substrim( $line,  237,  8 ) );
         #BASE_END_REIL_AVAILABLE
-        $sth_rwy->bind_param( 23, substrim( $line,  251,  1 ) );
+        $sth_rwy->bind_param( 22, substrim( $line,  245,  1 ) );
         #BASE_END_CENTERLINE_LIGHTS_AVAILABLE
-        $sth_rwy->bind_param( 24, substrim( $line,  252,  1 ) );
+        $sth_rwy->bind_param( 23, substrim( $line,  246,  1 ) );
         #BASE_END_TOUCHDOWN_LIGHTS_AVAILABLE
-        $sth_rwy->bind_param( 25, substrim( $line,  253,  1 ) );
+        $sth_rwy->bind_param( 24, substrim( $line,  247,  1 ) );
         #BASE_END_CONTROLLING_OBJECT
-        $sth_rwy->bind_param( 26, substrim( $line,  254, 11 ) );
+        $sth_rwy->bind_param( 25, substrim( $line,  248, 11 ) );
         #BASE_END_CONTROLLING_OBJECT_LIGHTED
-        $sth_rwy->bind_param( 27, substrim( $line,  265,  4 ) );
+        $sth_rwy->bind_param( 26, substrim( $line,  259,  4 ) );
         #BASE_END_CONTROLLING_OBJECT_SLOPE
-        $sth_rwy->bind_param( 28, substrim( $line,  274,  2 ) );
+        $sth_rwy->bind_param( 27, substrim( $line,  268,  2 ) );
         #BASE_END_CONTROLLING_OBJECT_HEIGHT
-        $sth_rwy->bind_param( 29, substrim( $line,  276,  5 ) );
+        $sth_rwy->bind_param( 28, substrim( $line,  270,  5 ) );
         #BASE_END_CONTROLLING_OBJECT_DISTANCE
-        $sth_rwy->bind_param( 30, substrim( $line,  281,  5 ) );
+        $sth_rwy->bind_param( 29, substrim( $line,  275,  5 ) );
         #BASE_END_CONTROLLING_OBJECT_OFFSET
-        $sth_rwy->bind_param( 31, substrim( $line,  286,  7 ) );
+        $sth_rwy->bind_param( 30, substrim( $line,  280,  7 ) );
         #RECIPROCAL_END_ID
-        $sth_rwy->bind_param( 32, substrim( $line,  293,  3 ) );
+        $sth_rwy->bind_param( 31, substrim( $line,  287,  3 ) );
         #RECIPROCAL_END_HEADING
-        $sth_rwy->bind_param( 33, substrim( $line,  296,  3 ) );
+        $sth_rwy->bind_param( 32, substrim( $line,  290,  3 ) );
         #RECIPROCAL_END_ILS_TYPE
-        $sth_rwy->bind_param( 34, substrim( $line,  299, 10 ) );
+        $sth_rwy->bind_param( 33, substrim( $line,  293, 10 ) );
         #RECIPROCAL_END_RIGHT_TRAFFIC
-        $sth_rwy->bind_param( 35, substrim( $line,  309,  1 ) );
+        $sth_rwy->bind_param( 34, substrim( $line,  303,  1 ) );
         #RECIPROCAL_END_MARKING_TYPE
-        $sth_rwy->bind_param( 36, substrim( $line,  310,  5 ) );
+        $sth_rwy->bind_param( 35, substrim( $line,  304,  5 ) );
         #RECIPROCAL_END_MARKING_CONDITION
-        $sth_rwy->bind_param( 37, substrim( $line,  315,  1 ) );
-        #RECIPROCAL_END_ARRESTING_DEVICE_TYPE
-        $sth_rwy->bind_param( 38, substrim( $line,  316,  6 ) );
+        $sth_rwy->bind_param( 36, substrim( $line,  309,  1 ) );
         #RECIPROCAL_END_RUNWAY_ELEVATION
-        $sth_rwy->bind_param( 39, substrim( $line,  376,  7 ) );
+        $sth_rwy->bind_param( 37, substrim( $line,  364,  7 ) );
         #RECIPROCAL_END_THRESHOLD_CROSSING_HEIGHT
-        $sth_rwy->bind_param( 40, substrim( $line,  383,  3 ) );
+        $sth_rwy->bind_param( 38, substrim( $line,  371,  3 ) );
         #RECIPROCAL_END_GLIDE_ANGLE
-        $sth_rwy->bind_param( 41, substrim( $line,  386,  4 ) );
+        $sth_rwy->bind_param( 39, substrim( $line,  374,  4 ) );
         #RECIPROCAL_END_DISPLACED_THRESHOLD_LENGTH
-        $sth_rwy->bind_param( 42, substrim( $line,  451,  4 ) );
+        $sth_rwy->bind_param( 40, substrim( $line,  439,  4 ) );
         #RECIPROCAL_END_TDZ_ELEVATION
-        $sth_rwy->bind_param( 43, substrim( $line,  455,  7 ) );
+        $sth_rwy->bind_param( 41, substrim( $line,  443,  7 ) );
         #RECIPROCAL_END_VISUAL_GLIDE_SLOPE
-        $sth_rwy->bind_param( 44, substrim( $line,  462,  5 ) );
+        $sth_rwy->bind_param( 42, substrim( $line,  450,  5 ) );
         #RECIPROCAL_END_RVR_LOCATIONS
-        $sth_rwy->bind_param( 45, substrim( $line,  467,  3 ) );
+        $sth_rwy->bind_param( 43, substrim( $line,  455,  3 ) );
         #RECIPROCAL_END_APCH_LIGHT_SYSTEM
-        $sth_rwy->bind_param( 46, substrim( $line,  471,  8 ) );
+        $sth_rwy->bind_param( 44, substrim( $line,  459,  8 ) );
         #RECIPROCAL_END_REIL_AVAILABLE
-        $sth_rwy->bind_param( 47, substrim( $line,  479,  1 ) );
+        $sth_rwy->bind_param( 45, substrim( $line,  467,  1 ) );
         #RECIPROCAL_END_CENTERLINE_LIGHTS_AVAILABLE
-        $sth_rwy->bind_param( 48, substrim( $line,  480,  1 ) );
+        $sth_rwy->bind_param( 46, substrim( $line,  468,  1 ) );
         #RECIPROCAL_END_TOUCHDOWN_LIGHTS_AVAILABLE
-        $sth_rwy->bind_param( 49, substrim( $line,  481,  1 ) );
+        $sth_rwy->bind_param( 47, substrim( $line,  469,  1 ) );
         #RECIPROCAL_END_CONTROLLING_OBJECT
-        $sth_rwy->bind_param( 50, substrim( $line,  482, 11 ) );
+        $sth_rwy->bind_param( 48, substrim( $line,  470, 11 ) );
         #RECIPROCAL_END_CONTROLLING_OBJECT_LIGHTED
-        $sth_rwy->bind_param( 51, substrim( $line,  493,  4 ) );
+        $sth_rwy->bind_param( 49, substrim( $line,  481,  4 ) );
         #RECIPROCAL_END_CONTROLLING_OBJECT_SLOPE
-        $sth_rwy->bind_param( 52, substrim( $line,  502,  2 ) );
+        $sth_rwy->bind_param( 50, substrim( $line,  490,  2 ) );
         #RECIPROCAL_END_CONTROLLING_OBJECT_HEIGHT
-        $sth_rwy->bind_param( 53, substrim( $line,  504,  5 ) );
+        $sth_rwy->bind_param( 51, substrim( $line,  492,  5 ) );
         #RECIPROCAL_END_CONTROLLING_OBJECT_DISTANCE
-        $sth_rwy->bind_param( 54, substrim( $line,  509,  5 ) );
+        $sth_rwy->bind_param( 52, substrim( $line,  497,  5 ) );
         #RECIPROCAL_END_CONTROLLING_OBJECT_OFFSET
-        $sth_rwy->bind_param( 55, substrim( $line,  514,  7 ) );
+        $sth_rwy->bind_param( 53, substrim( $line,  502,  7 ) );
         #BASE_END_GRADIENT
-        $sth_rwy->bind_param( 56, substrim( $line,  571,  5 ) );
+        $sth_rwy->bind_param( 54, substrim( $line,  559,  5 ) );
         #BASE_END_GRADIENT_DIRECTION
-        $sth_rwy->bind_param( 57, substrim( $line,  576,  4 ) );
+        $sth_rwy->bind_param( 55, substrim( $line,  564,  4 ) );
         #BASE_END_TORA
-        $sth_rwy->bind_param( 58, substrim( $line,  710,  5 ) );
+        $sth_rwy->bind_param( 56, substrim( $line,  698,  5 ) );
         #BASE_END_TODA
-        $sth_rwy->bind_param( 59, substrim( $line,  715,  5 ) );
+        $sth_rwy->bind_param( 57, substrim( $line,  703,  5 ) );
         #BASE_END_ASDA
-        $sth_rwy->bind_param( 60, substrim( $line,  720,  5 ) );
+        $sth_rwy->bind_param( 58, substrim( $line,  708,  5 ) );
         #BASE_END_LDA
-        $sth_rwy->bind_param( 61, substrim( $line,  725,  5 ) );
+        $sth_rwy->bind_param( 59, substrim( $line,  713,  5 ) );
         #BASE_END_LAHSO_DISTANCE
-        $sth_rwy->bind_param( 62, substrim( $line,  730,  5 ) );
+        $sth_rwy->bind_param( 60, substrim( $line,  718,  5 ) );
         #BASE_END_LAHSO_RUNWAY
-        $sth_rwy->bind_param( 63, substrim( $line,  735,  7 ) );
+        $sth_rwy->bind_param( 61, substrim( $line,  723,  7 ) );
         #RECIPROCAL_END_GRADIENT
-        $sth_rwy->bind_param( 64, substrim( $line,  862,  5  ) );
+        $sth_rwy->bind_param( 62, substrim( $line,  850,  5  ) );
         #RECIPROCAL_END_GRADIENT_DIRECTION
-        $sth_rwy->bind_param( 65, substrim( $line,  867,  4  ) );
+        $sth_rwy->bind_param( 63, substrim( $line,  855,  4  ) );
         #RECIPROCAL_END_TORA
-        $sth_rwy->bind_param( 66, substrim( $line, 1001,  5  ) );
+        $sth_rwy->bind_param( 64, substrim( $line,  989,  5  ) );
         #RECIPROCAL_END_TODA
-        $sth_rwy->bind_param( 67, substrim( $line, 1006,  5  ) );
+        $sth_rwy->bind_param( 65, substrim( $line,  994,  5  ) );
         #RECIPROCAL_END_ASDA
-        $sth_rwy->bind_param( 68, substrim( $line, 1011,  5  ) );
+        $sth_rwy->bind_param( 66, substrim( $line,  999,  5  ) );
         #RECIPROCAL_END_LDA
-        $sth_rwy->bind_param( 69, substrim( $line, 1016,  5  ) );
+        $sth_rwy->bind_param( 67, substrim( $line, 1004,  5  ) );
         #RECIPROCAL_END_LAHSO_DISTANCE
-        $sth_rwy->bind_param( 70, substrim( $line, 1021,  5  ) );
+        $sth_rwy->bind_param( 68, substrim( $line, 1009,  5  ) );
         #RECIPROCAL_END_LAHSO_RUNWAY
-        $sth_rwy->bind_param( 71, substrim( $line, 1026,  7  ) );
+        $sth_rwy->bind_param( 69, substrim( $line, 1014,  7  ) );
  
         $sth_rwy->execute();
     }
@@ -1305,13 +1538,28 @@ while ( my $line = <APT_FILE> )
         next if ( !exists( $site_number{ substrim( $line, 3, 11 ) } ) );
 
         #SITE_NUMBER
-        $sth_rmk->bind_param( 1, substrim( $line,  3,  11 ) );
+        $sth_rmk->bind_param( 1, substrim( $line,  3,   11 ) );
         #REMARK_NAME
-        $sth_rmk->bind_param( 2, substrim( $line, 16,  11 ) );
+        $sth_rmk->bind_param( 2, substrim( $line, 16,   11 ) );
         #REMARK_TEXT
-        $sth_rmk->bind_param( 3, substrim( $line, 18, 700 ) );
+        $sth_rmk->bind_param( 3, substrim( $line, 27, 1500 ) );
  
         $sth_rmk->execute();
+    }
+    elsif ( $type eq "ARS" )
+    {
+        next if ( !exists( $site_number{ substrim( $line, 3, 11 ) } ) );
+
+        #SITE_NUMBER
+        $sth_ars->bind_param( 1, substrim( $line,  3,  11 ) );
+        #RUNWAY_ID
+        $sth_ars->bind_param( 2, substrim( $line, 16,   7 ) );
+        #RUNWAY_END_ID
+        $sth_ars->bind_param( 3, substrim( $line, 23,   3 ) );
+        #ARRESTING_DEVICE
+        $sth_ars->bind_param( 4, substrim( $line, 26,   9 ) );
+ 
+        $sth_ars->execute();
     }
 
     if ( ($i % 1000) == 0 )
@@ -1353,13 +1601,13 @@ while ( my $line = <TWR_FILE> )
         #SITE_NUMBER
         $sth_twr1->bind_param( 2, substrim( $line,  18, 11 ) );
         #FACILITY_TYPE
-        $sth_twr1->bind_param( 3, substrim( $line, 202, 12 ) );
+        $sth_twr1->bind_param( 3, substrim( $line, 238, 12 ) );
         #RADIO_CALL_TOWER
-        $sth_twr1->bind_param( 4, capitalize( $line, 738, 26 ) );
+        $sth_twr1->bind_param( 4, capitalize( $line, 804, 26 ) );
         #RADIO_CALL_APCH
-        $sth_twr1->bind_param( 5, capitalize( $line, 790, 26 ) );
+        $sth_twr1->bind_param( 5, capitalize( $line, 856, 26 ) );
         #RADIO_CALL_DEP
-        $sth_twr1->bind_param( 6, capitalize( $line, 842, 26 ) );
+        $sth_twr1->bind_param( 6, capitalize( $line, 908, 26 ) );
  
         $sth_twr1->execute();
     }
@@ -1393,7 +1641,7 @@ while ( my $line = <TWR_FILE> )
         #ELEMENT_NUMBER
         $sth_twr6->bind_param( 2, substrim( $line,  8,   5 ) );
         #REMARK_TEXT
-        $sth_twr6->bind_param( 3, substrim( $line, 13, 400 ) );
+        $sth_twr6->bind_param( 3, substrim( $line, 13, 800 ) );
  
         $sth_twr6->execute();
     }
@@ -1406,9 +1654,9 @@ while ( my $line = <TWR_FILE> )
         #SATELLITE_AIRPORT_SITE_NUMBER
         $sth_twr7->bind_param( 3, substrim( $line, 102, 11 ) );
         #MASTER_AIRPORT_SITE_NUMBER
-        $sth_twr7->bind_param( 4, substrim( $line, 290, 11 ) );
+        $sth_twr7->bind_param( 4, substrim( $line, 326, 11 ) );
         #SATELLITE_AIRPORT_FREQ_FULL
-        $sth_twr7->bind_param( 5, substrim( $line, 394, 60 ) );
+        $sth_twr7->bind_param( 5, substrim( $line, 462, 60 ) );
  
         $sth_twr7->execute();
     }
@@ -1417,10 +1665,27 @@ while ( my $line = <TWR_FILE> )
         #FACILITY_ID
         substr( $line, 8, 4 ) =~ s/ /N/g;
         $sth_twr8->bind_param( 1, substrim( $line,  4,   4 ) );
+        #AIRSPACE_TYPES
         $sth_twr8->bind_param( 2, substrim( $line,  8,   4 ) );
+        #AIRSPACE_HOURS
         $sth_twr8->bind_param( 3, substrim( $line, 12, 300 ) );
  
         $sth_twr8->execute();
+    }
+    elsif ( $type eq "TWR9" )
+    {
+        #FACILITY_ID
+        $sth_twr9->bind_param( 1, substrim( $line,   4,   4 ) );
+        #ATIS_SERIAL_NO
+        $sth_twr9->bind_param( 2, substrim( $line,   8,   4 ) );
+        #ATIS_HOURS
+        $sth_twr9->bind_param( 3, substrim( $line,  12, 200 ) );
+        #ATIS_PURPOSE
+        $sth_twr9->bind_param( 4, substrim( $line, 212, 100 ) );
+        #ATIS_PHONE
+        $sth_twr9->bind_param( 5, substrim( $line, 312,  18 ) );
+ 
+        $sth_twr9->execute();
     }
 
     if ( ($i % 1000) == 0 )
@@ -1450,28 +1715,52 @@ while ( my $line = <AWOS_FILE> )
         $dbh->do( "PRAGMA synchronous=ON" );
     }
 
-    #WX_SENSOR_IDENT
-    $sth_awos->bind_param( 1, substrim( $line,  0, 4 ) );
-    #WX_SENSOR_TYPE
-    $sth_awos->bind_param( 2, substrim( $line,  4, 10 ) );
-    #COMMISSIONING_STATUS
-    $sth_awos->bind_param( 3, substrim( $line, 14, 1 ) );
-    #STATION_LATTITUDE_DEGREES
-    my $lat_dms = substrim( $line, 15, 14 );
-    $sth_awos->bind_param( 4, geo_parse_lat_dms( $lat_dms ) );
-    #STATION_LONGITUDE_DEGREES
-    my $lon_dms = substrim( $line, 29, 15 );
-    $sth_awos->bind_param( 5, geo_parse_lon_dms( $lon_dms ) );
-    #STATION_FREQUENCY
-    $sth_awos->bind_param( 6, substrim( $line, 44, 7 ) );
-    #SECOND_STATION_FREQUENCY
-    $sth_awos->bind_param( 7, substrim( $line, 51, 7 ) );
-    #STATION_PHONE_NUMBER
-    $sth_awos->bind_param( 8, substrim( $line, 58, 14 ) );
-    #SITE_NUMBER
-    $sth_awos->bind_param( 9, substrim( $line, 72, 11 ) );
+    my $type = substrim( $line, 0, 5 );
 
-    $sth_awos->execute();
+    if ( $type eq "AWOS1" )
+    {
+        #WX_SENSOR_IDENT
+        $sth_awos1->bind_param(  1, substrim( $line,   5,  4 ) );
+        #WX_SENSOR_TYPE
+        $sth_awos1->bind_param(  2, substrim( $line,   9, 10 ) );
+        #COMMISSIONING_STATUS
+        $sth_awos1->bind_param(  3, substrim( $line,  19,  1 ) );
+        #COMMISSIONING_DATE
+        $sth_awos1->bind_param(  4, substrim( $line,  20, 10 ) );
+        #NAVAID_FLAG
+        $sth_awos1->bind_param(  5, substrim( $line,  30,  1 ) );
+        #STATION_LATTITUDE_DEGREES
+        my $lat_dms = substrim( $line, 31, 14 );
+        $sth_awos1->bind_param(  6, geo_parse_lat_dms( $lat_dms ) );
+        #STATION_LONGITUDE_DEGREES
+        my $lon_dms = substrim( $line, 45, 15 );
+        $sth_awos1->bind_param(  7, geo_parse_lon_dms( $lon_dms ) );
+        #STATION_ELEVATION
+        $sth_awos1->bind_param(  8, substrim( $line,  60,  7 ) );
+        #ELEVATION_METHOD
+        $sth_awos1->bind_param(  9, substrim( $line,  67,  1 ) );
+        #STATION_FREQUENCY
+        $sth_awos1->bind_param( 10, substrim( $line,  68,  7 ) );
+        #SECOND_STATION_FREQUENCY
+        $sth_awos1->bind_param( 11, substrim( $line,  75,  7 ) );
+        #STATION_PHONE_NUMBER
+        $sth_awos1->bind_param( 12, substrim( $line,  82, 14 ) );
+        #SITE_NUMBER
+        $sth_awos1->bind_param( 13, substrim( $line, 110, 11 ) );
+
+        $sth_awos1->execute();
+    }
+    elsif ( $type eq "AWOS2" )
+    {
+        #WX_SENSOR_IDENT
+        $sth_awos2->bind_param( 1, substrim( $line,  5,   4 ) );
+        #WX_SENSOR_TYPE
+        $sth_awos2->bind_param( 2, substrim( $line,  9,  10 ) );
+        #WX_STATION_REMARKS
+        $sth_awos2->bind_param( 3, substrim( $line, 19, 236 ) );
+
+        $sth_awos2->execute();
+    }
 
     if ( ($i % 1000) == 0 )
     {
@@ -1481,12 +1770,12 @@ while ( my $line = <AWOS_FILE> )
     }
 }
 
-$dbh->do( "update awos set station_lattitude_degrees=("
-        ."select ref_lattitude_degrees from airports where airports.faa_code=awos.wx_sensor_ident"
+$dbh->do( "update awos1 set station_lattitude_degrees=("
+        ."select ref_lattitude_degrees from airports where airports.faa_code=awos1.wx_sensor_ident"
         .") where station_lattitude_degrees=0;" );
 
-$dbh->do( "update awos set station_longitude_degrees=("
-        ."select ref_longitude_degrees from airports where airports.faa_code=awos.wx_sensor_ident"
+$dbh->do( "update awos1 set station_longitude_degrees=("
+        ."select ref_longitude_degrees from airports where airports.faa_code=awos1.wx_sensor_ident"
         .") where station_longitude_degrees=0;" );
 
 print( "\rFinished processing $i records.\n" );
@@ -1517,53 +1806,55 @@ while ( my $line = <NAV_FILE> )
         #NAVAID_TYPE
         $sth_nav1->bind_param(  2, substrim( $line,   8, 20 ) );
         #NAVAID_NAME
-        $sth_nav1->bind_param(  3, capitalize( $line,  42, 26 ) );
+        $sth_nav1->bind_param(  3, capitalize( $line,  42, 30 ) );
         #ASSOC_CITY
-        $sth_nav1->bind_param(  4, capitalize( $line,  68, 26 ) );
+        $sth_nav1->bind_param(  4, capitalize( $line,  72, 40 ) );
         #ASSOC_STATE
-        $sth_nav1->bind_param(  5, substrim( $line, 114,  2 ) );
+        $sth_nav1->bind_param(  5, substrim( $line, 142,  2 ) );
         #PUBLIC_USE
-        $sth_nav1->bind_param(  6, substrim( $line, 242,  1 ) );
+        $sth_nav1->bind_param(  6, substrim( $line, 280,  1 ) );
         #NAVAID_CLASS
-        $sth_nav1->bind_param(  7, substrim( $line, 243, 11 ) );
+        $sth_nav1->bind_param(  7, substrim( $line, 281, 11 ) );
         #OPERATING_HOURS
-        $sth_nav1->bind_param(  8, substrim( $line, 254,  9 ) );
+        $sth_nav1->bind_param(  8, substrim( $line, 292, 11 ) );
         #REF_LATTITUDE_DEGREES
-        my $lattitude = substrim( $line,  297, 10 )/3600.0;
-        if ( substrim( $line, 307, 1 ) eq "S" )
+        my $lattitude = substrim( $line, 385, 10 )/3600.0;
+        if ( substrim( $line, 395, 1 ) eq "S" )
         {
             $lattitude *= -1;
         }
         $sth_nav1->bind_param(  9, $lattitude );
         #REF_LONGITUDE_DEGREES
-        my $longitude = substrim( $line,  322, 10 )/3600.0;
-        if ( substrim( $line, 332, 1 ) eq "W" )
+        my $longitude = substrim( $line, 410, 10 )/3600.0;
+        if ( substrim( $line, 420, 1 ) eq "W" )
         {
             $longitude *= -1;
         }
         $sth_nav1->bind_param( 10, $longitude );
         #ELEVATION_MSL
-        $sth_nav1->bind_param( 11, substrim( $line, 384,  5 ) );
+        $sth_nav1->bind_param( 11, substrim( $line, 472,  7 ) );
         #MAGNETIC_VARIATION_DEGREES
-        $sth_nav1->bind_param( 12, substrim( $line, 389,  4 ) );
+        $sth_nav1->bind_param( 12, substrim( $line, 479,  4 ) );
         #MAGNETIC_VARIATION_DIRECTION
-        $sth_nav1->bind_param( 13, substrim( $line, 393,  1 ) );
+        $sth_nav1->bind_param( 13, substrim( $line, 483,  1 ) );
         #MAGNETIC_VARIATION_YEAR
-        $sth_nav1->bind_param( 14, substrim( $line, 394,  4 ) );
+        $sth_nav1->bind_param( 14, substrim( $line, 484,  4 ) );
         #VOICE_FEATURE
-        $sth_nav1->bind_param( 15, substrim( $line, 398,  3 ) );
+        $sth_nav1->bind_param( 15, substrim( $line, 488,  3 ) );
         #POWER_OUTPUT
-        $sth_nav1->bind_param( 16, substrim( $line, 401,  4 ) );
+        $sth_nav1->bind_param( 16, substrim( $line, 491,  4 ) );
         #AUTOMATIC_VOICE_IDENT
-        $sth_nav1->bind_param( 17, substrim( $line, 405,  3 ) );
+        $sth_nav1->bind_param( 17, substrim( $line, 495,  3 ) );
+        #RADIO_VOICE_CALL
+        $sth_nav1->bind_param( 18, capitalize( $line, 499, 30 ) );
         #TACAN_CHANNEL
-        $sth_nav1->bind_param( 18, substrim( $line, 433,  4 ) );
+        $sth_nav1->bind_param( 19, substrim( $line, 529,  4 ) );
         #NAVAID_FREQUENCY
-        $sth_nav1->bind_param( 19, substrim( $line, 437,  6 ) );
-        #FANMARKER_TYPE TEXT
-        $sth_nav1->bind_param( 20, capitalize( $line, 467, 10 ) );
+        $sth_nav1->bind_param( 20, substrim( $line, 533,  6 ) );
+        #FANMARKER_TYPE
+        $sth_nav1->bind_param( 21, capitalize( $line, 563, 10 ) );
         #PROTECTED_FREQUENCY_ALTITUDE
-        $sth_nav1->bind_param( 21, substrim( $line, 480,  1 ) );
+        $sth_nav1->bind_param( 22, substrim( $line, 576,  1 ) );
 
         $sth_nav1->execute();
     }
@@ -1616,63 +1907,125 @@ while ( my $line = <ILS_FILE> )
         $sth_ils1->bind_param(  2, substrim( $line,  15,  3 ) );
         #ILS_TYPE
         $sth_ils1->bind_param(  3, substrim( $line,  18, 10 ) );
+        #ILS_ID TEXT
+        $sth_ils1->bind_param(  4, substrim( $line,  28,  6 ) );
         #ILS_CATEGORY
-        $sth_ils1->bind_param(  4, substrim( $line, 144,  9 ) );
+        $sth_ils1->bind_param(  5, substrim( $line, 172,  9 ) );
         #ILS_MAGNETIC_BEARING
-        $sth_ils1->bind_param(  5, substrim( $line, 253,  3 ) );
-        #LOCALIZER_TYPE
-        $sth_ils1->bind_param(  6, substrim( $line, 259, 15 ) );
-        #LOCALIZER_ID
-        $sth_ils1->bind_param(  7, substrim( $line, 274,  5 ) );
-        #LOCALIZER_FREQUENCY
-        $sth_ils1->bind_param(  8, substrim( $line, 279,  6 ) );
-        #LOCALIZER_COURSE_WIDTH
-        $sth_ils1->bind_param(  9, substrim( $line, 335,  5 ) );
-        #GLIDE_SLOPE_TYPE
-        $sth_ils1->bind_param( 10, substrim( $line, 351, 15 ) );
-        #GLIDE_SLOPE_ANGLE
-        $sth_ils1->bind_param( 11, substrim( $line, 366,  4 ) );
-        #GLIDE_SLOPE_FREQUENCY
-        $sth_ils1->bind_param( 12, substrim( $line, 370,  6 ) );
-        #INNER_MARKER_TYPE
-        $sth_ils1->bind_param( 13, substrim( $line, 439, 15 ) );
-        #INNER_MARKER_DISTANCE
-        $sth_ils1->bind_param( 14, substrim( $line, 504,  6 ) );
-        #MIDDLE_MARKER_TYPE
-        $sth_ils1->bind_param( 15, substrim( $line, 510, 15 ) );
-        #MIDDLE_MARKER_ID
-        $sth_ils1->bind_param( 16, substrim( $line, 525,  2 ) );
-        #MIDDLE_MARKER_NAME
-        $sth_ils1->bind_param( 17, substrim( $line, 527,  5 ) );
-        #MIDDLE_MARKER_FREQUENCY
-        $sth_ils1->bind_param( 18, substrim( $line, 532,  3 ) );
-        #MIDDLE_MARKER_DISTANCE
-        $sth_ils1->bind_param( 19, substrim( $line, 585,  6 ) );
-        #OUTER_MARKER_TYPE
-        $sth_ils1->bind_param( 20, substrim( $line, 591, 15 ) );
-        #OUTER_MARKER_ID
-        $sth_ils1->bind_param( 21, substrim( $line, 606,  2 ) );
-        #OUTER_MARKER_NAME
-        $sth_ils1->bind_param( 22, substrim( $line, 608,  5 ) );
-        #OUTER_MARKER_FREQUENCY
-        $sth_ils1->bind_param( 23, substrim( $line, 613,  3 ) );
-        #OUTER_MARKER_DISTANCE
-        $sth_ils1->bind_param( 24, substrim( $line, 666,  6 ) );
+        $sth_ils1->bind_param(  6, substrim( $line, 281,  6 ) );
 
         $sth_ils1->execute();
     }
-    elsif ( $type eq "ILS2" ) 
+    elsif ( $type eq "ILS2" )
     {
         #SITE_NUMBER
-        $sth_ils2->bind_param(  1, substrim( $line,   4,  11 ) );
+        $sth_ils2->bind_param( 1, substrim( $line,   4, 11 ) );
         #RUNWAY_ID
-        $sth_ils2->bind_param(  2, substrim( $line,  15,   3 ) );
+        $sth_ils2->bind_param( 2, substrim( $line,  15,  3 ) );
         #ILS_TYPE
-        $sth_ils2->bind_param(  3, substrim( $line,  18,  10 ) );
-        #ILS_REMARKS
-        $sth_ils2->bind_param(  4, substrim( $line,  28, 400 ) );
+        $sth_ils2->bind_param( 3, substrim( $line,  18, 10 ) );
+        #OPERATIONAL_STATUS
+        $sth_ils2->bind_param( 4, capitalize( $line,  28, 22 ) );
+        #OPERATIONAL_EFFECTIVE_DATE
+        $sth_ils2->bind_param( 5, substrim( $line,  50, 10 ) );
+        #LOCALIZER_FREQUENCY
+        $sth_ils2->bind_param( 6, substrim( $line, 133,  7 ) );
+        #LOCALIZER_BACK_COURSE_STATUS
+        $sth_ils2->bind_param( 7, capitalize( $line, 140, 15 ) );
+        #LOCALIZER_COURSE_WIDTH
+        $sth_ils2->bind_param( 8, substrim( $line, 155,  5 ) );
+        #LOCALIZER_COURSE_WIDTH_THRESHOLD
+        $sth_ils2->bind_param( 9, substrim( $line, 160,  7 ) );
 
         $sth_ils2->execute();
+    }
+    elsif ( $type eq "ILS3" )
+    {
+        #SITE_NUMBER
+        $sth_ils3->bind_param( 1, substrim( $line,   4, 11 ) );
+        #RUNWAY_ID
+        $sth_ils3->bind_param( 2, substrim( $line,  15,  3 ) );
+        #ILS_TYPE
+        $sth_ils3->bind_param( 3, substrim( $line,  18, 10 ) );
+        #OPERATIONAL_STATUS
+        $sth_ils3->bind_param( 4, capitalize( $line,  28, 22 ) );
+        #OPERATIONAL_EFFECTIVE_DATE
+        $sth_ils3->bind_param( 5, substrim( $line,  50, 10 ) );
+        #GLIDE_SLOPE_TYPE
+        $sth_ils3->bind_param( 6, substrim( $line, 133,  15 ) );
+        #GLIDE_SLOPE_ANGLE
+        $sth_ils3->bind_param( 7, substrim( $line, 148,   5 ) );
+        #GLIDE_SLOPE_FREQUENCY
+        $sth_ils3->bind_param( 8, substrim( $line, 153,   7 ) );
+
+        $sth_ils3->execute();
+    }
+    elsif ( $type eq "ILS4" )
+    {
+        #SITE_NUMBER
+        $sth_ils4->bind_param( 1, substrim( $line,   4, 11 ) );
+        #RUNWAY_ID
+        $sth_ils4->bind_param( 2, substrim( $line,  15,  3 ) );
+        #ILS_TYPE
+        $sth_ils4->bind_param( 3, substrim( $line,  18, 10 ) );
+        #OPERATIONAL_STATUS
+        $sth_ils4->bind_param( 4, capitalize( $line,  28, 22 ) );
+        #OPERATIONAL_EFFECTIVE_DATE
+        $sth_ils4->bind_param( 5, substrim( $line,  50, 10 ) );
+        #DME_CHANNEL
+        $sth_ils4->bind_param( 6, substrim( $line, 133,  4 ) );
+
+        $sth_ils4->execute();
+    }
+    elsif ( $type eq "ILS5" )
+    {
+        #SITE_NUMBER
+        $sth_ils5->bind_param(  1, substrim( $line,   4, 11 ) );
+        #RUNWAY_ID
+        $sth_ils5->bind_param(  2, substrim( $line,  15,  3 ) );
+        #ILS_TYPE
+        $sth_ils5->bind_param(  3, substrim( $line,  18, 10 ) );
+        #MARKER_TYPE
+        $sth_ils5->bind_param(  4, substrim( $line,  28,  2 ) );
+        #OPERATIONAL_STATUS
+        $sth_ils5->bind_param(  5, capitalize( $line, 30, 22 ) );
+        #OPERATIONAL_EFFECTIVE_DATE
+        $sth_ils5->bind_param(  6, substrim( $line,  52, 10 ) );
+        #MARKER_DISTANCE
+        $sth_ils5->bind_param(  7, substrim( $line, 114,  7 ) );
+        #MARKER_DISTANCE_CENTERLINE
+        $sth_ils5->bind_param(  8, substrim( $line, 121,  4 ) );
+        #MARKER_DIRECTION_CENTERLINE
+        $sth_ils5->bind_param(  9, substrim( $line, 125,  1 ) );
+        #MARKER_ELEVATION_MSL
+        $sth_ils5->bind_param( 10, substrim( $line, 128,  7 ) );
+        #MARKER_FACILITY_TYPE
+        $sth_ils5->bind_param( 11, substrim( $line, 135, 15 ) );
+        #MARKER_BEACON_ID
+        $sth_ils5->bind_param( 12, substrim( $line, 150,  2 ) );
+        #MARKER_BEACON_NAME
+        $sth_ils5->bind_param( 13, substrim( $line, 152, 30 ) );
+        #MARKER_BEACON_FREQUENCY
+        $sth_ils5->bind_param( 14, substrim( $line, 182,  3 ) );
+        #MARKER_NAVAID_ID
+        $sth_ils5->bind_param( 15, substrim( $line, 185, 25 ) );
+        #MARKER_SERVICE
+        $sth_ils5->bind_param( 16, substrim( $line, 232, 30 ) );
+
+        $sth_ils5->execute();
+    }
+    elsif ( $type eq "ILS6" )
+    {
+        #SITE_NUMBER
+        $sth_ils6->bind_param( 1, substrim( $line,   4,  11 ) );
+        #RUNWAY_ID
+        $sth_ils6->bind_param( 2, substrim( $line,  15,   3 ) );
+        #ILS_TYPE
+        $sth_ils6->bind_param( 3, substrim( $line,  18,  10 ) );
+        #ILS_REMARKS
+        $sth_ils6->bind_param( 4, substrim( $line,  28, 400 ) );
+
+        $sth_ils6->execute();
     }
 
     if ( ($i % 1000) == 0 )
@@ -1707,66 +2060,78 @@ while ( my $line = <AFF_FILE> )
     if ( $type eq "AFF1" )
     {
         #ARTCC_ID
-        $sth_aff1->bind_param( 1, substrim( $line,   4,  3 ) );
+        $sth_aff1->bind_param( 1, substrim( $line,   4,  4 ) );
         #ARTCC_NAME
-        $sth_aff1->bind_param( 2, capitalize( $line,   7, 40 ) );
+        $sth_aff1->bind_param( 2, capitalize( $line, 8, 40 ) );
         #SITE_LOCATION
-        $sth_aff1->bind_param( 3, capitalize( $line,  47, 30 ) );
+        $sth_aff1->bind_param( 3, capitalize( $line, 48, 30 ) );
         #FACILITY_TYPE
-        $sth_aff1->bind_param( 5, substrim( $line, 127,  5 ) );
-        #SITE_STATE_CODE
-        $sth_aff1->bind_param( 6, substrim( $line, 162,  2 ) );
+        $sth_aff1->bind_param( 4, substrim( $line, 128,  5 ) );
+        #ARTCC_LATTITUDE_DEGREES
+        my $lattitude = substrim( $line, 189, 10 )/3600.0;
+        if ( substr( $line, 199, 1 ) eq "S" )
+        {
+            $lattitude *= -1;
+        }
+        $sth_aff1->bind_param( 5, $lattitude );
+        #ARTCC_LONGITUDE_DEGREES
+        my $longitude = substrim( $line, 214, 10 )/3600.0;
+        if ( substr( $line, 224, 1 ) eq "W" )
+        {
+            $longitude *= -1;
+        }
+        $sth_aff1->bind_param( 6, $longitude );
 
         $sth_aff1->execute();
     }
     elsif ( $type eq "AFF2" ) 
     {
         #ARTCC_ID
-        $sth_aff2->bind_param( 1, substrim( $line,  4,   3 ) );
+        $sth_aff2->bind_param( 1, substrim( $line,  4,   4 ) );
         #SITE_LOCATION
-        $sth_aff2->bind_param( 2, capitalize( $line,  7,  30 ) );
+        $sth_aff2->bind_param( 2, capitalize( $line,  8,  30 ) );
         #FACILITY_TYPE
-        $sth_aff2->bind_param( 3, substrim( $line, 37,   5 ) );
+        $sth_aff2->bind_param( 3, substrim( $line, 38,   5 ) );
         #REMARK_ELEMENT_NO
-        $sth_aff2->bind_param( 4, substrim( $line, 42,   4 ) );
+        $sth_aff2->bind_param( 4, substrim( $line, 43,   4 ) );
         #REMARK_TEXT
-        $sth_aff2->bind_param( 5, substrim( $line, 46, 200 ) );
+        $sth_aff2->bind_param( 5, substrim( $line, 47, 200 ) );
 
         $sth_aff2->execute();
     }
     elsif ( $type eq "AFF3" ) 
     {
         #ARTCC_ID
-        $sth_aff3->bind_param( 1, substrim( $line,  4,  3 ) );
+        $sth_aff3->bind_param( 1, substrim( $line,  4,  4 ) );
         #SITE_LOCATION
-        $sth_aff3->bind_param( 2, capitalize( $line,  7, 30 ) );
+        $sth_aff3->bind_param( 2, capitalize( $line,  8, 30 ) );
         #FACILITY_TYPE
-        $sth_aff3->bind_param( 3, substrim( $line, 37,  5 ) );
+        $sth_aff3->bind_param( 3, substrim( $line, 38,  5 ) );
         #SITE_FREQUENCY
-        $sth_aff3->bind_param( 4, substrim( $line, 42,  7 ) );
+        $sth_aff3->bind_param( 4, substrim( $line, 43,  8 ) );
         #FREQ_ALTITUDE
-        $sth_aff3->bind_param( 5, capitalize( $line, 49, 10 ) );
+        $sth_aff3->bind_param( 5, capitalize( $line, 51, 10 ) );
         #FREQ_USAGE_NAME
-        $sth_aff3->bind_param( 6, capitalize( $line, 59, 17 ) );
+        $sth_aff3->bind_param( 6, capitalize( $line, 61, 17 ) );
         #IFR_FACILITY_ID
-        $sth_aff3->bind_param( 7, substrim( $line, 76,  4 ) );
+        $sth_aff3->bind_param( 7, substrim( $line, 78,  4 ) );
 
         $sth_aff3->execute();
     }
     elsif ( $type eq "AFF4" ) 
     {
         #ARTCC_ID
-        $sth_aff4->bind_param( 1, substrim( $line,  4,   3 ) );
+        $sth_aff4->bind_param( 1, substrim( $line,  4,   4 ) );
         #SITE_LOCATION
-        $sth_aff4->bind_param( 2, capitalize( $line,  7,  30 ) );
+        $sth_aff4->bind_param( 2, capitalize( $line,  8,  30 ) );
         #FACILITY_TYPE
-        $sth_aff4->bind_param( 3, substrim( $line, 37,   5 ) );
+        $sth_aff4->bind_param( 3, substrim( $line, 38,   5 ) );
         #REMARK_FREQUENCY
-        $sth_aff4->bind_param( 4, substrim( $line, 42,   7 ) );
+        $sth_aff4->bind_param( 4, substrim( $line, 43,   8 ) );
         #REMARKS_ELEMENT_NO
-        $sth_aff4->bind_param( 5, substrim( $line, 49,   2 ) );
+        $sth_aff4->bind_param( 5, substrim( $line, 51,   2 ) );
         #REMARK_TEXT
-        $sth_aff4->bind_param( 6, substrim( $line, 51, 200 ) );
+        $sth_aff4->bind_param( 6, substrim( $line, 53, 200 ) );
 
         $sth_aff4->execute();
     }
