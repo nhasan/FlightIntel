@@ -371,11 +371,11 @@ public class ActivityBase extends FragmentActivity {
         tv = (TextView) root.findViewById( R.id.navaid_info );
         tv.setText( String.format( "%s, %s", city, state ) );
         String use = c.getString( c.getColumnIndex( Nav1.PUBLIC_USE ) );
-        int elev_msl = c.getInt( c.getColumnIndex( Nav1.ELEVATION_MSL ) );
+        Float elev_msl = c.getFloat( c.getColumnIndex( Nav1.ELEVATION_MSL ) );
         tv = (TextView) root.findViewById( R.id.navaid_info2 );
-        tv.setText( String.format( "%s, %s MSL elevation",
+        tv.setText( String.format( "%s, %s elevation",
                 use.equals( "Y" )? "Public use" : "Private use",
-                FormatUtils.formatFeet( elev_msl ) ) );
+                FormatUtils.formatFeetMsl( elev_msl ) ) );
         tv = (TextView) root.findViewById( R.id.navaid_morse1 );
         tv.setText( DataUtils.getMorseCode( id.substring( 0, 1 ) ) );
         if ( id.length() > 1 ) {

@@ -94,21 +94,9 @@ public class RemarkDetailsActivity extends ActivityBase {
         if ( rmk.moveToFirst() ) {
             do {
                 String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
-                addRemarkRow( layout, remark );
+                addBulletedRow( layout, remark );
             } while ( rmk.moveToNext() );
         }
-    }
-
-    protected void addRemarkRow( LinearLayout layout, String remark ) {
-        int index = remark.indexOf( ' ' );
-        if ( index != -1 ) {
-            while ( remark.charAt( index ) == ' ' ) {
-                ++index;
-            }
-            remark = remark.substring( index );
-        }
-
-        addBulletedRow( layout, remark );
     }
 
 }

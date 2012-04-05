@@ -40,7 +40,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
@@ -186,18 +186,18 @@ public class TafFragment extends FragmentBase {
                 cursors[ 0 ] = c;
 
                 String[] wxColumns = new String[] {
-                        Awos.WX_SENSOR_IDENT,
-                        Awos.WX_SENSOR_TYPE,
-                        Awos.STATION_FREQUENCY,
-                        Awos.SECOND_STATION_FREQUENCY,
-                        Awos.STATION_PHONE_NUMBER,
+                        Awos1.WX_SENSOR_IDENT,
+                        Awos1.WX_SENSOR_TYPE,
+                        Awos1.STATION_FREQUENCY,
+                        Awos1.SECOND_STATION_FREQUENCY,
+                        Awos1.STATION_PHONE_NUMBER,
                         Airports.ASSOC_CITY,
                         Airports.ASSOC_STATE
                 };
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Airports.TABLE_NAME+" a"
-                        +" LEFT JOIN "+Awos.TABLE_NAME+" w"
-                        +" ON a."+Airports.FAA_CODE+" = w."+Awos.WX_SENSOR_IDENT );
+                        +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
+                        +" ON a."+Airports.FAA_CODE+" = w."+Awos1.WX_SENSOR_IDENT );
                 selection = "a."+Airports.ICAO_CODE+"=?";
                 c = builder.query( db, wxColumns, selection, new String[] { stationId },
                         null, null, null, null );

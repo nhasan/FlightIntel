@@ -85,8 +85,7 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
         if ( status.equals( "O" ) ) {
             mStringBuilder.append( type );
             mStringBuilder.append( ", " );
-            mStringBuilder.append( FormatUtils.formatFeet( elev ) );
-            mStringBuilder.append( " MSL" );
+            mStringBuilder.append( FormatUtils.formatFeetMsl( elev ) );
             if ( ctaf != null && ctaf.length() > 0 ) {
                 mStringBuilder.append( ", " );
                 mStringBuilder.append( ctaf );

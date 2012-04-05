@@ -48,7 +48,7 @@ import android.widget.TextView;
 import com.nadmm.airports.DatabaseManager.Aff3;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Attendance;
-import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Dtpp;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
@@ -237,12 +237,12 @@ public class AirportDetailsActivity extends ActivityBase {
                     "x."+Wxs.STATION_LATITUDE_DEGREES,
                     "x."+Wxs.STATION_LONGITUDE_DEGREES,
                     Wxs.STATION_STATE,
-                    Awos.WX_SENSOR_IDENT,
-                    Awos.WX_SENSOR_TYPE,
-                    Awos.STATION_FREQUENCY,
-                    Awos.SECOND_STATION_FREQUENCY,
-                    Awos.STATION_PHONE_NUMBER,
-                    Awos.COMMISSIONING_STATUS
+                    Awos1.WX_SENSOR_IDENT,
+                    Awos1.WX_SENSOR_TYPE,
+                    Awos1.STATION_FREQUENCY,
+                    Awos1.SECOND_STATION_FREQUENCY,
+                    Awos1.STATION_PHONE_NUMBER,
+                    Awos1.COMMISSIONING_STATUS
             };
 
             String selection = "("
@@ -255,13 +255,13 @@ public class AirportDetailsActivity extends ActivityBase {
             builder.setTables( Wxs.TABLE_NAME+" x"
                     +" LEFT JOIN "+Airports.TABLE_NAME+" a"
                     +" ON x."+Wxs.STATION_ID+" = a."+Airports.ICAO_CODE
-                    +" LEFT JOIN "+Awos.TABLE_NAME+" w"
-                    +" ON w."+Awos.WX_SENSOR_IDENT+" = a."+Airports.FAA_CODE );
+                    +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
+                    +" ON w."+Awos1.WX_SENSOR_IDENT+" = a."+Airports.FAA_CODE );
             c = builder.query( db, wxColumns, selection, selectionArgs,
                     null, null, null, null );
             if ( c.moveToFirst() ) {
                 do {
-                    String status = c.getString( c.getColumnIndex( Awos.COMMISSIONING_STATUS ) );
+                    String status = c.getString( c.getColumnIndex( Awos1.COMMISSIONING_STATUS ) );
                     if ( status != null && status.equals( "N" ) ) {
                         // Skip the inactive station
                         continue;
@@ -270,11 +270,11 @@ public class AirportDetailsActivity extends ActivityBase {
                     String name = c.getString( c.getColumnIndex( Wxs.STATION_NAME ) );
                     lat = c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
                     lon = c.getDouble( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-                    String id = c.getString( c.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
-                    String type = c.getString( c.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
-                    String freq = c.getString( c.getColumnIndex( Awos.STATION_FREQUENCY ) );
-                    String freq2 = c.getString( c.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
-                    String phone = c.getString( c.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+                    String id = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_IDENT ) );
+                    String type = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
+                    String freq = c.getString( c.getColumnIndex( Awos1.STATION_FREQUENCY ) );
+                    String freq2 = c.getString( c.getColumnIndex( Awos1.SECOND_STATION_FREQUENCY ) );
+                    String phone = c.getString( c.getColumnIndex( Awos1.STATION_PHONE_NUMBER ) );
                     AwosData awos = new AwosData( icaoCode, id, type, lat, lon,
                             freq, freq2, phone, name );
                     awosList.add( awos );
@@ -290,11 +290,11 @@ public class AirportDetailsActivity extends ActivityBase {
             String[] columns = new String[] {
                     BaseColumns._ID,
                     Airports.ICAO_CODE,
-                    Awos.WX_SENSOR_IDENT,
-                    Awos.WX_SENSOR_TYPE,
-                    Awos.STATION_FREQUENCY,
-                    Awos.SECOND_STATION_FREQUENCY,
-                    Awos.STATION_PHONE_NUMBER,
+                    Awos1.WX_SENSOR_IDENT,
+                    Awos1.WX_SENSOR_TYPE,
+                    Awos1.STATION_FREQUENCY,
+                    Awos1.SECOND_STATION_FREQUENCY,
+                    Awos1.STATION_PHONE_NUMBER,
                     Airports.FACILITY_NAME,
                     DISTANCE,
                     BEARING
@@ -588,36 +588,36 @@ public class AirportDetailsActivity extends ActivityBase {
         protected void showAwosDetails( Cursor[] result ) {
             TextView label = (TextView) findViewById( R.id.detail_awos_label );
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_awos_layout );
-            Cursor awos = result[ 6 ];
+            Cursor awos1 = result[ 6 ];
 
-            if ( awos.moveToFirst() ) {
+            if ( awos1.moveToFirst() ) {
                 do {
-                    String icaoCode = awos.getString( awos.getColumnIndex( Airports.ICAO_CODE ) );
-                    String sensorId = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_IDENT ) );
+                    String icaoCode = awos1.getString( awos1.getColumnIndex( Airports.ICAO_CODE ) );
+                    String sensorId = awos1.getString( awos1.getColumnIndex( Awos1.WX_SENSOR_IDENT ) );
                     if ( icaoCode == null || icaoCode.length() == 0 ) {
                         icaoCode = "K"+sensorId;
                     }
-                    String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
-                    String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
+                    String type = awos1.getString( awos1.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
+                    String freq = awos1.getString( awos1.getColumnIndex( Awos1.STATION_FREQUENCY ) );
                     if ( freq == null || freq.length() == 0 ) {
-                        freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
+                        freq = awos1.getString( awos1.getColumnIndex( Awos1.SECOND_STATION_FREQUENCY ) );
                     }
-                    String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
-                    String name = awos.getString( awos.getColumnIndex( Airports.FACILITY_NAME ) );
-                    float distance = awos.getFloat( awos.getColumnIndex( "DISTANCE" ) );
-                    float bearing = awos.getFloat( awos.getColumnIndex( "BEARING" ) );
-                    if ( awos.getPosition() > 0 ) {
+                    String phone = awos1.getString( awos1.getColumnIndex( Awos1.STATION_PHONE_NUMBER ) );
+                    String name = awos1.getString( awos1.getColumnIndex( Airports.FACILITY_NAME ) );
+                    float distance = awos1.getFloat( awos1.getColumnIndex( "DISTANCE" ) );
+                    float bearing = awos1.getFloat( awos1.getColumnIndex( "BEARING" ) );
+                    if ( awos1.getPosition() > 0 ) {
                         addSeparator( layout );
                     }
                     Intent intent = new Intent( getActivity(), WxDetailActivity.class );
                     Bundle args = new Bundle();
                     args.putString( NoaaService.STATION_ID, icaoCode );
-                    args.putString( Awos.WX_SENSOR_IDENT, sensorId );
+                    args.putString( Awos1.WX_SENSOR_IDENT, sensorId );
                     intent.putExtras( args );
-                    int resid = getSelectorResourceForRow( awos.getPosition(), awos.getCount() );
+                    int resid = getSelectorResourceForRow( awos1.getPosition(), awos1.getCount() );
                     addAwosRow( layout, icaoCode, name, type, freq, phone, distance,
                             bearing, intent, resid );
-                } while ( awos.moveToNext() );
+                } while ( awos1.moveToNext() );
             } else {
                 label.setVisibility( View.GONE );
                 layout.setVisibility( View.GONE );
@@ -686,10 +686,19 @@ public class AirportDetailsActivity extends ActivityBase {
             String beacon = apt.getString( apt.getColumnIndex( Airports.BEACON_COLOR ) );
             addSeparator( layout );
             addRow( layout, "Beacon", DataUtils.decodeBeacon( beacon ) );
-            String lighting = apt.getString( apt.getColumnIndex( Airports.LIGHTING_SCHEDULE ) );
+            String lighting;
+            lighting = apt.getString( apt.getColumnIndex( Airports.LIGHTING_SCHEDULE ) );
             if ( lighting.length() > 0 ) {
                 addSeparator( layout );
-                addRow( layout, "Lighting schedule", lighting );
+                addRow( layout, "Airport lighting", lighting );
+            }
+            try {
+                lighting = apt.getString( apt.getColumnIndex( Airports.BEACON_LIGHTING_SCHEDULE ) );
+                if ( lighting.length() > 0 ) {
+                    addSeparator( layout );
+                    addRow( layout, "Beacon lighting", lighting );
+                }
+            } catch ( Exception e ) {
             }
             String landingFee = apt.getString( apt.getColumnIndex( Airports.LANDING_FEE ) );
             addSeparator( layout );
@@ -787,7 +796,7 @@ public class AirportDetailsActivity extends ActivityBase {
             if ( rmk.moveToFirst() ) {
                 do {
                     String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
-                    addRemarkRow( layout, remark );
+                    addBulletedRow( layout, remark );
                     ++row;
                 } while ( rmk.moveToNext() );
              }
@@ -957,17 +966,6 @@ public class AirportDetailsActivity extends ActivityBase {
             intent.putExtras( bundle );
 
             addClickableRow( layout, row, intent, resid );
-        }
-
-        protected void addRemarkRow( LinearLayout layout, String remark ) {
-            int index = remark.indexOf( ' ' );
-            if ( index != -1 ) {
-                while ( remark.charAt( index ) == ' ' ) {
-                    ++index;
-                }
-                remark = remark.substring( index );
-            }
-            addBulletedRow( layout, remark );
         }
 
         protected void setRunwayDrawable( TextView tv, String runwayId, int length, int heading ) {

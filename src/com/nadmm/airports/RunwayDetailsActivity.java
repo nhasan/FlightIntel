@@ -31,13 +31,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Ars;
 import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
-import com.nadmm.airports.utils.UiUtils;
 
 public class RunwayDetailsActivity extends ActivityBase {
 
@@ -65,26 +65,47 @@ public class RunwayDetailsActivity extends ActivityBase {
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
             String runwayId = params[ 1 ];
-            Cursor[] cursors = new Cursor[ 3 ];
+            Cursor[] cursors = new Cursor[ 5 ];
 
             cursors[ 0 ] = getAirportDetails( siteNumber );
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Runways.TABLE_NAME );
             Cursor c = builder.query( db, new String[] { "*" },
                     Runways.SITE_NUMBER+"=? AND "+Runways.RUNWAY_ID+"=?",
                     new String[] { siteNumber, runwayId }, null, null, null, null );
+            c.moveToFirst();
             cursors[ 1 ] = c;
+
+            try {
+                String endId = c.getString( c.getColumnIndex( Runways.BASE_END_ID ) );
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Ars.TABLE_NAME );
+                c = builder.query( db, new String[] { "*" },
+                        Ars.SITE_NUMBER+"=? AND "+Ars.RUNWAY_ID+"=? AND "+Ars.RUNWAY_END_ID+"=?",
+                        new String[] { siteNumber, runwayId, endId }, null, null, null, null );
+                cursors[ 2 ] = c;
+    
+                endId = c.getString( c.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Ars.TABLE_NAME );
+                c = builder.query( db, new String[] { "*" },
+                        Ars.SITE_NUMBER+"=? AND "+Ars.RUNWAY_ID+"=? AND "+Ars.RUNWAY_END_ID+"=?",
+                        new String[] { siteNumber, runwayId, endId }, null, null, null, null );
+                cursors[ 3 ] = c;
+            } catch ( Exception e ) {
+            }
 
             builder = new SQLiteQueryBuilder();
             builder.setTables( Remarks.TABLE_NAME );
             c = builder.query( db, new String[] { Remarks.REMARK_NAME, Remarks.REMARK_TEXT },
                     Runways.SITE_NUMBER+"=? "
                     +"AND ( substr("+Remarks.REMARK_NAME+", 1, 2) in ('A2', 'A3', 'A4', 'A5', 'A6')"
-                    +"OR "+Remarks.REMARK_NAME+" in ('A81', 'A81 1') )",
+                    +"OR "+Remarks.REMARK_NAME+" like 'A81%' )",
                     new String[] { siteNumber }, null, null, null, null );
-            cursors[ 2 ] = c;
+            cursors[ 4 ] = c;
 
             return cursors;
         }
@@ -97,15 +118,10 @@ public class RunwayDetailsActivity extends ActivityBase {
     }
 
     protected void showDetails( Cursor[] result ) {
-        Cursor rwy = result[ 1 ];
-        if ( !rwy.moveToFirst() ) {
-            UiUtils.showToast( getApplicationContext(), "Unable to get runway information" );
-            finish();
-            return;
-        }
-
         Cursor apt = result[ 0 ];
         showAirportTitle( apt );
+
+        Cursor rwy = result[ 1 ];
 
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
         boolean isHelipad = runwayId.startsWith( "H" );
@@ -206,11 +222,16 @@ public class RunwayDetailsActivity extends ActivityBase {
             addSeparator( layout );
             addRow( layout, "Gradient", gradientString );
         }
-        String arrestingDevice = rwy.getString( rwy.getColumnIndex( 
-                Runways.BASE_END_ARRESTING_DEVICE_TYPE ) );
-        if ( arrestingDevice.length() > 0 ) {
-            addSeparator( layout );
-            addRow( layout, "Arresting device", arrestingDevice );
+        Cursor ars = result[ 2 ];
+        if ( ars != null && ars.moveToFirst() ) {
+            do {
+                String arrestingDevice = rwy.getString( rwy.getColumnIndex(
+                        Ars.ARRESTING_DEVICE ) );
+                if ( arrestingDevice.length() > 0 ) {
+                    addSeparator( layout );
+                    addRow( layout, "Arresting device", arrestingDevice );
+                }
+            } while ( ars.moveToNext() );
         }
         String apchLights = rwy.getString( rwy.getColumnIndex(
                 Runways.BASE_END_APCH_LIGHT_SYSTEM ) );
@@ -366,11 +387,16 @@ public class RunwayDetailsActivity extends ActivityBase {
             addSeparator( layout );
             addRow( layout, "Gradient", gradientString );
         }
-        String arrestingDevice = rwy.getString( rwy.getColumnIndex( 
-                Runways.RECIPROCAL_END_ARRESTING_DEVICE_TYPE ) );
-        if ( arrestingDevice.length() > 0 ) {
-            addSeparator( layout );
-            addRow( layout, "Arresting device", arrestingDevice );
+        Cursor ars = result[ 3 ];
+        if ( ars != null && ars.moveToFirst() ) {
+            do {
+                String arrestingDevice = rwy.getString( rwy.getColumnIndex(
+                        Ars.ARRESTING_DEVICE ) );
+                if ( arrestingDevice.length() > 0 ) {
+                    addSeparator( layout );
+                    addRow( layout, "Arresting device", arrestingDevice );
+                }
+            } while ( ars.moveToNext() );
         }
         String apchLights = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_APCH_LIGHT_SYSTEM ) );
@@ -517,14 +543,14 @@ public class RunwayDetailsActivity extends ActivityBase {
 
     protected void showCommonRemarks( LinearLayout layout, Cursor[] result, String runwayId ) {
         int count = 0;
-        Cursor rmk = result[ 2 ];
+        Cursor rmk = result[ 4 ];
         if ( rmk.moveToFirst() ) {
             do {
                 String rmkName = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_NAME ) );
                 if ( rmkName.startsWith( "A81" ) ) {
                     ++count;
                     String rmkText = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
-                    addRemarkRow( layout, rmkText );
+                    addBulletedRow( layout, rmkText );
                 }
             } while ( rmk.moveToNext() );
         }
@@ -601,14 +627,14 @@ public class RunwayDetailsActivity extends ActivityBase {
 
     protected int showRemarks( LinearLayout layout, Cursor[] result, String runwayId ) {
         int count = 0;
-        Cursor rmk = result[ 2 ];
+        Cursor rmk = result[ 4 ];
         if ( rmk.moveToFirst() ) {
             do {
                 String rmkName = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_NAME ) );
                 if ( rmkName.endsWith( "-"+runwayId ) ) {
                     ++count;
                     String rmkText = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
-                    addRemarkRow( layout, rmkText );
+                    addBulletedRow( layout, rmkText );
                 }
             } while ( rmk.moveToNext() );
         }
@@ -703,17 +729,6 @@ public class RunwayDetailsActivity extends ActivityBase {
         }
 
         return count;
-    }
-
-    protected void addRemarkRow( LinearLayout layout, String remark ) {
-        int index = remark.indexOf( ' ' );
-        if ( index != -1 ) {
-            while ( remark.charAt( index ) == ' ' ) {
-                ++index;
-            }
-            remark = remark.substring( index );
-        }
-        addBulletedRow( layout, remark );
     }
 
 }

@@ -108,4 +108,8 @@ public class FormatUtils {
                 altimeterHg, FormatUtils.formatNumber( altimeterMb ) );
     }
 
+    public static String formatDegrees( float degrees ) {
+        return String.format( "%.02f\u00B0", degrees );
+    }
+
 }

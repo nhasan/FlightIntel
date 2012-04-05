@@ -111,6 +111,7 @@ public class DatabaseManager {
         public static final String BOTTLED_O2_AVAILABLE = "BOTTLED_O2_AVAILABLE";
         public static final String BULK_O2_AVAILABLE = "BULK_O2_AVAILABLE";
         public static final String LIGHTING_SCHEDULE = "LIGHTING_SCHEDULE";
+        public static final String BEACON_LIGHTING_SCHEDULE = "BEACON_LIGHTING_SCHEDULE";
         public static final String TOWER_ON_SITE = "TOWER_ON_SITE";
         public static final String UNICOM_FREQS = "UNICOM_FREQS";
         public static final String CTAF_FREQ = "CTAF_FREQ";
@@ -130,7 +131,6 @@ public class DatabaseManager {
 
     public static final class Runways implements BaseColumns {
         public static final String TABLE_NAME = "runways";
-        // Fields for runway table
         public static final String SITE_NUMBER = "SITE_NUMBER";
         public static final String RUNWAY_ID = "RUNWAY_ID";
         public static final String RUNWAY_LENGTH = "RUNWAY_LENGTH";
@@ -144,7 +144,6 @@ public class DatabaseManager {
         public static final String BASE_END_RIGHT_TRAFFIC = "BASE_END_RIGHT_TRAFFIC";
         public static final String BASE_END_MARKING_TYPE = "BASE_END_MARKING_TYPE";
         public static final String BASE_END_MARKING_CONDITION = "BASE_END_MARKING_CONDITION";
-        public static final String BASE_END_ARRESTING_DEVICE_TYPE = "BASE_END_ARRESTING_DEVICE_TYPE";
         public static final String BASE_END_LATTITUDE_DEGREES = "BASE_END_LATTITUDE_DEGREES";
         public static final String BASE_END_LONGITUDE_DEGREES = "BASE_END_LONGITUDE_DEGREES";
         public static final String BASE_END_RUNWAY_ELEVATION = "BASE_END_RUNWAY_ELEVATION";
@@ -170,7 +169,6 @@ public class DatabaseManager {
         public static final String RECIPROCAL_END_RIGHT_TRAFFIC = "RECIPROCAL_END_RIGHT_TRAFFIC";
         public static final String RECIPROCAL_END_MARKING_TYPE = "RECIPROCAL_END_MARKING_TYPE";
         public static final String RECIPROCAL_END_MARKING_CONDITION = "RECIPROCAL_END_MARKING_CONDITION";
-        public static final String RECIPROCAL_END_ARRESTING_DEVICE_TYPE = "RECIPROCAL_END_ARRESTING_DEVICE_TYPE";
         public static final String RECIPROCAL_END_LATTITUDE_DEGREES = "RECIPROCAL_END_LATTITUDE_DEGREES";
         public static final String RECIPROCAL_END_LOGITUDE_DEGREES = "RECIPROCAL_END_LONGITUDE_DEGREES";
         public static final String RECIPROCAL_END_RUNWAY_ELEVATION = "RECIPROCAL_END_RUNWAY_ELEVATION";
@@ -206,6 +204,14 @@ public class DatabaseManager {
         public static final String RECIPROCAL_END_LDA = "RECIPROCAL_END_LDA";
         public static final String RECIPROCAL_END_LAHSO_DISTANCE = "RECIPROCAL_END_LAHSO_DISTANCE";
         public static final String RECIPROCAL_END_LAHSO_RUNWAY = "RECIPROCAL_END_LAHSO_RUNWAY";
+    }
+
+    public static final class Ars implements BaseColumns {
+        public static final String TABLE_NAME = "ars";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
+        public static final String RUNWAY_ID = "RUNWAY_ID";
+        public static final String RUNWAY_END_ID = "RUNWAY_END_ID";
+        public static final String ARRESTING_DEVICE = "ARRESTING_DEVICE";
     }
 
     public static final class Remarks implements BaseColumns {
@@ -261,8 +267,17 @@ public class DatabaseManager {
         public static final String AIRSPACE_HOURS = "AIRSPACE_HOURS";
     }
 
-    public static final class Awos implements BaseColumns {
-        public static final String TABLE_NAME = "awos";
+    public static final class Tower9 implements BaseColumns {
+        public static final String TABLE_NAME = "tower8";
+        public static final String FACILITY_ID = "FACILITY_ID";
+        public static final String ATIS_SERIAL_NO = "ATIS_SERIAL_NO";
+        public static final String ATIS_HOURS = "ATIS_HOURS";
+        public static final String ATIS_PURPOSE = "ATIS_PURPOSE";
+        public static final String ATIS_PHONE = "ATIS_PHONE";
+    }
+
+    public static final class Awos1 implements BaseColumns {
+        public static final String TABLE_NAME = "awos1";
         public static final String WX_SENSOR_IDENT = "WX_SENSOR_IDENT";
         public static final String WX_SENSOR_TYPE = "WX_SENSOR_TYPE";
         public static final String COMMISSIONING_STATUS = "COMMISSIONING_STATUS";
@@ -311,32 +326,67 @@ public class DatabaseManager {
         public static final String SITE_NUMBER = "SITE_NUMBER";
         public static final String RUNWAY_ID = "RUNWAY_ID";
         public static final String ILS_TYPE = "ILS_TYPE";
+        public static final String ILS_ID = "ILS_ID";
         public static final String ILS_CATEGORY = "ILS_CATEGORY";
         public static final String ILS_MAGNETIC_BEARING = "ILS_MAGNETIC_BEARING";
-        public static final String LOCALIZER_TYPE = "LOCALIZER_TYPE";
-        public static final String LOCALIZER_ID = "LOCALIZER_ID";
-        public static final String LOCALIZER_FREQUENCY = "LOCALIZER_FREQUENCY";
-        public static final String LOCALIZER_COURSE_WIDTH = "LOCALIZER_COURSE_WIDTH";
-        public static final String GLIDE_SLOPE_TYPE = "GLIDE_SLOPE_TYPE";
-        public static final String GLIDE_SLOPE_ANGLE = "GLIDE_SLOPE_ANGLE";
-        public static final String GLIDE_SLOPE_FREQUENCY = "GLIDE_SLOPE_FREQUENCY";
-        public static final String INNER_MARKER_TYPE = "INNER_MARKER_TYPE";
-        public static final String INNER_MARKER_DISTANCE = "INNER_MARKER_DISTANCE";
-        public static final String MIDDLE_MARKER_TYPE = "MIDDLE_MARKER_TYPE";
-        public static final String MIDDLE_MARKER_ID = "MIDDLE_MARKER_ID";
-        public static final String MIDDLE_MARKER_NAME = "MIDDLE_MARKER_NAME";
-        public static final String MIDDLE_MARKER_FREQUENCY = "MIDDLE_MARKER_FREQUENCY";
-        public static final String MIDDLE_MARKER_DISTANCE = "MIDDLE_MARKER_DISTANCE";
-        public static final String OUTER_MARKER_TYPE = "OUTER_MARKER_TYPE";
-        public static final String OUTER_MARKER_ID = "OUTER_MARKER_ID";
-        public static final String OUTER_MARKER_NAME = "OUTER_MARKER_NAME";
-        public static final String OUTER_MARKER_FREQUENCY = "OUTER_MARKER_FREQUENCY";
-        public static final String OUTER_MARKER_DISTANCE = "OUTER_MARKER_DISTANCE";
-        public static final String BACKCOURSE_MARKER_AVAILABLE = "BACKCOURSE_MARKER_AVAILABLE";
     }
 
     public static final class Ils2 implements BaseColumns {
         public static final String TABLE_NAME = "ils2";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
+        public static final String RUNWAY_ID = "RUNWAY_ID";
+        public static final String ILS_TYPE = "ILS_TYPE";
+        public static final String OPERATIONAL_STATUS = "OPERATIONAL_STATUS";
+        public static final String OPERATIONAL_EFFECTIVE_DATE = "OPERATIONAL_EFFECTIVE_DATE";
+        public static final String LOCALIZER_FREQUENCY = "LOCALIZER_FREQUENCY";
+        public static final String LOCALIZER_BACK_COURSE_STATUS = "LOCALIZER_BACK_COURSE_STATUS";
+        public static final String LOCALIZER_COURSE_WIDTH = "LOCALIZER_COURSE_WIDTH";
+    }
+
+    public static final class Ils3 implements BaseColumns {
+        public static final String TABLE_NAME = "ils3";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
+        public static final String RUNWAY_ID = "RUNWAY_ID";
+        public static final String ILS_TYPE = "ILS_TYPE";
+        public static final String OPERATIONAL_STATUS = "OPERATIONAL_STATUS";
+        public static final String OPERATIONAL_EFFECTIVE_DATE = "OPERATIONAL_EFFECTIVE_DATE";
+        public static final String GLIDE_SLOPE_TYPE = "GLIDE_SLOPE_TYPE";
+        public static final String GLIDE_SLOPE_ANGLE = "GLIDE_SLOPE_ANGLE";
+        public static final String GLIDE_SLOPE_FREQUENCY = "GLIDE_SLOPE_FREQUENCY";
+    }
+
+    public static final class Ils4 implements BaseColumns {
+        public static final String TABLE_NAME = "ils4";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
+        public static final String RUNWAY_ID = "RUNWAY_ID";
+        public static final String ILS_TYPE = "ILS_TYPE";
+        public static final String OPERATIONAL_STATUS = "OPERATIONAL_STATUS";
+        public static final String OPERATIONAL_EFFECTIVE_DATE = "OPERATIONAL_EFFECTIVE_DATE";
+        public static final String DME_CHANNEL = "DME_CHANNEL";
+    }
+
+    public static final class Ils5 implements BaseColumns {
+        public static final String TABLE_NAME = "ils5";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
+        public static final String RUNWAY_ID = "RUNWAY_ID";
+        public static final String ILS_TYPE = "ILS_TYPE";
+        public static final String MARKER_TYPE = "MARKER_TYPE";
+        public static final String OPERATIONAL_STATUS = "OPERATIONAL_STATUS";
+        public static final String OPERATIONAL_EFFECTIVE_DATE = "OPERATIONAL_EFFECTIVE_DATE";
+        public static final String MARKER_DISTANCE = "MARKER_DISTANCE";
+        public static final String MARKER_DISTANCE_CENTERLINE = "MARKET_DISTANCE_CENTERLINE";
+        public static final String MARKER_DIRECTION_CENTERLINE = "MARKET_DIRECTION_CENTERLINE";
+        public static final String MARKER_ELEVATION_MSL = "MARKER_ELEVATION_MSL";
+        public static final String MARKER_FACILITY_TYPE = "MARKER_FACILITY_TYPE";
+        public static final String MARKER_BEACON_ID = "MARKER_BEACON_ID";
+        public static final String MARKER_BEACON_NAME = "MARKER_BEACON_NAME";
+        public static final String MARKER_BEACON_FREQUENCY = "MARKER_BEACON_FREQUENCY";
+        public static final String MARKER_NAVAID_ID = "MARKER_NAVAID_ID";
+        public static final String MARKER_SERVICE = "MARKER_SERVICE";
+    }
+
+    public static final class Ils6 implements BaseColumns {
+        public static final String TABLE_NAME = "ils6";
         public static final String SITE_NUMBER = "SITE_NUMBER";
         public static final String RUNWAY_ID = "RUNWAY_ID";
         public static final String ILS_TYPE = "ILS_TYPE";
@@ -472,7 +522,27 @@ public class DatabaseManager {
             String query = "SELECT *,"
                 +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now', 'localtime') as age"
                 +" FROM "+Catalog.TABLE_NAME+" c1"
-                +" WHERE "+Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
+                +" WHERE "
+                    +Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
+                    +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
+                    +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE
+                    +" AND strftime('%s', c2."+Catalog.START_DATE
+                    +") <= strftime('%s', 'now', 'localtime') )";
+            return db.rawQuery( query, null );
+        } catch ( Exception e ) {
+        }
+        return null;
+    }
+
+    public Cursor getCurrentFromCatalog( String type ) {
+        try {
+            SQLiteDatabase db = getCatalogDb();
+            String query = "SELECT *,"
+                +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now', 'localtime') as age"
+                +" FROM "+Catalog.TABLE_NAME+" c1"
+                +" WHERE "
+                    +Catalog.TYPE+"='"+type+"' AND "
+                    +Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
                     +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
                     +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE
                     +" AND strftime('%s', c2."+Catalog.START_DATE

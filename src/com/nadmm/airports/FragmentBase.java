@@ -31,7 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
@@ -81,7 +81,7 @@ public class FragmentBase extends Fragment {
         tv.setText( String.format( "%s - %s", icaoCode, stationName ) );
         if ( awos.moveToFirst() ) {
             tv = (TextView) root.findViewById( R.id.wx_station_info );
-            String type = awos.getString( awos.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+            String type = awos.getString( awos.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
             if ( type == null || type.length() == 0 ) {
                 type = "ASOS/AWOS";
             }
@@ -89,7 +89,7 @@ public class FragmentBase extends Fragment {
             String state = awos.getString( awos.getColumnIndex( Airports.ASSOC_STATE ) );
             tv.setText( String.format( "%s, %s, %s", type, city, state ) );
 
-            String phone = awos.getString( awos.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+            String phone = awos.getString( awos.getColumnIndex( Awos1.STATION_PHONE_NUMBER ) );
             if ( phone != null && phone.length() > 0 ) {
                 tv = (TextView) root.findViewById( R.id.wx_station_phone );
                 tv.setText( phone );
@@ -97,14 +97,14 @@ public class FragmentBase extends Fragment {
                 tv.setVisibility( View.VISIBLE );
             }
 
-            String freq = awos.getString( awos.getColumnIndex( Awos.STATION_FREQUENCY ) );
+            String freq = awos.getString( awos.getColumnIndex( Awos1.STATION_FREQUENCY ) );
             if ( freq != null && freq.length() > 0 ) {
                 tv = (TextView) root.findViewById( R.id.wx_station_freq );
                 tv.setText( freq );
                 tv.setVisibility( View.VISIBLE );
             }
 
-            freq = awos.getString( awos.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
+            freq = awos.getString( awos.getColumnIndex( Awos1.SECOND_STATION_FREQUENCY ) );
             if ( freq != null && freq.length() > 0 ) {
                 tv = (TextView) root.findViewById( R.id.wx_station_freq2 );
                 tv.setText( freq );

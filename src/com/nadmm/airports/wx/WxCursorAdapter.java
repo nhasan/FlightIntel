@@ -29,7 +29,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.DataUtils;
@@ -83,9 +83,9 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         tv = (TextView) view.findViewById( R.id.wx_station_info );
         tv.setText( info.toString() );
 
-        String freq = c.getString( c.getColumnIndex( Awos.STATION_FREQUENCY ) );
+        String freq = c.getString( c.getColumnIndex( Awos1.STATION_FREQUENCY ) );
         if ( freq == null || freq.length() == 0 ) {
-            freq = c.getString( c.getColumnIndex( Awos.SECOND_STATION_FREQUENCY ) );
+            freq = c.getString( c.getColumnIndex( Awos1.SECOND_STATION_FREQUENCY ) );
         }
         if ( freq != null && freq.length() > 0 ) {
             try {
@@ -96,7 +96,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         }
 
         info = new StringBuilder();
-        String type = c.getString( c.getColumnIndex( Awos.WX_SENSOR_TYPE ) );
+        String type = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
         if ( type == null || type.length() == 0 ) {
             type = "ASOS/AWOS";
         }
@@ -108,7 +108,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         tv.setText( info.toString() );
 
         tv = (TextView) view.findViewById( R.id.wx_station_phone );
-        String phone = c.getString( c.getColumnIndex( Awos.STATION_PHONE_NUMBER ) );
+        String phone = c.getString( c.getColumnIndex( Awos1.STATION_PHONE_NUMBER ) );
         if ( phone != null && phone.length() > 0 ) {
             tv.setText( phone );
         }

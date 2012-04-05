@@ -30,6 +30,10 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Ils2;
+import com.nadmm.airports.DatabaseManager.Ils3;
+import com.nadmm.airports.DatabaseManager.Ils4;
+import com.nadmm.airports.DatabaseManager.Ils5;
+import com.nadmm.airports.DatabaseManager.Ils6;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
 
@@ -59,7 +63,7 @@ public class IlsDetailsActivity extends ActivityBase {
             String ilsType = params[ 2 ];
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 3 ];
+            Cursor[] cursors = new Cursor[ 9 ];
 
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -74,6 +78,45 @@ public class IlsDetailsActivity extends ActivityBase {
             builder.setTables( Ils2.TABLE_NAME );
             cursors[ 2 ] = builder.query( db, new String[] { "*" },
                     Ils2.SITE_NUMBER+"=? AND "+Ils2.RUNWAY_ID+"=? AND "+Ils2.ILS_TYPE+"=?",
+                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Ils3.TABLE_NAME );
+            cursors[ 3 ] = builder.query( db, new String[] { "*" },
+                    Ils3.SITE_NUMBER+"=? AND "+Ils3.RUNWAY_ID+"=? AND "+Ils3.ILS_TYPE+"=?",
+                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Ils4.TABLE_NAME );
+            cursors[ 4 ] = builder.query( db, new String[] { "*" },
+                    Ils4.SITE_NUMBER+"=? AND "+Ils4.RUNWAY_ID+"=? AND "+Ils4.ILS_TYPE+"=?",
+                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Ils5.TABLE_NAME );
+            cursors[ 5 ] = builder.query( db, new String[] { "*" },
+                    Ils5.SITE_NUMBER+"=? AND "+Ils5.RUNWAY_ID+"=? AND "+Ils5.ILS_TYPE+"=?"
+                    +" AND "+Ils5.MARKER_TYPE+"='IM'",
+                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Ils5.TABLE_NAME );
+            cursors[ 6 ] = builder.query( db, new String[] { "*" },
+                    Ils5.SITE_NUMBER+"=? AND "+Ils5.RUNWAY_ID+"=? AND "+Ils5.ILS_TYPE+"=?"
+                    +" AND "+Ils5.MARKER_TYPE+"='MM'",
+                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Ils5.TABLE_NAME );
+            cursors[ 7 ] = builder.query( db, new String[] { "*" },
+                    Ils5.SITE_NUMBER+"=? AND "+Ils5.RUNWAY_ID+"=? AND "+Ils5.ILS_TYPE+"=?"
+                    +" AND "+Ils5.MARKER_TYPE+"='OM'",
+                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Ils6.TABLE_NAME );
+            cursors[ 8 ] = builder.query( db, new String[] { "*" },
+                    Ils6.SITE_NUMBER+"=? AND "+Ils6.RUNWAY_ID+"=? AND "+Ils6.ILS_TYPE+"=?",
                     new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
 
             return cursors;
@@ -119,136 +162,169 @@ public class IlsDetailsActivity extends ActivityBase {
         String ilsType = ils1.getString( ils1.getColumnIndex( Ils1.ILS_TYPE ) );
         addRow( layout, "Type", ilsType );
         addSeparator( layout );
+        String locId = ils1.getString( ils1.getColumnIndex( Ils1.ILS_ID ) );
+        addRow( layout, "Id", locId );
         String category = ils1.getString( ils1.getColumnIndex( Ils1.ILS_CATEGORY ) );
         if ( category.length() > 0 ) {
-            addRow( layout, "Category", category );
             addSeparator( layout );
+            addRow( layout, "Category", category );
         }
+        addSeparator( layout );
         String bearing = ils1.getString( ils1.getColumnIndex( Ils1.ILS_MAGNETIC_BEARING ) );
         addRow( layout, "Magnetic bearing", bearing+"\u00B0" );
     }
 
     protected void showLocalizerDetails( Cursor result[] ) {
-        Cursor ils1 = result[ 1 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_loc_details );
-        String locType = ils1.getString( ils1.getColumnIndex( Ils1.LOCALIZER_TYPE ) );
-        addRow( layout, "Type", locType );
-        addSeparator( layout );
-        String locId = ils1.getString( ils1.getColumnIndex( Ils1.LOCALIZER_ID ) );
-        addRow( layout, "Id", locId );
-        addSeparator( layout );
-        String locFreq = ils1.getString( ils1.getColumnIndex( Ils1.LOCALIZER_FREQUENCY ) );
-        addRow( layout, "Frequency", locFreq );
-        addSeparator( layout );
-        Double locWidth = ils1.getDouble( ils1.getColumnIndex( Ils1.LOCALIZER_COURSE_WIDTH ) );
-        addRow( layout, "Course width", String.format( "%.02f\u00B0", locWidth ) );
+        Cursor ils2 = result[ 2 ];
+        if ( ils2.moveToFirst() ) {
+            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_loc_details );
+            String locFreq = ils2.getString( ils2.getColumnIndex( Ils2.LOCALIZER_FREQUENCY ) );
+            addRow( layout, "Frequency", locFreq );
+            addSeparator( layout );
+            float locWidth = ils2.getFloat( ils2.getColumnIndex( Ils2.LOCALIZER_COURSE_WIDTH ) );
+            addRow( layout, "Course width", FormatUtils.formatDegrees( locWidth ) );
+            String back = ils2.getString( ils2.getColumnIndex( Ils2.LOCALIZER_BACK_COURSE_STATUS ) );
+            if ( back.length() > 0 ) {
+                addSeparator( layout );
+                addRow( layout, "Back course", back );
+            }
+            addSeparator( layout );
+            String status = ils2.getString( ils2.getColumnIndex( Ils2.OPERATIONAL_STATUS ) );
+            String date = ils2.getString( ils2.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
+            addRow( layout, "Status", status, date );
+        } else {
+            TextView tv = (TextView) findViewById( R.id.rwy_loc_label );
+            tv.setVisibility( View.GONE );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_loc_details );
+            layout.setVisibility( View.GONE );
+        }
     }
 
     protected void showGlideslopeDetails( Cursor result[] ) {
-        Cursor ils1 = result[ 1 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_gs_details );
-        String gsType = ils1.getString( ils1.getColumnIndex( Ils1.GLIDE_SLOPE_TYPE ) );
-        if ( gsType.length() > 0 ) {
+        Cursor ils3 = result[ 3 ];
+        if ( ils3.moveToFirst() ) {
+            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_gs_details );
+            String gsType = ils3.getString( ils3.getColumnIndex( Ils3.GLIDE_SLOPE_TYPE ) );
             addRow( layout, "Type", gsType );
             addSeparator( layout );
-            Double gsAngle = ils1.getDouble( ils1.getColumnIndex( Ils1.GLIDE_SLOPE_ANGLE ) );
-            addRow( layout, "Glide angle", String.format( "%.02f\u00B0", gsAngle ) );
+            float gsAngle = ils3.getFloat( ils3.getColumnIndex( Ils3.GLIDE_SLOPE_ANGLE ) );
+            addRow( layout, "Glide angle", FormatUtils.formatDegrees( gsAngle ) );
             addSeparator( layout );
-            String gsFreq = ils1.getString( ils1.getColumnIndex( Ils1.GLIDE_SLOPE_FREQUENCY ) );
+            String gsFreq = ils3.getString( ils3.getColumnIndex( Ils3.GLIDE_SLOPE_FREQUENCY ) );
             addRow( layout, "Frequency", gsFreq );
+            addSeparator( layout );
+            String status = ils3.getString( ils3.getColumnIndex( Ils2.OPERATIONAL_STATUS ) );
+            String date = ils3.getString( ils3.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
+            addRow( layout, "Status", status, date );
         } else {
             TextView tv = (TextView) findViewById( R.id.rwy_gs_label );
             tv.setVisibility( View.GONE );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_gs_details );
             layout.setVisibility( View.GONE );
         }
     }
 
     protected void showInnerMarkerDetails( Cursor result[] ) {
-        Cursor ils1 = result[ 1 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_im_details );
-        String imType = ils1.getString( ils1.getColumnIndex( Ils1.INNER_MARKER_TYPE ) );
-        if ( imType.length() > 0 ) {
+        Cursor ils5 = result[ 5 ];
+        if ( ils5.moveToFirst() ) {
+            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_im_details );
+            String imType = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_TYPE ) );
             addRow( layout, "Type", imType );
             addSeparator( layout );
-            int imDistance = ils1.getInt( ils1.getColumnIndex( Ils1.INNER_MARKER_DISTANCE ) );
-            addRow( layout, "Distance", FormatUtils.formatFeet( imDistance ) );
+            int distance = ils5.getInt( ils5.getColumnIndex( Ils5.MARKER_DISTANCE ) );
+            addRow( layout, "Distance", FormatUtils.formatFeet( distance ) );
+            addSeparator( layout );
+            String status = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_STATUS ) );
+            String date = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
+            addRow( layout, "Status", status, date );
         } else {
             TextView tv = (TextView) findViewById( R.id.rwy_im_label );
             tv.setVisibility( View.GONE );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_im_details );
             layout.setVisibility( View.GONE );
         }
     }
 
     protected void showMiddleMarkerDetails( Cursor result[] ) {
-        Cursor ils1 = result[ 1 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_mm_details );
-        String mmType = ils1.getString( ils1.getColumnIndex( Ils1.MIDDLE_MARKER_TYPE ) );
-        if ( mmType.length() > 0 ) {
+        Cursor ils5 = result[ 6 ];
+        if ( ils5.moveToFirst() ) {
+            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_mm_details );
+            String mmType = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_TYPE ) );
             addRow( layout, "Type", mmType );
-            addSeparator( layout );
-            String mmId = ils1.getString( ils1.getColumnIndex( Ils1.MIDDLE_MARKER_ID ) );
+            String mmId = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_ID ) );
             if ( mmId.length() > 0 ) {
+                addSeparator( layout );
                 addRow( layout, "Id", mmId );
-                addSeparator( layout );
             }
-            String mmName = ils1.getString( ils1.getColumnIndex( Ils1.MIDDLE_MARKER_NAME ) );
+            String mmName = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_NAME ) );
             if ( mmName.length() > 0 ) {
+                addSeparator( layout );
                 addRow( layout, "Name", mmName );
-                addSeparator( layout );
             }
-            String mmFreq = ils1.getString( ils1.getColumnIndex( Ils1.MIDDLE_MARKER_FREQUENCY ) );
+            String mmFreq = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_FREQUENCY ) );
             if ( mmFreq.length() > 0 ) {
-                addRow( layout, "Frequency", mmFreq );
                 addSeparator( layout );
+                addRow( layout, "Frequency", mmFreq );
             }
-            int mmDistance = ils1.getInt( ils1.getColumnIndex( Ils1.MIDDLE_MARKER_DISTANCE ) );
+            addSeparator( layout );
+            int mmDistance = ils5.getInt( ils5.getColumnIndex( Ils5.MARKER_DISTANCE ) );
             addRow( layout, "Distance", FormatUtils.formatFeet( mmDistance ) );
+            addSeparator( layout );
+            String status = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_STATUS ) );
+            String date = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
+            addRow( layout, "Status", status, date );
         } else {
             TextView tv = (TextView) findViewById( R.id.rwy_mm_label );
             tv.setVisibility( View.GONE );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_mm_details );
             layout.setVisibility( View.GONE );
         }
     }
 
     protected void showOuterMarkerDetails( Cursor result[] ) {
-        Cursor ils1 = result[ 1 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_om_details );
-        String omType = ils1.getString( ils1.getColumnIndex( Ils1.OUTER_MARKER_TYPE ) );
-        if ( omType.length() > 0 ) {
+        Cursor ils5 = result[ 7 ];
+        if ( ils5.moveToFirst() ) {
+            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_om_details );
+            String omType = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_TYPE ) );
             addRow( layout, "Type", omType );
-            addSeparator( layout );
-            String omId = ils1.getString( ils1.getColumnIndex( Ils1.OUTER_MARKER_ID ) );
+            String omId = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_ID ) );
             if ( omId.length() > 0 ) {
+                addSeparator( layout );
                 addRow( layout, "Id", omId );
-                addSeparator( layout );
             }
-            String omName = ils1.getString( ils1.getColumnIndex( Ils1.OUTER_MARKER_NAME ) );
+            String omName = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_NAME ) );
             if ( omName.length() > 0 ) {
+                addSeparator( layout );
                 addRow( layout, "Name", omName );
-                addSeparator( layout );
             }
-            String omFreq = ils1.getString( ils1.getColumnIndex( Ils1.OUTER_MARKER_FREQUENCY ) );
+            String omFreq = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_FREQUENCY ) );
             if ( omFreq.length() > 0 ) {
-                addRow( layout, "Frequency", omFreq );
                 addSeparator( layout );
+                addRow( layout, "Frequency", omFreq );
             }
-            int omDistance = ils1.getInt( ils1.getColumnIndex( Ils1.OUTER_MARKER_DISTANCE ) );
+            addSeparator( layout );
+            int omDistance = ils5.getInt( ils5.getColumnIndex( Ils5.MARKER_DISTANCE ) );
             addRow( layout, "Distance", FormatUtils.formatFeet( omDistance ) );
+            addSeparator( layout );
+            String status = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_STATUS ) );
+            String date = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
+            addRow( layout, "Status", status, date );
         } else {
             TextView tv = (TextView) findViewById( R.id.rwy_om_label );
             tv.setVisibility( View.GONE );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_om_details );
             layout.setVisibility( View.GONE );
         }
     }
 
     protected void showIlsRemarks( Cursor result[] ) {
-        Cursor ils2 = result[ 2 ];
+        Cursor ils6 = result[ 8 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_ils_remarks );
-        if ( ils2.moveToFirst() ) {
+        if ( ils6.moveToFirst() ) {
             do {
-                String remark = ils2.getString( ils2.getColumnIndex( Ils2.ILS_REMARKS ) );
+                String remark = ils6.getString( ils6.getColumnIndex( Ils6.ILS_REMARKS ) );
                 addBulletedRow( layout, remark );
-            } while ( ils2.moveToNext() );
+            } while ( ils6.moveToNext() );
         } else {
             layout.setVisibility( View.GONE );
         }

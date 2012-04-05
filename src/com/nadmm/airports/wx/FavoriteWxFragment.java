@@ -42,7 +42,7 @@ import android.widget.ListView;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Awos;
+import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NetworkUtils;
@@ -242,11 +242,11 @@ public class FavoriteWxFragment extends ListFragment {
                 Wxs.STATION_ELEVATOIN_METER,
                 "x."+Wxs.STATION_LATITUDE_DEGREES,
                 "x."+Wxs.STATION_LONGITUDE_DEGREES,
-                Awos.WX_SENSOR_IDENT,
-                Awos.WX_SENSOR_TYPE,
-                Awos.STATION_FREQUENCY,
-                Awos.SECOND_STATION_FREQUENCY,
-                Awos.STATION_PHONE_NUMBER,
+                Awos1.WX_SENSOR_IDENT,
+                Awos1.WX_SENSOR_TYPE,
+                Awos1.STATION_FREQUENCY,
+                Awos1.SECOND_STATION_FREQUENCY,
+                Awos1.STATION_PHONE_NUMBER,
                 Airports.ASSOC_CITY,
                 Airports.ASSOC_STATE,
             };
@@ -257,8 +257,8 @@ public class FavoriteWxFragment extends ListFragment {
             builder.setTables( Wxs.TABLE_NAME+" x"
                     +" LEFT JOIN "+Airports.TABLE_NAME+" a"
                     +" ON x."+Wxs.STATION_ID+" = a."+Airports.ICAO_CODE
-                    +" LEFT JOIN "+Awos.TABLE_NAME+" w"
-                    +" ON w."+Awos.WX_SENSOR_IDENT+" = a."+Airports.FAA_CODE );
+                    +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
+                    +" ON w."+Awos1.WX_SENSOR_IDENT+" = a."+Airports.FAA_CODE );
             Cursor c = builder.query( db, wxColumns, selection, 
                     null, null, null, sortOrder, null );
 

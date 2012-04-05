@@ -63,7 +63,7 @@ public class CommDetailsActivity extends ActivityBase {
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
             Cursor[] cursors = new Cursor[ 11 ];
-            
+
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
 
