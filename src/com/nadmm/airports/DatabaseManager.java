@@ -520,14 +520,14 @@ public class DatabaseManager {
         try {
             SQLiteDatabase db = getCatalogDb();
             String query = "SELECT *,"
-                +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now', 'localtime') as age"
+                +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now') as age"
                 +" FROM "+Catalog.TABLE_NAME+" c1"
                 +" WHERE "
                     +Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
                     +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
                     +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE
                     +" AND strftime('%s', c2."+Catalog.START_DATE
-                    +") <= strftime('%s', 'now', 'localtime') )";
+                    +") <= strftime('%s', 'now') )";
             return db.rawQuery( query, null );
         } catch ( Exception e ) {
         }
@@ -538,7 +538,7 @@ public class DatabaseManager {
         try {
             SQLiteDatabase db = getCatalogDb();
             String query = "SELECT *,"
-                +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now', 'localtime') as age"
+                +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now') as age"
                 +" FROM "+Catalog.TABLE_NAME+" c1"
                 +" WHERE "
                     +Catalog.TYPE+"='"+type+"' AND "
@@ -546,7 +546,7 @@ public class DatabaseManager {
                     +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
                     +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE
                     +" AND strftime('%s', c2."+Catalog.START_DATE
-                    +") <= strftime('%s', 'now', 'localtime') )";
+                    +") <= strftime('%s', 'now') )";
             return db.rawQuery( query, null );
         } catch ( Exception e ) {
         }
@@ -556,7 +556,7 @@ public class DatabaseManager {
     public Cursor getAllFromCatalog() {
         SQLiteDatabase db = getCatalogDb();
         String query = "SELECT *,"
-            +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now', 'localtime') as age"
+            +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now') as age"
             +" FROM "+Catalog.TABLE_NAME;
         return db.rawQuery( query, null );
     }
