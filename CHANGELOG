@@ -1,3 +1,7 @@
+v3.1.5 (4/5/2012)
+=================
+* Close databases after installing a new database to ensure proper usage.
+
 v3.1.4 (4/5/2012)
 =================
 * Lots of internal changes to adapt to FADDS data format changes for 4/5/2012 cycle
