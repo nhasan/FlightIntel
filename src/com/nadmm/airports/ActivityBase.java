@@ -226,7 +226,7 @@ public class ActivityBase extends FragmentActivity {
             String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
             if ( type.equals( "FADDS" ) ) {
                 int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
-                if ( version < 64 ) {
+                if ( version < 65 ) {
                     Intent download = new Intent( this, DownloadActivity.class );
                     download.putExtra( "MSG", "This app version requires latest data update" );
                     c.close();
