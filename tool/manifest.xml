@@ -3,20 +3,20 @@
     <datafile>
         <type>FADDS</type>
         <desc>National Airspace System (FAA)</desc>
-        <version>64</version>
-        <filename>fadds_20120209.zip</filename>
-        <size>4854976</size>
-        <start>2012-02-09</start>
-        <end>2012-04-05</end>
+        <version>65</version>
+        <filename>fadds_20120405.zip</filename>
+        <size>5009467</size>
+        <start>2012-04-05</start>
+        <end>2012-05-31</end>
     </datafile>
     <datafile>
         <type>DTPP</type>
-        <desc>AeroNav d-TPP #1203 (FAA)</desc>
-        <version>1203</version>
-        <filename>dtpp_20120308.zip</filename>
-        <size>452924</size>
-        <start>2012-03-08T09:01:00Z</start>
-        <end>2012-04-05T09:01:00Z</end>
+        <desc>AeroNav d-TPP #1204 (FAA)</desc>
+        <version>1204</version>
+        <filename>dtpp_20120405.zip</filename>
+        <size>458344</size>
+        <start>2012-04-05T09:01:00Z</start>
+        <end>2012-05-03T09:01:00Z</end>
     </datafile>
 </manifest>
 
