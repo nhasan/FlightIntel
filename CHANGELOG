@@ -1,3 +1,7 @@
+v3.1.6 (4/5/2012)
+=================
+* Fixed database effective date calculations
+
 v3.1.5 (4/5/2012)
 =================
 * Close databases after installing a new database to ensure proper usage.
