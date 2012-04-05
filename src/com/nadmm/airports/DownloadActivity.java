@@ -737,6 +737,7 @@ public final class DownloadActivity extends ActivityBase {
                 // No more downloads left, cleanup any expired data
                 cleanupExpiredData();
                 showToast( "The data was downloaded and installed successfully" );
+                mDbManager.closeDatabases();
                 return 1;
             }
 
