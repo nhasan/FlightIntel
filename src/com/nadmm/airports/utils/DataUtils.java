@@ -377,22 +377,6 @@ public final class DataUtils {
         }
     }
 
-    public static String decodeUnicomFreq( String unicom ) {
-        String decodedUnicom = "";
-
-        int start = 0;
-        while ( start < unicom.length() ) {
-            if ( decodedUnicom.length() > 0 ) {
-                decodedUnicom += ", ";
-            }
-            int end = start+7;
-            decodedUnicom += unicom.substring( start, end );
-            start = end;
-        }
-
-        return decodedUnicom;
-    }
-
     public static String decodeWindIndicator( String windIndicator ) {
         if ( windIndicator.equals( "Y-L" ) ) {
             return "Lighted";
