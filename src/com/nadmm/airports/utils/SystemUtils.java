@@ -19,15 +19,19 @@
 
 package com.nadmm.airports.utils;
 
+import java.io.File;
 import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Environment;
 
 public class SystemUtils {
+
+    private final static String MIME_TYPE_PDF = "application/pdf";
 
     public static boolean canDisplayMimeType( Context context, String mimeType ) {
         PackageManager pm = context.getPackageManager();
@@ -47,6 +51,23 @@ public class SystemUtils {
             return false;
         }
         return true;
+    }
+
+    public static void startPDFViewer( Context context, String path ) {
+        if ( SystemUtils.canDisplayMimeType( context, MIME_TYPE_PDF ) ) {
+            // Fire an intent to view the PDF chart
+            Intent viewChart = new Intent( Intent.ACTION_VIEW );
+            Uri pdf = Uri.fromFile( new File( path ) );
+            viewChart.setDataAndType( pdf, MIME_TYPE_PDF );
+            context.startActivity( viewChart );
+        } else {
+            // No PDF viewer is installed, send user to Play Store
+            UiUtils.showToast( context, "Please install a PDF viewer app first" );
+            Intent market = new Intent( Intent.ACTION_VIEW );
+            Uri uri = Uri.parse( "market://details?id=org.ebookdroid" );
+            market.setData( uri );
+            context.startActivity( market );
+        }
     }
 
 }
