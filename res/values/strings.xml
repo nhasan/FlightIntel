@@ -77,7 +77,6 @@
     <string name="faa_services">FAA Services</string>
     <string name="fss_services">FSS Services</string>
     <string name="airport_operations">Airport Operations</string>
-    <string name="general_info">General information</string>
     <string name="agree">I Agree</string>
     <string name="disagree">I Disagree</string>
     <string name="other_details">Other Details</string>
@@ -93,8 +92,8 @@
     <string name="temperature">Temperature</string>
     <string name="pressure">Pressure</string>
     <string name="precipitation">Precipitation</string>
-    <string name="flight_category">Flight Category</string>
     <string name="instrument_procedures">Instrument Procedures</string>
+    <string name="aeronav_products">AeroNav Digital Products</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>

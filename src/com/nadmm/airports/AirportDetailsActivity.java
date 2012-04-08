@@ -41,6 +41,7 @@ import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -49,6 +50,8 @@ import com.nadmm.airports.DatabaseManager.Aff3;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Attendance;
 import com.nadmm.airports.DatabaseManager.Awos1;
+import com.nadmm.airports.DatabaseManager.Dafd;
+import com.nadmm.airports.DatabaseManager.DafdCycle;
 import com.nadmm.airports.DatabaseManager.Dtpp;
 import com.nadmm.airports.DatabaseManager.Remarks;
 import com.nadmm.airports.DatabaseManager.Runways;
@@ -58,12 +61,14 @@ import com.nadmm.airports.DatabaseManager.Tower6;
 import com.nadmm.airports.DatabaseManager.Tower7;
 import com.nadmm.airports.DatabaseManager.Tower8;
 import com.nadmm.airports.DatabaseManager.Wxs;
-import com.nadmm.airports.dtpp.DtppActivity;
+import com.nadmm.airports.aeronav.DafdService;
+import com.nadmm.airports.aeronav.DtppActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.MetarService;
@@ -154,7 +159,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
             DatabaseManager dbManager = getDbManager();
             SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 11 ];
+            Cursor[] cursors = new Cursor[ 13 ];
 
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -350,6 +355,21 @@ public class AirportDetailsActivity extends ActivityBase {
                 cursors[ 10 ] = c;
             }
 
+            db = dbManager.getDatabase( DatabaseManager.DB_DAFD );
+            if ( db != null ) {
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( DafdCycle.TABLE_NAME );
+                c = builder.query( db, new String[] { "*" },
+                        null, null, null, null, null, null );
+                cursors[ 11 ] = c;
+
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Dafd.TABLE_NAME );
+                c = builder.query( db, new String[] { "*" }, Dafd.FAA_CODE+"=? ",
+                        new String[] { faaCode }, null, null, null, null );
+                cursors[ 12 ] = c;
+            }
+
             return cursors;
         }
 
@@ -368,7 +388,10 @@ public class AirportDetailsActivity extends ActivityBase {
 
         private final HashSet<TextView> mAwosViews = new HashSet<TextView>();
         private final HashSet<TextView> mRunwayViews = new HashSet<TextView>();
-        private BroadcastReceiver mReceiver;
+        private BroadcastReceiver mMetarReceiver;
+        private BroadcastReceiver mDafdReceiver;
+        private IntentFilter mMetarFilter;
+        private IntentFilter mDafdFilter;
         private Bundle mExtras;
         private Location mLocation;
         private float mDeclination;
@@ -379,7 +402,10 @@ public class AirportDetailsActivity extends ActivityBase {
         @Override
         public void onCreate( Bundle savedInstanceState ) {
             super.onCreate( savedInstanceState );
-            mReceiver = new BroadcastReceiver() {
+
+            mMetarFilter = new IntentFilter();
+            mMetarFilter.addAction( NoaaService.ACTION_GET_METAR );
+            mMetarReceiver = new BroadcastReceiver() {
 
                 @Override
                 public void onReceive( Context context, Intent intent ) {
@@ -394,6 +420,15 @@ public class AirportDetailsActivity extends ActivityBase {
                     }
                 }
 
+            };
+
+            mDafdFilter = new IntentFilter();
+            mDafdFilter.addAction( DafdService.ACTION_GET_AFD );
+            mDafdReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive( Context context, Intent intent ) {
+                    handleDafdBroadcast( intent );
+                }
             };
         }
 
@@ -414,16 +449,16 @@ public class AirportDetailsActivity extends ActivityBase {
         @Override
         public void onResume() {
             super.onResume();
-            IntentFilter filter = new IntentFilter();
-            filter.addAction( NoaaService.ACTION_GET_METAR );
-            getActivityBase().registerReceiver( mReceiver, filter );
+            getActivityBase().registerReceiver( mMetarReceiver, mMetarFilter );
+            getActivityBase().registerReceiver( mDafdReceiver, mDafdFilter );
             requestMetars( false );
         }
 
         @Override
         public void onPause() {
             super.onPause();
-            getActivityBase().unregisterReceiver( mReceiver );
+            getActivityBase().unregisterReceiver( mMetarReceiver );
+            getActivityBase().unregisterReceiver( mDafdReceiver );
             if ( mTask != null ) {
                 mTask.cancel( true );
             }
@@ -464,7 +499,7 @@ public class AirportDetailsActivity extends ActivityBase {
             showRunwayDetails( result );
             showAwosDetails( result );
             showOperationsDetails( result );
-            showTppDetails( result );
+            showAeroNavDetails( result );
             showRemarks( result );
             showServicesDetails( result );
             showOtherDetails( result );
@@ -483,49 +518,28 @@ public class AirportDetailsActivity extends ActivityBase {
             String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
 
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_comm_layout );
-            int row = 0;
 
             String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
-            if ( ctaf.length() > 0 ) {
-                ++row;
-                addRow( layout, "CTAF", ctaf );
-            }
-
-            String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
-            if ( unicom.length() > 0 ) {
-                if ( row > 0 ) {
-                    addSeparator( layout );
-                }
-                ++row;
-                addRow( layout, "Unicom", DataUtils.decodeUnicomFreq( unicom ) );
-            }
-
-            if ( row > 0 ) {
-                addSeparator( layout );
-            }
-            Intent intent = new Intent( getActivity(), CommDetailsActivity.class );
-            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            ++row;
-            int resId = getSelectorResourceForRow( row-1, row+1 );
-            addClickableRow( layout, "ATC", intent, resId );
-
-            if ( row > 0 ) {
-                addSeparator( layout );
-            }
-
-            ++row;
-            Intent fss = new Intent( getActivity(), FssCommActivity.class );
-            fss.putExtra( Airports.SITE_NUMBER, siteNumber );
-            resId = getSelectorResourceForRow( row, row+2 );
-            addClickableRow( layout, "FSS outlets", fss, resId );
+            addRow( layout, "CTAF", ctaf.length() > 0? ctaf : "None" );
 
             addSeparator( layout );
+            String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
+            addRow( layout, "Unicom", unicom.length() > 0? unicom : "None" );
 
-            ++row;
+            addSeparator( layout );
+            Intent intent = new Intent( getActivity(), CommDetailsActivity.class );
+            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addClickableRow( layout, "ATC", intent, R.drawable.row_selector_middle );
+
+            addSeparator( layout );
+            Intent fss = new Intent( getActivity(), FssCommActivity.class );
+            fss.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addClickableRow( layout, "Nearby FSS outlets", fss, R.drawable.row_selector_middle );
+
+            addSeparator( layout );
             Intent navaids = new Intent( getActivity(), NavaidsActivity.class );
             navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
-            resId = getSelectorResourceForRow( row, row+1 );
-            addClickableRow( layout, "Navaids", navaids, resId );
+            addClickableRow( layout, "Nearby navaids", navaids, R.drawable.row_selector_bottom );
         }
 
         protected void showRunwayDetails( Cursor[] result ) {
@@ -773,7 +787,7 @@ public class AirportDetailsActivity extends ActivityBase {
             addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
         }
 
-        protected void showTppDetails( Cursor[] result ) {
+        protected void showAeroNavDetails( Cursor[] result ) {
             Cursor apt = result[ 0 ];
             String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
             Cursor dtpp = result[ 10 ];
@@ -782,9 +796,52 @@ public class AirportDetailsActivity extends ActivityBase {
                 Intent intent = new Intent( getActivity(), DtppActivity.class );
                 intent.putExtra( Airports.SITE_NUMBER, siteNumber );
                 addClickableRow( layout, "Instrument procedures", intent,
-                        R.drawable.row_selector );
+                        R.drawable.row_selector_top );
             } else {
-                addRow( layout, "No instrument procedures found" );
+                addRow( layout, "d-TPP data not found" );
+            }
+            addSeparator( layout );
+            Cursor cycle = result[ 11 ];
+            if ( cycle != null && cycle.moveToFirst() ) {
+                String afdCycle = cycle.getString( cycle.getColumnIndex( DafdCycle.AFD_CYCLE ) );
+                Cursor dafd = result[ 12 ];
+                dafd.moveToFirst();
+                String pdfName = dafd.getString( dafd.getColumnIndex( Dafd.PDF_NAME ) );
+                View row = addClickableRow( layout, "A/FD airport info", null,
+                        R.drawable.row_selector_bottom );
+                row.setTag( R.id.DAFD_CYCLE, afdCycle );
+                row.setTag( R.id.DAFD_PDF_NAME, pdfName );
+                row.setOnClickListener( new OnClickListener() {
+
+                    @Override
+                    public void onClick( View v ) {
+                        String afdCycle = (String) v.getTag( R.id.DAFD_CYCLE );
+                        String pdfName = (String) v.getTag( R.id.DAFD_PDF_NAME );
+                        getAfdPage( afdCycle, pdfName );
+                    }
+                } );
+            } else {
+                addRow( layout, "d-A/FD data not found" );
+            }
+        }
+
+        protected void getAfdPage( String afdCycle, String pdfName ) {
+            setRefreshItemVisible( true );
+            startRefreshAnimation();
+            Intent service = new Intent( getActivity(), DafdService.class );
+            service.setAction( DafdService.ACTION_GET_AFD );
+            service.putExtra( DafdService.CYCLE_NAME, afdCycle );
+            service.putExtra( DafdService.PDF_NAME, pdfName );
+            getActivity().startService( service );
+        }
+
+        protected void handleDafdBroadcast( Intent intent ) {
+            stopRefreshAnimation();
+            setRefreshItemVisible( false );
+            String action = intent.getAction();
+            if ( action.equals( DafdService.ACTION_GET_AFD ) ) {
+                String path = intent.getStringExtra( DafdService.PDF_PATH );
+                SystemUtils.startPDFViewer( getActivity(), path );
             }
         }
 

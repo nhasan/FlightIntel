@@ -21,4 +21,6 @@
     <item type="id" name="DTPP_PDF_PATH" />
     <item type="id" name="DTPP_USER_ACTION" />
     <item type="id" name="DTPP_PDF_NAME" />
+    <item type="id" name="DAFD_PDF_NAME" />
+    <item type="id" name="DAFD_CYCLE" />
 </resources>
