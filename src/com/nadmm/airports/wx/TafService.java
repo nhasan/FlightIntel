@@ -27,21 +27,18 @@ import org.apache.http.client.utils.URIUtils;
 import android.content.Intent;
 import android.text.format.DateUtils;
 
-import com.nadmm.airports.AirportsMain;
 import com.nadmm.airports.utils.UiUtils;
 
 public class TafService extends NoaaService {
 
     private final String TAF_QUERY = "dataSource=tafs&requestType=retrieve"
             +"&format=xml&compression=gzip&hoursBeforeNow=6&mostRecent=true&stationString=";
-    private final File TAF_DIR = new File(
-            AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/taf" );
     private final long TAF_CACHE_MAX_AGE = 2*DateUtils.HOUR_IN_MILLIS;
 
     protected TafParser mParser;
 
     public TafService() {
-        super( "TafService" );
+        super( "taf" );
         mParser = new TafParser();
     }
 
@@ -49,11 +46,8 @@ public class TafService extends NoaaService {
     public void onCreate() {
         super.onCreate();
 
-        if ( !TAF_DIR.exists() ) {
-            TAF_DIR.mkdirs();
-        }
         // Remove any old METAR files from cache first
-        cleanupCache( TAF_DIR, TAF_CACHE_MAX_AGE );
+        cleanupCache( DATA_DIR, TAF_CACHE_MAX_AGE );
     }
 
     @Override
@@ -67,7 +61,7 @@ public class TafService extends NoaaService {
         boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
         boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-        File xml = new File( TAF_DIR, "TAF_"+stationId+".xml" );
+        File xml = new File( DATA_DIR, "TAF_"+stationId+".xml" );
         if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
             fetchMetarFromNoaa( stationId, xml );
         }

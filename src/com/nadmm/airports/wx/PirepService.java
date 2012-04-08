@@ -28,7 +28,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.text.format.DateUtils;
 
-import com.nadmm.airports.AirportsMain;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.UiUtils;
 
@@ -36,8 +35,6 @@ public class PirepService extends NoaaService {
 
     private final String PIREP_QUERY_BASE = "dataSource=aircraftreports&requestType=retrieve"
             +"&format=xml&compression=gzip";
-    private final File PIREP_DIR = new File(
-            AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/pirep" );
     private final long PIREP_CACHE_MAX_AGE = 1*DateUtils.HOUR_IN_MILLIS;
 
     public static final String PIREP_RADIUS_NM = "PIREP_RADIUS_NM";
@@ -47,19 +44,15 @@ public class PirepService extends NoaaService {
     protected PirepParser mParser;
 
     public PirepService() {
-        super( "PirepService" );
+        super( "pirep" );
         mParser = new PirepParser();
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        if ( !PIREP_DIR.exists() ) {
-            PIREP_DIR.mkdirs();
-        }
         // Remove any old METAR files from cache first
-        cleanupCache( PIREP_DIR, PIREP_CACHE_MAX_AGE );
+        cleanupCache( DATA_DIR, PIREP_CACHE_MAX_AGE );
     }
 
     @Override
@@ -73,7 +66,7 @@ public class PirepService extends NoaaService {
         boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
         boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-        File xml = new File( PIREP_DIR, "PIREP_"+stationId+".xml" );
+        File xml = new File( DATA_DIR, "PIREP_"+stationId+".xml" );
         if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
             fetchPirepFromNoaa( intent, xml );
         }

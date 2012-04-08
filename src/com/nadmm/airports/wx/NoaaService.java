@@ -34,12 +34,15 @@ import org.apache.http.client.methods.HttpGet;
 
 import android.app.IntentService;
 
+import com.nadmm.airports.AirportsMain;
 import com.nadmm.airports.utils.NetworkUtils;
 
 public abstract class NoaaService extends IntentService {
 
     protected final String NOAA_HOST = "weather.aero";
     protected final String DATASERVER_PATH = "/dataserver1_4/httpparam";
+    protected final File DATA_DIR;
+
     public static final String STATION_ID = "STATION_ID";
     public static final String CACHE_ONLY = "CACHE_ONLY";
     public static final String FORCE_REFRESH = "FORCE_REFRESH";
@@ -56,6 +59,16 @@ public abstract class NoaaService extends IntentService {
         super( name );
         mHttpClient = NetworkUtils.getHttpClient();
         mTarget = new HttpHost( NOAA_HOST, 80 );
+        DATA_DIR = new File( AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/"+name );
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        if ( !DATA_DIR.exists() ) {
+            DATA_DIR.mkdirs();
+        }
     }
 
     protected void cleanupCache( File dir, long maxAge ) {

@@ -27,21 +27,18 @@ import org.apache.http.client.utils.URIUtils;
 import android.content.Intent;
 import android.text.format.DateUtils;
 
-import com.nadmm.airports.AirportsMain;
 import com.nadmm.airports.utils.UiUtils;
 
 public class MetarService extends NoaaService {
 
     private final String METAR_QUERY = "datasource=metars&requesttype=retrieve"
     		+"&format=xml&compression=gzip&hoursBeforeNow=3&mostRecent=true&stationString=";
-    private final File METAR_DIR = new File(
-            AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/metar" );
     private final long METAR_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
     protected MetarParser mParser;
 
     public MetarService() {
-        super( "MetarService" );
+        super( "metar" );
         mParser = new MetarParser();
     }
 
@@ -49,11 +46,8 @@ public class MetarService extends NoaaService {
     public void onCreate() {
         super.onCreate();
 
-        if ( !METAR_DIR.exists() ) {
-            METAR_DIR.mkdirs();
-        }
         // Remove any old METAR files from cache first
-        cleanupCache( METAR_DIR, METAR_CACHE_MAX_AGE );
+        cleanupCache( DATA_DIR, METAR_CACHE_MAX_AGE );
     }
 
     @Override
@@ -67,7 +61,7 @@ public class MetarService extends NoaaService {
         boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
         boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-        File xml = new File( METAR_DIR, "METAR_"+stationId+".xml" );
+        File xml = new File( DATA_DIR, "METAR_"+stationId+".xml" );
         if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
             fetchMetarFromNoaa( stationId, xml );
         }
