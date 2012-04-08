@@ -32,6 +32,14 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
 
     private StringBuilder mStringBuilder = new StringBuilder();
 
+    static class ViewHolder {
+        TextView name;
+        TextView id;
+        TextView location;
+        TextView distance;
+        TextView other;
+    }
+
     public AirportsCursorAdapter( Context context, Cursor c ) {
         super( context, R.layout.airport_list_item, c, R.id.list_section );
     }
@@ -43,21 +51,28 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
 
     @Override
     public void bindView( View view, Context context, Cursor c ) {
-        TextView tv;
-        String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
-        tv = (TextView) view.findViewById( R.id.facility_name );
-        tv.setText( name );
-        tv = (TextView) view.findViewById( R.id.facility_id );
-        String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
-        if ( code == null || code.trim().length() == 0 ) {
-            code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
+        ViewHolder holder = (ViewHolder) view.getTag();
+        if ( holder == null ) {
+            holder = new ViewHolder();
+            holder.name = (TextView) view.findViewById( R.id.facility_name );
+            holder.id = (TextView) view.findViewById( R.id.facility_id );
+            holder.location = (TextView) view.findViewById( R.id.location );
+            holder.distance = (TextView) view.findViewById( R.id.distance );
+            holder.other = (TextView) view.findViewById( R.id.other_info );
+            view.setTag( holder );
         }
-        tv.setText( code );
+
+        String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
+        holder.name.setText( name );
+        String id = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( id == null || id.trim().length() == 0 ) {
+            id = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
+        }
+        holder.id.setText( id );
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
         String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );
         String use = c.getString( c.getColumnIndex( Airports.FACILITY_USE ) );
-        tv = (TextView) view.findViewById( R.id.location );
-        tv.setText( String.format( "%s, %s, %s", city, state,
+        holder.location.setText( String.format( "%s, %s, %s", city, state,
                 DataUtils.decodeFacilityUse( use ) ) );
 
         if ( c.getColumnIndex( Airports.DISTANCE ) >= 0 
@@ -65,15 +80,12 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
             // Check if we have distance information
             float distance = c.getFloat( c.getColumnIndex( Airports.DISTANCE ) );
             float bearing = c.getFloat( c.getColumnIndex( Airports.BEARING ) );
-            tv = (TextView) view.findViewById( R.id.distance );
-            tv.setText( String.format( "%.1f NM %s, initial course %.0f\u00B0 M",
+            holder.distance.setText( String.format( "%.1f NM %s, initial course %.0f\u00B0 M",
                     distance, GeoUtils.getCardinalDirection( bearing ), bearing ) );
         } else {
-            tv = (TextView) view.findViewById( R.id.distance );
-            tv.setVisibility( View.GONE );
+            holder.distance.setVisibility( View.GONE );
         }
 
-        tv = (TextView) view.findViewById( R.id.other_info );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
         String type = DataUtils.decodeLandingFaclityType( siteNumber );
         String fuel = c.getString( c.getColumnIndex( Airports.FUEL_TYPES ) );
@@ -102,7 +114,7 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
             mStringBuilder.append( ", " );
             mStringBuilder.append( DataUtils.decodeStatus( status ) );
         }
-        tv.setText( mStringBuilder.toString() );
+        holder.other.setText( mStringBuilder.toString() );
     }
 
 }
