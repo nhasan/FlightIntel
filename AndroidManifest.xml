@@ -87,7 +87,7 @@
                   android:name=".wx.WxDetailActivity" />
 
         <activity android:label="@string/instrument_procedures"
-                  android:name=".dtpp.DtppActivity" />
+                  android:name=".aeronav.DtppActivity" />
 
         <activity android:label="@string/about"
                   android:name="AboutActivity" />
@@ -114,6 +114,7 @@
 		<service android:name=".wx.MetarService" />
         <service android:name=".wx.TafService" />
         <service android:name=".wx.PirepService" />
-        <service android:name=".dtpp.DtppService" />
+        <service android:name=".aeronav.DtppService" />
+        <service android:name=".aeronav.DafdService" />
     </application>
 </manifest>
