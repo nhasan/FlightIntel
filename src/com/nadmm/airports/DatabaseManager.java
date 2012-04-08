@@ -51,6 +51,7 @@ public class DatabaseManager {
 
     public static final String DB_FADDS = "FADDS";
     public static final String DB_DTPP = "DTPP";
+    public static final String DB_DAFD = "DAFD";
 
     private static final Object sLock = new Object();
     private static DatabaseManager sInstance = null;
@@ -439,7 +440,7 @@ public class DatabaseManager {
         public static final String BUSINESS_PHONE = "BUSINESS_PHONE";
     }
 
-    public static final class Cycle implements BaseColumns {
+    public static final class DtppCycle implements BaseColumns {
         public static final String TABLE_NAME = "cycle";
         public static final String TPP_CYCLE = "TPP_CYCLE";
         public static final String FROM_DATE = "FROM_DATE";
@@ -458,6 +459,19 @@ public class DatabaseManager {
         public static final String FAANFD18_CODE = "FAANFD18_CODE";
         public static final String MILITARY_USE = "MILITARY_USE";
         public static final String COPTER_USE = "COPTER_USE";
+    }
+
+    public static final class DafdCycle implements BaseColumns {
+        public static final String TABLE_NAME = "cycle";
+        public static final String AFD_CYCLE = "AFD_CYCLE";
+        public static final String FROM_DATE = "FROM_DATE";
+        public static final String TO_DATE = "TO_DATE";
+    }
+
+    public static final class Dafd implements BaseColumns {
+        public static final String TABLE_NAME = "dafd";
+        public static final String FAA_CODE = "FAA_CODE";
+        public static final String PDF_NAME = "PDF_NAME";
     }
 
     public static final class Catalog implements BaseColumns {
