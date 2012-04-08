@@ -19,7 +19,18 @@
 
 package com.nadmm.airports.utils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -75,6 +86,47 @@ public class NetworkUtils {
         ClientConnectionManager cm = new ThreadSafeClientConnManager( params, registry );
         HttpClient client = new DefaultHttpClient( cm, params );
         return client;
+    }
+
+    public static void doHttpGet( Context context, HttpClient httpClient, HttpHost target,
+            String path, File pdfFile ) {
+        InputStream in = null;
+        FileOutputStream out = null;
+
+        try {
+            URI uri = new URI( path );
+            HttpGet get = new HttpGet( uri );
+
+            HttpResponse response = httpClient.execute( target, get );
+            if ( response.getStatusLine().getStatusCode() == HttpStatus.SC_OK ) {
+                out = new FileOutputStream( pdfFile );
+
+                HttpEntity entity = response.getEntity();
+                in = entity.getContent();
+
+                byte[] buffer = new byte[ 32*1024 ];
+                int count;
+
+                while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
+                    out.write( buffer, 0, count );
+                }
+            }
+        } catch ( Exception e ) {
+            UiUtils.showToast( context, e.getMessage() );
+        } finally {
+            if ( in != null ) {
+                try {
+                    in.close();
+                } catch ( IOException e ) {
+                }
+            }
+            if ( out != null ) {
+                try {
+                    out.close();
+                } catch ( IOException e ) {
+                }
+            }
+        }
     }
 
 }
