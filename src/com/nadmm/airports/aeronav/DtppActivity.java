@@ -46,7 +46,6 @@ import android.widget.TextView;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Dafd;
 import com.nadmm.airports.DatabaseManager.Dtpp;
 import com.nadmm.airports.DatabaseManager.DtppCycle;
 import com.nadmm.airports.R;
@@ -138,12 +137,13 @@ public class DtppActivity extends ActivityBase {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
+            int index = 0;
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] result = new Cursor[ 12 ];
+            Cursor[] result = new Cursor[ 11 ];
 
             Cursor apt = getAirportDetails( siteNumber );
-            result[ 0 ] = apt;
+            result[ index++ ] = apt;
 
             mFaaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
 
@@ -153,19 +153,18 @@ public class DtppActivity extends ActivityBase {
             builder.setTables( DtppCycle.TABLE_NAME );
             Cursor c = builder.query( db, new String[] { "*" },
                     null, null, null, null, null, null );
-            result[ 1 ] = c;
+            result[ index++ ] = c;
 
             builder = new SQLiteQueryBuilder();
             builder.setTables( Dtpp.TABLE_NAME );
             c = builder.query( db, new String[] { Dtpp.TPP_VOLUME },
                     Dtpp.FAA_CODE+"=?",
                     new String[] { mFaaCode }, Dtpp.TPP_VOLUME, null, null, null );
-            result[ 2 ] = c;
+            result[ index++ ] = c;
 
             c.moveToFirst();
             mTppVolume = c.getString( c.getColumnIndex( Dtpp.TPP_VOLUME ) );
 
-            int index = 3;
             for ( String chartCode : new String[] { "APD", "MIN", "STAR", "IAP",
                     "DP", "DPO", "LAH", "HOT" } ) {
                 builder = new SQLiteQueryBuilder();
@@ -174,15 +173,6 @@ public class DtppActivity extends ActivityBase {
                         Dtpp.FAA_CODE+"=? AND "+Dtpp.CHART_CODE+"=?",
                         new String[] { mFaaCode, chartCode }, null, null, null, null );
                 result[ index++ ] = c;
-            }
-
-            db = mDbManager.getDatabase( DatabaseManager.DB_DAFD );
-            if ( db != null ) {
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Dafd.TABLE_NAME );
-                c = builder.query( db, new String[] { "*" }, Dafd.FAA_CODE+"=? ",
-                        new String[] { mFaaCode }, null, null, null, null );
-                result[ index ] = c;
             }
 
             return result;
@@ -360,7 +350,7 @@ public class DtppActivity extends ActivityBase {
     protected Intent makeServiceIntent( String action ) {
         Intent service = new Intent( this, DtppService.class );
         service.setAction( action );
-        service.putExtra( DtppService.TPP_CYCLE, mTppCycle );
+        service.putExtra( DtppService.CYCLE_NAME, mTppCycle );
         service.putExtra( DtppService.PDF_NAMES, mPendingCharts );
         return service;
     }
