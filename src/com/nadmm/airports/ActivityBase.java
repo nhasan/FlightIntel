@@ -77,7 +77,9 @@ public class ActivityBase extends FragmentActivity {
         @Override
         public void onClick( View v ) {
             Intent intent = (Intent) v.getTag();
-            startActivity( intent );
+            if ( intent != null ) {
+                startActivity( intent );
+            }
         }
     };
     private final OnClickListener mOnPhoneClickListener = new OnClickListener() {
@@ -220,6 +222,7 @@ public class ActivityBase extends FragmentActivity {
         }
 
         boolean dtppFound = false;
+        boolean dafdFound = false;
 
         // Check if we have any expired data. If yes, then redirect to download activity
         do {
@@ -234,6 +237,8 @@ public class ActivityBase extends FragmentActivity {
                 }
             } else if ( type.equals( "DTPP" ) ) {
                 dtppFound = true;
+            } else if ( type.equals( "DAFD" ) ) {
+                dafdFound = true;
             }
 
             int age = c.getInt( c.getColumnIndex( "age" ) );
@@ -259,6 +264,12 @@ public class ActivityBase extends FragmentActivity {
         if ( !dtppFound ) {
             Intent download = new Intent( this, DownloadActivity.class );
             download.putExtra( "MSG", "Please download the current d-TPP database" );
+            return download;
+        }
+
+        if ( !dafdFound ) {
+            Intent download = new Intent( this, DownloadActivity.class );
+            download.putExtra( "MSG", "Please download the current d-A/FD database" );
             return download;
         }
 
