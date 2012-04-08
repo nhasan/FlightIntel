@@ -117,7 +117,6 @@ sub airports
     my $from_date = $dafd->{'att'}->{'from_edate'};
     my $to_date = $dafd->{'att'}->{'to_edate'};
 
-    print $main::cycle."\n";
     #AFD_CYCLE
     $sth_cycle->bind_param( 1, $main::cycle );
     #FROM_DATE
