@@ -45,6 +45,7 @@
           android:icon="@drawable/ic_action_refresh" />
     <item android:id="@+id/menu_search"
           android:title="@string/search"
-          android:showAsAction="always" 
-          android:icon="@drawable/ic_action_search" />
+          android:showAsAction="collapseActionView|always" 
+          android:icon="@drawable/ic_action_search"
+          android:actionViewClass="android.widget.SearchView" />
 </menu>

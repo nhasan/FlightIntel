@@ -21,6 +21,8 @@ package com.nadmm.airports;
 
 import java.util.ArrayList;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -32,6 +34,7 @@ import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -55,6 +58,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -603,6 +607,16 @@ public class ActivityBase extends FragmentActivity {
         inflater.inflate( R.menu.mainmenu, menu );
         mRefreshItem = menu.findItem( R.id.menu_refresh );
         mRefreshDrawable = mRefreshItem.getIcon();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            SearchManager searchManager =
+                    (SearchManager) getSystemService( Context.SEARCH_SERVICE );
+            SearchView searchView =
+                    (SearchView) menu.findItem( R.id.menu_search ).getActionView();
+            searchView.setSearchableInfo( searchManager.getSearchableInfo( getComponentName() ) );
+            searchView.setIconifiedByDefault( false );
+        }
+
         return super.onCreateOptionsMenu( menu );
     }
 
@@ -613,7 +627,9 @@ public class ActivityBase extends FragmentActivity {
             startHomeActivity();
             return true;
         case R.id.menu_search:
-            onSearchRequested();
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                onSearchRequested();
+            }
             return true;
         case R.id.menu_browse:
             Intent browse = new Intent( this, BrowseActivity.class );
