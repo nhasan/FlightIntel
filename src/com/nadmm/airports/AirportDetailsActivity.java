@@ -776,6 +776,11 @@ public class AirportDetailsActivity extends ActivityBase {
                 addSeparator( layout );
                 addRow( layout, "Military landing rights", "Yes" );
             }
+            String medical = apt.getString( apt.getColumnIndex( Airports.MEDICAL_USE ) );
+            if ( medical != null && medical.equals( "Y" ) ) {
+                addSeparator( layout );
+                addRow( layout, "Medical use", "Yes" );
+            }
             addSeparator( layout );
             Intent intent = new Intent( getActivity(), AlmanacActivity.class );
             String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
@@ -792,11 +797,15 @@ public class AirportDetailsActivity extends ActivityBase {
             String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
             Cursor dtpp = result[ 10 ];
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_ifr_layout );
-            if ( dtpp != null && dtpp.moveToFirst() ) {
-                Intent intent = new Intent( getActivity(), DtppActivity.class );
-                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                addClickableRow( layout, "Instrument procedures", intent,
-                        R.drawable.row_selector_top );
+            if ( dtpp != null ) {
+                if ( dtpp.moveToFirst() ) {
+                    Intent intent = new Intent( getActivity(), DtppActivity.class );
+                    intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                    addClickableRow( layout, "Instrument procedures", intent,
+                            R.drawable.row_selector_top );
+                } else {
+                    addRow( layout, "No instrument procedures" );
+                }
             } else {
                 addRow( layout, "d-TPP data not found" );
             }
