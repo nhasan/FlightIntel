@@ -129,9 +129,11 @@ public class RunwayDetailsActivity extends ActivityBase {
         if ( isHelipad ) {
             setActionBarTitle( apt, "Helipad "+runwayId );
             showHelipadInformation( result );
+            showCommonRemarks( result, runwayId );
         } else {
             setActionBarTitle( apt, "Runway "+runwayId );
             showCommonInformation( result );
+            showCommonRemarks( result, runwayId );
             showBaseEndInformation( result );
             showReciprocalEndInformation( result );
         }
@@ -159,10 +161,6 @@ public class RunwayDetailsActivity extends ActivityBase {
         addSeparator( layout );
         String edgeLights = rwy.getString( rwy.getColumnIndex( Runways.EDGE_LIGHTS_INTENSITY ) );
         addRow( layout, "Edge lights", DataUtils.decodeRunwayEdgeLights( edgeLights ) );
-
-        // Show remarks
-        LinearLayout rmkLayout = (LinearLayout) findViewById( R.id.rwy_common_remarks );
-        showCommonRemarks( rmkLayout, result, runwayId );
     }
 
     protected void showBaseEndInformation( Cursor[] result ) {
@@ -541,7 +539,8 @@ public class RunwayDetailsActivity extends ActivityBase {
         showRemarks( rmkLayout, result, helipadId );
     }
 
-    protected void showCommonRemarks( LinearLayout layout, Cursor[] result, String runwayId ) {
+    protected void showCommonRemarks( Cursor[] result, String runwayId ) {
+        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_common_remarks );
         int count = 0;
         Cursor rmk = result[ 4 ];
         if ( rmk.moveToFirst() ) {
