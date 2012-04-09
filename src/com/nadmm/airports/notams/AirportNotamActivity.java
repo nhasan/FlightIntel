@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports;
+package com.nadmm.airports.notams;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,6 +26,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.PreferencesActivity;
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 public class AirportNotamActivity extends NotamActivityBase {
