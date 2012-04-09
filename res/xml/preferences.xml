@@ -58,15 +58,15 @@
                 android:defaultValue="dial" />
         <CheckBoxPreference
                 android:key="auto_download_on_3G"
-                android:title="Auto-download content on 3G/4G"
-                android:summaryOn="Auto-download content on 3G/4G+wifi"
-                android:summaryOff="Auto-download content on wifi only"
+                android:title="Use mobile data freely"
+                android:summaryOn="Do not verify downloads"
+                android:summaryOff="Verify download when not on Wifi"
                 defaultValue="false" />
         <CheckBoxPreference
                 android:key="show_local_time"
-                android:title="Use local timezone"
-                android:summaryOn="Local time will be shown"
-                android:summaryOff="UTC time will be shown"
+                android:title="Show local time"
+                android:summaryOn="Show date/time in local timezone"
+                android:summaryOff="Show date/time in UTC timezone"
                 defaultValue="false" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Crash Reports">
@@ -77,6 +77,6 @@
                 android:defaultValue="false"/>
         <EditTextPreference android:key="acra.user.email"
                 android:title="Your email address"
-                android:summary="Send your email address to the developer"/>
+                android:summary="Allow developer to contact you"/>
     </PreferenceCategory>
 </PreferenceScreen>
