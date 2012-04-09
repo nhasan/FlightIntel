@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports;
+package com.nadmm.airports.afd;
 
 import android.app.SearchManager;
 import android.content.Intent;
@@ -30,7 +30,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.R;
+import com.nadmm.airports.providers.AirportsProvider;
 import com.nadmm.airports.utils.AirportsCursorAdapter;
 
 public class SearchActivity extends ActivityBase {
