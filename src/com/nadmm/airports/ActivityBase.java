@@ -66,6 +66,9 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.afd.BrowseActivity;
+import com.nadmm.airports.afd.FavoritesActivity;
+import com.nadmm.airports.afd.NearbyActivity;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.UiUtils;
@@ -166,7 +169,7 @@ public class ActivityBase extends FragmentActivity {
         }
     }
 
-    protected void setContentShown( boolean shown ) {
+    public void setContentShown( boolean shown ) {
         View root = findViewById( android.R.id.content );
         setContentShown( root, shown );
     }
@@ -280,7 +283,7 @@ public class ActivityBase extends FragmentActivity {
         return null;
     }
 
-    protected void showAirportTitle( Cursor c ) {
+    public void showAirportTitle( Cursor c ) {
         View root = findViewById( R.id.airport_title_layout );
         TextView tv = (TextView) root.findViewById( R.id.airport_name );
         String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
@@ -661,7 +664,7 @@ public class ActivityBase extends FragmentActivity {
         }
     }
 
-    protected void setActionBarTitle( Cursor c ) {
+    public void setActionBarTitle( Cursor c ) {
         setActionBarTitle( c, getTitle().toString() );
     }
 

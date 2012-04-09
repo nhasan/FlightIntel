@@ -30,61 +30,61 @@
 	              android:name="DownloadActivity" />
 
         <activity android:label="@string/settings"
-                  android:name="PreferencesActivity" />
+                  android:name=".PreferencesActivity" />
 
         <activity android:label="@string/browse_airports"
-                  android:name="BrowseActivity" />
+                  android:name=".afd.BrowseActivity" />
 
         <activity android:label="@string/nearby_airports"
-                  android:name="NearbyActivity" />
+                  android:name=".afd.NearbyActivity" />
 
         <activity android:label="@string/favorites"
-                  android:name="FavoritesActivity" />
+                  android:name=".afd.FavoritesActivity" />
 
         <activity android:label="@string/airport_details"
-                  android:name="AirportDetailsActivity" />
+                  android:name=".afd.AirportDetailsActivity" />
 
         <activity android:label="@string/runways"
-                  android:name="RunwayDetailsActivity" />
+                  android:name=".afd.RunwayDetailsActivity" />
 
         <activity android:label="@string/other_services"
-                  android:name="ServicesDetailsActivity" />
+                  android:name=".afd.ServicesDetailsActivity" />
 
         <activity android:label="@string/airport_owner"
-                  android:name="OwnershipDetailsActivity" />
+                  android:name=".afd.OwnershipDetailsActivity" />
 
         <activity android:label="@string/airport_remarks"
-                  android:name="RemarkDetailsActivity" />
+                  android:name=".afd.RemarkDetailsActivity" />
 
         <activity android:label="@string/airport_attendance"
-                  android:name="AttendanceDetailsActivity" />
+                  android:name=".afd.AttendanceDetailsActivity" />
 
         <activity android:label="@string/atc_communications"
-                  android:name="CommDetailsActivity" />
+                  android:name=".afd.CommDetailsActivity" />
 
         <activity android:label="@string/nearby_navaids"
-                  android:name="NavaidsActivity" />
+                  android:name=".afd.NavaidsActivity" />
 
         <activity android:label="@string/navaid_details"
-                  android:name="NavaidDetailsActivity" />
+                  android:name=".afd.NavaidDetailsActivity" />
 
         <activity android:label="@string/navaid_notams"
-                  android:name=".NavaidNotamActivity" />
+                  android:name=".notams.NavaidNotamActivity" />
 
         <activity android:label="@string/fss_outlets"
-                  android:name="FssCommActivity" />
+                  android:name=".afd.FssCommActivity" />
 
         <activity android:label="@string/ils_details"
-                  android:name="IlsDetailsActivity" />
+                  android:name=".afd.IlsDetailsActivity" />
 
         <activity android:label="@string/sunrise_sunset"
-                  android:name="AlmanacActivity" />
+                  android:name=".afd.AlmanacActivity" />
 
         <activity android:label="@string/airport_notams"
-                  android:name=".AirportNotamActivity" />
+                  android:name=".notams.AirportNotamActivity" />
 
         <activity android:label="@string/aircraft_operations"
-                  android:name=".AircraftOpsActivity" />
+                  android:name=".afd.AircraftOpsActivity" />
 
         <activity android:label="@string/weather"
                   android:name=".wx.WxDetailActivity" />
@@ -98,7 +98,7 @@
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:name="DisclaimerActivity" />
 
-    	<activity android:launchMode="singleTop" android:name=".SearchActivity">
+    	<activity android:launchMode="singleTop" android:name=".afd.SearchActivity">
         	<intent-filter>
             	<action android:name="android.intent.action.SEARCH" />
 	        </intent-filter>
@@ -110,7 +110,7 @@
 	    <meta-data android:name="android.app.default_searchable"
     	        android:value=".SearchActivity" />
 
-		<provider android:name=".AirportsProvider"
+		<provider android:name=".providers.AirportsProvider"
 		          android:authorities="com.nadmm.airports.AirportsProvider"
 		          android:syncable="false" />
 

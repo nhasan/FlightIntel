@@ -19,6 +19,9 @@
 
 package com.nadmm.airports;
 
+import com.nadmm.airports.R;
+import com.nadmm.airports.R.xml;
+
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
