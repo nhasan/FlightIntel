@@ -83,6 +83,9 @@
         <activity android:label="@string/airport_notams"
                   android:name=".AirportNotamActivity" />
 
+        <activity android:label="@string/aircraft_operations"
+                  android:name=".AircraftOpsActivity" />
+
         <activity android:label="@string/weather"
                   android:name=".wx.WxDetailActivity" />
 

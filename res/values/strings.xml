@@ -94,6 +94,9 @@
     <string name="precipitation">Precipitation</string>
     <string name="instrument_procedures">Instrument Procedures</string>
     <string name="aeronav_products">AeroNav Digital Products</string>
+    <string name="based_aircraft">Based Aircrafts</string>
+    <string name="annual_ops">Annual Operations</string>
+    <string name="aircraft_operations">Aircraft Operations</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>

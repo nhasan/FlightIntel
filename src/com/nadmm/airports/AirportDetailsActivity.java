@@ -890,8 +890,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 fuelTypes = "No";
             }
             addRow( layout, "Fuel available", fuelTypes );
-            String repair;
-            repair = apt.getString( apt.getColumnIndex( Airports.AIRFRAME_REPAIR_SERVICE ) );
+            String repair = apt.getString( apt.getColumnIndex( Airports.AIRFRAME_REPAIR_SERVICE ) );
             if ( repair.length() == 0 ) {
                 repair = "No";
             }
@@ -917,6 +916,10 @@ public class AirportDetailsActivity extends ActivityBase {
             Intent intent = new Intent( getActivity(), OwnershipDetailsActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
             addClickableRow( layout, "Ownership and contact", intent, R.drawable.row_selector_top );
+            intent = new Intent( getActivity(), AircraftOpsActivity.class );
+            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addSeparator( layout );
+            addClickableRow( layout, "Aircraft operations", intent, R.drawable.row_selector_middle );
             intent = new Intent( getActivity(), RemarkDetailsActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
             addSeparator( layout );
