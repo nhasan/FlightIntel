@@ -150,7 +150,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
         layout.setVisibility( View.VISIBLE );
         do {
             String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
-            addRemarkRow( layout, remark );
+            addBulletedRow( layout, remark );
         } while ( rmk.moveToNext() );
     }
 
@@ -169,17 +169,6 @@ public class OwnershipDetailsActivity extends ActivityBase {
         makeClickToCall( tv );
         layout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addRemarkRow( LinearLayout layout, String remark ) {
-        int index = remark.indexOf( ' ' );
-        if ( index != -1 ) {
-            while ( remark.charAt( index ) == ' ' ) {
-                ++index;
-            }
-            remark = remark.substring( index );
-        }
-        addBulletedRow( layout, remark );
     }
 
 }
