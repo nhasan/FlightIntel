@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports;
+package com.nadmm.airports.afd;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -28,9 +28,12 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
+import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Attendance;
 import com.nadmm.airports.DatabaseManager.Remarks;
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 public class AttendanceDetailsActivity extends ActivityBase {

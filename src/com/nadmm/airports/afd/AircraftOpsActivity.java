@@ -17,14 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports;
+package com.nadmm.airports.afd;
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
 
