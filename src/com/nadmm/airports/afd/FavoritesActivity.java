@@ -17,13 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports;
+package com.nadmm.airports.afd;
 
 
 import android.os.Bundle;
 import android.support.v4.view.Menu;
 import android.support.v4.view.ViewPager;
 
+import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TabsAdapter;
 import com.nadmm.airports.wx.FavoriteWxFragment;
 import com.viewpagerindicator.TabPageIndicator;
