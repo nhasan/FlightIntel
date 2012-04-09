@@ -804,7 +804,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     addClickableRow( layout, "Instrument procedures", intent,
                             R.drawable.row_selector_top );
                 } else {
-                    addRow( layout, "No instrument procedures" );
+                    addRow( layout, "No instrument procedures available" );
                 }
             } else {
                 addRow( layout, "d-TPP data not found" );
