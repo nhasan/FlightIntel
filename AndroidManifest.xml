@@ -108,10 +108,10 @@
 
         <!-- declare the default searchable Activity for the whole app -->
 	    <meta-data android:name="android.app.default_searchable"
-    	        android:value=".SearchActivity" />
+    	        android:value=".afd.SearchActivity" />
 
 		<provider android:name=".providers.AirportsProvider"
-		          android:authorities="com.nadmm.airports.AirportsProvider"
+		          android:authorities="com.nadmm.airports.providers.AirportsProvider"
 		          android:syncable="false" />
 
 		<service android:name=".wx.MetarService" />

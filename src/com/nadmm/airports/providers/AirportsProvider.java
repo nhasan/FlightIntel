@@ -40,7 +40,7 @@ public class AirportsProvider extends ContentProvider {
 
     public static final String TAG = AirportsProvider.class.getSimpleName();
 
-    public static final String AUTHORITY = "com.nadmm.airports.AirportsProvider";
+    public static final String AUTHORITY = "com.nadmm.airports.providers.AirportsProvider";
     public static final Uri CONTENT_URI = Uri.parse( "content://" + AUTHORITY + "/airport" );
 
     // MIME types used for searching airports or looking up a single airport
