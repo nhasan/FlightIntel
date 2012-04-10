@@ -502,9 +502,9 @@ public class AirportDetailsActivity extends ActivityBase {
 
             showCommunicationsDetails( result );
             showRunwayDetails( result );
-            showNearbyFacilities( result );
             showRemarks( result );
             showAwosDetails( result );
+            showNearbyFacilities( result );
             showOperationsDetails( result );
             showAeroNavDetails( result );
             showServicesDetails( result );
@@ -593,25 +593,6 @@ public class AirportDetailsActivity extends ActivityBase {
             }
         }
 
-        protected void showNearbyFacilities( Cursor[] result ) {
-            Cursor apt = result[ 0 ];
-            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-
-            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_nearby_layout );
-
-            Intent airport = new Intent( getActivity(), NearbyActivity.class );
-            airport.putExtras( mExtras );
-            addClickableRow( layout, "Airports", airport, R.drawable.row_selector_top );
-            addSeparator( layout );
-            Intent fss = new Intent( getActivity(), FssCommActivity.class );
-            fss.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "FSS outlets", fss, R.drawable.row_selector_middle );
-            addSeparator( layout );
-            Intent navaids = new Intent( getActivity(), NavaidsActivity.class );
-            navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "Navaids", navaids, R.drawable.row_selector_bottom );
-        }
-
         protected void showRemarks( Cursor[] result ) {
             int row = 0;
             TextView label = (TextView) findViewById( R.id.detail_remarks_label );
@@ -685,6 +666,25 @@ public class AirportDetailsActivity extends ActivityBase {
                 label.setVisibility( View.GONE );
                 layout.setVisibility( View.GONE );
             }
+        }
+
+        protected void showNearbyFacilities( Cursor[] result ) {
+            Cursor apt = result[ 0 ];
+            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
+
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_nearby_layout );
+
+            Intent airport = new Intent( getActivity(), NearbyActivity.class );
+            airport.putExtras( mExtras );
+            addClickableRow( layout, "Airports", airport, R.drawable.row_selector_top );
+            addSeparator( layout );
+            Intent fss = new Intent( getActivity(), FssCommActivity.class );
+            fss.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addClickableRow( layout, "FSS outlets", fss, R.drawable.row_selector_middle );
+            addSeparator( layout );
+            Intent navaids = new Intent( getActivity(), NavaidsActivity.class );
+            navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addClickableRow( layout, "Navaids", navaids, R.drawable.row_selector_bottom );
         }
 
         protected void showOperationsDetails( Cursor[] result ) {
