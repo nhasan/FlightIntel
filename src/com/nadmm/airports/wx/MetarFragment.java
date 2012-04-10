@@ -162,6 +162,11 @@ public class MetarFragment extends FragmentBase {
     }
 
     protected void requestMetar( boolean refresh ) {
+        if ( getActivity() == null ) {
+            // Not ready to do this yet
+            return;
+        }
+
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         Intent service = new Intent( getActivity(), MetarService.class );
