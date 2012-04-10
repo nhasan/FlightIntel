@@ -119,5 +119,6 @@
         <service android:name=".wx.PirepService" />
         <service android:name=".aeronav.DtppService" />
         <service android:name=".aeronav.DafdService" />
+        <service android:name=".notams.NotamService" />
     </application>
 </manifest>
