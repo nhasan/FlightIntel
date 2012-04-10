@@ -378,6 +378,11 @@ public class DtppActivity extends ActivityBase {
         String path = intent.getStringExtra( DtppService.PDF_PATH );
 
         View view = mDtppRowMap.get( pdfName );
+        if ( view == null ) {
+            // We got a broadcast for a chart for some other airport
+            return;
+        }
+
         if ( path != null ) {
             showChartAvailability( view, true );
             view.setTag( R.id.DTPP_PDF_PATH, path );
