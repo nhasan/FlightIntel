@@ -18,5 +18,14 @@
         <start>2012-04-05T09:01:00Z</start>
         <end>2012-05-03T09:01:00Z</end>
     </datafile>
+    <datafile>
+        <type>DAFD</type>
+        <desc>AeroNav d-A/FD 05APR12 (FAA)</desc>
+        <version>1204</version>
+        <filename>dafd_20120405.zip</filename>
+        <size>83411</size>
+        <start>2012-04-05</start>
+        <end>2012-05-03</end>
+    </datafile>
 </manifest>
 
