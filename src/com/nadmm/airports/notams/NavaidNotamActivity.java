@@ -30,7 +30,6 @@ import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
-import com.nadmm.airports.utils.UiUtils;
 
 public class NavaidNotamActivity extends NotamActivityBase {
 
@@ -54,7 +53,6 @@ public class NavaidNotamActivity extends NotamActivityBase {
             Cursor[] result = new Cursor[ 1 ];
             String navaidId = params[ 0 ];
             String navaidType = params[ 1 ];
-            String icaoCode = "K"+navaidId;
 
             SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
 
@@ -69,33 +67,20 @@ public class NavaidNotamActivity extends NotamActivityBase {
                 return null;
             }
 
-            getNotams( icaoCode );
-
             return result;
         }
 
         @Override
         protected void onResult( Cursor[] result ) {
-            showDetails( result );
+            Cursor nav1 = result[ 0 ];
+
+            String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
+            String icaoCode = "K"+id;
+            setActionBarTitle( icaoCode );
+            showNavaidTitle( nav1 );
+            getNotams( icaoCode );
         }
 
-    }
-
-    protected void showDetails( Cursor[] result ) {
-        if ( result == null ) {
-            UiUtils.showToast( getApplicationContext(), "Navaid not found" );
-            finish();
-            return;
-        }
-
-        Cursor nav1 = result[ 0 ];
-
-        String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
-        setActionBarTitle( id );
-        showNavaidTitle( nav1 );
-        showNotams( "K"+id );
-
-        setContentShown( true );
     }
 
 }

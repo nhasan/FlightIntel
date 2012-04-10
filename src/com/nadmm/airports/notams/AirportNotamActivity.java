@@ -53,6 +53,16 @@ public class AirportNotamActivity extends NotamActivityBase {
             Cursor apt = getAirportDetails( siteNumber );
             result[ 0 ] = apt;
 
+            return result;
+        }
+
+        @Override
+        protected void onResult( Cursor[] result ) {
+            Cursor apt = result[ 0 ];
+
+            setActionBarTitle( apt );
+            showAirportTitle( apt );
+
             String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
             if ( icaoCode == null || icaoCode.length() == 0 ) {
                 String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
@@ -66,32 +76,9 @@ public class AirportNotamActivity extends NotamActivityBase {
                 // Also request GPS NOTAMs
                 icaoCode += ",KGPS";
             }
-
             getNotams( icaoCode );
-
-            return result;
         }
 
-        @Override
-        protected void onResult( Cursor[] result ) {
-            showDetails( result );
-        }
-
-    }
-
-    protected void showDetails( Cursor[] result ) {
-        Cursor apt = result [ 0 ];
-        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-        if ( icaoCode == null || icaoCode.length() == 0 ) {
-            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            icaoCode = "K"+faaCode;
-        }
-
-        setActionBarTitle( apt );
-        showAirportTitle( apt );
-        showNotams( icaoCode );
-
-        setContentShown( true );
     }
 
 }

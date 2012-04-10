@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,25 +19,20 @@
 
 package com.nadmm.airports.notams;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.net.ssl.HttpsURLConnection;
-
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -46,32 +41,71 @@ import android.widget.TextView;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.DataUtils;
-import com.nadmm.airports.utils.NetworkUtils;
-import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 public class NotamActivityBase extends ActivityBase {
 
-    private static final File NOTAM_DIR = SystemUtils.getExternalDir( "notam" );
-    private static final int MSEC_PER_MINUTE = 60*1000;
-    private static final int NOTAM_CACHE_MAX_AGE = 5*MSEC_PER_MINUTE;
+    private IntentFilter mFilter;
+    private BroadcastReceiver mReceiver;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        if ( !NOTAM_DIR.exists() ) {
-            NOTAM_DIR.mkdirs();
+        setContentView( createContentView( R.layout.dtpp_detail_view ) );
+
+        mFilter = new IntentFilter();
+        mFilter.addAction( NotamService.ACTION_GET_NOTAM );
+
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive( Context context, Intent intent ) {
+                handleNotamBroadcast( intent );
+            }
+        };
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerReceiver( mReceiver, mFilter );
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterReceiver( mReceiver );
+    }
+
+    protected void handleNotamBroadcast( Intent intent ) {
+        String action = intent.getAction();
+        if ( action.equals( NotamService.ACTION_GET_NOTAM ) ) {
+            String path = intent.getStringExtra( NotamService.NOTAM_PATH );
+            if ( path != null ) {
+                File notamFile = new File( path );
+                showNotams( notamFile );
+            }
         }
     }
 
-    protected void showNotams( String icaoCode ) {
-        LinearLayout content = (LinearLayout) findViewById( R.id.notam_content_layout );
-        File notamFile = new File( NOTAM_DIR, "NOTAM_"+icaoCode+".txt" );
+    protected void getNotams( String icaoCode ) {
+        Intent service = new Intent( this, NotamService.class );
+        service.setAction( NotamService.ACTION_GET_NOTAM );
+        service.putExtra( NotamService.ICAO_CODE, icaoCode );
+        startService( service );
+    }
 
-        HashMap<String, ArrayList<String>> notams = getNotamFromCache( notamFile );
+    protected void showNotams( File notamFile ) {
+        setContentShown( true );
+
+        LinearLayout content = (LinearLayout) findViewById( R.id.notam_content_layout );
+
+        HashMap<String, ArrayList<String>> notams = parseNotams( notamFile );
         if ( notams == null ) {
+            // NOTAM cache file is missing. Must be an issue with fetching from FAA
+            TextView title1 = (TextView) findViewById( R.id.notam_title1 );
+            title1.setText( "Unable to show NOTAMs at this moment" );
             return;
         }
 
@@ -109,83 +143,15 @@ public class NotamActivityBase extends ActivityBase {
                 this, lastModified.getTime() ) );
     }
 
-    protected void getNotams( String icaoCode ) {
-        cleanupNotamCache();
-        File notamFile = new File( NOTAM_DIR, "NOTAM_"+icaoCode+".txt" );
-        if ( notamFile.exists() ) {
-            // NOTAM cache file is still valid, do nothing
-            return;
-        }
-
-        // Notam not fetched yet or had expired and cleaned up, fetch from FAA
-        try {
-            getNotamsFromFAA( icaoCode, notamFile );
-        } catch ( IOException e ) {
-            UiUtils.showToast( NotamActivityBase.this, e.getMessage() );
-        }
-    }
-
-    private void getNotamsFromFAA( String icaoCode, File notamFile ) throws IOException {
-        if ( !NetworkUtils.isNetworkAvailable( this ) ) {
-            return;
-        }
-        InputStream in = null;
-        URL url = new URL( "https://pilotweb.nas.faa.gov"
-        		+"/PilotWeb/notamRetrievalByICAOAction.do?method=displayByICAOs" );
-        String params = "formatType=ICAO&retrieveLocId="+icaoCode+"&reportType=RAW"
-                +"&actionType=notamRetrievalByICAOs&openItems=&submit=View%20NOTAMs";
-
-        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-        conn.setRequestProperty( "Connection", "close" );
-        conn.setDoInput( true );
-        conn.setDoOutput( true );
-        conn.setUseCaches( false );
-        conn.setConnectTimeout( 30*1000 );
-        conn.setReadTimeout( 30*1000 );
-        conn.setRequestMethod( "POST" );
-        conn.setRequestProperty( "User-Agent", "Mozilla/5.0 (X11; U; Linux i686; en-US)" );
-        conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded" );
-        conn.setRequestProperty( "Content-Length", Integer.toString(params.length() ) );
-
-        // Write out the form parameters as the request body
-        OutputStream faa = conn.getOutputStream();
-        faa.write( params.getBytes( "UTF-8" ) );
-        faa.close();
-
-        int response = conn.getResponseCode();
-        if ( response == HttpURLConnection.HTTP_OK ) {
-            // Request was successful, parse the html to extract notams
-            in = conn.getInputStream();
-            ArrayList<String> notams = parseNotamsFromHtml( in );
-            in.close();
-
-            // Write the NOTAMS to the cache file
-            BufferedOutputStream cache = new BufferedOutputStream( 
-                    new FileOutputStream( notamFile ) );
-            for ( String notam : notams ) {
-                cache.write( notam.getBytes() );
-                cache.write( '\n' );
-            }
-            cache.close();
-        }
-    }
-
-    private HashMap<String, ArrayList<String>> getNotamFromCache( File notamFile ) {
-        HashMap<String, ArrayList<String>> notams = new HashMap<String, ArrayList<String>>();
-
-        if ( !notamFile.exists() ) {
-            // NOTAM cache file is missing. Must be an issue with fetching from FAA
-            TextView title1 = (TextView) findViewById( R.id.notam_title1 );
-            title1.setText( "There was an error while fetching NOTAMs from FAA." );
-            return null;
-        }
-
+    private HashMap<String, ArrayList<String>> parseNotams( File notamFile ) {
         // Remeber the ids we have seen to remove duplicates
-        Set<String> notamIDs = new HashSet<String>();
+        HashMap<String, ArrayList<String>> notams = new HashMap<String, ArrayList<String>>();
+        BufferedReader in = null;
 
         // Build the NOTAM list group by the subject
         try {
-            BufferedReader in = new BufferedReader( new FileReader( notamFile ) );
+            Set<String> notamIDs = new HashSet<String>();
+            in = new BufferedReader( new FileReader( notamFile ) );
             String notam;
             while ( ( notam = in.readLine() ) != null ) {
                 String parts[] = notam.split( " ", 5 );
@@ -202,61 +168,17 @@ public class NotamActivityBase extends ActivityBase {
                     notamIDs.add( notamID );
                 }
             }
-            in.close();
         } catch ( IOException e ) {
-            TextView title1 = (TextView) findViewById( R.id.notam_title1 );
-            title1.setText( "There was an error during parsing NOTAMs from cache: "
-                    +e.getMessage() );
-        }
-
-        return notams;
-    }
-
-    private ArrayList<String> parseNotamsFromHtml( InputStream in ) throws IOException {
-        ArrayList<String> notams = new ArrayList<String>();
-
-        BufferedReader reader = new BufferedReader( new InputStreamReader( in ) );
-
-        String line = null;
-        boolean inside = false;
-        StringBuilder builder = null;
-        while ( ( line = reader.readLine() ) != null ) {
-            if ( !inside ) {
-                // Inspect the contents of all <pre> tags to find NOTAMs
-                if ( line.toUpperCase().contains( "<PRE>" ) ) {
-                    builder = new StringBuilder();
-                    inside = true;
+        } finally {
+            try {
+                if ( in != null ) {
+                    in.close();
                 }
-            }
-            if ( inside ) {
-                builder.append( line+" " );
-                if ( line.toUpperCase().contains( "</PRE>" ) ) {
-                    inside = false;
-                    int start = builder.indexOf( "!" );
-                    if ( start >= 0 ) {
-                        // Now get the actual inner contents
-                        int end = builder.indexOf( "SOURCE:" );
-                        String notam = builder.substring( start, end ).trim();
-                        // Normalize the whitespaces
-                        //notam = whitespaces.matcher( notam ).replaceAll( " " );
-                        notams.add( notam );
-                    }
-                }
+            } catch ( IOException e ) {
             }
         }
 
         return notams;
-    }
-
-    private void cleanupNotamCache() {
-        Date now = new Date();
-        File[] files = NOTAM_DIR.listFiles();
-        for ( File file : files ) {
-            long age = now.getTime()-file.lastModified();
-            if ( age > NOTAM_CACHE_MAX_AGE ) {
-                file.delete();
-            }
-        }
     }
 
 }
