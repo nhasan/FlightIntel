@@ -44,17 +44,16 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.AirportsMain;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 public class NotamActivityBase extends ActivityBase {
 
-    private static final File NOTAM_DIR = new File(
-            AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/notam" );
+    private static final File NOTAM_DIR = SystemUtils.getExternalDir( "notam" );
     private static final int MSEC_PER_MINUTE = 60*1000;
     private static final int NOTAM_CACHE_MAX_AGE = 5*MSEC_PER_MINUTE;
 

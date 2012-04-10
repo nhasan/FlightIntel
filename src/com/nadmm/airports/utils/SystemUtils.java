@@ -22,6 +22,8 @@ package com.nadmm.airports.utils;
 import java.io.File;
 import java.util.List;
 
+import com.nadmm.airports.AirportsMain;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -30,6 +32,10 @@ import android.net.Uri;
 import android.os.Environment;
 
 public class SystemUtils {
+
+    public static final String EXTERNAL_STORAGE_DATA_DIRECTORY
+            = Environment.getExternalStorageDirectory()
+            + "/Android/data/"+AirportsMain.class.getPackage().getName();
 
     private final static String MIME_TYPE_PDF = "application/pdf";
 
@@ -68,6 +74,10 @@ public class SystemUtils {
             market.setData( uri );
             context.startActivity( market );
         }
+    }
+
+    public static File getExternalDir( String dir ) {
+        return new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/"+dir );
     }
 
 }

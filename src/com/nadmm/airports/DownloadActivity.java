@@ -53,7 +53,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.BaseColumns;
 import android.sax.Element;
@@ -93,10 +92,7 @@ public final class DownloadActivity extends ActivityBase {
     private static final String PATH = "/files";
     private static final String MANIFEST = "manifest.xml";
 
-    private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
-            = new File( Environment.getExternalStorageDirectory(), 
-            "Android/data/"+DownloadActivity.class.getPackage().getName() );
-    private static final File CACHE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/cache" );
+    private static final File CACHE_DIR = SystemUtils.getExternalDir( "cache" );
 
     final class DataInfo implements Comparable<DataInfo> {
 
@@ -794,7 +790,7 @@ public final class DownloadActivity extends ActivityBase {
                 now.setToNow();
                 DefaultHttpClient httpClient = new DefaultHttpClient();
                 HttpHost target = new HttpHost( HOST, PORT );
-                URI uri = new URI( PATH+"/"+data.fileName+"?unused="+now.toString() );
+                URI uri = new URI( PATH+"/"+data.fileName+"?unused="+now.toMillis( true ) );
                 Log.d( target.toHostString(), uri.toASCIIString() );
                 HttpGet get = new HttpGet( uri );
 

@@ -34,8 +34,8 @@ import org.apache.http.client.methods.HttpGet;
 
 import android.app.IntentService;
 
-import com.nadmm.airports.AirportsMain;
 import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.SystemUtils;
 
 public abstract class NoaaService extends IntentService {
 
@@ -59,7 +59,7 @@ public abstract class NoaaService extends IntentService {
         super( name );
         mHttpClient = NetworkUtils.getHttpClient();
         mTarget = new HttpHost( NOAA_HOST, 80 );
-        DATA_DIR = new File( AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/"+name );
+        DATA_DIR = SystemUtils.getExternalDir( name );
     }
 
     @Override

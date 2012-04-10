@@ -24,11 +24,11 @@ import java.io.File;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 
-import com.nadmm.airports.AirportsMain;
-import com.nadmm.airports.utils.NetworkUtils;
-
 import android.app.IntentService;
 import android.content.Intent;
+
+import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.SystemUtils;
 
 public abstract class AeroNavService extends IntentService {
 
@@ -50,7 +50,7 @@ public abstract class AeroNavService extends IntentService {
 
         mHttpClient = NetworkUtils.getHttpClient();
         mTarget = new HttpHost( AERONAV_HOST, 80 );
-        DATA_DIR = new File( AirportsMain.EXTERNAL_STORAGE_DATA_DIRECTORY, "/"+name );
+        DATA_DIR = SystemUtils.getExternalDir( name );
     }
 
     @Override
