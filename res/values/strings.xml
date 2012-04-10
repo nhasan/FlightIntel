@@ -56,6 +56,7 @@
     <string name="airport_manager">Airport Manager</string>
     <string name="remarks">Remarks</string>
     <string name="airport_remarks">Airport Remarks</string>
+    <string name="nearby_facilities">Nearby Facilities</string>
     <string name="airport_attendance">Airport Attendance</string>
     <string name="atc_communications">ATC Communications</string>
     <string name="atc_phones">ATC Phone Numbers</string>

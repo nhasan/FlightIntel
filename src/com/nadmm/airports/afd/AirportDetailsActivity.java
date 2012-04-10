@@ -502,10 +502,11 @@ public class AirportDetailsActivity extends ActivityBase {
 
             showCommunicationsDetails( result );
             showRunwayDetails( result );
+            showNearbyFacilities( result );
+            showRemarks( result );
             showAwosDetails( result );
             showOperationsDetails( result );
             showAeroNavDetails( result );
-            showRemarks( result );
             showServicesDetails( result );
             showOtherDetails( result );
 
@@ -526,25 +527,13 @@ public class AirportDetailsActivity extends ActivityBase {
 
             String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
             addRow( layout, "CTAF", ctaf.length() > 0? ctaf : "None" );
-
             addSeparator( layout );
             String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
             addRow( layout, "Unicom", unicom.length() > 0? unicom : "None" );
-
             addSeparator( layout );
             Intent intent = new Intent( getActivity(), CommDetailsActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "ATC", intent, R.drawable.row_selector_middle );
-
-            addSeparator( layout );
-            Intent fss = new Intent( getActivity(), FssCommActivity.class );
-            fss.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "Nearby FSS outlets", fss, R.drawable.row_selector_middle );
-
-            addSeparator( layout );
-            Intent navaids = new Intent( getActivity(), NavaidsActivity.class );
-            navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "Nearby navaids", navaids, R.drawable.row_selector_bottom );
+            addClickableRow( layout, "ATC", intent, R.drawable.row_selector_bottom );
         }
 
         protected void showRunwayDetails( Cursor[] result ) {
@@ -601,6 +590,61 @@ public class AirportDetailsActivity extends ActivityBase {
                 tv = (TextView) findViewById( R.id.detail_heli_label );
                 tv.setVisibility( View.GONE );
                 heliLayout.setVisibility( View.GONE );
+            }
+        }
+
+        protected void showNearbyFacilities( Cursor[] result ) {
+            Cursor apt = result[ 0 ];
+            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
+
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_nearby_layout );
+
+            Intent airport = new Intent( getActivity(), NearbyActivity.class );
+            airport.putExtras( mExtras );
+            addClickableRow( layout, "Airports", airport, R.drawable.row_selector_top );
+            addSeparator( layout );
+            Intent fss = new Intent( getActivity(), FssCommActivity.class );
+            fss.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addClickableRow( layout, "FSS outlets", fss, R.drawable.row_selector_middle );
+            addSeparator( layout );
+            Intent navaids = new Intent( getActivity(), NavaidsActivity.class );
+            navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addClickableRow( layout, "Navaids", navaids, R.drawable.row_selector_bottom );
+        }
+
+        protected void showRemarks( Cursor[] result ) {
+            int row = 0;
+            TextView label = (TextView) findViewById( R.id.detail_remarks_label );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
+            Cursor rmk = result[ 2 ];
+            if ( rmk.moveToFirst() ) {
+                do {
+                    String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
+                    addBulletedRow( layout, remark );
+                    ++row;
+                } while ( rmk.moveToNext() );
+             }
+
+            Cursor twr1 = result[ 3 ];
+            Cursor twr7 = result[ 4 ];
+            if ( twr1.moveToFirst() ) {
+                String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
+                if ( facilityType.equals( "NON-ATCT" ) && twr7.getCount() == 0 ) {
+                    // Show remarks, if any, since there are no frequencies listed
+                    Cursor twr6 = result[ 5 ];
+                    if ( twr6.moveToFirst() ) {
+                        do {
+                            String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
+                            addBulletedRow( layout, remark );
+                            ++row;
+                        } while ( twr6.moveToNext() );
+                    }
+                }
+            }
+
+            if ( row == 0 ) {
+                label.setVisibility( View.GONE );
+                layout.setVisibility( View.GONE );
             }
         }
 
@@ -742,22 +786,6 @@ public class AirportDetailsActivity extends ActivityBase {
                 addRow( layout, "Magnetic variation", 
                         String.format( "%d\u00B0 %s (actual)", Math.abs( variation ), dir ) );
             }
-            String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
-            if ( sectional.length() > 0 ) {
-                addSeparator( layout );
-                String lat = apt.getString( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
-                String lon = apt.getString( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-                if ( lat.length() > 0 && lon.length() > 0 ) {
-                    // Link to the sectional at SkyVector if location is available
-                    Uri uri = Uri.parse( String.format(
-                            "http://skyvector.com/?ll=%s,%s&zoom=1", lat, lon ) );
-                    Intent intent = new Intent( Intent.ACTION_VIEW, uri );
-                    addClickableRow( layout, "Sectional chart", sectional, intent, 
-                            R.drawable.row_selector_middle );
-                } else {
-                    addRow( layout, "Sectional chart", sectional );
-                }
-            }
             String intlEntry = apt.getString( apt.getColumnIndex( Airports.INTL_ENTRY_AIRPORT ) );
             if ( intlEntry != null && intlEntry.equals( "Y" ) ) {
                 addSeparator( layout );
@@ -785,6 +813,22 @@ public class AirportDetailsActivity extends ActivityBase {
             if ( medical != null && medical.equals( "Y" ) ) {
                 addSeparator( layout );
                 addRow( layout, "Medical use", "Yes" );
+            }
+            String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
+            if ( sectional.length() > 0 ) {
+                addSeparator( layout );
+                String lat = apt.getString( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+                String lon = apt.getString( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+                if ( lat.length() > 0 && lon.length() > 0 ) {
+                    // Link to the sectional at SkyVector if location is available
+                    Uri uri = Uri.parse( String.format(
+                            "http://skyvector.com/?ll=%s,%s&zoom=1", lat, lon ) );
+                    Intent intent = new Intent( Intent.ACTION_VIEW, uri );
+                    addClickableRow( layout, "Sectional chart", sectional, intent, 
+                            R.drawable.row_selector_middle );
+                } else {
+                    addRow( layout, "Sectional chart", sectional );
+                }
             }
             addSeparator( layout );
             Intent intent = new Intent( getActivity(), AlmanacActivity.class );
@@ -859,42 +903,6 @@ public class AirportDetailsActivity extends ActivityBase {
             }
         }
 
-        protected void showRemarks( Cursor[] result ) {
-            int row = 0;
-            TextView label = (TextView) findViewById( R.id.detail_remarks_label );
-            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
-            Cursor rmk = result[ 2 ];
-            if ( rmk.moveToFirst() ) {
-                do {
-                    String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
-                    addBulletedRow( layout, remark );
-                    ++row;
-                } while ( rmk.moveToNext() );
-             }
-
-            Cursor twr1 = result[ 3 ];
-            Cursor twr7 = result[ 4 ];
-            if ( twr1.moveToFirst() ) {
-                String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
-                if ( facilityType.equals( "NON-ATCT" ) && twr7.getCount() == 0 ) {
-                    // Show remarks, if any, since there are no frequencies listed
-                    Cursor twr6 = result[ 5 ];
-                    if ( twr6.moveToFirst() ) {
-                        do {
-                            String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
-                            addBulletedRow( layout, remark );
-                            ++row;
-                        } while ( twr6.moveToNext() );
-                    }
-                }
-            }
-
-            if ( row == 0 ) {
-                label.setVisibility( View.GONE );
-                layout.setVisibility( View.GONE );
-            }
-        }
-
         protected void showServicesDetails( Cursor[] result ) {
             Cursor apt = result[ 0 ];
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_services_layout );
@@ -941,11 +949,7 @@ public class AirportDetailsActivity extends ActivityBase {
             intent = new Intent( getActivity(), AttendanceDetailsActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
             addSeparator( layout );
-            addClickableRow( layout, "Attendance", intent, R.drawable.row_selector_middle );
-            addSeparator( layout );
-            intent = new Intent( getActivity(), NearbyActivity.class );
-            intent.putExtras( mExtras );
-            addClickableRow( layout, "Nearby airports", intent, R.drawable.row_selector_bottom );
+            addClickableRow( layout, "Attendance", intent, R.drawable.row_selector_bottom );
         }
 
         protected void addAwosRow( LinearLayout layout, String id, String name, String type, 
