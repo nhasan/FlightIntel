@@ -77,7 +77,7 @@ public class SystemUtils {
     }
 
     public static File getExternalDir( String dir ) {
-        return new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/"+dir );
+        return new File( EXTERNAL_STORAGE_DATA_DIRECTORY, dir );
     }
 
 }
