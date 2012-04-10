@@ -3,6 +3,7 @@ v3.2.0 (4/10/2012)
 * Added ability to show d-A/FD page for airports
 * Added aircraft operations screen showing based aircraft and annual ops
 * Show native search interface on devices with HoneyComb and later
+* Show nearby facilities in a separate section within airport details screen
 * Crash fix when showing runway information for some airports
 * Crash fix when showing instrument procedure charts
 * Crash fix when showing TAF and METAR
