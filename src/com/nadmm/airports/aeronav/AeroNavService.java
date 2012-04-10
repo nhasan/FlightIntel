@@ -32,6 +32,13 @@ import com.nadmm.airports.utils.SystemUtils;
 
 public abstract class AeroNavService extends IntentService {
 
+    public static final String ACTION_GET_AFD = "flightintel.intent.action.GET_AFD";
+    public static final String ACTION_CHECK_AFD = "flightintel.intent.action.CHECK_AFD";
+    public static final String ACTION_GET_CHART = "flightintel.intent.action.GET_CHART";
+    public static final String ACTION_CHECK_CHARTS = "flightintel.intent.action.CHECK_CHARTS";
+    public static final String ACTION_DELETE_CHARTS = "flightintel.intent.action.DELETE_CHARTS";
+
+
     public static final String CYCLE_NAME = "CYCLE_NAME";
     public static final String PDF_NAME = "PDF_NAME";
     public static final String PDF_PATH = "PDF_PATH";

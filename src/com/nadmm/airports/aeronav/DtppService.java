@@ -28,10 +28,6 @@ import com.nadmm.airports.utils.NetworkUtils;
 
 public class DtppService extends AeroNavService {
 
-    public static final String ACTION_GET_CHART = "flightintel.intent.action.GET_CHART";
-    public static final String ACTION_CHECK_CHARTS = "flightintel.intent.action.CHECK_CHARTS";
-    public static final String ACTION_DELETE_CHARTS = "flightintel.intent.action.DELETE_CHARTS";
-
     public DtppService() {
         super( "dtpp" );
     }

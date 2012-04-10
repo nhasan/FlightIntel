@@ -27,9 +27,6 @@ import com.nadmm.airports.utils.NetworkUtils;
 
 public class DafdService extends AeroNavService {
 
-    public static final String ACTION_GET_AFD = "flightintel.intent.action.GET_AFD";
-    public static final String ACTION_CHECK_AFD = "flightintel.intent.action.CHECK_AFD";
-
     public DafdService() {
         super( "dafd" );
     }
