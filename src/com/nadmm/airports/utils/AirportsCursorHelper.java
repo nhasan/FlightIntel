@@ -65,10 +65,8 @@ public class AirportsCursorHelper {
         return map;
     }
 
-    public static Cursor query( Context context, String selection, String[] selectionArgs, 
+    public static Cursor query( SQLiteDatabase db, String selection, String[] selectionArgs, 
             String groupBy, String having, String sortOrder, String limit ) {
-        DatabaseManager dbManager = DatabaseManager.instance( context );
-        SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
                 +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );

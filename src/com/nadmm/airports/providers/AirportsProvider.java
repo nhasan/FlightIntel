@@ -161,7 +161,9 @@ public class AirportsProvider extends ContentProvider {
         String[] selectionArgs = new String[] { query, query, "%"+query+"%", "%"+query+"%" };
         String limit = uri.getQueryParameter( "limit" );
 
-        Cursor c = AirportsCursorHelper.query( getContext(), selection, selectionArgs, 
+        DatabaseManager dbManager = DatabaseManager.instance( getContext() );
+        SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+        Cursor c = AirportsCursorHelper.query( db, selection, selectionArgs, 
                 null, null, Airports.FACILITY_NAME+" ASC", limit );
         return c;
     }

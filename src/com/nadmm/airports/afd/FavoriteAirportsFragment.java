@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -60,9 +61,10 @@ public class FavoriteAirportsFragment extends ListFragment {
                 selection += "'"+site_number+"'";
             };
 
+            SQLiteDatabase db = activity.getDatabase( DatabaseManager.DB_FADDS );
             // Query for the favorite airports
             selection = "a."+Airports.SITE_NUMBER+" in ("+selection+")";
-            Cursor c = AirportsCursorHelper.query( getActivity(), selection, 
+            Cursor c = AirportsCursorHelper.query( db, selection, 
                     null, null, null, Airports.FACILITY_NAME, null );
 
             return c;

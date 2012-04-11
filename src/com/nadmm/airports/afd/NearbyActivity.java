@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -47,6 +48,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.PreferencesActivity;
@@ -268,7 +270,8 @@ public class NearbyActivity extends ActivityBase {
                     String.valueOf( Math.toDegrees( radLonMin ) ),
                     String.valueOf( Math.toDegrees( radLonMax ) )
                     };
-            Cursor c = AirportsCursorHelper.query( NearbyActivity.this, selection, selectionArgs,
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+            Cursor c = AirportsCursorHelper.query( db, selection, selectionArgs,
                     null, null, null, null );
             if ( !c.moveToFirst() ) {
                 c.close();
