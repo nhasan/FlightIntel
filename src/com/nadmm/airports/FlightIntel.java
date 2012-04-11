@@ -25,7 +25,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-public class AirportsMain extends ActivityBase {
+public class FlightIntel extends ActivityBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {

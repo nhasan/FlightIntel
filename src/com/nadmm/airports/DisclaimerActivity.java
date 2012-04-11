@@ -46,7 +46,7 @@ public class DisclaimerActivity extends Activity {
             @Override
             public void onClick( View v ) {
                 markDisclaimerAgreed( true );
-                Intent intent = new Intent( DisclaimerActivity.this, AirportsMain.class );
+                Intent intent = new Intent( DisclaimerActivity.this, FlightIntel.class );
                 startActivity( intent );
                 finish();
             }

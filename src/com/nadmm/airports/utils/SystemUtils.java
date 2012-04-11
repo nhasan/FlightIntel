@@ -22,7 +22,7 @@ package com.nadmm.airports.utils;
 import java.io.File;
 import java.util.List;
 
-import com.nadmm.airports.AirportsMain;
+import com.nadmm.airports.FlightIntel;
 
 import android.content.Context;
 import android.content.Intent;
@@ -35,7 +35,7 @@ public class SystemUtils {
 
     public static final String EXTERNAL_STORAGE_DATA_DIRECTORY
             = Environment.getExternalStorageDirectory()
-            + "/Android/data/"+AirportsMain.class.getPackage().getName();
+            + "/Android/data/"+FlightIntel.class.getPackage().getName();
 
     private final static String MIME_TYPE_PDF = "application/pdf";
 
