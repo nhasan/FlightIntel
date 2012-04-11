@@ -162,8 +162,7 @@ public class AirportDetailsActivity extends ActivityBase {
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
 
-            DatabaseManager dbManager = getDbManager();
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 13 ];
 
             Cursor apt = getAirportDetails( siteNumber );
@@ -351,7 +350,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     null, null, Attendance.SEQUENCE_NUMBER, null );
             cursors[ 9 ] = c;
 
-            db = dbManager.getDatabase( DatabaseManager.DB_DTPP );
+            db = getDatabase( DatabaseManager.DB_DTPP );
             if ( db != null ) {
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Dtpp.TABLE_NAME );
@@ -360,7 +359,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 cursors[ 10 ] = c;
             }
 
-            db = dbManager.getDatabase( DatabaseManager.DB_DAFD );
+            db = getDatabase( DatabaseManager.DB_DAFD );
             if ( db != null ) {
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( DafdCycle.TABLE_NAME );
@@ -863,21 +862,24 @@ public class AirportDetailsActivity extends ActivityBase {
             if ( cycle != null && cycle.moveToFirst() ) {
                 String afdCycle = cycle.getString( cycle.getColumnIndex( DafdCycle.AFD_CYCLE ) );
                 Cursor dafd = result[ 12 ];
-                dafd.moveToFirst();
-                String pdfName = dafd.getString( dafd.getColumnIndex( Dafd.PDF_NAME ) );
-                View row = addClickableRow( layout, "A/FD airport info", null,
-                        R.drawable.row_selector_bottom );
-                row.setTag( R.id.DAFD_CYCLE, afdCycle );
-                row.setTag( R.id.DAFD_PDF_NAME, pdfName );
-                row.setOnClickListener( new OnClickListener() {
+                if ( dafd.moveToFirst() ) {
+                    String pdfName = dafd.getString( dafd.getColumnIndex( Dafd.PDF_NAME ) );
+                    View row = addClickableRow( layout, "A/FD airport info", null,
+                            R.drawable.row_selector_bottom );
+                    row.setTag( R.id.DAFD_CYCLE, afdCycle );
+                    row.setTag( R.id.DAFD_PDF_NAME, pdfName );
+                    row.setOnClickListener( new OnClickListener() {
 
-                    @Override
-                    public void onClick( View v ) {
-                        String afdCycle = (String) v.getTag( R.id.DAFD_CYCLE );
-                        String pdfName = (String) v.getTag( R.id.DAFD_PDF_NAME );
-                        getAfdPage( afdCycle, pdfName );
-                    }
-                } );
+                        @Override
+                        public void onClick( View v ) {
+                            String afdCycle = (String) v.getTag( R.id.DAFD_CYCLE );
+                            String pdfName = (String) v.getTag( R.id.DAFD_PDF_NAME );
+                            getAfdPage( afdCycle, pdfName );
+                        }
+                    } );
+                } else {
+                    addRow( layout, "A/FD page is not available for this airport" );
+                }
             } else {
                 addRow( layout, "d-A/FD data not found" );
             }

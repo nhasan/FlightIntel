@@ -58,7 +58,7 @@ public class RemarkDetailsActivity extends ActivityBase {
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
 
-            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Remarks.TABLE_NAME );
             cursors[ 1 ] = builder.query( db,

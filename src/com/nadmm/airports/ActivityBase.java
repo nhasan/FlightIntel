@@ -75,7 +75,7 @@ import com.nadmm.airports.utils.UiUtils;
 
 public class ActivityBase extends FragmentActivity {
 
-    protected DatabaseManager mDbManager;
+    private DatabaseManager mDbManager;
     private MenuItem mRefreshItem;
     private Drawable mRefreshDrawable;
     private LayoutInflater mInflater;
@@ -205,8 +205,7 @@ public class ActivityBase extends FragmentActivity {
     }
 
     public Cursor getAirportDetails( String siteNumber ) {
-        SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
-
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
                 +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
@@ -217,6 +216,17 @@ public class ActivityBase extends FragmentActivity {
         }
 
         return c;
+    }
+
+    public SQLiteDatabase getDatabase( String type ) {
+        SQLiteDatabase db = mDbManager.getDatabase( type );
+        if ( db == null ) {
+            Intent download = new Intent( this, DownloadActivity.class );
+            download.putExtra( "MSG", "Database may be corrupted. Please delete and re-install" );
+            startActivity( download );
+            finish();
+        }
+        return db;
     }
 
     protected Intent checkData() {

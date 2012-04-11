@@ -54,7 +54,7 @@ public class NavaidNotamActivity extends NotamActivityBase {
             String navaidId = params[ 0 ];
             String navaidType = params[ 1 ];
 
-            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Nav1.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"

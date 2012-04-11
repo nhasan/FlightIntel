@@ -246,7 +246,7 @@ public class NearbyActivity extends ActivityBase {
                     PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "20" ) );
 
             // Favorites may have changed, get the new list
-            mFavorites = mDbManager.getAptFavorites();
+            mFavorites = getDbManager().getAptFavorites();
 
             // Get the bounding box first to do a quick query as a first cut
             double[] box = GeoUtils.getBoundingBox( mLastLocation, radius );
@@ -404,11 +404,11 @@ public class NearbyActivity extends ActivityBase {
 
         switch ( item.getItemId() ) {
             case R.id.menu_add_favorites:
-                mDbManager.addToFavoriteAirports( siteNumber );
+                getDbManager().addToFavoriteAirports( siteNumber );
                 mFavorites.add( siteNumber );
                 break;
             case R.id.menu_remove_favorites:
-                mDbManager.removeFromFavoriteAirports( siteNumber );
+                getDbManager().removeFromFavoriteAirports( siteNumber );
                 mFavorites.remove( siteNumber );
                 break;
             case R.id.menu_view_details:

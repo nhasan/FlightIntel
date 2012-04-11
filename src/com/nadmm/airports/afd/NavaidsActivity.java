@@ -125,7 +125,7 @@ public class NavaidsActivity extends ActivityBase {
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
 
-            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 3 ];
 
             Cursor apt = getAirportDetails( siteNumber );

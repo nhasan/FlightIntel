@@ -139,7 +139,7 @@ public class DtppActivity extends ActivityBase {
             String siteNumber = params[ 0 ];
             int index = 0;
 
-            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] result = new Cursor[ 11 ];
 
             Cursor apt = getAirportDetails( siteNumber );
@@ -147,7 +147,7 @@ public class DtppActivity extends ActivityBase {
 
             mFaaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
 
-            db = mDbManager.getDatabase( DatabaseManager.DB_DTPP );
+            db = getDatabase( DatabaseManager.DB_DTPP );
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( DtppCycle.TABLE_NAME );

@@ -109,7 +109,7 @@ public class FssCommActivity extends ActivityBase {
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
 
-            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] result = new Cursor[ 2 ];
 
             Cursor apt = getAirportDetails( siteNumber );

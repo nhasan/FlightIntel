@@ -119,7 +119,7 @@ public final class BrowseActivity extends ActivityBase {
         @Override
         protected Cursor doInBackground( Bundle... params ) {
             Cursor c = null;
-            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
             Bundle extra = params[ 0 ];
             if ( !extra.containsKey( States.STATE_CODE ) ) {
@@ -301,7 +301,7 @@ public final class BrowseActivity extends ActivityBase {
         menu.setHeaderTitle( code+" - "+facilityName );
 
         // Show either "Add" or "Remove" entry depending on the context
-        if ( mDbManager.isFavoriteAirport( siteNumber ) ) {
+        if ( getDbManager().isFavoriteAirport( siteNumber ) ) {
             menu.removeItem( R.id.menu_add_favorites );
         } else {
             menu.removeItem( R.id.menu_remove_favorites );
@@ -315,10 +315,10 @@ public final class BrowseActivity extends ActivityBase {
 
         switch ( item.getItemId() ) {
             case R.id.menu_add_favorites:
-                mDbManager.addToFavoriteAirports( siteNumber );
+                getDbManager().addToFavoriteAirports( siteNumber );
                 break;
             case R.id.menu_remove_favorites:
-                mDbManager.removeFromFavoriteAirports( siteNumber );
+                getDbManager().removeFromFavoriteAirports( siteNumber );
                 break;
             case R.id.menu_view_details:
                 Intent intent = new Intent( this, AirportDetailsActivity.class );

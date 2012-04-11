@@ -70,7 +70,8 @@ public class CommDetailsActivity extends ActivityBase {
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
 
-            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder = new SQLiteQueryBuilder();
             builder.setTables( Tower1.TABLE_NAME );

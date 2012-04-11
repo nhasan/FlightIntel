@@ -61,7 +61,7 @@ public class NavaidDetailsActivity extends ActivityBase {
             String navaidId = params[ 0 ];
             String navaidType = params[ 1 ];
 
-            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 3 ];
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();

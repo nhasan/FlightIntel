@@ -65,7 +65,7 @@ public class IlsDetailsActivity extends ActivityBase {
             String runwayId = params[ 1 ];
             String ilsType = params[ 2 ];
 
-            SQLiteDatabase db = mDbManager.getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             Cursor[] cursors = new Cursor[ 9 ];
 
             Cursor apt = getAirportDetails( siteNumber );
