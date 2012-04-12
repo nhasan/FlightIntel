@@ -77,6 +77,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Catalog;
+import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 import com.nadmm.airports.utils.SystemUtils;
@@ -235,7 +236,9 @@ public final class DownloadActivity extends ActivityBase {
                 }
             } );
         } else {
-            showToast( "External storage is not available" );
+            Intent intent = new Intent( this, ExternalStorageActivity.class );
+            startActivity( intent );
+            finish();
         }
     }
 
