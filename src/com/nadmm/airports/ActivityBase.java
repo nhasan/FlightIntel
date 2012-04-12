@@ -22,8 +22,10 @@ package com.nadmm.airports;
 import java.util.ArrayList;
 
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -70,7 +72,9 @@ import com.nadmm.airports.afd.BrowseActivity;
 import com.nadmm.airports.afd.FavoritesActivity;
 import com.nadmm.airports.afd.NearbyActivity;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.FormatUtils;
+import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 public class ActivityBase extends FragmentActivity {
@@ -101,19 +105,51 @@ public class ActivityBase extends FragmentActivity {
         }
 
     };
+    IntentFilter mFilter;
+    BroadcastReceiver mExternalStorageReceiver;
+    boolean mExternalStorageAvailable = false;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         mDbManager = DatabaseManager.instance( this );
         mInflater = getLayoutInflater();
         overridePendingTransition( R.anim.fade_in, R.anim.fade_out );
+
+        mFilter = new IntentFilter();
+        mFilter.addAction( Intent.ACTION_MEDIA_MOUNTED );
+        mFilter.addAction( Intent.ACTION_MEDIA_SHARED );
+        mFilter.addAction( Intent.ACTION_MEDIA_UNMOUNTED );
+        mFilter.addAction( Intent.ACTION_MEDIA_REMOVED );
+        mFilter.addDataScheme( "file" );
+
+        mExternalStorageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive( Context context, Intent intent ) {
+                externalStorageStatusChanged();
+            }
+        };
+
         super.onCreate( savedInstanceState );
     }
 
     @Override
     protected void onPause() {
         overridePendingTransition( R.anim.fade_in, R.anim.fade_out );
+        unregisterReceiver( mExternalStorageReceiver );
         super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver( mExternalStorageReceiver, mFilter );
+    }
+
+    protected void externalStorageStatusChanged() {
+        if ( !SystemUtils.isExternalStorageAvailable() ) {
+            Intent intent = new Intent( this, ExternalStorageActivity.class );
+            startActivity( intent );
+        }
     }
 
     public DatabaseManager getDbManager() {
@@ -221,15 +257,19 @@ public class ActivityBase extends FragmentActivity {
     public SQLiteDatabase getDatabase( String type ) {
         SQLiteDatabase db = mDbManager.getDatabase( type );
         if ( db == null ) {
-            Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "Database may be corrupted. Please delete and re-install" );
-            startActivity( download );
+            Intent intent = checkData();
+            startActivity( intent );
             finish();
         }
         return db;
     }
 
     protected Intent checkData() {
+        if ( !SystemUtils.isExternalStorageAvailable() ) {
+            Intent intent = new Intent( this, ExternalStorageActivity.class );
+            return intent;
+        }
+
         Cursor c = mDbManager.getCurrentFromCatalog();
         if ( !c.moveToFirst() ) {
             Intent download = new Intent( this, DownloadActivity.class );
