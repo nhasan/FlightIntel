@@ -50,13 +50,7 @@ public class SystemUtils {
 
     public static boolean isExternalStorageAvailable() {
         String state = Environment.getExternalStorageState();
-        if ( !Environment.MEDIA_MOUNTED.equals( state ) ) {
-            return false;
-        }
-        else if ( Environment.MEDIA_MOUNTED_READ_ONLY.equals( state ) ) {
-            return false;
-        }
-        return true;
+        return Environment.MEDIA_MOUNTED.equals( state );
     }
 
     public static void startPDFViewer( Context context, String path ) {
