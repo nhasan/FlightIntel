@@ -527,8 +527,6 @@ public class DatabaseManager {
         mCatalogDbHelper = new CatalogDbOpenHelper( mContext );
         mUserDataDbHelper = new UserDataDbOpenHelper( mContext );
         mDatabases = new HashMap<String, SQLiteDatabase>();
-
-        openDatabases();
     }
 
     public SQLiteDatabase getCatalogDb() {
