@@ -1,5 +1,9 @@
 v3.2.2 (4/13/2012)
 ==================
+* Rebuild the apk. Previous build was unusable
+
+v3.2.2 (4/13/2012)
+==================
 * Crash fix in browse screen when db is not installed
 
 v3.2.1 (4/13/2012)
