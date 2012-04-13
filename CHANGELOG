@@ -1,3 +1,10 @@
+v3.2.1 (4/13/2012)
+==================
+* Show additional wx station remarks where available
+* Detect if external storage is not mounted and show a storage monitor screen instead of crashing 
+* Sort the search suggestion list by airport id
+* Fix crashes in TAF display
+
 v3.2.0 (4/10/2012)
 ==================
 * Added ability to show d-A/FD page for airports
