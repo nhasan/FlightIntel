@@ -324,7 +324,8 @@ public class TafFragment extends FragmentBase {
             RelativeLayout grp_layout = (RelativeLayout) inflate( R.layout.grouped_detail_item );
 
             // Keep track of forecast conditions across all change groups
-            if ( mLastForecast == null || forecast.changeIndicator.equals( "FM" ) ) {
+            if ( mLastForecast == null || forecast.changeIndicator == null
+                    || forecast.changeIndicator.equals( "FM" ) ) {
                 mLastForecast = forecast;
             } else {
                 if ( forecast.visibilitySM < Float.MAX_VALUE ) {
