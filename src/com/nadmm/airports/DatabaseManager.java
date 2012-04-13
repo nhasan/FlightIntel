@@ -22,7 +22,7 @@ package com.nadmm.airports;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Set;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -304,6 +304,14 @@ public class DatabaseManager {
         public static final String SECOND_STATION_FREQUENCY = "SECOND_STATION_FREQUENCY";
         public static final String STATION_PHONE_NUMBER = "STATION_PHONE_NUMBER";
         public static final String SITE_NUMBER = "SITE_NUMBER";
+    }
+
+
+    public static final class Awos2 implements BaseColumns {
+        public static final String TABLE_NAME = "awos2";
+        public static final String WX_SENSOR_IDENT = "WX_SENSOR_IDENT";
+        public static final String WX_SENSOR_TYPE = "WX_SENSOR_TYPE";
+        public static final String WX_STATION_REMARKS = "WX_STATION_REMARKS";
     }
 
     public static final class Nav1 implements BaseColumns {
@@ -705,9 +713,8 @@ public class DatabaseManager {
     }
 
     public synchronized void closeDatabases() {
-        Iterator<String> types  = mDatabases.keySet().iterator();
-        while ( types.hasNext() ) {
-            String type = types.next();
+        Set<String> types  = mDatabases.keySet();
+        for ( String type : types ) {
             Log.i( TAG, "Closing db for type="+type );
             mDatabases.get( type ).close();
         }
