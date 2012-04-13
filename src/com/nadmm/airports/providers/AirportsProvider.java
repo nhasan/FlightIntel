@@ -149,7 +149,7 @@ public class AirportsProvider extends ContentProvider {
         builder.setTables( Airports.TABLE_NAME );
         builder.setProjectionMap( mSuggestionColumnMap );
         Cursor c = builder.query( db, mSuggestionColumns, selection, selectionArgs, 
-                null, null, null, limit );
+                null, null, SearchManager.SUGGEST_COLUMN_TEXT_1+" ASC", limit );
         return c;
     }
 
