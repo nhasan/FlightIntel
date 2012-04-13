@@ -20,6 +20,7 @@
 package com.nadmm.airports.wx;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,6 +43,7 @@ import android.widget.TextView;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
+import com.nadmm.airports.DatabaseManager.Awos2;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
@@ -58,11 +60,14 @@ public class MetarFragment extends FragmentBase {
     protected Location mLocation;
     protected CursorAsyncTask mTask;
     protected BroadcastReceiver mReceiver;
+    protected ArrayList<String> mRemarks;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setHasOptionsMenu( true );
+
+        mRemarks = new ArrayList<String>();
 
         mReceiver = new BroadcastReceiver() {
             @Override
@@ -105,8 +110,9 @@ public class MetarFragment extends FragmentBase {
         protected Cursor[] doInBackground( String... params ) {
             String stationId = params[ 0 ];
 
-            Cursor[] cursors = new Cursor[ 2 ];
-            SQLiteDatabase db = getDbManager().getDatabase( DatabaseManager.DB_FADDS );
+            Cursor[] cursors = new Cursor[ 3 ];
+
+            SQLiteDatabase db = getActivityBase().getDatabase( DatabaseManager.DB_FADDS );
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Wxs.TABLE_NAME );
@@ -130,8 +136,20 @@ public class MetarFragment extends FragmentBase {
                     +" ON a."+Airports.FAA_CODE+" = w."+Awos1.WX_SENSOR_IDENT );
             selection = "a."+Airports.ICAO_CODE+"=? AND w."+Awos1.COMMISSIONING_STATUS+"='Y'";
             c = builder.query( db, wxColumns, selection, new String[] { stationId },
-                    null, null, null, null );
+                    null, null, null );
             cursors[ 1 ] = c;
+
+            if ( c.moveToFirst() ) {
+                String sensorId = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_IDENT ) );
+                String sensorType = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Awos2.TABLE_NAME );
+                selection = String.format( "%s=? AND %s=?",
+                        Awos2.WX_SENSOR_IDENT, Awos2.WX_SENSOR_TYPE );
+                c = builder.query( db, new String[] { Awos2.WX_STATION_REMARKS },
+                        selection, new String[] { sensorId, sensorType }, null, null, null );
+                cursors[ 2 ] = c;
+            }
 
             return cursors;
         }
@@ -151,6 +169,15 @@ public class MetarFragment extends FragmentBase {
             float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
             mLocation.setLatitude( lat );
             mLocation.setLongitude( lon );
+
+            Cursor rmk = result[ 2 ];
+            if ( rmk != null && rmk.moveToFirst() ) {
+                mRemarks.clear();
+                do {
+                    String remark = rmk.getString( rmk.getColumnIndex( Awos2.WX_STATION_REMARKS ) );
+                    mRemarks.add( remark );
+                } while ( rmk.moveToNext() );
+            }
 
             // Show the weather station info
             showWxTitle( result );
@@ -452,7 +479,6 @@ public class MetarFragment extends FragmentBase {
         }
 
         // Remarks
-        tv = (TextView) findViewById( R.id.wx_remarks_label );
         layout = (LinearLayout) findViewById( R.id.wx_remarks_layout );
         layout.removeAllViews();
         if ( !metar.flags.isEmpty() ) {
@@ -462,7 +488,13 @@ public class MetarFragment extends FragmentBase {
             for ( Flags flag : metar.flags ) {
                 addBulletedRow( layout, flag.toString() );
             }
-        } else {
+        }
+        for ( String remark : mRemarks ) {
+            addBulletedRow( layout, remark );
+        }
+
+        if ( layout.getChildCount() == 0 ) {
+            tv = (TextView) findViewById( R.id.wx_remarks_label );
             tv.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
         }
