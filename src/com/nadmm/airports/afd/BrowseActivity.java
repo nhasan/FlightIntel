@@ -120,6 +120,9 @@ public final class BrowseActivity extends ActivityBase {
         protected Cursor doInBackground( Bundle... params ) {
             Cursor c = null;
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+            if ( db == null ) {
+                return null;
+            }
 
             Bundle extra = params[ 0 ];
             if ( !extra.containsKey( States.STATE_CODE ) ) {
@@ -178,7 +181,14 @@ public final class BrowseActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            showDetails( c );
+            if ( c != null ) {
+                showDetails( c );
+            } else {
+                TextView tv = (TextView) findViewById( R.id.airport_list_title );
+                tv.setText( "Airport data is not installed on the device" );
+                tv.setVisibility( View.VISIBLE );
+            }
+            setContentShown( true );
         }
 
     }
@@ -209,7 +219,6 @@ public final class BrowseActivity extends ActivityBase {
         }
 
         listView.setAdapter( mListAdapter );
-        setContentShown( true );
     }
 
     private final class BrowseCursorAdapter extends SectionedCursorAdapter {
