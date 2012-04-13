@@ -219,9 +219,10 @@ public class FavoriteWxFragment extends ListFragment {
         @Override
         protected Cursor doInBackground( Void... params ) {
             ActivityBase activity = (ActivityBase) getActivity();
-            DatabaseManager dbManager = activity.getDbManager();
-            SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
 
+            SQLiteDatabase db = activity.getDatabase( DatabaseManager.DB_FADDS );
+
+            DatabaseManager dbManager = activity.getDbManager();
             ArrayList<String> favorites = dbManager.getWxFavorites();
 
             String selectionList = "";
