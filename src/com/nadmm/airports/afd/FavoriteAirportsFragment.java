@@ -39,18 +39,17 @@ import com.nadmm.airports.utils.AirportsCursorHelper;
 
 public class FavoriteAirportsFragment extends ListFragment {
 
+    private FavoriteAirportsTask mTask;
+
     public class FavoriteAirportsTask extends AsyncTask<Void, Void, Cursor> {
-
-        private final FavoriteAirportsFragment mFragment;
-
-        public FavoriteAirportsTask( FavoriteAirportsFragment fragment ) {
-            super();
-            mFragment = fragment;
-        }
 
         @Override
         protected Cursor doInBackground( Void... params ) {
             ActivityBase activity = (ActivityBase) getActivity();
+            if ( activity == null ) {
+                return null;
+            }
+
             DatabaseManager dbManager = activity.getDbManager();
             ArrayList<String> favorites = dbManager.getAptFavorites();
             String selection = "";
@@ -72,26 +71,31 @@ public class FavoriteAirportsFragment extends ListFragment {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            mFragment.setCursor( c );
+            if ( c != null ) {
+                setCursor( c );
+            }
         }
 
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        AirportsCursorAdapter adapter = (AirportsCursorAdapter) getListAdapter();
-        if ( adapter != null ) {
-            Cursor c = adapter.getCursor();
-            c.close();
-        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        FavoriteAirportsTask task = new FavoriteAirportsTask( this );
-        task.execute( (Void[]) null );
+        mTask = new FavoriteAirportsTask();
+        mTask.execute( (Void[]) null );
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mTask.cancel( true );
+        AirportsCursorAdapter adapter = (AirportsCursorAdapter) getListAdapter();
+        if ( adapter != null ) {
+            Cursor c = adapter.getCursor();
+            if ( c != null ) {
+                c.close();
+            }
+        }
     }
 
     @Override
