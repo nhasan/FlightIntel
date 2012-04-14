@@ -258,8 +258,10 @@ public class ActivityBase extends FragmentActivity {
         SQLiteDatabase db = mDbManager.getDatabase( type );
         if ( db == null ) {
             Intent intent = checkData();
-            startActivity( intent );
-            finish();
+            if ( intent != null ) {
+                startActivity( intent );
+                finish();
+            }
         }
         return db;
     }
