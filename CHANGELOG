@@ -1,5 +1,9 @@
 v3.2.3 (4/13/2012)
 ==================
+* Check for null intent
+
+v3.2.3 (4/13/2012)
+==================
 * Rebuild the apk. Previous build was unusable
 
 v3.2.2 (4/13/2012)
