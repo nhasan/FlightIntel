@@ -33,17 +33,27 @@ import android.widget.Toast;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 
 public class FragmentBase extends Fragment {
 
     private ActivityBase mActivity;
+    private CursorAsyncTask mTask;
 
     @Override
     public void onAttach( SupportActivity activity ) {
         super.onAttach( activity );
         mActivity = (ActivityBase) activity;
+    }
+
+    @Override
+    public void onPause() {
+        if ( mTask != null ) {
+            mTask.cancel( true );
+        }
+        super.onPause();
     }
 
     public DatabaseManager getDbManager() {
@@ -60,6 +70,11 @@ public class FragmentBase extends Fragment {
 
     protected void setContentShown( boolean shown ) {
         mActivity.setContentShown( getView(), shown );
+    }
+
+    protected CursorAsyncTask setBackgroundTask( CursorAsyncTask task ) {
+        mTask = task;
+        return mTask;
     }
 
     protected int getSelectorResourceForRow( int curRow, int totRows ) {

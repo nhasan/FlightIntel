@@ -116,8 +116,7 @@ public class DtppActivity extends ActivityBase {
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-        DtppTask task = new DtppTask();
-        task.execute( siteNumber );
+        setBackgroundTask( new DtppTask() ).execute( siteNumber );
     }
 
     @Override
@@ -179,13 +178,14 @@ public class DtppActivity extends ActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             Cursor apt = result[ 0 ];
             setActionBarTitle( apt );
             showAirportTitle( apt );
             showDtppSummary( result );
             showDtppCharts( result );
             setContentShown( true );
+            return true;
         }
 
     }

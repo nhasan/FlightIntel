@@ -44,8 +44,7 @@ public class RemarkDetailsActivity extends ActivityBase {
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-        AirportRemarksTask task = new AirportRemarksTask();
-        task.execute( siteNumber );
+        setBackgroundTask( new AirportRemarksTask() ).execute( siteNumber );
     }
 
     private final class AirportRemarksTask extends CursorAsyncTask {
@@ -75,8 +74,9 @@ public class RemarkDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             showDetails( result );
+            return true;
         }
 
     }

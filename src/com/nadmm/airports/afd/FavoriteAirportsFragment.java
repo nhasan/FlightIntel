@@ -88,7 +88,9 @@ public class FavoriteAirportsFragment extends ListFragment {
     @Override
     public void onPause() {
         super.onPause();
-        mTask.cancel( true );
+        if ( mTask != null ) {
+            mTask.cancel( true );
+        }
         AirportsCursorAdapter adapter = (AirportsCursorAdapter) getListAdapter();
         if ( adapter != null ) {
             Cursor c = adapter.getCursor();

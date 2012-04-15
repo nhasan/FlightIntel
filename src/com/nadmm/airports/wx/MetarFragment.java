@@ -58,7 +58,6 @@ public class MetarFragment extends FragmentBase {
 
     protected long mElevation;
     protected Location mLocation;
-    protected CursorAsyncTask mTask;
     protected BroadcastReceiver mReceiver;
     protected ArrayList<String> mRemarks;
 
@@ -85,14 +84,12 @@ public class MetarFragment extends FragmentBase {
 
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
-        mTask = new MetarDetailTask();
-        mTask.execute( stationId );
+        setBackgroundTask( new MetarDetailTask() ).execute( stationId );
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        mTask.cancel( true );
         getActivity().unregisterReceiver( mReceiver );
         super.onPause();
     }
@@ -155,35 +152,33 @@ public class MetarFragment extends FragmentBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             Cursor wxs = result[ 0 ];
-            if ( !wxs.moveToFirst() ) {
+            if ( wxs.moveToFirst() ) {
+                mLocation = new Location( "" );
+                float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+                float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+                mLocation.setLatitude( lat );
+                mLocation.setLongitude( lon );
+    
+                Cursor rmk = result[ 2 ];
+                if ( rmk != null && rmk.moveToFirst() ) {
+                    mRemarks.clear();
+                    do {
+                        String remark = rmk.getString(
+                                rmk.getColumnIndex( Awos2.WX_STATION_REMARKS ) );
+                        mRemarks.add( remark );
+                    } while ( rmk.moveToNext() );
+                }
+    
+                showWxTitle( result );
+                requestMetar( false );
+            } else {
                 UiUtils.showToast( getActivity().getApplicationContext(),
                         "Unable to get weather station info" );
                 getActivity().finish();
-                return;
             }
-
-            mLocation = new Location( "" );
-            float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-            float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-            mLocation.setLatitude( lat );
-            mLocation.setLongitude( lon );
-
-            Cursor rmk = result[ 2 ];
-            if ( rmk != null && rmk.moveToFirst() ) {
-                mRemarks.clear();
-                do {
-                    String remark = rmk.getString( rmk.getColumnIndex( Awos2.WX_STATION_REMARKS ) );
-                    mRemarks.add( remark );
-                } while ( rmk.moveToNext() );
-            }
-
-            // Show the weather station info
-            showWxTitle( result );
-
-            // Now request the weather
-            requestMetar( false );
+            return true;
         }
 
     }

@@ -102,10 +102,8 @@ public class AirportDetailsActivity extends ActivityBase {
         addFragment( AirportDetailsFragment.class );
     }
 
-    protected AirportDetailsTask startTask() {
-        AirportDetailsTask task = new AirportDetailsTask();
-        task.execute( mSiteNumber );
-        return task;
+    protected void startTask() {
+        setBackgroundTask( new AirportDetailsTask() ).execute( mSiteNumber );
     }
 
     private final class AwosData implements Comparable<AwosData> {
@@ -378,12 +376,13 @@ public class AirportDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             AirportDetailsFragment f = (AirportDetailsFragment) getFragment(
                     AirportDetailsFragment.class );
             if ( f != null ) {
                 f.onResult( result );
             }
+            return true;
         }
 
     }
@@ -400,7 +399,6 @@ public class AirportDetailsActivity extends ActivityBase {
         private Location mLocation;
         private float mDeclination;
         private String mIcaoCode;
-        AirportDetailsTask mTask;
         int mWxUpdates = 0;
 
         @Override
@@ -447,7 +445,7 @@ public class AirportDetailsActivity extends ActivityBase {
         public void onActivityCreated( Bundle savedInstanceState ) {
             super.onActivityCreated( savedInstanceState );
             AirportDetailsActivity activity = (AirportDetailsActivity) getActivityBase();
-            mTask = activity.startTask();
+            activity.startTask();
         }
 
         @Override
@@ -463,13 +461,9 @@ public class AirportDetailsActivity extends ActivityBase {
             super.onPause();
             getActivityBase().unregisterReceiver( mMetarReceiver );
             getActivityBase().unregisterReceiver( mDafdReceiver );
-            if ( mTask != null ) {
-                mTask.cancel( true );
-            }
         }
 
         public void onResult( Cursor[] result ) {
-            mTask = null;
             showDetails( result );
         }
 

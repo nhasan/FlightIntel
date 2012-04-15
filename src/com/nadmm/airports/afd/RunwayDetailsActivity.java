@@ -59,8 +59,7 @@ public class RunwayDetailsActivity extends ActivityBase {
         Bundle args = intent.getExtras();
         String siteNumber = args.getString( Runways.SITE_NUMBER );
         String runwayId = args.getString( Runways.RUNWAY_ID );
-        RunwayDetailsTask task = new RunwayDetailsTask();
-        task.execute( siteNumber, runwayId );
+        setBackgroundTask( new RunwayDetailsTask() ).execute( siteNumber, runwayId );
     }
 
     private final class RunwayDetailsTask extends CursorAsyncTask {
@@ -115,8 +114,9 @@ public class RunwayDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             showDetails( result );
+            return true;
         }
 
     }

@@ -50,8 +50,7 @@ public class NavaidDetailsActivity extends ActivityBase {
         Intent intent = getIntent();
         String navaidId = intent.getStringExtra( Nav1.NAVAID_ID );
         String navaidType = intent.getStringExtra( Nav1.NAVAID_TYPE );
-        NavaidDetailsTask task = new NavaidDetailsTask();
-        task.execute( navaidId, navaidType );
+        setBackgroundTask( new NavaidDetailsTask() ).execute( navaidId, navaidType );
     }
 
     private final class NavaidDetailsTask extends CursorAsyncTask {
@@ -98,14 +97,14 @@ public class NavaidDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             if ( result == null ) {
                 UiUtils.showToast( getApplicationContext(), "Navaid not found" );
                 finish();
-                return;
+            } else {
+                showDetails( result );
             }
-
-            showDetails( result );
+            return true;
         }
 
     }

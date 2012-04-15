@@ -58,8 +58,7 @@ public class FssCommActivity extends ActivityBase {
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-        FssCommTask task = new FssCommTask();
-        task.execute( siteNumber );
+        setBackgroundTask( new FssCommTask() ).execute( siteNumber );
     }
 
     private final class ComData implements Comparable<ComData> {
@@ -192,8 +191,9 @@ public class FssCommActivity extends ActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             showDetails( result );
+            return true;
         }
 
     }

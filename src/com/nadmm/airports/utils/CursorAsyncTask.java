@@ -30,14 +30,16 @@ public abstract class CursorAsyncTask extends AsyncTask<String, Void, Cursor[]> 
 
     @Override
     protected final void onPostExecute( Cursor[] result ) {
-        onResult( result );
-        for ( Cursor c : result ) {
-            if ( c != null ) {
-                c.close();
+        boolean close = onResult( result );
+        if ( close ) {
+            for ( Cursor c : result ) {
+                if ( c != null ) {
+                    c.close();
+                }
             }
         }
     }
 
-    protected abstract void onResult( Cursor[] result );
+    protected abstract boolean onResult( Cursor[] result );
 
 }

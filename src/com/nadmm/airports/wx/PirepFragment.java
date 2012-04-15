@@ -60,7 +60,6 @@ public class PirepFragment extends FragmentBase {
     private final int PIREP_HOURS_BEFORE = 3;
 
     protected Location mLocation;
-    protected CursorAsyncTask mTask;
     protected BroadcastReceiver mReceiver;
     protected String mStationId;
 
@@ -88,14 +87,12 @@ public class PirepFragment extends FragmentBase {
 
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
-        mTask = new PirepDetailTask();
-        mTask.execute( stationId );
+        setBackgroundTask( new PirepDetailTask() ).execute( stationId );
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        mTask.cancel( true );
         getActivity().unregisterReceiver( mReceiver );
         super.onPause();
     }
@@ -145,25 +142,25 @@ public class PirepFragment extends FragmentBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             Cursor wxs = result[ 0 ];
             if ( wxs == null || !wxs.moveToFirst() ) {
                 Bundle args = getArguments();
                 String stationId = args.getString( NoaaService.STATION_ID );
                 String error = String.format( "Unable to get station info for %s", stationId );
                 showError( error );
-                return;
+            } else {
+                mLocation = new Location( "" );
+                float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+                float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+                mLocation.setLatitude( lat );
+                mLocation.setLongitude( lon );
+    
+                // Now request the weather
+                mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
+                requestPirep( false );
             }
-
-            mLocation = new Location( "" );
-            float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-            float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-            mLocation.setLatitude( lat );
-            mLocation.setLongitude( lon );
-
-            // Now request the weather
-            mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
-            requestPirep( false );
+            return true;
         }
 
     }

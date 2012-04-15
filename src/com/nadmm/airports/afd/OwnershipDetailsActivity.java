@@ -48,8 +48,7 @@ public class OwnershipDetailsActivity extends ActivityBase {
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-        AirportDetailsTask task = new AirportDetailsTask();
-        task.execute( siteNumber );
+        setBackgroundTask( new AirportDetailsTask() ).execute( siteNumber );
     }
 
     private final class AirportDetailsTask extends CursorAsyncTask {
@@ -74,8 +73,9 @@ public class OwnershipDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             showDetails( result );
+            return true;
         }
 
     }

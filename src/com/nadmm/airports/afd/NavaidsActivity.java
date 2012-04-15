@@ -63,8 +63,7 @@ public class NavaidsActivity extends ActivityBase {
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-        NavaidDetailsTask task = new NavaidDetailsTask();
-        task.execute( siteNumber );
+        setBackgroundTask( new NavaidDetailsTask() ).execute( siteNumber );
     }
 
     private final class NavaidData implements Comparable<NavaidData> {
@@ -208,8 +207,9 @@ public class NavaidsActivity extends ActivityBase {
        }
 
        @Override
-       protected void onResult( Cursor[] result ) {
+       protected boolean onResult( Cursor[] result ) {
            showDetails( result );
+           return true;
        }
 
     }

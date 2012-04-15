@@ -57,7 +57,6 @@ public class TafFragment extends FragmentBase {
     private final int TAF_RADIUS = 25;
 
     protected Location mLocation;
-    protected CursorAsyncTask mTask;
     protected BroadcastReceiver mReceiver;
     protected String mStationId;
     protected Forecast mLastForecast;
@@ -85,14 +84,12 @@ public class TafFragment extends FragmentBase {
 
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
-        mTask = new TafDetailTask();
-        mTask.execute( stationId );
+        setBackgroundTask( new TafDetailTask() ).execute( stationId );
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        mTask.cancel( true );
         getActivity().unregisterReceiver( mReceiver );
         super.onPause();
     }
@@ -208,7 +205,7 @@ public class TafFragment extends FragmentBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             Cursor wxs = result[ 0 ];
             if ( wxs == null || !wxs.moveToFirst() ) {
                 // No station with TAF was found nearby
@@ -228,21 +225,21 @@ public class TafFragment extends FragmentBase {
                 title.setVisibility( View.GONE );
                 stopRefreshAnimation();
                 setContentShown( true );
-                return;
+            } else {
+                mLocation = new Location( "" );
+                float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+                float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+                mLocation.setLatitude( lat );
+                mLocation.setLongitude( lon );
+    
+                // Show the weather station info
+                showWxTitle( result );
+    
+                // Now request the weather
+                mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
+                requestTaf( mStationId, false );
             }
-
-            mLocation = new Location( "" );
-            float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-            float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-            mLocation.setLatitude( lat );
-            mLocation.setLongitude( lon );
-
-            // Show the weather station info
-            showWxTitle( result );
-
-            // Now request the weather
-            mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
-            requestTaf( mStationId, false );
+            return true;
         }
 
     }

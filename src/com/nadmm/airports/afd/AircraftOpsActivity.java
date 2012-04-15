@@ -41,8 +41,7 @@ public class AircraftOpsActivity extends ActivityBase {
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
-        OpsDetailsTask task = new OpsDetailsTask();
-        task.execute( siteNumber );
+        setBackgroundTask( new OpsDetailsTask() ).execute( siteNumber );
     }
 
     private final class OpsDetailsTask extends CursorAsyncTask {
@@ -60,8 +59,9 @@ public class AircraftOpsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             showDetails( result );
+            return true;
         }
 
     }

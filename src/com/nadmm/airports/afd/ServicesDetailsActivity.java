@@ -41,8 +41,7 @@ public class ServicesDetailsActivity extends ActivityBase {
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-        ServicesDetailsTask task = new ServicesDetailsTask();
-        task.execute( siteNumber );
+        setBackgroundTask( new ServicesDetailsTask() ).execute( siteNumber );
     }
 
     private final class ServicesDetailsTask extends CursorAsyncTask {
@@ -56,8 +55,9 @@ public class ServicesDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             showDetails( result );
+            return true;
         }
 
     }

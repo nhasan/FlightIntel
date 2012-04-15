@@ -40,8 +40,7 @@ public class AirportNotamActivity extends NotamActivityBase {
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-        NotamTask task = new NotamTask();
-        task.execute( siteNumber );
+        setBackgroundTask( new NotamTask() ).execute( siteNumber );
     }
 
     private final class NotamTask extends CursorAsyncTask {
@@ -57,7 +56,7 @@ public class AirportNotamActivity extends NotamActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             Cursor apt = result[ 0 ];
 
             setActionBarTitle( apt );
@@ -77,6 +76,7 @@ public class AirportNotamActivity extends NotamActivityBase {
                 icaoCode += ",KGPS";
             }
             getNotams( icaoCode );
+            return true;
         }
 
     }

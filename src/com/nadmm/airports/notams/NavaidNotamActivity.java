@@ -42,8 +42,7 @@ public class NavaidNotamActivity extends NotamActivityBase {
         Intent intent = getIntent();
         String navaidId = intent.getStringExtra( Nav1.NAVAID_ID );
         String navaidType = intent.getStringExtra( Nav1.NAVAID_TYPE );
-        NotamTask task = new NotamTask();
-        task.execute( navaidId, navaidType );
+        setBackgroundTask( new NotamTask() ).execute( navaidId, navaidType );
     }
 
     private final class NotamTask extends CursorAsyncTask {
@@ -71,7 +70,7 @@ public class NavaidNotamActivity extends NotamActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             Cursor nav1 = result[ 0 ];
 
             String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
@@ -79,6 +78,7 @@ public class NavaidNotamActivity extends NotamActivityBase {
             setActionBarTitle( icaoCode );
             showNavaidTitle( nav1 );
             getNotams( icaoCode );
+            return true;
         }
 
     }

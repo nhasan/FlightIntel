@@ -48,8 +48,7 @@ public class AlmanacActivity extends ActivityBase {
 
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-        AlmanacDetailsTask task = new AlmanacDetailsTask();
-        task.execute( siteNumber );
+        setBackgroundTask( new AlmanacDetailsTask() ).execute( siteNumber );
     }
 
     private final class AlmanacDetailsTask extends CursorAsyncTask {
@@ -63,8 +62,9 @@ public class AlmanacActivity extends ActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             showDetails( result );
+            return true;
         }
 
     }

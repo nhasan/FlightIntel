@@ -28,7 +28,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.view.ContextMenu;
@@ -46,6 +45,7 @@ import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.R;
+import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 
 public final class BrowseActivity extends ActivityBase {
@@ -94,14 +94,13 @@ public final class BrowseActivity extends ActivityBase {
         if ( !extra.containsKey( Airports.SITE_NUMBER ) ) {
             // Show browse list
             String stateCode = extra.getString( States.STATE_CODE );
+            String stateName = extra.getString( States.STATE_NAME );
             if ( stateCode == null ) {
                 getSupportActionBar().setSubtitle( "All Locations" );
             } else {
-                String stateName = extra.getString( States.STATE_NAME );
                 getSupportActionBar().setSubtitle( stateName );
             }
-            BrowseTask task = new BrowseTask();
-            task.execute( extra );
+            setBackgroundTask( new BrowseTask() ).execute( stateCode, stateName );
         }
     }
 
@@ -114,18 +113,20 @@ public final class BrowseActivity extends ActivityBase {
         }
     }
 
-    private final class BrowseTask extends AsyncTask<Bundle, Void, Cursor> {
+    private final class BrowseTask extends CursorAsyncTask {
 
         @Override
-        protected Cursor doInBackground( Bundle... params ) {
-            Cursor c = null;
+        protected Cursor[] doInBackground( String... params ) {
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             if ( db == null ) {
                 return null;
             }
 
-            Bundle extra = params[ 0 ];
-            if ( !extra.containsKey( States.STATE_CODE ) ) {
+            Cursor c = null;
+            String stateCode = params[ 0 ];
+            String stateName = params[ 1 ];
+
+            if ( stateCode == null ) {
                 // Show all the states grouped by first letter
                 SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
                 builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "
@@ -151,12 +152,10 @@ public final class BrowseActivity extends ActivityBase {
                 // Show all the airports in the selected state grouped by city
                 SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
                 builder.setTables( Airports.TABLE_NAME );
-                String state_code = extra.getString( States.STATE_CODE );
-                String state_name = extra.getString( States.STATE_NAME );
                 builder.setProjectionMap( sCityMap );
                 String selection = "("+Airports.ASSOC_STATE+" <> '' AND "+Airports.ASSOC_STATE
                         +"=?) OR ("+Airports.ASSOC_STATE+" = '' AND "+Airports.ASSOC_COUNTY+"=?)";
-                String[] selectionArgs = new String[] { state_code, state_name };
+                String[] selectionArgs = new String[] { stateCode, stateName };
 
                 c = builder.query( db,
                         // String[] projectionIn
@@ -176,11 +175,13 @@ public final class BrowseActivity extends ActivityBase {
                         // String sortOrder
                         Airports.ASSOC_CITY+", "+Airports.FACILITY_NAME );
             }
-            return c;
+
+            return new Cursor[] { c };
         }
 
         @Override
-        protected void onPostExecute( Cursor c ) {
+        protected boolean onResult( Cursor[] result ) {
+            Cursor c = result[ 0 ];
             if ( c != null ) {
                 showDetails( c );
             } else {
@@ -189,6 +190,7 @@ public final class BrowseActivity extends ActivityBase {
                 tv.setVisibility( View.VISIBLE );
             }
             setContentShown( true );
+            return false;
         }
 
     }

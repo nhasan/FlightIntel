@@ -71,6 +71,7 @@ import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.afd.BrowseActivity;
 import com.nadmm.airports.afd.FavoritesActivity;
 import com.nadmm.airports.afd.NearbyActivity;
+import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.FormatUtils;
@@ -83,6 +84,8 @@ public class ActivityBase extends FragmentActivity {
     private MenuItem mRefreshItem;
     private Drawable mRefreshDrawable;
     private LayoutInflater mInflater;
+    private CursorAsyncTask mTask;
+
     private Handler mHandler = new Handler();
     private final OnClickListener mOnRowClickListener = new OnClickListener() {
         @Override
@@ -134,6 +137,9 @@ public class ActivityBase extends FragmentActivity {
 
     @Override
     protected void onPause() {
+        if ( mTask != null ) {
+            mTask.cancel( true );
+        }
         overridePendingTransition( R.anim.fade_in, R.anim.fade_out );
         unregisterReceiver( mExternalStorageReceiver );
         super.onPause();
@@ -143,6 +149,11 @@ public class ActivityBase extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         registerReceiver( mExternalStorageReceiver, mFilter );
+    }
+
+    protected CursorAsyncTask setBackgroundTask( CursorAsyncTask task ) {
+        mTask = task;
+        return mTask;
     }
 
     protected void externalStorageStatusChanged() {

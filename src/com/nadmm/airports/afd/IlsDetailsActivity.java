@@ -53,8 +53,7 @@ public class IlsDetailsActivity extends ActivityBase {
         String siteNumber = args.getString( Ils1.SITE_NUMBER );
         String runwayId = args.getString( Ils1.RUNWAY_ID );
         String ilsType = args.getString( Ils1.ILS_TYPE );
-        ILSDetailsTask task = new ILSDetailsTask();
-        task.execute( siteNumber, runwayId, ilsType );
+        setBackgroundTask( new ILSDetailsTask() ).execute( siteNumber, runwayId, ilsType );
     }
 
     private final class ILSDetailsTask extends CursorAsyncTask {
@@ -126,8 +125,9 @@ public class IlsDetailsActivity extends ActivityBase {
         }
 
         @Override
-        protected void onResult( Cursor[] result ) {
+        protected boolean onResult( Cursor[] result ) {
             showDetails( result );
+            return true;
         }
 
     }
