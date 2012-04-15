@@ -29,7 +29,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -94,6 +96,8 @@ public final class DownloadActivity extends ActivityBase {
     private static final String MANIFEST = "manifest.xml";
 
     private static final File CACHE_DIR = SystemUtils.getExternalDir( "cache" );
+
+    private final Map<String, ProgressTracker> mTrackers = new HashMap<String, ProgressTracker>();
 
     final class DataInfo implements Comparable<DataInfo> {
 
@@ -243,13 +247,11 @@ public final class DownloadActivity extends ActivityBase {
     }
 
     private final class ProgressTracker {
-        public String type;
         public TextView msgText;
         public TextView statusText;
         public ProgressBar progressBar;
 
-        public ProgressTracker( String t, View convertView ) {
-            type = t;
+        public ProgressTracker( View convertView ) {
             msgText = (TextView) convertView.findViewById( R.id.download_msg );
             statusText = (TextView) convertView.findViewById( R.id.download_status );
             progressBar = (ProgressBar) convertView.findViewById( R.id.download_progress );
@@ -332,7 +334,7 @@ public final class DownloadActivity extends ActivityBase {
             int section = c.getInt( c.getColumnIndex( DownloadCursor.SECTION ) );
             if ( section == R.string.download_available ) {
                 String type = c.getString( c.getColumnIndex( DownloadCursor.TYPE ) );
-                view.setTag( new ProgressTracker( type, view ) );
+                mTrackers.put( type, new ProgressTracker( view ) );
             } else {
                 View msg = view.findViewById( R.id.download_msg );
                 msg.setVisibility( View.GONE );
@@ -766,15 +768,7 @@ public final class DownloadActivity extends ActivityBase {
         }
 
         protected ProgressTracker getTrackerForType( String type ) {
-            int count = mListView.getChildCount();
-            for ( int i=0; i<count; ++i) {
-                ProgressTracker tracker = (ProgressTracker) mListView.getChildAt( i ).getTag();
-                if ( tracker != null && type.equals( tracker.type ) ) {
-                    return tracker;
-                }
-            }
-
-            return null;
+            return mTrackers.get( type );
         }
 
         protected int downloadData( final DataInfo data ) {
