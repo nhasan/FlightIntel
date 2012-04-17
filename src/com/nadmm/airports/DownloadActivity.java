@@ -374,11 +374,11 @@ public final class DownloadActivity extends ActivityBase {
 
     private Cursor createCursor() {
         DownloadCursor c = new DownloadCursor();
-        for ( DataInfo info : mInstalledData ) {
-            c.addRow( R.string.download_installed, info );
-        }
         for ( DataInfo info : mAvailableData ) {
             c.addRow( R.string.download_available, info );
+        }
+        for ( DataInfo info : mInstalledData ) {
+            c.addRow( R.string.download_installed, info );
         }
         return c;
     }
