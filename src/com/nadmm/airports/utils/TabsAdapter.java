@@ -49,10 +49,6 @@ public class TabsAdapter extends FragmentPagerAdapter implements
             label = _label;
             fragment = null;
         }
-
-        public Fragment getFragment() {
-            return fragment;
-        }
     }
 
     public TabsAdapter( FragmentActivity activity, ViewPager pager ) {
@@ -83,8 +79,7 @@ public class TabsAdapter extends FragmentPagerAdapter implements
     }
 
     @Override
-    public void onPageScrolled( int position, float positionOffset,
-            int positionOffsetPixels ) {
+    public void onPageScrolled( int position, float positionOffset, int positionOffsetPixels ) {
     }
 
     @Override
@@ -99,10 +94,6 @@ public class TabsAdapter extends FragmentPagerAdapter implements
 
     @Override
     public void onPageSelected( int position ) {
-    }
-
-    public TabInfo getTabInfo( int index ) {
-        return mTabs.get( index );
     }
 
 }
