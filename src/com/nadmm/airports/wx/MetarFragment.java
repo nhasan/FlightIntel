@@ -499,7 +499,7 @@ public class MetarFragment extends FragmentBase {
         tv.setVisibility( View.VISIBLE );
 
         stopRefreshAnimation();
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected String getWindsDescription( Metar metar ) {

@@ -460,7 +460,7 @@ public class TafFragment extends FragmentBase {
         tv.setVisibility( View.VISIBLE );
 
         stopRefreshAnimation();
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     @Override

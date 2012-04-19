@@ -198,7 +198,7 @@ public class PirepFragment extends FragmentBase {
         tv.setVisibility( View.VISIBLE );
 
         stopRefreshAnimation();
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected void showPirepEntry( LinearLayout layout, PirepEntry entry ) {
