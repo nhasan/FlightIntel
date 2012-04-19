@@ -229,12 +229,12 @@ public class ActivityBase extends FragmentActivity {
         setContentView( createContentView( tv ) );
     }
 
-    protected Fragment addFragment( Class<?> clss ) {
+    protected Fragment addFragment( Class<?> clss, Bundle args ) {
         String tag = clss.getSimpleName();
         FragmentManager fm = getSupportFragmentManager();
         Fragment f = fm.findFragmentByTag( tag );
         if ( f == null ) {
-            f = Fragment.instantiate( this, clss.getName() );
+            f = Fragment.instantiate( this, clss.getName(), args );
         }
         FragmentTransaction ft = fm.beginTransaction();
         ft.add( R.id.fragment_container, f, tag );

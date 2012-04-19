@@ -99,7 +99,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
         setContentView( createContentView( R.layout.airport_activity_layout ) );
 
-        addFragment( AirportDetailsFragment.class );
+        addFragment( AirportDetailsFragment.class, null );
     }
 
     protected void startTask() {
