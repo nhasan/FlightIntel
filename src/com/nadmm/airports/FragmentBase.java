@@ -69,6 +69,10 @@ public class FragmentBase extends Fragment {
     }
 
     protected void setContentShown( boolean shown ) {
+        mActivity.setContentShown( shown );
+    }
+
+    protected void setFragmentContentShown( boolean shown ) {
         mActivity.setContentShown( getView(), shown );
     }
 
@@ -79,6 +83,14 @@ public class FragmentBase extends Fragment {
 
     protected int getSelectorResourceForRow( int curRow, int totRows ) {
         return mActivity.getSelectorResourceForRow( curRow, totRows );
+    }
+
+    public Cursor getAirportDetails( String siteNumber ) {
+        return mActivity.getAirportDetails( siteNumber );
+    }
+
+    public void showAirportTitle( Cursor c ) {
+        mActivity.showAirportTitle( c );
     }
 
     public void showWxTitle( Cursor[] cursors ) {
