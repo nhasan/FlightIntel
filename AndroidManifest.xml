@@ -57,7 +57,7 @@
                   android:name=".afd.RemarkDetailsActivity" />
 
         <activity android:label="@string/airport_attendance"
-                  android:name=".afd.AttendanceDetailsActivity" />
+                  android:name=".afd.AttendanceActivity" />
 
         <activity android:label="@string/atc_communications"
                   android:name=".afd.CommDetailsActivity" />
