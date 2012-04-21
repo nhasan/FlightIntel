@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,10 @@
  -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/detail_attendance_layout"
+        android:id="@+id/attendance_detail_item"
         android:orientation="vertical"
         android:background="@drawable/rounded_rectangle"
+        android:layout_marginBottom="6dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 </LinearLayout>

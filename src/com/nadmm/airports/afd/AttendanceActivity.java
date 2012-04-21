@@ -27,7 +27,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
@@ -122,18 +121,18 @@ public class AttendanceActivity extends ActivityBase {
                     String schedule = att.getString(
                             att.getColumnIndex( Attendance.ATTENDANCE_SCHEDULE ) );
                     String[] parts = schedule.split( "/" );
-                    LinearLayout table = (LinearLayout) inflate( R.layout.attendance_detail_item );
+                    LinearLayout item = (LinearLayout) inflate( R.layout.attendance_detail_item,
+                            layout );
                     if ( parts.length == 3 ) {
-                        addRow( table, "Months", parts[ 0 ] );
-                        addSeparator( table );
-                        addRow( table, "Days", parts[ 1 ] );
-                        addSeparator( table );
-                        addRow( table, "Hours", parts[ 2 ] );
+                        addRow( item, "Months", parts[ 0 ] );
+                        addSeparator( item );
+                        addRow( item, "Days", parts[ 1 ] );
+                        addSeparator( item );
+                        addRow( item, "Hours", parts[ 2 ] );
                     } else {
-                        addRow( table, "Attendance", schedule );
+                        addRow( item, "Attendance", schedule );
                     }
-                    layout.addView( table, 1, new LinearLayout.LayoutParams(
-                            LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+                    layout.addView( item );
                 } while ( att.moveToNext() );
             }
         }
