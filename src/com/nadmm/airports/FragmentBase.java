@@ -237,6 +237,15 @@ public class FragmentBase extends Fragment {
         mActivity.addSeparator( layout );
     }
 
+    protected View addPhoneRow( LinearLayout layout, String label, String phone ) {
+        return mActivity.addPhoneRow( layout, label, phone );
+    }
+
+    protected View addPhoneRow( LinearLayout layout, String label, String phone,
+            String label2, String value2 ) {
+        return mActivity.addPhoneRow( layout, label, phone, label2, value2 );
+    }
+
     protected void makeClickToCall( TextView tv ) {
         mActivity.makeClickToCall( tv );
     }
