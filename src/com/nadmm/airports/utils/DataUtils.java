@@ -21,6 +21,7 @@ package com.nadmm.airports.utils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -224,88 +225,80 @@ public final class DataUtils {
         return "Unknown";
     }
 
-    public static String decodeStorage( String storage ) {
-        String decodedStorage = "";
+    public static ArrayList<String> decodeStorage( String s ) {
+        ArrayList<String> storages = new ArrayList<String>();
 
         int start = 0;
-        while ( start < storage.length() ) {
-            int end = storage.indexOf( ",", start );
+        while ( start < s.length() ) {
+            int end = s.indexOf( ",", start );
             if ( end == -1 ) {
-                end = storage.length();
+                end = s.length();
             }
-            String type = storage.substring( start, end ).trim();
-
-            if ( decodedStorage.length() > 0 ) {
-                decodedStorage += ", ";
-            }
+            String type = s.substring( start, end ).trim();
 
             if ( type.equals( "BUOY" ) ) {
-                decodedStorage += "Buoy";
+                storages.add( "Buoy" );
             } else if ( type.equals( "HGR" ) ) {
-                decodedStorage += "Hangar";
+                storages.add( "Hangar" );
             } else if ( type.equals( "TIE" ) ) {
-                decodedStorage += "Tiedown";
+                storages.add( "Tiedown" );
             } else {
-                decodedStorage += type;
+                storages.add( type );
             }
 
             start = end+1;
         }
 
-        return decodedStorage;
+        return storages;
     }
 
-    public static String decodeServices( String services ) {
-        String decodedServices = "";
+    public static ArrayList<String> decodeServices( String s ) {
+        ArrayList<String> services = new ArrayList<String>();
 
         int start = 0;
-        while ( start < services.length() ) {
-            int end = services.indexOf( ",", start );
+        while ( start < s.length() ) {
+            int end = s.indexOf( ",", start );
             if ( end == -1 ) {
-                end = services.length();
+                end = s.length();
             }
-            String type = services.substring( start, end ).trim();
-
-            if ( decodedServices.length() > 0 ) {
-                decodedServices += ", ";
-            }
+            String type = s.substring( start, end ).trim();
 
             if ( type.equals( "AFRT" ) ) {
-                decodedServices += "Air freight";
+                services.add( "Air freight" );
             } else if ( type.equals( "AGRI" ) ) {
-                decodedServices += "Crop dusting";
+                services.add( "Crop dusting" );
             } else if ( type.equals( "AMB" ) ) {
-                decodedServices += "Air ambulance";
+                services.add( "Air ambulance" );
             } else if ( type.equals( "AVNCS" ) ) {
-                decodedServices += "Avionics";
+                services.add( "Avionics" );
             } else if ( type.equals( "BCHGR" ) ) {
-                decodedServices += "Beaching gear";
+                services.add( "Beaching gear" );
             } else if ( type.equals( "CARGO" ) ) {
-                decodedServices += "Cargo";
+                services.add( "Cargo" );
             } else if ( type.equals( "CHTR" ) ) {
-                decodedServices += "Charter";
+                services.add( "Charter" );
             } else if ( type.equals( "GLD" ) ) {
-                decodedServices += "Glider";
+                services.add( "Glider" );
             } else if ( type.equals( "INSTR" ) ) {
-                decodedServices += "Flight training";
+                services.add( "Flight instruction" );
             } else if ( type.equals( "PAJA" ) ) {
-                decodedServices += "Parachute jump activity";
+                services.add( "Parachute jump activity" );
             } else if ( type.equals( "RNTL" ) ) {
-                decodedServices += "Rental";
+                services.add( "Rental" );
             } else if ( type.equals( "SALES" ) ) {
-                decodedServices += "Sales";
+                services.add( "Sales" );
             } else if ( type.equals( "SURV" ) ) {
-                decodedServices += "Survey";
+                services.add( "Survey" );
             } else if ( type.equals( "TOW" ) ) {
-                decodedServices += "Glider towing";
+                services.add( "Glider towing" );
             } else {
-                decodedServices += type;
+                services.add( type );
             }
 
             start = end+1;
         }
 
-        return decodedServices;
+        return services;
     }
 
     public static String decodeSurfaceType( String surfaceType ) {
