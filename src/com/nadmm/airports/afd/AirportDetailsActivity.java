@@ -508,7 +508,7 @@ public class AirportDetailsActivity extends ActivityBase {
             String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
             addRow( layout, "Unicom", unicom.length() > 0? unicom : "None" );
             addSeparator( layout );
-            Intent intent = new Intent( getActivity(), CommDetailsActivity.class );
+            Intent intent = new Intent( getActivity(), CommunicationsActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
             addClickableRow( layout, "ATC", intent, R.drawable.row_selector_bottom );
         }

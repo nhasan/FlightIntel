@@ -60,7 +60,7 @@
                   android:name=".afd.AttendanceActivity" />
 
         <activity android:label="@string/atc_communications"
-                  android:name=".afd.CommDetailsActivity" />
+                  android:name=".afd.CommunicationsActivity" />
 
         <activity android:label="@string/nearby_navaids"
                   android:name=".afd.NavaidsActivity" />
