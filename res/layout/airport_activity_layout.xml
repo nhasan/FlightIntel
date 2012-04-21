@@ -24,13 +24,13 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
     <LinearLayout android:id="@+id/activity_layout"
+            android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
         <include layout="@layout/airport_title_layout" />
         <LinearLayout android:id="@+id/fragment_container"
+                android:orientation="vertical"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                android:layout_height="fill_parent"/>
     </LinearLayout>
 </ScrollView>
