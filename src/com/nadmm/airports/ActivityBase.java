@@ -230,15 +230,19 @@ public class ActivityBase extends FragmentActivity {
     }
 
     protected Fragment addFragment( Class<?> clss, Bundle args ) {
+        return addFragment( clss, args, R.id.fragment_container );
+    }
+
+    protected Fragment addFragment( Class<?> clss, Bundle args, int id ) {
         String tag = clss.getSimpleName();
         FragmentManager fm = getSupportFragmentManager();
         Fragment f = fm.findFragmentByTag( tag );
         if ( f == null ) {
             f = Fragment.instantiate( this, clss.getName(), args );
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add( R.id.fragment_container, f, tag );
+            ft.commit();
         }
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.add( R.id.fragment_container, f, tag );
-        ft.commit();
         return f;
     }
 
@@ -249,7 +253,11 @@ public class ActivityBase extends FragmentActivity {
     }
 
     protected View inflate( int resId ) {
-        return mInflater.inflate( resId, null );
+        return mInflater.inflate( resId, null, false );
+    }
+
+    protected View inflate( int resId, ViewGroup root ) {
+        return mInflater.inflate( resId, root, false );
     }
 
     public Cursor getAirportDetails( String siteNumber ) {
