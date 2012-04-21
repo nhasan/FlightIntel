@@ -19,10 +19,14 @@
 
 package com.nadmm.airports.afd;
 
+import java.util.ArrayList;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -65,7 +69,6 @@ public class ServicesDetailsActivity extends ActivityBase {
     protected void showDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
 
-        setActionBarTitle( apt );
         showAirportTitle( apt );
         showAirportServices( result );
         showFaaServices( result );
@@ -76,39 +79,40 @@ public class ServicesDetailsActivity extends ActivityBase {
 
     protected void showAirportServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_airport_services_layout );
-        String otherServices = DataUtils.decodeServices(
-                apt.getString( apt.getColumnIndex( Airports.OTHER_SERVICES ) ) );
-        String storage = DataUtils.decodeStorage( 
-                apt.getString( apt.getColumnIndex( Airports.STORAGE_FACILITY ) ) );
+        ArrayList<String> services = new ArrayList<String>();
+
+        String other =  apt.getString( apt.getColumnIndex( Airports.OTHER_SERVICES ) );
+        if ( other.length() > 0 ) {
+            services.addAll( DataUtils.decodeServices( other ) );
+        }
+        String storage = apt.getString( apt.getColumnIndex( Airports.STORAGE_FACILITY ) );
         if ( storage.length() > 0 ) {
-            otherServices += ","+storage;
+            services.addAll( DataUtils.decodeStorage( storage ) );
         }
         String bottOxygen = apt.getString( apt.getColumnIndex( Airports.BOTTLED_O2_AVAILABLE ) );
         if ( bottOxygen.equals( "Y" ) ) {
-            if  ( otherServices.length() > 0 ) {
-                otherServices += ",";
-            }
-            otherServices += "Bottled Oxygen";
+            services.add( "Bottled Oxygen" );
         }
         String bulkOxygen = apt.getString( apt.getColumnIndex( Airports.BULK_O2_AVAILABLE ) );
         if ( bulkOxygen.equals( "Y" ) ) {
-            if  ( otherServices.length() > 0 ) {
-                otherServices += ",";
-            }
-            otherServices += "Bulk Oxygen";
+            services.add( "Bulk Oxygen" );
         }
-        String[] services = otherServices.split( ",\\s*" );
-        for ( String service : services ) {
-            if ( service.length() > 0 ) {
+        if ( !services.isEmpty() ) {
+            LinearLayout layout = (LinearLayout) findViewById( R.id.airport_services_layout );
+            for ( String service : services ) {
                 addBulletedRow( layout, service );
             }
+        } else {
+            TextView tv = (TextView) findViewById( R.id.airport_services_label );
+            tv.setVisibility( View.GONE );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.airport_services_layout );
+            layout.setVisibility( View.GONE );
         }
     }
 
     protected void showFaaServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_faa_services_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.faa_services_layout );
         String faaRegion = apt.getString( apt.getColumnIndex( Airports.REGION_CODE ) );
         if ( faaRegion.length() > 0 ) {
             addRow( layout, "FAA region", DataUtils.decodeFaaRegion( faaRegion ) );
@@ -131,7 +135,7 @@ public class ServicesDetailsActivity extends ActivityBase {
 
     protected void showFssServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_fss_services_layout );
+        LinearLayout layout = (LinearLayout) findViewById( R.id.fss_services_layout );
         String fssId = apt.getString( apt.getColumnIndex( Airports.FSS_ID ) );
         String fssName = apt.getString( apt.getColumnIndex( Airports.FSS_NAME ) );
         addRow( layout, "Flight service", fssId+" ("+fssName+")" );
