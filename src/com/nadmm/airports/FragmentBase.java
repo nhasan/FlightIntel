@@ -21,10 +21,14 @@ package com.nadmm.airports;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.support.v4.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.SupportActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,6 +45,13 @@ public class FragmentBase extends Fragment {
 
     private ActivityBase mActivity;
     private CursorAsyncTask mTask;
+
+    @Override
+    public void onCreate( Bundle savedInstanceState ) {
+        setRetainInstance( true );
+
+        super.onCreate( savedInstanceState );
+    }
 
     @Override
     public void onAttach( SupportActivity activity ) {
@@ -60,8 +71,16 @@ public class FragmentBase extends Fragment {
         return mActivity.getDbManager();
     }
 
+    public SQLiteDatabase getDatabase( String type ) {
+        return mActivity.getDatabase( type );
+    }
+
     public ActivityBase getActivityBase() {
         return mActivity;
+    }
+
+    protected View createContentView( int id ) {
+        return mActivity.createContentView( id );
     }
 
     protected View createContentView( View view ) {
@@ -81,6 +100,10 @@ public class FragmentBase extends Fragment {
         return mTask;
     }
 
+    protected ActionBar getSupportActionBar() {
+        return mActivity.getSupportActionBar();
+    }
+
     protected int getSelectorResourceForRow( int curRow, int totRows ) {
         return mActivity.getSelectorResourceForRow( curRow, totRows );
     }
@@ -90,6 +113,7 @@ public class FragmentBase extends Fragment {
     }
 
     public void showAirportTitle( Cursor c ) {
+        mActivity.setActionBarTitle( c );
         mActivity.showAirportTitle( c );
     }
 
@@ -223,6 +247,10 @@ public class FragmentBase extends Fragment {
 
     protected View inflate( int id ) {
         return mActivity.inflate( id );
+    }
+
+    protected View inflate( int id, ViewGroup root ) {
+        return mActivity.inflate( id, root );
     }
 
     protected void startRefreshAnimation() {
