@@ -915,7 +915,7 @@ public class AirportDetailsActivity extends ActivityBase {
             Cursor apt = result[ 0 ];
             String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_other_layout );
-            Intent intent = new Intent( getActivity(), OwnershipDetailsActivity.class );
+            Intent intent = new Intent( getActivity(), OwnershipActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
             addClickableRow( layout, "Ownership and contact", intent, R.drawable.row_selector_top );
             intent = new Intent( getActivity(), AircraftOpsActivity.class );
