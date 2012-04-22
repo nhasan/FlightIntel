@@ -91,6 +91,10 @@ public class FragmentBase extends Fragment {
         mActivity.setContentShown( shown );
     }
 
+    protected void setContentMsg( String msg ) {
+        mActivity.setContentMsg( msg );
+    }
+
     protected void setFragmentContentShown( boolean shown ) {
         mActivity.setContentShown( getView(), shown );
     }
