@@ -40,7 +40,7 @@ import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
 
-public class IlsDetailsActivity extends ActivityBase {
+public class IlsActivity extends ActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {

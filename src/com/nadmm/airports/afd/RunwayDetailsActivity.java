@@ -201,7 +201,7 @@ public class RunwayDetailsActivity extends ActivityBase {
             args.putString( Ils1.SITE_NUMBER, siteNumber );
             args.putString( Ils1.RUNWAY_ID, runwayId );
             args.putString( Ils1.ILS_TYPE, ilsType );
-            Intent intent = new Intent( this, IlsDetailsActivity.class );
+            Intent intent = new Intent( this, IlsActivity.class );
             intent.putExtras( args );
             addClickableRow( layout, "Instrument approach", ilsType, intent, 
                     R.drawable.row_selector_middle );
@@ -370,7 +370,7 @@ public class RunwayDetailsActivity extends ActivityBase {
             args.putString( Ils1.SITE_NUMBER, siteNumber );
             args.putString( Ils1.RUNWAY_ID, runwayId );
             args.putString( Ils1.ILS_TYPE, ilsType );
-            Intent intent = new Intent( this, IlsDetailsActivity.class );
+            Intent intent = new Intent( this, IlsActivity.class );
             intent.putExtras( args );
             addClickableRow( layout, "Instrument approach", ilsType, intent, 
                     R.drawable.row_selector_middle );

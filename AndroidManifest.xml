@@ -75,7 +75,7 @@
                   android:name=".afd.FssCommActivity" />
 
         <activity android:label="@string/ils_details"
-                  android:name=".afd.IlsDetailsActivity" />
+                  android:name=".afd.IlsActivity" />
 
         <activity android:label="@string/sunrise_sunset"
                   android:name=".afd.AlmanacActivity" />
