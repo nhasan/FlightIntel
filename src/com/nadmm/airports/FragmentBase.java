@@ -112,6 +112,10 @@ public class FragmentBase extends Fragment {
         mActivity.setActionBarTitle( c, subtitle );
     }
 
+    protected void setActionBarTitle( String title ) {
+        mActivity.setActionBarTitle( title );
+    }
+
     protected int getSelectorResourceForRow( int curRow, int totRows ) {
         return mActivity.getSelectorResourceForRow( curRow, totRows );
     }
@@ -123,6 +127,10 @@ public class FragmentBase extends Fragment {
     public void showAirportTitle( Cursor c ) {
         mActivity.setActionBarTitle( c );
         mActivity.showAirportTitle( c );
+    }
+
+    protected void showNavaidTitle( Cursor c ) {
+        mActivity.showNavaidTitle( c );
     }
 
     public void showWxTitle( Cursor[] cursors ) {
