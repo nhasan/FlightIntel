@@ -108,6 +108,10 @@ public class FragmentBase extends Fragment {
         return mActivity.getSupportActionBar();
     }
 
+    protected void setActionBarTitle( Cursor c, String subtitle ) {
+        mActivity.setActionBarTitle( c, subtitle );
+    }
+
     protected int getSelectorResourceForRow( int curRow, int totRows ) {
         return mActivity.getSelectorResourceForRow( curRow, totRows );
     }
