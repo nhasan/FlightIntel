@@ -63,7 +63,7 @@
                   android:name=".afd.CommunicationsActivity" />
 
         <activity android:label="@string/nearby_navaids"
-                  android:name=".afd.NavaidsActivity" />
+                  android:name=".afd.afd.NearbyNavaidsActivity" />
 
         <activity android:label="@string/navaid_details"
                   android:name=".afd.NavaidDetailsActivity" />

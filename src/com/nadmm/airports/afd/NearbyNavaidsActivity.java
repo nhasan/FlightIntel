@@ -41,7 +41,7 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
 
-public class NavaidsActivity extends ActivityBase {
+public class NearbyNavaidsActivity extends ActivityBase {
 
     private final int RADIUS = 40;
 
@@ -288,7 +288,7 @@ public class NavaidsActivity extends ActivityBase {
         String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
         String label2 = name+" "+type;
         String value2 = String.format( "r%03d/%.1fNM", radial, distance );
-        Intent intent = new Intent( NavaidsActivity.this, NavaidDetailsActivity.class );
+        Intent intent = new Intent( NearbyNavaidsActivity.this, NavaidDetailsActivity.class );
         intent.putExtra( Nav1.NAVAID_ID, navaidId );
         intent.putExtra( Nav1.NAVAID_TYPE, type );
 
@@ -300,7 +300,7 @@ public class NavaidsActivity extends ActivityBase {
         String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
         String label2 = name+" "+type;
         String value2 = String.format( "%03d\u00B0M/%.1fNM", heading, distance );
-        Intent intent = new Intent( NavaidsActivity.this, NavaidDetailsActivity.class );
+        Intent intent = new Intent( NearbyNavaidsActivity.this, NavaidDetailsActivity.class );
         intent.putExtra( Nav1.NAVAID_ID, navaidId );
         intent.putExtra( Nav1.NAVAID_TYPE, type );
 

@@ -659,7 +659,7 @@ public class AirportDetailsActivity extends ActivityBase {
             fss.putExtra( Airports.SITE_NUMBER, siteNumber );
             addClickableRow( layout, "FSS outlets", fss, R.drawable.row_selector_middle );
             addSeparator( layout );
-            Intent navaids = new Intent( getActivity(), NavaidsActivity.class );
+            Intent navaids = new Intent( getActivity(), NearbyNavaidsActivity.class );
             navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
             addClickableRow( layout, "Navaids", navaids, R.drawable.row_selector_bottom );
         }
