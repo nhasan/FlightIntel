@@ -24,7 +24,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.nadmm.airports.ActivityBase;
@@ -33,6 +35,7 @@ import com.nadmm.airports.DatabaseManager.Com;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.Nav2;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.notams.NavaidNotamActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
@@ -45,175 +48,194 @@ public class NavaidDetailsActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( createContentView( R.layout.navaid_detail_view ) );
+        setContentView( createContentView( R.layout.navaid_activity_layout ) );
 
-        Intent intent = getIntent();
-        String navaidId = intent.getStringExtra( Nav1.NAVAID_ID );
-        String navaidType = intent.getStringExtra( Nav1.NAVAID_TYPE );
-        setBackgroundTask( new NavaidDetailsTask() ).execute( navaidId, navaidType );
+        Bundle args = getIntent().getExtras();
+        addFragment( NavaidDetailsFragment.class, args );
     }
 
-    private final class NavaidDetailsTask extends CursorAsyncTask {
+    public static class NavaidDetailsFragment extends FragmentBase {
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String navaidId = params[ 0 ];
-            String navaidType = params[ 1 ];
+        private final class NavaidDetailsTask extends CursorAsyncTask {
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 3 ];
+            @Override
+            protected Cursor[] doInBackground( String... params ) {
+                String navaidId = params[ 0 ];
+                String navaidType = params[ 1 ];
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Nav1.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
-                    +" ON a."+Nav1.ASSOC_STATE+"=s."+States.STATE_CODE );
-            Cursor c = builder.query( db, new String[] { "*" },
-                    Nav1.NAVAID_ID+"=? AND "+Nav1.NAVAID_TYPE+"=?",
-                    new String[] { navaidId, navaidType }, null, null, null, null );
-            if ( !c.moveToFirst() ) {
-                return null;
-            }
+                SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+                Cursor[] cursors = new Cursor[ 3 ];
 
-            cursors[ 0 ] = c;
-
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Nav2.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    Nav1.NAVAID_ID+"=? AND "+Nav1.NAVAID_TYPE+"=?",
-                    new String[] { navaidId, navaidType }, null, null, null, null );
-            cursors[ 1 ] = c;
-
-            if ( !navaidType.equals( "VOT" ) ) {
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Com.TABLE_NAME );
-                c = builder.query( db, new String[] { "*" },
-                        Com.ASSOC_NAVAID_ID+"=?", new String[] { navaidId },
-                        null, null, null, null );
-                cursors[ 2 ] = c;
-            } else {
-                cursors[ 2 ] = null;
-            }
-
-            return cursors;
-        }
-
-        @Override
-        protected boolean onResult( Cursor[] result ) {
-            if ( result == null ) {
-                UiUtils.showToast( getApplicationContext(), "Navaid not found" );
-                finish();
-            } else {
-                showDetails( result );
-            }
-            return true;
-        }
-
-    }
-
-    protected void showDetails( Cursor[] result ) {
-        Cursor nav1 = result[ 0 ];
-
-        String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
-        setActionBarTitle( id );
-        showNavaidTitle( nav1 );
-        showNavaidDetails( result );
-        showNavaidRemarks( result );
-
-        setContentShown( true );
-    }
-
-    protected void showNavaidDetails( Cursor[] result ) {
-        Cursor nav1 = result[ 0 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_details );
-        String navaidClass = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_CLASS ) );
-        String navaidType = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_TYPE ) );
-        addRow( layout, "Class", navaidClass );
-        double freq = nav1.getDouble( nav1.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
-        String tacan = nav1.getString( nav1.getColumnIndex( Nav1.TACAN_CHANNEL ) );
-        if ( freq == 0 ) {
-            freq = DataUtils.getTacanChannelFrequency( tacan );
-        }
-        if ( freq > 0 ) {
-            addSeparator( layout );
-            if ( !DataUtils.isDirectionalNavaid( navaidType ) && ( freq%1.0 ) == 0 ) {
-                addRow( layout, "Frequency", String.format( "%.0f", freq ) );
-            } else {
-                addRow( layout, "Frequency", String.format( "%.2f", freq ) );
-            }
-        }
-        String power = nav1.getString( nav1.getColumnIndex( Nav1.POWER_OUTPUT ) );
-        if ( power.length() > 0 ) {
-            addSeparator( layout );
-            addRow( layout, "Power output", power+" Watts" );
-        }
-        if ( tacan.length() > 0 ) {
-            addSeparator( layout );
-            addRow( layout, "Tacan channel", tacan );
-        }
-        String magVar = nav1.getString( nav1.getColumnIndex( Nav1.MAGNETIC_VARIATION_DEGREES ) );
-        if ( magVar.length() > 0 ) {
-            String magDir = nav1.getString( nav1.getColumnIndex( 
-                    Nav1.MAGNETIC_VARIATION_DIRECTION ) );
-            String magYear = nav1.getString( nav1.getColumnIndex( 
-                    Nav1.MAGNETIC_VARIATION_YEAR ) );
-            addSeparator( layout );
-            addRow( layout, "Magnetic variation", String.format( "%d\u00B0%s (%s)",
-                    Integer.valueOf( magVar ), magDir, magYear ) );
-        }
-        String alt = nav1.getString( nav1.getColumnIndex( Nav1.PROTECTED_FREQUENCY_ALTITUDE ) );
-        if ( alt.length() > 0 ) {
-            addSeparator( layout );
-            addRow( layout, "Service volume", DataUtils.decodeNavProtectedAltitude( alt ) );
-        }
-        String hours = nav1.getString( nav1.getColumnIndex( Nav1.OPERATING_HOURS ) );
-        addSeparator( layout );
-        addRow( layout, "Operating hours", hours );
-        String type = nav1.getString( nav1.getColumnIndex( Nav1.FANMARKER_TYPE ) );
-        if ( type.length() > 0 ) {
-            addSeparator( layout );
-            addRow( layout, "Fan marker type", type );
-        }
-        String voiceFeature = nav1.getString( nav1.getColumnIndex( Nav1.VOICE_FEATURE ) );
-        addSeparator( layout );
-        addRow( layout, "Voice feature", voiceFeature.equals( "Y" )? "Yes" : "No" );
-        String voiceIdent = nav1.getString( nav1.getColumnIndex( Nav1.AUTOMATIC_VOICE_IDENT ) );
-        addSeparator( layout );
-        addRow( layout, "Voice ident", voiceIdent.equals( "Y" )? "Yes" : "No" );
-        Cursor com = result[ 2 ];
-        if ( com != null && com.moveToFirst() ) {
-            do {
-                String outletType = com.getString( com.getColumnIndex( Com.COMM_OUTLET_TYPE ) );
-                String fssName = com.getString( com.getColumnIndex( Com.FSS_NAME ) );
-                String freqs = com.getString( com.getColumnIndex( Com.COMM_OUTLET_FREQS ) );
-                String outletName = fssName+" Radio ("+outletType+")";
-                int i =0;
-                while ( i < freqs.length() ) {
-                    addSeparator( layout );
-                    int end = Math.min( i+9, freqs.length() );
-                    String fssFreq = freqs.substring( i, end ).trim();
-                    addRow( layout, outletName, fssFreq );
-                    i = end;
+                SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+                builder.setTables( Nav1.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
+                        +" ON a."+Nav1.ASSOC_STATE+"=s."+States.STATE_CODE );
+                Cursor c = builder.query( db, new String[] { "*" },
+                        Nav1.NAVAID_ID+"=? AND "+Nav1.NAVAID_TYPE+"=?",
+                        new String[] { navaidId, navaidType }, null, null, null, null );
+                if ( !c.moveToFirst() ) {
+                    return null;
                 }
-            } while ( com.moveToNext() );
+
+                cursors[ 0 ] = c;
+
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Nav2.TABLE_NAME );
+                c = builder.query( db, new String[] { "*" },
+                        Nav1.NAVAID_ID+"=? AND "+Nav1.NAVAID_TYPE+"=?",
+                        new String[] { navaidId, navaidType }, null, null, null, null );
+                cursors[ 1 ] = c;
+
+                if ( !navaidType.equals( "VOT" ) ) {
+                    builder = new SQLiteQueryBuilder();
+                    builder.setTables( Com.TABLE_NAME );
+                    c = builder.query( db, new String[] { "*" },
+                            Com.ASSOC_NAVAID_ID+"=?", new String[] { navaidId },
+                            null, null, null, null );
+                    cursors[ 2 ] = c;
+                } else {
+                    cursors[ 2 ] = null;
+                }
+
+                return cursors;
+            }
+
+            @Override
+            protected boolean onResult( Cursor[] result ) {
+                showDetails( result );
+                return true;
+            }
+
         }
-        addSeparator( layout );
-        String navaidId = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
-        Intent intent = new Intent( this, NavaidNotamActivity.class );
-        intent.putExtra( Nav1.NAVAID_ID, navaidId );
-        intent.putExtra( Nav1.NAVAID_TYPE, navaidType );
-        addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
-    }
 
-    protected void showNavaidRemarks( Cursor[] result ) {
-        Cursor nav2 = result[ 1 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_remarks );
+        @Override
+        public View onCreateView( LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState ) {
+            View view = inflater.inflate( R.layout.navaid_detail_view, container, false );
+            return view;
+        }
 
-        if ( nav2.moveToFirst() ) {
-            do {
-                String remark = nav2.getString( nav2.getColumnIndex( Nav2.REMARK_TEXT ) );
-                addBulletedRow( layout, remark );
-            } while ( nav2.moveToNext() );
-        } else {
-            layout.setVisibility( View.GONE );
+        @Override
+        public void onActivityCreated( Bundle savedInstanceState ) {
+            Bundle args = getArguments();
+            String navaidId = args.getString( Nav1.NAVAID_ID );
+            String navaidType = args.getString( Nav1.NAVAID_TYPE );
+            setBackgroundTask( new NavaidDetailsTask() ).execute( navaidId, navaidType );
+
+            super.onActivityCreated( savedInstanceState );
+        }
+
+        protected void showDetails( Cursor[] result ) {
+            if ( result == null ) {
+                UiUtils.showToast( getActivity(), "Navaid not found" );
+                getActivity().finish();
+                return;
+            }
+
+            Cursor nav1 = result[ 0 ];
+
+            String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
+            setActionBarTitle( id );
+            showNavaidTitle( nav1 );
+            showNavaidDetails( result );
+            showNavaidRemarks( result );
+
+            setContentShown( true );
+        }
+
+        protected void showNavaidDetails( Cursor[] result ) {
+            Cursor nav1 = result[ 0 ];
+            LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_details );
+            String navaidClass = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_CLASS ) );
+            String navaidType = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_TYPE ) );
+            addRow( layout, "Class", navaidClass );
+            double freq = nav1.getDouble( nav1.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
+            String tacan = nav1.getString( nav1.getColumnIndex( Nav1.TACAN_CHANNEL ) );
+            if ( freq == 0 ) {
+                freq = DataUtils.getTacanChannelFrequency( tacan );
+            }
+            if ( freq > 0 ) {
+                addSeparator( layout );
+                if ( !DataUtils.isDirectionalNavaid( navaidType ) && ( freq%1.0 ) == 0 ) {
+                    addRow( layout, "Frequency", String.format( "%.0f", freq ) );
+                } else {
+                    addRow( layout, "Frequency", String.format( "%.2f", freq ) );
+                }
+            }
+            String power = nav1.getString( nav1.getColumnIndex( Nav1.POWER_OUTPUT ) );
+            if ( power.length() > 0 ) {
+                addSeparator( layout );
+                addRow( layout, "Power output", power+" Watts" );
+            }
+            if ( tacan.length() > 0 ) {
+                addSeparator( layout );
+                addRow( layout, "Tacan channel", tacan );
+            }
+            String magVar = nav1.getString( nav1.getColumnIndex( Nav1.MAGNETIC_VARIATION_DEGREES ) );
+            if ( magVar.length() > 0 ) {
+                String magDir = nav1.getString( nav1.getColumnIndex( 
+                        Nav1.MAGNETIC_VARIATION_DIRECTION ) );
+                String magYear = nav1.getString( nav1.getColumnIndex( 
+                        Nav1.MAGNETIC_VARIATION_YEAR ) );
+                addSeparator( layout );
+                addRow( layout, "Magnetic variation", String.format( "%d\u00B0%s (%s)",
+                        Integer.valueOf( magVar ), magDir, magYear ) );
+            }
+            String alt = nav1.getString( nav1.getColumnIndex( Nav1.PROTECTED_FREQUENCY_ALTITUDE ) );
+            if ( alt.length() > 0 ) {
+                addSeparator( layout );
+                addRow( layout, "Service volume", DataUtils.decodeNavProtectedAltitude( alt ) );
+            }
+            String hours = nav1.getString( nav1.getColumnIndex( Nav1.OPERATING_HOURS ) );
+            addSeparator( layout );
+            addRow( layout, "Operating hours", hours );
+            String type = nav1.getString( nav1.getColumnIndex( Nav1.FANMARKER_TYPE ) );
+            if ( type.length() > 0 ) {
+                addSeparator( layout );
+                addRow( layout, "Fan marker type", type );
+            }
+            String voiceFeature = nav1.getString( nav1.getColumnIndex( Nav1.VOICE_FEATURE ) );
+            addSeparator( layout );
+            addRow( layout, "Voice feature", voiceFeature.equals( "Y" )? "Yes" : "No" );
+            String voiceIdent = nav1.getString( nav1.getColumnIndex( Nav1.AUTOMATIC_VOICE_IDENT ) );
+            addSeparator( layout );
+            addRow( layout, "Voice ident", voiceIdent.equals( "Y" )? "Yes" : "No" );
+            Cursor com = result[ 2 ];
+            if ( com != null && com.moveToFirst() ) {
+                do {
+                    String outletType = com.getString( com.getColumnIndex( Com.COMM_OUTLET_TYPE ) );
+                    String fssName = com.getString( com.getColumnIndex( Com.FSS_NAME ) );
+                    String freqs = com.getString( com.getColumnIndex( Com.COMM_OUTLET_FREQS ) );
+                    String outletName = fssName+" Radio ("+outletType+")";
+                    int i =0;
+                    while ( i < freqs.length() ) {
+                        addSeparator( layout );
+                        int end = Math.min( i+9, freqs.length() );
+                        String fssFreq = freqs.substring( i, end ).trim();
+                        addRow( layout, outletName, fssFreq );
+                        i = end;
+                    }
+                } while ( com.moveToNext() );
+            }
+            addSeparator( layout );
+            String navaidId = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
+            Intent intent = new Intent( getActivity(), NavaidNotamActivity.class );
+            intent.putExtra( Nav1.NAVAID_ID, navaidId );
+            intent.putExtra( Nav1.NAVAID_TYPE, navaidType );
+            addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
+        }
+
+        protected void showNavaidRemarks( Cursor[] result ) {
+            Cursor nav2 = result[ 1 ];
+            LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_remarks );
+
+            if ( nav2.moveToFirst() ) {
+                do {
+                    String remark = nav2.getString( nav2.getColumnIndex( Nav2.REMARK_TEXT ) );
+                    addBulletedRow( layout, remark );
+                } while ( nav2.moveToNext() );
+            } else {
+                layout.setVisibility( View.GONE );
+            }
         }
     }
 

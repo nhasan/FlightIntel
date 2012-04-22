@@ -20,34 +20,25 @@
  */
  -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/navaid_detail_layout"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-    <LinearLayout android:id="@+id/navaid_top_layout"
+        android:layout_height="wrap_content"
+        android:paddingLeft="12dp"
+        android:paddingTop="20dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="12dp"
+        android:orientation="vertical">
+    <LinearLayout android:id="@+id/navaid_details"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_rectangle"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-        <include layout="@layout/navaid_title_layout" />
-        <LinearLayout android:id="@+id/navaid_detail_layout"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="12dp"
-                android:paddingTop="20dp"
-                android:paddingRight="12dp"
-                android:paddingBottom="12dp"
-                android:orientation="vertical">
-            <LinearLayout android:id="@+id/navaid_details"
-                    android:orientation="vertical"
-                    android:background="@drawable/rounded_rectangle"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" />
-            <LinearLayout android:id="@+id/navaid_remarks"
-                    android:orientation="vertical"
-                    android:background="@drawable/rounded_rectangle"
-                    android:layout_marginTop="8dp"
-                    android:padding="6dp"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" />
-        </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+            android:layout_height="wrap_content" />
+    <LinearLayout android:id="@+id/navaid_remarks"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_rectangle"
+            android:layout_marginTop="8dp"
+            android:padding="6dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+</LinearLayout>
