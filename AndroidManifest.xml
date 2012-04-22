@@ -36,7 +36,7 @@
                   android:name=".afd.BrowseActivity" />
 
         <activity android:label="@string/nearby_airports"
-                  android:name=".afd.NearbyActivity" />
+                  android:name=".afd.NearbyAirportsActivity" />
 
         <activity android:label="@string/favorites"
                   android:name=".afd.FavoritesActivity" />

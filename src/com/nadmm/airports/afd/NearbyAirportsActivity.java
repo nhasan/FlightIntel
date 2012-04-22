@@ -57,7 +57,7 @@ import com.nadmm.airports.utils.AirportsCursorAdapter;
 import com.nadmm.airports.utils.AirportsCursorHelper;
 import com.nadmm.airports.utils.GeoUtils;
 
-public class NearbyActivity extends ActivityBase {
+public class NearbyAirportsActivity extends ActivityBase {
 
     public static final String APT_LOCATION = "APT_LOCATION";
     public static final String APT_CODE = "APT_CODE";
@@ -354,7 +354,7 @@ public class NearbyActivity extends ActivityBase {
                 Cursor c = mListAdapter.getCursor();
                 c.moveToPosition( position );
                 String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-                Intent intent = new Intent( NearbyActivity.this, AirportDetailsActivity.class );
+                Intent intent = new Intent( NearbyAirportsActivity.this, AirportDetailsActivity.class );
                 intent.putExtra( Airports.SITE_NUMBER, siteNumber );
                 startActivity( intent );
             }

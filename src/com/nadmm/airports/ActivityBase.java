@@ -70,7 +70,7 @@ import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.afd.BrowseActivity;
 import com.nadmm.airports.afd.FavoritesActivity;
-import com.nadmm.airports.afd.NearbyActivity;
+import com.nadmm.airports.afd.NearbyAirportsActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
@@ -712,7 +712,7 @@ public class ActivityBase extends FragmentActivity {
             startActivity( browse );
             return true;
         case R.id.menu_nearby:
-            Intent nearby = new Intent( this, NearbyActivity.class );
+            Intent nearby = new Intent( this, NearbyAirportsActivity.class );
             startActivity( nearby );
             return true;
         case R.id.menu_favorites:

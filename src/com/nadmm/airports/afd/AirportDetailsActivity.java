@@ -472,7 +472,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
             // Extras bundle for "Nearby" activity
             mExtras = new Bundle();
-            mExtras.putParcelable( NearbyActivity.APT_LOCATION, mLocation );
+            mExtras.putParcelable( NearbyAirportsActivity.APT_LOCATION, mLocation );
 
             getActivityBase().setActionBarTitle( apt );
             getActivityBase().showAirportTitle( apt );
@@ -651,7 +651,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_nearby_layout );
 
-            Intent airport = new Intent( getActivity(), NearbyActivity.class );
+            Intent airport = new Intent( getActivity(), NearbyAirportsActivity.class );
             airport.putExtras( mExtras );
             addClickableRow( layout, "Airports", airport, R.drawable.row_selector_top );
             addSeparator( layout );
@@ -756,7 +756,7 @@ public class AirportDetailsActivity extends ActivityBase {
                             String.format( "%d\u00B0 %s", variation, dir ) );
                 }
             } else {
-                Location location = (Location) mExtras.get( NearbyActivity.APT_LOCATION );
+                Location location = (Location) mExtras.get( NearbyAirportsActivity.APT_LOCATION );
                 int variation = Math.round( GeoUtils.getMagneticDeclination( location ) );
                 dir = ( variation >= 0 )? "W" : "E";
                 addSeparator( layout );
