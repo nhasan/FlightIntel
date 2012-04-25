@@ -35,6 +35,9 @@
         <activity android:label="@string/browse_airports"
                   android:name=".afd.BrowseActivity" />
 
+        <activity android:label="@string/nearby_facilities"
+                  android:name=".afd.NearbyActivity" />
+
         <activity android:label="@string/nearby_airports"
                   android:name=".afd.NearbyAirportsActivity" />
 

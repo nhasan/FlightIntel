@@ -1,0 +1,162 @@
+/*
+ * FlightIntel for Pilots
+ *
+ * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+
+package com.nadmm.airports.afd;
+
+import java.util.ArrayList;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.text.format.DateUtils;
+
+import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.DatabaseManager.LocationColumns;
+import com.nadmm.airports.PreferencesActivity;
+import com.nadmm.airports.R;
+import com.nadmm.airports.afd.NearbyAirportsActivity.NearbyAirportsFragment;
+import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.utils.TabsAdapter;
+import com.nadmm.airports.wx.NearbyWxFragment;
+import com.viewpagerindicator.TabPageIndicator;
+
+public class NearbyActivity extends ActivityBase {
+
+    private LocationManager mLocationManager;
+    private LocationListener mLocationListener;
+    private Location mLastLocation;
+    private TabsAdapter mTabsAdapter;
+    private ArrayList<LocationListener> mLocationListeners;
+
+    @Override
+    protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+
+        setContentView( R.layout.fragment_view_pager_layout );
+
+        mLocationListeners = new ArrayList<LocationListener>();
+
+        // No location was passed, initialize the location service to get a fix
+        mLocationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+        mLocationListener = new AirportsLocationListener();
+
+        // Get the last known location to use a starting point
+        Location location = mLocationManager.getLastKnownLocation( LocationManager.GPS_PROVIDER );
+        if ( location == null ) {
+            // Try to get last location from network provider
+            location = mLocationManager.getLastKnownLocation( LocationManager.NETWORK_PROVIDER );
+        }
+
+        ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
+
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences( this );
+        int radius = Integer.valueOf( prefs.getString(
+                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
+
+        Bundle args = new Bundle();
+        args.putParcelable( LocationColumns.LOCATION, location );
+        args.putInt( LocationColumns.RADIUS, radius );
+
+        mTabsAdapter = new TabsAdapter( this, pager );
+        mTabsAdapter.addTab( "AIRPORTS", NearbyAirportsFragment.class, args );
+        mTabsAdapter.addTab( "WEATHER", NearbyWxFragment.class, args );
+
+        TabPageIndicator tabIndicator = (TabPageIndicator) findViewById( R.id.page_titles );
+        tabIndicator.setViewPager( pager );
+
+        setActionBarSubtitle( String.format( "Within %d NM Radius", radius ) );
+
+        if ( savedInstanceState != null ) {
+            pager.setCurrentItem( savedInstanceState.getInt( "nearbytab" ) );
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        requestLocationUpdates();
+
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if ( mLocationManager != null ) {
+            mLocationManager.removeUpdates( mLocationListener );
+        }
+    }
+
+    @Override
+    public void onAttachFragment( Fragment fragment ) {
+        if ( fragment instanceof LocationListener ) {
+            mLocationListeners.add( (LocationListener)fragment );
+        }
+        super.onAttachFragment( fragment );
+    }
+
+    protected void requestLocationUpdates() {
+        if ( mLocationManager != null ) {
+            mLocationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
+                    30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
+                    mLocationListener );
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
+            boolean useGps = prefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
+            if ( useGps ) {
+                mLocationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
+                        30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
+                        mLocationListener );
+            }
+        }
+    }
+
+    private final class AirportsLocationListener implements LocationListener {
+
+        @Override
+        public void onLocationChanged( Location location ) {
+            if ( GeoUtils.isBetterLocation( location, mLastLocation ) ) {
+                mLastLocation = location;
+                for ( LocationListener l : mLocationListeners ) {
+                    l.onLocationChanged( location );
+                }
+            }
+        }
+
+        @Override
+        public void onProviderDisabled( String provider ) {
+        }
+
+        @Override
+        public void onProviderEnabled( String provider ) {
+        }
+
+        @Override
+        public void onStatusChanged( String provider, int status, Bundle extras ) {
+        }
+        
+    };
+
+}
