@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
+import com.nadmm.airports.DatabaseManager.LocationColumns;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.DataUtils;
@@ -48,11 +49,6 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
 
     public void setMetars( HashMap<String, Metar> wx ) {
         mStationWx = wx;
-    }
-
-    @Override
-    public boolean hasStableIds() {
-        return true;
     }
 
     @Override
@@ -111,6 +107,15 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         String phone = c.getString( c.getColumnIndex( Awos1.STATION_PHONE_NUMBER ) );
         if ( phone != null && phone.length() > 0 ) {
             tv.setText( phone );
+        }
+
+        if ( c.getColumnIndex( LocationColumns.DISTANCE ) >= 0 
+                && c.getColumnIndex( LocationColumns.BEARING ) >= 0 ) {
+            tv = (TextView) view.findViewById( R.id.distance );
+            float distance = c.getFloat( c.getColumnIndex( LocationColumns.DISTANCE ) );
+            float bearing = c.getFloat( c.getColumnIndex( LocationColumns.BEARING ) );
+            tv.setText( String.format( "%.1f NM %s",
+                    distance, GeoUtils.getCardinalDirection( bearing ) ) );
         }
 
         Metar metar = mStationWx.get( stationId );
