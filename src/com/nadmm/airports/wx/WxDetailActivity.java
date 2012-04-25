@@ -31,7 +31,7 @@ import com.viewpagerindicator.TabPageIndicator;
 
 public class WxDetailActivity extends ActivityBase {
 
-    TabsAdapter mTabsAdapter;
+    private TabsAdapter mTabsAdapter;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
