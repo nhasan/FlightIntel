@@ -30,7 +30,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.AsyncTask;
-import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v4.app.ListFragment;
@@ -113,14 +112,13 @@ public class FavoriteWxFragment extends ListFragment {
         IntentFilter filter = new IntentFilter();
         filter.addAction( NoaaService.ACTION_GET_METAR );
         getActivity().registerReceiver( mReceiver, filter );
-        startTask();
+        new FavoriteWxTask().execute( (Void[]) null );
         super.onResume();
     }
 
     @Override
     public void onPause() {
         getActivity().unregisterReceiver( mReceiver );
-        stopTask();
         super.onPause();
     }
 
@@ -139,17 +137,6 @@ public class FavoriteWxFragment extends ListFragment {
         args.putString( NoaaService.STATION_ID, icaoCode );
         intent.putExtras( args );
         startActivity( intent );
-    }
-
-    public void startTask() {
-        mTask = new FavoriteWxTask( this );
-        mTask.execute( (Void[]) null );
-    }
-
-    public void stopTask() {
-        if ( mTask.getStatus() != Status.FINISHED ) {
-            mTask.cancel( true );
-        }
     }
 
     public void setCursor( final Cursor c ) {
@@ -209,13 +196,6 @@ public class FavoriteWxFragment extends ListFragment {
 
     public class FavoriteWxTask extends AsyncTask<Void, Void, Cursor> {
 
-        private final FavoriteWxFragment mFragment;
-
-        public FavoriteWxTask( FavoriteWxFragment fragment ) {
-            super();
-            mFragment = fragment;
-        }
-
         @Override
         protected Cursor doInBackground( Void... params ) {
             ActivityBase activity = (ActivityBase) getActivity();
@@ -249,7 +229,7 @@ public class FavoriteWxFragment extends ListFragment {
                 Awos1.SECOND_STATION_FREQUENCY,
                 Awos1.STATION_PHONE_NUMBER,
                 Airports.ASSOC_CITY,
-                Airports.ASSOC_STATE,
+                Airports.ASSOC_STATE
             };
 
             String sortOrder = Wxs.STATION_NAME;
@@ -268,9 +248,7 @@ public class FavoriteWxFragment extends ListFragment {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            if ( c != null ) {
-                mFragment.setCursor( c );
-            }
+            setCursor( c );
         }
 
     }
