@@ -23,7 +23,7 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
-    <TextView android:id="@+id/airport_list_title"
+    <TextView android:id="@+id/list_title"
 	        android:padding="4dp"
 	        android:gravity="center"
 	        android:visibility="gone"
