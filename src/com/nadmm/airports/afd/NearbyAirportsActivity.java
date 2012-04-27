@@ -68,6 +68,7 @@ public class NearbyAirportsActivity extends ActivityBase {
 
         Location mLocation;
         private CursorAdapter mListAdapter;
+        private ListView mListView;
 
         private final String[] mDisplayColumns = new String[] {
                 BaseColumns._ID,
@@ -87,6 +88,48 @@ public class NearbyAirportsActivity extends ActivityBase {
                 LocationColumns.DISTANCE,
                 LocationColumns.BEARING
         };
+
+        @Override
+        public void onDestroy() {
+            if ( mListAdapter != null ) {
+                Cursor c = mListAdapter.getCursor();
+                c.close();
+            }
+
+            super.onDestroy();
+        }
+
+        @Override
+        public View onCreateView( LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState ) {
+            View view = inflater.inflate( R.layout.list_view_layout, container, false );
+            mListView = (ListView) view.findViewById( R.id.list_view );
+            mListView.setOnItemClickListener( new OnItemClickListener() {
+
+                @Override
+                public void onItemClick( AdapterView<?> parent, View view,
+                        int position, long id ) {
+                    Cursor c = mListAdapter.getCursor();
+                    c.moveToPosition( position );
+                    String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+                    Intent intent = new Intent( getActivity(), AirportDetailsActivity.class );
+                    intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                    startActivity( intent );
+                }
+
+            } );
+
+            return createContentView( view );
+        }
+
+        @Override
+        public void onActivityCreated( Bundle savedInstanceState ) {
+            Bundle args = getArguments();
+            Location location = (Location) args.getParcelable( LocationColumns.LOCATION );
+            onLocationChanged( location );
+
+            super.onActivityCreated( savedInstanceState );
+        }
 
         // This data class allows us to sort the airport list based in distance
         private final class AirportData implements Comparable<AirportData> {
@@ -230,57 +273,27 @@ public class NearbyAirportsActivity extends ActivityBase {
 
             @Override
             protected void onPostExecute( Cursor c ) {
-                showDetails( c );
+                setCursor( c );
             }
 
         }
 
-        @Override
-        public View onCreateView( LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState ) {
-            View view = inflater.inflate( R.layout.list_view_layout, container, false );
-            return createContentView( view );
-        }
-
-        @Override
-        public void onActivityCreated( Bundle savedInstanceState ) {
-            Bundle args = getArguments();
-            Location location = (Location) args.getParcelable( LocationColumns.LOCATION );
-            onLocationChanged( location );
-
-            super.onActivityCreated( savedInstanceState );
-        }
-
-        @SuppressWarnings("deprecation")
-        protected void showDetails( Cursor c ) {
-            ListView listView = (ListView) findViewById( R.id.list_view );
-            registerForContextMenu( listView );
-            listView.setOnItemClickListener( new OnItemClickListener() {
-
-                @Override
-                public void onItemClick( AdapterView<?> parent, View view,
-                        int position, long id ) {
-                    Cursor c = mListAdapter.getCursor();
-                    c.moveToPosition( position );
-                    String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-                    Intent intent = new Intent( getActivity(), AirportDetailsActivity.class );
-                    intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                    startActivity( intent );
+        protected void setCursor( Cursor c ) {
+            ActivityBase activity = (ActivityBase) getActivity();
+            if ( activity != null ) {
+                int position = mListView.getFirstVisiblePosition();
+                if ( mListAdapter == null ) {
+                    mListAdapter = new AirportsCursorAdapter( getActivity(), c );
+                } else {
+                    mListAdapter.changeCursor( c );
                 }
+                if ( mListView.getAdapter() == null ) {
+                    mListView.setAdapter( mListAdapter );
+                }
+                mListView.setSelection( position );
 
-            } );
-
-            int position = listView.getFirstVisiblePosition();
-            if ( mListAdapter == null ) {
-                mListAdapter = new AirportsCursorAdapter( getActivity(), c );
-            } else {
-                mListAdapter.changeCursor( c );
+                setFragmentContentShown( true );
             }
-            listView.setAdapter( mListAdapter );
-            listView.setSelection( position );
-            getActivityBase().startManagingCursor( c );
-
-            setFragmentContentShown( true );
         }
 
         @Override
