@@ -116,6 +116,10 @@ public class FragmentBase extends Fragment {
         mActivity.setActionBarTitle( title );
     }
 
+    protected void setActionBarSubtitle( String subtitle ) {
+        mActivity.setActionBarSubtitle( subtitle );
+    }
+
     protected int getSelectorResourceForRow( int curRow, int totRows ) {
         return mActivity.getSelectorResourceForRow( curRow, totRows );
     }
