@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,16 +27,22 @@ import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
+import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.LocationColumns;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.R;
+import com.nadmm.airports.afd.NearbyAirportsActivity.NearbyAirportsFragment;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
@@ -64,6 +70,47 @@ public class NearbyNavaidsActivity extends ActivityBase {
         Intent intent = getIntent();
         String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
         setBackgroundTask( new NavaidDetailsTask() ).execute( siteNumber );
+
+
+        setContentView( createContentView( R.layout.fragment_activity_layout ) );
+
+        Bundle args = getIntent().getExtras();
+        addFragment( NearbyNavaidsFragment.class, args );
+    }
+
+    public static class NearbyNavaidsFragment extends FragmentBase implements LocationListener {
+
+
+        @Override
+        public View onCreateView( LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState ) {
+            return inflater.inflate( R.layout.airport_navaids_view, container, false );
+        }
+
+        @Override
+        public void onActivityCreated( Bundle savedInstanceState ) {
+            Bundle args = getArguments();
+            Location location = (Location) args.getParcelable( LocationColumns.LOCATION );
+            onLocationChanged( location );
+
+            super.onActivityCreated( savedInstanceState );
+        }
+
+        @Override
+        public void onLocationChanged( Location location ) {
+        }
+
+        @Override
+        public void onProviderDisabled( String provider ) {
+        }
+
+        @Override
+        public void onProviderEnabled( String provider ) {
+        }
+
+        @Override
+        public void onStatusChanged( String provider, int status, Bundle extras ) {
+        }
     }
 
     private final class NavaidData implements Comparable<NavaidData> {
