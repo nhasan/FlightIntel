@@ -116,6 +116,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             float bearing = c.getFloat( c.getColumnIndex( LocationColumns.BEARING ) );
             tv.setText( String.format( "%.1f NM %s",
                     distance, GeoUtils.getCardinalDirection( bearing ) ) );
+            tv.setVisibility( View.VISIBLE );
         }
 
         Metar metar = mStationWx.get( stationId );
