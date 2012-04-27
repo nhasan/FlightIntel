@@ -31,6 +31,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
@@ -56,8 +57,6 @@ public class NearbyActivity extends ActivityBase {
 
         setContentView( R.layout.fragment_view_pager_layout );
 
-        mLocationListeners = new ArrayList<LocationListener>();
-
         // No location was passed, initialize the location service to get a fix
         mLocationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
         mLocationListener = new AirportsLocationListener();
@@ -69,8 +68,6 @@ public class NearbyActivity extends ActivityBase {
             location = mLocationManager.getLastKnownLocation( LocationManager.NETWORK_PROVIDER );
         }
 
-        ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
-
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences( this );
         int radius = Integer.valueOf( prefs.getString(
@@ -80,6 +77,7 @@ public class NearbyActivity extends ActivityBase {
         args.putParcelable( LocationColumns.LOCATION, location );
         args.putInt( LocationColumns.RADIUS, radius );
 
+        ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
         mTabsAdapter = new TabsAdapter( this, pager );
         mTabsAdapter.addTab( "AIRPORTS", NearbyAirportsFragment.class, args );
         mTabsAdapter.addTab( "WEATHER", NearbyWxFragment.class, args );
@@ -103,15 +101,26 @@ public class NearbyActivity extends ActivityBase {
 
     @Override
     protected void onPause() {
-        super.onPause();
         if ( mLocationManager != null ) {
             mLocationManager.removeUpdates( mLocationListener );
         }
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onSaveInstanceState( Bundle outState ) {
+        super.onSaveInstanceState( outState );
+        ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
+        outState.putInt( "nearbytab", pager.getCurrentItem() );
     }
 
     @Override
     public void onAttachFragment( Fragment fragment ) {
         if ( fragment instanceof LocationListener ) {
+            if ( mLocationListeners == null ) {
+                mLocationListeners = new ArrayList<LocationListener>();
+            }
             mLocationListeners.add( (LocationListener)fragment );
         }
         super.onAttachFragment( fragment );
@@ -137,9 +146,11 @@ public class NearbyActivity extends ActivityBase {
 
         @Override
         public void onLocationChanged( Location location ) {
+            Log.d( "LOCATION", location.toString() );
             if ( GeoUtils.isBetterLocation( location, mLastLocation ) ) {
                 mLastLocation = location;
                 for ( LocationListener l : mLocationListeners ) {
+                    Log.d( "SENDING", l.toString() );
                     l.onLocationChanged( location );
                 }
             }
