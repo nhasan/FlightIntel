@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.LocationColumns;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.R;
 
@@ -75,11 +76,11 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
         holder.location.setText( String.format( "%s, %s, %s", city, state,
                 DataUtils.decodeFacilityUse( use ) ) );
 
-        if ( c.getColumnIndex( Airports.DISTANCE ) >= 0 
-                && c.getColumnIndex( Airports.BEARING ) >= 0 ) {
+        if ( c.getColumnIndex( LocationColumns.DISTANCE ) >= 0 
+                && c.getColumnIndex( LocationColumns.BEARING ) >= 0 ) {
             // Check if we have distance information
-            float distance = c.getFloat( c.getColumnIndex( Airports.DISTANCE ) );
-            float bearing = c.getFloat( c.getColumnIndex( Airports.BEARING ) );
+            float distance = c.getFloat( c.getColumnIndex( LocationColumns.DISTANCE ) );
+            float bearing = c.getFloat( c.getColumnIndex( LocationColumns.BEARING ) );
             holder.distance.setText( String.format( "%.1f NM %s, initial course %.0f\u00B0 M",
                     distance, GeoUtils.getCardinalDirection( bearing ), bearing ) );
         } else {
