@@ -56,9 +56,15 @@ public class DatabaseManager {
     private static final Object sLock = new Object();
     private static DatabaseManager sInstance = null;
 
+    public static final class LocationColumns {
+        public static final String LOCATION = "LOCATION";
+        public static final String DISTANCE = "DISTANCE";
+        public static final String BEARING = "BEARING";
+        public static final String RADIUS = "RADIUS";
+    }
+
     public static final class Airports implements BaseColumns {
         public static final String TABLE_NAME = "airports";
-        // Fields for airport table
         public static final String SITE_NUMBER = "SITE_NUMBER";
         public static final String FAA_CODE = "FAA_CODE";
         public static final String EFFECTIVE_DATE = "EFFECTIVE_DATE";
@@ -140,10 +146,6 @@ public class DatabaseManager {
         public static final String WIND_INDICATOR = "WIND_INDICATOR";
         public static final String ICAO_CODE = "ICAO_CODE";
         public static final String TIMEZONE_ID = "TIMEZONE_ID";
-
-        // These are not really columns in the table, but calculated
-        public static final String DISTANCE = "DISTANCE";
-        public static final String BEARING = "BEARING";
     }
 
     public static final class Runways implements BaseColumns {
