@@ -159,7 +159,7 @@ public final class BrowseActivity extends ActivityBase {
                 if ( c != null ) {
                     showDetails( c );
                 } else {
-                    TextView tv = (TextView) findViewById( R.id.airport_list_title );
+                    TextView tv = (TextView) findViewById( R.id.list_title );
                     tv.setText( "Airport data is not installed on the device" );
                     tv.setVisibility( View.VISIBLE );
                 }
@@ -172,7 +172,7 @@ public final class BrowseActivity extends ActivityBase {
         @Override
         public View onCreateView( LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState ) {
-            return inflater.inflate( R.layout.airport_list_view, container, false );
+            return inflater.inflate( R.layout.list_view_layout, container, false );
         }
 
         @Override
