@@ -75,7 +75,7 @@ public class SearchActivity extends ActivityBase {
         int count = c.getCount();
         startManagingCursor( c );
 
-        setContentView( R.layout.airport_list_view );
+        setContentView( R.layout.list_view_layout );
         ListView listView = (ListView) findViewById( R.id.list_view );
         listView.setOnItemClickListener( new OnItemClickListener() {
 
@@ -93,7 +93,7 @@ public class SearchActivity extends ActivityBase {
 
         mListAdapter = new AirportsCursorAdapter( this, c );
         listView.setAdapter( mListAdapter );
-        TextView title = (TextView) findViewById( R.id.airport_list_title );
+        TextView title = (TextView) findViewById( R.id.list_title );
         title.setVisibility( View.VISIBLE );
         title.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
                 count, count, query ) );
