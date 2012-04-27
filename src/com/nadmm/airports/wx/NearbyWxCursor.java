@@ -47,16 +47,18 @@ public class NearbyWxCursor extends MatrixCursor {
             Awos1.SECOND_STATION_FREQUENCY,
             Awos1.STATION_PHONE_NUMBER,
             Wxs.STATION_NAME,
-            Wxs.STATION_ELEVATOIN_METER,
             Airports.ASSOC_CITY,
             Airports.ASSOC_STATE,
+            Wxs.STATION_ELEVATOIN_METER,
+            Wxs.STATION_LATITUDE_DEGREES,
+            Wxs.STATION_LONGITUDE_DEGREES,
             LocationColumns.DISTANCE,
             LocationColumns.BEARING
     };
 
     public NearbyWxCursor( SQLiteDatabase db, Location location, int radius ) {
         super( mColumns );
-        
+
         float declination = GeoUtils.getMagneticDeclination( location );
 
         // Get the bounding box first to do a quick query as a first cut
@@ -66,10 +68,9 @@ public class NearbyWxCursor extends MatrixCursor {
         double radLonMin = box[ 2 ];
         double radLonMax = box[ 3 ];
 
-        ArrayList<AwosData> awosList = new ArrayList<AwosData>();
-
         // Check if 180th Meridian lies within the bounding Box
         boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
+
         String[] selectionArgs = {
                 String.valueOf( Math.toDegrees( radLatMin ) ), 
                 String.valueOf( Math.toDegrees( radLatMax ) ),
@@ -109,6 +110,7 @@ public class NearbyWxCursor extends MatrixCursor {
         Cursor c = builder.query( db, wxColumns, selection, selectionArgs,
                 null, null, null, null );
         if ( c.moveToFirst() ) {
+            ArrayList<AwosData> awosList = new ArrayList<AwosData>();
             do {
                 String status = c.getString( c.getColumnIndex( Awos1.COMMISSIONING_STATUS ) );
                 if ( status != null && status.equals( "N" ) ) {
@@ -118,32 +120,34 @@ public class NearbyWxCursor extends MatrixCursor {
                 AwosData awos = new AwosData( c, location, declination );
                 awosList.add( awos );
             } while ( c.moveToNext() );
-        }
-        c.close();
 
-        // Sort the airport list by distance from current location
-        Object[] awosSortedList = awosList.toArray();
-        Arrays.sort( awosSortedList );
+            // Sort the airport list by distance from current location
+            Object[] awosSortedList = awosList.toArray();
+            Arrays.sort( awosSortedList );
 
-        for ( Object o : awosSortedList ) {
-            AwosData awos = (AwosData) o;
-            if ( awos.DISTANCE <= 20 ) {
-                MatrixCursor.RowBuilder row = newRow();
-                row.add( getPosition() )
-                    .add( awos.ICAO_CODE )
-                    .add( awos.SENSOR_IDENT )
-                    .add( awos.SENSOR_TYPE )
-                    .add( awos.FREQUENCY )
-                    .add( awos.FREQUENCY2 )
-                    .add( awos.PHONE )
-                    .add( awos.NAME )
-                    .add( awos.ELEVATION )
-                    .add( awos.CITY )
-                    .add( awos.STATE )
-                    .add( awos.DISTANCE )
-                    .add( awos.BEARING );
+            for ( Object o : awosSortedList ) {
+                AwosData awos = (AwosData) o;
+                if ( awos.DISTANCE <= radius ) {
+                    MatrixCursor.RowBuilder row = newRow();
+                    row.add( getPosition() )
+                        .add( awos.ICAO_CODE )
+                        .add( awos.SENSOR_IDENT )
+                        .add( awos.SENSOR_TYPE )
+                        .add( awos.FREQUENCY )
+                        .add( awos.FREQUENCY2 )
+                        .add( awos.PHONE )
+                        .add( awos.NAME )
+                        .add( awos.CITY )
+                        .add( awos.STATE )
+                        .add( awos.ELEVATION )
+                        .add( awos.LATITUDE )
+                        .add( awos.LONGITUDE )
+                        .add( awos.DISTANCE )
+                        .add( awos.BEARING );
+                }
             }
         }
+        c.close();
     }
 
     private final class AwosData implements Comparable<AwosData> {
@@ -158,14 +162,14 @@ public class NearbyWxCursor extends MatrixCursor {
         public String CITY;
         public String STATE;
         public int ELEVATION;
+        public double LATITUDE;
+        public double LONGITUDE;
         public float DISTANCE;
         public float BEARING;
 
         public AwosData( Cursor c, Location location, float declination ) {
             ICAO_CODE = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
             NAME = c.getString( c.getColumnIndex( Wxs.STATION_NAME ) );
-            double lat = c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-            double lon = c.getDouble( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
             SENSOR_IDENT = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_IDENT ) );
             SENSOR_TYPE = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
             FREQUENCY = c.getString( c.getColumnIndex( Awos1.STATION_FREQUENCY ) );
@@ -174,6 +178,8 @@ public class NearbyWxCursor extends MatrixCursor {
             CITY = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
             STATE = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
             ELEVATION = c.getInt( c.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
+            LATITUDE = c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+            LONGITUDE = c.getDouble( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
 
             if ( SENSOR_TYPE == null || SENSOR_TYPE.length() == 0 ) {
                 SENSOR_TYPE = "ASOS/AWOS";
@@ -182,7 +188,7 @@ public class NearbyWxCursor extends MatrixCursor {
             // Now calculate the distance to this wx station
             float[] results = new float[ 2 ];
             Location.distanceBetween( location.getLatitude(), location.getLongitude(), 
-                    lat, lon, results );
+                    LATITUDE, LONGITUDE, results );
             DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
             BEARING = GeoUtils.applyDeclination( results[ 1 ], declination );
         }
