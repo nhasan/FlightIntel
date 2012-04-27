@@ -136,14 +136,16 @@ public class GeoUtils {
         return Math.round( heading+declination+360 )%360;
     }
 
-    /** Determines whether one Location reading is better than the current Location fix
-      * @param location  The new Location that you want to evaluate
-      * @param currentBestLocation  The current Location fix, to which you want to compare the new one
-      */
     public static boolean isBetterLocation( Location location, Location currentBestLocation ) {
         if ( currentBestLocation == null ) {
             // A new location is always better than no location
             return true;
+        }
+
+        if ( location.getLatitude() == currentBestLocation.getLatitude()
+                && location.getLongitude() == currentBestLocation.getLongitude() ) {
+            // No change in location is not better
+            return false;
         }
 
         // Check whether the new location fix is newer or older
