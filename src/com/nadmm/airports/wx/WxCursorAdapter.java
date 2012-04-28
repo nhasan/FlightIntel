@@ -67,15 +67,19 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
 
         StringBuilder info = new StringBuilder();
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
-        if ( info.length() > 0 ) {
-            info.append( ", " );
+        if ( city != null && city.length() > 0 ) {
+            if ( info.length() > 0 ) {
+                info.append( ", " );
+            }
+            info.append( city );
         }
-        info.append( city );
         String state = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
-        if ( info.length() > 0 ) {
-            info.append( ", " );
+        if ( state != null && state.length() > 0 ) {
+            if ( info.length() > 0 ) {
+                info.append( ", " );
+            }
+            info.append( state );
         }
-        info.append( state );
         tv = (TextView) view.findViewById( R.id.wx_station_info );
         tv.setText( info.toString() );
 
@@ -91,7 +95,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             }
         }
 
-        info = new StringBuilder();
+        info.setLength( 0 );
         String type = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
         if ( type == null || type.length() == 0 ) {
             type = "ASOS/AWOS";
