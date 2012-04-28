@@ -59,7 +59,6 @@ public class FavoriteWxFragment extends WxListFragmentBase {
                     selectionList += ", ";
                 }
                 selectionList += "'"+stationId+"'";
-                mStationWx.put( stationId, null );
             };
 
             String selection = Wxs.STATION_ID+" in ("+selectionList+")";
