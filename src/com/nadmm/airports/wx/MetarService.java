@@ -67,9 +67,9 @@ public class MetarService extends NoaaService {
         }
 
         Metar metar = new Metar();
+        metar.stationId = stationId;
 
         if ( xml.exists() ) {
-            metar.stationId = stationId;
             mParser.parse( xml, metar );
         }
 
