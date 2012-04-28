@@ -44,10 +44,10 @@ import com.nadmm.airports.utils.NetworkUtils;
 
 public class WxListFragmentBase extends FragmentBase {
 
-    protected HashMap<String, Metar> mStationWx = new HashMap<String, Metar>();
-    protected BroadcastReceiver mReceiver;
-    protected WxCursorAdapter mListAdapter;
-    protected ListView mListView;
+    private HashMap<String, Metar> mStationWx = new HashMap<String, Metar>();
+    private BroadcastReceiver mReceiver;
+    private WxCursorAdapter mListAdapter;
+    private ListView mListView;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
