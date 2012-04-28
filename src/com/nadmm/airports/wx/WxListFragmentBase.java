@@ -29,7 +29,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -130,14 +129,18 @@ public class WxListFragmentBase extends FragmentBase {
         if ( activity != null ) {
             if ( mListAdapter == null ) {
                 mListAdapter = new WxCursorAdapter( activity, c );
+                if ( c.moveToFirst() ) {
+                    do {
+                        String stationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
+                        mStationWx.put( stationId, null );
+                    } while ( c.moveToNext() );
+                }
                 mListAdapter.setMetars( mStationWx );
-                Log.d( "ADAPTER2", mListAdapter.toString() );
             } else {
                 mListAdapter.changeCursor( c );
             }
             if ( mListView.getAdapter() == null ) {
                 mListView.setAdapter( mListAdapter );
-                Log.d( "ADAPTER3", mListAdapter.toString() );
             }
 
             requestMetars( false );
@@ -174,23 +177,25 @@ public class WxListFragmentBase extends FragmentBase {
         @Override
         public void onReceive( Context context, Intent intent ) {
             Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
-            mStationWx.put( metar.stationId, metar );
+            if ( metar.isValid ) {
+                mStationWx.put( metar.stationId, metar );
 
-            ListView l = (ListView) findViewById( R.id.list_view );
-            int first = l.getFirstVisiblePosition();
+                ListView l = (ListView) findViewById( R.id.list_view );
+                int first = l.getFirstVisiblePosition();
 
-            int pos = 0;
-            while ( pos <= l.getChildCount() ) {
-                View view = l.getChildAt( pos );
-                if ( view != null ) {
-                    String icaoCode = (String) view.getTag();
-                    if ( icaoCode.equals( metar.stationId ) ) {
-                        Cursor c = (Cursor) mListAdapter.getItem( pos+first );
-                        mListAdapter.showMetarInfo( view, c, metar );
-                        break;
+                int pos = 0;
+                while ( pos <= l.getChildCount() ) {
+                    View view = l.getChildAt( pos );
+                    if ( view != null ) {
+                        String icaoCode = (String) view.getTag();
+                        if ( icaoCode.equals( metar.stationId ) ) {
+                            Cursor c = (Cursor) mListAdapter.getItem( pos+first );
+                            mListAdapter.showMetarInfo( view, c, metar );
+                            break;
+                        }
                     }
+                    ++pos;
                 }
-                ++pos;
             }
 
             ++mWxUpdates;
