@@ -177,25 +177,23 @@ public class WxListFragmentBase extends FragmentBase {
         @Override
         public void onReceive( Context context, Intent intent ) {
             Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
-            if ( metar.isValid ) {
-                mStationWx.put( metar.stationId, metar );
+            mStationWx.put( metar.stationId, metar );
 
-                ListView l = (ListView) findViewById( R.id.list_view );
-                int first = l.getFirstVisiblePosition();
+            ListView l = (ListView) findViewById( R.id.list_view );
+            int first = l.getFirstVisiblePosition();
 
-                int pos = 0;
-                while ( pos <= l.getChildCount() ) {
-                    View view = l.getChildAt( pos );
-                    if ( view != null ) {
-                        String icaoCode = (String) view.getTag();
-                        if ( icaoCode.equals( metar.stationId ) ) {
-                            Cursor c = (Cursor) mListAdapter.getItem( pos+first );
-                            mListAdapter.showMetarInfo( view, c, metar );
-                            break;
-                        }
+            int pos = 0;
+            while ( pos <= l.getChildCount() ) {
+                View view = l.getChildAt( pos );
+                if ( view != null ) {
+                    String icaoCode = (String) view.getTag();
+                    if ( icaoCode.equals( metar.stationId ) ) {
+                        Cursor c = (Cursor) mListAdapter.getItem( pos+first );
+                        mListAdapter.showMetarInfo( view, c, metar );
+                        break;
                     }
-                    ++pos;
                 }
+                ++pos;
             }
 
             ++mWxUpdates;
