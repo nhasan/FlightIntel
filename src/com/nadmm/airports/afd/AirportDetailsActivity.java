@@ -757,7 +757,7 @@ public class AirportDetailsActivity extends ActivityBase {
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
             addSeparator( layout );
             addClickableRow( layout, "Aircraft operations", intent, R.drawable.row_selector_middle );
-            intent = new Intent( getActivity(), RemarkDetailsActivity.class );
+            intent = new Intent( getActivity(), RemarksActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
             addSeparator( layout );
             addClickableRow( layout, "Additional remarks", intent, R.drawable.row_selector_middle );
