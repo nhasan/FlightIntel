@@ -527,8 +527,7 @@ public class MetarFragment extends FragmentBase {
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         if ( metar.windDirDegrees > 0 ) {
             float declination = GeoUtils.getMagneticDeclination( mLocation );
-            Drawable wind = UiUtils.getRotatedDrawable( getActivity(), R.drawable.windsock,
-                    GeoUtils.applyDeclination( metar.windDirDegrees, declination ) );
+            Drawable wind= WxUtils.getWindBarbDrawable( tv.getContext(), metar, declination );
             tv.setCompoundDrawablesWithIntrinsicBounds( wind, null, null, null );
             tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 6 ) );
         }
