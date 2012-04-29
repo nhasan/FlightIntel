@@ -740,7 +740,7 @@ public class AirportDetailsActivity extends ActivityBase {
             addSeparator( layout );
             addRow( layout, "Powerplant repair", repair );
             addSeparator( layout );
-            Intent intent = new Intent( getActivity(), ServicesDetailsActivity.class );
+            Intent intent = new Intent( getActivity(), ServicesActivity.class );
             intent.putExtra( Airports.SITE_NUMBER,
                     apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) ) );
             addClickableRow( layout, "Other services", intent, R.drawable.row_selector_bottom );
