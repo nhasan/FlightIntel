@@ -1,3 +1,9 @@
+v3.3.0 (4/29/2012)
+==================
+* Show nearby wx stations
+* Stability fixes
+* Ported more activities to Fragment
+
 v3.2.3 (4/13/2012)
 ==================
 * Check for null intent
