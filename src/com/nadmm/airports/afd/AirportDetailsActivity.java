@@ -855,7 +855,7 @@ public class AirportDetailsActivity extends ActivityBase {
             Bundle bundle = new Bundle();
             bundle.putString( Runways.SITE_NUMBER, siteNumber );
             bundle.putString( Runways.RUNWAY_ID, runwayId );
-            Intent intent = new Intent( getActivityBase(), RunwayDetailsActivity.class );
+            Intent intent = new Intent( getActivityBase(), RunwaysActivity.class );
             intent.putExtras( bundle );
 
             addClickableRow( layout, row, intent, resid );

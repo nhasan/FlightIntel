@@ -48,7 +48,7 @@
                   android:name=".afd.AirportDetailsActivity" />
 
         <activity android:label="@string/runways"
-                  android:name=".afd.RunwayDetailsActivity" />
+                  android:name=".afd.RunwaysActivity" />
 
         <activity android:label="@string/other_services"
                   android:name=".afd.ServicesDetailsActivity" />
