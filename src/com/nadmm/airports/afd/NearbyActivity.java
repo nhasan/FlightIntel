@@ -31,7 +31,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
@@ -146,11 +145,9 @@ public class NearbyActivity extends ActivityBase {
 
         @Override
         public void onLocationChanged( Location location ) {
-            Log.d( "LOCATION", location.toString() );
             if ( GeoUtils.isBetterLocation( location, mLastLocation ) ) {
                 mLastLocation = location;
                 for ( LocationListener l : mLocationListeners ) {
-                    Log.d( "SENDING", l.toString() );
                     l.onLocationChanged( location );
                 }
             }
