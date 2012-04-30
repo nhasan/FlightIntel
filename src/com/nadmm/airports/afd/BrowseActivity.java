@@ -54,6 +54,9 @@ public final class BrowseActivity extends ActivityBase {
         setContentView( createContentView( R.layout.fragment_activity_layout ) );
 
         Bundle args = getIntent().getExtras();
+        if ( args == null ) {
+            args = new Bundle();
+        }
         addFragment( BrowseFragment.class, args );
     }
 
@@ -178,17 +181,15 @@ public final class BrowseActivity extends ActivityBase {
         @Override
         public void onActivityCreated( Bundle savedInstanceState ) {
             Bundle args = getArguments();
-            if ( args != null && !args.containsKey( Airports.SITE_NUMBER ) ) {
-                // Show browse list
-                String stateCode = args.getString( States.STATE_CODE );
-                String stateName = args.getString( States.STATE_NAME );
-                if ( stateCode == null ) {
-                    getSupportActionBar().setSubtitle( "All Locations" );
-                } else {
-                    getSupportActionBar().setSubtitle( stateName );
-                }
-                setBackgroundTask( new BrowseTask() ).execute( stateCode, stateName );
+            // Show browse list
+            String stateCode = args.getString( States.STATE_CODE );
+            String stateName = args.getString( States.STATE_NAME );
+            if ( stateCode == null ) {
+                getSupportActionBar().setSubtitle( "All Locations" );
+            } else {
+                getSupportActionBar().setSubtitle( stateName );
             }
+            setBackgroundTask( new BrowseTask() ).execute( stateCode, stateName );
 
             super.onActivityCreated( savedInstanceState );
         }
