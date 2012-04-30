@@ -61,6 +61,7 @@ public class DatabaseManager {
         public static final String DISTANCE = "DISTANCE";
         public static final String BEARING = "BEARING";
         public static final String RADIUS = "RADIUS";
+        public static final String RADIAL = "RADIAL";
     }
 
     public static final class Airports implements BaseColumns {
