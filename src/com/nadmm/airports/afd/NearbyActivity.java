@@ -31,6 +31,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.format.DateUtils;
+import android.view.View;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
@@ -54,9 +55,10 @@ public class NearbyActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( R.layout.fragment_view_pager_layout );
+        View view = inflate( R.layout.fragment_view_pager_layout );
+        view.setKeepScreenOn( true );
+        setContentView( view );
 
-        // No location was passed, initialize the location service to get a fix
         mLocationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
         mLocationListener = new AirportsLocationListener();
 
