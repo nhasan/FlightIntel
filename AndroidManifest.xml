@@ -27,7 +27,7 @@
         </activity>
 
 	    <activity android:label="@string/downloads" 
-	              android:name="DownloadActivity" />
+	              android:name=".DownloadActivity" />
 
         <activity android:label="@string/settings"
                   android:name=".PreferencesActivity" />
