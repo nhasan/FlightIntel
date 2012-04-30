@@ -309,8 +309,7 @@ public class AirportDetailsActivity extends ActivityBase {
             mExtras = new Bundle();
             mExtras.putParcelable( LocationColumns.LOCATION, mLocation );
 
-            getActivityBase().setActionBarTitle( apt );
-            getActivityBase().showAirportTitle( apt );
+            showAirportTitle( apt );
 
             showCommunicationsDetails( result );
             showRunwayDetails( result );
@@ -321,10 +320,6 @@ public class AirportDetailsActivity extends ActivityBase {
             showAeroNavDetails( result );
             showServicesDetails( result );
             showOtherDetails( result );
-
-            TextView tv = (TextView) findViewById( R.id.effective_date );
-            tv.setText( "Effective date: "
-                    +apt.getString( apt.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
 
             requestMetars( false );
 
