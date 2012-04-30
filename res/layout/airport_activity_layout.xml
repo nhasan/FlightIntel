@@ -25,6 +25,7 @@
         android:layout_height="fill_parent">
     <LinearLayout android:id="@+id/activity_layout"
             android:orientation="vertical"
+            android:paddingBottom="12dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
         <include layout="@layout/airport_title_layout" />
@@ -32,5 +33,11 @@
                 android:orientation="vertical"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"/>
+        <TextView android:id="@+id/effective_date"
+                style="@style/TextSmall"
+                android:padding="4dp"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
     </LinearLayout>
 </ScrollView>

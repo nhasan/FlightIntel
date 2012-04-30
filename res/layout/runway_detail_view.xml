@@ -19,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
  -->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/rwy_detail_layout"
         android:orientation="vertical"
         android:paddingLeft="12dp"
-        android:paddingTop="5dp"
+        android:paddingTop="6dp"
         android:paddingRight="12dp"
-        android:paddingBottom="5dp"
+        android:paddingBottom="6dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/rwy_common_label"
