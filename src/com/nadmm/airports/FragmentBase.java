@@ -131,6 +131,7 @@ public class FragmentBase extends Fragment {
     public void showAirportTitle( Cursor c ) {
         mActivity.setActionBarTitle( c );
         mActivity.showAirportTitle( c );
+        mActivity.showFaddsEffectiveDate( c );
     }
 
     protected void showNavaidTitle( Cursor c ) {
