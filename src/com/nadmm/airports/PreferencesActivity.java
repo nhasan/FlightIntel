@@ -41,6 +41,7 @@ public class PreferencesActivity extends PreferenceActivity
 
     private SharedPreferences mSharedPrefs;
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
@@ -67,6 +68,7 @@ public class PreferencesActivity extends PreferenceActivity
         mSharedPrefs.unregisterOnSharedPreferenceChangeListener(this);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
         Preference pref = findPreference( key );

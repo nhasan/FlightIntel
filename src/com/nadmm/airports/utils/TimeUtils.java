@@ -56,6 +56,7 @@ public class TimeUtils {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static String formatDateTimeUTC( Context context, long millis ) {
         String s = DateUtils.formatDateRange( context, millis, millis,
                 DateUtils.FORMAT_24HOUR
