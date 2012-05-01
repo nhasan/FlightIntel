@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.BaseColumns;
 
 import com.nadmm.airports.ActivityBase;
@@ -34,13 +35,6 @@ import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
 
 public class FavoriteWxFragment extends WxListFragmentBase {
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        new FavoriteWxTask().execute( (Void[]) null );
-    }
 
     public class FavoriteWxTask extends AsyncTask<Void, Void, Cursor> {
 
@@ -98,6 +92,19 @@ public class FavoriteWxFragment extends WxListFragmentBase {
             setCursor( c );
         }
 
+    }
+
+    @Override
+    public void onCreate( Bundle savedInstanceState ) {
+        setEmptyText( "No favorite wx stations selected." );
+        super.onCreate( savedInstanceState );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        new FavoriteWxTask().execute( (Void[]) null );
     }
 
 }

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports.wx;
+package com.nadmm.airports.afd;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -28,9 +28,11 @@ import android.os.Bundle;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
 
-public class NearbyWxFragment extends WxListFragmentBase {
+public class NearbyAirportsFragment extends AirportListFragmentBase {
 
-    private final class NearbyWxTask extends AsyncTask<Location, Void, Cursor> {
+    Location mLocation;
+
+    private final class NearbyAirportsTask extends AsyncTask<Location, Void, Cursor> {
 
         @Override
         protected Cursor doInBackground( Location... params ) {
@@ -39,7 +41,7 @@ public class NearbyWxFragment extends WxListFragmentBase {
             int radius = args.getInt( LocationColumns.RADIUS );
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
-            return new NearbyWxCursor( db, location, radius );
+            return new NearbyAirportsCursor( db, location, radius );
         }
 
         @Override
@@ -51,24 +53,13 @@ public class NearbyWxFragment extends WxListFragmentBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        setEmptyText( "No wx stations found nearby." );
+        setEmptyText( "No airports found nearby." );
         super.onCreate( savedInstanceState );
     }
 
     @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        Bundle args = getArguments();
-        Location location = (Location) args.getParcelable( LocationColumns.LOCATION );
-        if ( location != null ) {
-            onLocationChanged( location );
-        }
-
-        super.onActivityCreated( savedInstanceState );
-    }
-
-    @Override
     public void onLocationChanged( Location location ) {
-        new NearbyWxTask().execute( location );
+        new NearbyAirportsTask().execute( location );
     }
 
 }

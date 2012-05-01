@@ -21,25 +21,16 @@ package com.nadmm.airports.afd;
 
 import java.util.ArrayList;
 
-import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.view.View;
-import android.widget.ListView;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.utils.AirportsCursorAdapter;
-import com.nadmm.airports.utils.AirportsCursorHelper;
 
-public class FavoriteAirportsFragment extends ListFragment {
-
-    private FavoriteAirportsTask mTask;
+public class FavoriteAirportsFragment extends AirportListFragmentBase {
 
     public class FavoriteAirportsTask extends AsyncTask<Void, Void, Cursor> {
 
@@ -71,61 +62,23 @@ public class FavoriteAirportsFragment extends ListFragment {
 
         @Override
         protected void onPostExecute( Cursor c ) {
-            if ( c != null ) {
-                setCursor( c );
-            }
+            setCursor( c );
         }
 
+    }
+
+    @Override
+    public void onCreate( Bundle savedInstanceState ) {
+        setEmptyText( "No favorite airports selected." );
+        super.onCreate( savedInstanceState );
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mTask = new FavoriteAirportsTask();
-        mTask.execute( (Void[]) null );
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if ( mTask != null ) {
-            mTask.cancel( true );
-        }
-        AirportsCursorAdapter adapter = (AirportsCursorAdapter) getListAdapter();
-        if ( adapter != null ) {
-            Cursor c = adapter.getCursor();
-            if ( c != null ) {
-                c.close();
-            }
-        }
-    }
-
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
-        setEmptyText( "No favorite airports yet" );
-    }
-
-    @Override
-    public void onListItemClick( ListView l, View view, int position, long id ) {
-        Cursor c = (SQLiteCursor) l.getItemAtPosition( position );
-        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-        Intent intent = new Intent( getActivity(), AirportDetailsActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-        startActivity( intent );
-    }
-
-    public void setCursor( final Cursor c ) {
-        // We may get called here after activity has detached
-        if ( getActivity() != null ) {
-            AirportsCursorAdapter adapter = (AirportsCursorAdapter) getListAdapter();
-            if ( adapter == null ) {
-                adapter = new AirportsCursorAdapter( getActivity(), c );
-                setListAdapter( adapter );
-            } else {
-                adapter.changeCursor( c );
-            }
-        }
+        setFragmentContentShownNoAnimation( false );
+        new FavoriteAirportsTask().execute( (Void[]) null );
     }
 
 }
