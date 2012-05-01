@@ -200,25 +200,42 @@ public class ActivityBase extends FragmentActivity {
         return root;
     }
 
+    public void setContentShown( boolean shown ) {
+        View root = findViewById( android.R.id.content );
+        setContentShown( root, shown, true );
+    }
+
     public void setContentShown( View view, boolean shown ) {
+        setContentShown( view, shown, true );
+    }
+
+    public void setContentShownNoAnimation( boolean shown ) {
+        View root = findViewById( android.R.id.content );
+        setContentShown( root, shown, false );
+    }
+
+    public void setContentShownNoAnimation( View view, boolean shown ) {
+        setContentShown( view, shown, false );
+    }
+
+    protected void setContentShown( View view, boolean shown, boolean animation ) {
         View progress = view.findViewById( R.id.INTERNAL_PROGRESS_CONTAINER_ID );
         View content = view.findViewById( R.id.INTERNAL_FRAGMENT_CONTAINER_ID );
         if ( shown ) {
-            progress.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_out ) );
-            content.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_in ) );
+            if ( animation ) {
+                progress.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_out ) );
+                content.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_in ) );
+            }
             progress.setVisibility( View.GONE );
             content.setVisibility( View.VISIBLE );
         } else {
-            progress.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_in ) );
-            content.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_out ) );
+            if ( animation ) {
+                progress.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_in ) );
+                content.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_out ) );
+            }
             progress.setVisibility( View.VISIBLE );
             content.setVisibility( View.GONE );
         }
-    }
-
-    public void setContentShown( boolean shown ) {
-        View root = findViewById( android.R.id.content );
-        setContentShown( root, shown );
     }
 
     protected void setContentMsg( String msg ) {
