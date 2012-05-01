@@ -91,12 +91,20 @@ public class FragmentBase extends Fragment {
         mActivity.setContentShown( shown );
     }
 
+    protected void setContentShownNoAnimation( boolean shown ) {
+        mActivity.setContentShownNoAnimation( shown );
+    }
+
     protected void setContentMsg( String msg ) {
         mActivity.setContentMsg( msg );
     }
 
     protected void setFragmentContentShown( boolean shown ) {
         mActivity.setContentShown( getView(), shown );
+    }
+
+    protected void setFragmentContentShownNoAnimation( boolean shown ) {
+        mActivity.setContentShownNoAnimation( getView(), shown );
     }
 
     protected CursorAsyncTask setBackgroundTask( CursorAsyncTask task ) {
