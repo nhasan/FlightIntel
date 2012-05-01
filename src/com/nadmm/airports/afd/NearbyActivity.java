@@ -37,7 +37,6 @@ import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
-import com.nadmm.airports.afd.NearbyAirportsActivity.NearbyAirportsFragment;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TabsAdapter;
 import com.nadmm.airports.wx.NearbyWxFragment;
