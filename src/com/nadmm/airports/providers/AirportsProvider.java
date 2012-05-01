@@ -34,7 +34,7 @@ import android.provider.BaseColumns;
 
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.utils.AirportsCursorHelper;
+import com.nadmm.airports.afd.AirportsCursorHelper;
 
 public class AirportsProvider extends ContentProvider {
 
