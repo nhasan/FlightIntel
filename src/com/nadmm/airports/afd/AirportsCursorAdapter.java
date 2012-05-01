@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports.utils;
+package com.nadmm.airports.afd;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -27,6 +27,10 @@ import android.widget.TextView;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.FormatUtils;
+import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.utils.SectionedCursorAdapter;
 import com.nadmm.airports.R;
 
 public class AirportsCursorAdapter extends SectionedCursorAdapter {
