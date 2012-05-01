@@ -23,14 +23,13 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
-    <TextView android:id="@+id/list_title"
+    <TextView android:id="@+id/list_msg"
 	        android:padding="4dp"
 	        android:gravity="center"
 	        android:visibility="gone"
-	        android:background="@drawable/top_bar"
             android:textAppearance="?android:attr/textAppearanceSmall" 
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="fill_parent" />
     <ListView android:id="@+id/list_view"
             android:divider="@drawable/list_divider"
             android:footerDividersEnabled="false"
