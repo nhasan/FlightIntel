@@ -34,7 +34,6 @@ import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.R;
 import com.nadmm.airports.providers.AirportsProvider;
-import com.nadmm.airports.utils.AirportsCursorAdapter;
 
 public class SearchActivity extends ActivityBase {
 
@@ -69,6 +68,7 @@ public class SearchActivity extends ActivityBase {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void showResults( String query ) {
         Cursor c = managedQuery( AirportsProvider.CONTENT_URI, null, null, 
                 new String[] { query }, null );
@@ -93,7 +93,7 @@ public class SearchActivity extends ActivityBase {
 
         mListAdapter = new AirportsCursorAdapter( this, c );
         listView.setAdapter( mListAdapter );
-        TextView title = (TextView) findViewById( R.id.list_title );
+        TextView title = (TextView) findViewById( R.id.list_msg );
         title.setVisibility( View.VISIBLE );
         title.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
                 count, count, query ) );
