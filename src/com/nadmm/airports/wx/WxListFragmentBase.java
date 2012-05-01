@@ -29,41 +29,26 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
-import android.view.LayoutInflater;
+import android.support.v4.widget.CursorAdapter;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Wxs;
-import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NetworkUtils;
 
-public class WxListFragmentBase extends FragmentBase {
+public class WxListFragmentBase extends ListFragmentBase {
 
     private HashMap<String, Metar> mStationWx = new HashMap<String, Metar>();
     private BroadcastReceiver mReceiver;
-    private WxCursorAdapter mListAdapter;
-    private ListView mListView;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         mReceiver = new MetarReceiver();
         setHasOptionsMenu( true );
         super.onCreate( savedInstanceState );
-    }
-
-    @Override
-    public void onDestroy() {
-        if ( mListAdapter != null ) {
-            Cursor c = mListAdapter.getCursor();
-            c.close();
-        }
-
-        super.onDestroy();
     }
 
     @Override
@@ -80,30 +65,6 @@ public class WxListFragmentBase extends FragmentBase {
         getActivity().unregisterReceiver( mReceiver );
 
         super.onPause();
-    }
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.list_view_layout, container, false );
-        mListView = (ListView) view.findViewById( R.id.list_view );
-        mListView.setOnItemClickListener( new OnItemClickListener() {
-
-            @Override
-            public void onItemClick( AdapterView<?> parent, View view,
-                    int position, long id ) {
-                Cursor c = (Cursor) mListView.getItemAtPosition( position );
-                String icaoCode = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
-                Intent intent = new Intent( getActivity(), WxDetailActivity.class );
-                Bundle args = new Bundle();
-                args.putString( NoaaService.STATION_ID, icaoCode );
-                intent.putExtras( args );
-                startActivity( intent );
-            }
-
-        } );
-
-        return createContentView( view );
     }
 
     @Override
@@ -125,32 +86,27 @@ public class WxListFragmentBase extends FragmentBase {
     }
 
     public void setCursor( Cursor c ) {
-        ActivityBase activity = (ActivityBase) getActivity();
-        if ( activity != null ) {
-            if ( mListAdapter == null ) {
-                mListAdapter = new WxCursorAdapter( activity, c );
-                if ( c.moveToFirst() ) {
-                    do {
-                        String stationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
-                        mStationWx.put( stationId, null );
-                    } while ( c.moveToNext() );
-                }
-                mListAdapter.setMetars( mStationWx );
-            } else {
-                mListAdapter.changeCursor( c );
+        mStationWx.clear();
+        if ( getActivity() != null ) {
+            if ( c.moveToFirst() ) {
+                do {
+                    String stationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
+                    mStationWx.put( stationId, null );
+                } while ( c.moveToNext() );
             }
-            if ( mListView.getAdapter() == null ) {
-                mListView.setAdapter( mListAdapter );
-            }
-
-            requestMetars( false );
-            setFragmentContentShown( true );
         }
+
+        super.setCursor( c );
+
+        requestMetars( false );
     }
 
     protected void requestMetars( Boolean force ) {
-        ActivityBase activity = (ActivityBase) getActivity();
+        if ( mStationWx.size() == 0 ) {
+            return;
+        }
 
+        ActivityBase activity = (ActivityBase) getActivity();
         boolean cacheOnly = NetworkUtils.useCacheContentOnly( activity );
         if ( force || !cacheOnly ) {
             activity.startRefreshAnimation();
@@ -188,8 +144,9 @@ public class WxListFragmentBase extends FragmentBase {
                 if ( view != null ) {
                     String icaoCode = (String) view.getTag();
                     if ( icaoCode.equals( metar.stationId ) ) {
-                        Cursor c = (Cursor) mListAdapter.getItem( pos+first );
-                        mListAdapter.showMetarInfo( view, c, metar );
+                        WxCursorAdapter adapter = (WxCursorAdapter) getListAdapter();
+                        Cursor c = (Cursor) adapter.getItem( pos+first );
+                        adapter.showMetarInfo( view, c, metar );
                         break;
                     }
                 }
@@ -204,7 +161,25 @@ public class WxListFragmentBase extends FragmentBase {
                 activity.stopRefreshAnimation();
             }
         }
-        
+
+    }
+
+    @Override
+    protected CursorAdapter newListAdapter( Context context, Cursor c ) {
+        WxCursorAdapter adapter = new WxCursorAdapter( context, c );
+        adapter.setMetars( mStationWx );
+        return adapter;
+    }
+
+    @Override
+    protected void onListItemClick( ListView l, View v, int position ) {
+        Cursor c = (Cursor) l.getItemAtPosition( position );
+        String icaoCode = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
+        Intent intent = new Intent( getActivity(), WxDetailActivity.class );
+        Bundle args = new Bundle();
+        args.putString( NoaaService.STATION_ID, icaoCode );
+        intent.putExtras( args );
+        startActivity( intent );
     }
 
 }
