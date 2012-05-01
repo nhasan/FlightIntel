@@ -51,7 +51,7 @@ public final class BrowseActivity extends ActivityBase {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( createContentView( R.layout.fragment_activity_layout ) );
+        setContentView( R.layout.fragment_activity_layout );
 
         Bundle args = getIntent().getExtras();
         if ( args == null ) {
@@ -88,7 +88,7 @@ public final class BrowseActivity extends ActivityBase {
             return map;
         }
 
-        private BrowseCursorAdapter mListAdapter;
+        private ListView mListView;
 
         private final class BrowseTask extends CursorAsyncTask {
 
@@ -158,15 +158,7 @@ public final class BrowseActivity extends ActivityBase {
 
             @Override
             protected boolean onResult( Cursor[] result ) {
-                Cursor c = result[ 0 ];
-                if ( c != null ) {
-                    showDetails( c );
-                } else {
-                    TextView tv = (TextView) findViewById( R.id.list_title );
-                    tv.setText( "Airport data is not installed on the device" );
-                    tv.setVisibility( View.VISIBLE );
-                }
-                setContentShown( true );
+                setcursor( result[ 0 ] );
                 return false;
             }
 
@@ -175,7 +167,19 @@ public final class BrowseActivity extends ActivityBase {
         @Override
         public View onCreateView( LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState ) {
-            return inflater.inflate( R.layout.list_view_layout, container, false );
+            View view = inflater.inflate( R.layout.list_view_layout, container, false );
+            mListView = (ListView) view.findViewById( R.id.list_view );
+            mListView.setOnItemClickListener( new OnItemClickListener() {
+
+                @Override
+                public void onItemClick( AdapterView<?> parent, View view,
+                        int position, long id ) {
+                    onListItemClick( position );
+                }
+
+            } );
+
+            return createContentView( view );
         }
 
         @Override
@@ -194,37 +198,28 @@ public final class BrowseActivity extends ActivityBase {
             super.onActivityCreated( savedInstanceState );
         }
 
-        @SuppressWarnings("deprecation")
-        protected void showDetails( Cursor c ) {
-            ListView listView = (ListView) findViewById( R.id.list_view );
-            listView.setOnItemClickListener( new OnItemClickListener() {
-
-                @Override
-                public void onItemClick( AdapterView<?> parent, View view,
-                        int position, long id ) {
-                    onListItemClick( position );
-                }
-
-            } );
-
+        protected void setcursor( Cursor c ) {
+            BrowseCursorAdapter adapter;
             if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
-                 mListAdapter = new BrowseCursorAdapter( getActivity(),
+                 adapter = new BrowseCursorAdapter( getActivity(),
                         R.layout.browse_all_item, c, R.id.browse_all_section,
                         BrowseCursorAdapter.STATE_MODE );
             } else {
-                mListAdapter = new BrowseCursorAdapter( getActivity(),
+                adapter = new BrowseCursorAdapter( getActivity(),
                         R.layout.browse_state_item, c, R.id.browse_state_section,
                         BrowseCursorAdapter.CITY_MODE );
                 getSupportActionBar().setSubtitle( String.format( "%s  (%d)",
                         getSupportActionBar().getSubtitle(), c.getCount() ) );
             }
 
-            getActivityBase().startManagingCursor( c );
-            listView.setAdapter( mListAdapter );
+            mListView.setAdapter( adapter );
+
+            setFragmentContentShown( true );
         }
 
         protected void onListItemClick( int position ) {
-            Cursor c = mListAdapter.getCursor();
+            BrowseCursorAdapter adapter = (BrowseCursorAdapter) mListView.getAdapter();
+            Cursor c = adapter.getCursor();
             c.moveToPosition( position );
             if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
                 // User clicked on a state
