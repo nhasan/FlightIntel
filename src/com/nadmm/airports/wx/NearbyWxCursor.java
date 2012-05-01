@@ -19,7 +19,6 @@
 
 package com.nadmm.airports.wx;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import android.database.Cursor;
@@ -38,7 +37,7 @@ import com.nadmm.airports.utils.GeoUtils;
 public class NearbyWxCursor extends MatrixCursor {
 
     // Build a cursor out of the sorted wx station list
-    private static final String[] mColumns = new String[] {
+    private static final String[] sColumns = new String[] {
             BaseColumns._ID,
             Wxs.STATION_ID,
             Awos1.WX_SENSOR_IDENT,
@@ -57,7 +56,7 @@ public class NearbyWxCursor extends MatrixCursor {
     };
 
     public NearbyWxCursor( SQLiteDatabase db, Location location, int radius ) {
-        super( mColumns );
+        super( sColumns );
 
         float declination = GeoUtils.getMagneticDeclination( location );
 
@@ -109,8 +108,9 @@ public class NearbyWxCursor extends MatrixCursor {
 
         Cursor c = builder.query( db, wxColumns, selection, selectionArgs,
                 null, null, null, null );
+
         if ( c.moveToFirst() ) {
-            ArrayList<AwosData> awosList = new ArrayList<AwosData>();
+            AwosData[] awosList = new AwosData[ c.getCount() ];
             do {
                 String status = c.getString( c.getColumnIndex( Awos1.COMMISSIONING_STATUS ) );
                 if ( status != null && status.equals( "N" ) ) {
@@ -118,15 +118,13 @@ public class NearbyWxCursor extends MatrixCursor {
                     continue;
                 }
                 AwosData awos = new AwosData( c, location, declination );
-                awosList.add( awos );
+                awosList[ c.getPosition() ] = awos;
             } while ( c.moveToNext() );
 
             // Sort the airport list by distance from current location
-            Object[] awosSortedList = awosList.toArray();
-            Arrays.sort( awosSortedList );
+            Arrays.sort( awosList );
 
-            for ( Object o : awosSortedList ) {
-                AwosData awos = (AwosData) o;
+            for ( AwosData awos : awosList ) {
                 if ( awos.DISTANCE <= radius ) {
                     MatrixCursor.RowBuilder row = newRow();
                     row.add( getPosition() )
