@@ -78,6 +78,7 @@ public class TimeUtils {
         return String.format( "%s %s", s, getLocalTimeZoneName() );
     }
 
+    @SuppressWarnings("deprecation")
     public static String formatDateRangeUTC( Context context,
             long startMillis, long endMillis ) {
         String s = DateUtils.formatDateRange( context, startMillis, endMillis,
