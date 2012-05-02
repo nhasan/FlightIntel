@@ -23,15 +23,11 @@ import java.util.ArrayList;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.BaseColumns;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
 
 public class FavoriteWxFragment extends WxListFragmentBase {
@@ -57,32 +53,8 @@ public class FavoriteWxFragment extends WxListFragmentBase {
 
             String selection = Wxs.STATION_ID+" in ("+selectionList+")";
 
-            String[] wxColumns = new String[] {
-                "x."+BaseColumns._ID,
-                Wxs.STATION_ID,
-                Wxs.STATION_NAME,
-                Wxs.STATION_ELEVATOIN_METER,
-                "x."+Wxs.STATION_LATITUDE_DEGREES,
-                "x."+Wxs.STATION_LONGITUDE_DEGREES,
-                Awos1.WX_SENSOR_IDENT,
-                Awos1.WX_SENSOR_TYPE,
-                Awos1.STATION_FREQUENCY,
-                Awos1.SECOND_STATION_FREQUENCY,
-                Awos1.STATION_PHONE_NUMBER,
-                Airports.ASSOC_CITY,
-                Airports.ASSOC_STATE
-            };
-
-            String sortOrder = Wxs.STATION_NAME;
-
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Wxs.TABLE_NAME+" x"
-                    +" LEFT JOIN "+Airports.TABLE_NAME+" a"
-                    +" ON x."+Wxs.STATION_ID+" = a."+Airports.ICAO_CODE
-                    +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
-                    +" ON w."+Awos1.WX_SENSOR_IDENT+" = a."+Airports.FAA_CODE );
-            Cursor c = builder.query( db, wxColumns, selection, 
-                    null, null, null, sortOrder, null );
+            Cursor c = WxCursorHelper.query( db, selection, null, null, null,
+                    Wxs.STATION_NAME, null );
 
             return c;
         }
@@ -104,6 +76,7 @@ public class FavoriteWxFragment extends WxListFragmentBase {
     public void onResume() {
         super.onResume();
 
+        setFragmentContentShownNoAnimation( false );
         new FavoriteWxTask().execute( (Void[]) null );
     }
 

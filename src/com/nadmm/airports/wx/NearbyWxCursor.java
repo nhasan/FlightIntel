@@ -24,7 +24,6 @@ import java.util.Arrays;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.provider.BaseColumns;
 
@@ -70,6 +69,12 @@ public class NearbyWxCursor extends MatrixCursor {
         // Check if 180th Meridian lies within the bounding Box
         boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
 
+        String selection = "("
+                +"x."+Wxs.STATION_LATITUDE_DEGREES+">=? AND "
+                +"x."+Wxs.STATION_LATITUDE_DEGREES+"<=?"
+                +") AND (x."+Wxs.STATION_LONGITUDE_DEGREES+">=? "
+                +(isCrossingMeridian180? "OR " : "AND ")
+                +"x."+Wxs.STATION_LONGITUDE_DEGREES+"<=?)";
         String[] selectionArgs = {
                 String.valueOf( Math.toDegrees( radLatMin ) ), 
                 String.valueOf( Math.toDegrees( radLatMax ) ),
@@ -77,37 +82,7 @@ public class NearbyWxCursor extends MatrixCursor {
                 String.valueOf( Math.toDegrees( radLonMax ) )
                 };
 
-        String[] wxColumns = new String[] {
-                Wxs.STATION_ID,
-                Wxs.STATION_NAME,
-                Wxs.STATION_ELEVATOIN_METER,
-                "x."+Wxs.STATION_LATITUDE_DEGREES,
-                "x."+Wxs.STATION_LONGITUDE_DEGREES,
-                Awos1.WX_SENSOR_IDENT,
-                Awos1.WX_SENSOR_TYPE,
-                Awos1.STATION_FREQUENCY,
-                Awos1.SECOND_STATION_FREQUENCY,
-                Awos1.STATION_PHONE_NUMBER,
-                Awos1.COMMISSIONING_STATUS,
-                Airports.ASSOC_CITY,
-                Airports.ASSOC_STATE,
-        };
-
-        String selection = "("
-                +"x."+Wxs.STATION_LATITUDE_DEGREES+">=? AND "
-                +"x."+Wxs.STATION_LATITUDE_DEGREES+"<=?"
-                +") AND (x."+Wxs.STATION_LONGITUDE_DEGREES+">=? "
-                +(isCrossingMeridian180? "OR " : "AND ")
-                +"x."+Wxs.STATION_LONGITUDE_DEGREES+"<=?)";
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( Wxs.TABLE_NAME+" x"
-                +" LEFT JOIN "+Airports.TABLE_NAME+" a"
-                +" ON x."+Wxs.STATION_ID+" = a."+Airports.ICAO_CODE
-                +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
-                +" ON w."+Awos1.WX_SENSOR_IDENT+" = a."+Airports.FAA_CODE );
-
-        Cursor c = builder.query( db, wxColumns, selection, selectionArgs,
-                null, null, null, null );
+        Cursor c = WxCursorHelper.query( db, selection, selectionArgs, null, null, null, null );
 
         if ( c.moveToFirst() ) {
             AwosData[] awosList = new AwosData[ c.getCount() ];
