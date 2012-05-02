@@ -91,8 +91,7 @@ public class NearbyNavaidsActivity extends ActivityBase {
                 TACAN_CHANNEL = c.getString( c.getColumnIndex( Nav1.TACAN_CHANNEL ) );
 
                 int var = c.getInt( c.getColumnIndex( Nav1.MAGNETIC_VARIATION_DEGREES ) );
-                String dir = c.getString( c.getColumnIndex(
-                        Nav1.MAGNETIC_VARIATION_DIRECTION ) );
+                String dir = c.getString( c.getColumnIndex( Nav1.MAGNETIC_VARIATION_DIRECTION ) );
                 if ( dir.equals( "E" ) ) {
                     var *= -1;
                 }
@@ -105,9 +104,7 @@ public class NearbyNavaidsActivity extends ActivityBase {
                         c.getDouble( c.getColumnIndex( Nav1.REF_LONGITUDE_DEGREES ) ),
                         results );
                 DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
-                RADIAL = (int) Math.round( results[ 1 ]+360 )%360;
-                RADIAL = DataUtils.calculateMagneticHeading( RADIAL, var );
-                RADIAL = DataUtils.calculateReciprocalHeading( RADIAL );
+                RADIAL = calculateRadial( results[ 1 ], var );
                 String alt = c.getString( c.getColumnIndex( Nav1.PROTECTED_FREQUENCY_ALTITUDE ) );
                 RANGE = ( alt != null && alt.equals( "T" ) )? 25 : 40;
             }
@@ -122,6 +119,11 @@ public class NearbyNavaidsActivity extends ActivityBase {
                 return 0;
             }
 
+            private int calculateRadial( float dir, int var ) {
+                int heading = (int) Math.round( dir+360 )%360;
+                heading = DataUtils.calculateMagneticHeading( heading, var );
+                return DataUtils.calculateReciprocalHeading( heading );
+            }
         }
 
         private final class NavaidDetailsTask extends CursorAsyncTask {
