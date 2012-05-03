@@ -58,6 +58,7 @@ public class MetarFragment extends FragmentBase {
 
     protected long mElevation;
     protected Location mLocation;
+    protected IntentFilter mFilter;
     protected BroadcastReceiver mReceiver;
     protected ArrayList<String> mRemarks;
 
@@ -67,6 +68,9 @@ public class MetarFragment extends FragmentBase {
         setHasOptionsMenu( true );
 
         mRemarks = new ArrayList<String>();
+
+        mFilter = new IntentFilter();
+        mFilter.addAction( NoaaService.ACTION_GET_METAR );
 
         mReceiver = new BroadcastReceiver() {
             @Override
@@ -78,9 +82,7 @@ public class MetarFragment extends FragmentBase {
 
     @Override
     public void onResume() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction( NoaaService.ACTION_GET_METAR );
-        getActivity().registerReceiver( mReceiver, filter );
+        getActivity().registerReceiver( mReceiver, mFilter );
 
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
