@@ -112,7 +112,7 @@ public class NetworkUtils {
                 }
             }
         } catch ( Exception e ) {
-            UiUtils.showToast( context, e.getMessage() );
+            UiUtils.showToast( context, "Error: Unable to download file" );
         } finally {
             if ( in != null ) {
                 try {
