@@ -11,21 +11,21 @@
     </datafile>
     <datafile>
         <type>DTPP</type>
-        <desc>AeroNav d-TPP #1204 (FAA)</desc>
-        <version>1204</version>
-        <filename>dtpp_20120405.zip</filename>
-        <size>458344</size>
-        <start>2012-04-05T09:01:00Z</start>
-        <end>2012-05-03T09:01:00Z</end>
+        <desc>AeroNav d-TPP #1205 (FAA)</desc>
+        <version>1205</version>
+        <filename>dtpp_20120503.zip</filename>
+        <size>458333</size>
+        <start>2012-05-03T09:01:00Z</start>
+        <end>2012-05-31T09:01:00Z</end>
     </datafile>
     <datafile>
         <type>DAFD</type>
         <desc>AeroNav d-A/FD 05APR12 (FAA)</desc>
-        <version>1204</version>
-        <filename>dafd_20120405.zip</filename>
+        <version>20120405</version>
+        <filename>dafd_20120503.zip</filename>
         <size>83411</size>
-        <start>2012-04-05</start>
-        <end>2012-05-03</end>
+        <start>2012-05-03</start>
+        <end>2012-05-31</end>
     </datafile>
 </manifest>
 
