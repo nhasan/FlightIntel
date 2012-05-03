@@ -1,3 +1,7 @@
+v3.3.1 (5/3/2012)
+==================
+Fix a crash in NearbyWxCursor with when inactive wx stations are present
+
 v3.3.0 (5/2/2012)
 ==================
 * Show nearby wx stations
