@@ -245,9 +245,6 @@ public class MetarFragment extends FragmentBase {
         layout = (LinearLayout) findViewById( R.id.wx_wind_layout );
         layout.removeAllViews();
         if ( metar.windSpeedKnots < Integer.MAX_VALUE ) {
-            tv.setVisibility( View.VISIBLE );
-            layout.setVisibility( View.VISIBLE );
-
             addWindRow( layout, metar );
             if ( metar.wshft ) {
                 StringBuilder sb = new StringBuilder();
@@ -258,19 +255,16 @@ public class MetarFragment extends FragmentBase {
                 addSeparator( layout );
                 addRow( layout, sb.toString() );
             }
-        } else {
-            tv.setVisibility( View.GONE );
-            layout.setVisibility( View.GONE );
         }
+        int visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;
+        tv.setVisibility( visibility );
+        layout.setVisibility( visibility );
 
         // Visibility
         tv = (TextView) findViewById( R.id.wx_vis_label );
         layout = (LinearLayout) findViewById( R.id.wx_vis_layout );
         layout.removeAllViews();
         if ( metar.visibilitySM < Float.MAX_VALUE ) {
-            tv.setVisibility( View.VISIBLE );
-            layout.setVisibility( View.VISIBLE );
-
             if ( metar.flags.contains( Flags.AutoReport ) && metar.visibilitySM == 10 ) {
                 addRow( layout, "10 statute miles or more horizontal visibility" );
             } else {
@@ -285,21 +279,19 @@ public class MetarFragment extends FragmentBase {
                 addRow( layout, String.format( "%s vertical",
                         FormatUtils.formatFeetAgl( metar.vertVisibilityFeet ) ) );
             }
-        } else {
-            tv.setVisibility( View.GONE );
-            layout.setVisibility( View.GONE );
         }
+        visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;
+        tv.setVisibility( visibility );
+        layout.setVisibility( visibility );
 
         // Weather
         layout = (LinearLayout) findViewById( R.id.wx_weather_layout );
         layout.removeAllViews();
-        int row = 0;
         for ( WxSymbol wx : metar.wxList ) {
-            if ( row > 0 ) {
+            if ( layout.getChildCount() > 0 ) {
                 addSeparator( layout );
             }
             addWeatherRow( layout, wx, metar.flightCategory );
-            ++row;
         }
 
         // Sky Conditions
@@ -307,30 +299,22 @@ public class MetarFragment extends FragmentBase {
         layout = (LinearLayout) findViewById( R.id.wx_sky_cond_layout );
         layout.removeAllViews();
         if ( !metar.skyConditions.isEmpty() ) {
-            tv.setVisibility( View.VISIBLE );
-            layout.setVisibility( View.VISIBLE );
-
-            int i = 0;
             for ( SkyCondition sky : metar.skyConditions ) {
-                if ( i > 0 ) {
+                if ( layout.getChildCount() > 0 ) {
                     addSeparator( layout );
                 }
                 addSkyConditionRow( layout, sky, metar.flightCategory );
-                ++i;
             }
-        } else {
-            tv.setVisibility( View.GONE );
-            layout.setVisibility( View.GONE );
         }
+        visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;
+        tv.setVisibility( visibility );
+        layout.setVisibility( visibility );
 
         // Temperature
         tv = (TextView) findViewById( R.id.wx_temp_label );
         layout = (LinearLayout) findViewById( R.id.wx_temp_layout );
         layout.removeAllViews();
         if ( metar.tempCelsius < Float.MAX_VALUE ) {
-            tv.setVisibility( View.VISIBLE );
-            layout.setVisibility( View.VISIBLE );
-
             addRow( layout, "Temperature",
                     FormatUtils.formatTemperature( metar.tempCelsius ) );
             if ( metar.dewpointCelsius < Float.MAX_VALUE ) {
@@ -371,19 +355,16 @@ public class MetarFragment extends FragmentBase {
                 addRow( layout, "24-hour minimum",
                         FormatUtils.formatTemperature( metar.minTemp24HrCentigrade ) );
             }
-        } else {
-            tv.setVisibility( View.GONE );
-            layout.setVisibility( View.GONE );
         }
+        visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;
+        tv.setVisibility( visibility );
+        layout.setVisibility( visibility );
 
         // Pressure
         tv = (TextView) findViewById( R.id.wx_pressure_label );
         layout = (LinearLayout) findViewById( R.id.wx_pressure_layout );
         layout.removeAllViews();
         if ( metar.altimeterHg < Float.MAX_VALUE ) {
-            tv.setVisibility( View.VISIBLE );
-            layout.setVisibility( View.VISIBLE );
-
             addRow( layout, "Altimeter",
                     FormatUtils.formatAltimeter( metar.altimeterHg ) );
             if ( metar.seaLevelPressureMb < Float.MAX_VALUE ) {
@@ -408,92 +389,74 @@ public class MetarFragment extends FragmentBase {
                 addSeparator( layout );
                 addRow( layout, "Pressure rising rapidly" );
             }
-        } else {
-            tv.setVisibility( View.GONE );
-            layout.setVisibility( View.GONE );
         }
+        visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;
+        tv.setVisibility( visibility );
+        layout.setVisibility( visibility );
 
         // Precipitation
         tv = (TextView) findViewById( R.id.wx_precip_label );
         layout = (LinearLayout) findViewById( R.id.wx_precip_layout );
         layout.removeAllViews();
-        row = 0;
         if ( metar.precipInches < Float.MAX_VALUE ) {
-            if ( row > 0 ) {
+            if ( layout.getChildCount() > 0 ) {
                 addSeparator( layout );
             }
             addRow( layout, "1-hour precipitation",
                     String.format( "%.2f\"", metar.precipInches ) );
-            ++row;
         }
         if ( metar.precip3HrInches < Float.MAX_VALUE ) {
-            if ( row > 0 ) {
+            if ( layout.getChildCount() > 0 ) {
                 addSeparator( layout );
             }
             addRow( layout, "3-hour precipitation",
                     String.format( "%.2f\"", metar.precip3HrInches ) );
-            ++row;
         }
         if ( metar.precip6HrInches < Float.MAX_VALUE ) {
-            if ( row > 0 ) {
+            if ( layout.getChildCount() > 0 ) {
                 addSeparator( layout );
             }
             addRow( layout, "6-hour precipitation",
                     String.format( "%.2f\"", metar.precip6HrInches ) );
-            ++row;
         }
         if ( metar.precip24HrInches < Float.MAX_VALUE ) {
-            if ( row > 0 ) {
+            if ( layout.getChildCount() > 0 ) {
                 addSeparator( layout );
             }
             addRow( layout, "24-hour precipitation",
                     String.format( "%.2f\"", metar.precip24HrInches ) );
-            ++row;
         }
         if ( metar.snowInches < Float.MAX_VALUE ) {
-            if ( row > 0 ) {
+            if ( layout.getChildCount() > 0 ) {
                 addSeparator( layout );
             }
             addRow( layout, "Snow depth", String.format( "%.0f\"", metar.snowInches ) );
-            ++row;
         }
         if ( metar.snincr ) {
-            if ( row > 0 ) {
+            if ( layout.getChildCount() > 0 ) {
                 addSeparator( layout );
             }
             addRow( layout, "Snow is increasing rapidly" );
-            ++row;
         }
-
-        if ( row > 0 ) {
-            tv.setVisibility( View.VISIBLE );
-            layout.setVisibility( View.VISIBLE );
-        } else {
-            tv.setVisibility( View.GONE );
-            layout.setVisibility( View.GONE );
-        }
+        visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;
+        tv.setVisibility( visibility );
+        layout.setVisibility( visibility );
 
         // Remarks
+        tv = (TextView) findViewById( R.id.wx_remarks_label );
         layout = (LinearLayout) findViewById( R.id.wx_remarks_layout );
         layout.removeAllViews();
-        if ( !metar.flags.isEmpty() ) {
-            tv.setVisibility( View.VISIBLE );
-            layout.setVisibility( View.VISIBLE );
-
-            for ( Flags flag : metar.flags ) {
-                addBulletedRow( layout, flag.toString() );
-            }
+        for ( Flags flag : metar.flags ) {
+            addBulletedRow( layout, flag.toString() );
         }
         for ( String remark : mRemarks ) {
             addBulletedRow( layout, remark );
         }
+        visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;
+        tv.setVisibility( visibility );
+        layout.setVisibility( visibility );
 
-        if ( layout.getChildCount() == 0 ) {
-            tv = (TextView) findViewById( R.id.wx_remarks_label );
-            tv.setVisibility( View.GONE );
-            layout.setVisibility( View.GONE );
-        }
-
+        // Fetch time
         tv = (TextView) findViewById( R.id.wx_fetch_time );
         tv.setText( "Fetched on "+TimeUtils.formatDateTime( getActivity(), metar.fetchTime )  );
         tv.setVisibility( View.VISIBLE );
