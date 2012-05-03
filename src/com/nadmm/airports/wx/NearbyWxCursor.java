@@ -87,11 +87,6 @@ public class NearbyWxCursor extends MatrixCursor {
         if ( c.moveToFirst() ) {
             AwosData[] awosList = new AwosData[ c.getCount() ];
             do {
-                String status = c.getString( c.getColumnIndex( Awos1.COMMISSIONING_STATUS ) );
-                if ( status != null && status.equals( "N" ) ) {
-                    // Skip the inactive station
-                    continue;
-                }
                 AwosData awos = new AwosData( c, location, declination );
                 awosList[ c.getPosition() ] = awos;
             } while ( c.moveToNext() );
@@ -100,24 +95,28 @@ public class NearbyWxCursor extends MatrixCursor {
             Arrays.sort( awosList );
 
             for ( AwosData awos : awosList ) {
-                if ( awos.DISTANCE <= radius ) {
-                    MatrixCursor.RowBuilder row = newRow();
-                    row.add( getPosition() )
-                        .add( awos.ICAO_CODE )
-                        .add( awos.SENSOR_IDENT )
-                        .add( awos.SENSOR_TYPE )
-                        .add( awos.FREQUENCY )
-                        .add( awos.FREQUENCY2 )
-                        .add( awos.PHONE )
-                        .add( awos.NAME )
-                        .add( awos.CITY )
-                        .add( awos.STATE )
-                        .add( awos.ELEVATION )
-                        .add( awos.LATITUDE )
-                        .add( awos.LONGITUDE )
-                        .add( awos.DISTANCE )
-                        .add( awos.BEARING );
+                if ( awos.STATUS != null && awos.STATUS.equals( "N" ) ) {
+                    continue;
                 }
+                if ( awos.DISTANCE > radius ) {
+                    continue;
+                }
+                MatrixCursor.RowBuilder row = newRow();
+                row.add( getPosition() )
+                    .add( awos.ICAO_CODE )
+                    .add( awos.SENSOR_IDENT )
+                    .add( awos.SENSOR_TYPE )
+                    .add( awos.FREQUENCY )
+                    .add( awos.FREQUENCY2 )
+                    .add( awos.PHONE )
+                    .add( awos.NAME )
+                    .add( awos.CITY )
+                    .add( awos.STATE )
+                    .add( awos.ELEVATION )
+                    .add( awos.LATITUDE )
+                    .add( awos.LONGITUDE )
+                    .add( awos.DISTANCE )
+                    .add( awos.BEARING );
             }
         }
         c.close();
@@ -126,12 +125,13 @@ public class NearbyWxCursor extends MatrixCursor {
     private final class AwosData implements Comparable<AwosData> {
 
         public String ICAO_CODE;
+        public String NAME;
+        public String STATUS;
         public String SENSOR_IDENT;
         public String SENSOR_TYPE;
         public String FREQUENCY;
         public String FREQUENCY2;
         public String PHONE;
-        public String NAME;
         public String CITY;
         public String STATE;
         public int ELEVATION;
@@ -143,6 +143,7 @@ public class NearbyWxCursor extends MatrixCursor {
         public AwosData( Cursor c, Location location, float declination ) {
             ICAO_CODE = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
             NAME = c.getString( c.getColumnIndex( Wxs.STATION_NAME ) );
+            STATUS = c.getString( c.getColumnIndex( Awos1.COMMISSIONING_STATUS ) );
             SENSOR_IDENT = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_IDENT ) );
             SENSOR_TYPE = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
             FREQUENCY = c.getString( c.getColumnIndex( Awos1.STATION_FREQUENCY ) );
