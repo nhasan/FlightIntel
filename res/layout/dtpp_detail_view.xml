@@ -20,48 +20,43 @@
  */
  -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-    <LinearLayout android:id="@+id/fss_top_layout"
-            android:orientation="vertical"
-            android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout android:id="@+id/buttons_layout"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-        <include layout="@layout/airport_title_layout" />
-        <LinearLayout android:id="@+id/buttons_layout"
-                android:orientation="horizontal"
-                android:layout_gravity="center"
+        <Button android:id="@+id/btnDownload"
+                style="@style/FlatButton"
+                android:text="@string/download_all"
+                android:visibility="gone"
+                android:gravity="center"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="4dp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-            <Button android:id="@+id/btnDownload"
-                    style="@style/FlatButton"
-                    android:text="@string/download_all"
-                    android:visibility="gone"
-                    android:gravity="center"
-                    android:layout_marginRight="4dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="4dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent" />
-            <Button android:id="@+id/btnDelete"
-                    style="@style/FlatButton"
-                    android:text="@string/delete_all"
-                    android:visibility="gone"
-                    android:gravity="center"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="4dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent" />
-        </LinearLayout>
-        <LinearLayout android:id="@+id/dtpp_detail_layout"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="12dp"
-                android:paddingTop="0dp"
-                android:paddingRight="12dp"
-                android:paddingBottom="12dp"
-                android:orientation="vertical">
-        </LinearLayout>
+                android:layout_height="fill_parent" />
+        <Button android:id="@+id/btnDelete"
+                style="@style/FlatButton"
+                android:text="@string/delete_all"
+                android:visibility="gone"
+                android:gravity="center"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent" />
     </LinearLayout>
-</ScrollView>
+    <LinearLayout android:id="@+id/dtpp_detail_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="12dp"
+            android:paddingTop="0dp"
+            android:paddingRight="12dp"
+            android:paddingBottom="12dp"
+            android:orientation="vertical">
+    </LinearLayout>
+</LinearLayout>
