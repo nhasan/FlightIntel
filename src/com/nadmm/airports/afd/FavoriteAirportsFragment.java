@@ -38,6 +38,7 @@ public class FavoriteAirportsFragment extends AirportListFragmentBase {
         protected Cursor doInBackground( Void... params ) {
             ActivityBase activity = (ActivityBase) getActivity();
             if ( activity == null ) {
+                cancel( false );
                 return null;
             }
 
@@ -51,8 +52,7 @@ public class FavoriteAirportsFragment extends AirportListFragmentBase {
                 selection += "'"+site_number+"'";
             };
 
-            SQLiteDatabase db = activity.getDatabase( DatabaseManager.DB_FADDS );
-            // Query for the favorite airports
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             selection = "a."+Airports.SITE_NUMBER+" in ("+selection+")";
             Cursor c = AirportsCursorHelper.query( db, selection, 
                     null, null, null, Airports.FACILITY_NAME, null );

@@ -37,8 +37,10 @@ public class FavoriteWxFragment extends WxListFragmentBase {
         @Override
         protected Cursor doInBackground( Void... params ) {
             ActivityBase activity = (ActivityBase) getActivity();
-
-            SQLiteDatabase db = activity.getDatabase( DatabaseManager.DB_FADDS );
+            if ( activity == null ) {
+                cancel( false );
+                return null;
+            }
 
             DatabaseManager dbManager = activity.getDbManager();
             ArrayList<String> favorites = dbManager.getWxFavorites();
@@ -51,8 +53,8 @@ public class FavoriteWxFragment extends WxListFragmentBase {
                 selectionList += "'"+stationId+"'";
             };
 
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             String selection = Wxs.STATION_ID+" in ("+selectionList+")";
-
             Cursor c = WxCursorHelper.query( db, selection, null, null, null,
                     Wxs.STATION_NAME, null );
 

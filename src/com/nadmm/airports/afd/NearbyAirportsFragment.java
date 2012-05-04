@@ -36,6 +36,11 @@ public class NearbyAirportsFragment extends AirportListFragmentBase {
 
         @Override
         protected Cursor doInBackground( Location... params ) {
+            if ( getActivity() == null ) {
+                cancel( false );
+                return null;
+            }
+
             Location location = params[ 0 ];
             Bundle args = getArguments();
             int radius = args.getInt( LocationColumns.RADIUS );
