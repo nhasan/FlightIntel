@@ -94,8 +94,14 @@ public final class BrowseActivity extends ActivityBase {
 
             @Override
             protected Cursor[] doInBackground( String... params ) {
+                if ( getActivity() == null ) {
+                    cancel( false );
+                    return null;
+                }
+
                 SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
                 if ( db == null ) {
+                    cancel( false );
                     return null;
                 }
 
