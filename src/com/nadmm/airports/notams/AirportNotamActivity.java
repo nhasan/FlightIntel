@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,64 +19,85 @@
 
 package com.nadmm.airports.notams;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
-public class AirportNotamActivity extends NotamActivityBase {
+public class AirportNotamActivity extends ActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( createContentView( R.layout.airport_notam_view ) );
+        setContentView( createContentView( R.layout.airport_activity_layout ) );
 
-        Intent intent = getIntent();
-        String siteNumber = intent.getStringExtra( Airports.SITE_NUMBER );
-        setBackgroundTask( new NotamTask() ).execute( siteNumber );
+        Bundle args = getIntent().getExtras();
+        addFragment( AirportNotamFragment.class, args );
     }
 
-    private final class NotamTask extends CursorAsyncTask {
+    public static class AirportNotamFragment extends NotamFragmentBase {
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            Cursor[] result = new Cursor[ 1 ];
-            String siteNumber = params[ 0 ];
-            Cursor apt = getAirportDetails( siteNumber );
-            result[ 0 ] = apt;
+        private final class AirportNotamTask extends CursorAsyncTask {
 
-            return result;
+            @Override
+            protected Cursor[] doInBackground( String... params ) {
+                Cursor[] result = new Cursor[ 1 ];
+                String siteNumber = params[ 0 ];
+                Cursor apt = getAirportDetails( siteNumber );
+                result[ 0 ] = apt;
+
+                return result;
+            }
+
+            @Override
+            protected boolean onResult( Cursor[] result ) {
+                Cursor apt = result[ 0 ];
+
+                showAirportTitle( apt );
+
+                String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+                if ( icaoCode == null || icaoCode.length() == 0 ) {
+                    String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+                    icaoCode = "K"+faaCode;
+                }
+
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
+                        getActivity() );
+                boolean showGPS = prefs.getBoolean( PreferencesActivity.KEY_SHOW_GPS_NOTAMS, false );
+                if ( showGPS ) {
+                    // Also request GPS NOTAMs
+                    icaoCode += ",KGPS";
+                }
+                getNotams( icaoCode );
+                return true;
+            }
+
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            Cursor apt = result[ 0 ];
+        public View onCreateView( LayoutInflater inflater, ViewGroup container,
+                Bundle savedInstanceState ) {
+            View view = inflater.inflate( R.layout.airport_notam_view, container, false );
+            return view;
+        }
 
-            setActionBarTitle( apt );
-            showAirportTitle( apt );
+        @Override
+        public void onActivityCreated( Bundle savedInstanceState ) {
+            Bundle args = getArguments();
+            String siteNumber = args.getString( Airports.SITE_NUMBER );
+            setBackgroundTask( new AirportNotamTask() ).execute( siteNumber );
 
-            String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-            if ( icaoCode == null || icaoCode.length() == 0 ) {
-                String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-                icaoCode = "K"+faaCode;
-            }
-
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(
-                    AirportNotamActivity.this );
-            boolean showGPS = prefs.getBoolean( PreferencesActivity.KEY_SHOW_GPS_NOTAMS, false );
-            if ( showGPS ) {
-                // Also request GPS NOTAMs
-                icaoCode += ",KGPS";
-            }
-            getNotams( icaoCode );
-            return true;
+            super.onActivityCreated( savedInstanceState );
         }
 
     }

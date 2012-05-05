@@ -38,22 +38,20 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
-import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 
-public class NotamActivityBase extends ActivityBase {
+public class NotamFragmentBase extends FragmentBase {
 
     private IntentFilter mFilter;
     private BroadcastReceiver mReceiver;
 
     @Override
-    protected void onCreate( Bundle savedInstanceState ) {
+    public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( createContentView( R.layout.dtpp_detail_view ) );
 
         mFilter = new IntentFilter();
         mFilter.addAction( NotamService.ACTION_GET_NOTAM );
@@ -69,13 +67,13 @@ public class NotamActivityBase extends ActivityBase {
     @Override
     public void onResume() {
         super.onResume();
-        registerReceiver( mReceiver, mFilter );
+        getActivity().registerReceiver( mReceiver, mFilter );
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        unregisterReceiver( mReceiver );
+        getActivity().unregisterReceiver( mReceiver );
     }
 
     protected void handleNotamBroadcast( Intent intent ) {
@@ -90,10 +88,10 @@ public class NotamActivityBase extends ActivityBase {
     }
 
     protected void getNotams( String icaoCode ) {
-        Intent service = new Intent( this, NotamService.class );
+        Intent service = new Intent( getActivity(), NotamService.class );
         service.setAction( NotamService.ACTION_GET_NOTAM );
         service.putExtra( NotamService.ICAO_CODE, icaoCode );
-        startService( service );
+        getActivity().startService( service );
     }
 
     protected void showNotams( File notamFile ) {
@@ -116,13 +114,13 @@ public class NotamActivityBase extends ActivityBase {
             if ( !notams.containsKey( subject ) ) {
                 continue;
             }
-            TextView label = new TextView( this );
+            TextView label = new TextView( getActivity() );
             label.setPadding(
-                    UiUtils.convertDpToPx( this, 6 ),
-                    UiUtils.convertDpToPx( this, 12 ),
-                    UiUtils.convertDpToPx( this, 6 ),
+                    UiUtils.convertDpToPx( getActivity(), 6 ),
+                    UiUtils.convertDpToPx( getActivity(), 12 ),
+                    UiUtils.convertDpToPx( getActivity(), 6 ),
                     0 );
-            label.setTextAppearance( this, R.style.TextSmall_Bold );
+            label.setTextAppearance( getActivity(), R.style.TextSmall_Bold );
             label.setText( subject );
             content.addView( label, new LinearLayout.LayoutParams(
                     LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
@@ -140,7 +138,7 @@ public class NotamActivityBase extends ActivityBase {
         TextView title2 = (TextView) findViewById( R.id.notam_title2 );
         Date lastModified = new Date( notamFile.lastModified() );
         title2.setText( "Last updated at "+ TimeUtils.formatDateTime(
-                this, lastModified.getTime() ) );
+                getActivity(), lastModified.getTime() ) );
     }
 
     private HashMap<String, ArrayList<String>> parseNotams( File notamFile ) {
