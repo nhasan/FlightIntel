@@ -40,6 +40,7 @@ import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.DownloadActivity;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
@@ -101,7 +102,6 @@ public final class BrowseActivity extends ActivityBase {
 
                 SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
                 if ( db == null ) {
-                    cancel( false );
                     return null;
                 }
 
@@ -164,7 +164,13 @@ public final class BrowseActivity extends ActivityBase {
 
             @Override
             protected boolean onResult( Cursor[] result ) {
-                setcursor( result[ 0 ] );
+                if ( result != null ) {
+                    setcursor( result[ 0 ] );
+                } else {
+                    Intent intent = new Intent( getActivity(), DownloadActivity.class );
+                    intent.putExtra( "MSG", "Please install the data before using the app" );
+                    startActivity( intent );
+                }
                 return false;
             }
 
