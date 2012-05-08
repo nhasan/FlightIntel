@@ -56,7 +56,9 @@ public class FormatUtils {
     }
 
     public static String formatFeetRangeMsl( int base, int top ) {
-        if ( base < Integer.MAX_VALUE && top < Integer.MAX_VALUE ) {
+        if ( base == 0 && top < Integer.MAX_VALUE ) {
+            return String.format( "Surface to %s ft MSL", sNumberFormat.format( top ) );
+        } else if ( base < Integer.MAX_VALUE && top < Integer.MAX_VALUE ) {
             return String.format( "%s to %s ft MSL",
                     sNumberFormat.format( base ), sNumberFormat.format( top ) );
         } else if ( base < Integer.MAX_VALUE ) {
@@ -73,7 +75,9 @@ public class FormatUtils {
     }
 
     public static String formatFeetRangeAgl( int base, int top ) {
-        if ( base < Integer.MAX_VALUE && top < Integer.MAX_VALUE ) {
+        if ( base == 0 && top < Integer.MAX_VALUE ) {
+            return String.format( "Surface to %s ft AGL", sNumberFormat.format( top ) );
+        } else if ( base < Integer.MAX_VALUE && top < Integer.MAX_VALUE ) {
             return String.format( "%s to %s ft AGL",
                     sNumberFormat.format( base ), sNumberFormat.format( top ) );
         } else if ( base < Integer.MAX_VALUE ) {
