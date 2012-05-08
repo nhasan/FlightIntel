@@ -86,7 +86,7 @@ public class MetarFragment extends FragmentBase {
 
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new MetarDetailTask() ).execute( stationId );
+        setBackgroundTask( new MetarTask() ).execute( stationId );
         super.onResume();
     }
 
@@ -103,7 +103,7 @@ public class MetarFragment extends FragmentBase {
         return createContentView( view );
     }
 
-    private final class MetarDetailTask extends CursorAsyncTask {
+    private final class MetarTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
