@@ -52,7 +52,7 @@ public class GeoUtils {
         return Math.sqrt( ( An*An + Bn*Bn )/( Ad*Ad + Bd*Bd ) );
     }
 
-    public static double[] getBoundingBox( Location location, int r ) {
+    public static double[] getBoundingBoxRadians( Location location, int r ) {
         double radLat = Math.toRadians( location.getLatitude() );
         double radLon = Math.toRadians( location.getLongitude() );
 
@@ -79,6 +79,15 @@ public class GeoUtils {
         }
 
         return new double[] { radLatMin, radLatMax, radLonMin, radLonMax };
+    }
+
+    public static double[] getBoundingBoxDegrees( Location location, int r ) {
+        double box[] = getBoundingBoxRadians( location, r );
+        box[ 0 ] = Math.toDegrees( box[ 0 ] );
+        box[ 1 ] = Math.toDegrees( box[ 1 ] );
+        box[ 2 ] = Math.toDegrees( box[ 2 ] );
+        box[ 3 ] = Math.toDegrees( box[ 3 ] );
+        return box;
     }
 
     public static String getCardinalDirection( float bearing ) {
