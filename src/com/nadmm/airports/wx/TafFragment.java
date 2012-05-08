@@ -84,7 +84,7 @@ public class TafFragment extends FragmentBase {
 
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new TafDetailTask() ).execute( stationId );
+        setBackgroundTask( new TafTask() ).execute( stationId );
         super.onResume();
     }
 
@@ -101,7 +101,7 @@ public class TafFragment extends FragmentBase {
         return createContentView( view );
     }
 
-    private final class TafDetailTask extends CursorAsyncTask {
+    private final class TafTask extends CursorAsyncTask {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -127,7 +127,7 @@ public class TafFragment extends FragmentBase {
                 c.close();
 
                 // Get the bounding box first to do a quick query as a first cut
-                double[] box = GeoUtils.getBoundingBox( location, TAF_RADIUS );
+                double[] box = GeoUtils.getBoundingBoxRadians( location, TAF_RADIUS );
                 double radLatMin = box[ 0 ];
                 double radLatMax = box[ 1 ];
                 double radLonMin = box[ 2 ];

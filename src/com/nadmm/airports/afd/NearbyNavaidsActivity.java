@@ -150,7 +150,7 @@ public class NearbyNavaidsActivity extends ActivityBase {
                         PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
 
                 // Get the bounding box first to do a quick query as a first cut
-                double[] box = GeoUtils.getBoundingBox( location, radius );
+                double[] box = GeoUtils.getBoundingBoxRadians( location, radius );
 
                 double radLatMin = box[ 0 ];
                 double radLatMax = box[ 1 ];

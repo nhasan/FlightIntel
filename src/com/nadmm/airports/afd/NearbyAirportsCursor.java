@@ -59,7 +59,7 @@ public class NearbyAirportsCursor extends MatrixCursor {
         float declination = GeoUtils.getMagneticDeclination( location );
 
         // Get the bounding box first to do a quick query as a first cut
-        double[] box = GeoUtils.getBoundingBox( location, radius );
+        double[] box = GeoUtils.getBoundingBoxRadians( location, radius );
         double radLatMin = box[ 0 ];
         double radLatMax = box[ 1 ];
         double radLonMin = box[ 2 ];

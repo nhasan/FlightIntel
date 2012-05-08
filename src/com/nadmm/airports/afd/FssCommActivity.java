@@ -125,7 +125,7 @@ public class FssCommActivity extends ActivityBase {
                 location.setLongitude( lon );
 
                 // Get the bounding box first to do a quick query as a first cut
-                double[] box = GeoUtils.getBoundingBox( location, RADIUS );
+                double[] box = GeoUtils.getBoundingBoxRadians( location, RADIUS );
 
                 double radLatMin = box[ 0 ];
                 double radLatMax = box[ 1 ];
