@@ -46,11 +46,16 @@ public abstract class NoaaService extends IntentService {
     public static final String STATION_ID = "STATION_ID";
     public static final String CACHE_ONLY = "CACHE_ONLY";
     public static final String FORCE_REFRESH = "FORCE_REFRESH";
+    public static final String RADIUS_NM = "RADIUS_NM";
+    public static final String LOCATION = "LOCATION";
+    public static final String HOURS_BEFORE = "HOURS_BEFORE";
+    public static final String COORDS_BOX = "COORDS_BOX";
     public static final String RESULT = "RESULT";
 
     public static final String ACTION_GET_METAR = "flightintel.intent.action.GET_METAR";
     public static final String ACTION_GET_TAF = "flightintel.intent.action.GET_TAF";
     public static final String ACTION_GET_PIREP = "flightintel.intent.action.GET_PIREP";
+    public static final String ACTION_GET_AIRSIGMET = "flightintel.intent.action.GET_AIRSIGMET";
 
     private HttpClient mHttpClient;
     private HttpHost mTarget;
