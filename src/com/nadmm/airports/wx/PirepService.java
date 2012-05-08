@@ -37,11 +37,7 @@ public class PirepService extends NoaaService {
             +"&format=xml&compression=gzip";
     private final long PIREP_CACHE_MAX_AGE = 1*DateUtils.HOUR_IN_MILLIS;
 
-    public static final String PIREP_RADIUS_NM = "PIREP_RADIUS_NM";
-    public static final String PIREP_LOCATION = "PIREP_LOCATION";
-    public static final String PIREP_HOURS_BEFORE = "PIREP_HOURS_BEFORE";
-
-    protected PirepParser mParser;
+    private PirepParser mParser;
 
     public PirepService() {
         super( "pirep" );
@@ -51,7 +47,7 @@ public class PirepService extends NoaaService {
     @Override
     public void onCreate() {
         super.onCreate();
-        // Remove any old METAR files from cache first
+        // Remove any old files from cache first
         cleanupCache( DATA_DIR, PIREP_CACHE_MAX_AGE );
     }
 
@@ -72,8 +68,8 @@ public class PirepService extends NoaaService {
         }
 
         Pirep pirep = new Pirep();
-        Location location = intent.getParcelableExtra( PIREP_LOCATION );
-        int radiusNM = intent.getIntExtra( PIREP_RADIUS_NM, 50 );
+        Location location = intent.getParcelableExtra( LOCATION );
+        int radiusNM = intent.getIntExtra( RADIUS_NM, 50 );
 
         if ( xml.exists() ) {
             mParser.parse( xml, pirep, location, radiusNM );
@@ -89,9 +85,9 @@ public class PirepService extends NoaaService {
 
     protected boolean fetchPirepFromNoaa( Intent intent, File xml ) {
         try {
-            int radiusNM = intent.getIntExtra( PIREP_RADIUS_NM, 50 );
-            int hoursBefore = intent.getIntExtra( PIREP_HOURS_BEFORE, 3 );
-            Location location = intent.getParcelableExtra( PIREP_LOCATION );
+            int radiusNM = intent.getIntExtra( RADIUS_NM, 50 );
+            int hoursBefore = intent.getIntExtra( HOURS_BEFORE, 3 );
+            Location location = intent.getParcelableExtra( LOCATION );
             String query = String.format( "%s&hoursBeforeNow=%d&radialDistance=%.0f;%.2f,%.2f",
                     PIREP_QUERY_BASE, hoursBefore,
                     radiusNM*GeoUtils.STATUTE_MILES_PER_NAUTICAL_MILES,

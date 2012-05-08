@@ -169,9 +169,9 @@ public class PirepFragment extends FragmentBase {
         Intent service = new Intent( getActivity(), PirepService.class );
         service.setAction( NoaaService.ACTION_GET_PIREP );
         service.putExtra( NoaaService.STATION_ID, mStationId );
-        service.putExtra( PirepService.PIREP_RADIUS_NM, PIREP_RADIUS_NM );
-        service.putExtra( PirepService.PIREP_HOURS_BEFORE, PIREP_HOURS_BEFORE );
-        service.putExtra( PirepService.PIREP_LOCATION, mLocation );
+        service.putExtra( PirepService.RADIUS_NM, PIREP_RADIUS_NM );
+        service.putExtra( PirepService.HOURS_BEFORE, PIREP_HOURS_BEFORE );
+        service.putExtra( PirepService.LOCATION, mLocation );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
     }

@@ -114,7 +114,7 @@ public class Pirep implements Serializable {
         }
     }
 
-    static public class PirepEntry implements Serializable {
+    public static class PirepEntry implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public boolean isValid;
