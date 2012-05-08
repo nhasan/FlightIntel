@@ -46,7 +46,7 @@ public class TafService extends NoaaService {
     public void onCreate() {
         super.onCreate();
 
-        // Remove any old METAR files from cache first
+        // Remove any old files from cache first
         cleanupCache( DATA_DIR, TAF_CACHE_MAX_AGE );
     }
 
@@ -63,7 +63,7 @@ public class TafService extends NoaaService {
 
         File xml = new File( DATA_DIR, "TAF_"+stationId+".xml" );
         if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
-            fetchMetarFromNoaa( stationId, xml );
+            fetchTafFromNoaa( stationId, xml );
         }
 
         Taf taf = new Taf();
@@ -81,7 +81,7 @@ public class TafService extends NoaaService {
         sendBroadcast( result );
     }
 
-    protected boolean fetchMetarFromNoaa( String stationId, File xml ) {
+    protected boolean fetchTafFromNoaa( String stationId, File xml ) {
         try {
             URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, DATASERVER_PATH,
                     TAF_QUERY+stationId, null );
