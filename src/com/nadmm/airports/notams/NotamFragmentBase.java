@@ -42,7 +42,6 @@ import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.TimeUtils;
-import com.nadmm.airports.utils.UiUtils;
 
 public class NotamFragmentBase extends FragmentBase {
 
@@ -114,21 +113,20 @@ public class NotamFragmentBase extends FragmentBase {
             if ( !notams.containsKey( subject ) ) {
                 continue;
             }
-            TextView label = new TextView( getActivity() );
-            label.setPadding(
-                    UiUtils.convertDpToPx( getActivity(), 6 ),
-                    UiUtils.convertDpToPx( getActivity(), 12 ),
-                    UiUtils.convertDpToPx( getActivity(), 6 ),
-                    0 );
-            label.setTextAppearance( getActivity(), R.style.TextSmall_Bold );
-            label.setText( subject );
-            content.addView( label, new LinearLayout.LayoutParams(
-                    LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+
+            LinearLayout item = (LinearLayout) inflate( R.layout.notam_detail_item );
+            TextView tv = (TextView) item.findViewById( R.id.notam_subject );
+            tv.setText( subject );
+
+            LinearLayout details = (LinearLayout) item.findViewById( R.id.notam_details );
             ArrayList<String> list = notams.get( subject );
+            count += list.size();
             for ( String notam : list ) {
-                addBulletedRow( content, notam );
-                ++count;
+                addBulletedRow( details, notam );
             }
+
+            content.addView( item, new LinearLayout.LayoutParams(
+                    LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
         }
 
         TextView title1 = (TextView) findViewById( R.id.notam_title1 );
