@@ -585,6 +585,12 @@ public class ActivityBase extends FragmentActivity {
         getSupportActionBar().setSubtitle( subtitle );
     }
 
+    protected void showFaddsEffectiveDate( Cursor c ) {
+        TextView tv = (TextView) findViewById( R.id.effective_date );
+        tv.setText( "Effective date: "
+                +c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
+    }
+
     protected void startHomeActivity() {
         ArrayList<String> fav = mDbManager.getAptFavorites();
         Class<?> clss;

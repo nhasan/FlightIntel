@@ -164,7 +164,7 @@ public class FragmentBase extends Fragment {
     public void showAirportTitle( Cursor c ) {
         mActivity.setActionBarTitle( c );
         mActivity.showAirportTitle( c );
-        showFaddsEffectiveDate( c );
+        mActivity.showFaddsEffectiveDate( c );
     }
 
     protected void showNavaidTitle( Cursor c ) {
@@ -434,12 +434,6 @@ public class FragmentBase extends Fragment {
         View separator = new View( mActivity );
         separator.setBackgroundColor( Color.LTGRAY );
         layout.addView( separator, new LayoutParams( LayoutParams.MATCH_PARENT, 1 ) );
-    }
-
-    protected void showFaddsEffectiveDate( Cursor c ) {
-        TextView tv = (TextView) findViewById( R.id.effective_date );
-        tv.setText( "Effective date: "
-                +c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
     }
 
     protected View findViewById( int id ) {
