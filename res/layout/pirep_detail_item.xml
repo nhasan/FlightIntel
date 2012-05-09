@@ -19,6 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
  -->
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:paddingTop="8dp"
         android:paddingBottom="0dp"
@@ -46,18 +47,17 @@
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_raw_pirep"
             android:background="@drawable/rounded_rectangle"
-            android:layout_marginTop="2dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
-            android:paddingLeft="12dp"
             android:paddingRight="12dp"
+            android:paddingLeft="12dp"
             android:textAppearance="?android:attr/textAppearanceSmall" 
             android:layout_below="@id/pirep_name"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/pirep_details"
             android:orientation="vertical"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="6dp"
             android:background="@drawable/rounded_rectangle"
             android:layout_below="@id/wx_raw_pirep"
             android:layout_width="fill_parent"
