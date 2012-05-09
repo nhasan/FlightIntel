@@ -1,9 +1,13 @@
+v3.4.0 (5/9/2012)
+=================
+* Added textual AIRMET/SIGMET to weather details 
+
 v3.3.1 (5/3/2012)
-==================
-Fix a crash in NearbyWxCursor with when inactive wx stations are present
+=================
+* Fix a crash in NearbyWxCursor with when inactive wx stations are present
 
 v3.3.0 (5/2/2012)
-==================
+=================
 * Show nearby wx stations
 * Prevent backlight from turning off on "Nearby" screen
 * Stability fixes
@@ -162,6 +166,7 @@ v1.7.0 (11/12/2011)
 ===================
 * Show solar information
 * Link to sectional at runwayfinder.com
+
 v1.6.1 (10/31/2011)
 ===================
 * Fixed a FC when show AWOS frequency (Thanks for reporting).
