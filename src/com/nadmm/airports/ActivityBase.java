@@ -468,19 +468,6 @@ public class ActivityBase extends FragmentActivity {
         }
     }
 
-    protected int getSelectorResourceForRow( int curRow, int totRows ) {
-        // TODO: Add more states to the drawables
-        if ( totRows == 1 ) {
-            return R.drawable.row_selector;
-        } else if ( curRow == 0 ) {
-            return R.drawable.row_selector_top;
-        } else if ( curRow == totRows-1 ) {
-            return R.drawable.row_selector_bottom;
-        } else {
-            return R.drawable.row_selector_middle;
-        }
-    }
-
     public boolean postRunnable( Runnable r, long delayMillis ) {
         return mHandler.postDelayed( r, delayMillis );
     }
@@ -596,12 +583,6 @@ public class ActivityBase extends FragmentActivity {
 
     protected void setActionBarSubtitle( String subtitle ) {
         getSupportActionBar().setSubtitle( subtitle );
-    }
-
-    protected void showFaddsEffectiveDate( Cursor c ) {
-        TextView tv = (TextView) findViewById( R.id.effective_date );
-        tv.setText( "Effective date: "
-                +c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
     }
 
     protected void startHomeActivity() {

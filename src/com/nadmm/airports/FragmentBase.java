@@ -157,10 +157,6 @@ public class FragmentBase extends Fragment {
         mActivity.setActionBarSubtitle( subtitle );
     }
 
-    protected int getSelectorResourceForRow( int curRow, int totRows ) {
-        return mActivity.getSelectorResourceForRow( curRow, totRows );
-    }
-
     public Cursor getAirportDetails( String siteNumber ) {
         return mActivity.getAirportDetails( siteNumber );
     }
@@ -168,7 +164,7 @@ public class FragmentBase extends Fragment {
     public void showAirportTitle( Cursor c ) {
         mActivity.setActionBarTitle( c );
         mActivity.showAirportTitle( c );
-        mActivity.showFaddsEffectiveDate( c );
+        showFaddsEffectiveDate( c );
     }
 
     protected void showNavaidTitle( Cursor c ) {
@@ -249,6 +245,19 @@ public class FragmentBase extends Fragment {
             }
 
         } );
+    }
+
+    protected int getSelectorResourceForRow( int curRow, int totRows ) {
+        // TODO: Add more states to the drawables
+        if ( totRows == 1 ) {
+            return R.drawable.row_selector;
+        } else if ( curRow == 0 ) {
+            return R.drawable.row_selector_top;
+        } else if ( curRow == totRows-1 ) {
+            return R.drawable.row_selector_bottom;
+        } else {
+            return R.drawable.row_selector_middle;
+        }
     }
 
     protected void makeRowClickable( View row, Intent intent, int resid ) {
@@ -425,6 +434,12 @@ public class FragmentBase extends Fragment {
         View separator = new View( mActivity );
         separator.setBackgroundColor( Color.LTGRAY );
         layout.addView( separator, new LayoutParams( LayoutParams.MATCH_PARENT, 1 ) );
+    }
+
+    protected void showFaddsEffectiveDate( Cursor c ) {
+        TextView tv = (TextView) findViewById( R.id.effective_date );
+        tv.setText( "Effective date: "
+                +c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
     }
 
     protected View findViewById( int id ) {
