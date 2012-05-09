@@ -265,9 +265,6 @@ public class NearbyNavaidsActivity extends ActivityBase {
             if ( vor != null && vor.moveToFirst() ) {
                 LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_vor_layout );
                 do {
-                    if ( vor.getPosition() > 0 ) {
-                        addSeparator( layout );
-                    }
                     String navaidId = vor.getString( vor.getColumnIndex( Nav1.NAVAID_ID ) );
                     String freq = vor.getString( vor.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
                     if ( freq.length() == 0 ) {
@@ -292,9 +289,6 @@ public class NearbyNavaidsActivity extends ActivityBase {
             if ( ndb != null && ndb.moveToFirst() ) {
                 LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_ndb_layout );
                 do {
-                    if ( ndb.getPosition() > 0 ) {
-                        addSeparator( layout );
-                    }
                     String navaidId = ndb.getString( vor.getColumnIndex( Nav1.NAVAID_ID ) );
                     String freq = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
                     String name = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_NAME ) );

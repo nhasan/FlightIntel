@@ -154,7 +154,6 @@ public class NavaidDetailsActivity extends ActivityBase {
                 freq = DataUtils.getTacanChannelFrequency( tacan );
             }
             if ( freq > 0 ) {
-                addSeparator( layout );
                 if ( !DataUtils.isDirectionalNavaid( navaidType ) && ( freq%1.0 ) == 0 ) {
                     addRow( layout, "Frequency", String.format( "%.0f", freq ) );
                 } else {
@@ -163,11 +162,9 @@ public class NavaidDetailsActivity extends ActivityBase {
             }
             String power = nav1.getString( nav1.getColumnIndex( Nav1.POWER_OUTPUT ) );
             if ( power.length() > 0 ) {
-                addSeparator( layout );
                 addRow( layout, "Power output", power+" Watts" );
             }
             if ( tacan.length() > 0 ) {
-                addSeparator( layout );
                 addRow( layout, "Tacan channel", tacan );
             }
             String magVar = nav1.getString( nav1.getColumnIndex( Nav1.MAGNETIC_VARIATION_DEGREES ) );
@@ -176,28 +173,22 @@ public class NavaidDetailsActivity extends ActivityBase {
                         Nav1.MAGNETIC_VARIATION_DIRECTION ) );
                 String magYear = nav1.getString( nav1.getColumnIndex( 
                         Nav1.MAGNETIC_VARIATION_YEAR ) );
-                addSeparator( layout );
                 addRow( layout, "Magnetic variation", String.format( "%d\u00B0%s (%s)",
                         Integer.valueOf( magVar ), magDir, magYear ) );
             }
             String alt = nav1.getString( nav1.getColumnIndex( Nav1.PROTECTED_FREQUENCY_ALTITUDE ) );
             if ( alt.length() > 0 ) {
-                addSeparator( layout );
                 addRow( layout, "Service volume", DataUtils.decodeNavProtectedAltitude( alt ) );
             }
             String hours = nav1.getString( nav1.getColumnIndex( Nav1.OPERATING_HOURS ) );
-            addSeparator( layout );
             addRow( layout, "Operating hours", hours );
             String type = nav1.getString( nav1.getColumnIndex( Nav1.FANMARKER_TYPE ) );
             if ( type.length() > 0 ) {
-                addSeparator( layout );
                 addRow( layout, "Fan marker type", type );
             }
             String voiceFeature = nav1.getString( nav1.getColumnIndex( Nav1.VOICE_FEATURE ) );
-            addSeparator( layout );
             addRow( layout, "Voice feature", voiceFeature.equals( "Y" )? "Yes" : "No" );
             String voiceIdent = nav1.getString( nav1.getColumnIndex( Nav1.AUTOMATIC_VOICE_IDENT ) );
-            addSeparator( layout );
             addRow( layout, "Voice ident", voiceIdent.equals( "Y" )? "Yes" : "No" );
             Cursor com = result[ 2 ];
             if ( com != null && com.moveToFirst() ) {
@@ -208,7 +199,6 @@ public class NavaidDetailsActivity extends ActivityBase {
                     String outletName = fssName+" Radio ("+outletType+")";
                     int i =0;
                     while ( i < freqs.length() ) {
-                        addSeparator( layout );
                         int end = Math.min( i+9, freqs.length() );
                         String fssFreq = freqs.substring( i, end ).trim();
                         addRow( layout, outletName, fssFreq );
@@ -216,7 +206,6 @@ public class NavaidDetailsActivity extends ActivityBase {
                     }
                 } while ( com.moveToNext() );
             }
-            addSeparator( layout );
             String navaidId = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
             Intent intent = new Intent( getActivity(), NavaidNotamActivity.class );
             intent.putExtra( Nav1.NAVAID_ID, navaidId );

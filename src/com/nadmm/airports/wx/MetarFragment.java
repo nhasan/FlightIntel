@@ -254,7 +254,6 @@ public class MetarFragment extends FragmentBase {
                 if ( metar.fropa ) {
                     sb.append( " due to frontal passage" );
                 }
-                addSeparator( layout );
                 addRow( layout, sb.toString() );
             }
         }
@@ -277,7 +276,6 @@ public class MetarFragment extends FragmentBase {
                         FormatUtils.formatNumber( metar.visibilitySM ) ) );
             }
             if ( metar.vertVisibilityFeet < Integer.MAX_VALUE ) {
-                addSeparator( layout );
                 addRow( layout, String.format( "%s vertical",
                         FormatUtils.formatFeetAgl( metar.vertVisibilityFeet ) ) );
             }
@@ -290,9 +288,6 @@ public class MetarFragment extends FragmentBase {
         layout = (LinearLayout) findViewById( R.id.wx_weather_layout );
         layout.removeAllViews();
         for ( WxSymbol wx : metar.wxList ) {
-            if ( layout.getChildCount() > 0 ) {
-                addSeparator( layout );
-            }
             addWeatherRow( layout, wx, metar.flightCategory );
         }
 
@@ -302,9 +297,6 @@ public class MetarFragment extends FragmentBase {
         layout.removeAllViews();
         if ( !metar.skyConditions.isEmpty() ) {
             for ( SkyCondition sky : metar.skyConditions ) {
-                if ( layout.getChildCount() > 0 ) {
-                    addSeparator( layout );
-                }
                 addSkyConditionRow( layout, sky, metar.flightCategory );
             }
         }
@@ -320,40 +312,32 @@ public class MetarFragment extends FragmentBase {
             addRow( layout, "Temperature",
                     FormatUtils.formatTemperature( metar.tempCelsius ) );
             if ( metar.dewpointCelsius < Float.MAX_VALUE ) {
-                addSeparator( layout );
                 addRow( layout, "Dew point",
                         FormatUtils.formatTemperature( metar.dewpointCelsius ) );
-                addSeparator( layout );
                 addRow( layout,"Relative humidity", String.format( "%.0f%%",
                         WxUtils.getRelativeHumidity( metar ) ) );
 
                 long denAlt = WxUtils.getDensityAltitude( metar );
                 if ( denAlt > mElevation ) {
-                    addSeparator( layout );
                     addRow( layout, "Density altitude", FormatUtils.formatFeet( denAlt ) );
                 }
             } else {
-                addSeparator( layout );
                 addRow( layout, "Dew point", "n/a" );
             }
 
             if ( metar.maxTemp6HrCentigrade < Float.MAX_VALUE ) {
-                addSeparator( layout );
                 addRow( layout, "6-hour maximum",
                         FormatUtils.formatTemperature( metar.maxTemp6HrCentigrade ) );
             }
             if ( metar.minTemp6HrCentigrade < Float.MAX_VALUE ) {
-                addSeparator( layout );
                 addRow( layout, "6-hour minimum",
                         FormatUtils.formatTemperature( metar.minTemp6HrCentigrade ) );
             }
             if ( metar.maxTemp24HrCentigrade < Float.MAX_VALUE ) {
-                addSeparator( layout );
                 addRow( layout, "24-hour maximum",
                         FormatUtils.formatTemperature( metar.maxTemp24HrCentigrade ) );
             }
             if ( metar.minTemp24HrCentigrade < Float.MAX_VALUE ) {
-                addSeparator( layout );
                 addRow( layout, "24-hour minimum",
                         FormatUtils.formatTemperature( metar.minTemp24HrCentigrade ) );
             }
@@ -370,25 +354,20 @@ public class MetarFragment extends FragmentBase {
             addRow( layout, "Altimeter",
                     FormatUtils.formatAltimeter( metar.altimeterHg ) );
             if ( metar.seaLevelPressureMb < Float.MAX_VALUE ) {
-                addSeparator( layout );
                 addRow( layout, "Sea level pressure", String.format( "%s mb",
                         FormatUtils.formatNumber( metar.seaLevelPressureMb ) ) );
             }
             long presAlt = WxUtils.getPressureAltitude( metar );
             if ( presAlt > mElevation ) {
-                addSeparator( layout );
                 addRow( layout, "Pressure altitude", FormatUtils.formatFeet( presAlt ) );
             }
             if ( metar.pressureTend3HrMb < Float.MAX_VALUE ) {
-                addSeparator( layout );
                 addRow( layout, "3-hour tendency", String.format( "%+.2f mb",
                         metar.pressureTend3HrMb ) );
             }
             if ( metar.presfr ) {
-                addSeparator( layout );
                 addRow( layout, "Pressure falling rapidly" );
             } if ( metar.presrr ) {
-                addSeparator( layout );
                 addRow( layout, "Pressure rising rapidly" );
             }
         }
@@ -401,43 +380,25 @@ public class MetarFragment extends FragmentBase {
         layout = (LinearLayout) findViewById( R.id.wx_precip_layout );
         layout.removeAllViews();
         if ( metar.precipInches < Float.MAX_VALUE ) {
-            if ( layout.getChildCount() > 0 ) {
-                addSeparator( layout );
-            }
             addRow( layout, "1-hour precipitation",
                     String.format( "%.2f\"", metar.precipInches ) );
         }
         if ( metar.precip3HrInches < Float.MAX_VALUE ) {
-            if ( layout.getChildCount() > 0 ) {
-                addSeparator( layout );
-            }
             addRow( layout, "3-hour precipitation",
                     String.format( "%.2f\"", metar.precip3HrInches ) );
         }
         if ( metar.precip6HrInches < Float.MAX_VALUE ) {
-            if ( layout.getChildCount() > 0 ) {
-                addSeparator( layout );
-            }
             addRow( layout, "6-hour precipitation",
                     String.format( "%.2f\"", metar.precip6HrInches ) );
         }
         if ( metar.precip24HrInches < Float.MAX_VALUE ) {
-            if ( layout.getChildCount() > 0 ) {
-                addSeparator( layout );
-            }
             addRow( layout, "24-hour precipitation",
                     String.format( "%.2f\"", metar.precip24HrInches ) );
         }
         if ( metar.snowInches < Float.MAX_VALUE ) {
-            if ( layout.getChildCount() > 0 ) {
-                addSeparator( layout );
-            }
             addRow( layout, "Snow depth", String.format( "%.0f\"", metar.snowInches ) );
         }
         if ( metar.snincr ) {
-            if ( layout.getChildCount() > 0 ) {
-                addSeparator( layout );
-            }
             addRow( layout, "Snow is increasing rapidly" );
         }
         visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;

@@ -223,11 +223,9 @@ public class PirepFragment extends FragmentBase {
         LinearLayout details = (LinearLayout) item.findViewById( R.id.pirep_details );
 
         addRow( details, "Type", entry.reportType );
-        addSeparator( details );
         addRow( details, "Aircraft", entry.aircraftRef );
 
         if ( entry.altitudeFeetMSL < Integer.MAX_VALUE ) {
-            addSeparator( details );
             if ( entry.flags.contains( Flags.NoFlightLevel ) ) {
                 addRow( details, "Altitude",
                         FormatUtils.formatFeetMsl( entry.altitudeFeetMSL ), "(Approximate)" );
@@ -238,17 +236,14 @@ public class PirepFragment extends FragmentBase {
         }
 
         if ( entry.visibilitySM < Integer.MAX_VALUE ) {
-            addSeparator( details );
             addRow( details, "Visibility", FormatUtils.formatVisibility( entry.visibilitySM ) );
         }
 
         if ( entry.tempCelsius < Integer.MAX_VALUE ) {
-            addSeparator( details );
             addRow( details, "Temperature", FormatUtils.formatTemperature( entry.tempCelsius ) );
         }
 
         if ( entry.windSpeedKnots < Integer.MAX_VALUE ) {
-            addSeparator( details );
             addRow( details, "Winds", String.format( "%d\u00B0 (true) at %d knots",
                     entry.windDirDegrees, entry.windSpeedKnots ) );
         }
@@ -261,7 +256,6 @@ public class PirepFragment extends FragmentBase {
                 }
                 sb.append( wx.toString() );
             }
-            addSeparator( details );
             addRow( details, "Weather", sb.toString() );
         }
 
@@ -284,7 +278,6 @@ public class PirepFragment extends FragmentBase {
         StringBuilder sb = new StringBuilder();
         sb.append( FormatUtils.formatFeetRangeMsl( sky.baseFeetMSL, sky.topFeetMSL ) );
         String extra = sb.toString();
-        addSeparator( details );
         addRow( details, "Sky cover", sky.skyCover, extra );
     }
 
@@ -310,7 +303,6 @@ public class PirepFragment extends FragmentBase {
         sb.append( FormatUtils.formatFeetRangeMsl(
                 turbulence.baseFeetMSL, turbulence.topFeetMSL ) );
         String extra = sb.toString();
-        addSeparator( details );
         addRow( details, "Turbulence", value, extra );
     }
 
@@ -329,7 +321,6 @@ public class PirepFragment extends FragmentBase {
         sb.setLength( 0 );
         sb.append( FormatUtils.formatFeetRangeMsl( icing.baseFeetMSL, icing.topFeetMSL ) );
         String extra = sb.toString();
-        addSeparator( details );
         addRow( details, "Icing", value, extra );
     }
 

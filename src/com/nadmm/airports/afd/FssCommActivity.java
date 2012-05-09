@@ -263,13 +263,11 @@ public class FssCommActivity extends ActivityBase {
                     LinearLayout layout = (LinearLayout) item.findViewById( R.id.group_details );
                     addRow( layout, "Call", fssName+" Radio" );
                     if ( navId.length() > 0 ) {
-                        addSeparator( layout );
                         addRow( layout, navId, navFreq+"T" );
                     }
 
                     int i =0;
                     while ( i < freqs.length() ) {
-                        addSeparator( layout );
                         int end = Math.min( i+9, freqs.length() );
                         String freq = freqs.substring( i, end ).trim();
                         addRow( layout, outletType, freq );

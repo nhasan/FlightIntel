@@ -334,10 +334,8 @@ public class AirportDetailsActivity extends ActivityBase {
 
             String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
             addRow( layout, "CTAF", ctaf.length() > 0? ctaf : "None" );
-            addSeparator( layout );
             String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
             addRow( layout, "Unicom", unicom.length() > 0? unicom : "None" );
-            addSeparator( layout );
             Intent intent = new Intent( getActivity(), CommunicationsActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
             addClickableRow( layout, "ATC", intent, R.drawable.row_selector_bottom );
@@ -368,17 +366,10 @@ public class AirportDetailsActivity extends ActivityBase {
                     String rwyId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
                     if ( rwyId.startsWith( "H" ) ) {
                         // This is a helipad
-                        if ( heliNum > 0 ) {
-                            addSeparator( heliLayout );
-                        }
                         int resId = getSelectorResourceForRow( heliNum, heliTot );
                         addRunwayRow( heliLayout, rwy, resId );
-                        ++heliNum;
                     } else {
                         // This is a runway
-                        if ( rwyNum > 0 ) {
-                            addSeparator( rwyLayout );
-                        }
                         int resId = getSelectorResourceForRow( rwyNum, rwyTot );
                         addRunwayRow( rwyLayout, rwy, resId );
                         ++rwyNum;
@@ -457,9 +448,6 @@ public class AirportDetailsActivity extends ActivityBase {
                     String name = awos1.getString( awos1.getColumnIndex( Wxs.STATION_NAME ) );
                     float distance = awos1.getFloat( awos1.getColumnIndex( "DISTANCE" ) );
                     float bearing = awos1.getFloat( awos1.getColumnIndex( "BEARING" ) );
-                    if ( awos1.getPosition() > 0 ) {
-                        addSeparator( layout );
-                    }
                     Intent intent = new Intent( getActivity(), WxDetailActivity.class );
                     Bundle args = new Bundle();
                     args.putString( NoaaService.STATION_ID, icaoCode );
@@ -484,11 +472,9 @@ public class AirportDetailsActivity extends ActivityBase {
             Intent airport = new Intent( getActivity(), NearbyAirportsActivity.class );
             airport.putExtras( mExtras );
             addClickableRow( layout, "Airports", airport, R.drawable.row_selector_top );
-            addSeparator( layout );
             Intent fss = new Intent( getActivity(), FssCommActivity.class );
             fss.putExtra( Airports.SITE_NUMBER, siteNumber );
             addClickableRow( layout, "FSS outlets", fss, R.drawable.row_selector_middle );
-            addSeparator( layout );
             Intent navaids = new Intent( getActivity(), NearbyNavaidsActivity.class );
             navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
             addClickableRow( layout, "Navaids", navaids, R.drawable.row_selector_bottom );
@@ -500,17 +486,14 @@ public class AirportDetailsActivity extends ActivityBase {
             String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
             addRow( layout, "Operation", DataUtils.decodeFacilityUse( use ) );
             String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            addSeparator( layout );
             addRow( layout, "FAA code", faaCode );
             String timezoneId = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
             if ( timezoneId.length() > 0 ) {
-                addSeparator( layout );
                 TimeZone tz = TimeZone.getTimeZone( timezoneId );
                 addRow( layout, "Local time zone", DataUtils.getTimeZoneAsString( tz ) );
             }
             String activation = apt.getString( apt.getColumnIndex( Airports.ACTIVATION_DATE ) );
             if ( activation.length() > 0 ) {
-                addSeparator( layout );
                 addRow( layout, "Activation date", activation );
             }
             Cursor twr8 = result[ 8 ];
@@ -518,7 +501,6 @@ public class AirportDetailsActivity extends ActivityBase {
                 String airspace = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_TYPES ) );
                 String value = DataUtils.decodeAirspace( airspace );
                 String hours = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_HOURS ) );
-                addSeparator( layout );
                 addRow( layout, "Airspace", value, hours );
             }
             String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
@@ -545,39 +527,31 @@ public class AirportDetailsActivity extends ActivityBase {
             } else {
                 towerValue = String.format( "No" );
             }
-            addSeparator( layout );
             addRow( layout, "Control tower", towerValue );
             String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
-            addSeparator( layout );
             addRow( layout, "Wind indicator", DataUtils.decodeWindIndicator( windIndicator ) );
             String circle = apt.getString( apt.getColumnIndex( Airports.SEGMENTED_CIRCLE ) );
-            addSeparator( layout );
             addRow( layout, "Segmented circle", circle.equals( "Y" )? "Yes" : "No" );
             String beacon = apt.getString( apt.getColumnIndex( Airports.BEACON_COLOR ) );
-            addSeparator( layout );
             addRow( layout, "Beacon", DataUtils.decodeBeacon( beacon ) );
             String lighting;
             lighting = apt.getString( apt.getColumnIndex( Airports.LIGHTING_SCHEDULE ) );
             if ( lighting.length() > 0 ) {
-                addSeparator( layout );
                 addRow( layout, "Airport lighting", lighting );
             }
             try {
                 lighting = apt.getString( apt.getColumnIndex( Airports.BEACON_LIGHTING_SCHEDULE ) );
                 if ( lighting.length() > 0 ) {
-                    addSeparator( layout );
                     addRow( layout, "Beacon lighting", lighting );
                 }
             } catch ( Exception e ) {
             }
             String landingFee = apt.getString( apt.getColumnIndex( Airports.LANDING_FEE ) );
-            addSeparator( layout );
             addRow( layout, "Landing fee", landingFee.equals( "Y" )? "Yes" : "No" );
             String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
             if ( dir.length() > 0 ) {
                 int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
                 String year = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_YEAR ) );
-                addSeparator( layout );
                 if ( year.length() > 0 ) {
                     addRow( layout, "Magnetic variation", 
                             String.format( "%d\u00B0 %s (%s)", variation, dir, year ) );
@@ -589,41 +563,34 @@ public class AirportDetailsActivity extends ActivityBase {
                 Location location = (Location) mExtras.get( LocationColumns.LOCATION );
                 int variation = Math.round( GeoUtils.getMagneticDeclination( location ) );
                 dir = ( variation >= 0 )? "W" : "E";
-                addSeparator( layout );
                 addRow( layout, "Magnetic variation", 
                         String.format( "%d\u00B0 %s (actual)", Math.abs( variation ), dir ) );
             }
             String intlEntry = apt.getString( apt.getColumnIndex( Airports.INTL_ENTRY_AIRPORT ) );
             if ( intlEntry != null && intlEntry.equals( "Y" ) ) {
-                addSeparator( layout );
                 addRow( layout, "International entry", "Yes" );
             }
             String customs = apt.getString( apt.getColumnIndex(
                     Airports.CUSTOMS_LANDING_RIGHTS_AIRPORT ) );
             if ( customs != null && customs.equals( "Y" ) ) {
-                addSeparator( layout );
                 addRow( layout, "Customs landing rights", "Yes" );
             }
             String jointUse = apt.getString( apt.getColumnIndex(
                     Airports.CIVIL_MILITARY_JOINT_USE ) );
             if ( jointUse != null && jointUse.equals( "Y" ) ) {
-                addSeparator( layout );
                 addRow( layout, "Civil/military joint use", "Yes" );
             }
             String militaryRights = apt.getString( apt.getColumnIndex(
                     Airports.MILITARY_LANDING_RIGHTS ) );
             if ( militaryRights != null && militaryRights.equals( "Y" ) ) {
-                addSeparator( layout );
                 addRow( layout, "Military landing rights", "Yes" );
             }
             String medical = apt.getString( apt.getColumnIndex( Airports.MEDICAL_USE ) );
             if ( medical != null && medical.equals( "Y" ) ) {
-                addSeparator( layout );
                 addRow( layout, "Medical use", "Yes" );
             }
             String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
             if ( sectional.length() > 0 ) {
-                addSeparator( layout );
                 String lat = apt.getString( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
                 String lon = apt.getString( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
                 if ( lat.length() > 0 && lon.length() > 0 ) {
@@ -637,12 +604,10 @@ public class AirportDetailsActivity extends ActivityBase {
                     addRow( layout, "Sectional chart", sectional );
                 }
             }
-            addSeparator( layout );
             Intent intent = new Intent( getActivity(), AlmanacActivity.class );
             String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
             addClickableRow( layout, "Sunrise and sunset", intent, R.drawable.row_selector_middle );
-            addSeparator( layout );
             intent = new Intent( getActivity(), AirportNotamActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
             addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
@@ -665,7 +630,6 @@ public class AirportDetailsActivity extends ActivityBase {
             } else {
                 addRow( layout, "d-TPP data not found" );
             }
-            addSeparator( layout );
             Cursor cycle = result[ 11 ];
             if ( cycle != null && cycle.moveToFirst() ) {
                 String afdCycle = cycle.getString( cycle.getColumnIndex( DafdCycle.AFD_CYCLE ) );
@@ -726,15 +690,12 @@ public class AirportDetailsActivity extends ActivityBase {
             if ( repair.length() == 0 ) {
                 repair = "No";
             }
-            addSeparator( layout );
             addRow( layout, "Airframe repair", repair );
             repair = apt.getString( apt.getColumnIndex( Airports.POWER_PLANT_REPAIR_SERVICE ) );
             if ( repair.length() == 0 ) {
                 repair = "No";
             }
-            addSeparator( layout );
             addRow( layout, "Powerplant repair", repair );
-            addSeparator( layout );
             Intent intent = new Intent( getActivity(), ServicesActivity.class );
             intent.putExtra( Airports.SITE_NUMBER,
                     apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) ) );
@@ -750,15 +711,12 @@ public class AirportDetailsActivity extends ActivityBase {
             addClickableRow( layout, "Ownership and contact", intent, R.drawable.row_selector_top );
             intent = new Intent( getActivity(), AircraftOpsActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addSeparator( layout );
             addClickableRow( layout, "Aircraft operations", intent, R.drawable.row_selector_middle );
             intent = new Intent( getActivity(), RemarksActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addSeparator( layout );
             addClickableRow( layout, "Additional remarks", intent, R.drawable.row_selector_middle );
             intent = new Intent( getActivity(), AttendanceActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addSeparator( layout );
             addClickableRow( layout, "Attendance", intent, R.drawable.row_selector_bottom );
         }
 

@@ -127,7 +127,6 @@ public class AlmanacActivity extends ActivityBase {
             format.setTimeZone( local );
             addRow( layout, "Morning civil twilight (Local)",
                     format.format( morningTwilight.getTime() ) );
-            addSeparator( layout );
             format.setTimeZone( utc );
             addRow( layout, "Morning civil twilight (UTC)",
                     format.format( morningTwilight.getTime() ) );
@@ -136,12 +135,10 @@ public class AlmanacActivity extends ActivityBase {
             if ( sunrise != null ) {
                 format.setTimeZone( local );
                 addRow( layout, "Sunrise (Local)", format.format( sunrise.getTime() ) );
-                addSeparator( layout );
                 format.setTimeZone( utc );
                 addRow( layout, "Sunrise (UTC)", format.format( sunrise.getTime() ) );
             } else {
                 addRow( layout, "Sunrise (Local)", "Sun does not rise" );
-                addSeparator( layout );
                 addRow( layout, "Sunrise (UTC)", "Sun does not rise" );
             }
 
@@ -149,12 +146,10 @@ public class AlmanacActivity extends ActivityBase {
             if ( sunset != null ) {
                 format.setTimeZone( local );
                 addRow( layout, "Sunset (Local)", format.format( sunset.getTime() ) );
-                addSeparator( layout );
                 format.setTimeZone( utc );
                 addRow( layout, "Sunset (UTC)", format.format( sunset.getTime() ) );
             } else {
                 addRow( layout, "Sunset (Local)", "Sun does not set" );
-                addSeparator( layout );
                 addRow( layout, "Sunset (UTC)", "Sun does not set" );
             }
 
@@ -162,7 +157,6 @@ public class AlmanacActivity extends ActivityBase {
             format.setTimeZone( local );
             addRow( layout, "Evening civil twilight (Local)",
                     format.format( eveningTwilight.getTime() ) );
-            addSeparator( layout );
             format.setTimeZone( utc );
             addRow( layout, "Evening civil twilight (UTC)",
                     format.format( eveningTwilight.getTime() ) );
@@ -170,17 +164,13 @@ public class AlmanacActivity extends ActivityBase {
             layout = (LinearLayout) findViewById( R.id.current_time_layout );
             format.setTimeZone( local );
             addRow( layout, "Local time zone", DataUtils.getTimeZoneAsString( local ) );
-            addSeparator( layout );
             addRow( layout, "Current time (Local)", format.format( now.getTime() ) );
-            addSeparator( layout );
             format.setTimeZone( utc );
             addRow( layout, "Current time (UTC)", format.format( now.getTime() ) );
-            addSeparator( layout );
             // Determine FAR 1.1 definition of day/night for logging flight time
             boolean day = ( now.compareTo( morningTwilight ) >= 0
                     && now.compareTo( eveningTwilight ) <= 0 );
             addRow( layout, "FAR 1.1 day/night", day? "Day" : "Night" );
-            addSeparator( layout );
             // Determine FAR 61.75(b) definition of day/night for carrying passengers
             Calendar far6175bBegin = (Calendar) sunset.clone();
             far6175bBegin.add( Calendar.HOUR_OF_DAY, 1 );

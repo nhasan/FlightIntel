@@ -125,9 +125,7 @@ public class AttendanceActivity extends ActivityBase {
                             layout );
                     if ( parts.length == 3 ) {
                         addRow( item, "Months", parts[ 0 ] );
-                        addSeparator( item );
                         addRow( item, "Days", parts[ 1 ] );
-                        addSeparator( item );
                         addRow( item, "Hours", parts[ 2 ] );
                     } else {
                         addRow( item, "Attendance", schedule );

@@ -98,22 +98,16 @@ public class AircraftOpsActivity extends ActivityBase {
             LinearLayout layout = (LinearLayout) findViewById( R.id.based_aircraft_layout );
             int count = apt.getInt( apt.getColumnIndex( Airports.SINGLE_ENGINE_COUNT ) );
             addRow( layout, "Single engine", FormatUtils.formatNumber( count ) );
-            addSeparator( layout );
             count = apt.getInt( apt.getColumnIndex( Airports.MULTI_ENGINE_COUNT ) );
             addRow( layout, "Multi engine", FormatUtils.formatNumber( count ) );
-            addSeparator( layout );
             count = apt.getInt( apt.getColumnIndex( Airports.JET_ENGINE_COUNT ) );
             addRow( layout, "Jet engine", FormatUtils.formatNumber( count ) );
-            addSeparator( layout );
             count = apt.getInt( apt.getColumnIndex( Airports.HELI_COUNT ) );
             addRow( layout, "Helicopters", FormatUtils.formatNumber( count ) );
-            addSeparator( layout );
             count = apt.getInt( apt.getColumnIndex( Airports.GLIDERS_COUNT ) );
             addRow( layout, "Gliders", FormatUtils.formatNumber( count ) );
-            addSeparator( layout );
             count = apt.getInt( apt.getColumnIndex( Airports.ULTRA_LIGHT_COUNT ) );
             addRow( layout, "Ultra light", FormatUtils.formatNumber( count ) );
-            addSeparator( layout );
             count = apt.getInt( apt.getColumnIndex( Airports.MILITARY_COUNT ) );
             addRow( layout, "Military", FormatUtils.formatNumber( count ) );
         }
@@ -122,22 +116,16 @@ public class AircraftOpsActivity extends ActivityBase {
             LinearLayout layout = (LinearLayout) findViewById( R.id.aircraft_ops_layout );
             int count = apt.getInt( apt.getColumnIndex( Airports.ANNUAL_COMMERCIAL_OPS ) );
             addRow( layout, "Commercial", FormatUtils.formatNumber( count ) );
-            addSeparator( layout );
             count = apt.getInt( apt.getColumnIndex( Airports.ANNUAL_COMMUTER_OPS ) );
             addRow( layout, "Commuter", FormatUtils.formatNumber( count ) );
-            addSeparator( layout );
             count = apt.getInt( apt.getColumnIndex( Airports.ANNUAL_AIRTAXI_OPS ) );
             addRow( layout, "Air taxi", FormatUtils.formatNumber( count ) );
-            addSeparator( layout );
             count = apt.getInt( apt.getColumnIndex( Airports.ANNUAL_GA_LOCAL_OPS ) );
             addRow( layout, "GA local", FormatUtils.formatNumber( count ) );
-            addSeparator( layout );
             count = apt.getInt( apt.getColumnIndex( Airports.ANNUAL_GA_ININERANT_OPS ) );
             addRow( layout, "GA other", FormatUtils.formatNumber( count ) );
-            addSeparator( layout );
             count = apt.getInt( apt.getColumnIndex( Airports.ANNUAL_MILITARY_OPS ) );
             addRow( layout, "Military", FormatUtils.formatNumber( count ) );
-            addSeparator( layout );
             String date = apt.getString( apt.getColumnIndex( Airports.OPS_REFERENCE_DATE ) );
             addRow( layout, "As-of", date );
         }

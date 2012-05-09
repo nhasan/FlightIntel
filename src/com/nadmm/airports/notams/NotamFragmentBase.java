@@ -124,11 +124,9 @@ public class NotamFragmentBase extends FragmentBase {
             label.setText( subject );
             content.addView( label, new LinearLayout.LayoutParams(
                     LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
-            addSeparator( content );
             ArrayList<String> list = notams.get( subject );
             for ( String notam : list ) {
                 addBulletedRow( content, notam );
-                addSeparator( content );
                 ++count;
             }
         }

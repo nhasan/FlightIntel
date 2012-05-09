@@ -26,20 +26,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -58,7 +54,6 @@ import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -76,7 +71,6 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.SystemUtils;
-import com.nadmm.airports.utils.UiUtils;
 
 public class ActivityBase extends FragmentActivity {
 
@@ -87,27 +81,6 @@ public class ActivityBase extends FragmentActivity {
     private CursorAsyncTask mTask;
 
     private Handler mHandler = new Handler();
-    private final OnClickListener mOnRowClickListener = new OnClickListener() {
-        @Override
-        public void onClick( View v ) {
-            Intent intent = (Intent) v.getTag();
-            if ( intent != null ) {
-                startActivity( intent );
-            }
-        }
-    };
-    private final OnClickListener mOnPhoneClickListener = new OnClickListener() {
-        
-        @Override
-        public void onClick( View v ) {
-            TextView tv = (TextView) v;
-            String action = (String) tv.getTag();
-            String phone = DataUtils.decodePhoneNumber( tv.getText().toString() );
-            Intent intent = new Intent( action, Uri.parse( "tel:"+phone ) );
-            startActivity( intent );
-        }
-
-    };
     IntentFilter mFilter;
     BroadcastReceiver mExternalStorageReceiver;
     boolean mExternalStorageAvailable = false;
@@ -505,166 +478,6 @@ public class ActivityBase extends FragmentActivity {
             return R.drawable.row_selector_bottom;
         } else {
             return R.drawable.row_selector_middle;
-        }
-    }
-
-    protected void makeRowClickable( View row, Intent intent, int resid ) {
-        row.setBackgroundResource( resid );
-        row.setTag( intent );
-        row.setOnClickListener( mOnRowClickListener );
-    }
-
-    protected View addClickableRow( LinearLayout layout, View row, Intent intent, int resid ) {
-        makeRowClickable( row, intent, resid );
-        layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
-        return row;
-    }
-
-    protected View addClickableRow( LinearLayout layout, String label,
-            Intent intent, int resid ) {
-        return addClickableRow( layout, label, null, intent, resid );
-    }
-
-    protected View addClickableRow( LinearLayout layout, String label, String value,
-            Intent intent, int resid ) {
-        View row = addRow( layout, label+"...", value );
-        makeRowClickable( row, intent, resid );
-        return row;
-    }
-
-    protected View addClickableRow( LinearLayout layout, String label1, String value1,
-            String label2, String value2, Intent intent, int resid ) {
-        View row = addRow( layout, label1, value1, label2, value2 );
-        makeRowClickable( row, intent, resid );
-        return row;
-    }
-
-    protected View addRow( LinearLayout layout, String label ) {
-        return addRow( layout, label, null );
-    }
-
-    protected View addRow( LinearLayout layout, String label, String value ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item2 );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
-        tv.setText( label );
-        tv = (TextView) row.findViewById( R.id.item_value );
-        if ( value != null && value.length() > 0 ) {
-            tv.setText( value );
-        } else {
-            tv.setVisibility( View.GONE );
-        }
-        layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
-        return row;
-    }
-
-    protected View addRow( LinearLayout layout, String label, String value1, String value2 ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item3 );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
-        tv.setText( label );
-        tv = (TextView) row.findViewById( R.id.item_value );
-        if ( value1 != null && value1.length() > 0 ) {
-            tv.setText( value1 );
-        } else {
-            tv.setVisibility( View.GONE );
-        }
-        tv = (TextView) row.findViewById( R.id.item_extra_value );
-        if ( value2 != null && value2.length() > 0 ) {
-            tv.setText( value2 );
-        } else {
-            tv.setVisibility( View.GONE );
-        }
-        layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
-        return row;
-    }
-
-    protected View addRow( LinearLayout layout, String label1, String value1,
-            String label2, String value2 ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item4 );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
-        tv.setText( label1 );
-        tv = (TextView) row.findViewById( R.id.item_value );
-        if ( value1 != null && value1.length() > 0 ) {
-            tv.setText( value1 );
-        } else {
-            tv.setVisibility( View.GONE );
-        }
-        tv = (TextView) row.findViewById( R.id.item_extra_label );
-        if ( label2 != null && label2.length() > 0 ) {
-            tv.setText( label2 );
-        } else {
-            tv.setVisibility( View.GONE );
-        }
-        tv = (TextView) row.findViewById( R.id.item_extra_value );
-        if ( value2 != null && value2.length() > 0 ) {
-            tv.setText( value2 );
-        } else {
-            tv.setVisibility( View.GONE );
-        }
-        layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
-        return row;
-    }
-
-    protected View addPhoneRow( LinearLayout layout, String label, String phone ) {
-        View row = addRow( layout, label, phone );
-        TextView tv = (TextView) row.findViewById( R.id.item_value );
-        makeClickToCall( tv );
-        return row;
-    }
-
-    protected View addPhoneRow( LinearLayout layout, String label, String phone,
-            String label2, String value2 ) {
-        View row = addRow( layout, label, phone, label2, value2 );
-        TextView tv = (TextView) row.findViewById( R.id.item_value );
-        makeClickToCall( tv );
-        return row;
-    }
-
-    protected void addBulletedRow( LinearLayout layout, String text ) {
-        LinearLayout innerLayout = new LinearLayout( this );
-        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( UiUtils.convertDpToPx( this, 6 ), 2, 2, 2 );
-        tv.setText( "\u2022 " );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        tv = new TextView( this );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 2, 12, 2 );
-        tv.setText( text );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                0, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
-    }
-
-    protected void addSeparator( LinearLayout layout ) {
-        View separator = new View( this );
-        separator.setBackgroundColor( Color.LTGRAY );
-        layout.addView( separator, new LayoutParams( LayoutParams.MATCH_PARENT, 1 ) );
-    }
-
-    protected void makeClickToCall( TextView tv ) {
-        PackageManager pm = getPackageManager();
-        boolean hasTelephony = pm.hasSystemFeature( PackageManager.FEATURE_TELEPHONY );
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-        String tapAction = prefs.getString( PreferencesActivity.KEY_PHONE_TAP_ACTION, "dial" );
-        if ( hasTelephony && !tapAction.equals( "ignore" ) ) {
-            if ( tv.getText().length() > 0 ) {
-                String action = tapAction.equals( "call" )?
-                        Intent.ACTION_CALL : Intent.ACTION_DIAL;
-                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.phone, 0, 0, 0 );
-                tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( this, 3 ) );
-                tv.setTag( action );
-                tv.setOnClickListener( mOnPhoneClickListener );
-            } else {
-                tv.setCompoundDrawablesWithIntrinsicBounds( 0, 0, 0, 0 );
-                tv.setOnClickListener( null );
-            }
         }
     }
 

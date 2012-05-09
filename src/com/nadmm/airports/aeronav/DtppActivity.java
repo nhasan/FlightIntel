@@ -253,11 +253,9 @@ public class DtppActivity extends ActivityBase {
             dtpp.moveToFirst();
             String tppVolume = dtpp.getString( 0 );
             addRow( layout, "Volume", tppVolume );
-            addSeparator( layout );
             addRow( layout, "Valid", TimeUtils.formatDateRange( getActivity(),
                     fromDate.getTime(), toDate.getTime() ) );
             if ( mExpired ) {
-                addSeparator( layout );
                 addRow( layout, "WARNING: This chart cycle has expired." );
             }
 
@@ -318,10 +316,6 @@ public class DtppActivity extends ActivityBase {
 
         protected View addChartRow( LinearLayout layout, String chartCode, String chartName,
                 String pdfName, String userAction, String faanfd18, int resid ) {
-            if ( layout.getChildCount() > 0 ) {
-                addSeparator( layout );
-            }
-
             View row;
             if ( userAction.length() > 0 ) {
                 row= addRow( layout, chartName, DataUtils.decodeUserAction( userAction ) );

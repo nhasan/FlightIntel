@@ -20,12 +20,18 @@
 package com.nadmm.airports;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.SupportActivity;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -33,6 +39,7 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
@@ -40,11 +47,33 @@ import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class FragmentBase extends Fragment {
 
     private ActivityBase mActivity;
     private CursorAsyncTask mTask;
+    private final OnClickListener mOnRowClickListener = new OnClickListener() {
+        @Override
+        public void onClick( View v ) {
+            Intent intent = (Intent) v.getTag();
+            if ( intent != null ) {
+                startActivity( intent );
+            }
+        }
+    };
+    private final OnClickListener mOnPhoneClickListener = new OnClickListener() {
+        
+        @Override
+        public void onClick( View v ) {
+            TextView tv = (TextView) v;
+            String action = (String) tv.getTag();
+            String phone = DataUtils.decodePhoneNumber( tv.getText().toString() );
+            Intent intent = new Intent( action, Uri.parse( "tel:"+phone ) );
+            startActivity( intent );
+        }
+
+    };
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -210,11 +239,11 @@ public class FragmentBase extends Fragment {
                 String icaoCode = (String) cb.getTag();
                 if ( cb.isChecked() ) {
                     getDbManager().addToFavoriteWx( icaoCode );
-                    Toast.makeText( getActivity(), "Added to favorites list",
+                    Toast.makeText( mActivity, "Added to favorites list",
                             Toast.LENGTH_SHORT ).show();
                 } else {
                     getDbManager().removeFromFavoriteWx( icaoCode );
-                    Toast.makeText( getActivity(), "Removed from favorites list",
+                    Toast.makeText( mActivity, "Removed from favorites list",
                             Toast.LENGTH_SHORT ).show();
                 }
             }
@@ -222,61 +251,180 @@ public class FragmentBase extends Fragment {
         } );
     }
 
-    protected View addRow( LinearLayout layout, String value ) {
-        return mActivity.addRow( layout, value );
+    protected void makeRowClickable( View row, Intent intent, int resid ) {
+        row.setBackgroundResource( resid );
+        row.setTag( intent );
+        row.setOnClickListener( mOnRowClickListener );
     }
 
-    protected View addRow( LinearLayout layout, String label, String value ) {
-        return mActivity.addRow( layout, label, value );
-    }
-
-    protected View addRow( LinearLayout layout, String label, String value1, String value2 ) {
-        return mActivity.addRow( layout, label, value1, value2 );
-    }
-
-    protected View addRow( LinearLayout layout, String label1, String value1,
-            String label2, String value2 ) {
-        return mActivity.addRow( layout, label1, value1, label2, value2 );
+    protected void makeClickToCall( TextView tv ) {
+        PackageManager pm = mActivity.getPackageManager();
+        boolean hasTelephony = pm.hasSystemFeature( PackageManager.FEATURE_TELEPHONY );
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( mActivity );
+        String tapAction = prefs.getString( PreferencesActivity.KEY_PHONE_TAP_ACTION, "dial" );
+        if ( hasTelephony && !tapAction.equals( "ignore" ) ) {
+            if ( tv.getText().length() > 0 ) {
+                String action = tapAction.equals( "call" )?
+                        Intent.ACTION_CALL : Intent.ACTION_DIAL;
+                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.phone, 0, 0, 0 );
+                tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( mActivity, 3 ) );
+                tv.setTag( action );
+                tv.setOnClickListener( mOnPhoneClickListener );
+            } else {
+                tv.setCompoundDrawablesWithIntrinsicBounds( 0, 0, 0, 0 );
+                tv.setOnClickListener( null );
+            }
+        }
     }
 
     protected View addClickableRow( LinearLayout layout, View row, Intent intent, int resid ) {
-        return mActivity.addClickableRow( layout, row, intent, resid );
+        if ( layout.getChildCount() > 0 ) {
+            addSeparator( layout );
+        }
+
+        makeRowClickable( row, intent, resid );
+        layout.addView( row, new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
     }
 
     protected View addClickableRow( LinearLayout layout, String label,
-            final Intent intent, int resid ) {
-        return mActivity.addClickableRow( layout, label, null, intent, resid );
+            Intent intent, int resid ) {
+        return addClickableRow( layout, label, null, intent, resid );
     }
 
     protected View addClickableRow( LinearLayout layout, String label, String value,
-            final Intent intent, int resid ) {
-        return mActivity.addClickableRow( layout, label, value, intent, resid );
+            Intent intent, int resid ) {
+        View row = addRow( layout, label+"...", value );
+        makeRowClickable( row, intent, resid );
+        return row;
     }
 
     protected View addClickableRow( LinearLayout layout, String label1, String value1,
-            String label2, String value2, final Intent intent, int resid ) {
-        return mActivity.addClickableRow( layout, label1, value1, label2, value2, intent, resid );
-    }
-
-    protected void addBulletedRow( LinearLayout layout, String text ) {
-        mActivity.addBulletedRow( layout, text );
-    }
-
-    protected void addSeparator( LinearLayout layout ) {
-        mActivity.addSeparator( layout );
+            String label2, String value2, Intent intent, int resid ) {
+        View row = addRow( layout, label1, value1, label2, value2 );
+        makeRowClickable( row, intent, resid );
+        return row;
     }
 
     protected View addPhoneRow( LinearLayout layout, String label, String phone ) {
-        return mActivity.addPhoneRow( layout, label, phone );
+        View row = addRow( layout, label, phone );
+        TextView tv = (TextView) row.findViewById( R.id.item_value );
+        makeClickToCall( tv );
+        return row;
     }
 
     protected View addPhoneRow( LinearLayout layout, String label, String phone,
             String label2, String value2 ) {
-        return mActivity.addPhoneRow( layout, label, phone, label2, value2 );
+        View row = addRow( layout, label, phone, label2, value2 );
+        TextView tv = (TextView) row.findViewById( R.id.item_value );
+        makeClickToCall( tv );
+        return row;
     }
 
-    protected void makeClickToCall( TextView tv ) {
-        mActivity.makeClickToCall( tv );
+    protected View addRow( LinearLayout layout, String label ) {
+        return addRow( layout, label, null );
+    }
+
+    protected View addRow( LinearLayout layout, String label, String value ) {
+        if ( layout.getChildCount() > 0 ) {
+            addSeparator( layout );
+        }
+
+        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item2 );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( label );
+        tv = (TextView) row.findViewById( R.id.item_value );
+        if ( value != null && value.length() > 0 ) {
+            tv.setText( value );
+        } else {
+            tv.setVisibility( View.GONE );
+        }
+        layout.addView( row, new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
+    }
+
+    protected View addRow( LinearLayout layout, String label, String value1, String value2 ) {
+        if ( layout.getChildCount() > 0 ) {
+            addSeparator( layout );
+        }
+
+        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item3 );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( label );
+        tv = (TextView) row.findViewById( R.id.item_value );
+        if ( value1 != null && value1.length() > 0 ) {
+            tv.setText( value1 );
+        } else {
+            tv.setVisibility( View.GONE );
+        }
+        tv = (TextView) row.findViewById( R.id.item_extra_value );
+        if ( value2 != null && value2.length() > 0 ) {
+            tv.setText( value2 );
+        } else {
+            tv.setVisibility( View.GONE );
+        }
+        layout.addView( row, new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
+    }
+
+    protected View addRow( LinearLayout layout, String label1, String value1,
+            String label2, String value2 ) {
+        if ( layout.getChildCount() > 0 ) {
+            addSeparator( layout );
+        }
+
+        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item4 );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        tv.setText( label1 );
+        tv = (TextView) row.findViewById( R.id.item_value );
+        if ( value1 != null && value1.length() > 0 ) {
+            tv.setText( value1 );
+        } else {
+            tv.setVisibility( View.GONE );
+        }
+        tv = (TextView) row.findViewById( R.id.item_extra_label );
+        if ( label2 != null && label2.length() > 0 ) {
+            tv.setText( label2 );
+        } else {
+            tv.setVisibility( View.GONE );
+        }
+        tv = (TextView) row.findViewById( R.id.item_extra_value );
+        if ( value2 != null && value2.length() > 0 ) {
+            tv.setText( value2 );
+        } else {
+            tv.setVisibility( View.GONE );
+        }
+        layout.addView( row, new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
+    }
+
+    protected void addBulletedRow( LinearLayout layout, String text ) {
+        LinearLayout innerLayout = new LinearLayout( mActivity );
+        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
+        TextView tv = new TextView( mActivity );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( UiUtils.convertDpToPx( mActivity, 6 ), 2, 2, 2 );
+        tv.setText( "\u2022 " );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
+        tv = new TextView( mActivity );
+        tv.setGravity( Gravity.LEFT );
+        tv.setPadding( 2, 2, 12, 2 );
+        tv.setText( text );
+        innerLayout.addView( tv, new LinearLayout.LayoutParams(
+                0, LayoutParams.WRAP_CONTENT, 1f ) );
+        layout.addView( innerLayout, new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    private void addSeparator( LinearLayout layout ) {
+        View separator = new View( mActivity );
+        separator.setBackgroundColor( Color.LTGRAY );
+        layout.addView( separator, new LayoutParams( LayoutParams.MATCH_PARENT, 1 ) );
     }
 
     protected View findViewById( int id ) {

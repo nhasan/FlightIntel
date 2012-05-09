@@ -181,15 +181,12 @@ public class IlsActivity extends ActivityBase {
             LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_ils_details );
             String ilsType = ils1.getString( ils1.getColumnIndex( Ils1.ILS_TYPE ) );
             addRow( layout, "Type", ilsType );
-            addSeparator( layout );
             String locId = ils1.getString( ils1.getColumnIndex( Ils1.ILS_ID ) );
             addRow( layout, "Id", locId );
             String category = ils1.getString( ils1.getColumnIndex( Ils1.ILS_CATEGORY ) );
             if ( category.length() > 0 ) {
-                addSeparator( layout );
                 addRow( layout, "Category", category );
             }
-            addSeparator( layout );
             String bearing = ils1.getString( ils1.getColumnIndex( Ils1.ILS_MAGNETIC_BEARING ) );
             addRow( layout, "Magnetic bearing", bearing+"\u00B0" );
         }
@@ -200,15 +197,12 @@ public class IlsActivity extends ActivityBase {
                 LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_loc_details );
                 String locFreq = ils2.getString( ils2.getColumnIndex( Ils2.LOCALIZER_FREQUENCY ) );
                 addRow( layout, "Frequency", locFreq );
-                addSeparator( layout );
                 float locWidth = ils2.getFloat( ils2.getColumnIndex( Ils2.LOCALIZER_COURSE_WIDTH ) );
                 addRow( layout, "Course width", FormatUtils.formatDegrees( locWidth ) );
                 String back = ils2.getString( ils2.getColumnIndex( Ils2.LOCALIZER_BACK_COURSE_STATUS ) );
                 if ( back.length() > 0 ) {
-                    addSeparator( layout );
                     addRow( layout, "Back course", back );
                 }
-                addSeparator( layout );
                 String status = ils2.getString( ils2.getColumnIndex( Ils2.OPERATIONAL_STATUS ) );
                 String date = ils2.getString( ils2.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
                 addRow( layout, "Status", status, date );
@@ -226,13 +220,10 @@ public class IlsActivity extends ActivityBase {
                 LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_gs_details );
                 String gsType = ils3.getString( ils3.getColumnIndex( Ils3.GLIDE_SLOPE_TYPE ) );
                 addRow( layout, "Type", gsType );
-                addSeparator( layout );
                 float gsAngle = ils3.getFloat( ils3.getColumnIndex( Ils3.GLIDE_SLOPE_ANGLE ) );
                 addRow( layout, "Glide angle", FormatUtils.formatDegrees( gsAngle ) );
-                addSeparator( layout );
                 String gsFreq = ils3.getString( ils3.getColumnIndex( Ils3.GLIDE_SLOPE_FREQUENCY ) );
                 addRow( layout, "Frequency", gsFreq );
-                addSeparator( layout );
                 String status = ils3.getString( ils3.getColumnIndex( Ils2.OPERATIONAL_STATUS ) );
                 String date = ils3.getString( ils3.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
                 addRow( layout, "Status", status, date );
@@ -250,10 +241,8 @@ public class IlsActivity extends ActivityBase {
                 LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_im_details );
                 String imType = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_TYPE ) );
                 addRow( layout, "Type", imType );
-                addSeparator( layout );
                 int distance = ils5.getInt( ils5.getColumnIndex( Ils5.MARKER_DISTANCE ) );
                 addRow( layout, "Distance", FormatUtils.formatFeet( distance ) );
-                addSeparator( layout );
                 String status = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_STATUS ) );
                 String date = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
                 addRow( layout, "Status", status, date );
@@ -273,23 +262,18 @@ public class IlsActivity extends ActivityBase {
                 addRow( layout, "Type", mmType );
                 String mmId = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_ID ) );
                 if ( mmId.length() > 0 ) {
-                    addSeparator( layout );
                     addRow( layout, "Id", mmId );
                 }
                 String mmName = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_NAME ) );
                 if ( mmName.length() > 0 ) {
-                    addSeparator( layout );
                     addRow( layout, "Name", mmName );
                 }
                 String mmFreq = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_FREQUENCY ) );
                 if ( mmFreq.length() > 0 ) {
-                    addSeparator( layout );
                     addRow( layout, "Frequency", mmFreq );
                 }
-                addSeparator( layout );
                 int mmDistance = ils5.getInt( ils5.getColumnIndex( Ils5.MARKER_DISTANCE ) );
                 addRow( layout, "Distance", FormatUtils.formatFeet( mmDistance ) );
-                addSeparator( layout );
                 String status = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_STATUS ) );
                 String date = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
                 addRow( layout, "Status", status, date );
@@ -309,23 +293,18 @@ public class IlsActivity extends ActivityBase {
                 addRow( layout, "Type", omType );
                 String omId = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_ID ) );
                 if ( omId.length() > 0 ) {
-                    addSeparator( layout );
                     addRow( layout, "Id", omId );
                 }
                 String omName = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_NAME ) );
                 if ( omName.length() > 0 ) {
-                    addSeparator( layout );
                     addRow( layout, "Name", omName );
                 }
                 String omFreq = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_FREQUENCY ) );
                 if ( omFreq.length() > 0 ) {
-                    addSeparator( layout );
                     addRow( layout, "Frequency", omFreq );
                 }
-                addSeparator( layout );
                 int omDistance = ils5.getInt( ils5.getColumnIndex( Ils5.MARKER_DISTANCE ) );
                 addRow( layout, "Distance", FormatUtils.formatFeet( omDistance ) );
-                addSeparator( layout );
                 String status = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_STATUS ) );
                 String date = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
                 addRow( layout, "Status", status, date );

@@ -267,14 +267,9 @@ public class CommunicationsActivity extends ActivityBase {
                     tv.setVisibility( View.VISIBLE );
                     LinearLayout layout = (LinearLayout) findViewById( R.id.airport_comm_details );
                     layout.setVisibility( View.VISIBLE );
-                    int row = 0;
                     for ( String key : map.keySet() ) {
                         for ( Pair<String, String> pair : map.get( key ) ) {
-                            if ( row > 0 ) {
-                                addSeparator( layout );
-                            }
                             addRow( layout, key, pair.first, pair.second );
-                            ++row;
                         }
                     }
                 }
@@ -388,14 +383,9 @@ public class CommunicationsActivity extends ActivityBase {
                 tv.setVisibility( View.VISIBLE );
                 LinearLayout layout = (LinearLayout) findViewById( R.id.atc_comm_details );
                 layout.setVisibility( View.VISIBLE );
-                int row = 0;
                 for ( String key : map.keySet() ) {
                     for ( Pair<String, String> pair : map.get( key ) ) {
-                        if ( row > 0 ) {
-                            addSeparator( layout );
-                        }
                         addRow( layout, key, pair.first, pair.second );
-                        ++row;
                     }
                 }
             }
@@ -414,7 +404,6 @@ public class CommunicationsActivity extends ActivityBase {
             if ( region.moveToFirst() ) {
                 String facility = region.getString( region.getColumnIndex( AtcPhones.FACILITY_ID ) );
                 String phone = region.getString( region.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
-                addSeparator( layout );
                 addPhoneRow( layout, DataUtils.decodeFaaRegion( facility )+" region", phone );
             }
 
@@ -422,12 +411,10 @@ public class CommunicationsActivity extends ActivityBase {
             if ( artcc.moveToFirst() ) {
                 String facility = artcc.getString( artcc.getColumnIndex( AtcPhones.FACILITY_ID ) );
                 String phone = artcc.getString( artcc.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
-                addSeparator( layout );
                 addPhoneRow( layout, DataUtils.decodeArtcc( facility ), phone, 
                         "Regional duty office", "(24 Hr)" );
                 phone = artcc.getString( artcc.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
                 String hours = artcc.getString( artcc.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
-                addSeparator( layout );
                 addPhoneRow( layout, DataUtils.decodeArtcc( facility ), phone,
                         "Business office", "("+hours+")" );
             }
@@ -437,7 +424,6 @@ public class CommunicationsActivity extends ActivityBase {
                 String faaCode = tracon.getString( tracon.getColumnIndex( AtcPhones.FACILITY_ID ) );
                 String phone = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
                 String hours = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
-                addSeparator( layout );
                 String name = DataUtils.getTraconName( faaCode );
                 addPhoneRow( layout, name+" TRACON", phone, "Business office", "("+hours+")" );
             }
@@ -448,7 +434,6 @@ public class CommunicationsActivity extends ActivityBase {
                 String name = tower1.getString( tower1.getColumnIndex( Tower1.RADIO_CALL_TOWER ) );
                 String phone = atct.getString( atct.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
                 String hours = atct.getString( atct.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
-                addSeparator( layout );
                 addPhoneRow( layout, name+" Tower", phone, "Business office", "("+hours+")" );
             }
         }
@@ -457,11 +442,7 @@ public class CommunicationsActivity extends ActivityBase {
             LinearLayout layout = (LinearLayout) findViewById( R.id.comm_remarks_layout );
             Cursor twr6 = result[ 3 ];
             if ( twr6.moveToFirst() ) {
-                int row = 0;
                 do {
-                    if ( row > 0 ) {
-                        addSeparator( layout );
-                    }
                     String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
                     addBulletedRow( layout, remark );
                 } while ( twr6.moveToNext() );

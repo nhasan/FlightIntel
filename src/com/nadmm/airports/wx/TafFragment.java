@@ -302,14 +302,10 @@ public class TafFragment extends FragmentBase {
             fcstType = "Normal";
         }
         addRow( layout, "Forecast type", fcstType );
-        addSeparator( layout );
         addRow( layout, "Issued at", TimeUtils.formatDateTime( getActivity(), taf.issueTime ) );
-        addSeparator( layout );
         addRow( layout, "Valid from", TimeUtils.formatDateTime( getActivity(), taf.validTimeFrom ) );
-        addSeparator( layout );
         addRow( layout, "Valid to", TimeUtils.formatDateTime( getActivity(), taf.validTimeTo ) );
         if ( taf.remarks != null && taf.remarks.length() > 0 && !taf.remarks.equals( "AMD" ) ) {
-            addSeparator( layout );
             addRow( layout, "\u2022 "+taf.remarks );
         }
 
@@ -354,9 +350,6 @@ public class TafFragment extends FragmentBase {
 
             if ( forecast.changeIndicator != null
                     && forecast.changeIndicator.equals( "BECMG" ) ) {
-                if ( fcst_layout.getChildCount() > 0 ) {
-                    addSeparator( fcst_layout );
-                }
                 addRow( fcst_layout, "Becoming at", TimeUtils.formatDateTime(
                         getActivity(), forecast.timeBecoming ) );
             }
@@ -376,40 +369,25 @@ public class TafFragment extends FragmentBase {
                 if ( forecast.windGustKnots < Integer.MAX_VALUE ) {
                     gust = String.format( "Gusting to %d knots", forecast.windGustKnots );
                 }
-                if ( fcst_layout.getChildCount() > 0 ) {
-                    addSeparator( fcst_layout );
-                }
                 addRow( fcst_layout, "Winds", wind, gust );
             }
 
             if ( forecast.visibilitySM < Float.MAX_VALUE ) {
                 String value = forecast.visibilitySM > 6? "6+ SM"
                         : FormatUtils.formatVisibility( forecast.visibilitySM );
-                if ( fcst_layout.getChildCount() > 0 ) {
-                    addSeparator( fcst_layout );
-                }
                 addRow( fcst_layout, "Visibility", value );
             }
 
             if ( forecast.vertVisibilityFeet < Integer.MAX_VALUE ) {
-                if ( fcst_layout.getChildCount() > 0 ) {
-                    addSeparator( fcst_layout );
-                }
                 addRow( fcst_layout, "Visibility",
                         FormatUtils.formatFeetAgl( forecast.vertVisibilityFeet ) );
             }
 
             for ( WxSymbol wx : forecast.wxList ) {
-                if ( fcst_layout.getChildCount() > 0 ) {
-                    addSeparator( fcst_layout );
-                }
                 addRow( fcst_layout, "Weather", wx.toString() );
             }
 
             for ( SkyCondition sky : forecast.skyConditions ) {
-                if ( fcst_layout.getChildCount() > 0 ) {
-                    addSeparator( fcst_layout );
-                }
                 addRow( fcst_layout, "Clouds", sky.toString() );
             }
 
@@ -418,24 +396,15 @@ public class TafFragment extends FragmentBase {
                         GeoUtils.getCardinalDirection( forecast.windShearDirDegrees ),
                         forecast.windShearDirDegrees, forecast.windShearSpeedKnots );
                 String height = FormatUtils.formatFeetAgl( forecast.windShearHeightFeetAGL );
-                if ( fcst_layout.getChildCount() > 0 ) {
-                    addSeparator( fcst_layout );
-                }
                 addRow( fcst_layout, "Wind shear", shear, height );
             }
 
             if ( forecast.altimeterHg < Float.MAX_VALUE ) {
-                if ( fcst_layout.getChildCount() > 0 ) {
-                    addSeparator( fcst_layout );
-                }
                 addRow( fcst_layout, "Altimeter",
                         FormatUtils.formatAltimeter( forecast.altimeterHg ) );
             }
 
             for ( TurbulenceCondition turbulence : forecast.turbulenceConditions ) {
-                if ( fcst_layout.getChildCount() > 0 ) {
-                    addSeparator( fcst_layout );
-                }
                 String value = WxUtils.decodeTurbulenceIntensity( turbulence.intensity );
                 String height = FormatUtils.formatFeetRangeAgl(
                         turbulence.minAltitudeFeetAGL, turbulence.maxAltitudeFeetAGL );
@@ -443,9 +412,6 @@ public class TafFragment extends FragmentBase {
             }
 
             for ( IcingCondition icing : forecast.icingConditions ) {
-                if ( fcst_layout.getChildCount() > 0 ) {
-                    addSeparator( fcst_layout );
-                }
                 String value = WxUtils.decodeIcingIntensity( icing.intensity );
                 String height = FormatUtils.formatFeetRangeAgl(
                         icing.minAltitudeFeetAGL, icing.maxAltitudeFeetAGL );

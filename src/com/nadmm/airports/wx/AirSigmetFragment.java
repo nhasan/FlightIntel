@@ -184,33 +184,21 @@ public class AirSigmetFragment extends FragmentBase {
         LinearLayout details = (LinearLayout) item.findViewById( R.id.airsigmet_details );
 
         if ( entry.hazardType != null && entry.hazardType.length() > 0 ) {
-            if ( details.getChildCount() > 0 ) {
-                addSeparator( details );
-            }
             addRow( details, "Type", entry.hazardType );
         }
 
         if ( entry.hazardSeverity != null && entry.hazardSeverity.length() > 0 ) {
-            if ( details.getChildCount() > 0 ) {
-                addSeparator( details );
-            }
             addRow( details, "Severity", entry.hazardSeverity );
         }
 
         if ( entry.minAltitudeFeet < Integer.MAX_VALUE
                 || entry.maxAltitudeFeet < Integer.MAX_VALUE ) {
-            if ( details.getChildCount() > 0 ) {
-                addSeparator( details );
-            }
-            addRow( details, "Altiude", FormatUtils.formatFeetRangeMsl(
+            addRow( details, "Altitude", FormatUtils.formatFeetRangeMsl(
                     entry.minAltitudeFeet, entry.maxAltitudeFeet ) );
         }
 
         if ( entry.movementDirDegrees < Integer.MAX_VALUE ) {
             StringBuilder sb = new StringBuilder();
-            if ( details.getChildCount() > 0 ) {
-                addSeparator( details );
-            }
             sb.append( String.format( "%d\u00B0 (%s)", entry.movementDirDegrees,
                     GeoUtils.getCardinalDirection( entry.movementDirDegrees ) ) );
             if ( entry.movementSpeedKnots < Integer.MAX_VALUE ) {
