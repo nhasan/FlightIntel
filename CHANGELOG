@@ -1,6 +1,7 @@
 v3.4.0 (5/9/2012)
 =================
 * Added textual AIRMET/SIGMET to weather details 
+* Fix "Nearby" screen when showing airports around an airport
 
 v3.3.1 (5/3/2012)
 =================
