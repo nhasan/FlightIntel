@@ -19,9 +19,12 @@
 
 package com.nadmm.airports.afd;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 
 public class NearbyAirportsActivity extends ActivityBase {
@@ -30,7 +33,14 @@ public class NearbyAirportsActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( createContentView( R.layout.fragment_activity_layout ) );
+        setContentView( R.layout.fragment_activity_layout );
+
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences( this );
+        int radius = Integer.valueOf( prefs.getString(
+                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
+
+        setActionBarSubtitle( String.format( "Within %d NM Radius", radius ) );
 
         Bundle args = getIntent().getExtras();
         addFragment( NearbyAirportsFragment.class, args );

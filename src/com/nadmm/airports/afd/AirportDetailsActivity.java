@@ -102,7 +102,6 @@ public class AirportDetailsActivity extends ActivityBase {
         private BroadcastReceiver mDafdReceiver;
         private IntentFilter mMetarFilter;
         private IntentFilter mDafdFilter;
-        private Bundle mExtras;
         private Location mLocation;
         private float mDeclination;
         private String mIcaoCode;
@@ -305,10 +304,6 @@ public class AirportDetailsActivity extends ActivityBase {
                 mIcaoCode = "K"+apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
             }
 
-            // Extras bundle for "Nearby" activity
-            mExtras = new Bundle();
-            mExtras.putParcelable( LocationColumns.LOCATION, mLocation );
-
             showAirportTitle( apt );
 
             showCommunicationsDetails( result );
@@ -470,7 +465,9 @@ public class AirportDetailsActivity extends ActivityBase {
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_nearby_layout );
 
             Intent airport = new Intent( getActivity(), NearbyAirportsActivity.class );
-            airport.putExtras( mExtras );
+            Bundle extras = new Bundle();
+            extras.putParcelable( LocationColumns.LOCATION, mLocation );
+            airport.putExtras( extras );
             addClickableRow( layout, "Airports", airport, R.drawable.row_selector_top );
             Intent fss = new Intent( getActivity(), FssCommActivity.class );
             fss.putExtra( Airports.SITE_NUMBER, siteNumber );
@@ -560,8 +557,7 @@ public class AirportDetailsActivity extends ActivityBase {
                             String.format( "%d\u00B0 %s", variation, dir ) );
                 }
             } else {
-                Location location = (Location) mExtras.get( LocationColumns.LOCATION );
-                int variation = Math.round( GeoUtils.getMagneticDeclination( location ) );
+                int variation = Math.round( GeoUtils.getMagneticDeclination( mLocation ) );
                 dir = ( variation >= 0 )? "W" : "E";
                 addRow( layout, "Magnetic variation", 
                         String.format( "%d\u00B0 %s (actual)", Math.abs( variation ), dir ) );
