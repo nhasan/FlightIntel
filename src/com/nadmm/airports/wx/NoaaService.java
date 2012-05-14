@@ -31,6 +31,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIUtils;
 
 import android.app.IntentService;
 
@@ -55,7 +56,10 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_METAR = "flightintel.intent.action.GET_METAR";
     public static final String ACTION_GET_TAF = "flightintel.intent.action.GET_TAF";
     public static final String ACTION_GET_PIREP = "flightintel.intent.action.GET_PIREP";
-    public static final String ACTION_GET_AIRSIGMET = "flightintel.intent.action.GET_AIRSIGMET";
+    public static final String ACTION_GET_AIRSIGMET_TEXT
+                                    = "flightintel.intent.action.GET_AIRSIGMET_TEXT";
+    public static final String ACTION_GET_AIRSIGMET_MAP
+                                    = "flightintel.intent.action.GET_AIRSIGMET_MAP";
 
     private HttpClient mHttpClient;
     private HttpHost mTarget;
@@ -88,7 +92,13 @@ public abstract class NoaaService extends IntentService {
         }
     }
 
-    protected boolean fetchFromNoaa( URI uri, File xml ) 
+    protected boolean fetchFromNoaa( String query, File xml, boolean compressed ) 
+            throws Exception {
+        URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, DATASERVER_PATH, query, null );
+        return fetchFromNoaa( uri, xml, compressed );
+    }
+
+    protected boolean fetchFromNoaa( URI uri, File xml, boolean compressed ) 
             throws Exception {
         if ( !NetworkUtils.isNetworkAvailable( this ) ) {
             return false;
@@ -105,7 +115,10 @@ public abstract class NoaaService extends IntentService {
         byte[] buffer = new byte[ 4096 ];
         int count;
         FileOutputStream out = new FileOutputStream( xml );
-        InputStream in = new GZIPInputStream( response.getEntity().getContent() );
+        InputStream in = response.getEntity().getContent();
+        if ( compressed ) {
+            in = new GZIPInputStream( in );
+        }
         while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
             out.write( buffer, 0, count );
         }
