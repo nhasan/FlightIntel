@@ -62,6 +62,8 @@ public class MetarFragment extends FragmentBase {
     protected BroadcastReceiver mReceiver;
     protected ArrayList<String> mRemarks;
 
+    private final int METAR_HOURS_BEFORE = 3;
+
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -196,6 +198,7 @@ public class MetarFragment extends FragmentBase {
         Intent service = new Intent( getActivity(), MetarService.class );
         service.setAction( NoaaService.ACTION_GET_METAR );
         service.putExtra( NoaaService.STATION_ID, stationId );
+        service.putExtra( NoaaService.HOURS_BEFORE, METAR_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
     }

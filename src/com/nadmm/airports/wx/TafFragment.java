@@ -55,6 +55,7 @@ import com.nadmm.airports.wx.Taf.TurbulenceCondition;
 public class TafFragment extends FragmentBase {
 
     private final int TAF_RADIUS = 25;
+    private final int TAF_HOURS_BEFORE = 3;
 
     protected Location mLocation;
     protected BroadcastReceiver mReceiver;
@@ -248,6 +249,7 @@ public class TafFragment extends FragmentBase {
         Intent service = new Intent( getActivity(), TafService.class );
         service.setAction( NoaaService.ACTION_GET_TAF );
         service.putExtra( NoaaService.STATION_ID, stationId );
+        service.putExtra( NoaaService.HOURS_BEFORE, TAF_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
     }
