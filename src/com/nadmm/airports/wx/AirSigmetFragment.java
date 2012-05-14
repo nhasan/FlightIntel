@@ -32,8 +32,10 @@ import android.support.v4.view.Menu;
 import android.support.v4.view.MenuItem;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,6 +43,7 @@ import android.widget.TextView;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.ImageViewActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
@@ -66,8 +69,14 @@ public class AirSigmetFragment extends FragmentBase {
 
             @Override
             public void onReceive( Context context, Intent intent ) {
-                AirSigmet airSigmet = (AirSigmet) intent.getSerializableExtra( NoaaService.RESULT );
-                showAirSigmet( airSigmet );
+                String action = intent.getAction();
+                if ( action.equals( NoaaService.ACTION_GET_AIRSIGMET_TEXT ) ) {
+                    AirSigmet airSigmet = (AirSigmet) intent.getSerializableExtra( NoaaService.RESULT );
+                    showAirSigmetText( airSigmet );
+                } else if ( action.equals( NoaaService.ACTION_GET_AIRSIGMET_MAP ) ) {
+                    String path = intent.getStringExtra( NoaaService.RESULT );
+                    showAirSigmetMap( path );
+                }
             }
 
         };
@@ -76,7 +85,8 @@ public class AirSigmetFragment extends FragmentBase {
     @Override
     public void onResume() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction( NoaaService.ACTION_GET_AIRSIGMET );
+        filter.addAction( NoaaService.ACTION_GET_AIRSIGMET_TEXT );
+        filter.addAction( NoaaService.ACTION_GET_AIRSIGMET_MAP );
         getActivity().registerReceiver( mReceiver, filter );
 
         Bundle args = getArguments();
@@ -95,6 +105,15 @@ public class AirSigmetFragment extends FragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.airsigmet_detail_view, container, false );
+        Button btnMap = (Button) view.findViewById( R.id.btnShowOnMap );
+        btnMap.setOnClickListener( new OnClickListener() {
+            
+            @Override
+            public void onClick( View v ) {
+                requestAirSigmetMap( false );
+            }
+        } );
+
         return createContentView( view );
     }
 
@@ -128,17 +147,17 @@ public class AirSigmetFragment extends FragmentBase {
                 mLocation.setLatitude( lat );
                 mLocation.setLongitude( lon );    
                 // Now request the airmet/sigmet
-                requestAirSigmet( false );
+                requestAirSigmetText( false );
             }
             return true;
         }
 
     }
 
-    protected void requestAirSigmet( boolean refresh ) {
+    protected void requestAirSigmetText( boolean refresh ) {
         double[] box = GeoUtils.getBoundingBoxDegrees( mLocation, AIRSIGMET_RADIUS_NM );
         Intent service = new Intent( getActivity(), AirSigmetService.class );
-        service.setAction( NoaaService.ACTION_GET_AIRSIGMET );
+        service.setAction( NoaaService.ACTION_GET_AIRSIGMET_TEXT );
         service.putExtra( NoaaService.STATION_ID, mStationId );
         service.putExtra( NoaaService.COORDS_BOX, box );
         service.putExtra( NoaaService.HOURS_BEFORE, AIRSIGMET_HOURS_BEFORE );
@@ -146,7 +165,15 @@ public class AirSigmetFragment extends FragmentBase {
         getActivity().startService( service );
     }
 
-    protected void showAirSigmet( AirSigmet airSigmet ) {
+    protected void requestAirSigmetMap( boolean refresh ) {
+        startRefreshAnimation();
+        Intent service = new Intent( getActivity(), AirSigmetService.class );
+        service.setAction( NoaaService.ACTION_GET_AIRSIGMET_MAP );
+        service.putExtra( NoaaService.FORCE_REFRESH, refresh );
+        getActivity().startService( service );
+    }
+
+    protected void showAirSigmetText( AirSigmet airSigmet ) {
         LinearLayout layout = (LinearLayout) findViewById( R.id.airsigmet_entries_layout );
         layout.removeAllViews();
 
@@ -210,6 +237,15 @@ public class AirSigmetFragment extends FragmentBase {
         layout.addView( item, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
     }
 
+    protected void showAirSigmetMap( String path ) {
+        stopRefreshAnimation();
+        Intent view = new Intent( getActivity(), ImageViewActivity.class );
+        view.putExtra( ImageViewActivity.IMAGE_PATH, path );
+        view.putExtra( ImageViewActivity.IMAGE_TITLE, "AIRMET/SIGMET" );
+        view.putExtra( ImageViewActivity.IMAGE_SUBTITLE, "Currently Active" );
+        startActivity( view );
+    }
+
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
         setRefreshItemVisible( true );
@@ -221,7 +257,7 @@ public class AirSigmetFragment extends FragmentBase {
         switch ( item.getItemId() ) {
         case R.id.menu_refresh:
             startRefreshAnimation();
-            requestAirSigmet( true );
+            requestAirSigmetText( true );
             return true;
         default:
             return super.onOptionsItemSelected( item );

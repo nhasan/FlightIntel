@@ -37,6 +37,14 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" 
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
+        <Button android:id="@+id/btnShowOnMap"
+                style="@style/FlatButton"
+                android:text="@string/show_on_map"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         <LinearLayout android:id="@+id/airsigmet_entries_layout"
                 android:orientation="vertical"
                 android:layout_width="fill_parent"

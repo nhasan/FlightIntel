@@ -104,6 +104,9 @@
         <activity android:theme="@android:style/Theme.Light.NoTitleBar"
                   android:name=".DisclaimerActivity" />
 
+        <activity android:label=""
+                  android:name=".ImageViewActivity" />
+
     	<activity android:launchMode="singleTop" android:name=".afd.SearchActivity">
         	<intent-filter>
             	<action android:name="android.intent.action.SEARCH" />
