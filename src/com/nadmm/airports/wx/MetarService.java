@@ -20,9 +20,6 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
-import java.net.URI;
-
-import org.apache.http.client.utils.URIUtils;
 
 import android.content.Intent;
 import android.text.format.DateUtils;
@@ -32,7 +29,7 @@ import com.nadmm.airports.utils.UiUtils;
 public class MetarService extends NoaaService {
 
     private final String METAR_QUERY = "datasource=metars&requesttype=retrieve"
-    		+"&format=xml&compression=gzip&hoursBeforeNow=3&mostRecent=true&stationString=";
+    		+"&format=xml&compression=gzip&hoursBeforeNow=%d&mostRecent=true&stationString=%s";
     private final long METAR_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
     protected MetarParser mParser;
@@ -59,11 +56,13 @@ public class MetarService extends NoaaService {
         // Get request parameters
         String stationId = intent.getStringExtra( STATION_ID );
         boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
+        int hours = intent.getIntExtra( HOURS_BEFORE, 3 );
         boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
         File xml = new File( DATA_DIR, "METAR_"+stationId+".xml" );
+
         if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
-            fetchMetarFromNoaa( stationId, xml );
+            fetchMetar( stationId, hours, xml );
         }
 
         Metar metar = new Metar();
@@ -81,12 +80,11 @@ public class MetarService extends NoaaService {
         sendBroadcast( result );
     }
 
-    protected boolean fetchMetarFromNoaa( String stationId, File xml ) {
+    protected boolean fetchMetar( String stationId, int hours, File xml ) {
         boolean result = false;
         try {
-            URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, DATASERVER_PATH,
-                    METAR_QUERY+stationId, null );
-            result = fetchFromNoaa( uri, xml );
+            String query = String.format( METAR_QUERY, hours, stationId );
+            result = fetchFromNoaa( query, xml, true );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "Unable to fetch METAR: "+e.getMessage() );
         }

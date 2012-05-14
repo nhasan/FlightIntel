@@ -20,9 +20,6 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
-import java.net.URI;
-
-import org.apache.http.client.utils.URIUtils;
 
 import android.content.Intent;
 import android.text.format.DateUtils;
@@ -32,7 +29,7 @@ import com.nadmm.airports.utils.UiUtils;
 public class TafService extends NoaaService {
 
     private final String TAF_QUERY = "dataSource=tafs&requestType=retrieve"
-            +"&format=xml&compression=gzip&hoursBeforeNow=6&mostRecent=true&stationString=";
+            +"&format=xml&compression=gzip&hoursBeforeNow=%d&mostRecent=true&stationString=%s";
     private final long TAF_CACHE_MAX_AGE = 2*DateUtils.HOUR_IN_MILLIS;
 
     protected TafParser mParser;
@@ -58,12 +55,14 @@ public class TafService extends NoaaService {
 
         // Get request parameters
         String stationId = intent.getStringExtra( STATION_ID );
+        int hours = intent.getIntExtra( HOURS_BEFORE, 6 );
         boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
         boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
         File xml = new File( DATA_DIR, "TAF_"+stationId+".xml" );
+
         if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
-            fetchTafFromNoaa( stationId, xml );
+            fetchTaf( stationId, hours, xml );
         }
 
         Taf taf = new Taf();
@@ -81,11 +80,10 @@ public class TafService extends NoaaService {
         sendBroadcast( result );
     }
 
-    protected boolean fetchTafFromNoaa( String stationId, File xml ) {
+    protected boolean fetchTaf( String stationId, int hours, File xml ) {
         try {
-            URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, DATASERVER_PATH,
-                    TAF_QUERY+stationId, null );
-            return fetchFromNoaa( uri, xml );
+            String query = String.format( TAF_QUERY, hours, stationId );
+            return fetchFromNoaa( query, xml, true );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "Unable to fetch TAF: "+e.getMessage() );
         }
