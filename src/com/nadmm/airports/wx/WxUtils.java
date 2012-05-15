@@ -187,7 +187,7 @@ public class WxUtils {
         return (float) ( 6.1094*Math.exp( ( 17.625*tempCelsius )/( tempCelsius+243.04 ) ) );
     }
 
-    static public float getStationPressure( Float altimHg, float elevMeters ) {
+    static public float getStationPressure( float altimHg, float elevMeters ) {
         // Station pressure is in inHg
         return (float) ( altimHg*Math.pow( ( 288-0.0065*elevMeters )/288, 5.2561 ) );
     }
