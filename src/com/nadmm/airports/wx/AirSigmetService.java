@@ -26,7 +26,6 @@ import org.apache.http.client.utils.URIUtils;
 
 import android.content.Intent;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import com.nadmm.airports.utils.UiUtils;
 
@@ -60,8 +59,6 @@ public class AirSigmetService extends NoaaService {
 
         boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
         boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
-
-        Log.d( "ACTION", action );
 
         if ( action.equals( ACTION_GET_AIRSIGMET_TEXT ) ) {
             String stationId = intent.getStringExtra( STATION_ID );
@@ -98,9 +95,7 @@ public class AirSigmetService extends NoaaService {
             if ( forceRefresh || !map.exists() ) {
                 try {
                     String path = AIRSIGMET_MAP_PATH+"/"+AIRSIGMET_MAP_NAME;
-                    Log.d( "FETCHING", path );
                     URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, path, null, null );
-                    Log.d( "FETCHING", uri.toString() );
                     fetchFromNoaa( uri, map, false );
                 } catch ( Exception e ) {
                     UiUtils.showToast( this, "Unable to fetch AirSigmet: "+e.getMessage() );
@@ -111,7 +106,6 @@ public class AirSigmetService extends NoaaService {
             Intent result = new Intent();
             result.setAction( action );
             if ( map.exists() ) {
-                Log.d( "MAP", map.getAbsolutePath() );
                 result.putExtra( RESULT, map.getAbsolutePath() );
             }
             sendBroadcast( result );
