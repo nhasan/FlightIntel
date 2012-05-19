@@ -27,12 +27,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.view.Menu;
-import android.support.v4.view.MenuItem;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.ListFragmentBase;

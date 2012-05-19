@@ -51,21 +51,11 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="Theme.Sherlock.Light.DarkActionBar"
-            parent="@style/Theme.Sherlock.Light">
-        <item name="abBackground">#ff404040</item>
-        <item name="abTitleTextStyle">@style/LightBoldTitle</item>
-        <item name="abSubtitleTextStyle">@style/LightSubtitle</item>
-        <item name="abIcon">@drawable/ab_icon</item>
+    <style name="Theme.Light.DarkActionBar" parent="@style/Theme.Sherlock.Light.DarkActionBar">
+        <item name="icon">@drawable/ab_icon</item>
+        <item name="android:icon">@drawable/ab_icon</item>
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
         <item name="vpiTabTextStyle">@style/CustomTabPageIndicator.Text</item>
-    </style>
-    <style name="LightBoldTitle" parent="@style/TextAppearance.Widget.Title">
-        <item name="android:textColor">#ffffffff</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-    <style name="LightSubtitle" parent="@style/TextAppearance.Widget.Subtitle">
-        <item name="android:textColor">#ffeeeeee</item>
     </style>
     <style name="CustomTabPageIndicator" parent="@style/Widget.TabPageIndicator">
         <item name="android:paddingTop">8dp</item>

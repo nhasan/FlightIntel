@@ -19,6 +19,7 @@
 
 package com.nadmm.airports;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -28,19 +29,18 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.SupportActivity;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.LinearLayout.LayoutParams;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
@@ -49,7 +49,8 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.UiUtils;
 
-public class FragmentBase extends Fragment {
+
+public class FragmentBase extends SherlockFragment {
 
     private ActivityBase mActivity;
     private CursorAsyncTask mTask;
@@ -83,7 +84,7 @@ public class FragmentBase extends Fragment {
     }
 
     @Override
-    public void onAttach( SupportActivity activity ) {
+    public void onAttach( Activity activity ) {
         super.onAttach( activity );
         mActivity = (ActivityBase) activity;
     }

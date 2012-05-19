@@ -22,12 +22,12 @@ package com.nadmm.airports.utils;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.actionbarsherlock.view.Menu;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FlightIntel;
 import com.nadmm.airports.R;

@@ -61,8 +61,6 @@ import android.sax.Element;
 import android.sax.EndElementListener;
 import android.sax.EndTextElementListener;
 import android.sax.RootElement;
-import android.support.v4.view.Menu;
-import android.support.v4.view.Window;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
 import android.text.format.Time;
@@ -78,12 +76,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.Window;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
+
 
 public final class DownloadActivity extends ActivityBase {
     private static final String TAG = DownloadActivity.class.getName();

@@ -21,9 +21,9 @@ package com.nadmm.airports.afd;
 
 
 import android.os.Bundle;
-import android.support.v4.view.Menu;
 import android.support.v4.view.ViewPager;
 
+import com.actionbarsherlock.view.Menu;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TabsAdapter;
