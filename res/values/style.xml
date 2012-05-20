@@ -55,14 +55,8 @@
         <item name="icon">@drawable/ab_icon</item>
         <item name="android:icon">@drawable/ab_icon</item>
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
-        <item name="vpiTabTextStyle">@style/CustomTabPageIndicator.Text</item>
     </style>
-    <style name="CustomTabPageIndicator" parent="@style/Widget.TabPageIndicator">
-        <item name="android:paddingTop">8dp</item>
-    </style>
-    <style name="CustomTabPageIndicator.Text"
-            parent="@style/Widget.TabPageIndicator.Text">
-        <item name="android:textColor">#ff000000</item>
-        <item name="android:textSize">12dp</item>
+    <style name="CustomTabPageIndicator" parent="Widget.TabPageIndicator">
+        <item name="android:textColor">#FF404040</item>
     </style>
 </resources>
