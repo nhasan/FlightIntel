@@ -137,6 +137,7 @@ public class NavaidDetailsActivity extends ActivityBase {
             setActionBarTitle( id );
             showNavaidTitle( nav1 );
             showNavaidDetails( result );
+            showNavaidNotams( result );
             showNavaidRemarks( result );
 
             setContentShown( true );
@@ -206,11 +207,17 @@ public class NavaidDetailsActivity extends ActivityBase {
                     }
                 } while ( com.moveToNext() );
             }
+        }
+
+        protected void showNavaidNotams( Cursor[] result ) {
+            Cursor nav1 = result[ 0 ];
+            LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_notams );
             String navaidId = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
+            String navaidType = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_TYPE ) );
             Intent intent = new Intent( getActivity(), NavaidNotamActivity.class );
             intent.putExtra( Nav1.NAVAID_ID, navaidId );
             intent.putExtra( Nav1.NAVAID_TYPE, navaidType );
-            addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
+            addClickableRow( layout, "View NOTAMs", intent, R.drawable.row_selector );
         }
 
         protected void showNavaidRemarks( Cursor[] result ) {

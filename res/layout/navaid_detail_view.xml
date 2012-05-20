@@ -34,6 +34,12 @@
             android:background="@drawable/rounded_rectangle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
+    <LinearLayout android:id="@+id/navaid_notams"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_rectangle"
+            android:layout_marginTop="8dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/navaid_remarks"
             android:orientation="vertical"
             android:background="@drawable/rounded_rectangle"
