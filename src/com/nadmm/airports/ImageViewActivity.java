@@ -19,6 +19,7 @@
 
 package com.nadmm.airports;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +39,11 @@ public class ImageViewActivity extends ActivityBase {
         setContentView( R.layout.fragment_activity_layout );
 
         Bundle args = getIntent().getExtras();
+        String title = args.getString( IMAGE_TITLE );
+        setActionBarTitle( title );
+        String subtitle = args.getString( IMAGE_SUBTITLE );
+        setActionBarSubtitle( subtitle );
+
         addFragment( ImageViewFragment.class, args );
     }
 
@@ -52,11 +58,6 @@ public class ImageViewActivity extends ActivityBase {
             Bundle args = getArguments();
             String path = args.getString( IMAGE_PATH );
             view.loadUrl( "file://"+path );
-
-            String title = args.getString( IMAGE_TITLE );
-            setActionBarTitle( title );
-            String subtitle = args.getString( IMAGE_SUBTITLE );
-            setActionBarSubtitle( subtitle );
 
             return view;
         }
