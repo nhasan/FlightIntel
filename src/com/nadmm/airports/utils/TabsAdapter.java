@@ -28,10 +28,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
-import com.viewpagerindicator.TitleProvider;
-
-public class TabsAdapter extends FragmentPagerAdapter implements
-        TitleProvider, ViewPager.OnPageChangeListener {
+public class TabsAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
 
     private final Context mContext;
     private final ViewPager mViewPager;
@@ -87,9 +84,8 @@ public class TabsAdapter extends FragmentPagerAdapter implements
     }
 
     @Override
-    public String getTitle( int position ) {
-        TabInfo info = mTabs.get( position );
-        return info.label;
+    public CharSequence getPageTitle( int position ) {
+        return mTabs.get( position ).label;
     }
 
     @Override
