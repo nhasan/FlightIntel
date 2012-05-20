@@ -57,6 +57,7 @@
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
     </style>
     <style name="CustomTabPageIndicator" parent="Widget.TabPageIndicator">
-        <item name="android:textColor">#FF404040</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#FF000000</item>
     </style>
 </resources>
