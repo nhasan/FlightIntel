@@ -38,9 +38,10 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
         <Button android:id="@+id/btnShowOnMap"
-                style="@style/FlatButton"
+                style="@style/Widget.Sherlock.Light.Button.Small"
                 android:text="@string/show_on_map"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:layout_marginTop="6dp"
                 android:layout_marginBottom="4dp"
                 android:layout_width="wrap_content"
