@@ -27,6 +27,8 @@ use Text::Autoformat;
 
 my $reTrim = qr/^\s+|\s+$/;
 my $BASE_DIR = shift @ARGV;
+my $dbfile = shift @ARGV;
+
 my $STATIONS_FILE = "$BASE_DIR/wx_stations.txt";
 my $wx_url = "http://weather.aero/dataserver1_4/httpparam?"
         ."dataSource=stations&requestType=retrieve&format=xml&stationString=~us,~ca";
@@ -41,13 +43,12 @@ sub capitalize($)
 }
 
 my $ret = 200;
-#my $ret = getstore( $wx_url, $STATIONS_FILE );
+my $ret = getstore( $wx_url, $STATIONS_FILE );
 if ( $ret != 200 )
 {
     die "Unable to download station list";
 }
 
-my $dbfile = "fadds.db";
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );
@@ -120,8 +121,6 @@ sub station
 {
     my( $twig, $station )= @_;
 
-    ++$count;
-
     my $site_type = $station->child( 0, "site_type" );
     my $site_types = "";
     if ( $site_type )
@@ -146,6 +145,8 @@ sub station
         my $elevation_m = $station->child_text( 0, "elevation_m" );
         my $latitude = $station->child_text( 0, "latitude" );
         my $longitude = $station->child_text( 0, "longitude" );
+
+        ++$count;
 
         print "\rLoading # $count...";
 
