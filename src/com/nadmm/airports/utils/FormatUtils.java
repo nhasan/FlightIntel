@@ -20,6 +20,7 @@
 package com.nadmm.airports.utils;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import com.nadmm.airports.wx.WxUtils;
 
@@ -31,6 +32,7 @@ public class FormatUtils {
     private static DecimalFormat sNumberFormat;
     private static DecimalFormat sFreqFormat;
     private static DecimalFormat sVisFormat;
+    private static NumberFormat sDollarFormat;
 
     static {
         sFeetFormat = new DecimalFormat();
@@ -45,6 +47,7 @@ public class FormatUtils {
         sFreqFormat.applyPattern( "##0.000" );
         sVisFormat = new DecimalFormat();
         sVisFormat.applyPattern( "#0.## SM" );
+        sDollarFormat = DecimalFormat.getCurrencyInstance();
     }
 
     public static String formatFeet( float value ) {
@@ -114,6 +117,10 @@ public class FormatUtils {
 
     public static String formatDegrees( float degrees ) {
         return String.format( "%.02f\u00B0", degrees );
+    }
+
+    public static String formatCurrency( double amount ) {
+        return sDollarFormat.format( amount );
     }
 
 }
