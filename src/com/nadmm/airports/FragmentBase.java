@@ -49,7 +49,6 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.UiUtils;
 
-
 public class FragmentBase extends SherlockFragment {
 
     private ActivityBase mActivity;
@@ -64,7 +63,6 @@ public class FragmentBase extends SherlockFragment {
         }
     };
     private final OnClickListener mOnPhoneClickListener = new OnClickListener() {
-        
         @Override
         public void onClick( View v ) {
             TextView tv = (TextView) v;
