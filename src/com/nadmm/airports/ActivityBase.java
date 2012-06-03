@@ -503,7 +503,7 @@ public class ActivityBase extends SherlockFragmentActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             SearchManager searchManager =
                     (SearchManager) getSystemService( Context.SEARCH_SERVICE );
-            SearchView searchView = new SearchView( this );
+            SearchView searchView = new SearchView( getSupportActionBar().getThemedContext() );
             searchView.setSearchableInfo( searchManager.getSearchableInfo( getComponentName() ) );
             searchView.setIconifiedByDefault( false );
             menu.findItem( R.id.menu_search ).setActionView( searchView );
