@@ -78,6 +78,8 @@
     <string name="faa_services">FAA Services</string>
     <string name="fss_services">FSS Services</string>
     <string name="airport_operations">Airport Operations</string>
+    <string name="donation_levels">Choose Donation</string>
+    <string name="past_donations">Past Donations</string>
     <string name="agree">I Agree</string>
     <string name="disagree">I Disagree</string>
     <string name="other_details">Other Details</string>
@@ -85,6 +87,7 @@
     <string name="phone">Phone</string>
     <string name="close">Close</string>
     <string name="about">About</string>
+    <string name="donate">Donate</string>
     <string name="refresh">Refresh</string>
     <string name="sky_condition">Sky Condition</string>
     <string name="winds">Winds</string>
