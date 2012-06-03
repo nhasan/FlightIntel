@@ -25,6 +25,7 @@ use LWP::Simple;
 use JSON;
 
 my $FADDS_BASE = shift @ARGV;
+# Current database
 my $dbfile = shift @ARGV;
 
 my $site_number;
@@ -36,15 +37,14 @@ my $geonames_url = "http://api.geonames.org/timezoneJSON?";
 
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$FADDS_BASE/$dbfile", "", "" );
 
-my $update_airports_tz = "update airports set TIMEZONE_ID=? where SITE_NUMBER=?";
-my $sth_upd = $dbh->prepare( $update_airports_tz );
-
-my $sth = $dbh->prepare( 
-            "SELECT SITE_NUMBER, REF_LATTITUDE_DEGREES, REF_LONGITUDE_DEGREES, TIMEZONE_ID"
-            ." FROM airports" ) or die "Can't prepare statement: $DBI::errstr\n";
-$sth->execute or die "Can't execute statement: $DBI::errstr\n";
+my $sth_upd = $dbh->prepare( "update airports set TIMEZONE_ID=? where SITE_NUMBER=?" );
 
 my $row = 0;
+
+my $sth = $dbh->prepare( "SELECT SITE_NUMBER, REF_LATTITUDE_DEGREES, REF_LONGITUDE_DEGREES,"
+            ." TIMEZONE_ID FROM airports" )
+            or die "Can't prepare statement: $DBI::errstr\n";
+$sth->execute or die "Can't execute statement: $DBI::errstr\n";
 
 while ( ( $site_number, $latitude, $longitude, $tz ) = $sth->fetchrow_array )
 {
@@ -55,6 +55,7 @@ while ( ( $site_number, $latitude, $longitude, $tz ) = $sth->fetchrow_array )
         ++$row;
         next;
     }
+
     print "Processing row=[$row], site=[$site_number], lat=[$latitude], lon=[$longitude]\n";
     my $json_text = get $geonames_url."lat=$latitude&lng=$longitude&username=nhasan";
     my $json = decode_json( $json_text );
@@ -64,6 +65,7 @@ while ( ( $site_number, $latitude, $longitude, $tz ) = $sth->fetchrow_array )
         print $json->{status}{message}."\n";
         next;
     }
+
     print "timezone=[$tz]\n";
     $sth_upd->bind_param( 1, $json->{timezoneId} );
     $sth_upd->bind_param( 2, $site_number );
