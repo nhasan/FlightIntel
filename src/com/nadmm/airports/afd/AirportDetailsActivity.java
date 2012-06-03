@@ -45,6 +45,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.Application;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Aff3;
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -67,6 +68,7 @@ import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.aeronav.DafdService;
 import com.nadmm.airports.aeronav.DtppActivity;
+import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.notams.AirportNotamActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
@@ -610,46 +612,53 @@ public class AirportDetailsActivity extends ActivityBase {
         }
 
         protected void showAeroNavDetails( Cursor[] result ) {
-            Cursor apt = result[ 0 ];
-            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-            Cursor dtpp = result[ 10 ];
-            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_ifr_layout );
-            if ( dtpp != null ) {
-                if ( dtpp.moveToFirst() ) {
-                    Intent intent = new Intent( getActivity(), DtppActivity.class );
-                    intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                    addClickableRow( layout, "Instrument procedures", intent,
-                            R.drawable.row_selector_top );
+            if ( Application.sDonationDone ) {
+                Cursor apt = result[ 0 ];
+                String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
+                Cursor dtpp = result[ 10 ];
+                LinearLayout layout = (LinearLayout) findViewById( R.id.detail_ifr_layout );
+                if ( dtpp != null ) {
+                    if ( dtpp.moveToFirst() ) {
+                        Intent intent = new Intent( getActivity(), DtppActivity.class );
+                        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                        addClickableRow( layout, "Instrument procedures", intent,
+                                R.drawable.row_selector_top );
+                    } else {
+                        addRow( layout, "No instrument procedures available" );
+                    }
                 } else {
-                    addRow( layout, "No instrument procedures available" );
+                    addRow( layout, "d-TPP data not found" );
                 }
-            } else {
-                addRow( layout, "d-TPP data not found" );
-            }
-            Cursor cycle = result[ 11 ];
-            if ( cycle != null && cycle.moveToFirst() ) {
-                String afdCycle = cycle.getString( cycle.getColumnIndex( DafdCycle.AFD_CYCLE ) );
-                Cursor dafd = result[ 12 ];
-                if ( dafd.moveToFirst() ) {
-                    String pdfName = dafd.getString( dafd.getColumnIndex( Dafd.PDF_NAME ) );
-                    View row = addClickableRow( layout, "A/FD airport info", null,
-                            R.drawable.row_selector_bottom );
-                    row.setTag( R.id.DAFD_CYCLE, afdCycle );
-                    row.setTag( R.id.DAFD_PDF_NAME, pdfName );
-                    row.setOnClickListener( new OnClickListener() {
+                Cursor cycle = result[ 11 ];
+                if ( cycle != null && cycle.moveToFirst() ) {
+                    String afdCycle = cycle.getString( cycle.getColumnIndex( DafdCycle.AFD_CYCLE ) );
+                    Cursor dafd = result[ 12 ];
+                    if ( dafd.moveToFirst() ) {
+                        String pdfName = dafd.getString( dafd.getColumnIndex( Dafd.PDF_NAME ) );
+                        View row = addClickableRow( layout, "A/FD airport info", null,
+                                R.drawable.row_selector_bottom );
+                        row.setTag( R.id.DAFD_CYCLE, afdCycle );
+                        row.setTag( R.id.DAFD_PDF_NAME, pdfName );
+                        row.setOnClickListener( new OnClickListener() {
 
-                        @Override
-                        public void onClick( View v ) {
-                            String afdCycle = (String) v.getTag( R.id.DAFD_CYCLE );
-                            String pdfName = (String) v.getTag( R.id.DAFD_PDF_NAME );
-                            getAfdPage( afdCycle, pdfName );
-                        }
-                    } );
+                            @Override
+                            public void onClick( View v ) {
+                                String afdCycle = (String) v.getTag( R.id.DAFD_CYCLE );
+                                String pdfName = (String) v.getTag( R.id.DAFD_PDF_NAME );
+                                getAfdPage( afdCycle, pdfName );
+                            }
+                        } );
+                    } else {
+                        addRow( layout, "A/FD page is not available for this airport" );
+                    }
                 } else {
-                    addRow( layout, "A/FD page is not available for this airport" );
+                    addRow( layout, "d-A/FD data not found" );
                 }
             } else {
-                addRow( layout, "d-A/FD data not found" );
+                Intent intent = new Intent( getActivity(), DonateActivity.class );
+                LinearLayout layout = (LinearLayout) findViewById( R.id.detail_ifr_layout );
+                addClickableRow( layout, "Please donate to enable this section",
+                        intent, R.drawable.row_selector );
             }
         }
 
