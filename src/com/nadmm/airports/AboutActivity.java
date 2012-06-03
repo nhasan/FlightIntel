@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,11 +19,14 @@
 
 package com.nadmm.airports;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.widget.Button;
+
+import com.nadmm.airports.donate.DonateActivity;
 
 public class AboutActivity extends ActivityBase {
 
@@ -34,6 +37,15 @@ public class AboutActivity extends ActivityBase {
         setContentView( R.layout.about_view );
         WebView webView = (WebView) findViewById( R.id.about_content );
         webView.loadUrl( "file:///android_asset/about.html" );
+
+        Button btnDonate = (Button) findViewById( R.id.btn_donate );
+        btnDonate.setOnClickListener( new OnClickListener() {
+            @Override
+            public void onClick( View v ) {
+                Intent intent = new Intent( AboutActivity.this, DonateActivity.class );
+                startActivity( intent );
+            }
+        } );
 
         Button btnOk = (Button) findViewById( R.id.btn_close );
         btnOk.setOnClickListener( new OnClickListener() {
