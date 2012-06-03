@@ -22,14 +22,14 @@ package com.nadmm.airports.utils;
 import java.io.File;
 import java.util.List;
 
-import com.nadmm.airports.FlightIntel;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Environment;
+
+import com.nadmm.airports.FlightIntel;
 
 public class SystemUtils {
 
