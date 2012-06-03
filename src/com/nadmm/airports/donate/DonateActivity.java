@@ -36,6 +36,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.Application;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.billing.BillingService;
@@ -61,6 +62,10 @@ public class DonateActivity extends ActivityBase {
 
         Bundle args = getIntent().getExtras();
         addFragment( DonateFragment.class, args );
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 
     public static class DonateFragment extends FragmentBase implements OnClickListener {
@@ -229,9 +234,11 @@ public class DonateActivity extends ActivityBase {
             LinearLayout layout = (LinearLayout) findViewById( R.id.past_donations_layout );
             layout.removeAllViews();
             if ( donations.isEmpty() ) {
+                Application.sDonationDone = false;
                 addRow( layout, "No donations made yet" );
                 tv.setVisibility( View.GONE );
             } else {
+                Application.sDonationDone = true;
                 for ( String productId : donations.keySet() ) {
                     Time time = donations.get( productId );
                     DonationLevel level = getDonationLevel( productId );
