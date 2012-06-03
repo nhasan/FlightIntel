@@ -26,14 +26,23 @@
         android:layout_height="wrap_content">
     <LinearLayout
             android:id="@+id/button_bar"
-            android:orientation="vertical"
-            android:padding="4dp"
+            android:orientation="horizontal"
+            android:padding="6dp"
             android:background="@android:color/darker_gray"
             android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
         <Button
+                android:id="@+id/btn_donate"
+                style="@style/Widget.Sherlock.Light.Button.Small"
+                android:text="@string/donate"
+                android:layout_gravity="center"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content" />
+        <Button
                 android:id="@+id/btn_close"
+                style="@style/Widget.Sherlock.Light.Button.Small"
                 android:text="@string/close"
                 android:layout_gravity="center"
                 android:layout_width="100dp"
