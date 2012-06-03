@@ -68,8 +68,14 @@ public class NearbyActivity extends ActivityBase {
             location = mLocationManager.getLastKnownLocation( LocationManager.NETWORK_PROVIDER );
         }
 
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences( this );
+        int radius = Integer.valueOf( prefs.getString(
+                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
+
         Bundle args = new Bundle();
         args.putParcelable( LocationColumns.LOCATION, location );
+        args.putInt( LocationColumns.RADIUS, radius );
 
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
         mTabsAdapter = new TabsAdapter( this, pager );
@@ -78,11 +84,6 @@ public class NearbyActivity extends ActivityBase {
 
         TabPageIndicator tabIndicator = (TabPageIndicator) findViewById( R.id.page_titles );
         tabIndicator.setViewPager( pager );
-
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences( this );
-        int radius = Integer.valueOf( prefs.getString(
-                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
 
         setActionBarSubtitle( String.format( "Within %d NM Radius", radius ) );
 

@@ -19,17 +19,14 @@
 
 package com.nadmm.airports.afd;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
-import com.nadmm.airports.PreferencesActivity;
 
 public class NearbyAirportsFragment extends AirportListFragmentBase {
 
@@ -53,13 +50,10 @@ public class NearbyAirportsFragment extends AirportListFragmentBase {
                 return null;
             }
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-
             Location location = params[ 0 ];
-            SharedPreferences prefs =
-                    PreferenceManager.getDefaultSharedPreferences( getActivity() );
-            int radius = Integer.valueOf( prefs.getString(
-                    PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
+            Bundle args = getArguments();
+            int radius = args.getInt( LocationColumns.RADIUS );
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
             return new NearbyAirportsCursor( db, location, radius );
         }
