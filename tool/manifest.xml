@@ -10,6 +10,15 @@
         <end>2012-05-31</end>
     </datafile>
     <datafile>
+        <type>FADDS</type>
+        <desc>National Airspace System (FAA)</desc>
+        <version>20120531</version>
+        <filename>fadds_20120531.zip</filename>
+        <size>5066915</size>
+        <start>2012-05-31</start>
+        <end>2012-07-26T09:01:00Z</end>
+    </datafile>
+    <datafile>
         <type>DTPP</type>
         <desc>AeroNav d-TPP #1205 (FAA)</desc>
         <version>1205</version>
@@ -19,6 +28,15 @@
         <end>2012-05-31T09:01:00Z</end>
     </datafile>
     <datafile>
+        <type>DTPP</type>
+        <desc>AeroNav d-TPP #1206 (FAA)</desc>
+        <version>1206</version>
+        <filename>dtpp_20120531.zip</filename>
+        <size>463506</size>
+        <start>2012-05-31T09:01:00Z</start>
+        <end>2012-06-28T09:01:00Z</end>
+    </datafile>
+    <datafile>
         <type>DAFD</type>
         <desc>AeroNav d-A/FD 05APR12 (FAA)</desc>
         <version>20120405</version>
@@ -26,6 +44,15 @@
         <size>83411</size>
         <start>2012-05-03</start>
         <end>2012-05-31</end>
+    </datafile>
+    <datafile>
+        <type>DAFD</type>
+        <desc>AeroNav d-A/FD 31MAY12 (FAA)</desc>
+        <version>20120531</version>
+        <filename>dafd_20120531.zip</filename>
+        <size>82807</size>
+        <start>2012-05-31</start>
+        <end>2012-07-26T09:01:00Z</end>
     </datafile>
 </manifest>
 
