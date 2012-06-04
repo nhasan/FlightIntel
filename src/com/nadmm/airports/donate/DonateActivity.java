@@ -96,8 +96,8 @@ public class DonateActivity extends ActivityBase {
         }
 
         private final DonationLevel[] mDonationLevels = {
-            new DonationLevel( "donate_199", "Frugal Flyer", 1.99 ),
-            new DonationLevel( "donate_399", "Generous Flyer", 3.99 )
+            new DonationLevel( "donate_199", "Intrepid Flyer", 1.99 ),
+            new DonationLevel( "donate_399", "Maverick Flyer", 3.99 )
         };
 
         private final class DonateTask extends CursorAsyncTask {
@@ -328,7 +328,7 @@ public class DonateActivity extends ActivityBase {
                     SharedPreferences.Editor edit = prefs.edit();
                     edit.putBoolean( DONATIONS_INITIALIZED, true );
                     edit.commit();
-                    UiUtils.showToast( getActivity(), "Donation transactions restored" );
+                    UiUtils.showToast( getActivity(), "Past donations restored successfully" );
                     showDonationView( BILLING_AVAILABLE );
                 } else {
                     showDonationView( BILLING_ERROR_RESTORE );
@@ -342,7 +342,7 @@ public class DonateActivity extends ActivityBase {
             boolean initialized = prefs.getBoolean( DONATIONS_INITIALIZED, false );
             if ( !initialized ) {
                 mBillingService.restoreTransactions();
-                UiUtils.showToast( getActivity(), "Restoring donation transactions" );
+                UiUtils.showToast( getActivity(), "Restoring past donation transactions" );
             }
             return initialized;
         }
