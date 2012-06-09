@@ -886,6 +886,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 Intent service = new Intent( getActivityBase(), MetarService.class );
                 service.setAction( NoaaService.ACTION_GET_METAR );
                 service.putExtra( NoaaService.STATION_ID, stationId );
+                service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
                 if ( force ) {
                     service.putExtra( NoaaService.FORCE_REFRESH, true );
                 } else if ( cacheOnly ) {
