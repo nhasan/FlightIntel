@@ -34,7 +34,7 @@
             android:indeterminateOnly="true"
             android:layout_gravity="center"
             android:paddingRight="10dp"
-            android:visibility="gone"
+            android:visibility="invisible"
             style="@android:style/Widget.ProgressBar.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
