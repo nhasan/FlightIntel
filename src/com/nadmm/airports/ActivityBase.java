@@ -66,6 +66,7 @@ import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.afd.BrowseActivity;
 import com.nadmm.airports.afd.FavoritesActivity;
 import com.nadmm.airports.afd.NearbyActivity;
+import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
@@ -543,6 +544,10 @@ public class ActivityBase extends SherlockFragmentActivity {
         case R.id.menu_settings:
             Intent settings = new Intent( this, PreferencesActivity.class  );
             startActivity( settings );
+            return true;
+        case R.id.menu_donate:
+            Intent donate = new Intent( this, DonateActivity.class );
+            startActivity( donate );
             return true;
         case R.id.menu_about:
             Intent about = new Intent( this, AboutActivity.class );
