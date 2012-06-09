@@ -22,6 +22,7 @@ package com.nadmm.airports.donate;
 import java.util.HashMap;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.Application;
+import com.nadmm.airports.FlightIntel;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.billing.BillingService;
@@ -66,6 +68,10 @@ public class DonateActivity extends ActivityBase {
 
     @Override
     public void onBackPressed() {
+        Intent intent = new Intent( this, FlightIntel.class );
+        intent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+        startActivity( intent );
+        finish();
     }
 
     public static class DonateFragment extends FragmentBase implements OnClickListener {
@@ -209,6 +215,7 @@ public class DonateActivity extends ActivityBase {
                 LinearLayout layout = (LinearLayout) findViewById( R.id.donate_level_layout );
                 layout.removeAllViews();
 
+                int count = mDonationLevels.length-donations.size();
                 for ( int i = 0; i < mDonationLevels.length; ++i ) {
                     DonationLevel level = mDonationLevels[ i ];
                     if ( !donations.containsKey( level.productId ) ) {
@@ -216,8 +223,7 @@ public class DonateActivity extends ActivityBase {
                                 FormatUtils.formatCurrency( level.amount ) );
                         row.setTag( level.productId );
                         row.setOnClickListener( this );
-                        row.setBackgroundResource( getRowSelector( i, 
-                                mDonationLevels.length-donations.size() ) );
+                        row.setBackgroundResource( UiUtils.getRowSelector( i, count ) );
                     }
                 }
 
@@ -255,20 +261,6 @@ public class DonateActivity extends ActivityBase {
             }
 
             setContentShown( true );
-        }
-
-        protected int getRowSelector( int row, int total ) {
-            int resid;
-            if ( total == 1 ) {
-                resid = R.drawable.row_selector;
-            } else if ( row == 0 ) {
-                resid = R.drawable.row_selector_top;
-            } else if ( row == total-1 ) {
-                resid = R.drawable.row_selector_bottom;
-            } else {
-                resid = R.drawable.row_selector_middle;
-            }
-            return resid;
         }
 
         protected DonationLevel getDonationLevel( String productId ) {
