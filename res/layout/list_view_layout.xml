@@ -23,14 +23,14 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
-    <TextView android:id="@+id/list_msg"
+    <TextView android:id="@android:id/empty"
 	        android:padding="4dp"
 	        android:gravity="center"
 	        android:visibility="gone"
             android:textAppearance="?android:attr/textAppearanceSmall" 
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
-    <ListView android:id="@+id/list_view"
+    <ListView android:id="@android:id/list"
             style="Widget.Sherlock.Light.ListView.DropDown"
             android:footerDividersEnabled="false"
             android:layout_weight="1"
