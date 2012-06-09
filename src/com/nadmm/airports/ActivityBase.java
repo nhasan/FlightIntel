@@ -230,7 +230,7 @@ public class ActivityBase extends SherlockFragmentActivity {
         if ( f == null ) {
             f = Fragment.instantiate( this, clss.getName(), args );
             FragmentTransaction ft = fm.beginTransaction();
-            ft.add( R.id.fragment_container, f, tag );
+            ft.add( id, f, tag );
             ft.commit();
         }
         return f;
