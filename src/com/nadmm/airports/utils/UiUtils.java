@@ -120,4 +120,18 @@ public class UiUtils {
         return resid;
     }
 
+    static public int getRowSelector( int row, int count ) {
+        int resid;
+        if ( count == 1 ) {
+            resid = R.drawable.row_selector;
+        } else if ( row == 0 ) {
+            resid = R.drawable.row_selector_top;
+        } else if ( row == count-1 ) {
+            resid = R.drawable.row_selector_bottom;
+        } else {
+            resid = R.drawable.row_selector_middle;
+        }
+        return resid;
+    }
+
 }
