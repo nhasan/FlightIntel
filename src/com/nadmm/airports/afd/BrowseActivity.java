@@ -28,11 +28,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.view.LayoutInflater;
+import android.support.v4.widget.CursorAdapter;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -41,7 +38,7 @@ import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.DownloadActivity;
-import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
@@ -61,7 +58,7 @@ public final class BrowseActivity extends ActivityBase {
         addFragment( BrowseFragment.class, args );
     }
 
-    public static class BrowseFragment extends FragmentBase {
+    public static class BrowseFragment extends ListFragmentBase {
 
         // Projection maps for queries
         static private final HashMap<String, String> sStateMap = buildStateMap();
@@ -88,8 +85,6 @@ public final class BrowseActivity extends ActivityBase {
                     +" AS "+Airports.ICAO_CODE );
             return map;
         }
-
-        private ListView mListView;
 
         private final class BrowseTask extends CursorAsyncTask {
 
@@ -165,7 +160,7 @@ public final class BrowseActivity extends ActivityBase {
             @Override
             protected boolean onResult( Cursor[] result ) {
                 if ( result != null ) {
-                    setcursor( result[ 0 ] );
+                    setCursor( result[ 0 ] );
                 } else {
                     Intent intent = new Intent( getActivity(), DownloadActivity.class );
                     intent.putExtra( "MSG", "Please install the data before using the app" );
@@ -174,24 +169,6 @@ public final class BrowseActivity extends ActivityBase {
                 return false;
             }
 
-        }
-
-        @Override
-        public View onCreateView( LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState ) {
-            View view = inflater.inflate( R.layout.list_view_layout, container, false );
-            mListView = (ListView) view.findViewById( R.id.list_view );
-            mListView.setOnItemClickListener( new OnItemClickListener() {
-
-                @Override
-                public void onItemClick( AdapterView<?> parent, View view,
-                        int position, long id ) {
-                    onListItemClick( position );
-                }
-
-            } );
-
-            return createContentView( view );
         }
 
         @Override
@@ -210,7 +187,8 @@ public final class BrowseActivity extends ActivityBase {
             super.onActivityCreated( savedInstanceState );
         }
 
-        protected void setcursor( Cursor c ) {
+        @Override
+        protected CursorAdapter newListAdapter( Context context, Cursor c ) {
             BrowseCursorAdapter adapter;
             if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
                  adapter = new BrowseCursorAdapter( getActivity(),
@@ -223,14 +201,12 @@ public final class BrowseActivity extends ActivityBase {
                 getSupportActionBar().setSubtitle( String.format( "%s  (%d)",
                         getSupportActionBar().getSubtitle(), c.getCount() ) );
             }
-
-            mListView.setAdapter( adapter );
-
-            setFragmentContentShown( true );
+            return adapter;
         }
 
-        protected void onListItemClick( int position ) {
-            BrowseCursorAdapter adapter = (BrowseCursorAdapter) mListView.getAdapter();
+        @Override
+        protected void onListItemClick( ListView l, View v, int position ) {
+            BrowseCursorAdapter adapter = (BrowseCursorAdapter) getListAdapter();
             Cursor c = adapter.getCursor();
             c.moveToPosition( position );
             if ( c.getColumnIndex( Airports.SITE_NUMBER ) == -1 ) {
