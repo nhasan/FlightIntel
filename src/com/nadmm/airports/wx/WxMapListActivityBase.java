@@ -86,9 +86,11 @@ public abstract class WxMapListActivityBase extends SherlockListActivity {
 
     @Override
     protected void onListItemClick( ListView l, View v, int position, long id ) {
-        mAdapter.setPendingPos( position );
-        String code = (String) mAdapter.getItem( position );
-        requestWxMap( code );
+        if ( mAdapter.getPendingPos() == -1 ) {
+            mAdapter.setPendingPos( position );
+            String code = (String) mAdapter.getItem( position );
+            requestWxMap( code );
+        }
     }
 
     protected void requestWxMap( String code ) {

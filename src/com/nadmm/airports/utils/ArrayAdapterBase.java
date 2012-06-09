@@ -65,13 +65,22 @@ public class ArrayAdapterBase extends BaseAdapter {
         TextView tv = (TextView) convertView.findViewById( R.id.text );
         tv.setText( mNames[ position ] );
         View view = convertView.findViewById( R.id.progress );
-        view.setVisibility( position == mPendingPos? View.VISIBLE : View.GONE );
+        view.setVisibility( position == mPendingPos? View.VISIBLE : View.INVISIBLE );
         return convertView;
+    }
+
+    @Override
+    public boolean areAllItemsEnabled() {
+        return mPendingPos == -1;
     }
 
     public void setPendingPos( int position ) {
         mPendingPos = position;
         notifyDataSetChanged();
+    }
+
+    public int getPendingPos() {
+        return mPendingPos;
     }
 
     public void clearPendingPos() {
