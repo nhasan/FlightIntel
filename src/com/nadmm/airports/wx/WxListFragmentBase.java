@@ -116,6 +116,7 @@ public class WxListFragmentBase extends ListFragmentBase {
             Intent service = new Intent( activity, MetarService.class );
             service.setAction( NoaaService.ACTION_GET_METAR );
             service.putExtra( NoaaService.STATION_ID, stationId );
+            service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
             if ( force ) {
                 service.putExtra( NoaaService.FORCE_REFRESH, true );
             }
@@ -135,7 +136,7 @@ public class WxListFragmentBase extends ListFragmentBase {
             Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
             mStationWx.put( metar.stationId, metar );
 
-            ListView l = (ListView) findViewById( R.id.list_view );
+            ListView l = (ListView) findViewById( android.R.id.list );
             int first = l.getFirstVisiblePosition();
 
             int pos = 0;
