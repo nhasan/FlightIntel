@@ -31,7 +31,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -101,6 +103,15 @@ public class PirepFragment extends FragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.pirep_detail_view, container, false );
+        Button btnImages = (Button) view.findViewById( R.id.btnViewMaps );
+        btnImages.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                Intent intent = new Intent( getActivity(), PirepMapActivity.class );
+                startActivity( intent );
+            }
+        } );
         return createContentView( view );
     }
 
@@ -169,6 +180,7 @@ public class PirepFragment extends FragmentBase {
         Intent service = new Intent( getActivity(), PirepService.class );
         service.setAction( NoaaService.ACTION_GET_PIREP );
         service.putExtra( NoaaService.STATION_ID, mStationId );
+        service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
         service.putExtra( PirepService.RADIUS_NM, PIREP_RADIUS_NM );
         service.putExtra( PirepService.HOURS_BEFORE, PIREP_HOURS_BEFORE );
         service.putExtra( PirepService.LOCATION, mLocation );

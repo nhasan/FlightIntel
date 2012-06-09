@@ -20,19 +20,28 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
+import java.net.URI;
+
+import org.apache.http.client.utils.URIUtils;
 
 import android.content.Intent;
 import android.location.Location;
 import android.text.format.DateUtils;
+import android.util.Log;
 
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 public class PirepService extends NoaaService {
 
-    private final String PIREP_QUERY =
+    private final String PIREP_IMAGE_NAME = "pireps_%s.gif";
+    private final String PIREP_IMAGE_ZOOM_NAME = "pireps_%s_zoom.gif";
+    private final String PIREP_TEXT_QUERY =
             "dataSource=aircraftreports&requestType=retrieve&format=xml&compression=gzip"
             + "&hoursBeforeNow=%d&radialDistance=%.0f;%.2f,%.2f";
+    private final String PIREP_IMAGE_QUERY = "/data/pireps/";
+    private final String PIREP_IMAGE_ZOOM_QUERY = "/data/pireps/zoom/";
     private final long PIREP_CACHE_MAX_AGE = 1*DateUtils.HOUR_IN_MILLIS;
 
     private PirepParser mParser;
@@ -51,41 +60,71 @@ public class PirepService extends NoaaService {
 
     @Override
     protected void onHandleIntent( Intent intent ) {
-        if ( !intent.getAction().equals( ACTION_GET_PIREP ) ) {
-            return;
+        String action = intent.getAction();
+        if ( action.equals( ACTION_GET_PIREP ) ) {
+            String type = intent.getStringExtra( TYPE );
+            if ( type.equals( TYPE_TEXT ) ) {
+                // Get request parameters
+                String stationId = intent.getStringExtra( STATION_ID );
+                int radiusNM = intent.getIntExtra( RADIUS_NM, 50 );
+                int hours = intent.getIntExtra( HOURS_BEFORE, 3 );
+                Location location = intent.getParcelableExtra( LOCATION );
+                boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
+                boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
+
+                File xml = new File( DATA_DIR, "PIREP_"+stationId+".xml" );
+
+                if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
+                    fetchPirep( hours, location, radiusNM, xml );
+                }
+
+                Pirep pirep = new Pirep();
+
+                if ( xml.exists() ) {
+                    mParser.parse( xml, pirep, location, radiusNM );
+                }
+
+                // Broadcast the result
+                Intent result = new Intent();
+                result.setAction( ACTION_GET_PIREP );
+                result.putExtra( STATION_ID, stationId );
+                result.putExtra( RESULT, pirep );
+                sendBroadcast( result );
+            } else if ( type.equals( TYPE_IMAGE ) ) {
+                boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
+                String code = intent.getStringExtra( IMAGE_CODE );
+                String imageName = String.format(
+                        hiRes? PIREP_IMAGE_ZOOM_NAME : PIREP_IMAGE_NAME,
+                        code );
+                File image = new File( DATA_DIR, imageName );
+                if ( !image.exists() ) {
+                    try {
+                        String query = hiRes? PIREP_IMAGE_ZOOM_QUERY : PIREP_IMAGE_QUERY;
+                        query += imageName;
+                        Log.d( "QUREY", query );
+                        URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, query, null, null );
+                        fetchFromNoaa( uri, image, false );
+                    } catch ( Exception e ) {
+                        UiUtils.showToast( this, "Unable to fetch image: "+e.getMessage() );
+                    }
+                }
+
+                // Broadcast the result
+                Intent result = new Intent();
+                result.setAction( action );
+                result.putExtra( TYPE, TYPE_IMAGE );
+                result.putExtra( IMAGE_CODE, code );
+                if ( image.exists() ) {
+                    result.putExtra( RESULT, image.getAbsolutePath() );
+                }
+                sendBroadcast( result );
+            }
         }
-
-        // Get request parameters
-        String stationId = intent.getStringExtra( STATION_ID );
-        int radiusNM = intent.getIntExtra( RADIUS_NM, 50 );
-        int hours = intent.getIntExtra( HOURS_BEFORE, 3 );
-        Location location = intent.getParcelableExtra( LOCATION );
-        boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
-        boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
-
-        File xml = new File( DATA_DIR, "PIREP_"+stationId+".xml" );
-
-        if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
-            fetchPirep( hours, location, radiusNM, xml );
-        }
-
-        Pirep pirep = new Pirep();
-
-        if ( xml.exists() ) {
-            mParser.parse( xml, pirep, location, radiusNM );
-        }
-
-        // Broadcast the result
-        Intent result = new Intent();
-        result.setAction( ACTION_GET_PIREP );
-        result.putExtra( STATION_ID, stationId );
-        result.putExtra( RESULT, pirep );
-        sendBroadcast( result );
     }
 
     protected boolean fetchPirep( int hours, Location location, int radiusNM, File xml ) {
         try {
-            String query = String.format( PIREP_QUERY, hours,
+            String query = String.format( PIREP_TEXT_QUERY, hours,
                     radiusNM*GeoUtils.STATUTE_MILES_PER_NAUTICAL_MILES,
                     location.getLongitude(), location.getLatitude() );
             return fetchFromNoaa( query, xml, true );

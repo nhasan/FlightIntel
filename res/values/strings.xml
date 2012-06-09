@@ -102,6 +102,7 @@
     <string name="annual_ops">Annual Operations</string>
     <string name="aircraft_operations">Aircraft Operations</string>
     <string name="airsigmet_images">Select AirSigmet Image</string>
+    <string name="pirep_images">Select Pirep Image</string>
     <string name="select_region">Select Map Region</string>
     <string name="sd_card_monitor">SD Card Monitor</string>
     <string name="try_now">Try Now</string>
