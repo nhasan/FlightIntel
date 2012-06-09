@@ -22,4 +22,5 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <bool name="ActionbarShowAirportName">true</bool>
+    <bool name="WxHiResImages">true</bool>
 </resources>
