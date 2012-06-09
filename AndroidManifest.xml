@@ -93,6 +93,18 @@
         <activity android:label="@string/weather"
                   android:name=".wx.WxDetailActivity" />
 
+        <activity android:label="@string/airsigmet_images"
+                  android:name=".wx.AirSigmetMapActivity"
+                  android:theme="@style/Theme.Sherlock.Light.Dialog" />
+
+        <activity android:label="@string/select_region"
+                  android:name=".wx.MetarMapActivity"
+                  android:theme="@style/Theme.Sherlock.Light.Dialog" />
+
+        <activity android:label="@string/select_region"
+                  android:name=".wx.TafMapActivity"
+                  android:theme="@style/Theme.Sherlock.Light.Dialog" />
+        
         <activity android:label="@string/instrument_procedures"
                   android:name=".aeronav.DtppActivity" />
 
@@ -111,7 +123,9 @@
         <activity android:label=""
                   android:name=".ImageViewActivity" />
 
-    	<activity android:launchMode="singleTop" android:name=".afd.SearchActivity">
+    	<activity android:label="@string/search"
+                  android:launchMode="singleTop"
+                  android:name=".afd.SearchActivity">
         	<intent-filter>
             	<action android:name="android.intent.action.SEARCH" />
 	        </intent-filter>

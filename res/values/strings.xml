@@ -101,17 +101,19 @@
     <string name="based_aircraft">Based Aircrafts</string>
     <string name="annual_ops">Annual Operations</string>
     <string name="aircraft_operations">Aircraft Operations</string>
+    <string name="airsigmet_images">Select AirSigmet Image</string>
+    <string name="select_region">Select Map Region</string>
     <string name="sd_card_monitor">SD Card Monitor</string>
     <string name="try_now">Try Now</string>
-    <string name="show_on_map">Show on Map</string>
+    <string name="view_maps">View Maps</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>
         <item quantity="other">%1$d active NOTAMs found</item>
     </plurals>
     <plurals name="search_entry_found">
-        <item quantity="zero">No airport found matching \'%2$s\'</item>
-        <item quantity="one">1 airport found matching \'%2$s\'</item>
-        <item quantity="other">%1$d airports found matching \'%2$s\'</item>
+        <item quantity="zero">No airports matching \'%2$s\'</item>
+        <item quantity="one">1 airport matching \'%2$s\'</item>
+        <item quantity="other">%1$d airports matching \'%2$s\'</item>
     </plurals>
 </resources>

@@ -31,12 +31,11 @@ import com.nadmm.airports.utils.UiUtils;
 
 public class AirSigmetService extends NoaaService {
 
-    //http://weather.aero/data/airmets/airmets_ALL.gif
+    private final String AIRSIGMET_IMAGE_NAME = "airmets_%s.gif";
     private final String AIRSIGMET_TEXT_QUERY =
             "datasource=airsigmets&requesttype=retrieve&format=xml&compression=gzip"
             + "&hoursBeforeNow=%d&minLat=%.2f&maxLat=%.2f&minLon=%.2f&maxLon=%.2f";
-    private final String AIRSIGMET_MAP_PATH = "/data/airmets";
-    private final String AIRSIGMET_MAP_NAME = "airmets_ALL.gif";
+    private final String AIRSIGMET_IMAGE_QUERY = "/data/airmets/";
     private final long AIRSIGMET_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
 
     AirSigmetParser mParser;
@@ -56,59 +55,64 @@ public class AirSigmetService extends NoaaService {
     @Override
     protected void onHandleIntent( Intent intent ) {
         String action = intent.getAction();
+        if ( action.equals( ACTION_GET_AIRSIGMET ) ) {
+            String type = intent.getStringExtra( TYPE );
+            if ( type.equals( TYPE_TEXT ) ) {
+                String stationId = intent.getStringExtra( STATION_ID );
+                double[] box = intent.getDoubleArrayExtra( COORDS_BOX );
+                int hours = intent.getIntExtra( HOURS_BEFORE, 3 );
+                boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
+                boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-        boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
-        boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
+                File xml = new File( DATA_DIR, "AIRSIGMET_"+stationId+".xml" );
 
-        if ( action.equals( ACTION_GET_AIRSIGMET_TEXT ) ) {
-            String stationId = intent.getStringExtra( STATION_ID );
-            double[] box = intent.getDoubleArrayExtra( COORDS_BOX );
-            int hours = intent.getIntExtra( HOURS_BEFORE, 3 );
-
-            File xml = new File( DATA_DIR, "AIRSIGMET_"+stationId+".xml" );
-
-            if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
-                try {
-                    String query = String.format( AIRSIGMET_TEXT_QUERY,
-                            hours, box[ 0 ], box[ 1 ], box[ 2 ], box[ 3 ] );
-                    fetchFromNoaa( query, xml, true );
-                } catch ( Exception e ) {
-                    UiUtils.showToast( this, "Unable to fetch AirSigmet: "+e.getMessage() );
+                if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
+                    try {
+                        String query = String.format( AIRSIGMET_TEXT_QUERY,
+                                hours, box[ 0 ], box[ 1 ], box[ 2 ], box[ 3 ] );
+                        fetchFromNoaa( query, xml, true );
+                    } catch ( Exception e ) {
+                        UiUtils.showToast( this, "Unable to fetch AirSigmet: "+e.getMessage() );
+                    }
                 }
-            }
 
-            AirSigmet airSigmet = new AirSigmet();
+                AirSigmet airSigmet = new AirSigmet();
 
-            if ( xml.exists() ) {
-                mParser.parse( xml, airSigmet );
-            }
-
-            // Broadcast the result
-            Intent result = new Intent();
-            result.setAction( action );
-            result.putExtra( STATION_ID, stationId );
-            result.putExtra( RESULT, airSigmet );
-            sendBroadcast( result );
-        } else if ( action.equals( ACTION_GET_AIRSIGMET_MAP ) ) {
-            File map = new File( DATA_DIR, AIRSIGMET_MAP_NAME );
-
-            if ( forceRefresh || !map.exists() ) {
-                try {
-                    String path = AIRSIGMET_MAP_PATH+"/"+AIRSIGMET_MAP_NAME;
-                    URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, path, null, null );
-                    fetchFromNoaa( uri, map, false );
-                } catch ( Exception e ) {
-                    UiUtils.showToast( this, "Unable to fetch AirSigmet: "+e.getMessage() );
+                if ( xml.exists() ) {
+                    mParser.parse( xml, airSigmet );
                 }
-            }
 
-            // Broadcast the result
-            Intent result = new Intent();
-            result.setAction( action );
-            if ( map.exists() ) {
-                result.putExtra( RESULT, map.getAbsolutePath() );
+                // Broadcast the result
+                Intent result = new Intent();
+                result.setAction( action );
+                result.putExtra( STATION_ID, stationId );
+                result.putExtra( TYPE, TYPE_TEXT );
+                result.putExtra( RESULT, airSigmet );
+                sendBroadcast( result );
+            } else if ( type.equals( TYPE_IMAGE ) ) {
+                String code = intent.getStringExtra( IMAGE_CODE );
+                String imageName = String.format( AIRSIGMET_IMAGE_NAME, code );
+                File image = new File( DATA_DIR, imageName );
+                if ( !image.exists() ) {
+                    try {
+                        URI uri = URIUtils.createURI( "http", NOAA_HOST, 80,
+                                AIRSIGMET_IMAGE_QUERY+"/"+imageName, null, null );
+                        fetchFromNoaa( uri, image, false );
+                    } catch ( Exception e ) {
+                        UiUtils.showToast( this, "Unable to fetch image: "+e.getMessage() );
+                    }
+                }
+
+                // Broadcast the result
+                Intent result = new Intent();
+                result.setAction( action );
+                result.putExtra( TYPE, TYPE_IMAGE );
+                result.putExtra( IMAGE_CODE, code );
+                if ( image.exists() ) {
+                    result.putExtra( RESULT, image.getAbsolutePath() );
+                }
+                sendBroadcast( result );
             }
-            sendBroadcast( result );
         }
     }
 

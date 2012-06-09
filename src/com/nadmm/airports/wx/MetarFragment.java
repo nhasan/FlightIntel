@@ -35,6 +35,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -102,6 +104,15 @@ public class MetarFragment extends FragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.metar_detail_view, container, false );
+        Button btnImages = (Button) view.findViewById( R.id.btnViewMaps );
+        btnImages.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                Intent intent = new Intent( getActivity(), MetarMapActivity.class );
+                startActivity( intent );
+            }
+        } );
         return createContentView( view );
     }
 
@@ -198,6 +209,7 @@ public class MetarFragment extends FragmentBase {
         Intent service = new Intent( getActivity(), MetarService.class );
         service.setAction( NoaaService.ACTION_GET_METAR );
         service.putExtra( NoaaService.STATION_ID, stationId );
+        service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
         service.putExtra( NoaaService.HOURS_BEFORE, METAR_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );

@@ -20,16 +20,23 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
+import java.net.URI;
+
+import org.apache.http.client.utils.URIUtils;
 
 import android.content.Intent;
 import android.text.format.DateUtils;
 
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.UiUtils;
 
 public class TafService extends NoaaService {
 
-    private final String TAF_QUERY = "dataSource=tafs&requestType=retrieve"
+    private final String TAF_IMAGE_NAME = "taf_%s.gif";
+    private final String TAF_TEXT_QUERY = "dataSource=tafs&requestType=retrieve"
             +"&format=xml&compression=gzip&hoursBeforeNow=%d&mostRecent=true&stationString=%s";
+    private final String TAF_IMAGE_QUERY = "tools/weatherproducts/tafs/default/"
+            + "loadImage/region/%s/product/prevail/zoom/%s";
     private final long TAF_CACHE_MAX_AGE = 2*DateUtils.HOUR_IN_MILLIS;
 
     protected TafParser mParser;
@@ -49,40 +56,67 @@ public class TafService extends NoaaService {
 
     @Override
     protected void onHandleIntent( Intent intent ) {
-        if ( !intent.getAction().equals( ACTION_GET_TAF ) ) {
-            return;
+        String action = intent.getAction();
+        if ( action.equals( ACTION_GET_TAF ) ) {
+            String type = intent.getStringExtra( TYPE );
+            if ( type.equals( TYPE_TEXT ) ) {
+                // Get request parameters
+                String stationId = intent.getStringExtra( STATION_ID );
+                int hours = intent.getIntExtra( HOURS_BEFORE, 6 );
+                boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
+                boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
+
+                File xml = new File( DATA_DIR, "TAF_"+stationId+".xml" );
+
+                if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
+                    fetchTaf( stationId, hours, xml );
+                }
+
+                Taf taf = new Taf();
+
+                if ( xml.exists() ) {
+                    taf.stationId = stationId;
+                    mParser.parse( xml, taf );
+                }
+
+                // Broadcast the result
+                Intent result = new Intent();
+                result.setAction( ACTION_GET_TAF );
+                result.putExtra( STATION_ID, stationId );
+                result.putExtra( RESULT, taf );
+                sendBroadcast( result );
+            } else if ( type.equals( TYPE_IMAGE ) ) {
+                String code = intent.getStringExtra( IMAGE_CODE );
+                String imageName = String.format( TAF_IMAGE_NAME, code );
+                File image = new File( DATA_DIR, imageName );
+                if ( !image.exists() ) {
+                    try {
+                        boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
+                        String query = String.format( TAF_IMAGE_QUERY, code,
+                                hiRes? "true" : "false" );
+                        URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, query, null, null );
+                        fetchFromNoaa( uri, image, false );
+                    } catch ( Exception e ) {
+                        UiUtils.showToast( this, "Unable to fetch image: "+e.getMessage() );
+                    }
+                }
+
+                // Broadcast the result
+                Intent result = new Intent();
+                result.setAction( action );
+                result.putExtra( TYPE, TYPE_IMAGE );
+                result.putExtra( IMAGE_CODE, code );
+                if ( image.exists() ) {
+                    result.putExtra( RESULT, image.getAbsolutePath() );
+                }
+                sendBroadcast( result );
+            }
         }
-
-        // Get request parameters
-        String stationId = intent.getStringExtra( STATION_ID );
-        int hours = intent.getIntExtra( HOURS_BEFORE, 6 );
-        boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
-        boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
-
-        File xml = new File( DATA_DIR, "TAF_"+stationId+".xml" );
-
-        if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
-            fetchTaf( stationId, hours, xml );
-        }
-
-        Taf taf = new Taf();
-
-        if ( xml.exists() ) {
-            taf.stationId = stationId;
-            mParser.parse( xml, taf );
-        }
-
-        // Broadcast the result
-        Intent result = new Intent();
-        result.setAction( ACTION_GET_TAF );
-        result.putExtra( STATION_ID, stationId );
-        result.putExtra( RESULT, taf );
-        sendBroadcast( result );
     }
 
     protected boolean fetchTaf( String stationId, int hours, File xml ) {
         try {
-            String query = String.format( TAF_QUERY, hours, stationId );
+            String query = String.format( TAF_TEXT_QUERY, hours, stationId );
             return fetchFromNoaa( query, xml, true );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "Unable to fetch TAF: "+e.getMessage() );

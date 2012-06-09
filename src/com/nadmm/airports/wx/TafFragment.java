@@ -31,7 +31,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -99,6 +101,15 @@ public class TafFragment extends FragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.taf_detail_view, container, false );
+        Button btnImages = (Button) view.findViewById( R.id.btnViewMaps );
+        btnImages.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                Intent intent = new Intent( getActivity(), TafMapActivity.class );
+                startActivity( intent );
+            }
+        } );
         return createContentView( view );
     }
 
@@ -248,6 +259,7 @@ public class TafFragment extends FragmentBase {
     protected void requestTaf( String stationId, boolean refresh ) {
         Intent service = new Intent( getActivity(), TafService.class );
         service.setAction( NoaaService.ACTION_GET_TAF );
+        service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
         service.putExtra( NoaaService.STATION_ID, stationId );
         service.putExtra( NoaaService.HOURS_BEFORE, TAF_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );

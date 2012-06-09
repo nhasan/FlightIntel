@@ -51,15 +51,17 @@ public abstract class NoaaService extends IntentService {
     public static final String LOCATION = "LOCATION";
     public static final String HOURS_BEFORE = "HOURS_BEFORE";
     public static final String COORDS_BOX = "COORDS_BOX";
+    public static final String TYPE = "TYPE";
+    public static final String IMAGE_CODE = "IMAGE_CODE";
     public static final String RESULT = "RESULT";
+
+    public static final String TYPE_TEXT = "TYPE_TEXT";
+    public static final String TYPE_IMAGE = "TYPE_IMAGE";
 
     public static final String ACTION_GET_METAR = "flightintel.intent.action.GET_METAR";
     public static final String ACTION_GET_TAF = "flightintel.intent.action.GET_TAF";
     public static final String ACTION_GET_PIREP = "flightintel.intent.action.GET_PIREP";
-    public static final String ACTION_GET_AIRSIGMET_TEXT
-                                    = "flightintel.intent.action.GET_AIRSIGMET_TEXT";
-    public static final String ACTION_GET_AIRSIGMET_MAP
-                                    = "flightintel.intent.action.GET_AIRSIGMET_MAP";
+    public static final String ACTION_GET_AIRSIGMET = "flightintel.intent.action.GET_AIRSIGMET";
 
     private HttpClient mHttpClient;
     private HttpHost mTarget;
