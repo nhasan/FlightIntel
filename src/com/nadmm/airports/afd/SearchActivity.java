@@ -28,7 +28,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -76,7 +75,7 @@ public class SearchActivity extends ActivityBase {
         startManagingCursor( c );
 
         setContentView( R.layout.list_view_layout );
-        ListView listView = (ListView) findViewById( R.id.list_view );
+        ListView listView = (ListView) findViewById( android.R.id.list );
         listView.setOnItemClickListener( new OnItemClickListener() {
 
             @Override
@@ -93,9 +92,8 @@ public class SearchActivity extends ActivityBase {
 
         mListAdapter = new AirportsCursorAdapter( this, c );
         listView.setAdapter( mListAdapter );
-        TextView title = (TextView) findViewById( R.id.list_msg );
-        title.setVisibility( View.VISIBLE );
-        title.setText( getResources().getQuantityString( R.plurals.search_entry_found, 
+        getSupportActionBar().setSubtitle(
+                getResources().getQuantityString( R.plurals.search_entry_found, 
                 count, count, query ) );
     }
 
