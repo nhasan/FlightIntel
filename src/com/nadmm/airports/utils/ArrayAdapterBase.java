@@ -60,7 +60,7 @@ public class ArrayAdapterBase extends BaseAdapter {
     @Override
     public View getView( int position, View convertView, ViewGroup parent ) {
         if ( convertView == null ) {
-            convertView = mInflater.inflate( R.layout.list_item, null );
+            convertView = mInflater.inflate( R.layout.list_item_text1, null );
         }
         TextView tv = (TextView) convertView.findViewById( R.id.text );
         tv.setText( mNames[ position ] );
