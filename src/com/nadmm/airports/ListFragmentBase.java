@@ -43,7 +43,7 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.list_view_layout, container, false );
-        mListView = (ListView) view.findViewById( R.id.list_view );
+        mListView = (ListView) view.findViewById( android.R.id.list );
         mListView.setOnItemClickListener( new OnItemClickListener() {
 
             @Override
@@ -93,7 +93,7 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
     }
 
     public void setListShown( boolean show ) {
-        TextView tv = (TextView) findViewById( R.id.list_msg );
+        TextView tv = (TextView) findViewById( android.R.id.empty );
         if ( show ) {
             tv.setVisibility( View.GONE );
             mListView.setVisibility( View.VISIBLE );
