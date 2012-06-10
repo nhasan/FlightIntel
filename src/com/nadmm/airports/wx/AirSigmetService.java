@@ -27,15 +27,18 @@ import org.apache.http.client.utils.URIUtils;
 import android.content.Intent;
 import android.text.format.DateUtils;
 
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.UiUtils;
 
 public class AirSigmetService extends NoaaService {
 
     private final String AIRSIGMET_IMAGE_NAME = "airmets_%s.gif";
+    private final String AIRSIGMET_IMAGE_ZOOM_NAME = "zoom_airmets_%s.gif";
     private final String AIRSIGMET_TEXT_QUERY =
             "datasource=airsigmets&requesttype=retrieve&format=xml&compression=gzip"
             + "&hoursBeforeNow=%d&minLat=%.2f&maxLat=%.2f&minLon=%.2f&maxLon=%.2f";
     private final String AIRSIGMET_IMAGE_QUERY = "/data/airmets/";
+    private final String AIRSIGMET_IMAGE_ZOOM_QUERY = "/data/airmets/zoom/";
     private final long AIRSIGMET_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
 
     AirSigmetParser mParser;
@@ -90,13 +93,16 @@ public class AirSigmetService extends NoaaService {
                 result.putExtra( RESULT, airSigmet );
                 sendBroadcast( result );
             } else if ( type.equals( TYPE_IMAGE ) ) {
+                boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
                 String code = intent.getStringExtra( IMAGE_CODE );
-                String imageName = String.format( AIRSIGMET_IMAGE_NAME, code );
+                String imageName = String.format(
+                        hiRes? AIRSIGMET_IMAGE_ZOOM_NAME : AIRSIGMET_IMAGE_NAME, code );
                 File image = new File( DATA_DIR, imageName );
                 if ( !image.exists() ) {
                     try {
-                        URI uri = URIUtils.createURI( "http", NOAA_HOST, 80,
-                                AIRSIGMET_IMAGE_QUERY+"/"+imageName, null, null );
+                        String query = hiRes? AIRSIGMET_IMAGE_ZOOM_QUERY : AIRSIGMET_IMAGE_QUERY;
+                        query += imageName;
+                        URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, query, null, null );
                         fetchFromNoaa( uri, image, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch image: "+e.getMessage() );
