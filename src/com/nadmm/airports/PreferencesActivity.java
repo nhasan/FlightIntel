@@ -35,7 +35,6 @@ public class PreferencesActivity extends PreferenceActivity
     public static final String KEY_SHOW_GPS_NOTAMS = "show_gps_notams";
     public static final String KEY_AUTO_DOWNLOAD_ON_3G = "auto_download_on_3G";
     public static final String KEY_DISCLAIMER_AGREED = "disclaimer_agreed";
-    public static final String KEY_PHONE_TAP_ACTION = "phone_tap_action";
     public static final String KEY_WX_FAV_MIGRATED = "wx_fav_migrated";
     public static final String SHOW_LOCAL_TIME = "show_local_time";
 
@@ -55,7 +54,6 @@ public class PreferencesActivity extends PreferenceActivity
         super.onResume();
         // Initialize the preference screen
         onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
-        onSharedPreferenceChanged( mSharedPrefs, KEY_PHONE_TAP_ACTION );
 
         // Set up a listener whenever a key changes
         mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
@@ -75,15 +73,6 @@ public class PreferencesActivity extends PreferenceActivity
        if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
             String radius = mSharedPrefs.getString( key, "20" );
             pref.setSummary( "Show airports within a radius of "+radius+ " NM" );
-        } else if ( key.equals( KEY_PHONE_TAP_ACTION ) ) {
-            String value = mSharedPrefs.getString( KEY_PHONE_TAP_ACTION, "dial" );
-            if ( value.equals( "ignore" ) ) {
-                pref.setSummary( "Do nothing" );
-            } else if ( value.equals( "dial" ) ) {
-                pref.setSummary( "Dial the number" );
-            } else if ( value.equals( "call" ) ) {
-                pref.setSummary( "Call the number" );
-            }
         }
     }
 

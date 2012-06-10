@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,17 +50,11 @@
                 defaultValue="false" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Miscellaneous">
-        <ListPreference
-                android:key="phone_tap_action"
-                android:title="Phone number taps"
-                android:entries="@array/phone_tap_entries"
-                android:entryValues="@array/phone_tap_values"
-                android:defaultValue="dial" />
         <CheckBoxPreference
                 android:key="auto_download_on_3G"
                 android:title="Use mobile data freely"
-                android:summaryOn="Do not verify downloads"
-                android:summaryOff="Verify download when not on Wifi"
+                android:summaryOn="Do not ask before using mobile data"
+                android:summaryOff="Ask before using mobile data"
                 defaultValue="false" />
         <CheckBoxPreference
                 android:key="show_local_time"

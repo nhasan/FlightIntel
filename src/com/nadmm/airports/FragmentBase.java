@@ -21,14 +21,12 @@ package com.nadmm.airports;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -268,15 +266,11 @@ public class FragmentBase extends SherlockFragment {
     protected void makeClickToCall( TextView tv ) {
         PackageManager pm = mActivity.getPackageManager();
         boolean hasTelephony = pm.hasSystemFeature( PackageManager.FEATURE_TELEPHONY );
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( mActivity );
-        String tapAction = prefs.getString( PreferencesActivity.KEY_PHONE_TAP_ACTION, "dial" );
-        if ( hasTelephony && !tapAction.equals( "ignore" ) ) {
+        if ( hasTelephony ) {
             if ( tv.getText().length() > 0 ) {
-                String action = tapAction.equals( "call" )?
-                        Intent.ACTION_CALL : Intent.ACTION_DIAL;
                 tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.phone, 0, 0, 0 );
                 tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( mActivity, 3 ) );
-                tv.setTag( action );
+                tv.setTag( Intent.ACTION_DIAL );
                 tv.setOnClickListener( mOnPhoneClickListener );
             } else {
                 tv.setCompoundDrawablesWithIntrinsicBounds( 0, 0, 0, 0 );
