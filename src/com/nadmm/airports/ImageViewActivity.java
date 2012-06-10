@@ -19,6 +19,8 @@
 
 package com.nadmm.airports;
 
+import com.actionbarsherlock.app.ActionBar.LayoutParams;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,8 +54,9 @@ public class ImageViewActivity extends ActivityBase {
         public View onCreateView( LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState ) {
             WebView view = new WebView( getActivity() );
+            view.setLayoutParams( new ViewGroup.LayoutParams(
+                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT ) );
             view.getSettings().setBuiltInZoomControls( true );
-
             Bundle args = getArguments();
             String path = args.getString( IMAGE_PATH );
             view.loadUrl( "file://"+path );
