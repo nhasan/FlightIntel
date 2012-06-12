@@ -86,10 +86,8 @@ public class AirSigmetService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = new Intent();
-                result.setAction( action );
+                Intent result = makeIntent( action, type );
                 result.putExtra( STATION_ID, stationId );
-                result.putExtra( TYPE, TYPE_TEXT );
                 result.putExtra( RESULT, airSigmet );
                 sendBroadcast( result );
             } else if ( type.equals( TYPE_IMAGE ) ) {
@@ -110,9 +108,7 @@ public class AirSigmetService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = new Intent();
-                result.setAction( action );
-                result.putExtra( TYPE, TYPE_IMAGE );
+                Intent result = makeIntent( action, type );
                 result.putExtra( IMAGE_CODE, code );
                 if ( image.exists() ) {
                     result.putExtra( RESULT, image.getAbsolutePath() );

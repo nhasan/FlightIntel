@@ -52,29 +52,33 @@ import com.nadmm.airports.wx.AirSigmet.AirSigmetEntry;
 
 public class AirSigmetFragment extends FragmentBase {
 
+    private final String mAction = NoaaService.ACTION_GET_AIRSIGMET;
+
     private final int AIRSIGMET_RADIUS_NM = 50;
     private final int AIRSIGMET_HOURS_BEFORE = 3;
 
-    protected Location mLocation;
-    protected BroadcastReceiver mReceiver;
-    protected String mStationId;
+    private Location mLocation;
+    private IntentFilter mFilter;
+    private BroadcastReceiver mReceiver;
+    private String mStationId;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setHasOptionsMenu( true );
 
+        mFilter = new IntentFilter();
+        mFilter.addAction( mAction );
+
         mReceiver = new BroadcastReceiver() {
 
             @Override
             public void onReceive( Context context, Intent intent ) {
                 String action = intent.getAction();
-                if ( action.equals( NoaaService.ACTION_GET_AIRSIGMET ) ) {
+                if ( action.equals( mAction ) ) {
                     String type = intent.getStringExtra( NoaaService.TYPE );
                     if ( type.equals( NoaaService.TYPE_TEXT ) ) {
-                        AirSigmet airSigmet = (AirSigmet) intent.getSerializableExtra(
-                                NoaaService.RESULT );
-                        showAirSigmetText( airSigmet );
+                        showAirSigmetText( intent );
                     }
                 }
             }
@@ -83,19 +87,18 @@ public class AirSigmetFragment extends FragmentBase {
 
     @Override
     public void onResume() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction( NoaaService.ACTION_GET_AIRSIGMET );
-        getActivity().registerReceiver( mReceiver, filter );
-
+        getActivity().registerReceiver( mReceiver, mFilter );
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         setBackgroundTask( new AirSigmetTask() ).execute( stationId );
+
         super.onResume();
     }
 
     @Override
     public void onPause() {
         getActivity().unregisterReceiver( mReceiver );
+
         super.onPause();
     }
 
@@ -156,7 +159,7 @@ public class AirSigmetFragment extends FragmentBase {
     protected void requestAirSigmetText( boolean refresh ) {
         double[] box = GeoUtils.getBoundingBoxDegrees( mLocation, AIRSIGMET_RADIUS_NM );
         Intent service = new Intent( getActivity(), AirSigmetService.class );
-        service.setAction( NoaaService.ACTION_GET_AIRSIGMET );
+        service.setAction( mAction );
         service.putExtra( NoaaService.STATION_ID, mStationId );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
         service.putExtra( NoaaService.COORDS_BOX, box );
@@ -165,7 +168,9 @@ public class AirSigmetFragment extends FragmentBase {
         getActivity().startService( service );
     }
 
-    protected void showAirSigmetText( AirSigmet airSigmet ) {
+    protected void showAirSigmetText( Intent intent ) {
+        AirSigmet airSigmet = (AirSigmet) intent.getSerializableExtra(NoaaService.RESULT );
+
         LinearLayout layout = (LinearLayout) findViewById( R.id.airsigmet_entries_layout );
         layout.removeAllViews();
 

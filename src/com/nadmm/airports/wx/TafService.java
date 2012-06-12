@@ -80,8 +80,7 @@ public class TafService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = new Intent();
-                result.setAction( ACTION_GET_TAF );
+                Intent result = makeIntent( action, type );
                 result.putExtra( STATION_ID, stationId );
                 result.putExtra( RESULT, taf );
                 sendBroadcast( result );
@@ -102,9 +101,7 @@ public class TafService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = new Intent();
-                result.setAction( action );
-                result.putExtra( TYPE, TYPE_IMAGE );
+                Intent result = makeIntent( action, type );
                 result.putExtra( IMAGE_CODE, code );
                 if ( image.exists() ) {
                     result.putExtra( RESULT, image.getAbsolutePath() );

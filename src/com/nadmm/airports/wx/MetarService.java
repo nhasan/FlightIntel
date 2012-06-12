@@ -85,8 +85,7 @@ public class MetarService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = new Intent();
-                result.setAction( ACTION_GET_METAR );
+                Intent result = makeIntent( action, type );
                 result.putExtra( STATION_ID, stationId );
                 result.putExtra( RESULT, metar );
                 sendBroadcast( result );
@@ -102,14 +101,12 @@ public class MetarService extends NoaaService {
                         URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, query, null, null );
                         fetchFromNoaa( uri, image, false );
                     } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch image: "+e.getMessage() );
+                        UiUtils.showToast( this, "Unable to fetch METAR image: "+e.getMessage() );
                     }
                 }
 
                 // Broadcast the result
-                Intent result = new Intent();
-                result.setAction( action );
-                result.putExtra( TYPE, TYPE_IMAGE );
+                Intent result = makeIntent( action, type );
                 result.putExtra( IMAGE_CODE, code );
                 if ( image.exists() ) {
                     result.putExtra( RESULT, image.getAbsolutePath() );

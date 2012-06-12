@@ -58,44 +58,52 @@ import com.nadmm.airports.wx.Pirep.TurbulenceCondition;
 
 public class PirepFragment extends FragmentBase {
 
+    private final String mAction = NoaaService.ACTION_GET_PIREP;
     private final int PIREP_RADIUS_NM = 50;
     private final int PIREP_HOURS_BEFORE = 3;
 
-    protected Location mLocation;
-    protected BroadcastReceiver mReceiver;
-    protected String mStationId;
+    private Location mLocation;
+    private IntentFilter mFilter;
+    private BroadcastReceiver mReceiver;
+    private String mStationId;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setHasOptionsMenu( true );
 
+        mFilter = new IntentFilter();
+        mFilter.addAction( mAction );
+
         mReceiver = new BroadcastReceiver() {
 
             @Override
             public void onReceive( Context context, Intent intent ) {
-                Pirep pirep = (Pirep) intent.getSerializableExtra( NoaaService.RESULT );
-                showPirep( pirep );
+                String action = intent.getAction();
+                if ( action.equals( mAction ) ) {
+                    String type = intent.getStringExtra( NoaaService.TYPE );
+                    if ( type.equals( NoaaService.TYPE_TEXT ) ) {
+                        showPirep( intent );
+                    }
+                }
             }
-
         };
     }
 
     @Override
     public void onResume() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction( NoaaService.ACTION_GET_PIREP );
-        getActivity().registerReceiver( mReceiver, filter );
-
+        getActivity().registerReceiver( mReceiver, mFilter );
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         setBackgroundTask( new PirepDetailTask() ).execute( stationId );
+
         super.onResume();
     }
 
     @Override
     public void onPause() {
         getActivity().unregisterReceiver( mReceiver );
+
         super.onPause();
     }
 
@@ -178,7 +186,7 @@ public class PirepFragment extends FragmentBase {
 
     protected void requestPirep( boolean refresh ) {
         Intent service = new Intent( getActivity(), PirepService.class );
-        service.setAction( NoaaService.ACTION_GET_PIREP );
+        service.setAction( mAction );
         service.putExtra( NoaaService.STATION_ID, mStationId );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
         service.putExtra( PirepService.RADIUS_NM, PIREP_RADIUS_NM );
@@ -188,7 +196,9 @@ public class PirepFragment extends FragmentBase {
         getActivity().startService( service );
     }
 
-    protected void showPirep( Pirep pirep ) {
+    protected void showPirep( Intent intent ) {
+        Pirep pirep = (Pirep) intent.getSerializableExtra( NoaaService.RESULT );
+
         LinearLayout layout = (LinearLayout) findViewById( R.id.pirep_entries_layout );
         layout.removeAllViews();
 

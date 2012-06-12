@@ -58,11 +58,13 @@ import com.nadmm.airports.wx.Metar.Flags;
 
 public class MetarFragment extends FragmentBase {
 
-    protected long mElevation;
-    protected Location mLocation;
-    protected IntentFilter mFilter;
-    protected BroadcastReceiver mReceiver;
-    protected ArrayList<String> mRemarks;
+    private final String mAction = NoaaService.ACTION_GET_METAR;
+
+    private long mElevation;
+    private Location mLocation;
+    private IntentFilter mFilter;
+    private BroadcastReceiver mReceiver;
+    private ArrayList<String> mRemarks;
 
     private final int METAR_HOURS_BEFORE = 3;
 
@@ -74,12 +76,18 @@ public class MetarFragment extends FragmentBase {
         mRemarks = new ArrayList<String>();
 
         mFilter = new IntentFilter();
-        mFilter.addAction( NoaaService.ACTION_GET_METAR );
+        mFilter.addAction( mAction );
 
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive( Context context, Intent intent ) {
-                showMetar( intent );
+                String action = intent.getAction();
+                if ( action.equals( mAction ) ) {
+                    String type = intent.getStringExtra( NoaaService.TYPE );
+                    if ( type.equals( NoaaService.TYPE_TEXT ) ) {
+                        showMetar( intent );
+                    }
+                }
             }
         };
     }
@@ -87,16 +95,17 @@ public class MetarFragment extends FragmentBase {
     @Override
     public void onResume() {
         getActivity().registerReceiver( mReceiver, mFilter );
-
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         setBackgroundTask( new MetarTask() ).execute( stationId );
+
         super.onResume();
     }
 
     @Override
     public void onPause() {
         getActivity().unregisterReceiver( mReceiver );
+
         super.onPause();
     }
 
@@ -207,7 +216,7 @@ public class MetarFragment extends FragmentBase {
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         Intent service = new Intent( getActivity(), MetarService.class );
-        service.setAction( NoaaService.ACTION_GET_METAR );
+        service.setAction( mAction );
         service.putExtra( NoaaService.STATION_ID, stationId );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
         service.putExtra( NoaaService.HOURS_BEFORE, METAR_HOURS_BEFORE );

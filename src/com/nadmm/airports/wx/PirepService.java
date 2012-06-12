@@ -27,7 +27,6 @@ import org.apache.http.client.utils.URIUtils;
 import android.content.Intent;
 import android.location.Location;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.GeoUtils;
@@ -85,8 +84,7 @@ public class PirepService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = new Intent();
-                result.setAction( ACTION_GET_PIREP );
+                Intent result = makeIntent( action, type );
                 result.putExtra( STATION_ID, stationId );
                 result.putExtra( RESULT, pirep );
                 sendBroadcast( result );
@@ -101,18 +99,15 @@ public class PirepService extends NoaaService {
                     try {
                         String query = hiRes? PIREP_IMAGE_ZOOM_QUERY : PIREP_IMAGE_QUERY;
                         query += imageName;
-                        Log.d( "QUREY", query );
                         URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, query, null, null );
                         fetchFromNoaa( uri, image, false );
                     } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch image: "+e.getMessage() );
+                        UiUtils.showToast( this, "Unable to fetch PIREP image: "+e.getMessage() );
                     }
                 }
 
                 // Broadcast the result
-                Intent result = new Intent();
-                result.setAction( action );
-                result.putExtra( TYPE, TYPE_IMAGE );
+                Intent result = makeIntent( action, type );
                 result.putExtra( IMAGE_CODE, code );
                 if ( image.exists() ) {
                     result.putExtra( RESULT, image.getAbsolutePath() );

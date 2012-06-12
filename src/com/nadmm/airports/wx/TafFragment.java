@@ -56,44 +56,53 @@ import com.nadmm.airports.wx.Taf.TurbulenceCondition;
 
 public class TafFragment extends FragmentBase {
 
+    private final String mAction = NoaaService.ACTION_GET_TAF;
     private final int TAF_RADIUS = 25;
     private final int TAF_HOURS_BEFORE = 3;
 
-    protected Location mLocation;
-    protected BroadcastReceiver mReceiver;
-    protected String mStationId;
-    protected Forecast mLastForecast;
+    private Location mLocation;
+    private IntentFilter mFilter;
+    private BroadcastReceiver mReceiver;
+    private String mStationId;
+    private Forecast mLastForecast;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setHasOptionsMenu( true );
 
+        mFilter = new IntentFilter();
+        mFilter.addAction( mAction );
+
         mReceiver = new BroadcastReceiver() {
 
             @Override
             public void onReceive( Context context, Intent intent ) {
-                showTaf( intent );
+                String action = intent.getAction();
+                if ( action.equals( mAction ) ) {
+                    String type = intent.getStringExtra( NoaaService.TYPE );
+                    if ( type.equals( NoaaService.TYPE_TEXT ) ) {
+                        showTaf( intent );
+                    }
+                }
             }
-
         };
     }
 
     @Override
     public void onResume() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction( NoaaService.ACTION_GET_TAF );
-        getActivity().registerReceiver( mReceiver, filter );
-
+        getActivity().registerReceiver( mReceiver, mFilter );
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         setBackgroundTask( new TafTask() ).execute( stationId );
+
         super.onResume();
     }
 
     @Override
     public void onPause() {
         getActivity().unregisterReceiver( mReceiver );
+
         super.onPause();
     }
 
@@ -258,7 +267,7 @@ public class TafFragment extends FragmentBase {
 
     protected void requestTaf( String stationId, boolean refresh ) {
         Intent service = new Intent( getActivity(), TafService.class );
-        service.setAction( NoaaService.ACTION_GET_TAF );
+        service.setAction( mAction );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
         service.putExtra( NoaaService.STATION_ID, stationId );
         service.putExtra( NoaaService.HOURS_BEFORE, TAF_HOURS_BEFORE );
