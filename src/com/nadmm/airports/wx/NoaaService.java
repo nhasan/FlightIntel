@@ -34,6 +34,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIUtils;
 
 import android.app.IntentService;
+import android.content.Intent;
 
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
@@ -62,6 +63,7 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_TAF = "flightintel.intent.action.GET_TAF";
     public static final String ACTION_GET_PIREP = "flightintel.intent.action.GET_PIREP";
     public static final String ACTION_GET_AIRSIGMET = "flightintel.intent.action.GET_AIRSIGMET";
+    public static final String ACTION_GET_PROGCHART = "flightintel.intent.action.GET_PROGCHART";
 
     private HttpClient mHttpClient;
     private HttpHost mTarget;
@@ -127,6 +129,13 @@ public abstract class NoaaService extends IntentService {
         in.close();
         out.close();
         return true;
+    }
+
+    protected Intent makeIntent( String action, String type ) {
+        Intent intent = new Intent();
+        intent.setAction( action );
+        intent.putExtra( TYPE, type );
+        return intent;
     }
 
 }
