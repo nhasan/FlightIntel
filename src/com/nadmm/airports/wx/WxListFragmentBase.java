@@ -46,7 +46,7 @@ public class WxListFragmentBase extends ListFragmentBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        mReceiver = new MetarReceiver();
+        mReceiver = new WxReceiver();
         setHasOptionsMenu( true );
         super.onCreate( savedInstanceState );
     }
@@ -127,7 +127,7 @@ public class WxListFragmentBase extends ListFragmentBase {
         }
     }
 
-    private final class MetarReceiver extends BroadcastReceiver {
+    private final class WxReceiver extends BroadcastReceiver {
 
         protected int mWxUpdates = 0;
 
