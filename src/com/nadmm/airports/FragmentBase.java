@@ -324,6 +324,18 @@ public class FragmentBase extends SherlockFragment {
         return row;
     }
 
+    protected View addProgressRow( LinearLayout layout, String label ) {
+        if ( layout.getChildCount() > 0 ) {
+            addSeparator( layout );
+        }
+        LinearLayout row = (LinearLayout) inflate( R.layout.list_item_text1 );
+        TextView tv = (TextView) row.findViewById( R.id.text );
+        tv.setText( label );
+        layout.addView( row, new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
+    }
+
     protected View addRow( LinearLayout layout, String label ) {
         return addRow( layout, label, null );
     }
