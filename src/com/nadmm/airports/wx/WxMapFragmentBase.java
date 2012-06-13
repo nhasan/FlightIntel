@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ImageViewActivity;
@@ -41,12 +42,14 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     private BroadcastReceiver mReceiver;
     private String[] mWxMapCodes;
     private String[] mWxMapNames;
+    private String mLabel;
     private View mPendingRow;
 
-    public WxMapFragmentBase( String action, String[] codes, String[] names ) {
+    public WxMapFragmentBase( String action, String[] codes, String[] names, String label ) {
         mAction = action;
         mWxMapCodes = codes;
         mWxMapNames = names;
+        mLabel = label;
     }
 
     @Override
@@ -86,7 +89,13 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        View view = inflate( R.layout.wx_map_detail_view );
+        View v = inflate( R.layout.wx_map_detail_view );
+        TextView tv = (TextView) v.findViewById( R.id.wx_map_label );
+        if ( mLabel != null ) {
+            tv.setText( mLabel );
+        } else {
+            tv.setVisibility( View.GONE );
+        }
 
         OnClickListener listener = new OnClickListener() {
             
@@ -98,7 +107,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
             }
         };
 
-        LinearLayout layout = (LinearLayout) view.findViewById( R.id.wx_map_layout );
+        LinearLayout layout = (LinearLayout) v.findViewById( R.id.wx_map_layout );
         for ( int i = 0; i < mWxMapCodes.length; ++i ) {
             View row = addProgressRow( layout, mWxMapNames[ i ] );
             row.setTag( mWxMapCodes[ i ] );
@@ -106,7 +115,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
             row.setBackgroundResource( UiUtils.getRowSelector( i, mWxMapCodes.length ) );
         }
 
-        return view;
+        return v;
     }
 
     private void requestWxMap( String code ) {
