@@ -26,7 +26,6 @@ import java.net.URI;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -42,8 +41,9 @@ import com.nadmm.airports.utils.SystemUtils;
 public abstract class NoaaService extends IntentService {
 
     protected final String NOAA_HOST = "weather.aero";
-    protected final String DATASERVER_PATH = "/dataserver1_4/httpparam";
-    protected final File DATA_DIR;
+    protected final String RADAR_HOST = "radar.weather.gov";
+
+    protected final String NOAA_DATASERVER_PATH = "/dataserver1_4/httpparam";
 
     public static final String STATION_ID = "STATION_ID";
     public static final String CACHE_ONLY = "CACHE_ONLY";
@@ -63,28 +63,27 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_TAF = "flightintel.intent.action.GET_TAF";
     public static final String ACTION_GET_PIREP = "flightintel.intent.action.GET_PIREP";
     public static final String ACTION_GET_AIRSIGMET = "flightintel.intent.action.GET_AIRSIGMET";
+    public static final String ACTION_GET_RADAR = "flightintel.intent.action.GET_RADAR";
     public static final String ACTION_GET_PROGCHART = "flightintel.intent.action.GET_PROGCHART";
 
+    protected File mDataDir;
+    protected int mAge;
     private HttpClient mHttpClient;
-    private HttpHost mTarget;
 
-    public NoaaService( String name ) {
+    public NoaaService( String name, long age ) {
         super( name );
         mHttpClient = NetworkUtils.getHttpClient();
-        mTarget = new HttpHost( NOAA_HOST, 80 );
-        DATA_DIR = SystemUtils.getExternalDir( name );
-    }
+        mDataDir = SystemUtils.getExternalDir( "wx/"+name );
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        if ( !DATA_DIR.exists() ) {
-            DATA_DIR.mkdirs();
+        if ( !mDataDir.exists() ) {
+            mDataDir.mkdirs();
         }
+
+        // Remove any old files from cache first
+        cleanupCache( mDataDir, age );
     }
 
-    protected void cleanupCache( File dir, long maxAge ) {
+    private void cleanupCache( File dir, long maxAge ) {
         // Delete all files that are older
         Date now = new Date();
         File[] files = dir.listFiles();
@@ -96,29 +95,39 @@ public abstract class NoaaService extends IntentService {
         }
     }
 
-    protected boolean fetchFromNoaa( String query, File xml, boolean compressed ) 
+    protected boolean fetchFromNoaa( String query, File file, boolean compressed ) 
             throws Exception {
-        URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, DATASERVER_PATH, query, null );
-        return fetchFromNoaa( uri, xml, compressed );
+        return fetchFromNoaa( NOAA_DATASERVER_PATH, query, file, compressed );
     }
 
-    protected boolean fetchFromNoaa( URI uri, File xml, boolean compressed ) 
+    protected boolean fetchFromNoaa( String path, String query, File file, boolean compressed ) 
+            throws Exception {
+        return fetch( NOAA_HOST, path, query, file, compressed );
+    }
+
+    protected boolean fetch( String host, String path, String query, File file, boolean compressed ) 
+            throws Exception {
+        URI uri = URIUtils.createURI( "http", host, 80, path, query, null );
+        return fetch( uri, file, compressed );
+    }
+
+    protected boolean fetch( URI uri, File file, boolean compressed ) 
             throws Exception {
         if ( !NetworkUtils.isNetworkAvailable( this ) ) {
             return false;
         }
 
         HttpGet get = new HttpGet( uri );
+        HttpResponse response = mHttpClient.execute( get );
 
-        HttpResponse response = mHttpClient.execute( mTarget, get );
         int status = response.getStatusLine().getStatusCode();
         if ( status != HttpStatus.SC_OK ) {
             throw new Exception( response.getStatusLine().getReasonPhrase() );
         }
 
-        byte[] buffer = new byte[ 4096 ];
+        byte[] buffer = new byte[ 16*1024 ];
         int count;
-        FileOutputStream out = new FileOutputStream( xml );
+        FileOutputStream out = new FileOutputStream( file );
         InputStream in = response.getEntity().getContent();
         if ( compressed ) {
             in = new GZIPInputStream( in );
@@ -136,6 +145,10 @@ public abstract class NoaaService extends IntentService {
         intent.setAction( action );
         intent.putExtra( TYPE, type );
         return intent;
+    }
+
+    protected File getDataFile( String name ) {
+        return new File( mDataDir, name );
     }
 
 }
