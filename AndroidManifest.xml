@@ -92,22 +92,22 @@
         <activity android:label="@string/weather"
                   android:name=".wx.WxDetailActivity" />
 
-        <activity android:label="@string/airsigmet_images"
-                  android:name=".wx.AirSigmetMapActivity"
-                  android:theme="@style/Theme.Sherlock.Light.Dialog" />
-
-        <activity android:label="@string/select_region"
+        <activity android:label="@string/metar_maps"
                   android:name=".wx.MetarMapActivity"
                   android:theme="@style/Theme.Sherlock.Light.Dialog" />
 
-        <activity android:label="@string/select_region"
+        <activity android:label="@string/taf_maps"
                   android:name=".wx.TafMapActivity"
                   android:theme="@style/Theme.Sherlock.Light.Dialog" />
 
         <activity android:label="@string/pirep_images"
                   android:name=".wx.PirepMapActivity"
                   android:theme="@style/Theme.Sherlock.Light.Dialog" />
-        
+
+        <activity android:label="@string/airsigmet_images"
+                  android:name=".wx.AirSigmetMapActivity"
+                  android:theme="@style/Theme.Sherlock.Light.Dialog" />
+
         <activity android:label="@string/instrument_procedures"
                   android:name=".aeronav.DtppActivity" />
 
