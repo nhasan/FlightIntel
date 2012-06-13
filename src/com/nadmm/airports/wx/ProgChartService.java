@@ -20,34 +20,24 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
-import java.net.URI;
-
-import org.apache.http.client.utils.URIUtils;
-
-import com.nadmm.airports.R;
-import com.nadmm.airports.utils.UiUtils;
 
 import android.content.Intent;
 import android.text.format.DateUtils;
+
+import com.nadmm.airports.R;
+import com.nadmm.airports.utils.UiUtils;
 
 public class ProgChartService extends NoaaService {
 
     private final String PROGCHART_IMAGE_NAME = "prog%s.gif";
     private final String PROGCHART_IMAGE_ZOOM_NAME = "prog%s_zoom.gif";
-    private final String PROGCHART_IMAGE_QUERY = "/data/progs/";
-    private final String PROGCHART_IMAGE_ZOOM_QUERY = "/data/progs/zoom/";
-    private final long PROGCHART_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
+    private final String PROGCHART_IMAGE_PATH = "/data/progs/";
+    private final String PROGCHART_IMAGE_ZOOM_PATH = "/data/progs/zoom/";
+
+    private static final long PROGCHART_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
 
     public ProgChartService() {
-        super( "progchart" );
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        // Remove any old files from cache first
-        cleanupCache( DATA_DIR, PROGCHART_CACHE_MAX_AGE );
+        super( "progchart", PROGCHART_CACHE_MAX_AGE );
     }
 
     @Override
@@ -61,13 +51,12 @@ public class ProgChartService extends NoaaService {
                 String imageName = String.format(
                         hiRes? PROGCHART_IMAGE_ZOOM_NAME : PROGCHART_IMAGE_NAME,
                         code );
-                File image = new File( DATA_DIR, imageName );
-                if ( !image.exists() ) {
+                File imageFile = getDataFile( imageName );
+                if ( !imageFile.exists() ) {
                     try {
-                        String query = hiRes? PROGCHART_IMAGE_ZOOM_QUERY : PROGCHART_IMAGE_QUERY;
-                        query += imageName;
-                        URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, query, null, null );
-                        fetchFromNoaa( uri, image, false );
+                        String path = hiRes? PROGCHART_IMAGE_ZOOM_PATH : PROGCHART_IMAGE_PATH;
+                        path += imageName;
+                        fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch PROGCHART image: "
                                 +e.getMessage() );
@@ -77,8 +66,8 @@ public class ProgChartService extends NoaaService {
                 // Broadcast the result
                 Intent result = makeIntent( action, type );
                 result.putExtra( IMAGE_CODE, code );
-                if ( image.exists() ) {
-                    result.putExtra( RESULT, image.getAbsolutePath() );
+                if ( imageFile.exists() ) {
+                    result.putExtra( RESULT, imageFile.getAbsolutePath() );
                 }
                 sendBroadcast( result );
             }

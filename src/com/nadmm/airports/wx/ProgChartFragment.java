@@ -19,29 +19,17 @@
 
 package com.nadmm.airports.wx;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import com.actionbarsherlock.view.Menu;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.ImageViewActivity;
 import com.nadmm.airports.R;
-import com.nadmm.airports.utils.UiUtils;
 
-public class ProgChartFragment extends FragmentBase {
 
-    private final String mAction = NoaaService.ACTION_GET_PROGCHART;
-
-    private BroadcastReceiver mReceiver;
-    private View mPendingRow;
+public class ProgChartFragment extends WxMapFragmentBase {
 
     private static final String[] sProgChartCodes = new String[] {
         "00hr",
@@ -59,108 +47,22 @@ public class ProgChartFragment extends FragmentBase {
         "48 hr Forecast" 
     };
 
-    @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-        setHasOptionsMenu( false );
-
-        mReceiver = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                String action = intent.getAction();
-                if ( action.equals( mAction ) ) {
-                    String type = intent.getStringExtra( NoaaService.TYPE );
-                    if ( type.equals( NoaaService.TYPE_IMAGE ) ) {
-                        showProgChart( intent );
-                    }
-                }
-            }
-        };
-    }
-
-    @Override
-    public void onResume() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction( mAction );
-        getActivity().registerReceiver( mReceiver, filter );
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        getActivity().unregisterReceiver( mReceiver );
-        super.onPause();
+    public ProgChartFragment() {
+        super( NoaaService.ACTION_GET_PROGCHART, sProgChartCodes, sProgChartNames );
     }
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        View view = inflate( R.layout.progchart_detail_view );
-
-        OnClickListener listener = new OnClickListener() {
-            
-            @Override
-            public void onClick( View v ) {
-                mPendingRow = v;
-                String code = (String) v.getTag();
-                requestProgChart( code );
-            }
-        };
-
-        LinearLayout layout = (LinearLayout) view.findViewById( R.id.progchart_layout );
-        for ( int i = 0; i < sProgChartCodes.length; ++i ) {
-            View row = addProgressRow( layout, sProgChartNames[ i ] );
-            row.setTag( sProgChartCodes[ i ] );
-            row.setOnClickListener( listener );
-            row.setBackgroundResource( UiUtils.getRowSelector( i, sProgChartCodes.length ) );
-        }
-
-        return view;
+        View v = super.onCreateView( inflater, container, savedInstanceState );
+        TextView tv = (TextView) v.findViewById( R.id.wx_map_label );
+        tv.setText( R.string.select_prog_chart );
+        return v;
     }
 
     @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( true );
-    }
-
-    protected void requestProgChart( String code ) {
-        setProgressBarVisible( true );
-        Intent service = new Intent( getActivity(), ProgChartService.class );
-        service.setAction( NoaaService.ACTION_GET_PROGCHART );
-        service.putExtra( NoaaService.TYPE, NoaaService.TYPE_IMAGE );
-        service.putExtra( NoaaService.IMAGE_CODE, code );
-        getActivity().startService( service );
-    }
-
-    protected void showProgChart( Intent intent ) {
-        String path = intent.getStringExtra( NoaaService.RESULT );
-        if ( path != null ) {
-            Intent view = new Intent( getActivity(), ImageViewActivity.class );
-            view.putExtra( ImageViewActivity.IMAGE_PATH, path );
-            view.putExtra( ImageViewActivity.IMAGE_TITLE, "Prognosis Charts" );
-            String code = intent.getStringExtra( NoaaService.IMAGE_CODE );
-            String name = getDisplayText( code );
-            if ( name != null ) {
-                view.putExtra( ImageViewActivity.IMAGE_SUBTITLE, name );
-            }
-            startActivity( view );
-        }
-        setProgressBarVisible( false );
-    }
-
-    protected String getDisplayText( String code ) {
-        for ( int i = 0; i < sProgChartCodes.length; ++i ) {
-            if ( code.equals( sProgChartCodes[ i ] ) ) {
-                return sProgChartNames[ i ];
-            }
-        }
-        return "";
-    }
-
-    protected void setProgressBarVisible( boolean visible ) {
-        View view = mPendingRow.findViewById( R.id.progress );
-        view.setVisibility( visible? View.VISIBLE : View.INVISIBLE );
+    protected Intent getServiceIntent() {
+        return new Intent( getActivity(), ProgChartService.class );
     }
 
 }

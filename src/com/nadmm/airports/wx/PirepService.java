@@ -20,9 +20,6 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
-import java.net.URI;
-
-import org.apache.http.client.utils.URIUtils;
 
 import android.content.Intent;
 import android.location.Location;
@@ -39,22 +36,16 @@ public class PirepService extends NoaaService {
     private final String PIREP_TEXT_QUERY =
             "dataSource=aircraftreports&requestType=retrieve&format=xml&compression=gzip"
             + "&hoursBeforeNow=%d&radialDistance=%.0f;%.2f,%.2f";
-    private final String PIREP_IMAGE_QUERY = "/data/pireps/";
-    private final String PIREP_IMAGE_ZOOM_QUERY = "/data/pireps/zoom/";
-    private final long PIREP_CACHE_MAX_AGE = 1*DateUtils.HOUR_IN_MILLIS;
+    private final String PIREP_IMAGE_PATH = "/data/pireps/";
+    private final String PIREP_IMAGE_ZOOM_PATH = "/data/pireps/zoom/";
+
+    private static final long PIREP_CACHE_MAX_AGE = 1*DateUtils.HOUR_IN_MILLIS;
 
     private PirepParser mParser;
 
     public PirepService() {
-        super( "pirep" );
+        super( "pirep", PIREP_CACHE_MAX_AGE );
         mParser = new PirepParser();
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        // Remove any old files from cache first
-        cleanupCache( DATA_DIR, PIREP_CACHE_MAX_AGE );
     }
 
     @Override
@@ -71,10 +62,17 @@ public class PirepService extends NoaaService {
                 boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
                 boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-                File xml = new File( DATA_DIR, "PIREP_"+stationId+".xml" );
+                File xml = getDataFile( "PIREP_"+stationId+".xml" );
 
                 if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
-                    fetchPirep( hours, location, radiusNM, xml );
+                    try {
+                        String query = String.format( PIREP_TEXT_QUERY, hours,
+                                radiusNM*GeoUtils.STATUTE_MILES_PER_NAUTICAL_MILES,
+                                location.getLongitude(), location.getLatitude() );
+                        fetchFromNoaa( query, xml, true );
+                    } catch ( Exception e ) {
+                        UiUtils.showToast( this, "Unable to fetch PIREP: "+e.getMessage() );
+                    }
                 }
 
                 Pirep pirep = new Pirep();
@@ -94,13 +92,12 @@ public class PirepService extends NoaaService {
                 String imageName = String.format(
                         hiRes? PIREP_IMAGE_ZOOM_NAME : PIREP_IMAGE_NAME,
                         code );
-                File image = new File( DATA_DIR, imageName );
-                if ( !image.exists() ) {
+                File imageFile = getDataFile( imageName );
+                if ( !imageFile.exists() ) {
                     try {
-                        String query = hiRes? PIREP_IMAGE_ZOOM_QUERY : PIREP_IMAGE_QUERY;
-                        query += imageName;
-                        URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, query, null, null );
-                        fetchFromNoaa( uri, image, false );
+                        String path = hiRes? PIREP_IMAGE_ZOOM_PATH : PIREP_IMAGE_PATH;
+                        path += imageName;
+                        fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch PIREP image: "+e.getMessage() );
                     }
@@ -109,24 +106,12 @@ public class PirepService extends NoaaService {
                 // Broadcast the result
                 Intent result = makeIntent( action, type );
                 result.putExtra( IMAGE_CODE, code );
-                if ( image.exists() ) {
-                    result.putExtra( RESULT, image.getAbsolutePath() );
+                if ( imageFile.exists() ) {
+                    result.putExtra( RESULT, imageFile.getAbsolutePath() );
                 }
                 sendBroadcast( result );
             }
         }
-    }
-
-    protected boolean fetchPirep( int hours, Location location, int radiusNM, File xml ) {
-        try {
-            String query = String.format( PIREP_TEXT_QUERY, hours,
-                    radiusNM*GeoUtils.STATUTE_MILES_PER_NAUTICAL_MILES,
-                    location.getLongitude(), location.getLatitude() );
-            return fetchFromNoaa( query, xml, true );
-        } catch ( Exception e ) {
-            UiUtils.showToast( this, "Unable to fetch PIREP: "+e.getMessage() );
-        }
-        return false;
     }
 
 }

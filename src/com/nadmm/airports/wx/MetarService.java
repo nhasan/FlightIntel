@@ -20,9 +20,6 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
-import java.net.URI;
-
-import org.apache.http.client.utils.URIUtils;
 
 import android.content.Intent;
 import android.text.format.DateUtils;
@@ -35,23 +32,16 @@ public class MetarService extends NoaaService {
     private final String METAR_IMAGE_NAME = "metar_%s.gif";
     private final String METAR_TEXT_QUERY = "datasource=metars&requesttype=retrieve"
     		+ "&format=xml&compression=gzip&hoursBeforeNow=%d&mostRecent=true&stationString=%s";
-    private final String METAR_IMAGE_QUERY = "tools/weatherproducts/metars/default/"
+    private final String METAR_IMAGE_PATH = "/tools/weatherproducts/metars/default/"
     		+ "loadImage/region/%s/product/METARs/zoom/%s";
-    private final long METAR_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
+
+    private static final long METAR_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
     private MetarParser mParser;
 
     public MetarService() {
-        super( "metar" );
+        super( "metar", METAR_CACHE_MAX_AGE );
         mParser = new MetarParser();
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        // Remove any old METAR files from cache first
-        cleanupCache( DATA_DIR, METAR_CACHE_MAX_AGE );
     }
 
     @Override
@@ -66,7 +56,7 @@ public class MetarService extends NoaaService {
                 boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
                 boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-                File xml = new File( DATA_DIR, "METAR_"+stationId+".xml" );
+                File xml = getDataFile( "METAR_"+stationId+".xml" );
 
                 if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
                     try {
@@ -92,14 +82,13 @@ public class MetarService extends NoaaService {
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
                 String imageName = String.format( METAR_IMAGE_NAME, code );
-                File image = new File( DATA_DIR, imageName );
-                if ( !image.exists() ) {
+                File imageFile = getDataFile( imageName );
+                if ( !imageFile.exists() ) {
                     try {
                         boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
-                        String query = String.format( METAR_IMAGE_QUERY, code,
+                        String path = String.format( METAR_IMAGE_PATH, code,
                                 hiRes? "true" : "false" );
-                        URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, query, null, null );
-                        fetchFromNoaa( uri, image, false );
+                        fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch METAR image: "+e.getMessage() );
                     }
@@ -108,8 +97,8 @@ public class MetarService extends NoaaService {
                 // Broadcast the result
                 Intent result = makeIntent( action, type );
                 result.putExtra( IMAGE_CODE, code );
-                if ( image.exists() ) {
-                    result.putExtra( RESULT, image.getAbsolutePath() );
+                if ( imageFile.exists() ) {
+                    result.putExtra( RESULT, imageFile.getAbsolutePath() );
                 }
                 sendBroadcast( result );
             }

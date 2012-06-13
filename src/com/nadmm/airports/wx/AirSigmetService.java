@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,6 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
-import java.net.URI;
-
-import org.apache.http.client.utils.URIUtils;
 
 import android.content.Intent;
 import android.text.format.DateUtils;
@@ -37,22 +34,16 @@ public class AirSigmetService extends NoaaService {
     private final String AIRSIGMET_TEXT_QUERY =
             "datasource=airsigmets&requesttype=retrieve&format=xml&compression=gzip"
             + "&hoursBeforeNow=%d&minLat=%.2f&maxLat=%.2f&minLon=%.2f&maxLon=%.2f";
-    private final String AIRSIGMET_IMAGE_QUERY = "/data/airmets/";
-    private final String AIRSIGMET_IMAGE_ZOOM_QUERY = "/data/airmets/zoom/";
-    private final long AIRSIGMET_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
+    private final String AIRSIGMET_IMAGE_PATH = "/data/airmets/";
+    private final String AIRSIGMET_IMAGE_ZOOM_PATH = "/data/airmets/zoom/";
+
+    private static final long AIRSIGMET_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
 
     AirSigmetParser mParser;
 
     public AirSigmetService() {
-        super( "airsigmet" );
+        super( "airsigmet", AIRSIGMET_CACHE_MAX_AGE );
         mParser = new AirSigmetParser();
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        // Remove any old files from cache first
-        cleanupCache( DATA_DIR, AIRSIGMET_CACHE_MAX_AGE );
     }
 
     @Override
@@ -67,7 +58,7 @@ public class AirSigmetService extends NoaaService {
                 boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
                 boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-                File xml = new File( DATA_DIR, "AIRSIGMET_"+stationId+".xml" );
+                File xml = getDataFile( "AIRSIGMET_"+stationId+".xml" );
 
                 if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
                     try {
@@ -95,13 +86,12 @@ public class AirSigmetService extends NoaaService {
                 String code = intent.getStringExtra( IMAGE_CODE );
                 String imageName = String.format(
                         hiRes? AIRSIGMET_IMAGE_ZOOM_NAME : AIRSIGMET_IMAGE_NAME, code );
-                File image = new File( DATA_DIR, imageName );
-                if ( !image.exists() ) {
+                File imageFile = getDataFile( imageName );
+                if ( !imageFile.exists() ) {
                     try {
-                        String query = hiRes? AIRSIGMET_IMAGE_ZOOM_QUERY : AIRSIGMET_IMAGE_QUERY;
-                        query += imageName;
-                        URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, query, null, null );
-                        fetchFromNoaa( uri, image, false );
+                        String path = hiRes? AIRSIGMET_IMAGE_ZOOM_PATH : AIRSIGMET_IMAGE_PATH;
+                        path += imageName;
+                        fetchFromNoaa( path, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch image: "+e.getMessage() );
                     }
@@ -110,8 +100,8 @@ public class AirSigmetService extends NoaaService {
                 // Broadcast the result
                 Intent result = makeIntent( action, type );
                 result.putExtra( IMAGE_CODE, code );
-                if ( image.exists() ) {
-                    result.putExtra( RESULT, image.getAbsolutePath() );
+                if ( imageFile.exists() ) {
+                    result.putExtra( RESULT, imageFile.getAbsolutePath() );
                 }
                 sendBroadcast( result );
             }

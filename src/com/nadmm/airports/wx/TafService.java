@@ -20,9 +20,6 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
-import java.net.URI;
-
-import org.apache.http.client.utils.URIUtils;
 
 import android.content.Intent;
 import android.text.format.DateUtils;
@@ -35,23 +32,16 @@ public class TafService extends NoaaService {
     private final String TAF_IMAGE_NAME = "taf_%s.gif";
     private final String TAF_TEXT_QUERY = "dataSource=tafs&requestType=retrieve"
             +"&format=xml&compression=gzip&hoursBeforeNow=%d&mostRecent=true&stationString=%s";
-    private final String TAF_IMAGE_QUERY = "tools/weatherproducts/tafs/default/"
+    private final String TAF_IMAGE_PATH = "/tools/weatherproducts/tafs/default/"
             + "loadImage/region/%s/product/prevail/zoom/%s";
-    private final long TAF_CACHE_MAX_AGE = 2*DateUtils.HOUR_IN_MILLIS;
+
+    private static final long TAF_CACHE_MAX_AGE = 2*DateUtils.HOUR_IN_MILLIS;
 
     protected TafParser mParser;
 
     public TafService() {
-        super( "taf" );
+        super( "taf", TAF_CACHE_MAX_AGE );
         mParser = new TafParser();
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        // Remove any old files from cache first
-        cleanupCache( DATA_DIR, TAF_CACHE_MAX_AGE );
     }
 
     @Override
@@ -66,7 +56,7 @@ public class TafService extends NoaaService {
                 boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
                 boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-                File xml = new File( DATA_DIR, "TAF_"+stationId+".xml" );
+                File xml = getDataFile( "TAF_"+stationId+".xml" );
 
                 if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
                     fetchTaf( stationId, hours, xml );
@@ -87,16 +77,15 @@ public class TafService extends NoaaService {
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
                 String imageName = String.format( TAF_IMAGE_NAME, code );
-                File image = new File( DATA_DIR, imageName );
+                File image = getDataFile( imageName );
                 if ( !image.exists() ) {
                     try {
                         boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
-                        String query = String.format( TAF_IMAGE_QUERY, code,
+                        String path = String.format( TAF_IMAGE_PATH, code,
                                 hiRes? "true" : "false" );
-                        URI uri = URIUtils.createURI( "http", NOAA_HOST, 80, query, null, null );
-                        fetchFromNoaa( uri, image, false );
+                        fetchFromNoaa( path, null, image, false );
                     } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch image: "+e.getMessage() );
+                        UiUtils.showToast( this, "Unable to fetch TAF image: "+e.getMessage() );
                     }
                 }
 
