@@ -149,6 +149,7 @@
         <service android:name=".wx.PirepService" />
         <service android:name=".wx.AirSigmetService" />
         <service android:name=".wx.ProgChartService" />
+        <service android:name=".wx.RadarService" />
         <service android:name=".aeronav.DtppService" />
         <service android:name=".aeronav.DafdService" />
         <service android:name=".notams.NotamService" />

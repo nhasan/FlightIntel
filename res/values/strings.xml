@@ -105,6 +105,7 @@
     <string name="pirep_images">Select Pirep Image</string>
     <string name="select_region">Select Map Region</string>
     <string name="select_prog_chart">Select Prognosis Chart</string>
+    <string name="select_radar_image">Select Radar Image</string>
     <string name="sd_card_monitor">SD Card Monitor</string>
     <string name="try_now">Try Now</string>
     <string name="view_maps">View Maps</string>
