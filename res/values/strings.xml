@@ -101,9 +101,10 @@
     <string name="based_aircraft">Based Aircrafts</string>
     <string name="annual_ops">Annual Operations</string>
     <string name="aircraft_operations">Aircraft Operations</string>
-    <string name="airsigmet_images">Select AirSigmet Image</string>
-    <string name="pirep_images">Select Pirep Image</string>
-    <string name="select_region">Select Map Region</string>
+    <string name="metar_maps">METAR Maps</string>
+    <string name="taf_maps">TAF Maps</string>
+    <string name="pirep_images">Pirep Maps</string>
+    <string name="airsigmet_images">AirSigmet Maps</string>
     <string name="select_prog_chart">Select Prognosis Chart</string>
     <string name="select_radar_image">Select Radar Image</string>
     <string name="sd_card_monitor">SD Card Monitor</string>
