@@ -20,23 +20,35 @@
 package com.nadmm.airports.wx;
 
 import android.content.Intent;
+import android.os.Bundle;
 
-import com.nadmm.airports.utils.ArrayAdapterBase;
+import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.R;
 
-public class TafMapActivity extends WxMapListActivityBase {
-
-    public TafMapActivity() {
-        super( NoaaService.ACTION_GET_TAF, "TAF Maps" );
-    }
+public class TafMapActivity extends ActivityBase {
 
     @Override
-    protected ArrayAdapterBase getMapListAdapter() {
-        return new WxRegionsAdapter( this );
+    protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+
+        setContentView( R.layout.fragment_activity_layout );
+
+        Bundle args = getIntent().getExtras();
+        addFragment( TafMapFragment.class, args );
     }
 
-    @Override
-    protected Intent getServiceIntent() {
-        return new Intent( this, TafService.class );
+    public static class TafMapFragment extends WxMapFragmentBase {
+
+        public TafMapFragment() {
+            super( NoaaService.ACTION_GET_TAF, WxRegions.sWxRegionCodes,
+                    WxRegions.sWxRegionNames, "Select Region" );
+        }
+
+        @Override
+        protected Intent getServiceIntent() {
+            return new Intent( getActivity(), TafService.class );
+        }
+
     }
 
 }

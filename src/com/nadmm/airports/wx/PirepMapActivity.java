@@ -20,10 +20,12 @@
 package com.nadmm.airports.wx;
 
 import android.content.Intent;
+import android.os.Bundle;
 
-import com.nadmm.airports.utils.ArrayAdapterBase;
+import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.R;
 
-public class PirepMapActivity extends WxMapListActivityBase {
+public class PirepMapActivity extends ActivityBase {
 
     private static final String[] sPirepCodes = {
         "US_IC",
@@ -79,18 +81,28 @@ public class PirepMapActivity extends WxMapListActivityBase {
         "Southwest - Weather/Sky"
     };
 
-    public PirepMapActivity() {
-        super( NoaaService.ACTION_GET_PIREP, "PIREP Maps" );
+    @Override
+    protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+
+        setContentView( R.layout.fragment_activity_layout );
+
+        Bundle args = getIntent().getExtras();
+        addFragment( PirepMapFragment.class, args );
     }
 
-    @Override
-    protected ArrayAdapterBase getMapListAdapter() {
-        return new ArrayAdapterBase( this, sPirepCodes, sPirepNames );
-    }
+    public static class PirepMapFragment extends WxMapFragmentBase {
 
-    @Override
-    protected Intent getServiceIntent() {
-        return new Intent( this, PirepService.class );
+        public PirepMapFragment() {
+            super( NoaaService.ACTION_GET_PIREP, sPirepCodes, sPirepNames,
+                    "Select Region and Category" );
+        }
+
+        @Override
+        protected Intent getServiceIntent() {
+            return new Intent( getActivity(), PirepService.class );
+        }
+
     }
 
 }

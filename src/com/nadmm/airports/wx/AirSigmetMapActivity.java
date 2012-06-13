@@ -20,10 +20,12 @@
 package com.nadmm.airports.wx;
 
 import android.content.Intent;
+import android.os.Bundle;
 
-import com.nadmm.airports.utils.ArrayAdapterBase;
+import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.R;
 
-public class AirSigmetMapActivity extends WxMapListActivityBase {
+public class AirSigmetMapActivity extends ActivityBase {
 
     private static final String[] sAirSigmetCodes = new String[] {
         "ALL",
@@ -49,18 +51,28 @@ public class AirSigmetMapActivity extends WxMapListActivityBase {
         "Turbulence G-AIRMETs and SIGMETs"
     };
 
-    public AirSigmetMapActivity() {
-        super( NoaaService.ACTION_GET_AIRSIGMET, "AIRSIGMET Maps" );
-    }
-
     @Override
-    protected ArrayAdapterBase getMapListAdapter() {
-        return new ArrayAdapterBase( this, sAirSigmetCodes, sAirSigmetNames );
+    protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+
+        setContentView( R.layout.fragment_activity_layout );
+
+        Bundle args = getIntent().getExtras();
+        addFragment( AirSigmetMapFragment.class, args );
     }
 
-    @Override
-    protected Intent getServiceIntent() {
-        return new Intent( this, AirSigmetService.class );
-    }
+    public static class AirSigmetMapFragment extends WxMapFragmentBase {
 
+        public AirSigmetMapFragment() {
+            super( NoaaService.ACTION_GET_AIRSIGMET, sAirSigmetCodes, sAirSigmetNames,
+                    "Select Category" );
+        }
+
+        @Override
+        protected Intent getServiceIntent() {
+            return new Intent( getActivity(), AirSigmetService.class );
+        }
+
+    }
+    
 }

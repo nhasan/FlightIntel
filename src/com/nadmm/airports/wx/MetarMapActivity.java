@@ -20,23 +20,35 @@
 package com.nadmm.airports.wx;
 
 import android.content.Intent;
+import android.os.Bundle;
 
-import com.nadmm.airports.utils.ArrayAdapterBase;
+import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.R;
 
-public class MetarMapActivity extends WxMapListActivityBase {
-
-    public MetarMapActivity() {
-        super( NoaaService.ACTION_GET_METAR, "METAR Maps" );
-    }
+public class MetarMapActivity extends ActivityBase {
 
     @Override
-    protected ArrayAdapterBase getMapListAdapter() {
-        return new WxRegionsAdapter( this );
+    protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+
+        setContentView( R.layout.fragment_activity_layout );
+
+        Bundle args = getIntent().getExtras();
+        addFragment( MetarMapFragment.class, args );
     }
 
-    @Override
-    protected Intent getServiceIntent() {
-        return new Intent( this, MetarService.class );
+    public static class MetarMapFragment extends WxMapFragmentBase {
+
+        public MetarMapFragment() {
+            super( NoaaService.ACTION_GET_METAR, WxRegions.sWxRegionCodes,
+                    WxRegions.sWxRegionNames, "Select Region" );
+        }
+
+        @Override
+        protected Intent getServiceIntent() {
+            return new Intent( getActivity(), MetarService.class );
+        }
+
     }
 
 }
