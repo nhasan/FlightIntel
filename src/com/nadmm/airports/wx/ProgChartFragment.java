@@ -20,13 +20,6 @@
 package com.nadmm.airports.wx;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.nadmm.airports.R;
 
 
 public class ProgChartFragment extends WxMapFragmentBase {
@@ -48,16 +41,8 @@ public class ProgChartFragment extends WxMapFragmentBase {
     };
 
     public ProgChartFragment() {
-        super( NoaaService.ACTION_GET_PROGCHART, sProgChartCodes, sProgChartNames );
-    }
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View v = super.onCreateView( inflater, container, savedInstanceState );
-        TextView tv = (TextView) v.findViewById( R.id.wx_map_label );
-        tv.setText( R.string.select_prog_chart );
-        return v;
+        super( NoaaService.ACTION_GET_PROGCHART, sProgChartCodes, sProgChartNames,
+                "Select Prog Chart" );
     }
 
     @Override

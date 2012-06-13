@@ -19,14 +19,7 @@
 
 package com.nadmm.airports.wx;
 
-import com.nadmm.airports.R;
-
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
 public class RadarFragment extends WxMapFragmentBase {
 
@@ -63,16 +56,7 @@ public class RadarFragment extends WxMapFragmentBase {
     };
 
     public RadarFragment() {
-        super( NoaaService.ACTION_GET_RADAR, sRadarCodes, sRadarNames );
-    }
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View v = super.onCreateView( inflater, container, savedInstanceState );
-        TextView tv = (TextView) v.findViewById( R.id.wx_map_label );
-        tv.setText( R.string.select_radar_image );
-        return v;
+        super( NoaaService.ACTION_GET_RADAR, sRadarCodes, sRadarNames, "Select Radar Image" );
     }
 
     @Override
