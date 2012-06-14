@@ -22,6 +22,7 @@ package com.nadmm.airports.wx;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
@@ -65,6 +66,7 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_AIRSIGMET = "flightintel.intent.action.GET_AIRSIGMET";
     public static final String ACTION_GET_RADAR = "flightintel.intent.action.GET_RADAR";
     public static final String ACTION_GET_PROGCHART = "flightintel.intent.action.GET_PROGCHART";
+    public static final String ACTION_GET_WIND = "flightintel.intent.action.GET_WIND";
 
     protected File mDataDir;
     protected int mAge;
@@ -140,15 +142,31 @@ public abstract class NoaaService extends IntentService {
         return true;
     }
 
-    protected Intent makeIntent( String action, String type ) {
+    protected File getDataFile( String name ) {
+        return new File( mDataDir, name );
+    }
+
+    protected void sendResultIntent( String action, String stationId, Serializable result ) {
+        Intent intent = makeResultIntent( action, TYPE_TEXT );
+        intent.putExtra( STATION_ID, stationId );
+        intent.putExtra( RESULT, result );
+        sendBroadcast( intent );
+    }
+
+    protected void sendResultIntent( String action, String code, File result ) {
+        Intent intent = makeResultIntent( action, TYPE_IMAGE );
+        intent.putExtra( IMAGE_CODE, code );
+        if ( result.exists() ) {
+            intent.putExtra( RESULT, result.getAbsolutePath() );
+        }
+        sendBroadcast( intent );
+    }
+
+    private Intent makeResultIntent( String action, String type ) {
         Intent intent = new Intent();
         intent.setAction( action );
         intent.putExtra( TYPE, type );
         return intent;
-    }
-
-    protected File getDataFile( String name ) {
-        return new File( mDataDir, name );
     }
 
 }
