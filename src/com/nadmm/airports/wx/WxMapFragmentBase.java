@@ -120,7 +120,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
 
     private void requestWxMap( String code ) {
         setProgressBarVisible( true );
-        Intent service = new Intent( getActivity(), RadarService.class );
+        Intent service = getServiceIntent();
         service.setAction( mAction );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_IMAGE );
         service.putExtra( NoaaService.IMAGE_CODE, code );
