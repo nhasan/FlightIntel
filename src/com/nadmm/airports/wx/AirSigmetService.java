@@ -77,10 +77,7 @@ public class AirSigmetService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = makeIntent( action, type );
-                result.putExtra( STATION_ID, stationId );
-                result.putExtra( RESULT, airSigmet );
-                sendBroadcast( result );
+                sendResultIntent( action, stationId, airSigmet );
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
                 String code = intent.getStringExtra( IMAGE_CODE );
@@ -93,17 +90,13 @@ public class AirSigmetService extends NoaaService {
                         path += imageName;
                         fetchFromNoaa( path, imageFile, false );
                     } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch image: "+e.getMessage() );
+                        UiUtils.showToast( this, "Unable to fetch AirSigmet image: "
+                                +e.getMessage() );
                     }
                 }
 
                 // Broadcast the result
-                Intent result = makeIntent( action, type );
-                result.putExtra( IMAGE_CODE, code );
-                if ( imageFile.exists() ) {
-                    result.putExtra( RESULT, imageFile.getAbsolutePath() );
-                }
-                sendBroadcast( result );
+                sendResultIntent( action, code, imageFile );
             }
         }
     }

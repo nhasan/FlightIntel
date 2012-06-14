@@ -31,7 +31,7 @@ public class RadarService extends NoaaService {
     private final String RADAR_IMAGE_NAME = "%s.gif";
     private final String RADAR_IMAGE_PATH = "/Conus/RadarImg/";
 
-    private final static long RADAR_CACHE_MAX_AGE = 15*DateUtils.MINUTE_IN_MILLIS;
+    private final static long RADAR_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
     public RadarService() {
         super( "radar", RADAR_CACHE_MAX_AGE );
@@ -56,12 +56,7 @@ public class RadarService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = makeIntent( action, type );
-                result.putExtra( IMAGE_CODE, code );
-                if ( imageFile.exists() ) {
-                    result.putExtra( RESULT, imageFile.getAbsolutePath() );
-                }
-                sendBroadcast( result );
+                sendResultIntent( action, code, imageFile );
             }
         }
     }

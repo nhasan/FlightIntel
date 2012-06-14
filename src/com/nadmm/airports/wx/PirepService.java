@@ -82,10 +82,7 @@ public class PirepService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = makeIntent( action, type );
-                result.putExtra( STATION_ID, stationId );
-                result.putExtra( RESULT, pirep );
-                sendBroadcast( result );
+                sendResultIntent( action, stationId, pirep );
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
                 String code = intent.getStringExtra( IMAGE_CODE );
@@ -104,12 +101,7 @@ public class PirepService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = makeIntent( action, type );
-                result.putExtra( IMAGE_CODE, code );
-                if ( imageFile.exists() ) {
-                    result.putExtra( RESULT, imageFile.getAbsolutePath() );
-                }
-                sendBroadcast( result );
+                sendResultIntent( action, code, imageFile );
             }
         }
     }

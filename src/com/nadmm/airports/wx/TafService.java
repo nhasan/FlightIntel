@@ -59,7 +59,12 @@ public class TafService extends NoaaService {
                 File xml = getDataFile( "TAF_"+stationId+".xml" );
 
                 if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
-                    fetchTaf( stationId, hours, xml );
+                    try {
+                        String query = String.format( TAF_TEXT_QUERY, hours, stationId );
+                        fetchFromNoaa( query, xml, true );
+                    } catch ( Exception e ) {
+                        UiUtils.showToast( this, "Unable to fetch TAF: "+e.getMessage() );
+                    }
                 }
 
                 Taf taf = new Taf();
@@ -70,44 +75,26 @@ public class TafService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = makeIntent( action, type );
-                result.putExtra( STATION_ID, stationId );
-                result.putExtra( RESULT, taf );
-                sendBroadcast( result );
+                sendResultIntent( action, stationId, taf );
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
                 String imageName = String.format( TAF_IMAGE_NAME, code );
-                File image = getDataFile( imageName );
-                if ( !image.exists() ) {
+                File imageFile = getDataFile( imageName );
+                if ( !imageFile.exists() ) {
                     try {
                         boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
                         String path = String.format( TAF_IMAGE_PATH, code,
                                 hiRes? "true" : "false" );
-                        fetchFromNoaa( path, null, image, false );
+                        fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch TAF image: "+e.getMessage() );
                     }
                 }
 
                 // Broadcast the result
-                Intent result = makeIntent( action, type );
-                result.putExtra( IMAGE_CODE, code );
-                if ( image.exists() ) {
-                    result.putExtra( RESULT, image.getAbsolutePath() );
-                }
-                sendBroadcast( result );
+                sendResultIntent( action, code, imageFile );
             }
         }
-    }
-
-    protected boolean fetchTaf( String stationId, int hours, File xml ) {
-        try {
-            String query = String.format( TAF_TEXT_QUERY, hours, stationId );
-            return fetchFromNoaa( query, xml, true );
-        } catch ( Exception e ) {
-            UiUtils.showToast( this, "Unable to fetch TAF: "+e.getMessage() );
-        }
-        return false;
     }
 
 }

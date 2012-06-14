@@ -75,10 +75,7 @@ public class MetarService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = makeIntent( action, type );
-                result.putExtra( STATION_ID, stationId );
-                result.putExtra( RESULT, metar );
-                sendBroadcast( result );
+                sendResultIntent( action, stationId, metar );
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
                 String imageName = String.format( METAR_IMAGE_NAME, code );
@@ -95,12 +92,7 @@ public class MetarService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = makeIntent( action, type );
-                result.putExtra( IMAGE_CODE, code );
-                if ( imageFile.exists() ) {
-                    result.putExtra( RESULT, imageFile.getAbsolutePath() );
-                }
-                sendBroadcast( result );
+                sendResultIntent( action, code, imageFile );
             }
         }
     }

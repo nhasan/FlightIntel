@@ -34,7 +34,7 @@ public class ProgChartService extends NoaaService {
     private final String PROGCHART_IMAGE_PATH = "/data/progs/";
     private final String PROGCHART_IMAGE_ZOOM_PATH = "/data/progs/zoom/";
 
-    private static final long PROGCHART_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
+    private static final long PROGCHART_CACHE_MAX_AGE = 240*DateUtils.MINUTE_IN_MILLIS;
 
     public ProgChartService() {
         super( "progchart", PROGCHART_CACHE_MAX_AGE );
@@ -64,12 +64,7 @@ public class ProgChartService extends NoaaService {
                 }
 
                 // Broadcast the result
-                Intent result = makeIntent( action, type );
-                result.putExtra( IMAGE_CODE, code );
-                if ( imageFile.exists() ) {
-                    result.putExtra( RESULT, imageFile.getAbsolutePath() );
-                }
-                sendBroadcast( result );
+                sendResultIntent( action, code, imageFile );
             }
         }
     }
