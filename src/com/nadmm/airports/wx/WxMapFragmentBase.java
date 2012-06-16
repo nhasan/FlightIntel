@@ -43,19 +43,20 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     private String[] mWxMapCodes;
     private String[] mWxMapNames;
     private String mLabel;
+    private String mTitle;
     private View mPendingRow;
 
-    public WxMapFragmentBase( String action, String[] codes, String[] names, String label ) {
+    public WxMapFragmentBase( String action, String[] codes, String[] names ) {
         mAction = action;
         mWxMapCodes = codes;
         mWxMapNames = names;
-        mLabel = label;
     }
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setHasOptionsMenu( false );
+        setTitle( getActivity().getTitle().toString() );
 
         mReceiver = new BroadcastReceiver() {
 
@@ -132,7 +133,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
         if ( path != null ) {
             Intent view = new Intent( getActivity(), ImageViewActivity.class );
             view.putExtra( ImageViewActivity.IMAGE_PATH, path );
-            view.putExtra( ImageViewActivity.IMAGE_TITLE, "Radar Images" );
+            view.putExtra( ImageViewActivity.IMAGE_TITLE, mTitle );
             String code = intent.getStringExtra( NoaaService.IMAGE_CODE );
             String name = getDisplayText( code );
             if ( name != null ) {
@@ -156,7 +157,15 @@ public abstract class WxMapFragmentBase extends FragmentBase {
         return "";
     }
 
-    protected void setProgressBarVisible( boolean visible ) {
+    protected void setLabel( String label ) {
+        mLabel = label;
+    }
+
+    protected void setTitle( String title ) {
+        mTitle = title;
+    }
+
+    private void setProgressBarVisible( boolean visible ) {
         View view = mPendingRow.findViewById( R.id.progress );
         view.setVisibility( visible? View.VISIBLE : View.INVISIBLE );
     }
