@@ -45,6 +45,7 @@ public abstract class NoaaService extends IntentService {
 
     protected final String NOAA_HOST = "weather.aero";
     protected final String RADAR_HOST = "radar.weather.gov";
+    protected final String ADDS_HOST = "aviationweather.gov";
 
     protected final String NOAA_DATASERVER_PATH = "/dataserver1_4/httpparam";
 
@@ -69,6 +70,7 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_RADAR = "flightintel.intent.action.GET_RADAR";
     public static final String ACTION_GET_PROGCHART = "flightintel.intent.action.GET_PROGCHART";
     public static final String ACTION_GET_WIND = "flightintel.intent.action.GET_WIND";
+    public static final String ACTION_GET_SIGWX = "flightintel.intent.action.GET_SIGWX";
 
     protected File mDataDir;
     private HttpClient mHttpClient;
