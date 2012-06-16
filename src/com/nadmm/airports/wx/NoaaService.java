@@ -21,7 +21,9 @@ package com.nadmm.airports.wx;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
@@ -69,7 +71,6 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_WIND = "flightintel.intent.action.GET_WIND";
 
     protected File mDataDir;
-    protected int mAge;
     private HttpClient mHttpClient;
 
     public NoaaService( String name, long age ) {
@@ -113,32 +114,44 @@ public abstract class NoaaService extends IntentService {
         return fetch( uri, file, compressed );
     }
 
-    protected boolean fetch( URI uri, File file, boolean compressed ) 
-            throws Exception {
+    protected boolean fetch( URI uri, File file, boolean compressed ) throws Exception {
         if ( !NetworkUtils.isNetworkAvailable( this ) ) {
             return false;
         }
 
-        HttpGet get = new HttpGet( uri );
-        HttpResponse response = mHttpClient.execute( get );
+        InputStream in = null;
+        OutputStream out = null;
 
-        int status = response.getStatusLine().getStatusCode();
-        if ( status != HttpStatus.SC_OK ) {
-            throw new Exception( response.getStatusLine().getReasonPhrase() );
-        }
+        try {
+            HttpGet get = new HttpGet( uri );
+            HttpResponse response = mHttpClient.execute( get );
 
-        byte[] buffer = new byte[ 16*1024 ];
-        int count;
-        FileOutputStream out = new FileOutputStream( file );
-        InputStream in = response.getEntity().getContent();
-        if ( compressed ) {
-            in = new GZIPInputStream( in );
+            int status = response.getStatusLine().getStatusCode();
+            if ( status != HttpStatus.SC_OK ) {
+                throw new Exception( response.getStatusLine().getReasonPhrase() );
+            }
+
+            byte[] buffer = new byte[ 16*1024 ];
+            int count;
+            out = new FileOutputStream( file );
+            in = response.getEntity().getContent();
+            if ( compressed ) {
+                in = new GZIPInputStream( in );
+            }
+            while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
+                out.write( buffer, 0, count );
+            }
+        } finally {
+            try {
+                if ( in != null ) {
+                    in.close();
+                }
+                if ( out != null ) {
+                    out.close();
+                }
+            } catch ( IOException e ) {
+            }
         }
-        while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
-            out.write( buffer, 0, count );
-        }
-        in.close();
-        out.close();
         return true;
     }
 
