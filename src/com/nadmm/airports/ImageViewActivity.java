@@ -57,8 +57,8 @@ public class ImageViewActivity extends ActivityBase {
             view.setLayoutParams( new ViewGroup.LayoutParams(
                     LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT ) );
             view.getSettings().setBuiltInZoomControls( true );
-            //view.getSettings().setLoadWithOverviewMode( true );
-            //view.getSettings().setUseWideViewPort( true );
+            view.getSettings().setLoadWithOverviewMode( true );
+            view.getSettings().setUseWideViewPort( true );
             Bundle args = getArguments();
             String path = args.getString( IMAGE_PATH );
             view.loadUrl( "file://"+path );
