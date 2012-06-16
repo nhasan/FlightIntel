@@ -33,11 +33,11 @@ public class ProgChartFragment extends WxMapFragmentBase {
     };
 
     private static final String[] sProgChartNames = new String[] {
-        "Current Analysis",
-        "12 hr Forecast",
-        "24 hr Forecast",
-        "36 hr Forecast",
-        "48 hr Forecast" 
+        "Current Surface Analysis",
+        "12 hr Surface Prognosis",
+        "24 hr Surface Prognosis",
+        "36 hr Surface Prognosis",
+        "48 hr Surface Prognosis" 
     };
 
     public ProgChartFragment() {
