@@ -1,8 +1,15 @@
+v4.0.0 (6/16/12)
+=================
+* Added Radar images
+* Added Prognosis images
+* Added Winds Aloft images
+* Added SIGWX images
+
 v3.6.0 (6/9/2012)
 =================
 * Show all graphical depictions on map for METAR, TAF, PIREP and AIRSIGMET
 * Bug fixes
- 
+
 v3.5.0 (6/3/2012)
 =================
 * Show current national Airmet/Sigmet graphics
