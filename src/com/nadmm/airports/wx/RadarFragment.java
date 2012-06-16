@@ -23,7 +23,7 @@ import android.content.Intent;
 
 public class RadarFragment extends WxMapFragmentBase {
 
-    private static final String[] sRadarCodes = new String[] {   
+    private static final String[] sRadarCodes = new String[] {
         "alaska",
         "centgrtlakes",
         "greatlakes",
@@ -49,10 +49,10 @@ public class RadarFragment extends WxMapFragmentBase {
         "Pacific Northwest",
         "Pacific Southwest",
         "Southeast",
-        "Southen Mississipi Valey",
+        "Southen Mississippi Valey",
         "Southern Plains",
         "Southern Rockies",
-        "Upper Mississipi Valey"
+        "Upper Mississippi Valey"
     };
 
     public RadarFragment() {
