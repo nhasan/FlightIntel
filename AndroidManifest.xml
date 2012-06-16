@@ -151,6 +151,7 @@
         <service android:name=".wx.ProgChartService" />
         <service android:name=".wx.RadarService" />
         <service android:name=".wx.WindService" />
+        <service android:name=".wx.SigWxService" />
         <service android:name=".aeronav.DtppService" />
         <service android:name=".aeronav.DafdService" />
         <service android:name=".notams.NotamService" />
