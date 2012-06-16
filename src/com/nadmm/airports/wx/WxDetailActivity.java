@@ -47,6 +47,7 @@ public class WxDetailActivity extends ActivityBase {
         mTabsAdapter.addTab( "AIRSIGMET", AirSigmetFragment.class, args );
         mTabsAdapter.addTab( "RADAR", RadarFragment.class, args );
         mTabsAdapter.addTab( "PROGCHART", ProgChartFragment.class, args );
+        mTabsAdapter.addTab( "WIND", WindFragment.class, args );
 
         TabPageIndicator tabIndicator = (TabPageIndicator) findViewById( R.id.page_titles );
         tabIndicator.setViewPager( pager );
