@@ -84,6 +84,7 @@ public class DonateActivity extends ActivityBase {
         private static final int BILLING_AVAILABLE = 4;
 
         private BillingService mBillingService;
+        private DonateDatabase mDonateDb;
         private DonationsObserver mDonationsObserver;
         private Cursor mCursor;
         private boolean mBillingSupported;
@@ -110,9 +111,7 @@ public class DonateActivity extends ActivityBase {
             @Override
             protected Cursor[] doInBackground( String... params ) {
                 Cursor[] cursors = new Cursor[ 1 ];
-                DonateDatabase db = new DonateDatabase( getActivity() );
-                cursors[ 0 ] = db.queryAlldonations();
-                db.close();
+                cursors[ 0 ] = mDonateDb.queryAlldonations();
 
                 return cursors;
             }
@@ -138,6 +137,8 @@ public class DonateActivity extends ActivityBase {
 
         @Override
         public void onActivityCreated( Bundle savedInstanceState ) {
+            mDonateDb = new DonateDatabase( getActivity() );
+
             Handler handler = new Handler();
             mDonationsObserver = new DonationsObserver( handler );
 
@@ -166,6 +167,7 @@ public class DonateActivity extends ActivityBase {
         @Override
         public void onDestroy() {
             super.onDestroy();
+            mDonateDb.close();
             mBillingService.unbind();
         }
 
@@ -278,7 +280,6 @@ public class DonateActivity extends ActivityBase {
 
             @Override
             public void onBillingSupported( boolean supported ) {
-                Log.d( "onBillingSupported", String.valueOf( supported ) );
                 if ( supported ) {
                     if ( restoreDatabase() ) {
                         showDonationView( BILLING_AVAILABLE );
