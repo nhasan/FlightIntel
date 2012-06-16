@@ -59,7 +59,6 @@ public class ResponseHandler {
      * @param supported true if in-app billing is supported.
      */
     public static void checkBillingSupportedResponse(boolean supported) {
-        Log.d( "HANDLER", String.valueOf( supported ) );
         if (sPurchaseObserver != null) {
             sPurchaseObserver.onBillingSupported(supported);
         }
