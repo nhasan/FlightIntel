@@ -41,7 +41,8 @@ public class MetarMapActivity extends ActivityBase {
 
         public MetarMapFragment() {
             super( NoaaService.ACTION_GET_METAR, WxRegions.sWxRegionCodes,
-                    WxRegions.sWxRegionNames, "Select Region" );
+                    WxRegions.sWxRegionNames );
+            setLabel( "Select Region" );
         }
 
         @Override

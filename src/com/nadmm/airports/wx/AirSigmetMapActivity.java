@@ -64,8 +64,8 @@ public class AirSigmetMapActivity extends ActivityBase {
     public static class AirSigmetMapFragment extends WxMapFragmentBase {
 
         public AirSigmetMapFragment() {
-            super( NoaaService.ACTION_GET_AIRSIGMET, sAirSigmetCodes, sAirSigmetNames,
-                    "Select Category" );
+            super( NoaaService.ACTION_GET_AIRSIGMET, sAirSigmetCodes, sAirSigmetNames );
+            setLabel( "Select Category" );
         }
 
         @Override

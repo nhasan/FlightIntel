@@ -41,7 +41,8 @@ public class TafMapActivity extends ActivityBase {
 
         public TafMapFragment() {
             super( NoaaService.ACTION_GET_TAF, WxRegions.sWxRegionCodes,
-                    WxRegions.sWxRegionNames, "Select Region" );
+                    WxRegions.sWxRegionNames );
+            setLabel( "Select Region" );
         }
 
         @Override

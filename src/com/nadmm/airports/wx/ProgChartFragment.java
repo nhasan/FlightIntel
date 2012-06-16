@@ -41,8 +41,9 @@ public class ProgChartFragment extends WxMapFragmentBase {
     };
 
     public ProgChartFragment() {
-        super( NoaaService.ACTION_GET_PROGCHART, sProgChartCodes, sProgChartNames,
-                "Select Prognosis Chart" );
+        super( NoaaService.ACTION_GET_PROGCHART, sProgChartCodes, sProgChartNames );
+        setTitle( "Prognosis Charts" );
+        setLabel( "Select Prognosis Chart" );
     }
 
     @Override

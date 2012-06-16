@@ -56,7 +56,9 @@ public class RadarFragment extends WxMapFragmentBase {
     };
 
     public RadarFragment() {
-        super( NoaaService.ACTION_GET_RADAR, sRadarCodes, sRadarNames, "Select Radar Image" );
+        super( NoaaService.ACTION_GET_RADAR, sRadarCodes, sRadarNames );
+        setTitle( "Radar Images" );
+        setLabel( "Select Radar Image" );
     }
 
     @Override

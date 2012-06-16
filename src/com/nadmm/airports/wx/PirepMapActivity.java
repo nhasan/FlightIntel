@@ -94,8 +94,8 @@ public class PirepMapActivity extends ActivityBase {
     public static class PirepMapFragment extends WxMapFragmentBase {
 
         public PirepMapFragment() {
-            super( NoaaService.ACTION_GET_PIREP, sPirepCodes, sPirepNames,
-                    "Select Region and Category" );
+            super( NoaaService.ACTION_GET_PIREP, sPirepCodes, sPirepNames );
+            setLabel( "Select Region and Category" );
         }
 
         @Override
