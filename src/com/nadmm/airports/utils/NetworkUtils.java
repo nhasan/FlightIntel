@@ -80,9 +80,9 @@ public class NetworkUtils {
     }
 
     public static HttpClient getHttpClient() {
-        HttpParams params = new BasicHttpParams();
         SchemeRegistry registry = new SchemeRegistry();
         registry.register( new Scheme( "http", PlainSocketFactory.getSocketFactory(), 80 ) );
+        HttpParams params = new BasicHttpParams();
         ClientConnectionManager cm = new ThreadSafeClientConnManager( params, registry );
         HttpClient client = new DefaultHttpClient( cm, params );
         return client;
@@ -96,35 +96,33 @@ public class NetworkUtils {
         try {
             URI uri = new URI( path );
             HttpGet get = new HttpGet( uri );
-
             HttpResponse response = httpClient.execute( target, get );
-            if ( response.getStatusLine().getStatusCode() == HttpStatus.SC_OK ) {
-                out = new FileOutputStream( pdfFile );
 
-                HttpEntity entity = response.getEntity();
-                in = entity.getContent();
+            int status = response.getStatusLine().getStatusCode();
+            if ( status != HttpStatus.SC_OK ) {
+                throw new Exception( response.getStatusLine().getReasonPhrase() );
+            }
 
-                byte[] buffer = new byte[ 32*1024 ];
-                int count;
+            byte[] buffer = new byte[ 32*1024 ];
+            int count;
+            out = new FileOutputStream( pdfFile );
+            HttpEntity entity = response.getEntity();
+            in = entity.getContent();
 
-                while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
-                    out.write( buffer, 0, count );
-                }
+            while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
+                out.write( buffer, 0, count );
             }
         } catch ( Exception e ) {
-            UiUtils.showToast( context, "Error: Unable to download file" );
+            UiUtils.showToast( context, "Unable to download file: "+e.getMessage() );
         } finally {
-            if ( in != null ) {
-                try {
+            try {
+                if ( in != null ) {
                     in.close();
-                } catch ( IOException e ) {
                 }
-            }
-            if ( out != null ) {
-                try {
+                if ( out != null ) {
                     out.close();
-                } catch ( IOException e ) {
                 }
+            } catch ( IOException e ) {
             }
         }
     }
