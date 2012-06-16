@@ -88,7 +88,7 @@ public class AirSigmetService extends NoaaService {
                     try {
                         String path = hiRes? AIRSIGMET_IMAGE_ZOOM_PATH : AIRSIGMET_IMAGE_PATH;
                         path += imageName;
-                        fetchFromNoaa( path, imageFile, false );
+                        fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch AirSigmet image: "
                                 +e.getMessage() );
