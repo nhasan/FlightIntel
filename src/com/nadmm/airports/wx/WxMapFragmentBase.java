@@ -56,7 +56,6 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setHasOptionsMenu( false );
-        setTitle( getActivity().getTitle().toString() );
 
         mReceiver = new BroadcastReceiver() {
 
@@ -136,7 +135,11 @@ public abstract class WxMapFragmentBase extends FragmentBase {
         if ( path != null ) {
             Intent view = new Intent( getActivity(), ImageViewActivity.class );
             view.putExtra( ImageViewActivity.IMAGE_PATH, path );
-            view.putExtra( ImageViewActivity.IMAGE_TITLE, mTitle );
+            if ( mTitle != null ) {
+                view.putExtra( ImageViewActivity.IMAGE_TITLE, mTitle );
+            } else {
+                view.putExtra( ImageViewActivity.IMAGE_TITLE, getActivity().getTitle() );
+            }
             String code = intent.getStringExtra( NoaaService.IMAGE_CODE );
             String name = getDisplayText( code );
             if ( name != null ) {
