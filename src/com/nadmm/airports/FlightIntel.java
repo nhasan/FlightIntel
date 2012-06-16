@@ -20,6 +20,9 @@
 package com.nadmm.airports;
 
 
+import java.io.File;
+import java.util.Arrays;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -27,6 +30,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 import com.nadmm.airports.donate.DonateDatabase;
+import com.nadmm.airports.utils.SystemUtils;
 
 public class FlightIntel extends ActivityBase {
 
@@ -40,6 +44,9 @@ public class FlightIntel extends ActivityBase {
         DonateDatabase db = new DonateDatabase( this );
         Cursor c = db.queryAlldonations();
         Application.sDonationDone = c.moveToFirst();
+        db.close();
+
+        cleanupOldDirs();
 
         boolean agreed = prefs.getBoolean( PreferencesActivity.KEY_DISCLAIMER_AGREED, false );
         if ( !agreed ) {
@@ -59,6 +66,35 @@ public class FlightIntel extends ActivityBase {
 
         startHomeActivity();
         finish();
+    }
+
+    private void cleanupOldDirs() {
+        final String[] oldNames = new String[] {
+            "airsigmet",
+            "metar",
+            "pirep",
+            "taf"
+        };
+
+        File root = SystemUtils.getExternalDir( "" );
+        File[] files = root.listFiles();
+        for ( File file : files ) {
+            if ( Arrays.binarySearch( oldNames, file.getName() ) >= 0 ) {
+                removeDir( file );
+            }
+        }
+    }
+
+    private void removeDir( File dir ) {
+        File[] files = dir.listFiles();
+        for ( File file : files ) {
+            if ( file.isDirectory() ) {
+                removeDir( file );
+            } else {
+                file.delete();
+            }
+        }
+        dir.delete();
     }
 
 }
