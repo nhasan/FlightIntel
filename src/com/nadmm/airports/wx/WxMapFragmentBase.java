@@ -75,6 +75,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
 
     @Override
     public void onResume() {
+        mPendingRow = null;
         IntentFilter filter = new IntentFilter();
         filter.addAction( mAction );
         getActivity().registerReceiver( mReceiver, filter );
@@ -102,9 +103,11 @@ public abstract class WxMapFragmentBase extends FragmentBase {
             
             @Override
             public void onClick( View v ) {
-                mPendingRow = v;
-                String code = getMapCode( v );
-                requestWxMap( code );
+                if ( mPendingRow == null ) {
+                    mPendingRow = v;
+                    String code = getMapCode( v );
+                    requestWxMap( code );
+                }
             }
         };
 
@@ -166,8 +169,10 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     }
 
     private void setProgressBarVisible( boolean visible ) {
-        View view = mPendingRow.findViewById( R.id.progress );
-        view.setVisibility( visible? View.VISIBLE : View.INVISIBLE );
+        if ( mPendingRow != null ) {
+            View view = mPendingRow.findViewById( R.id.progress );
+            view.setVisibility( visible? View.VISIBLE : View.INVISIBLE );
+        }
     }
 
     protected abstract Intent getServiceIntent();
