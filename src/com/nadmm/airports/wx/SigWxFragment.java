@@ -16,19 +16,19 @@ public class SigWxFragment extends WxMapFragmentBase {
     };
 
     private static final String[] sSigWxNames = new String[] {
-        "12 hr SIGWX Prognosis (0000 UTC)",
-        "12 hr SIGWX Prognosis (0600 UTC)",
-        "12 hr SIGWX Prognosis (1200 UTC)",
-        "12 hr SIGWX Prognosis (1800 UTC)",
-        "24 hr SIGWX Prognosis (0000 UTC)",
-        "24 hr SIGWX Prognosis (0600 UTC)",
-        "24 hr SIGWX Prognosis (1200 UTC)",
-        "24 hr SIGWX Prognosis (1800 UTC)",
+        "12 hr Prognosis (Vaild 0000 UTC)",
+        "12 hr Prognosis (Valid 0600 UTC)",
+        "12 hr Prognosis (Valid 1200 UTC)",
+        "12 hr Prognosis (Valid 1800 UTC)",
+        "24 hr Prognosis (Valid 0000 UTC)",
+        "24 hr Prognosis (Valid 0600 UTC)",
+        "24 hr Prognosis (Valid 1200 UTC)",
+        "24 hr Prognosis (Valid 1800 UTC)",
     };
 
     public SigWxFragment() {
         super( NoaaService.ACTION_GET_SIGWX, sSigWxCodes, sSigWxNames );
-        setTitle( "SIGWX Images" );
+        setTitle( "SigWx Images" );
         setLabel( "Select SigWx Image" );
     }
 
