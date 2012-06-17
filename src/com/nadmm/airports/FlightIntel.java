@@ -78,20 +78,24 @@ public class FlightIntel extends ActivityBase {
 
         File root = SystemUtils.getExternalDir( "" );
         File[] files = root.listFiles();
-        for ( File file : files ) {
-            if ( Arrays.binarySearch( oldNames, file.getName() ) >= 0 ) {
-                removeDir( file );
+        if ( files != null ) {
+            for ( File file : files ) {
+                if ( Arrays.binarySearch( oldNames, file.getName() ) >= 0 ) {
+                    removeDir( file );
+                }
             }
         }
     }
 
     private void removeDir( File dir ) {
         File[] files = dir.listFiles();
-        for ( File file : files ) {
-            if ( file.isDirectory() ) {
-                removeDir( file );
-            } else {
-                file.delete();
+        if ( files != null ) {
+            for ( File file : files ) {
+                if ( file.isDirectory() ) {
+                    removeDir( file );
+                } else {
+                    file.delete();
+                }
             }
         }
         dir.delete();

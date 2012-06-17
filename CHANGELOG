@@ -1,5 +1,9 @@
+v4.0.1 (6/17/12)
+================
+* Fix a crash at startup on new installations
+
 v4.0.0 (6/16/12)
-=================
+================
 * Added Radar images
 * Added Prognosis images
 * Added Winds Aloft images
