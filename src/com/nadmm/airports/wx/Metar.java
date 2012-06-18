@@ -25,7 +25,7 @@ import java.util.EnumSet;
 
 public final class Metar implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 3338578580544822881L;
 
     public enum Flags {
         Corrected {
@@ -151,6 +151,39 @@ public final class Metar implements Serializable {
         snincr = false;
         wshft = false;
         fropa = false;
+    }
+
+    public void parseRemarks() {
+        int index = rawText.indexOf( "RMK" );
+        if ( index == -1 ) {
+            return;
+        }
+
+        String[] rmks = rawText.substring( index ).split( "\\s+" );
+        index = 0;
+        while ( index < rmks.length ) {
+            String rmk = rmks[ index++ ];
+            if ( rmk.equals( "PRESRR" ) ) {
+                presrr = true;
+            } else if ( rmk.equals( "PRESFR" ) ) {
+                presfr = true;
+            } else if ( rmk.equals( "SNINCR" ) ) {
+                snincr = true;
+            } else if ( rmk.equals( "WSHFT" ) ) {
+                wshft = true;
+            } else if ( rmk.equals( "FROPA" ) ) {
+                fropa = true;
+            } else if ( rmk.equals( "PNO" ) ) {
+                flags.add( Flags.RainSensorOff );
+            } else if ( rmk.equals( "PK" ) ) {
+                rmk = rmks[ index++ ];
+                if ( rmk.equals( "WND" ) ) {
+                    rmk = rmks[ index++ ];
+                    String speed = rmk.substring( 3, rmk.indexOf( '/' ) );
+                    windPeakKnots = Integer.valueOf( speed );
+                }
+            }
+        }
     }
 
     public void setMissingFields() {
