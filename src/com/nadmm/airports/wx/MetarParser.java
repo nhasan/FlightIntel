@@ -52,39 +52,6 @@ public final class MetarParser {
         }
     }
 
-    protected void parseRemarks( Metar metar ) {
-        int index = metar.rawText.indexOf( "RMK" );
-        if ( index == -1 ) {
-            return;
-        }
-
-        String[] rmks = metar.rawText.substring( index ).split( "\\s+" );
-        index = 0;
-        while ( index < rmks.length ) {
-            String rmk = rmks[ index++ ];
-            if ( rmk.equals( "PRESRR" ) ) {
-                metar.presrr = true;
-            } else if ( rmk.equals( "PRESFR" ) ) {
-                metar.presfr = true;
-            } else if ( rmk.equals( "SNINCR" ) ) {
-                metar.snincr = true;
-            } else if ( rmk.equals( "WSHFT" ) ) {
-                metar.wshft = true;
-            } else if ( rmk.equals( "FROPA" ) ) {
-                metar.fropa = true;
-            } else if ( rmk.equals( "PNO" ) ) {
-                metar.flags.add( Flags.RainSensorOff );
-            } else if ( rmk.equals( "PK" ) ) {
-                rmk = rmks[ index++ ];
-                if ( rmk.equals( "WND" ) ) {
-                    rmk = rmks[ index++ ];
-                    String speed = rmk.substring( 3, rmk.indexOf( '/' ) );
-                    metar.windPeakKnots = Integer.valueOf( speed );
-                }
-            }
-        }
-    }
-
     protected final class MetarHandler extends DefaultHandler {
 
         private Metar metar;
@@ -123,7 +90,6 @@ public final class MetarParser {
                 throws SAXException {
             if ( qName.equalsIgnoreCase( "raw_text" ) ) {
                 metar.rawText = text.toString();
-                parseRemarks( metar );
             } else if ( qName.equalsIgnoreCase( "observation_time" ) ) {
                 try {
                     Time time = new Time();
@@ -207,8 +173,70 @@ public final class MetarParser {
                 metar.metarType = text.toString();
             } else if ( qName.equalsIgnoreCase( "metar" ) ) {
                 metar.isValid = true;
-                metar.setMissingFields();
+                parseRemarks( metar );
+                setMissingFields( metar );
             }
+        }
+
+    }
+
+    public void parseRemarks( Metar metar ) {
+        int index = metar.rawText.indexOf( "RMK" );
+        if ( index == -1 ) {
+            return;
+        }
+
+        String[] rmks = metar.rawText.substring( index ).split( "\\s+" );
+        index = 0;
+        while ( index < rmks.length ) {
+            String rmk = rmks[ index++ ];
+            if ( rmk.equals( "PRESRR" ) ) {
+                metar.presrr = true;
+            } else if ( rmk.equals( "PRESFR" ) ) {
+                metar.presfr = true;
+            } else if ( rmk.equals( "SNINCR" ) ) {
+                metar.snincr = true;
+            } else if ( rmk.equals( "WSHFT" ) ) {
+                metar.wshft = true;
+            } else if ( rmk.equals( "FROPA" ) ) {
+                metar.fropa = true;
+            } else if ( rmk.equals( "PNO" ) ) {
+                metar.flags.add( Flags.RainSensorOff );
+            } else if ( rmk.equals( "PK" ) ) {
+                rmk = rmks[ index++ ];
+                if ( rmk.equals( "WND" ) ) {
+                    rmk = rmks[ index++ ];
+                    String speed = rmk.substring( 3, rmk.indexOf( '/' ) );
+                    metar.windPeakKnots = Integer.valueOf( speed );
+                }
+            }
+        }
+    }
+
+    public void setMissingFields( Metar metar ) {
+        if ( metar.flightCategory == null ) {
+            metar.flightCategory =
+                    WxUtils.computeFlightCategory( metar.skyConditions, metar.visibilitySM );
+        }
+        if ( metar.vertVisibilityFeet < Integer.MAX_VALUE ) {
+            // Check to see if we have an OVX layer, if not add it
+            boolean found = false;
+            for ( SkyCondition sky : metar.skyConditions ) {
+                if ( sky.getSkyCover().equals( "OVX" ) ) {
+                    found = true;
+                    break;
+                }
+            }
+            if ( !found ) {
+                metar.skyConditions.add( SkyCondition.create( "OVX", 0 ) );
+            }
+        }
+        if ( metar.wxList.isEmpty() ) {
+            metar.wxList.add( WxSymbol.get( "NSW", "" ) );
+        }
+        if ( metar.skyConditions.isEmpty() ) {
+            // Sky condition is not available in the METAR
+            metar.skyConditions.add( SkyCondition.create( "SKM", 0 ) );
         }
     }
 
