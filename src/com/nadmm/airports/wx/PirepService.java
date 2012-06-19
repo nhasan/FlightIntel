@@ -62,23 +62,29 @@ public class PirepService extends NoaaService {
                 boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
                 boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-                File xml = getDataFile( "PIREP_"+stationId+".xml" );
+                File xmlFile = getDataFile( "PIREP_"+stationId+".xml" );
+                File objFile = getDataFile( "PIREP_"+stationId+".obj" );
+                Pirep pirep = null;
 
-                if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
+                if ( forceRefresh || ( !cacheOnly && !xmlFile.exists() ) ) {
                     try {
                         String query = String.format( PIREP_TEXT_QUERY, hours,
                                 radiusNM*GeoUtils.STATUTE_MILES_PER_NAUTICAL_MILES,
                                 location.getLongitude(), location.getLatitude() );
-                        fetchFromNoaa( query, xml, true );
+                        fetchFromNoaa( query, xmlFile, true );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch PIREP: "+e.getMessage() );
                     }
                 }
 
-                Pirep pirep = new Pirep();
-
-                if ( xml.exists() ) {
-                    mParser.parse( xml, pirep, location, radiusNM );
+                if ( objFile.exists() ) {
+                    pirep = (Pirep) readObject( objFile );
+                } else if ( xmlFile.exists() ) {
+                    pirep = new Pirep();
+                    mParser.parse( xmlFile, pirep, location, radiusNM );
+                    writeObject( pirep, objFile );
+                } else {
+                    pirep = new Pirep();
                 }
 
                 // Broadcast the result

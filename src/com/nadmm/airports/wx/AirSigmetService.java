@@ -58,22 +58,28 @@ public class AirSigmetService extends NoaaService {
                 boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
                 boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-                File xml = getDataFile( "AIRSIGMET_"+stationId+".xml" );
+                File xmlFile = getDataFile( "AIRSIGMET_"+stationId+".xml" );
+                File objFile = getDataFile( "AIRSIGMET_"+stationId+".obj" );
+                AirSigmet airSigmet = null;
 
-                if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
+                if ( forceRefresh || ( !cacheOnly && !xmlFile.exists() ) ) {
                     try {
                         String query = String.format( AIRSIGMET_TEXT_QUERY,
                                 hours, box[ 0 ], box[ 1 ], box[ 2 ], box[ 3 ] );
-                        fetchFromNoaa( query, xml, true );
+                        fetchFromNoaa( query, xmlFile, true );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch AirSigmet: "+e.getMessage() );
                     }
                 }
 
-                AirSigmet airSigmet = new AirSigmet();
-
-                if ( xml.exists() ) {
-                    mParser.parse( xml, airSigmet );
+                if ( objFile.exists() ) {
+                    airSigmet = (AirSigmet) readObject( objFile );
+                } else if ( xmlFile.exists() ) {
+                    airSigmet = new AirSigmet();
+                    mParser.parse( xmlFile, airSigmet );
+                    writeObject( airSigmet, objFile );
+                } else {
+                    airSigmet = new AirSigmet();
                 }
 
                 // Broadcast the result

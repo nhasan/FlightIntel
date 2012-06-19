@@ -20,9 +20,13 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
@@ -182,6 +186,36 @@ public abstract class NoaaService extends IntentService {
         intent.setAction( action );
         intent.putExtra( TYPE, type );
         return intent;
+    }
+
+    protected void writeObject( Object object, File objFile ) {
+        try {
+            ObjectOutputStream out = new ObjectOutputStream( new FileOutputStream( objFile ) );
+            out.writeObject( object );
+            out.close();
+        } catch ( FileNotFoundException e ) {
+            e.printStackTrace();
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    protected Object readObject( File objFile ) {
+        Object object = null;
+        try {
+            ObjectInputStream in = new ObjectInputStream( new FileInputStream( objFile ) );
+            object = in.readObject();
+            in.close();
+            return object;
+        } catch ( FileNotFoundException e ) {
+            e.printStackTrace();
+        } catch ( IOException e ) {
+            e.printStackTrace();
+        } catch ( ClassNotFoundException e ) {
+            objFile.delete();
+            e.printStackTrace();
+        }
+        return object;
     }
 
 }

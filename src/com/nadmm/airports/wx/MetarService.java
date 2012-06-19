@@ -56,22 +56,29 @@ public class MetarService extends NoaaService {
                 boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
                 boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-                File xml = getDataFile( "METAR_"+stationId+".xml" );
+                File xmlFile = getDataFile( "METAR_"+stationId+".xml" );
+                File objFile = getDataFile( "METAR_"+stationId+".obj" );
+                Metar metar = null;
 
-                if ( forceRefresh || ( !cacheOnly && !xml.exists() ) ) {
+                if ( forceRefresh || ( !cacheOnly && !xmlFile.exists() ) ) {
                     try {
                         String query = String.format( METAR_TEXT_QUERY, hours, stationId );
-                        fetchFromNoaa( query, xml, true );
+                        fetchFromNoaa( query, xmlFile, true );
+                        metar = parse( stationId, xmlFile, objFile );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch METAR: "+e.getMessage() );
                     }
                 }
 
-                Metar metar = new Metar();
-
-                if ( xml.exists() ) {
+                if ( objFile.exists() ) {
+                    metar = (Metar) readObject( objFile );
+                } else if ( xmlFile.exists() ) {
+                    metar = new Metar();
                     metar.stationId = stationId;
-                    mParser.parse( xml, metar );
+                    mParser.parse( xmlFile, metar );
+                    writeObject( metar, objFile );
+                } else {
+                    metar = new Metar();
                 }
 
                 // Broadcast the result
@@ -95,6 +102,16 @@ public class MetarService extends NoaaService {
                 sendResultIntent( action, code, imageFile );
             }
         }
+    }
+
+    private Metar parse( String stationId, File xmlFile, File objFile ) {
+        Metar metar = new Metar();
+        if ( xmlFile.exists() ) {
+            metar.stationId = stationId;
+            mParser.parse( xmlFile, metar );
+            writeObject( metar, objFile );
+        }
+        return metar;
     }
 
 }
