@@ -247,7 +247,7 @@ public class MetarFragment extends FragmentBase {
             addBulletedRow( layout, "Station has not updated the METAR for more than 3 hours" );
             detail.setVisibility( View.GONE );
             stopRefreshAnimation();
-            setContentShown( true );
+            setFragmentContentShown( true );
             return;
         } else {
             tv.setText( "" );
