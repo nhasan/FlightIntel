@@ -43,13 +43,14 @@ public class FavoriteAirportsFragment extends AirportListFragmentBase {
             }
 
             DatabaseManager dbManager = activity.getDbManager();
-            ArrayList<String> favorites = dbManager.getAptFavorites();
+            ArrayList<String> siteNumbers = dbManager.getAptFavorites();
+
             String selection = "";
-            for (String site_number : favorites ) {
+            for (String siteNumber : siteNumbers ) {
                 if ( selection.length() > 0 ) {
                     selection += ", ";
                 }
-                selection += "'"+site_number+"'";
+                selection += "'"+siteNumber+"'";
             };
 
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
