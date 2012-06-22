@@ -52,8 +52,8 @@
     </style>
 
     <style name="Theme.Light.DarkActionBar" parent="@style/Theme.Sherlock.Light.DarkActionBar">
-        <item name="icon">@drawable/ab_icon</item>
-        <item name="android:icon">@drawable/ab_icon</item>
+        <item name="icon">@drawable/icon</item>
+        <item name="android:icon">@drawable/icon</item>
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
     </style>
     <style name="CustomTabPageIndicator" parent="Widget.TabPageIndicator">
