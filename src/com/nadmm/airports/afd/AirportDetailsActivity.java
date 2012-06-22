@@ -107,7 +107,8 @@ public class AirportDetailsActivity extends ActivityBase {
         private Location mLocation;
         private float mDeclination;
         private String mIcaoCode;
-        int mWxUpdates = 0;
+        private int mRadius;
+        private int mWxUpdates = 0;
 
         private final class AirportDetailsTask extends CursorAsyncTask {
 
@@ -171,12 +172,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     cursors[ 5 ] = c;
                 }
 
-                SharedPreferences prefs =
-                        PreferenceManager.getDefaultSharedPreferences( getActivity() );
-                int radius = Integer.valueOf( prefs.getString(
-                        PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
-
-                cursors[ 6 ] = new NearbyWxCursor( db, mLocation, radius );
+                cursors[ 6 ] = new NearbyWxCursor( db, mLocation, mRadius );
 
                 String faa_code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
                 builder = new SQLiteQueryBuilder();
@@ -256,6 +252,11 @@ public class AirportDetailsActivity extends ActivityBase {
                 }
 
             };
+
+            SharedPreferences prefs =
+                    PreferenceManager.getDefaultSharedPreferences( getActivity() );
+            mRadius = Integer.valueOf( prefs.getString(
+                    PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
 
             mDafdFilter = new IntentFilter();
             mDafdFilter.addAction( DafdService.ACTION_GET_AFD );
@@ -467,9 +468,8 @@ public class AirportDetailsActivity extends ActivityBase {
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_nearby_layout );
 
             Intent airport = new Intent( getActivity(), NearbyAirportsActivity.class );
-            Bundle extras = new Bundle();
-            extras.putParcelable( LocationColumns.LOCATION, mLocation );
-            airport.putExtras( extras );
+            airport.putExtra( LocationColumns.LOCATION, mLocation );
+            airport.putExtra( LocationColumns.RADIUS, mRadius );
             addClickableRow( layout, "Airports", airport, R.drawable.row_selector_top );
             Intent fss = new Intent( getActivity(), FssCommActivity.class );
             fss.putExtra( Airports.SITE_NUMBER, siteNumber );
