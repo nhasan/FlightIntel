@@ -25,7 +25,8 @@ import org.acra.annotation.ReportsCrashes;
 @ReportsCrashes( formKey = "dDd5R3ZOb2pXMGFiM19oYjFnSWRmdmc6MQ" ) 
 public class Application extends android.app.Application {
 
-    public static boolean sDonationDone = false;
+    public static Boolean sDonationDone;
+
     @Override
     public void onCreate() {
         // The following line triggers the initialization of ACRA

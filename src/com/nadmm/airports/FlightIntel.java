@@ -25,11 +25,9 @@ import java.util.Arrays;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-import com.nadmm.airports.donate.DonateDatabase;
 import com.nadmm.airports.utils.SystemUtils;
 
 public class FlightIntel extends ActivityBase {
@@ -40,11 +38,6 @@ public class FlightIntel extends ActivityBase {
 
         PreferenceManager.setDefaultValues( this, R.xml.preferences, false );
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-
-        DonateDatabase db = new DonateDatabase( this );
-        Cursor c = db.queryAlldonations();
-        Application.sDonationDone = c.moveToFirst();
-        db.close();
 
         cleanupOldDirs();
 

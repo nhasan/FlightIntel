@@ -67,6 +67,7 @@ import com.nadmm.airports.afd.BrowseActivity;
 import com.nadmm.airports.afd.FavoritesActivity;
 import com.nadmm.airports.afd.NearbyActivity;
 import com.nadmm.airports.donate.DonateActivity;
+import com.nadmm.airports.donate.DonateDatabase;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
@@ -105,6 +106,13 @@ public class ActivityBase extends SherlockFragmentActivity {
                 externalStorageStatusChanged();
             }
         };
+
+        if ( Application.sDonationDone == null ) {
+            DonateDatabase db = new DonateDatabase( this );
+            Cursor c = db.queryAlldonations();
+            Application.sDonationDone = c.moveToFirst();
+            db.close();
+        }
 
         super.onCreate( savedInstanceState );
     }
