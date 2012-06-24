@@ -45,6 +45,11 @@
           android:showAsAction="always"
           android:visible="false"
           android:icon="@drawable/ic_action_refresh" />
+    <item android:id="@+id/menu_charts_download"
+          android:title="@string/charts_download"
+          android:showAsAction="always"
+          android:visible="false"
+          android:icon="@drawable/ic_action_charts_download" />
     <item android:id="@+id/menu_search"
           android:title="@string/search"
           android:showAsAction="collapseActionView|always" 
