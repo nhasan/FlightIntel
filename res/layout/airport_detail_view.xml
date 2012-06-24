@@ -42,8 +42,8 @@
     <TextView android:id="@+id/detail_rwy_label"
             style="@style/TextSmall.Bold"
             android:padding="4dp"
-            android:text="@string/runways"
             android:layout_marginTop="4dp"
+            android:text="@string/runways"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/detail_rwy_layout"
@@ -66,8 +66,8 @@
     <TextView android:id="@+id/detail_remarks_label"
             style="@style/TextSmall.Bold"
             android:padding="4dp"
-            android:text="@string/airport_remarks"
             android:layout_marginTop="4dp"
+            android:text="@string/airport_remarks"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/detail_remarks_layout"
@@ -80,8 +80,8 @@
     <TextView android:id="@+id/detail_awos_label"
             style="@style/TextSmall.Bold"
             android:padding="4dp"
-            android:text="@string/weather_stations"
             android:layout_marginTop="4dp"
+            android:text="@string/weather_stations"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/detail_awos_layout"
@@ -92,8 +92,8 @@
     <TextView android:id="@+id/detail_nearby_label"
             style="@style/TextSmall.Bold"
             android:padding="4dp"
-            android:text="@string/nearby_facilities"
             android:layout_marginTop="4dp"
+            android:text="@string/nearby_facilities"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/detail_nearby_layout"
@@ -104,8 +104,8 @@
     <TextView android:id="@+id/detail_operations_label"
             style="@style/TextSmall.Bold"
             android:padding="4dp"
-            android:text="@string/airport_operations"
             android:layout_marginTop="4dp"
+            android:text="@string/airport_operations"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/detail_operations_layout"
@@ -116,8 +116,8 @@
     <TextView android:id="@+id/detail_ifr_label"
             style="@style/TextSmall.Bold"
             android:padding="4dp"
-            android:text="@string/aeronav_products"
             android:layout_marginTop="4dp"
+            android:text="@string/aeronav_products"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/detail_ifr_layout"
