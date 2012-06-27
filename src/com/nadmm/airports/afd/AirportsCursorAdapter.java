@@ -21,6 +21,7 @@ package com.nadmm.airports.afd;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.widget.ResourceCursorAdapter;
 import android.view.View;
 import android.widget.TextView;
 
@@ -31,9 +32,8 @@ import com.nadmm.airports.R;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.utils.SectionedCursorAdapter;
 
-public class AirportsCursorAdapter extends SectionedCursorAdapter {
+public class AirportsCursorAdapter extends ResourceCursorAdapter {
 
     private StringBuilder mStringBuilder = new StringBuilder();
 
@@ -45,13 +45,9 @@ public class AirportsCursorAdapter extends SectionedCursorAdapter {
         TextView other;
     }
 
+    @SuppressWarnings("deprecation")
     public AirportsCursorAdapter( Context context, Cursor c ) {
-        super( context, R.layout.airport_list_item, c, R.id.list_section );
-    }
-
-    @Override
-    public String getSectionName() {
-        return null;
+        super( context, R.layout.airport_list_item, c );
     }
 
     @Override
