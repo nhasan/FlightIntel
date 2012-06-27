@@ -30,7 +30,7 @@ import android.widget.ListView;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.aeronav.BatchDownloadActivity;
+import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 
@@ -67,7 +67,7 @@ public class AirportListFragmentBase extends ListFragmentBase {
         // Handle item selection
         switch ( item.getItemId() ) {
         case R.id.menu_charts_download:
-            Intent intent = new Intent( getActivity(), BatchDownloadActivity.class );
+            Intent intent = new Intent( getActivity(), ChartsDownloadActivity.class );
             getActivity().startActivity( intent );
             return true;
         default:
