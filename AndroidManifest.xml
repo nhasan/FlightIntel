@@ -112,7 +112,7 @@
                   android:name=".aeronav.DtppActivity" />
 
         <activity android:label="@string/charts_download"
-                  android:name=".aeronav.BatchDownloadActivity" />
+                  android:name=".aeronav.ChartsDownloadActivity" />
 
         <activity android:label="@string/app_name"
                   android:name=".utils.ExternalStorageActivity" />
