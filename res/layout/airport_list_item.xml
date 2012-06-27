@@ -22,15 +22,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="4dp"
-        android:paddingBottom="8dp"
+        android:padding="8dp"
         android:orientation="vertical">
-    <TextView android:id="@+id/list_section"
-        style="?android:attr/listSeparatorTextViewStyle"
-        android:gravity="left|center_vertical"
-        android:visibility="gone"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>
     <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -38,30 +31,25 @@
         <TextView android:id="@+id/facility_name"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textStyle="bold"
-                android:paddingLeft="4dp"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
         <TextView android:id="@+id/facility_id"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:paddingRight="6dp"
                 android:gravity="right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
     </LinearLayout>
     <TextView android:id="@+id/location"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:paddingLeft="4dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/other_info"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:paddingLeft="4dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/distance"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:paddingLeft="4dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
 </LinearLayout>
