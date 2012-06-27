@@ -435,7 +435,7 @@ public class FragmentBase extends SherlockFragment {
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
-    private void addSeparator( LinearLayout layout ) {
+    protected void addSeparator( LinearLayout layout ) {
         View separator = new View( mActivity );
         separator.setBackgroundColor( Color.LTGRAY );
         layout.addView( separator, new LayoutParams( LayoutParams.MATCH_PARENT, 1 ) );
