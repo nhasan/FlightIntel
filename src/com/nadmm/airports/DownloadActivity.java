@@ -77,7 +77,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.Window;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.NetworkUtils;
@@ -158,7 +157,6 @@ public final class DownloadActivity extends ActivityBase {
         mStop = new AtomicBoolean( false );
         mHandler = new Handler();
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         setContentView( createContentView( R.layout.download_list_view ) );
 
         // Add the footer view
@@ -393,7 +391,6 @@ public final class DownloadActivity extends ActivityBase {
 
         @Override
         protected void onPreExecute() {
-            setProgressBarIndeterminateVisibility( true );
             Button btnDownload = (Button) findViewById( R.id.btnDownload );
             btnDownload.setEnabled( false );
             mInstalledData.clear();
@@ -434,8 +431,6 @@ public final class DownloadActivity extends ActivityBase {
 
         @Override
         protected void onPostExecute( Integer result ) {
-            setProgressBarIndeterminateVisibility( false );
-
             if ( result != 0 ) {
                 TextView empty = (TextView) findViewById( android.R.id.empty );
                 empty.setText( R.string.download_error );
