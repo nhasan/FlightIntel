@@ -21,6 +21,7 @@ package com.nadmm.airports;
 
 import java.util.ArrayList;
 
+import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -502,6 +503,7 @@ public class ActivityBase extends SherlockFragmentActivity {
         }
     }
 
+    @TargetApi(11)
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
         MenuInflater inflater = getSupportMenuInflater();
