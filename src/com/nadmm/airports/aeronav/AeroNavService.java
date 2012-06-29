@@ -27,6 +27,7 @@ import org.apache.http.client.HttpClient;
 import android.app.IntentService;
 import android.content.Intent;
 
+import com.nadmm.airports.utils.FileUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
 
@@ -34,17 +35,16 @@ public abstract class AeroNavService extends IntentService {
 
     public static final String ACTION_GET_AFD = "flightintel.intent.action.GET_AFD";
     public static final String ACTION_CHECK_AFD = "flightintel.intent.action.CHECK_AFD";
-    public static final String ACTION_GET_CHART = "flightintel.intent.action.GET_CHART";
+    public static final String ACTION_GET_CHARTS = "flightintel.intent.action.GET_CHARTS";
     public static final String ACTION_CHECK_CHARTS = "flightintel.intent.action.CHECK_CHARTS";
     public static final String ACTION_DELETE_CHARTS = "flightintel.intent.action.DELETE_CHARTS";
 
-
     public static final String CYCLE_NAME = "CYCLE_NAME";
+    public static final String TPP_VOLUME = "TPP_VOLUME";
     public static final String PDF_NAME = "PDF_NAME";
     public static final String PDF_PATH = "PDF_PATH";
     public static final String PDF_NAMES = "PDF_NAMES";
     public static final String DOWNLOAD_IF_MISSING = "DOWNLOAD_IF_MISSING";
-    public static final String VOLUME_NAME = "VOLUME_NAME";
 
     protected final HttpClient mHttpClient;
     protected final HttpHost mTarget;
@@ -91,16 +91,10 @@ public abstract class AeroNavService extends IntentService {
 
     protected void cleanupOldCycles() {
         File[] cycles = DATA_DIR.listFiles();
-        for ( File cycle : cycles ) {
-            if ( cycle.isDirectory() ) {
-                // First delete all the charts within this cycle directory
-                File[] files = cycle.listFiles();
-                for ( File file : files ) {
-                    file.delete();
-                }
+        if ( cycles != null ) {
+            for ( File cycle : cycles ) {
+                FileUtils.removeDir( cycle );
             }
-            // Now delete the cycle directory itself
-            cycle.delete();
         }
     }
 

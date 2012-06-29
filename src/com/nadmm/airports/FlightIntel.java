@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import com.nadmm.airports.utils.FileUtils;
 import com.nadmm.airports.utils.SystemUtils;
 
 public class FlightIntel extends ActivityBase {
@@ -74,24 +75,10 @@ public class FlightIntel extends ActivityBase {
         if ( files != null ) {
             for ( File file : files ) {
                 if ( Arrays.binarySearch( oldNames, file.getName() ) >= 0 ) {
-                    removeDir( file );
+                    FileUtils.removeDir( file );
                 }
             }
         }
-    }
-
-    private void removeDir( File dir ) {
-        File[] files = dir.listFiles();
-        if ( files != null ) {
-            for ( File file : files ) {
-                if ( file.isDirectory() ) {
-                    removeDir( file );
-                } else {
-                    file.delete();
-                }
-            }
-        }
-        dir.delete();
     }
 
 }
