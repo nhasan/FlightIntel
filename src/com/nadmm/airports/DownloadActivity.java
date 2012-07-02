@@ -200,32 +200,13 @@ public final class DownloadActivity extends ActivityBase {
     }
 
     private void checkNetworkAndDownload() {
-        if ( !NetworkUtils.isNetworkAvailable( this ) ) {
-            return;
-        }
+        NetworkUtils.checkNetworkAndDownload( this, new Runnable() {
 
-        if ( !NetworkUtils.isConnectedToWifi( this ) ) {
-            AlertDialog.Builder builder = new AlertDialog.Builder( this );
-            builder.setMessage( "You are not connected to a wifi network.\n"
-                    +"Continue download?" )
-                   .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick( DialogInterface dialog, int id ) {
-                            download();
-                        }
-                   } )
-                   .setNegativeButton( "No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick( DialogInterface dialog, int id ) {
-                        }
-                   } );
-            AlertDialog alert = builder.create();
-            alert.show();
-            return;
-        }
-        else {
-            download();
-        }
+            @Override
+            public void run() {
+                download();
+            }
+        } );
     }
 
     private void download() {
