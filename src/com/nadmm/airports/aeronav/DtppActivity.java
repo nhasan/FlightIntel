@@ -146,7 +146,7 @@ public class DtppActivity extends ActivityBase {
 
             mFilter = new IntentFilter();
             mFilter.addAction( DtppService.ACTION_CHECK_CHARTS );
-            mFilter.addAction( DtppService.ACTION_GET_CHART );
+            mFilter.addAction( DtppService.ACTION_GET_CHARTS );
 
             mReceiver = new BroadcastReceiver() {
                 @Override
@@ -349,7 +349,7 @@ public class DtppActivity extends ActivityBase {
             setRefreshItemVisible( true );
             startRefreshAnimation();
             mPendingCharts.add( pdfName );
-            Intent service = makeServiceIntent( DtppService.ACTION_GET_CHART );
+            Intent service = makeServiceIntent( DtppService.ACTION_GET_CHARTS );
             getActivity().startService( service );
         }
 
@@ -408,10 +408,7 @@ public class DtppActivity extends ActivityBase {
             if ( path != null ) {
                 showChartAvailability( view, true );
                 view.setTag( R.id.DTPP_PDF_PATH, path );
-                if ( action.equals( DtppService.ACTION_GET_CHART ) ) {
-                    if ( mExpired ) {
-                        UiUtils.showToast( getActivity(), "WARNING: This chart has expired!" );
-                    }
+                if ( action.equals( DtppService.ACTION_GET_CHARTS ) ) {
                     startPdfViewer( path );
                 }
             } else {
@@ -473,28 +470,13 @@ public class DtppActivity extends ActivityBase {
         }
 
         protected void getAptCharts() {
-            if ( !NetworkUtils.isConnectedToWifi( getActivity() ) ) {
-                AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
-                builder.setMessage( "You are not connected to a wifi network.\n"
-                        +"Continue download?" )
-                       .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick( DialogInterface dialog, int id ) {
-                                getMissingCharts();
-                            }
-                       } )
-                       .setNegativeButton( "No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick( DialogInterface dialog, int id ) {
-                            }
-                       } );
-                AlertDialog alert = builder.create();
-                alert.show();
-                return;
-            }
-            else {
-                getMissingCharts();
-            }
+            NetworkUtils.checkNetworkAndDownload( getActivity(), new Runnable() {
+
+                @Override
+                public void run() {
+                    getMissingCharts();
+                }
+            } );
         }
 
         protected void startPdfViewer( String path ) {
