@@ -29,6 +29,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -40,7 +41,6 @@ import com.nadmm.airports.R;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TabsAdapter;
 import com.nadmm.airports.wx.NearbyWxFragment;
-import com.viewpagerindicator.TabPageIndicator;
 
 public class NearbyActivity extends ActivityBase {
 
@@ -82,8 +82,8 @@ public class NearbyActivity extends ActivityBase {
         mTabsAdapter.addTab( "AIRPORTS", NearbyAirportsFragment.class, args );
         mTabsAdapter.addTab( "WEATHER", NearbyWxFragment.class, args );
 
-        TabPageIndicator tabIndicator = (TabPageIndicator) findViewById( R.id.page_titles );
-        tabIndicator.setViewPager( pager );
+        PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
+        tabs.setTabIndicatorColor( 0x33b5e5 );
 
         setActionBarSubtitle( String.format( "Within %d NM Radius", radius ) );
 

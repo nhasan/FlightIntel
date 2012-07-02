@@ -21,6 +21,7 @@ package com.nadmm.airports.afd;
 
 
 import android.os.Bundle;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 
 import com.actionbarsherlock.view.Menu;
@@ -28,7 +29,6 @@ import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TabsAdapter;
 import com.nadmm.airports.wx.FavoriteWxFragment;
-import com.viewpagerindicator.TabPageIndicator;
 
 public class FavoritesActivity extends ActivityBase {
 
@@ -44,8 +44,8 @@ public class FavoritesActivity extends ActivityBase {
         adapter.addTab( "AIRPORTS", FavoriteAirportsFragment.class, null );
         adapter.addTab( "WEATHER", FavoriteWxFragment.class, null );
 
-        TabPageIndicator tabIndicator = (TabPageIndicator) findViewById( R.id.page_titles );
-        tabIndicator.setViewPager( pager );
+        PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
+        tabs.setTabIndicatorColor( 0x33b5e5 );
 
         if ( savedInstanceState != null ) {
             pager.setCurrentItem( savedInstanceState.getInt( "favtab" ) );

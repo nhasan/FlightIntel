@@ -22,12 +22,12 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TabsAdapter;
-import com.viewpagerindicator.TabPageIndicator;
 
 public class WxDetailActivity extends ActivityBase {
 
@@ -50,8 +50,8 @@ public class WxDetailActivity extends ActivityBase {
         mTabsAdapter.addTab( "WIND", WindFragment.class, args );
         mTabsAdapter.addTab( "SIGWX", SigWxFragment.class, args );
 
-        TabPageIndicator tabIndicator = (TabPageIndicator) findViewById( R.id.page_titles );
-        tabIndicator.setViewPager( pager );
+        PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
+        tabs.setTabIndicatorColor( 0x33b5e5 );
 
         if ( savedInstanceState != null ) {
             pager.setCurrentItem( savedInstanceState.getInt( "wxtab" ) );
