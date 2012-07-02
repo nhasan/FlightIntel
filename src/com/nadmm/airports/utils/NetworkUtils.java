@@ -40,11 +40,14 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
+import android.support.v4.net.ConnectivityManagerCompat;
 
 import com.nadmm.airports.PreferencesActivity;
 
@@ -62,11 +65,39 @@ public class NetworkUtils {
         return true;
     }
 
-    public static boolean isConnectedToWifi( Context context ) {
-        ConnectivityManager connMan = (ConnectivityManager) context.getSystemService( 
+    public static boolean isConnectedToMeteredNetwork( Context context ) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService( 
                 Context.CONNECTIVITY_SERVICE );
-        NetworkInfo network = connMan.getActiveNetworkInfo();
-        return ( network != null && network.getType() == ConnectivityManager.TYPE_WIFI );
+        ConnectivityManagerCompat cm2 = new ConnectivityManagerCompat();
+        return cm2.isActiveNetworkMetered( cm );
+    }
+
+    public static void checkNetworkAndDownload( Context context, final Runnable runnable ) {
+        if ( !NetworkUtils.isNetworkAvailable( context ) ) {
+            UiUtils.showToast( context, "Please check your internet connection" );
+        }
+
+        if ( NetworkUtils.isConnectedToMeteredNetwork( context ) ) {
+            AlertDialog.Builder builder = new AlertDialog.Builder( context );
+            builder.setMessage( "You are conneteced to a metered network such as mobile data"
+                    +" or tethered to mobile data.\nContinue download?" )
+                   .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick( DialogInterface dialog, int id ) {
+                            runnable.run();
+                        }
+                   } )
+                   .setNegativeButton( "No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick( DialogInterface dialog, int id ) {
+                        }
+                   } );
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+        else {
+            runnable.run();
+        }
     }
 
     public static boolean useCacheContentOnly( Context context ) {
@@ -75,7 +106,7 @@ public class NetworkUtils {
         boolean alwaysAutoFetch = prefs.getBoolean(
                 PreferencesActivity.KEY_AUTO_DOWNLOAD_ON_3G, false );
         boolean cacheOnly = ( !alwaysAutoFetch 
-                && !NetworkUtils.isConnectedToWifi( context ) );
+                && NetworkUtils.isConnectedToMeteredNetwork( context ) );
         return cacheOnly;
     }
 
@@ -89,7 +120,7 @@ public class NetworkUtils {
     }
 
     public static void doHttpGet( Context context, HttpClient httpClient, HttpHost target,
-            String path, File pdfFile ) {
+            String path, File file ) {
         InputStream in = null;
         FileOutputStream out = null;
 
@@ -105,7 +136,7 @@ public class NetworkUtils {
 
             byte[] buffer = new byte[ 32*1024 ];
             int count;
-            out = new FileOutputStream( pdfFile );
+            out = new FileOutputStream( file );
             HttpEntity entity = response.getEntity();
             in = entity.getContent();
 
@@ -113,7 +144,7 @@ public class NetworkUtils {
                 out.write( buffer, 0, count );
             }
         } catch ( Exception e ) {
-            UiUtils.showToast( context, "Unable to download file: "+e.getMessage() );
+            UiUtils.showToast( context, file.getName()+": "+e.getMessage() );
         } finally {
             try {
                 if ( in != null ) {
