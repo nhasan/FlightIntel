@@ -113,8 +113,7 @@
     <string name="try_now">Try Now</string>
     <string name="view_maps">View Maps</string>
     <string name="charts_download">Charts Download</string>
-    <string name="download_fav_charts">Download Charts for Favorites</string>
-    <string name="download_volume_charts">Download Charts by Volume</string>
+    <string name="select_charts_volume">Select Charts Volume</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>

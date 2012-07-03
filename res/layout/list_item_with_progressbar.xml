@@ -19,35 +19,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
  -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:orientation="vertical">
-    <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-        <TextView android:id="@+id/item_label"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:paddingLeft="4dp"
-                android:gravity="left"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent" />
-        <TextView android:id="@+id/item_value"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:paddingRight="4dp"
-                android:gravity="right"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent" />
-    </LinearLayout>
+        android:padding="8dp">
+    <TextView android:id="@+id/item_label"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingLeft="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent" />
+    <TextView android:id="@+id/item_value"
+            android:layout_toRightOf="@id/item_label"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingRight="4dp"
+            android:gravity="right"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent" />
     <ProgressBar android:id="@+id/progress"
+            android:layout_below="@id/item_label"
             style="?android:attr/progressBarStyleHorizontal"
             android:visibility="gone"
             android:paddingRight="4dp"
             android:paddingLeft="4dp"
             android:layout_width="fill_parent"
             android:layout_height="10dp" />
- </LinearLayout>
+ </RelativeLayout>
  

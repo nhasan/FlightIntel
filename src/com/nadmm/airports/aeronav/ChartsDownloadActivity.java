@@ -32,6 +32,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,6 +40,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.ActivityBase;
@@ -50,6 +52,7 @@ import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.afd.AirportsCursorHelper;
 import com.nadmm.airports.utils.CursorAsyncTask;
+import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 
@@ -69,11 +72,15 @@ public class ChartsDownloadActivity extends ActivityBase {
 
         private ArrayList<String> mFavorites = new ArrayList<String>();
         private String mTppCycle;
+        private String mTppVolume;
         private Cursor mCursor;
         private IntentFilter mFilter;
         private BroadcastReceiver mReceiver;
         private View mDownloadRow;
+        private ProgressBar mProgressBar;
         private OnClickListener mOnClickListener;
+        private boolean mExpired;
+        private boolean mGoodNetwork;
 
         @Override
         public void onCreate( Bundle savedInstanceState ) {
@@ -92,10 +99,12 @@ public class ChartsDownloadActivity extends ActivityBase {
                 
                 @Override
                 public void onClick( View v ) {
-                    mDownloadRow = v;
-                    String tppVolume = (String) v.getTag();
-                    VolumeDownloadTask task = new VolumeDownloadTask();
-                    task.execute( tppVolume );
+                    if ( mDownloadRow == null ) {
+                        mDownloadRow = v;
+                        String tppVolume = (String) v.getTag();
+                        VolumeDownloadTask task = new VolumeDownloadTask();
+                        task.execute( tppVolume );
+                    }
                 }
             };
 
@@ -189,7 +198,8 @@ public class ChartsDownloadActivity extends ActivityBase {
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Dtpp.TABLE_NAME );
                 c = builder.query( db, new String[] { Dtpp.TPP_VOLUME, 
-                        "count(DISTINCT "+Dtpp.PDF_NAME+") AS total" }, null,
+                        "count(DISTINCT "+Dtpp.PDF_NAME+") AS total" },
+                        Dtpp.USER_ACTION+"!='D'",
                         null, Dtpp.TPP_VOLUME, null, null, null );
                 result[ 2 ] = c;
 
@@ -216,30 +226,51 @@ public class ChartsDownloadActivity extends ActivityBase {
             getSupportActionBar().setSubtitle( String.format( "AeroNav Cycle %s", mTppCycle ) );
 
             String expiry = c.getString( c.getColumnIndex( DtppCycle.TO_DATE ) );
-            TextView tv = (TextView) findViewById( R.id.charts_cycle_expiry );
             SimpleDateFormat df = new SimpleDateFormat( "HHmm'Z' MM/dd/yy" );
             df.setTimeZone( java.util.TimeZone.getTimeZone( "UTC" ) );
+            Date endDate = null;
             try {
-                Date dt = df.parse( expiry );
-                tv.setText( "This cycle expires on "
-                        +TimeUtils.formatDateTime( getActivity(), dt.getTime() ) );
+                endDate = df.parse( expiry );
             } catch ( ParseException e ) {
             }
 
-            LinearLayout layout = (LinearLayout) findViewById( R.id.fav_chart_details );
-            if ( !mFavorites.isEmpty() ) {
-                c = result[ 1 ];
-                int numCharts = c.getCount();
-                addRow( layout, String.format( "%d Favorite airports", mFavorites.size() ),
-                        String.format( "%d charts", numCharts ) );
-                if ( numCharts > 0 ) {
-                    // Make clickable
-                }
-            } else {
-                addRow( layout, "No favorite airports have been selected yet" );
+            // Determine if chart cycle has expired
+            Date now = new Date();
+            if ( now.getTime() > endDate.getTime() ) {
+                mExpired = true;
             }
 
-            layout = (LinearLayout) findViewById( R.id.vol_chart_details );
+            TextView tv = (TextView) findViewById( R.id.charts_cycle_expiry );
+            if ( mExpired ) {
+                tv.setText( "This chart cycle has expired on "
+                        +TimeUtils.formatDateTime( getActivity(), endDate.getTime() ) );
+            } else {
+                tv.setText( "This chart cycle expires on "
+                        +TimeUtils.formatDateTime( getActivity(), endDate.getTime() ) );
+            }
+
+            tv = (TextView) findViewById( R.id.charts_download_msg );
+            tv.setText( "Each chart volume is about 150-250MB in size and may take 15-30 mins"
+                    +" to download. Charts are stored on the external SD card storage."
+                    +" Long press to delete all the charts for a volume."
+                    +" Press 'Back' button to stop the running download."
+                    +" Download will not start if you are connected to a metered network.");
+
+            tv = (TextView) findViewById( R.id.charts_download_warning );
+            if ( !NetworkUtils.isNetworkAvailable( getActivity() ) ) {
+                tv.setText( "No connected to the internet" );
+                mGoodNetwork = false;
+            } else if ( NetworkUtils.isConnectedToMeteredNetwork( getActivity() ) ) {
+                tv.setText( "Connected to a metered network" );
+                mGoodNetwork = false;
+            } else {
+                tv.setText( "Connected to an unmetered network" );
+                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.check, 0, 0, 0 );
+                tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 2 ) );
+                mGoodNetwork = true;
+            }
+
+            LinearLayout layout = (LinearLayout) findViewById( R.id.vol_chart_details );
             c = result[ 2 ];
             if ( c.moveToFirst() ) {
                 do {
@@ -258,15 +289,19 @@ public class ChartsDownloadActivity extends ActivityBase {
 
             @Override
             protected Cursor[] doInBackground( String... params ) {
-                String tppVolume = params[ 0 ];
+                mTppVolume = params[ 0 ];
                 SQLiteDatabase db = getDatabase( DatabaseManager.DB_DTPP );
 
                 Cursor[] result = new Cursor[ 1 ];
 
                 SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
                 builder.setTables( Dtpp.TABLE_NAME );
-                Cursor c = builder.query( db, new String[] { Dtpp.PDF_NAME, Dtpp.TPP_VOLUME },
-                        Dtpp.TPP_VOLUME+"=?", new String[] { tppVolume }, null, null, null );
+                Cursor c = builder.query( db,
+                        new String[] { Dtpp.PDF_NAME },
+                        Dtpp.TPP_VOLUME+"=? AND "+Dtpp.USER_ACTION+"!=?",
+                        new String[] { mTppVolume, "D" },
+                        Dtpp.PDF_NAME+","+Dtpp.TPP_VOLUME,
+                        null, null );
                 result[ 0 ] = c;
 
                 return result;
@@ -276,22 +311,26 @@ public class ChartsDownloadActivity extends ActivityBase {
             protected boolean onResult( Cursor[] result ) {
                 mCursor = result[ 0 ];
                 mCursor.moveToFirst();
-                ProgressBar progress = (ProgressBar) mDownloadRow.findViewById( R.id.progress );
-                progress.setMax( mCursor.getCount() );
-                progress.setVisibility( View.VISIBLE );
+                mProgressBar = (ProgressBar) mDownloadRow.findViewById( R.id.progress );
+                mProgressBar.setMax( mCursor.getCount() );
+                Log.d( "TOTAL", String.valueOf( mCursor.getCount() ) );
                 getNextChart();
                 return false;
             }
         }
 
         protected void onChartDownload( Context context, Intent intent ) {
-            ProgressBar progress = (ProgressBar) mDownloadRow.findViewById( R.id.progress );
-            progress.setProgress( mCursor.getPosition() );
             if ( mCursor != null ) {
+                mProgressBar.setProgress( mCursor.getPosition() );
                 if ( mCursor.moveToNext() ) {
                     getNextChart();
                 } else {
-                    progress.setVisibility( View.GONE );
+                    int avail = DtppService.getChartsCount( mTppCycle, mTppVolume );
+                    int total = mCursor.getCount();
+                    showStatus( mDownloadRow, avail, total );
+                    mProgressBar.setVisibility( View.GONE );
+                    mDownloadRow = null;
+                    mTppVolume = null;
                     mCursor.close();
                     mCursor = null;
                     return;
@@ -300,13 +339,15 @@ public class ChartsDownloadActivity extends ActivityBase {
         }
 
         protected void getNextChart() {
+            mProgressBar.setVisibility( View.VISIBLE );
             String pdfName = mCursor.getString( mCursor.getColumnIndex( Dtpp.PDF_NAME ) );
-            String tppVolume = mCursor.getString( mCursor.getColumnIndex( Dtpp.TPP_VOLUME ) );
+            ArrayList<String> pdfNames = new ArrayList<String>();
+            pdfNames.add( pdfName );
             Intent service = new Intent( getActivity(), DtppService.class );
-            service.setAction( DtppService.ACTION_GET_CHART );
+            service.setAction( DtppService.ACTION_GET_CHARTS );
             service.putExtra( DtppService.CYCLE_NAME, mTppCycle );
-            service.putExtra( DtppService.VOLUME_NAME, tppVolume );
-            service.putExtra( DtppService.PDF_NAMES, new String[] { pdfName } );
+            service.putExtra( DtppService.TPP_VOLUME, mTppVolume );
+            service.putExtra( DtppService.PDF_NAMES, pdfNames );
             getActivity().startService( service );
         }
 
@@ -316,24 +357,38 @@ public class ChartsDownloadActivity extends ActivityBase {
                 addSeparator( layout );
             }
 
-            LinearLayout row = (LinearLayout) inflate( R.layout.list_item_with_progressbar );
+            RelativeLayout row = (RelativeLayout) inflate( R.layout.list_item_with_progressbar );
 
             TextView tv = (TextView) row.findViewById( R.id.item_label );
             tv.setText( tppVolume );
             tv = (TextView) row.findViewById( R.id.item_value );
-            tv.setText( String.format( "%d/%d charts", avail, total ) );
+            tv.setText( String.format( "%d charts", total ) );
 
-            if ( avail < total ) {
+            if ( mGoodNetwork && !mExpired && avail < total ) {
                 row.setOnClickListener( mOnClickListener );
                 row.setBackgroundResource( resid );
                 row.setTag( tppVolume );
             }
 
-            layout.addView( row, new LinearLayout.LayoutParams(
+            showStatus( row, avail, total );
+
+            layout.addView( row, new RelativeLayout.LayoutParams(
                     LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
 
             return row;
         }
+
+        protected void showStatus( View view, int avail, int total ) {
+            TextView tv = (TextView) view.findViewById( R.id.item_label );
+            if ( avail == total ) {
+                tv.setCompoundDrawablesWithIntrinsicBounds(
+                        R.drawable.btn_check_on_holo_light, 0, 0, 0 );
+            } else {
+                tv.setCompoundDrawablesWithIntrinsicBounds(
+                        R.drawable.btn_check_off_holo_light, 0, 0, 0 );
+            }
+        }
+
     }
 
 }
