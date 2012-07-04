@@ -68,6 +68,8 @@ public class DonateDatabase {
             mDb.replace( Donations.TABLE_NAME, null, values );
         } else if ( state == PurchaseState.REFUNDED ) {
             mDb.delete( Donations.TABLE_NAME, Donations._ID+"=?", new String[] { orderId } );
+        } else if ( state == PurchaseState.CANCELED ) {
+            mDb.delete( Donations.TABLE_NAME, Donations._ID+"=?", new String[] { orderId } );
         }
     }
 
