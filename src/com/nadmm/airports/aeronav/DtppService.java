@@ -25,53 +25,50 @@ import java.util.ArrayList;
 import android.content.Intent;
 
 import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.SystemUtils;
 
 public class DtppService extends AeroNavService {
 
+    private static final String DTPP = "dtpp";
+    private static final File DTPP_DIR = SystemUtils.getExternalDir( DTPP );
+
     public DtppService() {
-        super( "dtpp" );
+        super( DTPP );
     }
 
     @Override
     protected void onHandleIntent( Intent intent ) {
         String action = intent.getAction();
-        if ( action.equals( ACTION_GET_CHART ) ) {
-            getChart( intent );
+        if ( action.equals( ACTION_GET_CHARTS ) ) {
+            getCharts( intent );
         } else if ( action.equals( ACTION_CHECK_CHARTS ) ) {
-            checkCharts( intent );
+            getCharts( intent );
         } else if ( action.equals( ACTION_DELETE_CHARTS ) ) {
             deleteCharts( intent );
         }
     }
 
-    protected void checkCharts( Intent intent ) {
+    protected void getCharts( Intent intent ) {
+        String action = intent.getAction();
+
         String tppCycle = intent.getStringExtra( CYCLE_NAME );
-        ArrayList<String> pdfNames = intent.getStringArrayListExtra( PDF_NAMES );
-        boolean download = intent.getBooleanExtra( DOWNLOAD_IF_MISSING, false );
-
-        File cycleDir = getCycleDir( tppCycle );
-
-        for ( String pdfName : pdfNames ) {
-            File pdfFile = new File( cycleDir, pdfName );
-            if ( download && !pdfFile.exists() ) {
-                downloadChart( tppCycle, pdfFile );
-            }
-            sendResult( ACTION_CHECK_CHARTS, tppCycle, pdfFile );
-        }
-    }
-
-    protected void getChart( Intent intent ) {
-        String tppCycle = intent.getStringExtra( CYCLE_NAME );
+        String tppVolume = intent.getStringExtra( TPP_VOLUME );
         ArrayList<String> pdfNames = intent.getStringArrayListExtra( PDF_NAMES );
 
-        File cycleDir = getCycleDir( tppCycle );
+        File dir = getVolumeDir( tppCycle, tppVolume );
 
         for ( String pdfName : pdfNames ) {
-            File pdfFile = new File( cycleDir, pdfName );
+            File pdfFile = new File( dir, pdfName );
             if ( !pdfFile.exists() ) {
+                if ( action.equals( ACTION_CHECK_CHARTS ) ) {
+                    boolean download = intent.getBooleanExtra( DOWNLOAD_IF_MISSING, false );
+                    if ( !download ) {
+                        continue;
+                    }
+                }
                 downloadChart( tppCycle, pdfFile );
             }
-            sendResult( ACTION_GET_CHART, tppCycle, pdfFile );
+            sendResult( action, tppCycle, pdfFile );
         }
     }
 
@@ -99,6 +96,20 @@ public class DtppService extends AeroNavService {
         }
 
         NetworkUtils.doHttpGet( this, mHttpClient, mTarget, path, pdfFile );
+    }
+
+    protected File getVolumeDir( String cycle, String tppVolume ) {
+        File dir = new File( getCycleDir( cycle ), tppVolume );
+        if ( !dir.exists() ) {
+            dir.mkdir();
+        }
+        return dir;
+    }
+
+    public static int getChartsCount( String cycle, String tppVolume ) {
+        File dir = new File( DTPP_DIR, cycle+"/"+tppVolume );
+        String[] files = dir.list();
+        return files != null? files.length : 0;
     }
 
 }

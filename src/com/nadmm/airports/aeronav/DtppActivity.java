@@ -373,6 +373,7 @@ public class DtppActivity extends ActivityBase {
             Intent service = new Intent( getActivity(), DtppService.class );
             service.setAction( action );
             service.putExtra( DtppService.CYCLE_NAME, mTppCycle );
+            service.putExtra( DtppService.TPP_VOLUME, mTppVolume );
             service.putExtra( DtppService.PDF_NAMES, mPendingCharts );
             return service;
         }

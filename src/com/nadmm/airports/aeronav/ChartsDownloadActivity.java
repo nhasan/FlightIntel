@@ -32,7 +32,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,6 +43,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.Application;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Dtpp;
@@ -101,9 +101,7 @@ public class ChartsDownloadActivity extends ActivityBase {
                 public void onClick( View v ) {
                     if ( mDownloadRow == null ) {
                         mDownloadRow = v;
-                        String tppVolume = (String) v.getTag();
-                        VolumeDownloadTask task = new VolumeDownloadTask();
-                        task.execute( tppVolume );
+                        startChartDownload();
                     }
                 }
             };
@@ -121,6 +119,7 @@ public class ChartsDownloadActivity extends ActivityBase {
         @Override
         public void onPause() {
             getActivity().unregisterReceiver( mReceiver );
+            mDownloadRow = null;
             if ( mCursor != null ) {
                 mCursor.close();
                 mCursor = null;
@@ -141,6 +140,12 @@ public class ChartsDownloadActivity extends ActivityBase {
             setBackgroundTask( new ChartsDownloadTask() ).execute();
 
             super.onActivityCreated( savedInstanceState );
+        }
+
+        private void startChartDownload() {
+            String tppVolume = (String) mDownloadRow.getTag();
+            VolumeDownloadTask task = new VolumeDownloadTask();
+            task.execute( tppVolume );
         }
 
         private class ChartsDownloadTask extends CursorAsyncTask {
@@ -254,21 +259,28 @@ public class ChartsDownloadActivity extends ActivityBase {
                     +" to download. Charts are stored on the external SD card storage."
                     +" Long press to delete all the charts for a volume."
                     +" Press 'Back' button to stop the running download."
-                    +" Download will not start if you are connected to a metered network.");
+                    +" Download will not start if you are connected to a metered network"
+                    +" such as mobile data or tethered WiFi.");
 
             tv = (TextView) findViewById( R.id.charts_download_warning );
-            if ( !NetworkUtils.isNetworkAvailable( getActivity() ) ) {
-                tv.setText( "No connected to the internet" );
+            if ( !Application.sDonationDone ) {
+                tv.setText( "This function is only available after a donation" );
+                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.delete, 0, 0, 0 );
+                mGoodNetwork = false;
+            } else if ( !NetworkUtils.isNetworkAvailable( getActivity() ) ) {
+                tv.setText( "Not connected to the internet" );
+                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.delete, 0, 0, 0 );
                 mGoodNetwork = false;
             } else if ( NetworkUtils.isConnectedToMeteredNetwork( getActivity() ) ) {
                 tv.setText( "Connected to a metered network" );
+                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.delete, 0, 0, 0 );
                 mGoodNetwork = false;
             } else {
                 tv.setText( "Connected to an unmetered network" );
                 tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.check, 0, 0, 0 );
-                tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 2 ) );
                 mGoodNetwork = true;
             }
+            tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 4 ) );
 
             LinearLayout layout = (LinearLayout) findViewById( R.id.vol_chart_details );
             c = result[ 2 ];
@@ -313,7 +325,6 @@ public class ChartsDownloadActivity extends ActivityBase {
                 mCursor.moveToFirst();
                 mProgressBar = (ProgressBar) mDownloadRow.findViewById( R.id.progress );
                 mProgressBar.setMax( mCursor.getCount() );
-                Log.d( "TOTAL", String.valueOf( mCursor.getCount() ) );
                 getNextChart();
                 return false;
             }
