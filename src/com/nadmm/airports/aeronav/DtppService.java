@@ -25,12 +25,10 @@ import java.util.ArrayList;
 import android.content.Intent;
 
 import com.nadmm.airports.utils.NetworkUtils;
-import com.nadmm.airports.utils.SystemUtils;
 
 public class DtppService extends AeroNavService {
 
     private static final String DTPP = "dtpp";
-    private static final File DTPP_DIR = SystemUtils.getExternalDir( DTPP );
 
     public DtppService() {
         super( DTPP );
@@ -45,6 +43,8 @@ public class DtppService extends AeroNavService {
             getCharts( intent );
         } else if ( action.equals( ACTION_DELETE_CHARTS ) ) {
             deleteCharts( intent );
+        } else if ( action.equals( ACTION_COUNT_CHARTS ) ) {
+            countCharts( intent );
         }
     }
 
@@ -58,15 +58,17 @@ public class DtppService extends AeroNavService {
         File dir = getVolumeDir( tppCycle, tppVolume );
 
         for ( String pdfName : pdfNames ) {
-            File pdfFile = new File( dir, pdfName );
+            File pdfFile;
+            if ( pdfName.equals( "legendAD.pdf"  ) || pdfName.equals( "frntmatter.pdf" ) ) {
+                pdfFile = new File( getCycleDir( tppCycle ), pdfName );
+            } else {
+                pdfFile = new File( dir, pdfName );
+            }
             if ( !pdfFile.exists() ) {
-                if ( action.equals( ACTION_CHECK_CHARTS ) ) {
-                    boolean download = intent.getBooleanExtra( DOWNLOAD_IF_MISSING, false );
-                    if ( !download ) {
-                        continue;
-                    }
+                boolean download = intent.getBooleanExtra( DOWNLOAD_IF_MISSING, true );
+                if ( download ) {
+                    downloadChart( tppCycle, pdfFile );
                 }
-                downloadChart( tppCycle, pdfFile );
             }
             sendResult( action, tppCycle, pdfFile );
         }
@@ -74,17 +76,33 @@ public class DtppService extends AeroNavService {
 
     protected void deleteCharts( Intent intent ) {
         String tppCycle = intent.getStringExtra( CYCLE_NAME );
+        String tppVolume = intent.getStringExtra( TPP_VOLUME );
         ArrayList<String> pdfNames = intent.getStringArrayListExtra( PDF_NAMES );
 
-        File cycleDir = getCycleDir( tppCycle );
+        File dir = getVolumeDir( tppCycle, tppVolume );
 
         for ( String pdfName : pdfNames ) {
-            File pdfFile = new File( cycleDir, pdfName );
+            File pdfFile = new File( dir, pdfName );
             if ( pdfFile.exists() ) {
                 pdfFile.delete();
             }
             sendResult( ACTION_CHECK_CHARTS, tppCycle, pdfFile );
         }
+    }
+
+    protected void countCharts( Intent intent ) {
+        String tppCycle = intent.getStringExtra( CYCLE_NAME );
+        String tppVolume = intent.getStringExtra( TPP_VOLUME );
+        File dir = getVolumeDir( tppCycle, tppVolume );
+        String[] files = dir.list();
+        int count = files != null? files.length : 0;
+
+        Intent result = new Intent();
+        result.setAction( intent.getAction() );
+        result.putExtra( CYCLE_NAME, tppCycle );
+        result.putExtra( TPP_VOLUME, tppVolume );
+        result.putExtra( PDF_COUNT, count );
+        sendBroadcast( result );
     }
 
     protected void downloadChart( String tppCycle, File pdfFile ) {
@@ -104,12 +122,6 @@ public class DtppService extends AeroNavService {
             dir.mkdir();
         }
         return dir;
-    }
-
-    public static int getChartsCount( String cycle, String tppVolume ) {
-        File dir = new File( DTPP_DIR, cycle+"/"+tppVolume );
-        String[] files = dir.list();
-        return files != null? files.length : 0;
     }
 
 }

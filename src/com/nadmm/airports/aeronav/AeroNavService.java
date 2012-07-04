@@ -38,12 +38,14 @@ public abstract class AeroNavService extends IntentService {
     public static final String ACTION_GET_CHARTS = "flightintel.intent.action.GET_CHARTS";
     public static final String ACTION_CHECK_CHARTS = "flightintel.intent.action.CHECK_CHARTS";
     public static final String ACTION_DELETE_CHARTS = "flightintel.intent.action.DELETE_CHARTS";
+    public static final String ACTION_COUNT_CHARTS = "flightintel.intent.action.COUNT_CHARTS";
 
     public static final String CYCLE_NAME = "CYCLE_NAME";
     public static final String TPP_VOLUME = "TPP_VOLUME";
     public static final String PDF_NAME = "PDF_NAME";
     public static final String PDF_PATH = "PDF_PATH";
     public static final String PDF_NAMES = "PDF_NAMES";
+    public static final String PDF_COUNT = "PDF_COUNT";
     public static final String DOWNLOAD_IF_MISSING = "DOWNLOAD_IF_MISSING";
 
     protected final HttpClient mHttpClient;

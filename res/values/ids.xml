@@ -14,7 +14,7 @@
   limitations under the License.
   -->
 
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <item type="id" name="INTERNAL_PROGRESS_CONTAINER_ID" />
     <item type="id" name="INTERNAL_FRAGMENT_CONTAINER_ID" />
     <item type="id" name="DTPP_CHART_CODE" />
@@ -23,4 +23,6 @@
     <item type="id" name="DTPP_PDF_NAME" />
     <item type="id" name="DAFD_PDF_NAME" />
     <item type="id" name="DAFD_CYCLE" />
+    <item type="id" name="DTPP_VOLUME_NAME" />
+    <item type="id" name="DTPP_CHART_COUNT" />
 </resources>
