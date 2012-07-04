@@ -183,8 +183,9 @@ public class DonateActivity extends ActivityBase {
                     String productId = mCursor.getString(
                             mCursor.getColumnIndex( Donations.PRODUCT_ID ) );
                     Time time = new Time();
-                    time.parse3339( mCursor.getString( mCursor.getColumnIndex(
-                            Donations.PURCHASE_TIME ) ) );
+                    String purchaseTime = mCursor.getString( mCursor.getColumnIndex(
+                            Donations.PURCHASE_TIME ) );
+                    time.parse3339( purchaseTime );
                     donations.put( productId, time );
                 } while ( mCursor.moveToNext() );
             }
