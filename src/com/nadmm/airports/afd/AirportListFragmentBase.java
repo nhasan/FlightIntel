@@ -27,12 +27,8 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.ListFragmentBase;
-import com.nadmm.airports.R;
 
 public class AirportListFragmentBase extends ListFragmentBase {
 
@@ -54,25 +50,6 @@ public class AirportListFragmentBase extends ListFragmentBase {
         Intent intent = new Intent( getActivity(), AirportDetailsActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         startActivity( intent );
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        menu.findItem( R.id.menu_charts_download ).setVisible( true );
-        super.onPrepareOptionsMenu( menu );
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_charts_download:
-            Intent intent = new Intent( getActivity(), ChartsDownloadActivity.class );
-            getActivity().startActivity( intent );
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
-        }
     }
 
 }
