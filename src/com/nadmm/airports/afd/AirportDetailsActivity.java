@@ -79,6 +79,7 @@ import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.MetarService;
+import com.nadmm.airports.wx.NearbyWxActivity;
 import com.nadmm.airports.wx.NearbyWxCursor;
 import com.nadmm.airports.wx.NoaaService;
 import com.nadmm.airports.wx.WxDetailActivity;
@@ -432,6 +433,9 @@ public class AirportDetailsActivity extends ActivityBase {
 
             if ( awos1.moveToFirst() ) {
                 do {
+                    if ( awos1.getPosition() == 3 ) {
+                        break;
+                    }
                     String icaoCode = awos1.getString( awos1.getColumnIndex( Wxs.STATION_ID ) );
                     String sensorId = awos1.getString( awos1.getColumnIndex( Awos1.WX_SENSOR_IDENT ) );
                     if ( icaoCode == null || icaoCode.length() == 0 ) {
@@ -455,6 +459,15 @@ public class AirportDetailsActivity extends ActivityBase {
                     addAwosRow( layout, icaoCode, name, type, freq, phone, distance,
                             bearing, intent, resid );
                 } while ( awos1.moveToNext() );
+
+                if ( !awos1.isAfterLast() ) {
+                    Intent intent = new Intent( getActivity(), NearbyWxActivity.class );
+                    intent.putExtra( LocationColumns.LOCATION, mLocation );
+                    intent.putExtra( LocationColumns.RADIUS, mRadius );
+                    addClickableRow( layout,
+                            String.format( "View all %d nearby Wx stations", awos1.getCount() ), 
+                            intent, R.drawable.row_selector_bottom );
+                }
             } else {
                 label.setVisibility( View.GONE );
                 layout.setVisibility( View.GONE );
@@ -612,31 +625,18 @@ public class AirportDetailsActivity extends ActivityBase {
         }
 
         protected void showAeroNavDetails( Cursor[] result ) {
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_aeronav_layout );
             if ( Application.sDonationDone ) {
                 Cursor apt = result[ 0 ];
                 String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-                Cursor dtpp = result[ 10 ];
-                LinearLayout layout = (LinearLayout) findViewById( R.id.detail_ifr_layout );
-                if ( dtpp != null ) {
-                    if ( dtpp.moveToFirst() ) {
-                        Intent intent = new Intent( getActivity(), DtppActivity.class );
-                        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                        addClickableRow( layout, "Instrument procedures", intent,
-                                R.drawable.row_selector_top );
-                    } else {
-                        addRow( layout, "No instrument procedures available" );
-                    }
-                } else {
-                    addRow( layout, "d-TPP data not found" );
-                }
                 Cursor cycle = result[ 11 ];
                 if ( cycle != null && cycle.moveToFirst() ) {
                     String afdCycle = cycle.getString( cycle.getColumnIndex( DafdCycle.AFD_CYCLE ) );
                     Cursor dafd = result[ 12 ];
                     if ( dafd.moveToFirst() ) {
                         String pdfName = dafd.getString( dafd.getColumnIndex( Dafd.PDF_NAME ) );
-                        View row = addClickableRow( layout, "A/FD airport info", null,
-                                R.drawable.row_selector_bottom );
+                        View row = addClickableRow( layout, "A/FD page", null,
+                                R.drawable.row_selector_top );
                         row.setTag( R.id.DAFD_CYCLE, afdCycle );
                         row.setTag( R.id.DAFD_PDF_NAME, pdfName );
                         row.setOnClickListener( new OnClickListener() {
@@ -654,9 +654,21 @@ public class AirportDetailsActivity extends ActivityBase {
                 } else {
                     addRow( layout, "d-A/FD data not found" );
                 }
+                Cursor dtpp = result[ 10 ];
+                if ( dtpp != null ) {
+                    if ( dtpp.moveToFirst() ) {
+                        Intent intent = new Intent( getActivity(), DtppActivity.class );
+                        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+                        addClickableRow( layout, "Instrument charts", intent,
+                                R.drawable.row_selector_bottom );
+                    } else {
+                        addRow( layout, "No instrument procedures available" );
+                    }
+                } else {
+                    addRow( layout, "d-TPP data not found" );
+                }
             } else {
                 Intent intent = new Intent( getActivity(), DonateActivity.class );
-                LinearLayout layout = (LinearLayout) findViewById( R.id.detail_ifr_layout );
                 addClickableRow( layout, "Please donate to enable this section",
                         intent, R.drawable.row_selector );
             }
@@ -747,12 +759,8 @@ public class AirportDetailsActivity extends ActivityBase {
 
             sb.setLength( 0 );
             sb.append( type );
-            if ( distance >= 2.5 ) {
-                sb.append( String.format( ", %.0f NM %s", distance,
-                        GeoUtils.getCardinalDirection( bearing ) ) );
-            } else {
-                sb.append( ", On-site" );
-            }
+            sb.append( String.format( ", %.1f NM %s", distance,
+                    GeoUtils.getCardinalDirection( bearing ) ) );
             String label2 = sb.toString();
             String value2 = phone;
 
