@@ -35,6 +35,11 @@
     <item android:id="@+id/menu_settings" 
           android:title="@string/settings"
           android:icon="@android:drawable/ic_menu_preferences" />
+    <item android:id="@+id/menu_charts_download"
+          android:title="@string/charts"
+          android:showAsAction="ifRoom"
+          android:visible="true"
+          android:icon="@drawable/ic_action_charts_download" />
     <item android:id="@+id/menu_donate"
           android:title="@string/donate" />
     <item android:id="@+id/menu_about"
@@ -45,11 +50,6 @@
           android:showAsAction="always"
           android:visible="false"
           android:icon="@drawable/ic_action_refresh" />
-    <item android:id="@+id/menu_charts_download"
-          android:title="@string/charts_download"
-          android:showAsAction="always"
-          android:visible="false"
-          android:icon="@drawable/ic_action_charts_download" />
     <item android:id="@+id/menu_search"
           android:title="@string/search"
           android:showAsAction="collapseActionView|always" 
