@@ -64,6 +64,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.afd.BrowseActivity;
 import com.nadmm.airports.afd.FavoritesActivity;
 import com.nadmm.airports.afd.NearbyActivity;
@@ -562,6 +563,10 @@ public class ActivityBase extends SherlockFragmentActivity {
         case R.id.menu_about:
             Intent about = new Intent( this, AboutActivity.class );
             startActivity( about );
+            return true;
+        case R.id.menu_charts_download:
+            Intent intent = new Intent( this, ChartsDownloadActivity.class );
+            startActivity( intent );
             return true;
         default:
             return super.onOptionsItemSelected( item );
