@@ -134,8 +134,10 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             tv.setVisibility( View.GONE );
         }
 
-        Metar metar = mStationWx.get( stationId );
-        showMetarInfo( view, c, metar );
+        if ( mStationWx != null ) {
+            Metar metar = mStationWx.get( stationId );
+            showMetarInfo( view, c, metar );
+        }
     }
 
     protected void showMetarInfo( View view, Cursor c, Metar metar ) {
