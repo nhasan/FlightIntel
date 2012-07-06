@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.nadmm.airports"
-      android:versionCode="4001"
-      android:versionName="4.0.1" >
+      android:versionCode="4010"
+      android:versionName="4.1.0" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -13,7 +13,7 @@
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 
-    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="15" />
+    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="16" />
 
     <application android:icon="@drawable/icon"
             android:name=".Application"
@@ -107,6 +107,9 @@
         <activity android:label="@string/airsigmet_images"
                   android:name=".wx.AirSigmetMapActivity"
                   android:theme="@style/Theme.Sherlock.Light.Dialog" />
+
+        <activity android:label="@string/nearby_wx"
+                  android:name=".wx.NearbyWxActivity" />
 
         <activity android:label="@string/instrument_procedures"
                   android:name=".aeronav.DtppActivity" />
