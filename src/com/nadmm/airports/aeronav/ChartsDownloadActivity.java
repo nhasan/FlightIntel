@@ -43,6 +43,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.actionbarsherlock.view.Menu;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.Application;
 import com.nadmm.airports.DatabaseManager;
@@ -61,10 +62,18 @@ public class ChartsDownloadActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( R.layout.fragment_activity_layout );
+        View view = inflate( R.layout.fragment_activity_layout );
+        setContentView( view );
+        view.setKeepScreenOn( true );
 
         Bundle args = getIntent().getExtras();
         addFragment( ChartsDownloadFragment.class, args );
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu( Menu menu ) {
+        menu.findItem( R.id.menu_charts_download ).setVisible( false );
+        return super.onPrepareOptionsMenu( menu );
     }
 
     public static class ChartsDownloadFragment extends FragmentBase {
@@ -124,11 +133,7 @@ public class ChartsDownloadActivity extends ActivityBase {
         @Override
         public void onPause() {
             getActivity().unregisterReceiver( mReceiver );
-            mDownloadRow = null;
-            if ( mCursor != null ) {
-                mCursor.close();
-                mCursor = null;
-            }
+            finishDownload();
 
             super.onPause();
         }
@@ -223,9 +228,11 @@ public class ChartsDownloadActivity extends ActivityBase {
             tv = (TextView) findViewById( R.id.charts_download_msg );
             tv.setText( "Each chart volume is about 150-250MB in size and may take 15-30 mins"
                     +" to download. Charts are stored on the external SD card storage."
-                    +" Press 'Back' button to stop the running download."
+                    +" Press 'Back' button to stop a running download."
                     +" Download will not start if you are connected to a metered network"
-                    +" such as mobile data or tethered WiFi due to the size of the downloads.");
+                    +" such as mobile data or tethered WiFi due to the large size of the"
+                    +" downloads.\n\n"
+                    +"All charts for a cycle are automatically deleted at the end of that cycle" );
 
             tv = (TextView) findViewById( R.id.charts_download_warning );
             if ( !Application.sDonationDone ) {
@@ -301,13 +308,20 @@ public class ChartsDownloadActivity extends ActivityBase {
                     getNextChart();
                 } else {
                     getChartCount( mTppCycle, mTppVolume );
-                    mProgressBar.setVisibility( View.GONE );
-                    mDownloadRow = null;
-                    mTppVolume = null;
-                    mCursor.close();
-                    mCursor = null;
+                    finishDownload();
                     return;
                 }
+            }
+        }
+
+        protected void finishDownload() {
+            if ( mDownloadRow != null  ) {
+                mDownloadRow = null;
+                mProgressBar.setVisibility( View.GONE );
+                mProgressBar = null;
+                mTppVolume = null;
+                mCursor.close();
+                mCursor = null;
             }
         }
 
@@ -369,6 +383,7 @@ public class ChartsDownloadActivity extends ActivityBase {
                 row.setOnClickListener( mOnClickListener );
             } else {
                 row.setBackgroundResource( 0 );
+                row.setOnClickListener( null );
             }
             showStatus( row, avail, total );
         }
