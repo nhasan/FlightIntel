@@ -759,8 +759,12 @@ public class AirportDetailsActivity extends ActivityBase {
 
             sb.setLength( 0 );
             sb.append( type );
-            sb.append( String.format( ", %.1f NM %s", distance,
-                    GeoUtils.getCardinalDirection( bearing ) ) );
+            if ( mIcaoCode.equals( id ) ) {
+                sb.append( ", On-site" );
+            } else {
+                sb.append( String.format( ", %.1f NM %s", distance,
+                        GeoUtils.getCardinalDirection( bearing ) ) );
+            }
             String label2 = sb.toString();
             String value2 = phone;
 
