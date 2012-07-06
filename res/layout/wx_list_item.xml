@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,12 @@
  */
  -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:paddingTop="4dp"
-        android:paddingBottom="8dp"
+        android:padding="8dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/wx_station_name"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold"
-            android:paddingLeft="4dp"
             android:singleLine="true"
             android:ellipsize="end"
             android:gravity="left"
@@ -35,7 +33,6 @@
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_id"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:paddingRight="6dp"
             android:gravity="right"
             android:layout_toRightOf="@id/wx_station_name"
             android:layout_alignParentRight="true"
@@ -43,7 +40,6 @@
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_info"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:paddingLeft="4dp"
             android:gravity="left"
             android:layout_below="@id/wx_station_name"
             android:layout_width="wrap_content"
@@ -51,7 +47,6 @@
     <TextView android:id="@+id/wx_station_freq"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textStyle="bold"
-            android:paddingRight="6dp"
             android:gravity="right"
             android:layout_toRightOf="@id/wx_station_info"
             android:layout_below="@id/wx_station_id"
@@ -65,20 +60,17 @@
             android:layout_height="wrap_content">
         <TextView android:id="@+id/wx_station_info2"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:paddingLeft="4dp"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
         <TextView android:id="@+id/wx_station_phone"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:paddingRight="6dp"
                 android:gravity="right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
     </LinearLayout>
     <TextView android:id="@+id/wx_station_wx"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:paddingLeft="4dp"
             android:gravity="left"
             android:singleLine="true"
             android:ellipsize="end"
@@ -88,7 +80,6 @@
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_report_age"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:paddingRight="6dp"
             android:gravity="right"
             android:visibility="gone"
             android:layout_toRightOf="@id/wx_station_wx"
@@ -98,7 +89,6 @@
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/distance"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:paddingLeft="4dp"
             android:visibility="gone"
             android:layout_below="@id/wx_station_wx"
             android:layout_width="fill_parent"
