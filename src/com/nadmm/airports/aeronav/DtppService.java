@@ -81,6 +81,14 @@ public class DtppService extends AeroNavService {
 
         File dir = getVolumeDir( tppCycle, tppVolume );
 
+        if ( pdfNames == null ) {
+            String[] files = dir.list();
+            pdfNames = new ArrayList<String>( files.length );
+            for ( String file : files ) {
+                pdfNames.add( file );
+            }
+        }
+
         for ( String pdfName : pdfNames ) {
             File pdfFile = new File( dir, pdfName );
             if ( pdfFile.exists() ) {
@@ -88,6 +96,8 @@ public class DtppService extends AeroNavService {
             }
             sendResult( ACTION_CHECK_CHARTS, tppCycle, pdfFile );
         }
+
+        countCharts( intent );
     }
 
     protected void countCharts( Intent intent ) {
