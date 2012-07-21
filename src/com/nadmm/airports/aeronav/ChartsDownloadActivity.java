@@ -25,8 +25,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -83,17 +85,19 @@ public class ChartsDownloadActivity extends ActivityBase {
         private Cursor mCursor;
         private IntentFilter mFilter;
         private BroadcastReceiver mReceiver;
-        private View mDownloadRow;
+        private View mSelectedRow;
         private ProgressBar mProgressBar;
         private OnClickListener mOnClickListener;
         private boolean mExpired;
-        private boolean mGoodNetwork;
+        private boolean mIsOk;
+        private boolean mStop;
         private HashMap<String, View> mVolumeRowMap = new HashMap<String, View>();
 
         @Override
         public void onCreate( Bundle savedInstanceState ) {
             mFilter = new IntentFilter();
             mFilter.addAction( DtppService.ACTION_GET_CHARTS );
+            mFilter.addAction( DtppService.ACTION_CHECK_CHARTS );
             mFilter.addAction( DtppService.ACTION_COUNT_CHARTS );
 
             mReceiver = new BroadcastReceiver() {
@@ -103,6 +107,8 @@ public class ChartsDownloadActivity extends ActivityBase {
                     String action = intent.getAction();
                     if ( action.equals( DtppService.ACTION_GET_CHARTS ) ) {
                         onChartDownload( context, intent );
+                    } else if ( action.equals( DtppService.ACTION_CHECK_CHARTS ) ) {
+                        onChartDelete( context, intent );
                     } else if ( action.equals( DtppService.ACTION_COUNT_CHARTS ) ) {
                         onChartCount( context, intent );
                     }
@@ -113,9 +119,21 @@ public class ChartsDownloadActivity extends ActivityBase {
                 
                 @Override
                 public void onClick( View v ) {
-                    if ( mDownloadRow == null ) {
-                        mDownloadRow = v;
-                        startChartDownload();
+                    if ( mSelectedRow == null ) {
+                        mStop = false;
+                        int total = (Integer) v.getTag( R.id.DTPP_CHART_TOTAL );
+                        int avail = (Integer) v.getTag( R.id.DTPP_CHART_AVAIL );
+                        if ( avail < total ) {
+                            if ( mIsOk && !mExpired ) {
+                                startChartDownload( v );
+                            } else {
+                                UiUtils.showToast( getActivity(), "Cannot start download" );
+                            }
+                        } else {
+                            confirmChartDelete( v );
+                        }
+                    } else if ( v == mSelectedRow ) {
+                        confirmAndStopDownload();
                     }
                 }
             };
@@ -133,7 +151,7 @@ public class ChartsDownloadActivity extends ActivityBase {
         @Override
         public void onPause() {
             getActivity().unregisterReceiver( mReceiver );
-            finishDownload();
+            finishOperation();
 
             super.onPause();
         }
@@ -152,10 +170,54 @@ public class ChartsDownloadActivity extends ActivityBase {
             super.onActivityCreated( savedInstanceState );
         }
 
-        private void startChartDownload() {
-            String tppVolume = (String) mDownloadRow.getTag( R.id.DTPP_VOLUME_NAME );
+        private void startChartDownload( View v ) {
+            mSelectedRow = v;
+            String tppVolume = (String) mSelectedRow.getTag( R.id.DTPP_VOLUME_NAME );
             VolumeDownloadTask task = new VolumeDownloadTask();
             task.execute( tppVolume );
+        }
+
+        private void confirmChartDelete( final View v ) {
+            int avail = (Integer) v.getTag( R.id.DTPP_CHART_AVAIL );
+            String tppVolume = (String) v.getTag( R.id.DTPP_VOLUME_NAME );
+            AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
+            builder.setTitle( "Confirm Delete" );
+            builder.setMessage( String.format(
+                    "Are you sure you want to delete all %d charts for %s volume?",
+                    avail, tppVolume ) );
+            builder.setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick( DialogInterface dialog, int which ) {
+                            startChartDelete( v );
+                        }
+                    } );
+            builder.setNegativeButton( "No", null );
+            builder.setIcon( android.R.drawable.ic_dialog_alert );
+            builder.show();
+        }
+
+        private void startChartDelete( View v ) {
+            mSelectedRow = v;
+            String tppVolume = (String) mSelectedRow.getTag( R.id.DTPP_VOLUME_NAME );
+            VolumeDeleteTask task = new VolumeDeleteTask();
+            task.execute( tppVolume );
+        }
+
+        private void confirmAndStopDownload() {
+            AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
+            builder.setTitle( "Stop Download" );
+            builder.setMessage( "Do you want to stop the chart download?" );
+            builder.setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick( DialogInterface dialog, int which ) {
+                    mStop = true;
+                }
+            } );
+            builder.setNegativeButton( "No", null );
+            builder.setIcon( android.R.drawable.ic_dialog_alert );
+            builder.show();
         }
 
         private class ChartsDownloadTask extends CursorAsyncTask {
@@ -238,19 +300,22 @@ public class ChartsDownloadActivity extends ActivityBase {
             if ( !Application.sDonationDone ) {
                 tv.setText( "This function is only available after a donation" );
                 tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.delete, 0, 0, 0 );
-                mGoodNetwork = false;
+                mIsOk = false;
+            } else if ( mExpired ) {
+                tv.setText( "Chart cycle has expired" );
+                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.delete, 0, 0, 0 );
             } else if ( !NetworkUtils.isNetworkAvailable( getActivity() ) ) {
                 tv.setText( "Not connected to the internet" );
                 tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.delete, 0, 0, 0 );
-                mGoodNetwork = false;
+                mIsOk = false;
             } else if ( NetworkUtils.isConnectedToMeteredNetwork( getActivity() ) ) {
                 tv.setText( "Connected to a metered network" );
                 tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.delete, 0, 0, 0 );
-                mGoodNetwork = false;
+                mIsOk = false;
             } else {
                 tv.setText( "Connected to an unmetered network" );
                 tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.check, 0, 0, 0 );
-                mGoodNetwork = true;
+                mIsOk = true;
             }
             tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 4 ) );
 
@@ -294,8 +359,10 @@ public class ChartsDownloadActivity extends ActivityBase {
             protected boolean onResult( Cursor[] result ) {
                 mCursor = result[ 0 ];
                 mCursor.moveToFirst();
-                mProgressBar = (ProgressBar) mDownloadRow.findViewById( R.id.progress );
+                mProgressBar = (ProgressBar) mSelectedRow.findViewById( R.id.progress );
                 mProgressBar.setMax( mCursor.getCount() );
+                mProgressBar.setProgress( 0 );
+                mProgressBar.setVisibility( View.VISIBLE );
                 getNextChart();
                 return false;
             }
@@ -304,29 +371,16 @@ public class ChartsDownloadActivity extends ActivityBase {
         protected void onChartDownload( Context context, Intent intent ) {
             if ( mCursor != null ) {
                 mProgressBar.setProgress( mCursor.getPosition() );
-                if ( mCursor.moveToNext() ) {
+                if ( !mStop && mCursor.moveToNext() ) {
                     getNextChart();
                 } else {
                     getChartCount( mTppCycle, mTppVolume );
-                    finishDownload();
-                    return;
+                    finishOperation();
                 }
             }
         }
 
-        protected void finishDownload() {
-            if ( mDownloadRow != null  ) {
-                mDownloadRow = null;
-                mProgressBar.setVisibility( View.GONE );
-                mProgressBar = null;
-                mTppVolume = null;
-                mCursor.close();
-                mCursor = null;
-            }
-        }
-
         protected void getNextChart() {
-            mProgressBar.setVisibility( View.VISIBLE );
             String pdfName = mCursor.getString( mCursor.getColumnIndex( Dtpp.PDF_NAME ) );
             ArrayList<String> pdfNames = new ArrayList<String>();
             pdfNames.add( pdfName );
@@ -336,6 +390,78 @@ public class ChartsDownloadActivity extends ActivityBase {
             service.putExtra( DtppService.TPP_VOLUME, mTppVolume );
             service.putExtra( DtppService.PDF_NAMES, pdfNames );
             getActivity().startService( service );
+        }
+
+        private class VolumeDeleteTask extends CursorAsyncTask {
+
+            @Override
+            protected Cursor[] doInBackground( String... params ) {
+                mTppVolume = params[ 0 ];
+                SQLiteDatabase db = getDatabase( DatabaseManager.DB_DTPP );
+
+                Cursor[] result = new Cursor[ 1 ];
+
+                SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+                builder.setTables( Dtpp.TABLE_NAME );
+                Cursor c = builder.query( db,
+                        new String[] { Dtpp.PDF_NAME },
+                        Dtpp.TPP_VOLUME+"=? AND "+Dtpp.USER_ACTION+"!=?",
+                        new String[] { mTppVolume, "D" },
+                        Dtpp.PDF_NAME+","+Dtpp.TPP_VOLUME,
+                        null, null );
+                result[ 0 ] = c;
+
+                return result;
+            }
+
+            @Override
+            protected boolean onResult( Cursor[] result ) {
+                mCursor = result[ 0 ];
+                mCursor.moveToFirst();
+                mProgressBar = (ProgressBar) mSelectedRow.findViewById( R.id.progress );
+                mProgressBar.setMax( mCursor.getCount() );
+                mProgressBar.setProgress( 0 );
+                mProgressBar.setVisibility( View.VISIBLE );
+                deleteNextChart();
+                return false;
+            }
+        }
+
+        protected void onChartDelete( Context context, Intent intent ) {
+            if ( mCursor != null ) {
+                mProgressBar.setProgress( mCursor.getPosition() );
+                if ( !mStop && mCursor.moveToNext() ) {
+                    deleteNextChart();
+                } else {
+                    getChartCount( mTppCycle, mTppVolume );
+                    finishOperation();
+                }
+            }
+        }
+
+        protected void deleteNextChart() {
+            String pdfName = mCursor.getString( mCursor.getColumnIndex( Dtpp.PDF_NAME ) );
+            ArrayList<String> pdfNames = new ArrayList<String>();
+            pdfNames.add( pdfName );
+            Intent service = new Intent( getActivity(), DtppService.class );
+            service.setAction( DtppService.ACTION_DELETE_CHARTS );
+            service.putExtra( DtppService.CYCLE_NAME, mTppCycle );
+            service.putExtra( DtppService.TPP_VOLUME, mTppVolume );
+            service.putExtra( DtppService.PDF_NAMES, pdfNames );
+            getActivity().startService( service );
+        }
+
+        protected void finishOperation() {
+            mTppVolume = null;
+            mSelectedRow = null;
+            if ( mProgressBar != null ) {
+                mProgressBar.setVisibility( View.GONE );
+                mProgressBar = null;
+            }
+            if ( mCursor != null ) {
+                mCursor.close();
+                mCursor = null;
+            }
         }
 
         protected void getChartCount( String tppCycle, String tppVolume ) {
@@ -360,7 +486,7 @@ public class ChartsDownloadActivity extends ActivityBase {
             tv.setText( String.format( "%d charts", total ) );
 
             row.setTag( R.id.DTPP_VOLUME_NAME, tppVolume );
-            row.setTag( R.id.DTPP_CHART_COUNT, total );
+            row.setTag( R.id.DTPP_CHART_TOTAL, total );
             row.setBackgroundResource( resid );
 
             showStatus( row, 0, total );
@@ -378,14 +504,12 @@ public class ChartsDownloadActivity extends ActivityBase {
             String tppVolume = intent.getStringExtra( DtppService.TPP_VOLUME );
             int avail = (int) intent.getIntExtra( DtppService.PDF_COUNT, 0 );
             View row = mVolumeRowMap.get( tppVolume );
-            int total = (Integer) row.getTag( R.id.DTPP_CHART_COUNT );
-            if ( row != null && mGoodNetwork && !mExpired && avail < total ) {
+            if ( row != null ) {
                 row.setOnClickListener( mOnClickListener );
-            } else {
-                row.setBackgroundResource( 0 );
-                row.setOnClickListener( null );
+                row.setTag( R.id.DTPP_CHART_AVAIL, avail );
+                int total = (Integer) row.getTag( R.id.DTPP_CHART_TOTAL );
+                showStatus( row, avail, total );
             }
-            showStatus( row, avail, total );
         }
 
         protected void showStatus( View row, int avail, int total ) {

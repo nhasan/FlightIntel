@@ -24,5 +24,6 @@
     <item type="id" name="DAFD_PDF_NAME" />
     <item type="id" name="DAFD_CYCLE" />
     <item type="id" name="DTPP_VOLUME_NAME" />
-    <item type="id" name="DTPP_CHART_COUNT" />
+    <item type="id" name="DTPP_CHART_TOTAL" />
+    <item type="id" name="DTPP_CHART_AVAIL" />
 </resources>
