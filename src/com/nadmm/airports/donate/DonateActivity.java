@@ -321,10 +321,10 @@ public class DonateActivity extends ActivityBase {
                     edit.putBoolean( DONATIONS_INITIALIZED, true );
                     edit.commit();
                     UiUtils.showToast( getActivity(), "Past donations restored successfully" );
-                    showDonationView( BILLING_AVAILABLE );
                 } else {
-                    showDonationView( BILLING_ERROR_RESTORE );
+                    UiUtils.showToast( getActivity(), "Unable to restore donation transactions" );
                 }
+                showDonationView( BILLING_AVAILABLE );
             }
 
         }
