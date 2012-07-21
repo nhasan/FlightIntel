@@ -53,6 +53,8 @@ import com.nadmm.airports.PreferencesActivity;
 
 public class NetworkUtils {
 
+    private static byte[] sBuffer = new byte[ 32*1024 ];
+
     public static boolean isNetworkAvailable( Context context ) {
         ConnectivityManager connMan = (ConnectivityManager) context.getSystemService( 
                 Context.CONNECTIVITY_SERVICE );
@@ -134,14 +136,13 @@ public class NetworkUtils {
                 throw new Exception( response.getStatusLine().getReasonPhrase() );
             }
 
-            byte[] buffer = new byte[ 32*1024 ];
             int count;
             out = new FileOutputStream( file );
             HttpEntity entity = response.getEntity();
             in = entity.getContent();
 
-            while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
-                out.write( buffer, 0, count );
+            while ( ( count = in.read( sBuffer, 0, sBuffer.length ) ) != -1 ) {
+                out.write( sBuffer, 0, count );
             }
         } catch ( Exception e ) {
             UiUtils.showToast( context, file.getName()+": "+e.getMessage() );
