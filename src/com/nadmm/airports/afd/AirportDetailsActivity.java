@@ -433,7 +433,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
             if ( awos1.moveToFirst() ) {
                 do {
-                    if ( awos1.getPosition() == 3 ) {
+                    if ( awos1.getPosition() == 5 ) {
                         break;
                     }
                     String icaoCode = awos1.getString( awos1.getColumnIndex( Wxs.STATION_ID ) );
