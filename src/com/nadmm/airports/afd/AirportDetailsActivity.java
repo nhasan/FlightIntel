@@ -101,6 +101,8 @@ public class AirportDetailsActivity extends ActivityBase {
 
         private final HashSet<TextView> mAwosViews = new HashSet<TextView>();
         private final HashSet<TextView> mRunwayViews = new HashSet<TextView>();
+        private final int MAX_WX_STATIONS = 5;
+
         private BroadcastReceiver mMetarReceiver;
         private BroadcastReceiver mDafdReceiver;
         private IntentFilter mMetarFilter;
@@ -433,7 +435,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
             if ( awos1.moveToFirst() ) {
                 do {
-                    if ( awos1.getPosition() == 5 ) {
+                    if ( awos1.getPosition() == MAX_WX_STATIONS ) {
                         break;
                     }
                     String icaoCode = awos1.getString( awos1.getColumnIndex( Wxs.STATION_ID ) );
