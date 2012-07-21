@@ -35,7 +35,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -403,7 +402,6 @@ public class DtppActivity extends ActivityBase {
             String pdfName = intent.getStringExtra( DtppService.PDF_NAME );
             String path = intent.getStringExtra( DtppService.PDF_PATH );
 
-            Log.d( pdfName, path!=null? "FOUND" : "NOT FOUND" );
             View view = mDtppRowMap.get( pdfName );
             if ( view == null ) {
                 // We got a broadcast for a chart for some other airport
