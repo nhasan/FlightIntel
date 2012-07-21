@@ -1,9 +1,15 @@
-v4.0.1 (6/17/12)
-================
+v4.1.0 (7/21/2012)
+==================
+* Download charts by volume
+* Improved performance of wx parsing
+* Other fixes
+
+v4.0.1 (6/17/2012)
+==================
 * Fix a crash at startup on new installations
 
-v4.0.0 (6/16/12)
-================
+v4.0.0 (6/16/2012)
+==================
 * Added Radar images
 * Added Prognosis images
 * Added Winds Aloft images
