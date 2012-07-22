@@ -217,7 +217,9 @@ public class MetarFragment extends FragmentBase {
         String stationId = args.getString( NoaaService.STATION_ID );
         Intent service = new Intent( getActivity(), MetarService.class );
         service.setAction( mAction );
-        service.putExtra( NoaaService.STATION_ID, stationId );
+        ArrayList<String> stationIds = new ArrayList<String>();
+        stationIds.add( stationId );
+        service.putExtra( NoaaService.STATION_IDS, stationIds );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
         service.putExtra( NoaaService.HOURS_BEFORE, METAR_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );

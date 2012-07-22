@@ -21,7 +21,11 @@ package com.nadmm.airports.wx;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -38,28 +42,36 @@ import com.nadmm.airports.wx.Metar.Flags;
 
 public final class MetarParser {
 
-    public void parse( File xml, Metar metar ) {
-        try {
-            metar.fetchTime = xml.lastModified();
-            InputSource input = new InputSource( new FileReader( xml ) );
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = factory.newSAXParser();
-            MetarHandler handler = new MetarHandler( metar );
-            XMLReader xmlReader = parser.getXMLReader();
-            xmlReader.setContentHandler( handler );
-            xmlReader.parse( input );
-        } catch ( Exception e ) {
+    private long mFetchTime;
+    public HashMap<String, Metar> mMetars = new HashMap<String, Metar>();
+
+    public ArrayList<Metar> parse( File xmlFile, ArrayList<String> stationIds )
+            throws ParserConfigurationException, SAXException, IOException {
+        mFetchTime = xmlFile.lastModified();
+        InputSource input = new InputSource( new FileReader( xmlFile ) );
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParser parser = factory.newSAXParser();
+        MetarHandler handler = new MetarHandler();
+        XMLReader xmlReader = parser.getXMLReader();
+        xmlReader.setContentHandler( handler );
+        xmlReader.parse( input );
+        ArrayList<Metar> metars = new ArrayList<Metar>( mMetars.values() );
+        // Now put the missing ones
+        for ( String stationId : stationIds ) {
+            if ( !mMetars.containsKey( stationId ) ) {
+                Metar metar = new Metar();
+                metar.stationId = stationId;
+                metar.fetchTime = mFetchTime;
+                metars.add( metar );
+            }
         }
+        return metars;
     }
 
-    protected final class MetarHandler extends DefaultHandler {
+    private final class MetarHandler extends DefaultHandler {
 
         private Metar metar;
         private StringBuilder text = new StringBuilder();
-
-        public MetarHandler( Metar metar ) {
-            this.metar = metar;
-        }
 
         @Override
         public void characters( char[] ch, int start, int length )
@@ -71,6 +83,8 @@ public final class MetarParser {
         public void startElement( String uri, String localName, String qName,
                 Attributes attributes ) throws SAXException {
             if ( qName.equalsIgnoreCase( "metar" ) ) {
+                metar = new Metar();
+                metar.fetchTime = mFetchTime;
             } else if ( qName.equalsIgnoreCase( "sky_condition" ) ) {
                 String name = attributes.getValue( "sky_cover" );
                 int cloudBaseAGL = 0;
@@ -88,7 +102,12 @@ public final class MetarParser {
         @Override
         public void endElement( String uri, String localName, String qName )
                 throws SAXException {
-            if ( qName.equalsIgnoreCase( "raw_text" ) ) {
+            if ( qName.equalsIgnoreCase( "metar" ) ) {
+                metar.isValid = true;
+                parseRemarks( metar );
+                setMissingFields( metar );
+                mMetars.put( metar.stationId, metar );
+            } else if ( qName.equalsIgnoreCase( "raw_text" ) ) {
                 metar.rawText = text.toString();
             } else if ( qName.equalsIgnoreCase( "observation_time" ) ) {
                 try {
@@ -97,6 +116,8 @@ public final class MetarParser {
                     metar.observationTime = time.toMillis( true );
                 } catch ( TimeFormatException e ) {
                 }
+            } else if ( qName.equalsIgnoreCase( "station_id" ) ) {
+                metar.stationId = text.toString();
             } else if ( qName.equalsIgnoreCase( "elevation_m" ) ) {
                 metar.stationElevationMeters = Float.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "temp_c" ) ) {
@@ -171,10 +192,6 @@ public final class MetarParser {
                 metar.vertVisibilityFeet = Integer.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "metar_type" ) ) {
                 metar.metarType = text.toString();
-            } else if ( qName.equalsIgnoreCase( "metar" ) ) {
-                metar.isValid = true;
-                parseRemarks( metar );
-                setMissingFields( metar );
             }
         }
 

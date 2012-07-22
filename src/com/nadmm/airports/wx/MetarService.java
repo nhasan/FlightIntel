@@ -20,6 +20,7 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import android.content.Intent;
 import android.text.format.DateUtils;
@@ -31,7 +32,8 @@ public class MetarService extends NoaaService {
 
     private final String METAR_IMAGE_NAME = "metar_%s.gif";
     private final String METAR_TEXT_QUERY = "datasource=metars&requesttype=retrieve"
-    		+ "&format=xml&compression=gzip&hoursBeforeNow=%d&mostRecent=true&stationString=%s";
+    		+ "&hoursBeforeNow=%d&mostRecentForEachStation=constraint"
+            + "&format=xml&compression=gzip&stationString=%s";
     private final String METAR_IMAGE_PATH = "/tools/weatherproducts/metars/default/"
     		+ "loadImage/region/%s/product/METARs/zoom/%s";
 
@@ -51,38 +53,56 @@ public class MetarService extends NoaaService {
             String type = intent.getStringExtra( TYPE );
             if ( type.equals( TYPE_TEXT ) ) {
                 // Get request parameters
-                String stationId = intent.getStringExtra( STATION_ID );
+                ArrayList<String> stationIds = intent.getStringArrayListExtra( STATION_IDS );
                 int hours = intent.getIntExtra( HOURS_BEFORE, 3 );
                 boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
                 boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-                File xmlFile = getDataFile( "METAR_"+stationId+".xml" );
-                File objFile = getDataFile( "METAR_"+stationId+".obj" );
-                Metar metar = null;
+                if ( forceRefresh || !cacheOnly ) {
+                    ArrayList<String> missing = new ArrayList<String>();
+                    for ( String stationId : stationIds ) {
+                        if ( forceRefresh|| !getObjFile( stationId ).exists() ) {
+                            missing.add( stationId );
+                        }
+                    }
 
-                if ( forceRefresh || ( !cacheOnly && !xmlFile.exists() ) ) {
-                    try {
-                        String query = String.format( METAR_TEXT_QUERY, hours, stationId );
-                        fetchFromNoaa( query, xmlFile, true );
-                        metar = parse( stationId, xmlFile, objFile );
-                    } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch METAR: "+e.getMessage() );
+                    StringBuilder param = new StringBuilder();
+                    for ( String stationId : missing ) {
+                        if ( param.length() > 0 ) {
+                            param.append( "," );
+                        }
+                        param.append( stationId );
+                    }
+
+                    if ( param.length() > 0 ) {
+                        File tmpFile = null;
+                        try {
+                            tmpFile = File.createTempFile( "metar", null );
+                            String query = String.format( METAR_TEXT_QUERY, hours, param );
+                            fetchFromNoaa( query, tmpFile, true );
+                            parseMetars( tmpFile, missing );
+                        } catch ( Exception e ) {
+                            UiUtils.showToast( this, "Unable to fetch METAR: "+e.getMessage() );
+                        } finally {
+                            if ( tmpFile != null ) {
+                                tmpFile.delete();
+                            }
+                        }
                     }
                 }
 
-                if ( objFile.exists() ) {
-                    metar = (Metar) readObject( objFile );
-                } else if ( xmlFile.exists() ) {
-                    metar = new Metar();
-                    metar.stationId = stationId;
-                    mParser.parse( xmlFile, metar );
-                    writeObject( metar, objFile );
-                } else {
-                    metar = new Metar();
-                }
+                for ( String stationId : stationIds ) {
+                    File objFile = getObjFile( stationId );
+                    Metar metar;
+                    if ( objFile.exists() ) {
+                        metar = (Metar) readObject( objFile );
+                    } else {
+                        metar = new Metar();
+                    }
 
-                // Broadcast the result
-                sendResultIntent( action, stationId, metar );
+                    // Broadcast the result
+                    sendResultIntent( action, stationId, metar );
+                }
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
                 String imageName = String.format( METAR_IMAGE_NAME, code );
@@ -104,14 +124,22 @@ public class MetarService extends NoaaService {
         }
     }
 
-    private Metar parse( String stationId, File xmlFile, File objFile ) {
-        Metar metar = new Metar();
+    private void parseMetars( File xmlFile, ArrayList<String> stationIds ) {
         if ( xmlFile.exists() ) {
-            metar.stationId = stationId;
-            mParser.parse( xmlFile, metar );
-            writeObject( metar, objFile );
+            try {
+                ArrayList<Metar> metars = mParser.parse( xmlFile, stationIds );
+                for ( Metar metar : metars ) {
+                    File objFile = getObjFile( metar.stationId );
+                    writeObject( metar, objFile );
+                }
+            } catch ( Exception e ) {
+                UiUtils.showToast( getApplicationContext(), "Unable to parse METAR data" );
+            }
         }
-        return metar;
+    }
+
+    private File getObjFile( String stationId ) {
+        return getDataFile( "METAR_"+stationId+".obj" );
     }
 
 }

@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.afd;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TimeZone;
 
@@ -895,19 +896,21 @@ public class AirportDetailsActivity extends ActivityBase {
                 getActivityBase().startRefreshAnimation();
             }
 
+            ArrayList<String> stationIds = new ArrayList<String>();
             for ( TextView tv : mAwosViews ) {
                 String stationId = (String) tv.getTag();
-                Intent service = new Intent( getActivityBase(), MetarService.class );
-                service.setAction( NoaaService.ACTION_GET_METAR );
-                service.putExtra( NoaaService.STATION_ID, stationId );
-                service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
-                if ( force ) {
-                    service.putExtra( NoaaService.FORCE_REFRESH, true );
-                } else if ( cacheOnly ) {
-                    service.putExtra( NoaaService.CACHE_ONLY, true );
-                }
-                getActivityBase().startService( service );
+                stationIds.add( stationId );
             }
+            Intent service = new Intent( getActivityBase(), MetarService.class );
+            service.setAction( NoaaService.ACTION_GET_METAR );
+            service.putExtra( NoaaService.STATION_IDS, stationIds );
+            service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
+            if ( force ) {
+                service.putExtra( NoaaService.FORCE_REFRESH, true );
+            } else if ( cacheOnly ) {
+                service.putExtra( NoaaService.CACHE_ONLY, true );
+            }
+            getActivityBase().startService( service );
         }
 
         protected void showWxInfo( Metar metar ) {

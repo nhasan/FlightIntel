@@ -54,6 +54,7 @@ public abstract class NoaaService extends IntentService {
     protected final String NOAA_DATASERVER_PATH = "/dataserver1_4/httpparam";
 
     public static final String STATION_ID = "STATION_ID";
+    public static final String STATION_IDS = "STATION_IDS";
     public static final String CACHE_ONLY = "CACHE_ONLY";
     public static final String FORCE_REFRESH = "FORCE_REFRESH";
     public static final String RADIUS_NM = "RADIUS_NM";

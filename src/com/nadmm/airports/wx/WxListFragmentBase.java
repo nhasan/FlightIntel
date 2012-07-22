@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.wx;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.BroadcastReceiver;
@@ -112,19 +113,18 @@ public class WxListFragmentBase extends ListFragmentBase {
             activity.startRefreshAnimation();
         }
 
-        for ( String stationId : mStationWx.keySet() ) {
-            Intent service = new Intent( activity, MetarService.class );
-            service.setAction( NoaaService.ACTION_GET_METAR );
-            service.putExtra( NoaaService.STATION_ID, stationId );
-            service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
-            if ( force ) {
-                service.putExtra( NoaaService.FORCE_REFRESH, true );
-            }
-            else if ( cacheOnly ) {
-                service.putExtra( NoaaService.CACHE_ONLY, true );
-            }
-            activity.startService( service );
+        ArrayList<String> stationIds = new ArrayList<String>( mStationWx.keySet() );
+        Intent service = new Intent( activity, MetarService.class );
+        service.setAction( NoaaService.ACTION_GET_METAR );
+        service.putExtra( NoaaService.STATION_IDS, stationIds );
+        service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
+        if ( force ) {
+            service.putExtra( NoaaService.FORCE_REFRESH, true );
         }
+        else if ( cacheOnly ) {
+            service.putExtra( NoaaService.CACHE_ONLY, true );
+        }
+        activity.startService( service );
     }
 
     private final class WxReceiver extends BroadcastReceiver {
