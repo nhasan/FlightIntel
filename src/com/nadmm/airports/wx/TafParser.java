@@ -21,7 +21,9 @@ package com.nadmm.airports.wx;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -36,18 +38,18 @@ import android.util.TimeFormatException;
 
 public class TafParser {
 
-    public void parse( File xml, Taf taf ) {
-        try {
-            taf.fetchTime = xml.lastModified();
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = factory.newSAXParser();
-            XMLReader xmlReader = parser.getXMLReader();
-            TafHandler handler = new TafHandler( taf );
-            xmlReader.setContentHandler( handler );
-            InputSource input = new InputSource( new FileReader( xml ) );
-            xmlReader.parse( input );
-        } catch ( Exception e ) {
-        }
+    public Taf parse( File xml )
+            throws ParserConfigurationException, SAXException, IOException {
+        Taf taf = new Taf();
+        taf.fetchTime = xml.lastModified();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParser parser = factory.newSAXParser();
+        XMLReader xmlReader = parser.getXMLReader();
+        TafHandler handler = new TafHandler( taf );
+        xmlReader.setContentHandler( handler );
+        InputSource input = new InputSource( new FileReader( xml ) );
+        xmlReader.parse( input );
+        return taf;
     }
 
     protected final class TafHandler extends DefaultHandler {

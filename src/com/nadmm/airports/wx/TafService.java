@@ -56,26 +56,28 @@ public class TafService extends NoaaService {
                 boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
                 boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-                Taf taf = null;
-                File xmlFile = getDataFile( "TAF_"+stationId+".xml" );
                 File objFile = getDataFile( "TAF_"+stationId+".obj" );
 
-                if ( forceRefresh || ( !cacheOnly && !xmlFile.exists() ) ) {
+                if ( forceRefresh || ( !cacheOnly && !objFile.exists() ) ) {
+                    File tmpFile = null;
                     try {
+                        tmpFile = File.createTempFile( "taf", null );
                         String query = String.format( TAF_TEXT_QUERY, hours, stationId );
-                        fetchFromNoaa( query, xmlFile, true );
+                        fetchFromNoaa( query, tmpFile, true );
+                        Taf taf = mParser.parse( tmpFile );
+                        writeObject( taf, objFile );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch TAF: "+e.getMessage() );
+                    } finally {
+                        if ( tmpFile != null ) {
+                            tmpFile.delete();
+                        }
                     }
                 }
-                
+
+                Taf taf = null;
                 if ( objFile.exists() ) {
                     taf = (Taf) readObject( objFile );
-                } else if ( xmlFile.exists() ) {
-                    taf = new Taf();
-                    taf.stationId = stationId;
-                    mParser.parse( xmlFile, taf );
-                    writeObject( taf, objFile );
                 } else {
                     taf = new Taf();
                 }
