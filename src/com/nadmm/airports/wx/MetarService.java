@@ -20,7 +20,12 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import android.content.Intent;
 import android.text.format.DateUtils;
@@ -124,16 +129,13 @@ public class MetarService extends NoaaService {
         }
     }
 
-    private void parseMetars( File xmlFile, ArrayList<String> stationIds ) {
+    private void parseMetars( File xmlFile, ArrayList<String> stationIds )
+            throws ParserConfigurationException, SAXException, IOException {
         if ( xmlFile.exists() ) {
-            try {
-                ArrayList<Metar> metars = mParser.parse( xmlFile, stationIds );
-                for ( Metar metar : metars ) {
-                    File objFile = getObjFile( metar.stationId );
-                    writeObject( metar, objFile );
-                }
-            } catch ( Exception e ) {
-                UiUtils.showToast( getApplicationContext(), "Unable to parse METAR data" );
+            ArrayList<Metar> metars = mParser.parse( xmlFile, stationIds );
+            for ( Metar metar : metars ) {
+                File objFile = getObjFile( metar.stationId );
+                writeObject( metar, objFile );
             }
         }
     }
