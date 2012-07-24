@@ -26,6 +26,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -104,6 +105,18 @@ public class UiUtils {
         DisplayMetrics dm = tv.getResources().getDisplayMetrics();
         tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
         tv.setCompoundDrawablePadding( (int) ( dm.density*6+0.5 ) );
+    }
+
+    static public Drawable getColorizedDrawable( Resources res, int resid, int color ) {
+        Drawable d = res.getDrawable( resid ).mutate();
+        d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
+        return d;
+    }
+
+    static public void setColorizedTextViewDrawable( TextView tv, int resid, int color ) {
+        Resources res = tv.getResources();
+        Drawable d = getColorizedDrawable( res, resid, color );
+        setTextViewDrawable( tv, d );
     }
 
     static public int getRowSelectorForCursor( Cursor c ) {

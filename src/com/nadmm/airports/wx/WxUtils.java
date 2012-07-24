@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.widget.TextView;
 
@@ -58,19 +57,10 @@ public class WxUtils {
         return name;
     }
 
-    static public Drawable getColorizedDrawable( Resources res, String flightCategory,
-            int resid ) {
-        Drawable d = res.getDrawable( resid ).mutate();
-        int color = getFlightCategoryColor( flightCategory );
-        d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
-        return d;
-    }
-
     static public void showColorizedDrawable( TextView tv, String flightCategory, int resid ) {
         // Get a mutable copy of the drawable so each can be set to a different color
-        Resources res = tv.getResources();
-        Drawable d = getColorizedDrawable( res, flightCategory, resid );
-        UiUtils.setTextViewDrawable( tv, d );
+        int color = getFlightCategoryColor( flightCategory );
+        UiUtils.setColorizedTextViewDrawable( tv, resid, color );
     }
 
     static public void setFlightCategoryDrawable( TextView tv, String flightCategory ) {
@@ -133,7 +123,8 @@ public class WxUtils {
             Context context = tv.getContext();
             Resources res = context.getResources();
             SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
-            Drawable d1 = getColorizedDrawable( res, metar.flightCategory, sky.getDrawable() );
+            int color = getFlightCategoryColor( metar.flightCategory );
+            Drawable d1 = UiUtils.getColorizedDrawable( res, sky.getDrawable(), color );
             Drawable d2 = null;
             if ( isWindAvailable( metar ) ) {
                 d2 = getWindBarbDrawable( tv.getContext(), metar, declination );
