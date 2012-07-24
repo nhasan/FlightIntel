@@ -83,10 +83,10 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         tv = (TextView) view.findViewById( R.id.wx_station_info );
         if ( info.length() > 0 ) {
             tv.setText( info.toString() );
-            tv.setVisibility( View.VISIBLE );
         } else {
-            tv.setVisibility( View.GONE );
+            tv.setText( "Location not available" );
         }
+
         String freq = c.getString( c.getColumnIndex( Awos1.STATION_FREQUENCY ) );
         if ( freq == null || freq.length() == 0 ) {
             freq = c.getString( c.getColumnIndex( Awos1.SECOND_STATION_FREQUENCY ) );
@@ -95,11 +95,10 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         if ( freq != null && freq.length() > 0 ) {
             try {
                 tv.setText( FormatUtils.formatFreq( Float.valueOf( freq ) ) );
-                tv.setVisibility( View.VISIBLE );
             } catch ( NumberFormatException e ) {
             }
         } else {
-            tv.setVisibility( View.GONE );
+            tv.setText( "" );
         }
 
         info.setLength( 0 );
@@ -122,9 +121,9 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             tv.setText( "" );
         }
 
+        tv = (TextView) view.findViewById( R.id.distance );
         if ( c.getColumnIndex( LocationColumns.DISTANCE ) >= 0 
                 && c.getColumnIndex( LocationColumns.BEARING ) >= 0 ) {
-            tv = (TextView) view.findViewById( R.id.distance );
             float distance = c.getFloat( c.getColumnIndex( LocationColumns.DISTANCE ) );
             float bearing = c.getFloat( c.getColumnIndex( LocationColumns.BEARING ) );
             tv.setText( String.format( "%.1f NM %s",
