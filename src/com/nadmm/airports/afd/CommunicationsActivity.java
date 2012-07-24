@@ -226,7 +226,7 @@ public class CommunicationsActivity extends ActivityBase {
                         freq = freq.substring( 0, i );
                         break;
                     }
-                    if ( freqUse.contains( "LCL" ) ) {
+                    if ( freqUse.contains( "LCL" ) || freqUse.contains( "LC/P" ) ) {
                         addFrequencyToMap( map, towerRadioCall+" Tower", freq, extra );
                     }
                     if ( freqUse.contains( "GND" ) ) {
