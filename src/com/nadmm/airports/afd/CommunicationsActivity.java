@@ -255,7 +255,7 @@ public class CommunicationsActivity extends ActivityBase {
                         addFrequencyToMap( map, "TRSA", freq, extra );
                     }
                     if ( freqUse.contains( "TAXI CLNC" ) ) {
-                        addFrequencyToMap( map, "Pre-taxi Clearance", freq, extra );
+                        addFrequencyToMap( map, "Taxi Clearance", freq, extra );
                     }
                     if ( freqUse.contains( "EMERG" ) ) {
                         addFrequencyToMap( map, "Emergency", freq, extra );
