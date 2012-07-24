@@ -118,6 +118,8 @@ public class RemarksActivity extends ActivityBase {
                     String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
                     addBulletedRow( layout, remark );
                 } while ( rmk.moveToNext() );
+            } else {
+                addBulletedRow( layout, "No airport remarks available" );
             }
         }
     }
