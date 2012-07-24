@@ -165,16 +165,24 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                         }
                     }
                 }
+
+                info.append( ", " );
                 if ( metar.windGustKnots < Integer.MAX_VALUE ) {
-                    info.append( ", gusting winds" );
+                    info.append( "gusting winds" );
                 } else if ( metar.windSpeedKnots > 0 && metar.windDirDegrees == 0 ) {
-                    info.append( ", variable winds" );
-                } else if ( metar.windSpeedKnots > 10 ) {
-                    info.append( ", strong winds" );
+                    info.append( "variable winds" );
+                } else if ( metar.windSpeedKnots > 48 ) {
+                    info.append( "storm winds" );
+                } else if ( metar.windSpeedKnots > 32 ) {
+                    info.append( "gale winds" );
+                } else if ( metar.windSpeedKnots > 12 ) {
+                    info.append( "strong winds" );
+                } else if ( metar.windSpeedKnots > 6 ) {
+                    info.append( "moderate winds" );
                 } else if ( metar.windSpeedKnots > 0 ) {
-                    info.append( ", light winds" );
+                    info.append( "light winds" );
                 } else {
-                    info.append( ", calm winds" );
+                    info.append( "calm winds" );
                 }
 
                 tv = (TextView) view.findViewById( R.id.wx_station_wx );
