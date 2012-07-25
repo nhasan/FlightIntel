@@ -130,6 +130,10 @@ public class AirportDetailsActivity extends ActivityBase {
                 double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
                 double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
                 int elev_msl = apt.getInt( apt.getColumnIndex( Airports.ELEVATION_MSL ) );
+                mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+                if ( mIcaoCode == null || mIcaoCode.length() == 0 ) {
+                    mIcaoCode = "K"+apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+                }
 
                 mLocation = new Location( "" );
                 mLocation.setLatitude( lat );
@@ -305,11 +309,6 @@ public class AirportDetailsActivity extends ActivityBase {
 
         protected void showDetails( Cursor[] result ) {
             Cursor apt = result[ 0 ];
-
-            mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-            if ( mIcaoCode == null || mIcaoCode.length() == 0 ) {
-                mIcaoCode = "K"+apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            }
 
             showAirportTitle( apt );
 
@@ -862,8 +861,8 @@ public class AirportDetailsActivity extends ActivityBase {
                 }
             }
 
-            Drawable rwy = UiUtils.getRotatedDrawable( getActivity(), resid, heading );
-            tv.setCompoundDrawablesWithIntrinsicBounds( rwy, null, null, null );
+            Drawable d = UiUtils.getRotatedDrawable( getActivity(), resid, heading );
+            tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
             tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 5 ) );
         }
 
