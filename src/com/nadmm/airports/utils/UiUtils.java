@@ -85,14 +85,15 @@ public class UiUtils {
     }
 
     public static Drawable getRotatedDrawable( Context context, int resid, float rotation ) {
-        Bitmap bmp = BitmapFactory.decodeResource( context.getResources(), resid );
+        Resources res = context.getResources();
+        Bitmap bmp = BitmapFactory.decodeResource( res, resid );
         Bitmap rotated = Bitmap.createBitmap( bmp.getWidth(), bmp.getHeight(),
                 Bitmap.Config.ARGB_8888 );
         Canvas canvas = new Canvas( rotated );
         canvas.setDensity( Bitmap.DENSITY_NONE );
         canvas.rotate( rotation, bmp.getWidth()/2, bmp.getHeight()/2 );
         canvas.drawBitmap( bmp, 0, 0, sPaint );
-        return new BitmapDrawable( context.getResources(), rotated );
+        return new BitmapDrawable( res, rotated );
     }
 
     static public void setTextViewDrawable( TextView tv, int resid ) {
