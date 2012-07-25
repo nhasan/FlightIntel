@@ -31,6 +31,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -363,6 +364,9 @@ public class ActivityBase extends SherlockFragmentActivity {
         if ( code == null || code.length() == 0 ) {
             code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
         }
+        String tower = c.getString( c.getColumnIndex( Airports.TOWER_ON_SITE ) );
+        int color = tower.equals( "Y" )? Color.rgb( 48, 96, 144 ) : Color.rgb( 128, 72, 92 );
+        tv.setTextColor( color );
         String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
         tv.setText( String.format( "%s - %s", code, name ) );
         tv = (TextView) root.findViewById( R.id.airport_info );
