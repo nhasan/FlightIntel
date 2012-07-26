@@ -683,7 +683,7 @@ public class DatabaseManager {
                 new String[] { siteNumber, "WX" } );
     }
 
-    private synchronized void openDatabases() {
+    public synchronized void openDatabases() {
         Cursor c = getCurrentFromCatalog();
         if ( c != null ) {
             if ( c.moveToFirst() ) {
