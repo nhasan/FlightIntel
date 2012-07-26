@@ -32,8 +32,7 @@ my $dafd_url = "http://aeronav.faa.gov/afd/afd_$cycle.xml";
 my $count = 0;
 
 print "Downloading the d-AFD metafile: ".$dafd_url."...";
-my $ret = 200;
-#my $ret = getstore( $dafd_url, $AFD_METADATA_FILE );
+my $ret = getstore( $dafd_url, $AFD_METADATA_FILE );
 if ( $ret != 200 )
 {
     die "Unable to download d-AFD metadata.";
