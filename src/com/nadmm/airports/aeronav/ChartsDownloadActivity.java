@@ -125,7 +125,7 @@ public class ChartsDownloadActivity extends ActivityBase {
                         int avail = (Integer) v.getTag( R.id.DTPP_CHART_AVAIL );
                         if ( avail < total ) {
                             if ( mIsOk && !mExpired ) {
-                                startChartDownload( v );
+                                confirmStartDownload( v );
                             } else {
                                 UiUtils.showToast( getActivity(), "Cannot start download" );
                             }
@@ -133,7 +133,7 @@ public class ChartsDownloadActivity extends ActivityBase {
                             confirmChartDelete( v );
                         }
                     } else if ( v == mSelectedRow ) {
-                        confirmAndStopDownload();
+                        confirmStopDownload();
                     }
                 }
             };
@@ -170,6 +170,27 @@ public class ChartsDownloadActivity extends ActivityBase {
             super.onActivityCreated( savedInstanceState );
         }
 
+        private void confirmStartDownload( final View v ) {
+            int total = (Integer) v.getTag( R.id.DTPP_CHART_TOTAL );
+            int avail = (Integer) v.getTag( R.id.DTPP_CHART_AVAIL );
+            String tppVolume = (String) v.getTag( R.id.DTPP_VOLUME_NAME );
+            AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
+            builder.setTitle( "Start Download" );
+            builder.setMessage( String.format(
+                    "Do you want to download %d charts for %s volume?",
+                    total-avail, tppVolume ) );
+            builder.setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick( DialogInterface dialog, int which ) {
+                    startChartDownload( v );
+                }
+            } );
+            builder.setNegativeButton( "No", null );
+            builder.setIcon( android.R.drawable.ic_dialog_alert );
+            builder.show();
+        }
+
         private void startChartDownload( View v ) {
             mSelectedRow = v;
             String tppVolume = (String) mSelectedRow.getTag( R.id.DTPP_VOLUME_NAME );
@@ -204,7 +225,7 @@ public class ChartsDownloadActivity extends ActivityBase {
             task.execute( tppVolume );
         }
 
-        private void confirmAndStopDownload() {
+        private void confirmStopDownload() {
             AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
             builder.setTitle( "Stop Download" );
             builder.setMessage( "Do you want to stop the chart download?" );
