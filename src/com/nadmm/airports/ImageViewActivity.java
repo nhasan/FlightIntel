@@ -19,13 +19,14 @@
 
 package com.nadmm.airports;
 
-import com.actionbarsherlock.app.ActionBar.LayoutParams;
-
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
+
+import com.actionbarsherlock.app.ActionBar.LayoutParams;
+import com.nadmm.airports.views.ImageZoomView;
 
 public class ImageViewActivity extends ActivityBase {
 
@@ -53,15 +54,12 @@ public class ImageViewActivity extends ActivityBase {
         @Override
         public View onCreateView( LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState ) {
-            WebView view = new WebView( getActivity() );
+            ImageZoomView view = new ImageZoomView( getActivity(), null );
             view.setLayoutParams( new ViewGroup.LayoutParams(
                     LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT ) );
-            view.getSettings().setBuiltInZoomControls( true );
-            view.getSettings().setLoadWithOverviewMode( true );
-            view.getSettings().setUseWideViewPort( true );
             Bundle args = getArguments();
             String path = args.getString( IMAGE_PATH );
-            view.loadUrl( "file://"+path );
+            view.setImage( BitmapFactory.decodeFile( path ) );
 
             return view;
         }
