@@ -735,7 +735,7 @@ public class ImageZoomView extends View implements Observer {
         private static final int FPS = 60;
 
         /** Factor applied to pan motion outside of pan snap limits. */
-        private static final float PAN_OUTSIDE_SNAP_FACTOR = .25f;
+        private static final float PAN_OUTSIDE_SNAP_FACTOR = .4f;
 
         /** Zoom state under control */
         private final ZoomState mState = new ZoomState();
