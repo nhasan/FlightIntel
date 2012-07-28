@@ -147,6 +147,7 @@
     	        android:value=".afd.SearchActivity" />
 
 		<provider android:name=".providers.AirportsProvider"
+                  android:exported="false"
 		          android:authorities="com.nadmm.airports.providers.AirportsProvider"
 		          android:syncable="false" />
 
@@ -158,12 +159,14 @@
         <service android:name=".wx.RadarService" />
         <service android:name=".wx.WindService" />
         <service android:name=".wx.SigWxService" />
+        <service android:name=".wx.CvaService" />
         <service android:name=".aeronav.DtppService" />
         <service android:name=".aeronav.DafdService" />
         <service android:name=".notams.NotamService" />
         <service android:name=".billing.BillingService" />
 
-        <receiver android:name=".billing.BillingReceiver">
+        <receiver android:name=".billing.BillingReceiver"
+                  android:exported="false">
             <intent-filter>
                 <action android:name="com.android.vending.billing.IN_APP_NOTIFY" />
                 <action android:name="com.android.vending.billing.RESPONSE_CODE" />

@@ -76,6 +76,7 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_PROGCHART = "flightintel.intent.action.GET_PROGCHART";
     public static final String ACTION_GET_WIND = "flightintel.intent.action.GET_WIND";
     public static final String ACTION_GET_SIGWX = "flightintel.intent.action.GET_SIGWX";
+    public static final String ACTION_GET_CVA = "flightintel.intent.action.GET_CVA";
 
     protected File mDataDir;
     private HttpClient mHttpClient;
