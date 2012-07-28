@@ -49,6 +49,7 @@ public class CvaFragment extends WxMapFragmentBase {
     public CvaFragment() {
         super( NoaaService.ACTION_GET_CVA, WxRegions.sWxRegionCodes,
                 WxRegions.sWxRegionNames, R.layout.wx_cav_detail_view );
+        setTitle( "Ceiling and Visibility");
         setLabel( "Select Region" );
     }
 
