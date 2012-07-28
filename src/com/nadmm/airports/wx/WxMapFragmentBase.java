@@ -45,11 +45,20 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     private String mLabel;
     private String mTitle;
     private View mPendingRow;
+    private int mLayoutId;
 
     public WxMapFragmentBase( String action, String[] codes, String[] names ) {
         mAction = action;
         mWxMapCodes = codes;
         mWxMapNames = names;
+        mLayoutId = R.layout.wx_map_detail_view;
+    }
+
+    public WxMapFragmentBase( String action, String[] codes, String[] names, int layoutId ) {
+        mAction = action;
+        mWxMapCodes = codes;
+        mWxMapNames = names;
+        mLayoutId = layoutId;
     }
 
     @Override
@@ -90,7 +99,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        View v = inflate( R.layout.wx_map_detail_view );
+        View v = inflate( mLayoutId );
         TextView tv = (TextView) v.findViewById( R.id.wx_map_label );
         if ( mLabel != null ) {
             tv.setText( mLabel );
@@ -127,7 +136,11 @@ public abstract class WxMapFragmentBase extends FragmentBase {
         service.setAction( mAction );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_IMAGE );
         service.putExtra( NoaaService.IMAGE_CODE, code );
+        setServiceParams( service );
         getActivity().startService( service );
+    }
+
+    protected void setServiceParams( Intent intent ) {
     }
 
     private void showWxMap( Intent intent ) {
