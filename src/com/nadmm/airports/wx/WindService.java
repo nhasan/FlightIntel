@@ -21,17 +21,14 @@ package com.nadmm.airports.wx;
 
 import java.io.File;
 
-import com.nadmm.airports.R;
-import com.nadmm.airports.utils.UiUtils;
-
 import android.content.Intent;
 import android.text.format.DateUtils;
 
+import com.nadmm.airports.utils.UiUtils;
+
 public class WindService extends NoaaService {
 
-    private final String WIND_IMAGE_NAME = "ruc00hr_%s_wind.gif";
     private final String WIND_IMAGE_ZOOM_NAME = "ruc00hr_%s_wind_zoom.gif";
-    private final String WIND_IMAGE_PATH = "/data/winds/";
     private final String WIND_IMAGE_ZOOM_PATH = "/data/winds/zoom/";
 
     private static final long WIND_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
@@ -47,14 +44,11 @@ public class WindService extends NoaaService {
             String type = intent.getStringExtra( TYPE );
             if ( type.equals( TYPE_IMAGE ) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
-                boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
-                String imageName = String.format(
-                        hiRes? WIND_IMAGE_ZOOM_NAME : WIND_IMAGE_NAME,
-                        code );
+                String imageName = String.format( WIND_IMAGE_ZOOM_NAME, code );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = hiRes? WIND_IMAGE_ZOOM_PATH : WIND_IMAGE_PATH;
+                        String path = WIND_IMAGE_ZOOM_PATH;
                         path += imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {

@@ -24,14 +24,11 @@ import java.io.File;
 import android.content.Intent;
 import android.text.format.DateUtils;
 
-import com.nadmm.airports.R;
 import com.nadmm.airports.utils.UiUtils;
 
 public class ProgChartService extends NoaaService {
 
-    private final String PROGCHART_IMAGE_NAME = "prog%s.gif";
     private final String PROGCHART_IMAGE_ZOOM_NAME = "prog%s_zoom.gif";
-    private final String PROGCHART_IMAGE_PATH = "/data/progs/";
     private final String PROGCHART_IMAGE_ZOOM_PATH = "/data/progs/zoom/";
 
     private static final long PROGCHART_CACHE_MAX_AGE = 240*DateUtils.MINUTE_IN_MILLIS;
@@ -47,14 +44,11 @@ public class ProgChartService extends NoaaService {
             String type = intent.getStringExtra( TYPE );
             if ( type.equals( TYPE_IMAGE ) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
-                boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
-                String imageName = String.format(
-                        hiRes? PROGCHART_IMAGE_ZOOM_NAME : PROGCHART_IMAGE_NAME,
-                        code );
+                String imageName = String.format( PROGCHART_IMAGE_ZOOM_NAME, code );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = hiRes? PROGCHART_IMAGE_ZOOM_PATH : PROGCHART_IMAGE_PATH;
+                        String path = PROGCHART_IMAGE_ZOOM_PATH;
                         path += imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
