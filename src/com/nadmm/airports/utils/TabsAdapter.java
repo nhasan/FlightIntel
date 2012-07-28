@@ -28,7 +28,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
-public class TabsAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener {
+public class TabsAdapter extends FragmentPagerAdapter  {
 
     private final Context mContext;
     private final ViewPager mViewPager;
@@ -76,20 +76,8 @@ public class TabsAdapter extends FragmentPagerAdapter implements ViewPager.OnPag
     }
 
     @Override
-    public void onPageScrolled( int position, float positionOffset, int positionOffsetPixels ) {
-    }
-
-    @Override
-    public void onPageScrollStateChanged( int state ) {
-    }
-
-    @Override
     public CharSequence getPageTitle( int position ) {
         return mTabs.get( position ).label;
-    }
-
-    @Override
-    public void onPageSelected( int position ) {
     }
 
 }
