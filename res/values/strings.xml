@@ -116,6 +116,9 @@
     <string name="view_maps">View Maps</string>
     <string name="charts_download">Charts Download</string>
     <string name="select_charts_volume">Select Charts Volume</string>
+    <string name="select_type">Select Type</string>
+    <string name="ceiling">Ceiling</string>
+    <string name="flight_category">Flight Category</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>
