@@ -20,41 +20,73 @@
 package com.nadmm.airports.wx;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.widget.ArrayAdapter;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TabsAdapter;
+import com.viewpagerindicator.UnderlinePageIndicator;
 
-public class WxDetailActivity extends ActivityBase {
+public class WxDetailActivity extends ActivityBase
+                implements OnNavigationListener, ViewPager.OnPageChangeListener {
 
     private TabsAdapter mTabsAdapter;
+    private ViewPager mPager;
+
+    private static final String[] mLabels = new String[] {
+        "METAR",
+        "TAF",
+        "Pilot Reports",
+        "Airmets/Sigmets",
+        "Radar",
+        "Prognosis Charts",
+        "Winds",
+        "Significant Wx",
+        "Ceiling & Visibility"
+    };
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
-        setContentView( R.layout.fragment_view_pager_layout );
+        setContentView( R.layout.fragment_pager_vpi_layout );
 
-        ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
-        mTabsAdapter = new TabsAdapter( this, pager );
+        mPager = (ViewPager) findViewById( R.id.content_pager );
+
+        mTabsAdapter = new TabsAdapter( this, mPager );
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
-        mTabsAdapter.addTab( "METAR", MetarFragment.class, args );
-        mTabsAdapter.addTab( "TAF", TafFragment.class, args );
-        mTabsAdapter.addTab( "PIREP", PirepFragment.class, args );
-        mTabsAdapter.addTab( "AIRSIGMET", AirSigmetFragment.class, args );
-        mTabsAdapter.addTab( "RADAR", RadarFragment.class, args );
-        mTabsAdapter.addTab( "PROGCHART", ProgChartFragment.class, args );
-        mTabsAdapter.addTab( "WIND", WindFragment.class, args );
-        mTabsAdapter.addTab( "SIGWX", SigWxFragment.class, args );
+        mTabsAdapter.addTab( mLabels[ 0 ], MetarFragment.class, args );
+        mTabsAdapter.addTab( mLabels[ 1 ], TafFragment.class, args );
+        mTabsAdapter.addTab( mLabels[ 2 ], PirepFragment.class, args );
+        mTabsAdapter.addTab( mLabels[ 3 ], AirSigmetFragment.class, args );
+        mTabsAdapter.addTab( mLabels[ 4 ], RadarFragment.class, args );
+        mTabsAdapter.addTab( mLabels[ 5 ], ProgChartFragment.class, args );
+        mTabsAdapter.addTab( mLabels[ 6 ], WindFragment.class, args );
+        mTabsAdapter.addTab( mLabels[ 7 ], SigWxFragment.class, args );
+        mTabsAdapter.addTab( mLabels[ 8 ], CvaFragment.class, args );
 
-        PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
-        tabs.setTabIndicatorColor( 0x33b5e5 );
+        Context context = getSupportActionBar().getThemedContext();
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>( context,
+                R.layout.sherlock_spinner_item, mLabels );
+        adapter.setDropDownViewResource( R.layout.sherlock_spinner_dropdown_item );
+        getSupportActionBar().setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
+        getSupportActionBar().setListNavigationCallbacks( adapter, this );
+
+        UnderlinePageIndicator indicator = (UnderlinePageIndicator) findViewById( R.id.indicator );
+        indicator.setViewPager( mPager );
+        indicator.setSelectedColor( 0xFF33B5E5 );
+        indicator.setBackgroundColor( 0xFFAAAAAA );
+        indicator.setFadeDelay(3000);
+        indicator.setFadeLength(1000);
+        indicator.setOnPageChangeListener( this );
 
         if ( savedInstanceState != null ) {
-            pager.setCurrentItem( savedInstanceState.getInt( "wxtab" ) );
+            mPager.setCurrentItem( savedInstanceState.getInt( "wxtab" ) );
         }
 
         super.onCreate( savedInstanceState );
@@ -63,8 +95,26 @@ public class WxDetailActivity extends ActivityBase {
     @Override
     protected void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
-        ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
-        outState.putInt( "wxtab", pager.getCurrentItem() );
+        outState.putInt( "wxtab", mPager.getCurrentItem() );
+    }
+
+    @Override
+    public boolean onNavigationItemSelected( int itemPosition, long itemId ) {
+        mPager.setCurrentItem( itemPosition );
+        return false;
+    }
+
+    @Override
+    public void onPageScrollStateChanged( int arg0 ) {
+    }
+
+    @Override
+    public void onPageScrolled( int arg0, float arg1, int arg2 ) {
+    }
+
+    @Override
+    public void onPageSelected( int arg0 ) {
+        getSupportActionBar().setSelectedNavigationItem( arg0 );
     }
 
 }
