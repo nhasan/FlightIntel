@@ -54,7 +54,7 @@ public class NearbyActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        View view = inflate( R.layout.fragment_view_pager_layout );
+        View view = inflate( R.layout.fragment_pager_layout );
         view.setKeepScreenOn( true );
         setContentView( view );
 

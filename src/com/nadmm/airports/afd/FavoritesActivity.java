@@ -36,7 +36,7 @@ public class FavoritesActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( R.layout.fragment_view_pager_layout );
+        setContentView( R.layout.fragment_pager_layout );
 
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
 
