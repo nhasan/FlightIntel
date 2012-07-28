@@ -26,7 +26,7 @@
     <LinearLayout
             android:orientation="vertical"
             android:paddingLeft="12dp"
-            android:paddingTop="8dp"
+            android:paddingTop="6dp"
             android:paddingRight="12dp"
             android:paddingBottom="12dp"
             android:layout_width="match_parent"
