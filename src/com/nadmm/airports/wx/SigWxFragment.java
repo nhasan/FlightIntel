@@ -28,7 +28,6 @@ public class SigWxFragment extends WxMapFragmentBase {
 
     public SigWxFragment() {
         super( NoaaService.ACTION_GET_SIGWX, sSigWxCodes, sSigWxNames );
-        setTitle( "SigWx Images" );
         setLabel( "Select SigWx Image" );
     }
 
