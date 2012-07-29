@@ -28,7 +28,7 @@ import com.nadmm.airports.utils.UiUtils;
 
 public class WindService extends NoaaService {
 
-    private final String WIND_IMAGE_ZOOM_NAME = "ruc00hr_%s_wind_zoom.gif";
+    private final String WIND_IMAGE_ZOOM_NAME = "ruc00hr_%s_%s_zoom.gif";
     private final String WIND_IMAGE_ZOOM_PATH = "/data/winds/zoom/";
 
     private static final long WIND_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
@@ -43,8 +43,9 @@ public class WindService extends NoaaService {
         if ( action.equals( ACTION_GET_WIND ) ) {
             String type = intent.getStringExtra( TYPE );
             if ( type.equals( TYPE_IMAGE ) ) {
+                String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );
-                String imageName = String.format( WIND_IMAGE_ZOOM_NAME, code );
+                String imageName = String.format( WIND_IMAGE_ZOOM_NAME, code, imgType );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
@@ -52,8 +53,7 @@ public class WindService extends NoaaService {
                         path += imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch Wind image: "
-                                +e.getMessage() );
+                        UiUtils.showToast( this, "Unable to fetch Wind image: "+e.getMessage() );
                     }
                 }
 

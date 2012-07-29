@@ -23,6 +23,20 @@ import android.content.Intent;
 
 public class WindFragment extends WxMapFragmentBase {
 
+    private static final String[] sTypeCodes = {
+        "wind",
+        "windstrm",
+        "temp",
+        "isa"
+    };
+
+    private static final String[] sTypeNames = {
+        "Wind Speed",
+        "Wind Streamlines",
+        "Temperature",
+        "Temperature Difference"
+    };
+
     private static final String[] sWindCodes = new String[] {
         "sfc",
         "900",
@@ -52,7 +66,8 @@ public class WindFragment extends WxMapFragmentBase {
     };
 
     public WindFragment() {
-        super( NoaaService.ACTION_GET_WIND, sWindCodes, sWindNames );
+        super( NoaaService.ACTION_GET_WIND,
+                sWindCodes, sWindNames, sTypeCodes, sTypeNames );
         setTitle( "Wind Images" );
         setLabel( "Select Altitude" );
     }
