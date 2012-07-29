@@ -47,9 +47,10 @@ public class WxDetailActivity extends ActivityBase {
         mTabsAdapter.addTab( "AIRMET/SIGMET", AirSigmetFragment.class, args );
         mTabsAdapter.addTab( "RADAR", RadarFragment.class, args );
         mTabsAdapter.addTab( "PROGNOSIS CHARTS", ProgChartFragment.class, args );
-        mTabsAdapter.addTab( "WINDS ALOFT", WindFragment.class, args );
+        mTabsAdapter.addTab( "WINDS/TEMPERATURE", WindFragment.class, args );
         mTabsAdapter.addTab( "SIG WX", SigWxFragment.class, args );
         mTabsAdapter.addTab( "CEILING & VISIBILIY", CvaFragment.class, args );
+        mTabsAdapter.addTab( "ICING", IcingFragment.class, args );
 
         PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
         tabs.setTabIndicatorColor( 0x33b5e5 );
