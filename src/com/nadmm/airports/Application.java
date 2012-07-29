@@ -19,18 +19,12 @@
 
 package com.nadmm.airports;
 
-import org.acra.ACRA;
-import org.acra.annotation.ReportsCrashes;
-
-@ReportsCrashes( formKey = "dDd5R3ZOb2pXMGFiM19oYjFnSWRmdmc6MQ" ) 
 public class Application extends android.app.Application {
 
     public static Boolean sDonationDone;
 
     @Override
     public void onCreate() {
-        // The following line triggers the initialization of ACRA
-        ACRA.init(this);
         super.onCreate();
     }
 
