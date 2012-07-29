@@ -27,58 +27,38 @@ import com.nadmm.airports.R;
 
 public class PirepMapActivity extends ActivityBase {
 
+    private static final String[] sTypeCodes = {
+        "IC",
+        "TB",
+        "WS"
+    };
+
+    private static final String[] sTypeNames = {
+        "Icing",
+        "Turbulence",
+        "Weather/Sky"
+    };
+
     private static final String[] sPirepCodes = {
-        "US_IC",
-        "US_TB",
-        "US_WS",
-        "AK_IC",
-        "AK_TB",
-        "AK_WS",
-        "NC_IC",
-        "NC_TB",
-        "NC_WS",
-        "NE_IC",
-        "NE_TB",
-        "NE_WS",
-        "NW_IC",
-        "NW_TB",
-        "NW_WS",
-        "SC_IC",
-        "SC_TB",
-        "SC_WS",
-        "SE_IC",
-        "SE_TB",
-        "SE_WS",
-        "SW_IC",
-        "SW_TB",
-        "SW_WS"
+        "US",
+        "AK",
+        "NC",
+        "NE",
+        "NW",
+        "SC",
+        "SE",
+        "SW",
     };
 
     private static final String[] sPirepNames = {
-        "Contiguous U.S. - Icing",
-        "Contiguous U.S. - Turbulence",
-        "Contiguous U.S. - Weather/Sky",
-        "Alaska - Icing",
-        "Alaska - Turbulence",
-        "Alaska - Weather/Sky",
-        "Northcentral - Icing",
-        "Northcentral - Turbulence",
-        "Northcentral - Weather/Sky",
-        "Northeast - Icing",
-        "Northeast - Turbulence",
-        "Northeast - Weather/Sky",
-        "Northwest - Icing",
-        "Northwest - Turbulence",
-        "Northwest - Weather/Sky",
-        "Southcentral - Icing",
-        "Southcentral - Turbulence",
-        "Southcentral - Weather/Sky",
-        "Southeast - Icing",
-        "Southeast - Turbulence",
-        "Southeast - Weather/Sky",
-        "Southwest - Icing",
-        "Southwest - Turbulence",
-        "Southwest - Weather/Sky"
+        "Contiguous U.S.",
+        "Alaska",
+        "Northcentral",
+        "Northeast",
+        "Northwest",
+        "Southcentral",
+        "Southeast",
+        "Southwest",
     };
 
     @Override
@@ -94,7 +74,8 @@ public class PirepMapActivity extends ActivityBase {
     public static class PirepMapFragment extends WxMapFragmentBase {
 
         public PirepMapFragment() {
-            super( NoaaService.ACTION_GET_PIREP, sPirepCodes, sPirepNames );
+            super( NoaaService.ACTION_GET_PIREP,
+                    sPirepCodes, sPirepNames, sTypeCodes, sTypeNames );
             setLabel( "Select Region and Category" );
         }
 

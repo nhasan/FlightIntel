@@ -25,18 +25,15 @@ import android.content.Intent;
 import android.location.Location;
 import android.text.format.DateUtils;
 
-import com.nadmm.airports.R;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 public class PirepService extends NoaaService {
 
-    private final String PIREP_IMAGE_NAME = "pireps_%s.gif";
-    private final String PIREP_IMAGE_ZOOM_NAME = "pireps_%s_zoom.gif";
+    private final String PIREP_IMAGE_ZOOM_NAME = "pireps_%s_%s_zoom.gif";
     private final String PIREP_TEXT_QUERY =
             "dataSource=aircraftreports&requestType=retrieve&format=xml&compression=gzip"
             + "&hoursBeforeNow=%d&radialDistance=%.0f;%.2f,%.2f";
-    private final String PIREP_IMAGE_PATH = "/data/pireps/";
     private final String PIREP_IMAGE_ZOOM_PATH = "/data/pireps/zoom/";
 
     private static final long PIREP_CACHE_MAX_AGE = 1*DateUtils.HOUR_IN_MILLIS;
@@ -90,15 +87,13 @@ public class PirepService extends NoaaService {
                 // Broadcast the result
                 sendResultIntent( action, stationId, pirep );
             } else if ( type.equals( TYPE_IMAGE ) ) {
-                boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
+                String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );
-                String imageName = String.format(
-                        hiRes? PIREP_IMAGE_ZOOM_NAME : PIREP_IMAGE_NAME,
-                        code );
+                String imageName = String.format( PIREP_IMAGE_ZOOM_NAME, code, imgType );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = hiRes? PIREP_IMAGE_ZOOM_PATH : PIREP_IMAGE_PATH;
+                        String path = PIREP_IMAGE_ZOOM_PATH;
                         path += imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
