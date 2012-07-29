@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.nadmm.airports"
-      android:versionCode="4010"
-      android:versionName="4.1.0" >
+      android:versionCode="4011"
+      android:versionName="4.1.1" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -94,19 +94,19 @@
 
         <activity android:label="@string/metar_maps"
                   android:name=".wx.MetarMapActivity"
-                  android:theme="@style/Theme.Sherlock.Light.Dialog" />
+                  android:theme="@style/Theme.Light.Dialog" />
 
         <activity android:label="@string/taf_maps"
                   android:name=".wx.TafMapActivity"
-                  android:theme="@style/Theme.Sherlock.Light.Dialog" />
+                  android:theme="@style/Theme.Light.Dialog" />
 
         <activity android:label="@string/pirep_images"
                   android:name=".wx.PirepMapActivity"
-                  android:theme="@style/Theme.Sherlock.Light.Dialog" />
+                  android:theme="@style/Theme.Light.Dialog" />
 
         <activity android:label="@string/airsigmet_images"
                   android:name=".wx.AirSigmetMapActivity"
-                  android:theme="@style/Theme.Sherlock.Light.Dialog" />
+                  android:theme="@style/Theme.Light.Dialog" />
 
         <activity android:label="@string/nearby_wx"
                   android:name=".wx.NearbyWxActivity" />
@@ -160,13 +160,13 @@
         <service android:name=".wx.WindService" />
         <service android:name=".wx.SigWxService" />
         <service android:name=".wx.CvaService" />
+        <service android:name=".wx.IcingService" />
         <service android:name=".aeronav.DtppService" />
         <service android:name=".aeronav.DafdService" />
         <service android:name=".notams.NotamService" />
         <service android:name=".billing.BillingService" />
 
-        <receiver android:name=".billing.BillingReceiver"
-                  android:exported="false">
+        <receiver android:name=".billing.BillingReceiver">
             <intent-filter>
                 <action android:name="com.android.vending.billing.IN_APP_NOTIFY" />
                 <action android:name="com.android.vending.billing.RESPONSE_CODE" />
