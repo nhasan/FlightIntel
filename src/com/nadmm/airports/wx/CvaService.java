@@ -33,7 +33,6 @@ public class CvaService extends NoaaService {
             + "loadImage/region/%s/product/%s/zoom/true";
 
     private static final long CVA_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
-    public static final String CVA_TYPE = "CVA_TYPE";
 
     public CvaService() {
         super( "cva", CVA_CACHE_MAX_AGE );
@@ -45,13 +44,13 @@ public class CvaService extends NoaaService {
         if ( action.equals( ACTION_GET_CVA ) ) {
             String type = intent.getStringExtra( TYPE );
             if ( type.equals( TYPE_IMAGE ) ) {
+                String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );
-                String cva = intent.getStringExtra( CVA_TYPE );
-                String imageName = String.format( CVA_IMAGE_NAME, cva, code );
+                String imageName = String.format( CVA_IMAGE_NAME, imgType, code );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = String.format( CVA_IMAGE_PATH, code, cva );
+                        String path = String.format( CVA_IMAGE_PATH, code, imgType );
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch CVA image: "+e.getMessage() );

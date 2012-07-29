@@ -20,49 +20,27 @@
 package com.nadmm.airports.wx;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-
-import com.nadmm.airports.R;
 
 
 public class CvaFragment extends WxMapFragmentBase {
 
-    private static final String[] mCvaTypeNames = {
-        "CVA - Flight Category",
-        "CVA - Ceiling",
-        "CVA - Visibility"
-    };
-
-    private static final String[] mCvaTypeCodes = {
+    private static final String[] sTypeCodes = {
         "metarsNCVAfcat",
         "metarsNCVAceil",
         "metarsNCVAvis"
     };
 
-    private Spinner mSpinner;
+    private static final String[] sTypeNames = {
+        "CVA - Flight Category",
+        "CVA - Ceiling",
+        "CVA - Visibility"
+    };
 
     public CvaFragment() {
-        super( NoaaService.ACTION_GET_CVA, WxRegions.sWxRegionCodes,
-                WxRegions.sWxRegionNames, R.layout.wx_cav_detail_view );
+        super( NoaaService.ACTION_GET_CVA,
+                WxRegions.sWxRegionCodes, WxRegions.sWxRegionNames, sTypeCodes, sTypeNames );
         setTitle( "Ceiling and Visibility");
         setLabel( "Select Region" );
-    }
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View v = super.onCreateView( inflater, container, savedInstanceState );
-        mSpinner = (Spinner) v.findViewById( R.id.cav_type );
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>( getActivity(),
-                R.layout.sherlock_spinner_item, mCvaTypeNames );
-        adapter.setDropDownViewResource( R.layout.sherlock_spinner_dropdown_item );
-        mSpinner.setAdapter( adapter );
-        return v;
     }
 
     @Override
@@ -72,8 +50,6 @@ public class CvaFragment extends WxMapFragmentBase {
 
     @Override
     protected void setServiceParams( Intent intent ) {
-        int pos = mSpinner.getSelectedItemPosition();
-        intent.putExtra( CvaService.CVA_TYPE, mCvaTypeCodes[ pos ] );
         String region = intent.getStringExtra( NoaaService.IMAGE_CODE );
         if ( region.equals( "INA" ) ) {
             intent.putExtra( NoaaService.IMAGE_CODE, "US" );

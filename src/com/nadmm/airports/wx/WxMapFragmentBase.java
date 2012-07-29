@@ -28,7 +28,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
@@ -40,25 +42,30 @@ public abstract class WxMapFragmentBase extends FragmentBase {
 
     private String mAction;
     private BroadcastReceiver mReceiver;
+    private String[] mWxTypeCodes;
+    private String[] mWxTypeNames;
     private String[] mWxMapCodes;
     private String[] mWxMapNames;
     private String mLabel;
     private String mTitle;
     private View mPendingRow;
-    private int mLayoutId;
+    private Spinner mSpinner;
 
-    public WxMapFragmentBase( String action, String[] codes, String[] names ) {
+    public WxMapFragmentBase( String action, String[] mapCodes, String[] mapNames ) {
         mAction = action;
-        mWxMapCodes = codes;
-        mWxMapNames = names;
-        mLayoutId = R.layout.wx_map_detail_view;
+        mWxMapCodes = mapCodes;
+        mWxMapNames = mapNames;
+        mWxTypeCodes = null;
+        mWxTypeNames = null;
     }
 
-    public WxMapFragmentBase( String action, String[] codes, String[] names, int layoutId ) {
+    public WxMapFragmentBase( String action, String[] mapCodes, String[] mapNames,
+            String[] typeCodes, String[] typeNames ) {
         mAction = action;
-        mWxMapCodes = codes;
-        mWxMapNames = names;
-        mLayoutId = layoutId;
+        mWxMapCodes = mapCodes;
+        mWxMapNames = mapNames;
+        mWxTypeCodes = typeCodes;
+        mWxTypeNames = typeNames;
     }
 
     @Override
@@ -99,7 +106,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        View v = inflate( mLayoutId );
+        View v = inflate( R.layout.wx_map_detail_view );
         TextView tv = (TextView) v.findViewById( R.id.wx_map_label );
         if ( mLabel != null ) {
             tv.setText( mLabel );
@@ -127,6 +134,18 @@ public abstract class WxMapFragmentBase extends FragmentBase {
             row.setBackgroundResource( UiUtils.getRowSelector( i, mWxMapCodes.length ) );
         }
 
+        if ( mWxTypeCodes != null ) {
+            tv = (TextView) v.findViewById( R.id.wx_map_type_label );
+            tv.setVisibility( View.VISIBLE );
+            layout = (LinearLayout) v.findViewById( R.id.wx_map_type_layout );
+            layout.setVisibility( View.VISIBLE );
+            mSpinner = (Spinner) v.findViewById( R.id.map_type );
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>( getActivity(),
+                    R.layout.sherlock_spinner_item, mWxTypeNames );
+            adapter.setDropDownViewResource( R.layout.sherlock_spinner_dropdown_item );
+            mSpinner.setAdapter( adapter );
+        }
+
         return v;
     }
 
@@ -136,7 +155,13 @@ public abstract class WxMapFragmentBase extends FragmentBase {
         service.setAction( mAction );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_IMAGE );
         service.putExtra( NoaaService.IMAGE_CODE, code );
+        if ( mSpinner != null ) {
+            int pos = mSpinner.getSelectedItemPosition();
+            service.putExtra( NoaaService.IMAGE_TYPE, mWxTypeCodes[ pos ] );
+        }
+
         setServiceParams( service );
+
         getActivity().startService( service );
     }
 
@@ -159,6 +184,8 @@ public abstract class WxMapFragmentBase extends FragmentBase {
                 view.putExtra( ImageViewActivity.IMAGE_SUBTITLE, name );
             }
             startActivity( view );
+        } else {
+            mPendingRow = null;
         }
         setProgressBarVisible( false );
     }
