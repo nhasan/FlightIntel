@@ -30,7 +30,6 @@ import org.xml.sax.SAXException;
 import android.content.Intent;
 import android.text.format.DateUtils;
 
-import com.nadmm.airports.R;
 import com.nadmm.airports.utils.UiUtils;
 
 public class MetarService extends NoaaService {
@@ -40,7 +39,7 @@ public class MetarService extends NoaaService {
     		+ "&hoursBeforeNow=%d&mostRecentForEachStation=constraint"
             + "&format=xml&compression=gzip&stationString=%s";
     private final String METAR_IMAGE_PATH = "/tools/weatherproducts/metars/default/"
-    		+ "loadImage/region/%s/product/METARs/zoom/%s";
+    		+ "loadImage/region/%s/product/METARs/zoom/true";
 
     private static final long METAR_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
@@ -114,9 +113,7 @@ public class MetarService extends NoaaService {
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
-                        String path = String.format( METAR_IMAGE_PATH, code,
-                                hiRes? "true" : "false" );
+                        String path = String.format( METAR_IMAGE_PATH, code );
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch METAR image: "+e.getMessage() );

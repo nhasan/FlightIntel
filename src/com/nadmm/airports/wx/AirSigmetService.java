@@ -24,17 +24,14 @@ import java.io.File;
 import android.content.Intent;
 import android.text.format.DateUtils;
 
-import com.nadmm.airports.R;
 import com.nadmm.airports.utils.UiUtils;
 
 public class AirSigmetService extends NoaaService {
 
-    private final String AIRSIGMET_IMAGE_NAME = "airmets_%s.gif";
     private final String AIRSIGMET_IMAGE_ZOOM_NAME = "zoom_airmets_%s.gif";
     private final String AIRSIGMET_TEXT_QUERY =
             "datasource=airsigmets&requesttype=retrieve&format=xml&compression=gzip"
             + "&hoursBeforeNow=%d&minLat=%.2f&maxLat=%.2f&minLon=%.2f&maxLon=%.2f";
-    private final String AIRSIGMET_IMAGE_PATH = "/data/airmets/";
     private final String AIRSIGMET_IMAGE_ZOOM_PATH = "/data/airmets/zoom/";
 
     private static final long AIRSIGMET_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
@@ -85,14 +82,12 @@ public class AirSigmetService extends NoaaService {
                 // Broadcast the result
                 sendResultIntent( action, stationId, airSigmet );
             } else if ( type.equals( TYPE_IMAGE ) ) {
-                boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
                 String code = intent.getStringExtra( IMAGE_CODE );
-                String imageName = String.format(
-                        hiRes? AIRSIGMET_IMAGE_ZOOM_NAME : AIRSIGMET_IMAGE_NAME, code );
+                String imageName = String.format( AIRSIGMET_IMAGE_ZOOM_NAME, code );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = hiRes? AIRSIGMET_IMAGE_ZOOM_PATH : AIRSIGMET_IMAGE_PATH;
+                        String path = AIRSIGMET_IMAGE_ZOOM_PATH;
                         path += imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
