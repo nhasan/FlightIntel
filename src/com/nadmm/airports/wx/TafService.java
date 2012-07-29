@@ -24,7 +24,6 @@ import java.io.File;
 import android.content.Intent;
 import android.text.format.DateUtils;
 
-import com.nadmm.airports.R;
 import com.nadmm.airports.utils.UiUtils;
 
 public class TafService extends NoaaService {
@@ -33,7 +32,7 @@ public class TafService extends NoaaService {
     private final String TAF_TEXT_QUERY = "dataSource=tafs&requestType=retrieve"
             +"&format=xml&compression=gzip&hoursBeforeNow=%d&mostRecent=true&stationString=%s";
     private final String TAF_IMAGE_PATH = "/tools/weatherproducts/tafs/default/"
-            + "loadImage/region/%s/product/prevail/zoom/%s";
+            + "loadImage/region/%s/product/prevail/zoom/true";
 
     private static final long TAF_CACHE_MAX_AGE = 2*DateUtils.HOUR_IN_MILLIS;
 
@@ -92,9 +91,7 @@ public class TafService extends NoaaService {
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        boolean hiRes = getResources().getBoolean( R.bool.WxHiResImages );
-                        String path = String.format( TAF_IMAGE_PATH, code,
-                                hiRes? "true" : "false" );
+                        String path = String.format( TAF_IMAGE_PATH, code );
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch TAF image: "+e.getMessage() );
