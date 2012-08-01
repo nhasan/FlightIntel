@@ -235,7 +235,6 @@ public final class DownloadActivity extends ActivityBase {
             msgText = (TextView) convertView.findViewById( R.id.download_msg );
             statusText = (TextView) convertView.findViewById( R.id.download_status );
             progressBar = (ProgressBar) convertView.findViewById( R.id.download_progress );
-            statusText.setVisibility( View.VISIBLE );
         }
 
         public void initProgress( int resid, int max ) {
@@ -245,6 +244,12 @@ public final class DownloadActivity extends ActivityBase {
             progressBar.setVisibility( View.VISIBLE );
             statusText.setVisibility( View.VISIBLE );
             msgText.setVisibility( View.VISIBLE );
+        }
+
+        public void hideProgress() {
+            progressBar.setVisibility( View.GONE );
+            statusText.setVisibility( View.GONE );
+            msgText.setVisibility( View.GONE );
         }
 
         public void setProgress( int progress ) {
@@ -732,6 +737,7 @@ public final class DownloadActivity extends ActivityBase {
         protected void onPostExecute( Integer result ) {
             if ( result < 0 ) {
                 showToast( "There was an error while downloading data" );
+                mTracker.hideProgress();
             }
 
             mStop.set( false );
