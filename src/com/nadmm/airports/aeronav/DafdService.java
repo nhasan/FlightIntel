@@ -23,8 +23,6 @@ import java.io.File;
 
 import android.content.Intent;
 
-import com.nadmm.airports.utils.NetworkUtils;
-
 public class DafdService extends AeroNavService {
 
     public DafdService() {
@@ -49,7 +47,7 @@ public class DafdService extends AeroNavService {
         File pdfFile = new File( cycleDir, pdfName );
         if ( !pdfFile.exists() ) {
             String path = String.format( "/pdfs/%s", pdfFile.getName() );
-            NetworkUtils.doHttpGet( this, mHttpClient, mTarget, path, pdfFile );
+            fetch( path, pdfFile );
         }
 
         sendResult( ACTION_GET_AFD, afdCycle, pdfFile );

@@ -20,9 +20,10 @@
 package com.nadmm.airports.aeronav;
 
 import java.io.File;
+import java.net.URI;
 
-import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.utils.URIUtils;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import android.content.Intent;
 import com.nadmm.airports.utils.FileUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public abstract class AeroNavService extends IntentService {
 
@@ -49,7 +51,6 @@ public abstract class AeroNavService extends IntentService {
     public static final String DOWNLOAD_IF_MISSING = "DOWNLOAD_IF_MISSING";
 
     protected final HttpClient mHttpClient;
-    protected final HttpHost mTarget;
 
     private final String AERONAV_HOST = "aeronav.faa.gov";
     private final File DATA_DIR;
@@ -58,7 +59,6 @@ public abstract class AeroNavService extends IntentService {
         super( name );
 
         mHttpClient = NetworkUtils.getHttpClient();
-        mTarget = new HttpHost( AERONAV_HOST, 80 );
         DATA_DIR = SystemUtils.getExternalDir( name );
     }
 
@@ -78,6 +78,16 @@ public abstract class AeroNavService extends IntentService {
             dir.mkdir();
         }
         return dir;
+    }
+
+    protected boolean fetch( String path, File file ) {
+        try {
+            URI uri = URIUtils.createURI( "http", AERONAV_HOST, 80, path, null, null );
+            return NetworkUtils.doHttpGet( this, mHttpClient, uri, file, null );
+        } catch ( Exception e ) {
+            UiUtils.showToast( this, "Error: "+e.getMessage() );
+        }
+        return false;
     }
 
     protected void sendResult( String action, String cycle, File pdfFile ) {

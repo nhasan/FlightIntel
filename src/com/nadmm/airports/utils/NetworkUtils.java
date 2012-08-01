@@ -19,18 +19,21 @@
 
 package com.nadmm.airports.utils;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.net.URI;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIUtils;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -121,31 +124,44 @@ public class NetworkUtils {
         return client;
     }
 
-    public static void doHttpGet( Context context, HttpClient httpClient, HttpHost target,
-            String path, File file ) {
+    public static boolean doHttpGet( Context context, HttpClient httpClient, String host,
+            String path, File file, Class<? extends FilterInputStream> filter )
+            throws Exception {
+        URI uri = URIUtils.createURI( "http", host, 80, path, null, null );
+        return doHttpGet( context, httpClient, uri, file, filter );
+    }
+
+    public static boolean doHttpGet( Context context, HttpClient httpClient, URI uri,
+            File file, Class<? extends FilterInputStream> filter ) throws Exception {
+        if ( !NetworkUtils.isNetworkAvailable( context ) ) {
+            return false;
+        }
+
         InputStream in = null;
-        FileOutputStream out = null;
+        OutputStream out = null;
 
         try {
-            URI uri = new URI( path );
             HttpGet get = new HttpGet( uri );
-            HttpResponse response = httpClient.execute( target, get );
+            HttpResponse response = httpClient.execute( get );
 
             int status = response.getStatusLine().getStatusCode();
             if ( status != HttpStatus.SC_OK ) {
                 throw new Exception( response.getStatusLine().getReasonPhrase() );
             }
 
-            int count;
             out = new FileOutputStream( file );
-            HttpEntity entity = response.getEntity();
-            in = entity.getContent();
+            in = response.getEntity().getContent();
+            if ( filter != null ) {
+                @SuppressWarnings("unchecked")
+                Constructor<FilterInputStream> ctor =
+                        (Constructor<FilterInputStream>) filter.getConstructor( InputStream.class );
+                in = ctor.newInstance( new BufferedInputStream( in ) );
+            }
 
+            int count;
             while ( ( count = in.read( sBuffer, 0, sBuffer.length ) ) != -1 ) {
                 out.write( sBuffer, 0, count );
             }
-        } catch ( Exception e ) {
-            UiUtils.showToast( context, file.getName()+": "+e.getMessage() );
         } finally {
             try {
                 if ( in != null ) {
@@ -157,6 +173,7 @@ public class NetworkUtils {
             } catch ( IOException e ) {
             }
         }
+        return true;
     }
 
 }

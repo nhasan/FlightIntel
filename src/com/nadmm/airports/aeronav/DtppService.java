@@ -24,8 +24,6 @@ import java.util.ArrayList;
 
 import android.content.Intent;
 
-import com.nadmm.airports.utils.NetworkUtils;
-
 public class DtppService extends AeroNavService {
 
     private static final String DTPP = "dtpp";
@@ -115,7 +113,7 @@ public class DtppService extends AeroNavService {
             path = String.format( "/d-tpp/%s/%s", tppCycle, pdfFile.getName() );
         }
 
-        NetworkUtils.doHttpGet( this, mHttpClient, mTarget, path, pdfFile );
+        fetch( path, pdfFile );
     }
 
     protected File getVolumeDir( String cycle, String tppVolume ) {

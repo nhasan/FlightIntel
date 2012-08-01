@@ -24,19 +24,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIUtils;
 
 import android.app.IntentService;
@@ -125,44 +120,8 @@ public abstract class NoaaService extends IntentService {
     }
 
     protected boolean fetch( URI uri, File file, boolean compressed ) throws Exception {
-        if ( !NetworkUtils.isNetworkAvailable( this ) ) {
-            return false;
-        }
-
-        InputStream in = null;
-        OutputStream out = null;
-
-        try {
-            HttpGet get = new HttpGet( uri );
-            HttpResponse response = mHttpClient.execute( get );
-
-            int status = response.getStatusLine().getStatusCode();
-            if ( status != HttpStatus.SC_OK ) {
-                throw new Exception( response.getStatusLine().getReasonPhrase() );
-            }
-
-            byte[] buffer = new byte[ 16*1024 ];
-            int count;
-            out = new FileOutputStream( file );
-            in = response.getEntity().getContent();
-            if ( compressed ) {
-                in = new GZIPInputStream( in );
-            }
-            while ( ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
-                out.write( buffer, 0, count );
-            }
-        } finally {
-            try {
-                if ( in != null ) {
-                    in.close();
-                }
-                if ( out != null ) {
-                    out.close();
-                }
-            } catch ( IOException e ) {
-            }
-        }
-        return true;
+        return NetworkUtils.doHttpGet( this, mHttpClient, uri, file,
+                compressed? GZIPInputStream.class : null );
     }
 
     protected File getDataFile( String name ) {
