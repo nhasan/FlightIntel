@@ -169,6 +169,10 @@ public class AirSigmetFragment extends FragmentBase {
     }
 
     protected void showAirSigmetText( Intent intent ) {
+        if ( getActivity() == null ) {
+            return;
+        }
+
         AirSigmet airSigmet = (AirSigmet) intent.getSerializableExtra(NoaaService.RESULT );
 
         LinearLayout layout = (LinearLayout) findViewById( R.id.airsigmet_entries_layout );
