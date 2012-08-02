@@ -146,6 +146,10 @@ public class NearbyActivity extends ActivityBase {
 
         @Override
         public void onLocationChanged( Location location ) {
+            if ( mLocationListeners == null ) {
+                return;
+            }
+
             if ( GeoUtils.isBetterLocation( location, mLastLocation ) ) {
                 mLastLocation = location;
                 for ( LocationListener l : mLocationListeners ) {
