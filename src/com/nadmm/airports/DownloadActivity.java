@@ -21,26 +21,18 @@ package com.nadmm.airports;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.AlertDialog;
@@ -56,6 +48,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ResultReceiver;
 import android.provider.BaseColumns;
 import android.sax.Element;
 import android.sax.EndElementListener;
@@ -144,7 +137,6 @@ public final class DownloadActivity extends ActivityBase {
 
     private DatabaseManager mDbManager;
     private DownloadTask mDownloadTask;
-    private AtomicBoolean mStop;
     private Handler mHandler;
     private ListView mListView;
 
@@ -154,7 +146,6 @@ public final class DownloadActivity extends ActivityBase {
 
         mDbManager = DatabaseManager.instance( this );
         mDownloadTask = null;
-        mStop = new AtomicBoolean( false );
         mHandler = new Handler();
 
         setContentView( createContentView( R.layout.download_list_view ) );
@@ -241,6 +232,10 @@ public final class DownloadActivity extends ActivityBase {
             progressBar.setMax( max );
             msgText.setText( resid );
             setProgress( 0 );
+            showProgress();
+        }
+
+        public void showProgress() {
             progressBar.setVisibility( View.VISIBLE );
             statusText.setVisibility( View.VISIBLE );
             msgText.setVisibility( View.VISIBLE );
@@ -390,19 +385,16 @@ public final class DownloadActivity extends ActivityBase {
 
             result = getInstalled();
             if ( result != 0 ) {
-                showToast( "There was an error while checking installed data" );
                 return result;
             }
 
             result = downloadManifest();
             if ( result != 0 ) {
-                showToast( "There was an error while downloading manifest" );
                 return result;
             }
 
             result = parseManifest();
             if ( result != 0 ) {
-                showToast( "There was an error while processing manifest" );
                 return result;
             }
 
@@ -452,7 +444,7 @@ public final class DownloadActivity extends ActivityBase {
                             mInstalledData.add( info );
                         }
                     } catch ( TimeFormatException e ) {
-                        Log.e( TAG, "Error parsing dates: "+e.getMessage() );
+                        UiUtils.showToast( mActivity, e.getMessage() );
                         return -1;
                     }
                 } while ( c.moveToNext() );
@@ -465,44 +457,29 @@ public final class DownloadActivity extends ActivityBase {
         private int downloadManifest() {
             try {
                 if ( !NetworkUtils.isNetworkAvailable( mActivity ) ) {
+                    UiUtils.showToast( mActivity, "Please check your network connection" );
                     return -1;
                 }
 
-                Time now = new Time();
-                now.setToNow();
                 DefaultHttpClient httpClient = new DefaultHttpClient();
-                HttpHost target = new HttpHost( HOST, PORT );
-                URI uri = new URI( PATH+"/"+MANIFEST+"?unused="+now.toString() );
-                Log.d( target.toHostString(), uri.toASCIIString() );
-                HttpGet get = new HttpGet( uri );
+                File manifest = new File( getCacheDir(), MANIFEST );
 
-                HttpResponse response = httpClient.execute( target, get );
-                if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK ) {
-                    Log.e( TAG, response.getStatusLine().getReasonPhrase() );
-                    return -1;
+                boolean fetch = true;
+                if ( manifest.exists() ) {
+                    Date now = new Date();
+                    long age = now.getTime()-manifest.lastModified();
+                    if ( age < 10*DateUtils.MINUTE_IN_MILLIS ) {
+                        fetch = false;
+                    }
                 }
 
-                HttpEntity entity = response.getEntity();
-                InputStream in = entity.getContent();
-                FileOutputStream out = mActivity.openFileOutput( MANIFEST, MODE_PRIVATE );
-
-                byte[] buffer = new byte[ 8*1024 ];
-                int len = buffer.length;
-                int count = 0;
-
-                while ( ( count = in.read( buffer, 0, len ) ) != -1 ) {
-                    out.write( buffer, 0, count );
+                if ( fetch ) {
+                    NetworkUtils.doHttpGet( mActivity, httpClient, HOST, PORT, PATH+"/"+MANIFEST,
+                            manifest, null, null );
                 }
-
-                in.close();
-                out.close();
             }
-            catch ( IOException e ) {
-                Log.e( TAG, "IOException: "+e.getMessage() );
-                return -1;
-            }
-            catch ( URISyntaxException e ) {
-                Log.e( TAG, "URISyntaxException: "+e.getMessage() );
+            catch ( Exception e ) {
+                UiUtils.showToast( mActivity, e.getMessage() );
                 return -1;
             }
 
@@ -512,104 +489,86 @@ public final class DownloadActivity extends ActivityBase {
         private int parseManifest() {
             FileInputStream in;
             try {
-                in = mActivity.openFileInput( MANIFEST );
-            } catch ( FileNotFoundException e ) {
-                Log.e( TAG, "FileNotFoundException: "+e.getMessage() );
-                return -1;
-            }
+                File manifest = new File( getCacheDir(), MANIFEST );
+                in = new FileInputStream( manifest );
 
-            final DataInfo info = new DataInfo();
-            RootElement root = new RootElement( "manifest" );
-            Element datafile = root.getChild( "datafile" );
-            datafile.setEndElementListener( new EndElementListener() {
-                @Override
-                public void end() {
-                    mAvailableData.add( new DataInfo( info ) );
-                }
-            } );
-            datafile.getChild( "type" ).setEndTextElementListener( 
-                    new EndTextElementListener() {
-                        @Override
-                        public void end( String body ) {
-                            info.type = body;
-                        }
+                final DataInfo info = new DataInfo();
+                RootElement root = new RootElement( "manifest" );
+                Element datafile = root.getChild( "datafile" );
+                datafile.setEndElementListener( new EndElementListener() {
+                    @Override
+                    public void end() {
+                        mAvailableData.add( new DataInfo( info ) );
                     }
-            );
-            datafile.getChild( "desc" ).setEndTextElementListener(
-                    new EndTextElementListener() {
-                        @Override
-                        public void end( String body ) {
-                            info.desc = body;
+                } );
+                datafile.getChild( "type" ).setEndTextElementListener( 
+                        new EndTextElementListener() {
+                            @Override
+                            public void end( String body ) {
+                                info.type = body;
+                            }
                         }
-                    }
-            );
-            datafile.getChild( "version" ).setEndTextElementListener(
-                    new EndTextElementListener() {
-                        @Override
-                        public void end( String body ) {
-                            info.version = Integer.parseInt( body );
+                );
+                datafile.getChild( "desc" ).setEndTextElementListener(
+                        new EndTextElementListener() {
+                            @Override
+                            public void end( String body ) {
+                                info.desc = body;
+                            }
                         }
-                    }
-            );
-            datafile.getChild( "filename" ).setEndTextElementListener(
-                    new EndTextElementListener() {
-                        @Override
-                        public void end( String body ) {
-                            info.fileName = body;
+                );
+                datafile.getChild( "version" ).setEndTextElementListener(
+                        new EndTextElementListener() {
+                            @Override
+                            public void end( String body ) {
+                                info.version = Integer.parseInt( body );
+                            }
                         }
-                    }
-            );
-            datafile.getChild( "size" ).setEndTextElementListener( 
-                    new EndTextElementListener() {
-                        @Override
-                        public void end( String body ) {
-                            info.size = Integer.parseInt( body );
+                );
+                datafile.getChild( "filename" ).setEndTextElementListener(
+                        new EndTextElementListener() {
+                            @Override
+                            public void end( String body ) {
+                                info.fileName = body;
+                            }
                         }
-                    }
-            );
-            datafile.getChild( "start" ).setEndTextElementListener(
-                    new EndTextElementListener() {
-                        @Override
-                        public void end( String body ) {
-                            try {
+                );
+                datafile.getChild( "size" ).setEndTextElementListener( 
+                        new EndTextElementListener() {
+                            @Override
+                            public void end( String body ) {
+                                info.size = Integer.parseInt( body );
+                            }
+                        }
+                );
+                datafile.getChild( "start" ).setEndTextElementListener(
+                        new EndTextElementListener() {
+                            @Override
+                            public void end( String body ) {
                                 info.start = new Time();
                                 info.start.parse3339( body );
                                 info.start.normalize( false );
-                            } catch ( TimeFormatException e ) {
-                                Log.e( TAG, "Error parsing start date: "+e.getMessage() );
                             }
                         }
-                    }
-            );
-            datafile.getChild( "end" ).setEndTextElementListener(
-                    new EndTextElementListener() {
-                        @Override
-                        public void end(String body) {
-                            try {
+                );
+                datafile.getChild( "end" ).setEndTextElementListener(
+                        new EndTextElementListener() {
+                            @Override
+                            public void end(String body) {
                                 info.end = new Time();
                                 info.end.parse3339( body );
                                 info.end.normalize( false );
-                            } catch ( TimeFormatException e ) {
-                                Log.e( TAG, "Error parsing end date: "+e.getMessage() );
                             }
                         }
-                    }
-            );
+                );
 
-            try {
                 Xml.parse( in, Xml.Encoding.UTF_8, root.getContentHandler() );
-            }
-            catch ( Exception e ) {
-                Log.e( TAG, "Error parsing manifest: "+e.getMessage() );
-                return -1;
-            }
 
-            Collections.sort( mAvailableData );
+                Collections.sort( mAvailableData );
 
-            try {
                 in.close();
-            } catch ( IOException e ) {
-                Log.e( TAG, "Error closing manifest file: "+e.getMessage() );
+            } catch ( Exception e ) {
+                UiUtils.showToast( mActivity, e.getMessage() );
                 return -1;
             }
 
@@ -719,7 +678,7 @@ public final class DownloadActivity extends ActivityBase {
             } else {
                 // No more downloads left, cleanup any expired data
                 cleanupExpiredData();
-                showToast( "The data was downloaded and installed successfully" );
+                UiUtils.showToast( mActivity, "Data installation completed successfully" );
                 mDbManager.closeDatabases();
                 mDbManager.openDatabases();
                 return 1;
@@ -730,17 +689,14 @@ public final class DownloadActivity extends ActivityBase {
 
         @Override
         protected void onProgressUpdate( Integer... progress ) {
-             mTracker.setProgress( progress[ 0 ] );
+            mTracker.setProgress( progress[ 0 ] );
         }
 
         @Override
         protected void onPostExecute( Integer result ) {
-            if ( result < 0 ) {
-                showToast( "There was an error while downloading data" );
+            if ( mTracker != null ) {
                 mTracker.hideProgress();
             }
-
-            mStop.set( false );
 
             // Update the displayed list to reflect the recently installed data
             updateDownloadList();
@@ -763,72 +719,33 @@ public final class DownloadActivity extends ActivityBase {
                 }
             } );
 
-            InputStream in = null;
-            FileOutputStream out = null;
-
             try {
-                Time now = new Time();
-                now.setToNow();
                 DefaultHttpClient httpClient = new DefaultHttpClient();
-                HttpHost target = new HttpHost( HOST, PORT );
-                URI uri = new URI( PATH+"/"+data.fileName+"?unused="+now.toMillis( true ) );
-                Log.d( target.toHostString(), uri.toASCIIString() );
-                HttpGet get = new HttpGet( uri );
-
-                HttpResponse response = httpClient.execute( target, get );
-                if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK ) {
-                    Log.e( TAG, response.getStatusLine().getReasonPhrase() );
-                    return -2;
-                }
 
                 if ( !CACHE_DIR.exists() ) {
                     if ( !CACHE_DIR.mkdirs() ) {
-                        showToast( "Unable to create cache dir on external storage" );
+                        UiUtils.showToast( mActivity, "Unable to create folder on external storage" );
                         return -3;
                     }
                 }
 
                 File zipFile = new File( CACHE_DIR, data.fileName );
-                out = new FileOutputStream( zipFile );
 
-                HttpEntity entity = response.getEntity();
-                in = entity.getContent();
+                ResultReceiver receiver = new ResultReceiver( mHandler ) {
+                    protected void onReceiveResult( int resultCode, Bundle resultData ) {
+                        long progress = resultData.getLong( NetworkUtils.RESULT_PROGRESS );
+                        publishProgress( (int) progress );
+                    }
+                };
 
-                Log.i( TAG, "Opened file "+zipFile.getCanonicalPath()+" for writing" );
-
-                byte[] buffer = new byte[ 32*1024 ];
-                int count;
-                int total = 0;
-
-                while ( !mStop.get() && ( count = in.read( buffer, 0, buffer.length ) ) != -1 ) {
-                    out.write( buffer, 0, count );
-                    total += count;
-                    publishProgress( total );
-                }
-
-                if ( mStop.get() == true ) {
-                    // Process was stopped by the user
-                    return -3;
-                }
-
-                return 0;
+                NetworkUtils.doHttpGet( mActivity, httpClient, HOST, PORT, PATH+"/"+data.fileName,
+                        zipFile, receiver, null );
             } catch ( Exception e ) {
-                showToast( e.getMessage() );
+                UiUtils.showToast( mActivity, e.getMessage() );
                 return -1;
-            } finally {
-                if ( in != null ) {
-                    try {
-                        in.close();
-                    } catch ( IOException e ) {
-                    }
-                }
-                if ( out != null ) {
-                    try {
-                        out.close();
-                    } catch ( IOException e ) {
-                    }
-                }
             }
+
+            return 0;
         }
 
         protected int installData( final DataInfo data ) {
@@ -837,7 +754,7 @@ public final class DownloadActivity extends ActivityBase {
             try {
                 zipFile = new ZipFile( cacheFile );
             } catch ( Exception e ) {
-                showToast( e.getMessage() );
+                UiUtils.showToast( mActivity, e.getMessage() );
                 return -1;
             }
 
@@ -854,7 +771,7 @@ public final class DownloadActivity extends ActivityBase {
 
             if ( !DatabaseManager.DATABASE_DIR.exists() ) {
                 if ( !DatabaseManager.DATABASE_DIR.mkdirs() ) {
-                    showToast( "Unable to create database dir on external storage" );
+                    UiUtils.showToast( mActivity, "Unable to create folder on external storage" );
                     return -3;
                 }
             }
@@ -875,23 +792,15 @@ public final class DownloadActivity extends ActivityBase {
                 int total = 0;
 
                 // Try to read the type of record first
-                while ( !mStop.get() && ( count = in.read( buffer, 0, len ) ) != -1 )  {
+                while ( ( count = in.read( buffer, 0, len ) ) != -1 )  {
                     out.write( buffer, 0, count );
                     total += count;
                     publishProgress( total );
                 }
 
-                if ( mStop.get() ) {
-                    // Process was stopped by the user
-                    return -3;
-                }
-
                 return 0;
-            } catch ( FileNotFoundException e ) {
-                showToast( e.getMessage() );
-                return -1;
-            } catch ( IOException e ) {
-                showToast( e.getMessage() );
+            } catch ( Exception e ) {
+                UiUtils.showToast( mActivity, e.getMessage() );
                return -1;
             } finally {
                 cacheFile.delete();
@@ -900,15 +809,9 @@ public final class DownloadActivity extends ActivityBase {
                     if ( in != null ) {
                         in.close();
                     }
-                } catch ( IOException e ) {
-                }
-                try {
                     if ( out != null ) {
                         out.close();
                     }
-                } catch ( IOException e ) {
-                }
-                try {
                     zipFile.close();
                 } catch ( IOException e ) {
                 }
@@ -931,7 +834,7 @@ public final class DownloadActivity extends ActivityBase {
                     +", version="+data.version+", db="+data.dbName );
             int rc = mDbManager.insertCatalogEntry( values );
             if ( rc < 0 ) {
-                showToast( "Failed to update catalog database" );
+                UiUtils.showToast( mActivity, "Failed to update catalog database" );
             }
 
             return rc;
@@ -1035,7 +938,7 @@ public final class DownloadActivity extends ActivityBase {
                     Integer _id = c.getInt( c.getColumnIndex( Catalog._ID ) );
                     String dbName = c.getString( c.getColumnIndex( Catalog.DB_NAME ) );
                     File file = new File( DatabaseManager.DATABASE_DIR, dbName );
-                    if ( file.delete() ) {
+                    if ( catalogDb.isOpen() && file.delete() ) {
                         // Now delete the catalog entry for the file
                         catalogDb.delete( Catalog.TABLE_NAME, Catalog._ID+"=?", 
                                 new String[] { Integer.toString( _id ) } );
@@ -1044,15 +947,6 @@ public final class DownloadActivity extends ActivityBase {
             } while ( c.moveToNext() );
         }
         c.close();
-    }
-
-    public void onStop() {
-        super.onStop();
-
-        if ( mDownloadTask != null ) {
-            Log.i( TAG, "Stopping download thread" );
-            mStop.set( true );
-        }
     }
 
     @Override
@@ -1067,10 +961,6 @@ public final class DownloadActivity extends ActivityBase {
         menu.findItem( R.id.menu_search ).setEnabled( enabled );
 
         return super.onPrepareOptionsMenu( menu );
-    }
-
-    void showToast( String msg ) {
-        UiUtils.showToast( this, msg );
     }
 
 }
