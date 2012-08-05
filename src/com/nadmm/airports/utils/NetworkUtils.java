@@ -49,6 +49,8 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.net.ConnectivityManagerCompat;
 
@@ -56,7 +58,10 @@ import com.nadmm.airports.PreferencesActivity;
 
 public class NetworkUtils {
 
-    private static byte[] sBuffer = new byte[ 32*1024 ];
+    private static final byte[] sBuffer = new byte[ 32*1024 ];
+
+    public static final String RESULT_PROGRESS = "RESULT_PROGRESS";
+    public static final String RESULT_LENGTH = "RESULT_LENGTH";
 
     public static boolean isNetworkAvailable( Context context ) {
         ConnectivityManager connMan = (ConnectivityManager) context.getSystemService( 
@@ -125,14 +130,21 @@ public class NetworkUtils {
     }
 
     public static boolean doHttpGet( Context context, HttpClient httpClient, String host,
-            String path, File file, Class<? extends FilterInputStream> filter )
-            throws Exception {
-        URI uri = URIUtils.createURI( "http", host, 80, path, null, null );
-        return doHttpGet( context, httpClient, uri, file, filter );
+            String path, File file, ResultReceiver receiver,
+            Class<? extends FilterInputStream> filter ) throws Exception {
+        return doHttpGet( context, httpClient, host, 80, path, file, receiver, filter );
+    }
+
+    public static boolean doHttpGet( Context context, HttpClient httpClient, String host, int port,
+            String path, File file, ResultReceiver receiver,
+            Class<? extends FilterInputStream> filter ) throws Exception {
+        URI uri = URIUtils.createURI( "http", host, port, path, null, null );
+        return doHttpGet( context, httpClient, uri, file, receiver, filter );
     }
 
     public static boolean doHttpGet( Context context, HttpClient httpClient, URI uri,
-            File file, Class<? extends FilterInputStream> filter ) throws Exception {
+            File file, ResultReceiver receiver, Class<? extends FilterInputStream> filter )
+            throws Exception {
         if ( !NetworkUtils.isNetworkAvailable( context ) ) {
             return false;
         }
@@ -149,6 +161,8 @@ public class NetworkUtils {
                 throw new Exception( response.getStatusLine().getReasonPhrase() );
             }
 
+            long length = response.getEntity().getContentLength();
+
             out = new FileOutputStream( file );
             in = response.getEntity().getContent();
             if ( filter != null ) {
@@ -159,8 +173,16 @@ public class NetworkUtils {
             }
 
             int count;
+            long progress = 0;
             while ( ( count = in.read( sBuffer, 0, sBuffer.length ) ) != -1 ) {
                 out.write( sBuffer, 0, count );
+                if ( receiver != null ) {
+                    progress += count;
+                    Bundle bundle = new Bundle();
+                    bundle.putLong( RESULT_PROGRESS, progress );
+                    bundle.putLong( RESULT_LENGTH, length );
+                    receiver.send( 0, bundle );
+                }
             }
         } finally {
             try {
