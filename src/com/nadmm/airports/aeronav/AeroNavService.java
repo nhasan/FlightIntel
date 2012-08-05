@@ -83,7 +83,7 @@ public abstract class AeroNavService extends IntentService {
     protected boolean fetch( String path, File file ) {
         try {
             URI uri = URIUtils.createURI( "http", AERONAV_HOST, 80, path, null, null );
-            return NetworkUtils.doHttpGet( this, mHttpClient, uri, file, null );
+            return NetworkUtils.doHttpGet( this, mHttpClient, uri, file, null, null );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "Error: "+e.getMessage() );
         }
