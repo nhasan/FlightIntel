@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -130,15 +130,15 @@ public class NetworkUtils {
     }
 
     public static boolean doHttpGet( Context context, HttpClient httpClient, String host,
-            String path, File file, ResultReceiver receiver,
+            String path, String query, File file, ResultReceiver receiver,
             Class<? extends FilterInputStream> filter ) throws Exception {
-        return doHttpGet( context, httpClient, host, 80, path, file, receiver, filter );
+        return doHttpGet( context, httpClient, host, 80, path, query, file, receiver, filter );
     }
 
-    public static boolean doHttpGet( Context context, HttpClient httpClient, String host, int port,
-            String path, File file, ResultReceiver receiver,
+    public static boolean doHttpGet( Context context, HttpClient httpClient, String host,
+            int port, String path, String query, File file, ResultReceiver receiver,
             Class<? extends FilterInputStream> filter ) throws Exception {
-        URI uri = URIUtils.createURI( "http", host, port, path, null, null );
+        URI uri = URIUtils.createURI( "http", host, port, path, query, null );
         return doHttpGet( context, httpClient, uri, file, receiver, filter );
     }
 
