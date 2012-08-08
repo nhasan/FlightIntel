@@ -74,3 +74,6 @@ while ( <FILE> )
 
     $sth_atcphones->execute;
 }
+
+$dbh->disconnect();
+
