@@ -74,7 +74,7 @@ public class ChartsDownloadActivity extends ActivityBase {
 
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
-        menu.findItem( R.id.menu_charts_download ).setVisible( false );
+        menu.findItem( R.id.menu_charts ).setVisible( false );
         return super.onPrepareOptionsMenu( menu );
     }
 
