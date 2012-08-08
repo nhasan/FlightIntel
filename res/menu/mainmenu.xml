@@ -35,11 +35,13 @@
     <item android:id="@+id/menu_settings" 
           android:title="@string/settings"
           android:icon="@android:drawable/ic_menu_preferences" />
-    <item android:id="@+id/menu_charts_download"
+    <item android:id="@+id/menu_charts"
           android:title="@string/charts"
           android:showAsAction="ifRoom"
           android:visible="true"
           android:icon="@drawable/ic_action_charts_download" />
+    <item android:id="@+id/menu_library"
+          android:title="@string/library" />
     <item android:id="@+id/menu_donate"
           android:title="@string/donate" />
     <item android:id="@+id/menu_about"
