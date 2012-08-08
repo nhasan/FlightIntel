@@ -64,16 +64,16 @@ public abstract class NoaaService extends IntentService {
     public static final String TYPE_TEXT = "TYPE_TEXT";
     public static final String TYPE_IMAGE = "TYPE_IMAGE";
 
-    public static final String ACTION_GET_METAR = "flightintel.intent.action.GET_METAR";
-    public static final String ACTION_GET_TAF = "flightintel.intent.action.GET_TAF";
-    public static final String ACTION_GET_PIREP = "flightintel.intent.action.GET_PIREP";
-    public static final String ACTION_GET_AIRSIGMET = "flightintel.intent.action.GET_AIRSIGMET";
-    public static final String ACTION_GET_RADAR = "flightintel.intent.action.GET_RADAR";
-    public static final String ACTION_GET_PROGCHART = "flightintel.intent.action.GET_PROGCHART";
-    public static final String ACTION_GET_WIND = "flightintel.intent.action.GET_WIND";
-    public static final String ACTION_GET_SIGWX = "flightintel.intent.action.GET_SIGWX";
-    public static final String ACTION_GET_CVA = "flightintel.intent.action.GET_CVA";
-    public static final String ACTION_GET_ICING = "flightintel.intent.action.GET_ICING";
+    public static final String ACTION_GET_METAR = "flightintel.intent.wx.action.GET_METAR";
+    public static final String ACTION_GET_TAF = "flightintel.intent.wx.action.GET_TAF";
+    public static final String ACTION_GET_PIREP = "flightintel.intent.wx.action.GET_PIREP";
+    public static final String ACTION_GET_AIRSIGMET = "flightintel.intent.wx.action.GET_AIRSIGMET";
+    public static final String ACTION_GET_RADAR = "flightintel.intent.wx.action.GET_RADAR";
+    public static final String ACTION_GET_PROGCHART = "flightintel.intent.wx.action.GET_PROGCHART";
+    public static final String ACTION_GET_WIND = "flightintel.intent.wx.action.GET_WIND";
+    public static final String ACTION_GET_SIGWX = "flightintel.intent.action.wx.GET_SIGWX";
+    public static final String ACTION_GET_CVA = "flightintel.intent.wx.action.GET_CVA";
+    public static final String ACTION_GET_ICING = "flightintel.intent.action.wx.GET_ICING";
 
     protected File mDataDir;
     private HttpClient mHttpClient;
