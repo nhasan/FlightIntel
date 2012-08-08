@@ -20,6 +20,7 @@
 package com.nadmm.airports;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import android.annotation.TargetApi;
 import android.app.SearchManager;
@@ -71,6 +72,7 @@ import com.nadmm.airports.afd.FavoritesActivity;
 import com.nadmm.airports.afd.NearbyActivity;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
+import com.nadmm.airports.library.LibraryActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
@@ -295,66 +297,43 @@ public class ActivityBase extends SherlockFragmentActivity {
         }
 
         Cursor c = mDbManager.getCurrentFromCatalog();
-        if ( !c.moveToFirst() ) {
-            Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "Please install the data before using the app" );
-            c.close();
-            return download;
-        }
 
-        boolean dtppFound = false;
-        boolean dafdFound = false;
+        String msg = null;
+        HashSet<String> installed = new HashSet<String>();
 
         // Check if we have any expired data. If yes, then redirect to download activity
-        do {
-            String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
-            if ( type.equals( "FADDS" ) ) {
-                int version = c.getInt( c.getColumnIndex( Catalog.VERSION ) );
-                if ( version < 65 ) {
-                    Intent download = new Intent( this, DownloadActivity.class );
-                    download.putExtra( "MSG", "This app version requires latest data update" );
-                    c.close();
-                    return download;
+        if ( c.moveToFirst() ) {
+            do {
+                String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
+                installed.add( type );
+
+                int age = c.getInt( c.getColumnIndex( "age" ) );
+                if ( age <= 0 ) {
+                    msg = "One or more data items have expired";
+                    break;
                 }
-            } else if ( type.equals( "DTPP" ) ) {
-                dtppFound = true;
-            } else if ( type.equals( "DAFD" ) ) {
-                dafdFound = true;
-            }
 
-            int age = c.getInt( c.getColumnIndex( "age" ) );
-            if ( age <= 0 ) {
-                // We have some expired data
-                Intent download = new Intent( this, DownloadActivity.class );
-                download.putExtra( "MSG", "One or more data items have expired" );
-                c.close();
-                return download;
-            }
-
-            // Try to make sure we can open the databases
-            SQLiteDatabase db = mDbManager.getDatabase( type );
-            if ( db == null ) {
-                Intent download = new Intent( this, DownloadActivity.class );
-                download.putExtra( "MSG", "Database is corrupted. Please delete and re-install" );
-                c.close();
-                return download;
-            }
-        } while ( c.moveToNext() );
+                // Try to make sure we can open the databases
+                SQLiteDatabase db = mDbManager.getDatabase( type );
+                if ( db == null ) {
+                    msg = "Database is corrupted. Please delete and re-install";
+                    break;
+                }
+            } while ( c.moveToNext() );
+        }
         c.close();
 
-        if ( !dtppFound ) {
-            Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "Please download the current d-TPP database" );
-            return download;
+        if ( installed.size() < 4 ) {
+            msg = "Please download the required database";
         }
 
-        if ( !dafdFound ) {
-            Intent download = new Intent( this, DownloadActivity.class );
-            download.putExtra( "MSG", "Please download the current d-A/FD database" );
-            return download;
+        Intent intent = null;
+        if ( msg != null ) {
+            intent = new Intent( this, DownloadActivity.class );
+            intent.putExtra( "MSG", msg );
         }
 
-        return null;
+        return intent;
     }
 
     public void showAirportTitle( Cursor c ) {
@@ -568,9 +547,13 @@ public class ActivityBase extends SherlockFragmentActivity {
             Intent about = new Intent( this, AboutActivity.class );
             startActivity( about );
             return true;
-        case R.id.menu_charts_download:
-            Intent intent = new Intent( this, ChartsDownloadActivity.class );
-            startActivity( intent );
+        case R.id.menu_charts:
+            Intent charts = new Intent( this, ChartsDownloadActivity.class );
+            startActivity( charts );
+            return true;
+        case R.id.menu_library:
+            Intent library = new Intent( this, LibraryActivity.class );
+            startActivity( library );
             return true;
         default:
             return super.onOptionsItemSelected( item );
