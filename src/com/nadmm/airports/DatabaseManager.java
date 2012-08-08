@@ -52,6 +52,7 @@ public class DatabaseManager {
     public static final String DB_FADDS = "FADDS";
     public static final String DB_DTPP = "DTPP";
     public static final String DB_DAFD = "DAFD";
+    public static final String DB_LIBRARY = "LIBRARY";
 
     private static final Object sLock = new Object();
     private static DatabaseManager sInstance = null;
@@ -499,6 +500,22 @@ public class DatabaseManager {
         public static final String TABLE_NAME = "dafd";
         public static final String FAA_CODE = "FAA_CODE";
         public static final String PDF_NAME = "PDF_NAME";
+    }
+
+    public static final class BookCategories implements BaseColumns {
+        public static final String TABLE_NAME = "bookcategories";
+        public static final String CATEGORY_CODE = "CATEGORY_CODE";
+        public static final String CATEGORY_NAME = "CATEGORY_NAME";
+    }
+
+    public static final class Library implements BaseColumns {
+        public static final String TABLE_NAME = "library";
+        public static final String CATEGORY_CODE = "CATEGORY_CODE";
+        public static final String BOOK_NAME = "BOOK_NAME";
+        public static final String BOOK_DESC = "BOOK_DESC";
+        public static final String AUTHOR = "AUTHOR";
+        public static final String EDITION = "EDITION";
+        public static final String DOWNLOAD_SIZE = "DOWNLOAD_SIZE";
     }
 
     public static final class Catalog implements BaseColumns {
