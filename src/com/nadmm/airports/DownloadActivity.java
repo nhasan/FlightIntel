@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -86,7 +87,7 @@ public final class DownloadActivity extends ActivityBase {
     private static final Integer PORT = 80;
     //private static final String PATH = "/~nhasan/fadds";
     private static final String PATH = "/files";
-    private static final String MANIFEST = "manifest.xml";
+    private static final String MANIFEST = "manifest1.xml";
 
     private static final File CACHE_DIR = SystemUtils.getExternalDir( "cache" );
 
@@ -475,7 +476,7 @@ public final class DownloadActivity extends ActivityBase {
 
                 if ( fetch ) {
                     NetworkUtils.doHttpGet( mActivity, httpClient, HOST, PORT, PATH+"/"+MANIFEST,
-                            manifest, null, null );
+                            "uuid="+UUID.randomUUID().toString(), manifest, null, null );
                 }
             }
             catch ( Exception e ) {
@@ -739,7 +740,7 @@ public final class DownloadActivity extends ActivityBase {
                 };
 
                 NetworkUtils.doHttpGet( mActivity, httpClient, HOST, PORT, PATH+"/"+data.fileName,
-                        zipFile, receiver, null );
+                        "uuid="+UUID.randomUUID().toString(), zipFile, receiver, null );
             } catch ( Exception e ) {
                 UiUtils.showToast( mActivity, e.getMessage() );
                 return -1;
