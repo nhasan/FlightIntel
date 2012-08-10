@@ -317,27 +317,27 @@ public class ChartsDownloadActivity extends ActivityBase {
                     +" downloads.\n\n"
                     +"All charts for a cycle are automatically deleted at the end of that cycle" );
 
-            tv = (TextView) findViewById( R.id.charts_download_warning );
+            String msg;
             if ( !Application.sDonationDone ) {
-                tv.setText( "This function is only available after a donation" );
-                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.delete, 0, 0, 0 );
+                msg = "This function is only available after a donation";
                 mIsOk = false;
             } else if ( mExpired ) {
-                tv.setText( "Chart cycle has expired" );
-                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.delete, 0, 0, 0 );
+                msg = "Chart cycle has expired";
+                mIsOk = false;
             } else if ( !NetworkUtils.isNetworkAvailable( getActivity() ) ) {
-                tv.setText( "Not connected to the internet" );
-                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.delete, 0, 0, 0 );
+                msg = "Not connected to the internet";
                 mIsOk = false;
             } else if ( NetworkUtils.isConnectedToMeteredNetwork( getActivity() ) ) {
-                tv.setText( "Connected to a metered network" );
-                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.delete, 0, 0, 0 );
+                msg = "Connected to a metered network";
                 mIsOk = false;
             } else {
-                tv.setText( "Connected to an unmetered network" );
-                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.check, 0, 0, 0 );
+                msg = "Connected to an unmetered network";
                 mIsOk = true;
             }
+            tv = (TextView) findViewById( R.id.charts_download_warning );
+            tv.setText( msg );
+            tv.setCompoundDrawablesWithIntrinsicBounds(
+                    mIsOk? R.drawable.check : R.drawable.delete, 0, 0, 0 );
             tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 4 ) );
 
             LinearLayout layout = (LinearLayout) findViewById( R.id.vol_chart_details );
@@ -493,8 +493,8 @@ public class ChartsDownloadActivity extends ActivityBase {
             getActivity().startService( service );
         }
 
-        protected View addTppVolumeRow( LinearLayout layout,
-                String tppVolume, int total, int resid ) {
+        protected View addTppVolumeRow( LinearLayout layout, String tppVolume,
+                int total, int resid ) {
             if ( layout.getChildCount() > 0 ) {
                 addSeparator( layout );
             }
