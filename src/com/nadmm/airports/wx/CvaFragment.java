@@ -41,6 +41,9 @@ public class CvaFragment extends WxMapFragmentBase {
                 WxRegions.sWxRegionCodes, WxRegions.sWxRegionNames, sTypeCodes, sTypeNames );
         setTitle( "Ceiling and Visibility");
         setLabel( "Select Region" );
+        setHelpText( "By FAA policy, CVA is a Supplementary Weather Product for "
+                + "enhanced situational awareness only. CVA must only be used with primary "
+                + "products such as METARs, TAFs and AIRMETs." );
     }
 
     @Override

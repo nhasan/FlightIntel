@@ -48,6 +48,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     private String[] mWxMapNames;
     private String mLabel;
     private String mTitle;
+    private String mHelpText;
     private View mPendingRow;
     private Spinner mSpinner;
 
@@ -107,11 +108,16 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View v = inflate( R.layout.wx_map_detail_view );
-        TextView tv = (TextView) v.findViewById( R.id.wx_map_label );
-        if ( mLabel != null ) {
+        if ( mLabel != null && mLabel.length() > 0 ) {
+            TextView tv = (TextView) v.findViewById( R.id.wx_map_label );
             tv.setText( mLabel );
-        } else {
-            tv.setVisibility( View.GONE );
+            tv.setVisibility( View.VISIBLE );
+        }
+
+        if ( mHelpText != null && mHelpText.length() > 0 ) {
+            TextView tv = (TextView) v.findViewById( R.id.help_text );
+            tv.setText( mHelpText );
+            tv.setVisibility( View.VISIBLE );
         }
 
         OnClickListener listener = new OnClickListener() {
@@ -135,7 +141,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
         }
 
         if ( mWxTypeCodes != null ) {
-            tv = (TextView) v.findViewById( R.id.wx_map_type_label );
+            TextView tv = (TextView) v.findViewById( R.id.wx_map_type_label );
             tv.setVisibility( View.VISIBLE );
             layout = (LinearLayout) v.findViewById( R.id.wx_map_type_layout );
             layout.setVisibility( View.VISIBLE );
@@ -209,6 +215,10 @@ public abstract class WxMapFragmentBase extends FragmentBase {
 
     protected void setTitle( String title ) {
         mTitle = title;
+    }
+
+    protected void setHelpText( String text ) {
+        mHelpText = text;
     }
 
     private void setProgressBarVisible( boolean visible ) {
