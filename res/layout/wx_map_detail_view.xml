@@ -53,6 +53,7 @@
         <TextView android:id="@+id/wx_map_label"
                 style="@style/TextSmall.Bold"
                 android:padding="6dp"
+                android:visibility="gone"
                 android:layout_marginTop="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -61,5 +62,11 @@
                 android:background="@drawable/rounded_rectangle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-    </LinearLayout>
+        <TextView android:id="@+id/help_text"
+                android:visibility="gone"
+                android:padding="6dp"
+                android:layout_marginTop="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 </ScrollView>
