@@ -50,29 +50,29 @@ public abstract class AeroNavService extends IntentService {
     public static final String PDF_COUNT = "PDF_COUNT";
     public static final String DOWNLOAD_IF_MISSING = "DOWNLOAD_IF_MISSING";
 
-    protected final HttpClient mHttpClient;
-
     private final String AERONAV_HOST = "aeronav.faa.gov";
-    private final File DATA_DIR;
+
+    private final File mDataDir;
+    private final HttpClient mHttpClient;
 
     public AeroNavService( String name ) {
         super( name );
 
         mHttpClient = NetworkUtils.getHttpClient();
-        DATA_DIR = SystemUtils.getExternalDir( name );
+        mDataDir = SystemUtils.getExternalDir( name );
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        if ( !DATA_DIR.exists() ) {
-            DATA_DIR.mkdirs();
+        if ( !mDataDir.exists() ) {
+            mDataDir.mkdirs();
         }
     }
 
     protected File getCycleDir( String cycle ) {
-        File dir = new File( DATA_DIR, cycle );
+        File dir = new File( mDataDir, cycle );
         if ( !dir.exists() ) {
             cleanupOldCycles();
             dir.mkdir();
@@ -102,7 +102,7 @@ public abstract class AeroNavService extends IntentService {
     }
 
     protected void cleanupOldCycles() {
-        File[] cycles = DATA_DIR.listFiles();
+        File[] cycles = mDataDir.listFiles();
         if ( cycles != null ) {
             for ( File cycle : cycles ) {
                 FileUtils.removeDir( cycle );

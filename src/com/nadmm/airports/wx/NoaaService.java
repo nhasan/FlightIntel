@@ -75,7 +75,7 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_CVA = "flightintel.intent.wx.action.GET_CVA";
     public static final String ACTION_GET_ICING = "flightintel.intent.action.wx.GET_ICING";
 
-    protected File mDataDir;
+    private File mDataDir;
     private HttpClient mHttpClient;
 
     public NoaaService( String name, long age ) {
