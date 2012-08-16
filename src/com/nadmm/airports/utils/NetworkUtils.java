@@ -53,6 +53,7 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.net.ConnectivityManagerCompat;
+import android.util.Log;
 
 import com.nadmm.airports.PreferencesActivity;
 
@@ -142,6 +143,28 @@ public class NetworkUtils {
         return doHttpGet( context, httpClient, uri, file, receiver, filter );
     }
 
+    private static class CountingInputStream extends BufferedInputStream {
+
+        private int mCount;
+
+        public CountingInputStream( InputStream in ) {
+            super( in );
+        }
+
+        @Override
+        public int read( byte[] buffer, int offset, int byteCount ) throws IOException {
+            int count = super.read( buffer, offset, byteCount );
+            if ( count != -1 ) {
+                mCount += count;
+            }
+            return count;
+        }
+
+        public int getCount() {
+            return mCount;
+        }
+    }
+
     public static boolean doHttpGet( Context context, HttpClient httpClient, URI uri,
             File file, ResultReceiver receiver, Class<? extends FilterInputStream> filter )
             throws Exception {
@@ -149,7 +172,8 @@ public class NetworkUtils {
             return false;
         }
 
-        InputStream in = null;
+        InputStream f = null;
+        CountingInputStream in = null;
         OutputStream out = null;
 
         try {
@@ -160,25 +184,28 @@ public class NetworkUtils {
             if ( status != HttpStatus.SC_OK ) {
                 throw new Exception( response.getStatusLine().getReasonPhrase() );
             }
-
             long length = response.getEntity().getContentLength();
 
             out = new FileOutputStream( file );
-            in = response.getEntity().getContent();
+            in = new CountingInputStream( response.getEntity().getContent() );
+
             if ( filter != null ) {
                 @SuppressWarnings("unchecked")
                 Constructor<FilterInputStream> ctor =
                         (Constructor<FilterInputStream>) filter.getConstructor( InputStream.class );
-                in = ctor.newInstance( new BufferedInputStream( in ) );
+                f = ctor.newInstance( in );
+            } else {
+                f = in;
             }
 
             int count;
             long progress = 0;
-            while ( ( count = in.read( sBuffer, 0, sBuffer.length ) ) != -1 ) {
+            while ( ( count = f.read( sBuffer ) ) != -1 ) {
                 out.write( sBuffer, 0, count );
                 if ( receiver != null ) {
-                    progress += count;
+                    progress += in.getCount();
                     Bundle bundle = new Bundle();
+                    Log.d( "STATUS", String.format( "%d of %d", progress, length  ) );
                     bundle.putLong( RESULT_PROGRESS, progress );
                     bundle.putLong( RESULT_LENGTH, length );
                     receiver.send( 0, bundle );
