@@ -48,6 +48,7 @@ import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 public class LibraryFragment extends FragmentBase {
@@ -60,6 +61,8 @@ public class LibraryFragment extends FragmentBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
+        setRetainInstance( true );
+
         mFilter = new IntentFilter();
         mFilter.addAction( LibraryService.ACTION_CHECK_BOOKS );
         mFilter.addAction( LibraryService.ACTION_GET_BOOK );
@@ -68,10 +71,7 @@ public class LibraryFragment extends FragmentBase {
             
             @Override
             public void onReceive( Context context, Intent intent ) {
-                String action = intent.getAction();
-                if ( action.equals( LibraryService.ACTION_CHECK_BOOKS ) ) {
-                } else if ( action.equals( LibraryService.ACTION_GET_BOOK ) ) {
-                }
+                handleBroadcast( intent );
             }
         };
 
@@ -214,6 +214,8 @@ public class LibraryFragment extends FragmentBase {
                 } while ( c.moveToNext() );
             }
         }
+
+        checkBooks();
     }
 
     private View addLibraryRow( LinearLayout layout, String name, String desc, String edition,
@@ -240,6 +242,26 @@ public class LibraryFragment extends FragmentBase {
         return row;
     }
 
+    protected void handleBroadcast( Intent intent ) {
+        String action = intent.getAction();
+        String pdfName = intent.getStringExtra( LibraryService.BOOK_NAME );
+        String path = intent.getStringExtra( LibraryService.PDF_PATH );
+
+        View row = mBookRowMap.get( pdfName );
+        if ( row == null ) {
+            return;
+        }
+
+        if ( path != null ) {
+            showStatus( row, true );
+            if ( action.equals( LibraryService.ACTION_GET_BOOK ) ) {
+                SystemUtils.startPDFViewer( getActivity(), path );
+            }
+        } else {
+            showStatus( row, false );
+        }
+    }
+
     protected void showStatus( View row, boolean isAvailable ) {
         TextView tv = (TextView) row.findViewById( R.id.book_desc );
         if ( isAvailable ) {
@@ -261,6 +283,7 @@ public class LibraryFragment extends FragmentBase {
         Intent service = makeServiceIntent( LibraryService.ACTION_CHECK_BOOKS );
         ArrayList<String> books = new ArrayList<String>( mBookRowMap.keySet() );
         service.putExtra( LibraryService.BOOK_NAMES, books );
+        getActivity().startService( service );
     }
 
     protected Intent makeServiceIntent( String action ) {

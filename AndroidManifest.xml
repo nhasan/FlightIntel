@@ -132,6 +132,9 @@
         <activity android:label=""
                   android:name=".ImageViewActivity" />
 
+        <activity android:label="@string/library"
+                  android:name=".library.LibraryActivity" />
+
     	<activity android:label="@string/search"
                   android:launchMode="singleTop"
                   android:name=".afd.SearchActivity">
