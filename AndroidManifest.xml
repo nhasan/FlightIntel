@@ -164,6 +164,7 @@
         <service android:name=".wx.SigWxService" />
         <service android:name=".wx.CvaService" />
         <service android:name=".wx.IcingService" />
+        <service android:name=".library.LibraryService" />
         <service android:name=".aeronav.DtppService" />
         <service android:name=".aeronav.DafdService" />
         <service android:name=".notams.NotamService" />
