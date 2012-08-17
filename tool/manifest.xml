@@ -27,5 +27,14 @@
         <start>2012-07-26T09:01:00Z</start>
         <end>2012-09-20T09:01:00Z</end>
     </datafile>
+    <datafile>
+        <type>DTPP</type>
+        <desc>AeroNav d-TPP #1209 (FAA)</desc>
+        <version>1209</version>
+        <filename>dtpp_20120823.zip</filename>
+        <size>459233</size>
+        <start>2012-08-23T09:01:00Z</start>
+        <end>2012-09-20T09:01:00Z</end>
+    </datafile>
 </manifest>
 
