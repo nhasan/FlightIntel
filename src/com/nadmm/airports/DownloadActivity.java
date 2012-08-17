@@ -87,7 +87,7 @@ public final class DownloadActivity extends ActivityBase {
     private static final Integer PORT = 80;
     //private static final String PATH = "/~nhasan/fadds";
     private static final String PATH = "/files";
-    private static final String MANIFEST = "manifest1.xml";
+    private static final String MANIFEST = "manifest.xml";
 
     private static final File CACHE_DIR = SystemUtils.getExternalDir( "cache" );
 
@@ -734,7 +734,7 @@ public final class DownloadActivity extends ActivityBase {
 
                 ResultReceiver receiver = new ResultReceiver( mHandler ) {
                     protected void onReceiveResult( int resultCode, Bundle resultData ) {
-                        long progress = resultData.getLong( NetworkUtils.RESULT_PROGRESS );
+                        long progress = resultData.getLong( NetworkUtils.CONTENT_PROGRESS );
                         publishProgress( (int) progress );
                     }
                 };
