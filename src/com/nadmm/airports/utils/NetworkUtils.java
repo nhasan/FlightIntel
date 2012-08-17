@@ -61,8 +61,8 @@ public class NetworkUtils {
 
     private static final byte[] sBuffer = new byte[ 32*1024 ];
 
-    public static final String RESULT_PROGRESS = "RESULT_PROGRESS";
-    public static final String RESULT_LENGTH = "RESULT_LENGTH";
+    public static final String CONTENT_PROGRESS = "CONTENT_PROGRESS";
+    public static final String CONTENT_LENGTH = "CONTENT_LENGTH";
 
     public static boolean isNetworkAvailable( Context context ) {
         ConnectivityManager connMan = (ConnectivityManager) context.getSystemService( 
@@ -149,6 +149,7 @@ public class NetworkUtils {
 
         public CountingInputStream( InputStream in ) {
             super( in );
+            mCount = 0;
         }
 
         @Override
@@ -185,6 +186,7 @@ public class NetworkUtils {
                 throw new Exception( response.getStatusLine().getReasonPhrase() );
             }
             long length = response.getEntity().getContentLength();
+            Log.d( "CONTENT_LENGTH", String.valueOf( length ) );
 
             out = new FileOutputStream( file );
             in = new CountingInputStream( response.getEntity().getContent() );
@@ -198,23 +200,35 @@ public class NetworkUtils {
                 f = in;
             }
 
+            long chunk = Math.min( length/10, 50*1024 );
+            long last = 0;
+
             int count;
-            long progress = 0;
             while ( ( count = f.read( sBuffer ) ) != -1 ) {
                 out.write( sBuffer, 0, count );
                 if ( receiver != null ) {
-                    progress += in.getCount();
-                    Bundle bundle = new Bundle();
-                    Log.d( "STATUS", String.format( "%d of %d", progress, length  ) );
-                    bundle.putLong( RESULT_PROGRESS, progress );
-                    bundle.putLong( RESULT_LENGTH, length );
-                    receiver.send( 0, bundle );
+                    long current = in.getCount();
+                    long delta = current - last;
+                    if ( delta >= chunk ) {
+                        Bundle bundle = new Bundle();
+                        bundle.putLong( CONTENT_PROGRESS, current );
+                        bundle.putLong( CONTENT_LENGTH, length );
+                        receiver.send( 0, bundle );
+                        last = current;
+                    }
                 }
+            }
+            if ( receiver != null ) {
+                // If compressed, the filter stream may not read the entire source stream
+                Bundle bundle = new Bundle();
+                bundle.putLong( CONTENT_PROGRESS, length );
+                bundle.putLong( CONTENT_LENGTH, length );
+                receiver.send( 1, bundle );
             }
         } finally {
             try {
-                if ( in != null ) {
-                    in.close();
+                if ( f != null ) {
+                    f.close();
                 }
                 if ( out != null ) {
                     out.close();

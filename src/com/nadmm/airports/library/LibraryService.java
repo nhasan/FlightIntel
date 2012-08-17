@@ -29,6 +29,8 @@ import org.apache.http.client.utils.URIUtils;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.util.Log;
 
 import com.nadmm.airports.utils.NetworkUtils;
@@ -103,7 +105,8 @@ public class LibraryService extends IntentService {
             String path = LIBRARY_PATH+"/"+category+"/"+pdfFile.getName()+".gz";
             URI uri = URIUtils.createURI( "http", LIBRARY_HOST, 80, path, null, null );
             Log.d( "URI", uri.toString() );
-            return NetworkUtils.doHttpGet( this, mHttpClient, uri, pdfFile, null,
+            ProgressReceiver receiver = new ProgressReceiver();
+            return NetworkUtils.doHttpGet( this, mHttpClient, uri, pdfFile, receiver,
                     GZIPInputStream.class );
         } catch ( Exception e ) {
             UiUtils.showToast( this, e.getMessage() );
@@ -141,6 +144,24 @@ public class LibraryService extends IntentService {
             categoryDir.mkdirs();
         }
         return categoryDir;
+    }
+
+    protected void handleProgress( long progress ) {
+        Log.d( "PROGRESS", String.valueOf( progress ) );
+    }
+
+    private class ProgressReceiver extends ResultReceiver {
+
+        public ProgressReceiver() {
+            super( null );
+        }
+
+        @Override
+        public void send( int resultCode, Bundle resultData ) {
+            long progress = resultData.getLong( NetworkUtils.CONTENT_PROGRESS, 0 );
+            handleProgress( progress );
+        }
+
     }
 
 }
