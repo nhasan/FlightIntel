@@ -85,36 +85,39 @@ $dbh->do( $create_library_table );
 $dbh->do( "CREATE INDEX idx_library_book on library ( CATEGORY_CODE, BOOK_NAME );" );
 my $sth_library = $dbh->prepare( $insert_library_record );
 
-insert_book( "handbooks", "faa-h-8083-3a-2004", "Airplane Flying Handbook", 
+insert_book( "handbooks", "faa-h-8083-3a-2004.pdf", "Airplane Flying Handbook", 
         "2004", "FAA", 14042494 );
-insert_book( "handbooks", "faa-h-8083-25a-2008", "Pilot's Handbook of Aeronautical Knowledge",
+insert_book( "handbooks", "faa-h-8083-25a-2008.pdf", "Pilot's Handbook of Aeronautical Knowledge",
         "2008", "FAA", 56064942 );
-insert_book( "handbooks", "faa-h-8083-27a-2006", "Student Pilot Guide",
+insert_book( "handbooks", "faa-h-8083-27a-2006.pdf", "Student Pilot Guide",
         "2008", "FAA", 231507 );
-insert_book( "handbooks", "faa-h-8083-15a-2008", "Instrument Flying Handbook",
+insert_book( "handbooks", "faa-h-8083-15a-2008.pdf", "Instrument Flying Handbook",
         "2008", "FAA", 36125039 );
-insert_book( "handbooks", "faa-h-8261-1a-2007", "Instrument Procedures Handbook",
+insert_book( "handbooks", "faa-h-8261-1a-2007.pdf", "Instrument Procedures Handbook",
         "2007", "FAA", 18019925 );
-insert_book( "handbooks", "Chart_Users_Guide_10thEd", "Aeronautical Chart User's Guide",
+insert_book( "handbooks", "Chart_Users_Guide_10thEd.pdf", "Aeronautical Chart User's Guide",
         "10th Edition", "FAA", 17160003 );
 
-insert_book( "periodicals", "cb_389", "Callback", "Issue 389", "NASA", 167376 );
-insert_book( "periodicals", "cb_390", "Callback", "Issue 390", "NASA", 227682 );
-insert_book( "periodicals", "JulAug2012", "FAA Safety Briefing", "Jul/Aug 2012", "FAA", 3930855 );
-insert_book( "periodicals", "MayJun2012", "FAA Safety Briefing", "May/Jun 2012", "FAA", 3162708 );
-insert_book( "periodicals", "MarApr2012", "FAA Safety Briefing", "Mar/Apr 2012", "FAA", 6997082 );
+insert_book( "periodicals", "cb_389.pdf", "Callback", "Issue 389", "NASA", 167376 );
+insert_book( "periodicals", "cb_390.pdf", "Callback", "Issue 390", "NASA", 227682 );
+insert_book( "periodicals", "JulAug2012.pdf", "FAA Safety Briefing",
+        "Jul/Aug 2012", "FAA", 3930855 );
+insert_book( "periodicals", "MayJun2012.pdf", "FAA Safety Briefing",
+        "May/Jun 2012", "FAA", 3162708 );
+insert_book( "periodicals", "MarApr2012.pdf", "FAA Safety Briefing",
+        "Mar/Apr 2012", "FAA", 6997082 );
 
-insert_book( "regs", "aim_2012_r1", "Aeronautical Information Manual (AIM)",
+insert_book( "regs", "aim_2012_r1.pdf", "Aeronautical Information Manual (AIM)",
         "2012", "FAA", 8641046 );
-insert_book( "regs", "cfr-2012-title14-vol1", "Federal Aviation Regulations (FAR)",
+insert_book( "regs", "cfr-2012-title14-vol1.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 1-59", "US GPO", 9855949 );
-insert_book( "regs", "cfr-2012-title14-vol2", "Federal Aviation Regulations (FAR)",
+insert_book( "regs", "cfr-2012-title14-vol2.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 60-109", "US GPO", 15172137 );
-insert_book( "regs", "cfr-2012-title14-vol3", "Federal Aviation Regulations (FAR)",
+insert_book( "regs", "cfr-2012-title14-vol3.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 110-199", "US GPO", 4961592 );
-insert_book( "regs", "cfr-2012-title14-vol4", "Federal Aviation Regulations (FAR)",
+insert_book( "regs", "cfr-2012-title14-vol4.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 200-1199", "US GPO", 16738523 );
-insert_book( "regs", "cfr-2012-title14-vol5", "Federal Aviation Regulations (FAR)",
+insert_book( "regs", "cfr-2012-title14-vol5.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 1200-End", "US GPO", 2181583 );
 
 exit;
