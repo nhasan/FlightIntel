@@ -26,4 +26,6 @@
     <item type="id" name="DTPP_VOLUME_NAME" />
     <item type="id" name="DTPP_CHART_TOTAL" />
     <item type="id" name="DTPP_CHART_AVAIL" />
+    <item type="id" name="LIBRARY_PDF_PATH" />
+    <item type="id" name="LIBRARY_PDF_NAME" />
 </resources>
