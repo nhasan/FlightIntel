@@ -159,8 +159,8 @@ public class DtppActivity extends ActivityBase {
                 @Override
                 public void onClick( View v ) {
                     String path = (String) v.getTag( R.id.DTPP_PDF_PATH );
-                    String pdfName = (String) v.getTag( R.id.DTPP_PDF_NAME );
                     if ( path == null ) {
+                        String pdfName = (String) v.getTag( R.id.DTPP_PDF_NAME );
                         getTppChart( pdfName );
                     } else {
                         startPdfViewer( path );
