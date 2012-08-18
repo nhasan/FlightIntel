@@ -53,7 +53,6 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.support.v4.net.ConnectivityManagerCompat;
-import android.util.Log;
 
 import com.nadmm.airports.PreferencesActivity;
 
@@ -182,12 +181,22 @@ public class NetworkUtils {
             HttpGet get = new HttpGet( uri );
             HttpResponse response = httpClient.execute( get );
 
+            Bundle bundle = new Bundle();
+            bundle.putString( CONTENT_NAME, file.getName() );
+
             int status = response.getStatusLine().getStatusCode();
             if ( status != HttpStatus.SC_OK ) {
+                if ( receiver != null ) {
+                    // Signal the receiver that download is aborted
+                    bundle.putLong( CONTENT_LENGTH, 0 );
+                    bundle.putLong( CONTENT_PROGRESS, 0 );
+                    receiver.send( 2, bundle );
+                }
                 throw new Exception( response.getStatusLine().getReasonPhrase() );
             }
+
             long length = response.getEntity().getContentLength();
-            Log.d( "CONTENT_LENGTH", String.valueOf( length ) );
+            bundle.putLong( CONTENT_LENGTH, length );
 
             out = new FileOutputStream( file );
             in = new CountingInputStream( response.getEntity().getContent() );
@@ -203,9 +212,6 @@ public class NetworkUtils {
 
             long chunk = Math.max( length/100, 16*1024 );
             long last = 0;
-            Bundle bundle = new Bundle();
-            bundle.putLong( CONTENT_LENGTH, length );
-            bundle.putString( CONTENT_NAME, file.getName() );
 
             int count;
             while ( ( count = f.read( sBuffer ) ) != -1 ) {
