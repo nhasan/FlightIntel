@@ -20,16 +20,10 @@
 package com.nadmm.airports;
 
 
-import java.io.File;
-import java.util.Arrays;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-
-import com.nadmm.airports.utils.FileUtils;
-import com.nadmm.airports.utils.SystemUtils;
 
 public class FlightIntel extends ActivityBase {
 
@@ -39,8 +33,6 @@ public class FlightIntel extends ActivityBase {
 
         PreferenceManager.setDefaultValues( this, R.xml.preferences, false );
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-
-        cleanupOldDirs();
 
         boolean agreed = prefs.getBoolean( PreferencesActivity.KEY_DISCLAIMER_AGREED, false );
         if ( !agreed ) {
@@ -60,25 +52,6 @@ public class FlightIntel extends ActivityBase {
 
         startHomeActivity();
         finish();
-    }
-
-    private void cleanupOldDirs() {
-        final String[] oldNames = new String[] {
-            "airsigmet",
-            "metar",
-            "pirep",
-            "taf"
-        };
-
-        File root = SystemUtils.getExternalDir( "" );
-        File[] files = root.listFiles();
-        if ( files != null ) {
-            for ( File file : files ) {
-                if ( Arrays.binarySearch( oldNames, file.getName() ) >= 0 ) {
-                    FileUtils.removeDir( file );
-                }
-            }
-        }
     }
 
 }
