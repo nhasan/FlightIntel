@@ -29,6 +29,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:layout_alignParentRight="true"
             android:gravity="right"
+            android:paddingRight="4dp"
             android:paddingLeft="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -39,6 +40,7 @@
             android:singleLine="true"
             android:ellipsize="end"
             android:paddingRight="4dp"
+            android:paddingLeft="4dp"
             android:layout_toLeftOf="@id/book_edition"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -50,17 +52,27 @@
             android:ellipsize="end"
             android:paddingTop="2dp"
             android:paddingRight="4dp"
+            android:paddingLeft="4dp"
             android:layout_below="@id/book_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/book_size"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:layout_alignParentRight="true"
+            android:layout_alignBaseline="@id/book_author"
             android:gravity="right"
             android:paddingTop="2dp"
+            android:paddingRight="4dp"
             android:paddingLeft="4dp"
             android:layout_toRightOf="@id/book_author"
             android:layout_below="@id/book_edition"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+    <ProgressBar android:id="@+id/progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:visibility="gone"
+            android:padding="4dp"
+            android:layout_below="@id/book_author"
+            android:layout_width="fill_parent"
+            android:layout_height="18dp" />
 </RelativeLayout>
