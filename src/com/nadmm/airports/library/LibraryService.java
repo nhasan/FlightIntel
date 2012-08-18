@@ -150,8 +150,6 @@ public class LibraryService extends IntentService {
         Intent intent = new Intent( ACTION_DOWNLOAD_PROGRESS );
         intent.putExtras( resultData );
         sendOrderedBroadcast( intent, null );
-        long progress = resultData.getLong( NetworkUtils.CONTENT_PROGRESS, 0 );
-        Log.d( "PROGRESS", String.valueOf( progress ) );
     }
 
     private class ProgressReceiver extends ResultReceiver {
