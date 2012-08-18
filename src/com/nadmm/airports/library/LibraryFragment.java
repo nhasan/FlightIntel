@@ -59,6 +59,7 @@ public class LibraryFragment extends FragmentBase {
     private BroadcastReceiver mReceiver;
     private OnClickListener mOnClickListener;
     private boolean mPending;
+    private String mCategory;
     private HashMap<String, View> mBookRowMap = new HashMap<String, View>();
 
     @Override
@@ -70,6 +71,9 @@ public class LibraryFragment extends FragmentBase {
         mFilter.addAction( LibraryService.ACTION_CHECK_BOOKS );
         mFilter.addAction( LibraryService.ACTION_GET_BOOK );
         mFilter.addAction( LibraryService.ACTION_DOWNLOAD_PROGRESS );
+
+        Bundle args = getArguments();
+        mCategory = args.getString( Library.CATEGORY_CODE );
 
         mReceiver = new BroadcastReceiver() {
 
@@ -130,10 +134,8 @@ public class LibraryFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
-        Bundle args = getArguments();
-        String category = args.getString( Library.CATEGORY_CODE );
         LibraryTask task = new LibraryTask();
-        task.execute( category );
+        task.execute( mCategory );
 
         super.onActivityCreated( savedInstanceState );
     }
@@ -157,7 +159,7 @@ public class LibraryFragment extends FragmentBase {
                 builder.setTables( Library.TABLE_NAME );
                 c = builder.query( db, new String[] { "*" },
                         Library.CATEGORY_CODE+"=?", new String[] { category },
-                        null, null, null );
+                        null, null, Library._ID );
                 c.moveToFirst();
                 int i =0;
                 String prevDesc = "";
@@ -263,18 +265,18 @@ public class LibraryFragment extends FragmentBase {
     }
 
     protected void handleBook( Intent intent ) {
-        String action = intent.getAction();
         String pdfName = intent.getStringExtra( LibraryService.BOOK_NAME );
-        String path = intent.getStringExtra( LibraryService.PDF_PATH );
-
         View row = mBookRowMap.get( pdfName );
         if ( row == null ) {
+            // Maybe for a different category
             return;
         }
 
+        String path = intent.getStringExtra( LibraryService.PDF_PATH );
         if ( path != null ) {
             showStatus( row, true );
             row.setTag( R.id.LIBRARY_PDF_PATH, path );
+            String action = intent.getAction();
             if ( action.equals( LibraryService.ACTION_GET_BOOK ) ) {
                 SystemUtils.startPDFViewer( getActivity(), path );
             }
@@ -330,9 +332,7 @@ public class LibraryFragment extends FragmentBase {
     protected Intent makeServiceIntent( String action ) {
         Intent service = new Intent( getActivity(), LibraryService.class );
         service.setAction( action );
-        Bundle args = getArguments();
-        String category = args.getString( Library.CATEGORY_CODE );
-        service.putExtra( LibraryService.CATEGORY, category );
+        service.putExtra( LibraryService.CATEGORY, mCategory );
         return service;
     }
 
