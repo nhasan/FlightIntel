@@ -63,6 +63,7 @@ public class NetworkUtils {
 
     public static final String CONTENT_PROGRESS = "CONTENT_PROGRESS";
     public static final String CONTENT_LENGTH = "CONTENT_LENGTH";
+    public static final String CONTENT_NAME = "CONTENT_NAME";
 
     public static boolean isNetworkAvailable( Context context ) {
         ConnectivityManager connMan = (ConnectivityManager) context.getSystemService( 
@@ -200,8 +201,11 @@ public class NetworkUtils {
                 f = in;
             }
 
-            long chunk = Math.min( length/10, 50*1024 );
+            long chunk = Math.max( length/100, 16*1024 );
             long last = 0;
+            Bundle bundle = new Bundle();
+            bundle.putLong( CONTENT_LENGTH, length );
+            bundle.putString( CONTENT_NAME, file.getName() );
 
             int count;
             while ( ( count = f.read( sBuffer ) ) != -1 ) {
@@ -210,9 +214,7 @@ public class NetworkUtils {
                     long current = in.getCount();
                     long delta = current - last;
                     if ( delta >= chunk ) {
-                        Bundle bundle = new Bundle();
                         bundle.putLong( CONTENT_PROGRESS, current );
-                        bundle.putLong( CONTENT_LENGTH, length );
                         receiver.send( 0, bundle );
                         last = current;
                     }
@@ -220,9 +222,7 @@ public class NetworkUtils {
             }
             if ( receiver != null ) {
                 // If compressed, the filter stream may not read the entire source stream
-                Bundle bundle = new Bundle();
                 bundle.putLong( CONTENT_PROGRESS, length );
-                bundle.putLong( CONTENT_LENGTH, length );
                 receiver.send( 1, bundle );
             }
         } finally {

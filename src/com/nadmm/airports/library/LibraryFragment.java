@@ -38,6 +38,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -57,6 +58,7 @@ public class LibraryFragment extends FragmentBase {
     private IntentFilter mFilter;
     private BroadcastReceiver mReceiver;
     private OnClickListener mOnClickListener;
+    private boolean mPending;
     private HashMap<String, View> mBookRowMap = new HashMap<String, View>();
 
     @Override
@@ -64,23 +66,41 @@ public class LibraryFragment extends FragmentBase {
         setRetainInstance( true );
 
         mFilter = new IntentFilter();
+        mFilter.setPriority( 10 );
         mFilter.addAction( LibraryService.ACTION_CHECK_BOOKS );
         mFilter.addAction( LibraryService.ACTION_GET_BOOK );
+        mFilter.addAction( LibraryService.ACTION_DOWNLOAD_PROGRESS );
 
         mReceiver = new BroadcastReceiver() {
-            
+
             @Override
             public void onReceive( Context context, Intent intent ) {
-                handleBroadcast( intent );
+                String action = intent.getAction();
+                if ( action.equals( LibraryService.ACTION_DOWNLOAD_PROGRESS ) ) {
+                    handleProgress( intent );
+                } else {
+                    handleBook( intent );
+                }
             }
         };
 
         mOnClickListener = new OnClickListener() {
-            
+
             @Override
             public void onClick( View v ) {
-                String name = (String) v.getTag();
-                getBook( name );
+                String path = (String) v.getTag( R.id.LIBRARY_PDF_PATH );
+                if ( path == null ) {
+                    if ( !mPending ) {
+                        mPending = true;
+                        ProgressBar progressBar = (ProgressBar) v.findViewById( R.id.progress );
+                        progressBar.setIndeterminate( true );
+                        progressBar.setVisibility( View.VISIBLE );
+                        String name = (String) v.getTag( R.id.LIBRARY_PDF_NAME );
+                        getBook( name );
+                    }
+                } else {
+                    SystemUtils.startPDFViewer( getActivity(), path );
+                }
             }
         };
 
@@ -232,7 +252,7 @@ public class LibraryFragment extends FragmentBase {
         tv.setText( author );
         tv = (TextView) row.findViewById( R.id.book_size );
         tv.setText( Formatter.formatShortFileSize( getActivity(), size ) );
-        row.setTag( name );
+        row.setTag( R.id.LIBRARY_PDF_NAME, name );
         row.setOnClickListener( mOnClickListener );
         row.setBackgroundResource( resid );
         showStatus( row, false );
@@ -242,7 +262,7 @@ public class LibraryFragment extends FragmentBase {
         return row;
     }
 
-    protected void handleBroadcast( Intent intent ) {
+    protected void handleBook( Intent intent ) {
         String action = intent.getAction();
         String pdfName = intent.getStringExtra( LibraryService.BOOK_NAME );
         String path = intent.getStringExtra( LibraryService.PDF_PATH );
@@ -254,11 +274,32 @@ public class LibraryFragment extends FragmentBase {
 
         if ( path != null ) {
             showStatus( row, true );
+            row.setTag( R.id.LIBRARY_PDF_PATH, path );
             if ( action.equals( LibraryService.ACTION_GET_BOOK ) ) {
                 SystemUtils.startPDFViewer( getActivity(), path );
             }
         } else {
             showStatus( row, false );
+        }
+    }
+
+    protected void handleProgress( Intent intent ) {
+        String name = intent.getStringExtra( NetworkUtils.CONTENT_NAME );
+        View row = mBookRowMap.get( name );
+        if ( row != null ) {
+            ProgressBar progressBar = (ProgressBar) row.findViewById( R.id.progress );
+            long length = intent.getLongExtra( NetworkUtils.CONTENT_LENGTH, 0 );
+            if ( !progressBar.isShown() ) {
+                progressBar.setVisibility( View.VISIBLE );
+            }
+            progressBar.setMax( (int) length );
+            progressBar.setIndeterminate( false );
+            long progress = intent.getLongExtra( NetworkUtils.CONTENT_PROGRESS, 0 );
+            progressBar.setProgress( (int) progress );
+            if ( progress >= length ) {
+                progressBar.setVisibility( View.GONE );
+                mPending = false;
+            }
         }
     }
 

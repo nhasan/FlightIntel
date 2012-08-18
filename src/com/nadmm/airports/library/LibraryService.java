@@ -43,8 +43,9 @@ public class LibraryService extends IntentService {
 
     public static final String LIBRARY_HOST = "commondatastorage.googleapis.com";
     public static final String LIBRARY_PATH = "/flightintel/library";
-    public static final String ACTION_GET_BOOK = "flightintel.intent.library.action.GET_BOOK";
-    public static final String ACTION_CHECK_BOOKS = "flightintel.intent.library.action.CHECK_BOOKS";
+    public static final String ACTION_GET_BOOK = "flightintel.library.action.GET_BOOK";
+    public static final String ACTION_CHECK_BOOKS = "flightintel.library.action.CHECK_BOOKS";
+    public static final String ACTION_DOWNLOAD_PROGRESS = "flightintel.library.action.PROGRESS";
     public static final String CATEGORY = "CATEGORY";
     public static final String BOOK_NAME = "BOOK_NAME";
     public static final String BOOK_NAMES = "BOOK_NAMES";
@@ -115,8 +116,7 @@ public class LibraryService extends IntentService {
     }
 
     protected void sendResult( String action, String category, File pdfFile ) {
-        Intent result = new Intent();
-        result.setAction( action );
+        Intent result = new Intent( action );
         result.putExtra( CATEGORY, category );
         result.putExtra( BOOK_NAME, pdfFile.getName() );
         if ( pdfFile.exists() ) {
@@ -146,7 +146,11 @@ public class LibraryService extends IntentService {
         return categoryDir;
     }
 
-    protected void handleProgress( long progress ) {
+    protected void handleProgress( int resultCode, Bundle resultData ) {
+        Intent intent = new Intent( ACTION_DOWNLOAD_PROGRESS );
+        intent.putExtras( resultData );
+        sendOrderedBroadcast( intent, null );
+        long progress = resultData.getLong( NetworkUtils.CONTENT_PROGRESS, 0 );
         Log.d( "PROGRESS", String.valueOf( progress ) );
     }
 
@@ -158,8 +162,8 @@ public class LibraryService extends IntentService {
 
         @Override
         public void send( int resultCode, Bundle resultData ) {
-            long progress = resultData.getLong( NetworkUtils.CONTENT_PROGRESS, 0 );
-            handleProgress( progress );
+            // We want to handle the result in the same thread synchronously
+            handleProgress( resultCode, resultData );
         }
 
     }
