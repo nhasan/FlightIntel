@@ -102,8 +102,8 @@ public class DonateActivity extends ActivityBase {
         }
 
         private final DonationLevel[] mDonationLevels = {
-            new DonationLevel( "donate_199", "Intrepid Flyer", 1.99 ),
-            new DonationLevel( "donate_399", "Maverick Flyer", 3.99 )
+            new DonationLevel( "donate_399", "Maverick Flyer", 3.99 ),
+            new DonationLevel( "donate_599", "Ace Flyer", 3.99 )
         };
 
         private final class DonateTask extends CursorAsyncTask {
