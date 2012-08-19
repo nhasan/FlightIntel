@@ -55,7 +55,8 @@ public class LibraryActivity extends ActivityBase {
         SQLiteDatabase db = getDatabase( DatabaseManager.DB_LIBRARY );
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( BookCategories.TABLE_NAME );
-        Cursor c = builder.query( db, new String[] { "*" }, null, null, null, null, null );
+        Cursor c = builder.query( db, new String[] { "*" }, null, null, null, null,
+                BookCategories._ID );
         if ( c.moveToFirst() ) {
             do {
                 String code = c.getString( c.getColumnIndex( BookCategories.CATEGORY_CODE ) );
