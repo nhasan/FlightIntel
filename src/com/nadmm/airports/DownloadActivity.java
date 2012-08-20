@@ -476,7 +476,7 @@ public final class DownloadActivity extends ActivityBase {
 
                 if ( fetch ) {
                     NetworkUtils.doHttpGet( mActivity, httpClient, HOST, PORT, PATH+"/"+MANIFEST,
-                            "uuid="+UUID.randomUUID().toString(), manifest, null, null );
+                            "uuid="+UUID.randomUUID().toString(), manifest );
                 }
             }
             catch ( Exception e ) {
@@ -739,8 +739,9 @@ public final class DownloadActivity extends ActivityBase {
                     }
                 };
 
+                Bundle result = new Bundle();
                 NetworkUtils.doHttpGet( mActivity, httpClient, HOST, PORT, PATH+"/"+data.fileName,
-                        "uuid="+UUID.randomUUID().toString(), zipFile, receiver, null );
+                        "uuid="+UUID.randomUUID().toString(), zipFile, receiver, result, null );
             } catch ( Exception e ) {
                 UiUtils.showToast( mActivity, e.getMessage() );
                 return -1;
