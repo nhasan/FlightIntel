@@ -88,12 +88,16 @@ public class LibraryFragment extends FragmentBase {
                 if ( !mActivity.isPending() ) {
                     String path = (String) v.getTag( R.id.LIBRARY_PDF_PATH );
                     if ( path == null ) {
-                        mActivity.setPending( true );
-                        ProgressBar progressBar = (ProgressBar) v.findViewById( R.id.progress );
-                        progressBar.setIndeterminate( true );
-                        progressBar.setVisibility( View.VISIBLE );
-                        String name = (String) v.getTag( R.id.LIBRARY_PDF_NAME );
-                        getBook( name );
+                        if ( mIsOk ) {
+                            mActivity.setPending( true );
+                            ProgressBar progressBar = (ProgressBar) v.findViewById( R.id.progress );
+                            progressBar.setIndeterminate( true );
+                            progressBar.setVisibility( View.VISIBLE );
+                            String name = (String) v.getTag( R.id.LIBRARY_PDF_NAME );
+                            getBook( name );
+                        } else {
+                            UiUtils.showToast( getActivity(), "Cannot start download" );
+                        }
                     } else {
                         SystemUtils.startPDFViewer( getActivity(), path );
                     }
