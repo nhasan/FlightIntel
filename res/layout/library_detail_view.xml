@@ -31,7 +31,7 @@
         <TextView android:id="@+id/msg_txt"
                 style="@style/TextSmall"
                 android:padding="4dp"
-                android:layout_marginBottom="4dp"
+                android:layout_marginBottom="6dp"
                 android:gravity="left|center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
