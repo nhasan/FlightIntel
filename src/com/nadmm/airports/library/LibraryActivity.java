@@ -67,6 +67,7 @@ public class LibraryActivity extends ActivityBase {
                     receiver.onReceive( context, intent );
                 }
 
+                // Show the PDF here as the Fragment requesting it may be paused
                 String action = intent.getAction();
                 if ( action.equals( LibraryService.ACTION_GET_BOOK ) ) {
                     String path = intent.getStringExtra( LibraryService.PDF_PATH );
@@ -90,7 +91,7 @@ public class LibraryActivity extends ActivityBase {
         mTabsAdapter = new TabsAdapter( this, pager );
 
         PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
-        tabs.setTabIndicatorColor( 0x33b5e5 );
+        tabs.setTabIndicatorColor( getResources().getColor( R.color.tab_indicator ) );
 
         if ( savedInstanceState != null ) {
             pager.setCurrentItem( savedInstanceState.getInt( "wxtab" ) );

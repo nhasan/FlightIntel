@@ -53,7 +53,7 @@ public class WxDetailActivity extends ActivityBase {
         mTabsAdapter.addTab( "ICING", IcingFragment.class, args );
 
         PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
-        tabs.setTabIndicatorColor( 0x33b5e5 );
+        tabs.setTabIndicatorColor( getResources().getColor( R.color.tab_indicator ) );
 
         if ( savedInstanceState != null ) {
             pager.setCurrentItem( savedInstanceState.getInt( "wxtab" ) );

@@ -83,7 +83,7 @@ public class NearbyActivity extends ActivityBase {
         mTabsAdapter.addTab( "WEATHER", NearbyWxFragment.class, args );
 
         PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
-        tabs.setTabIndicatorColor( 0x33b5e5 );
+        tabs.setTabIndicatorColor( getResources().getColor( R.color.tab_indicator ) );
 
         setActionBarSubtitle( String.format( "Within %d NM Radius", radius ) );
 
