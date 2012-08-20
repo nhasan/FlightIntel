@@ -130,17 +130,16 @@ public class NetworkUtils {
         return client;
     }
 
-    public static boolean doHttpGet( Context context, HttpClient httpClient, String host,
-            String path, String query, File file, ResultReceiver receiver,
-            Class<? extends FilterInputStream> filter ) throws Exception {
-        return doHttpGet( context, httpClient, host, 80, path, query, file, receiver, filter );
+    public static boolean doHttpGet( Context context, HttpClient httpClient, String host, int port,
+            String path, String query, File file ) throws Exception {
+        return doHttpGet( context, httpClient, host, port, path, query, file, null, null, null );
     }
 
-    public static boolean doHttpGet( Context context, HttpClient httpClient, String host,
-            int port, String path, String query, File file, ResultReceiver receiver,
+    public static boolean doHttpGet( Context context, HttpClient httpClient, String host, int port,
+            String path, String query, File file, ResultReceiver receiver, Bundle result,
             Class<? extends FilterInputStream> filter ) throws Exception {
         URI uri = URIUtils.createURI( "http", host, port, path, query, null );
-        return doHttpGet( context, httpClient, uri, file, receiver, filter );
+        return doHttpGet( context, httpClient, uri, file, receiver, result, filter );
     }
 
     private static class CountingInputStream extends BufferedInputStream {
@@ -167,10 +166,15 @@ public class NetworkUtils {
     }
 
     public static boolean doHttpGet( Context context, HttpClient httpClient, URI uri,
-            File file, ResultReceiver receiver, Class<? extends FilterInputStream> filter )
+            File file, ResultReceiver receiver, Bundle result,
+            Class<? extends FilterInputStream> filter )
             throws Exception {
         if ( !NetworkUtils.isNetworkAvailable( context ) ) {
             return false;
+        }
+
+        if ( receiver != null && result == null ) {
+            throw new Exception( "Result cannot be null" );
         }
 
         InputStream f = null;
@@ -181,22 +185,22 @@ public class NetworkUtils {
             HttpGet get = new HttpGet( uri );
             HttpResponse response = httpClient.execute( get );
 
-            Bundle bundle = new Bundle();
-            bundle.putString( CONTENT_NAME, file.getName() );
-
             int status = response.getStatusLine().getStatusCode();
             if ( status != HttpStatus.SC_OK ) {
                 if ( receiver != null ) {
                     // Signal the receiver that download is aborted
-                    bundle.putLong( CONTENT_LENGTH, 0 );
-                    bundle.putLong( CONTENT_PROGRESS, 0 );
-                    receiver.send( 2, bundle );
+                    result.putLong( CONTENT_LENGTH, 0 );
+                    result.putLong( CONTENT_PROGRESS, 0 );
+                    receiver.send( 2, result );
                 }
                 throw new Exception( response.getStatusLine().getReasonPhrase() );
             }
 
             long length = response.getEntity().getContentLength();
-            bundle.putLong( CONTENT_LENGTH, length );
+
+            if ( receiver != null ) {
+                result.putLong( CONTENT_LENGTH, length );
+            }
 
             out = new FileOutputStream( file );
             in = new CountingInputStream( response.getEntity().getContent() );
@@ -220,16 +224,16 @@ public class NetworkUtils {
                     long current = in.getCount();
                     long delta = current - last;
                     if ( delta >= chunk ) {
-                        bundle.putLong( CONTENT_PROGRESS, current );
-                        receiver.send( 0, bundle );
+                        result.putLong( CONTENT_PROGRESS, current );
+                        receiver.send( 0, result );
                         last = current;
                     }
                 }
             }
             if ( receiver != null ) {
                 // If compressed, the filter stream may not read the entire source stream
-                bundle.putLong( CONTENT_PROGRESS, length );
-                receiver.send( 1, bundle );
+                result.putLong( CONTENT_PROGRESS, length );
+                receiver.send( 1, result );
             }
         } finally {
             try {
