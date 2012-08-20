@@ -31,7 +31,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import android.util.Log;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
@@ -105,9 +105,13 @@ public class LibraryService extends IntentService {
         try {
             String path = LIBRARY_PATH+"/"+category+"/"+pdfFile.getName()+".gz";
             URI uri = URIUtils.createURI( "http", LIBRARY_HOST, 80, path, null, null );
-            Log.d( "URI", uri.toString() );
+
             ProgressReceiver receiver = new ProgressReceiver();
-            return NetworkUtils.doHttpGet( this, mHttpClient, uri, pdfFile, receiver,
+            Bundle result = new Bundle();
+            result.putString( NetworkUtils.CONTENT_NAME, pdfFile.getName() );
+            result.putString( CATEGORY, category );
+
+            return NetworkUtils.doHttpGet( this, mHttpClient, uri, pdfFile, receiver, result,
                     GZIPInputStream.class );
         } catch ( Exception e ) {
             UiUtils.showToast( this, e.getMessage() );
@@ -122,7 +126,8 @@ public class LibraryService extends IntentService {
         if ( pdfFile.exists() ) {
             result.putExtra( PDF_PATH, pdfFile.getAbsolutePath() );
         }
-        sendBroadcast( result );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
+        bm.sendBroadcast( result );
     }
 
     private void cleanupBooks( String category, ArrayList<String> books ) {
@@ -149,7 +154,8 @@ public class LibraryService extends IntentService {
     protected void handleProgress( int resultCode, Bundle resultData ) {
         Intent intent = new Intent( ACTION_DOWNLOAD_PROGRESS );
         intent.putExtras( resultData );
-        sendOrderedBroadcast( intent, null );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
+        bm.sendBroadcast( intent );
     }
 
     private class ProgressReceiver extends ResultReceiver {

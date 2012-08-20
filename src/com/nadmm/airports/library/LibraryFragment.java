@@ -25,7 +25,6 @@ import java.util.HashMap;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -41,6 +40,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nadmm.airports.Application;
 import com.nadmm.airports.DatabaseManager;
@@ -55,25 +55,18 @@ import com.nadmm.airports.utils.UiUtils;
 public class LibraryFragment extends FragmentBase {
 
     private boolean mIsOk;
-    private IntentFilter mFilter;
     private BroadcastReceiver mReceiver;
     private OnClickListener mOnClickListener;
-    private boolean mPending;
     private String mCategory;
     private HashMap<String, View> mBookRowMap = new HashMap<String, View>();
+    private LibraryActivity mActivity;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        setRetainInstance( true );
-
-        mFilter = new IntentFilter();
-        mFilter.setPriority( 10 );
-        mFilter.addAction( LibraryService.ACTION_CHECK_BOOKS );
-        mFilter.addAction( LibraryService.ACTION_GET_BOOK );
-        mFilter.addAction( LibraryService.ACTION_DOWNLOAD_PROGRESS );
-
         Bundle args = getArguments();
         mCategory = args.getString( Library.CATEGORY_CODE );
+
+        mActivity = (LibraryActivity) getActivity();
 
         mReceiver = new BroadcastReceiver() {
 
@@ -92,18 +85,21 @@ public class LibraryFragment extends FragmentBase {
 
             @Override
             public void onClick( View v ) {
-                String path = (String) v.getTag( R.id.LIBRARY_PDF_PATH );
-                if ( path == null ) {
-                    if ( !mPending ) {
-                        mPending = true;
+                if ( !mActivity.isPending() ) {
+                    String path = (String) v.getTag( R.id.LIBRARY_PDF_PATH );
+                    if ( path == null ) {
+                        mActivity.setPending( true );
                         ProgressBar progressBar = (ProgressBar) v.findViewById( R.id.progress );
                         progressBar.setIndeterminate( true );
                         progressBar.setVisibility( View.VISIBLE );
                         String name = (String) v.getTag( R.id.LIBRARY_PDF_NAME );
                         getBook( name );
+                    } else {
+                        SystemUtils.startPDFViewer( getActivity(), path );
                     }
                 } else {
-                    SystemUtils.startPDFViewer( getActivity(), path );
+                    UiUtils.showToast( mActivity, "Please wait, another download is in progress",
+                            Toast.LENGTH_SHORT );
                 }
             }
         };
@@ -113,14 +109,14 @@ public class LibraryFragment extends FragmentBase {
 
     @Override
     public void onResume() {
-        getActivity().registerReceiver( mReceiver, mFilter );
+        mActivity.registerReceiver( mCategory, mReceiver );
 
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        getActivity().unregisterReceiver( mReceiver );
+        mActivity.unregisterReceiver( mCategory );
 
         super.onPause();
     }
@@ -267,21 +263,15 @@ public class LibraryFragment extends FragmentBase {
     protected void handleBook( Intent intent ) {
         String pdfName = intent.getStringExtra( LibraryService.BOOK_NAME );
         View row = mBookRowMap.get( pdfName );
-        if ( row == null ) {
-            // Maybe for a different category
-            return;
-        }
-
-        String path = intent.getStringExtra( LibraryService.PDF_PATH );
-        if ( path != null ) {
-            showStatus( row, true );
-            row.setTag( R.id.LIBRARY_PDF_PATH, path );
-            String action = intent.getAction();
-            if ( action.equals( LibraryService.ACTION_GET_BOOK ) ) {
-                SystemUtils.startPDFViewer( getActivity(), path );
+        if ( row != null ) {
+            String path = intent.getStringExtra( LibraryService.PDF_PATH );
+            showStatus( row, path != null );
+            if ( path != null ) {
+                row.setTag( R.id.LIBRARY_PDF_PATH, path );
+                // Hide the progressbar just to make sure
+                ProgressBar progressBar = (ProgressBar) row.findViewById( R.id.progress );
+                progressBar.setVisibility( View.GONE );
             }
-        } else {
-            showStatus( row, false );
         }
     }
 
@@ -300,7 +290,6 @@ public class LibraryFragment extends FragmentBase {
             progressBar.setProgress( (int) progress );
             if ( progress >= length ) {
                 progressBar.setVisibility( View.GONE );
-                mPending = false;
             }
         }
     }
