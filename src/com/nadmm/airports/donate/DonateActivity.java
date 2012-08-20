@@ -28,7 +28,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -102,8 +101,9 @@ public class DonateActivity extends ActivityBase {
         }
 
         private final DonationLevel[] mDonationLevels = {
+            new DonationLevel( "donate_199", "Intrepid Flyer", 1.99 ),
             new DonationLevel( "donate_399", "Maverick Flyer", 3.99 ),
-            new DonationLevel( "donate_599", "Ace Flyer", 3.99 )
+            new DonationLevel( "donate_599", "Ace Flyer", 5.99 )
         };
 
         private final class DonateTask extends CursorAsyncTask {
@@ -219,7 +219,8 @@ public class DonateActivity extends ActivityBase {
                 int count = mDonationLevels.length-donations.size();
                 for ( int i = 0; i < mDonationLevels.length; ++i ) {
                     DonationLevel level = mDonationLevels[ i ];
-                    if ( !donations.containsKey( level.productId ) ) {
+                    if ( !level.productId.equals( "donate_199" )
+                            && !donations.containsKey( level.productId ) ) {
                         View row = addRow( layout, level.description,
                                 FormatUtils.formatCurrency( level.amount ) );
                         row.setTag( level.productId );
@@ -312,7 +313,6 @@ public class DonateActivity extends ActivityBase {
             @Override
             public void onRestoreTransactionsResponse( RestoreTransactions request,
                     ResponseCode responseCode ) {
-                Log.d( "onRestoreTransactionsResponse", responseCode.toString() );
                 if ( responseCode == ResponseCode.RESULT_OK ) {
                     // Update the shared preferences so that we don't perform
                     // a RestoreTransactions again.
