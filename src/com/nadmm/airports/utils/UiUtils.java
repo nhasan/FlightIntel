@@ -54,13 +54,17 @@ public class UiUtils {
     }
 
     public static void showToast( final Context context, final String msg ) {
+        showToast( context, msg, Toast.LENGTH_LONG );
+    }
+
+    public static void showToast( final Context context, final String msg, final int duration ) {
         if ( msg == null ) {
             return;
         }
         sHandler.post( new Runnable () {
             @Override
             public void run() {
-                Toast.makeText( context.getApplicationContext(), msg, Toast.LENGTH_LONG ).show();
+                Toast.makeText( context.getApplicationContext(), msg, duration ).show();
             }
         } );
     }
