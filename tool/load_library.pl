@@ -118,9 +118,9 @@ insert_book( "manuals", "Chart_Users_Guide_10thEd.pdf", "Aeronautical Chart User
 insert_book( "manuals", "faa-h-8083-19a-2008.pdf", "Plane Sense - General Aviation Information",
         "2008", "FAA-H-8083-19A", 13246143 );
 insert_book( "manuals", "ac-00-6a-1975.pdf", "Aviation Weather",
-        "1975", "FAA", 29916885 );
+        "1975", "AC-00-6A", 29916885 );
 insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
-        "2010", "FAA/NWS", 12250011 );
+        "2010", "AC-00-45G", 12250011 );
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072 );
 
