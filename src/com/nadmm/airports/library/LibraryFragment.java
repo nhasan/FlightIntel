@@ -268,10 +268,10 @@ public class LibraryFragment extends FragmentBase {
             showStatus( row, path != null );
             if ( path != null ) {
                 row.setTag( R.id.LIBRARY_PDF_PATH, path );
-                // Hide the progressbar just to make sure
-                ProgressBar progressBar = (ProgressBar) row.findViewById( R.id.progress );
-                progressBar.setVisibility( View.GONE );
             }
+            // Hide the progressbar
+            ProgressBar progressBar = (ProgressBar) row.findViewById( R.id.progress );
+            progressBar.setVisibility( View.GONE );
         }
     }
 
@@ -284,13 +284,12 @@ public class LibraryFragment extends FragmentBase {
             if ( !progressBar.isShown() ) {
                 progressBar.setVisibility( View.VISIBLE );
             }
-            progressBar.setMax( (int) length );
-            progressBar.setIndeterminate( false );
+            if ( progressBar.getMax() != length ) {
+                progressBar.setIndeterminate( false );
+                progressBar.setMax( (int) length );
+            }
             long progress = intent.getLongExtra( NetworkUtils.CONTENT_PROGRESS, 0 );
             progressBar.setProgress( (int) progress );
-            if ( progress >= length ) {
-                progressBar.setVisibility( View.GONE );
-            }
         }
     }
 
