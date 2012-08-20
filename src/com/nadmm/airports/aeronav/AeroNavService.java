@@ -20,10 +20,8 @@
 package com.nadmm.airports.aeronav;
 
 import java.io.File;
-import java.net.URI;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.utils.URIUtils;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -82,8 +80,7 @@ public abstract class AeroNavService extends IntentService {
 
     protected boolean fetch( String path, File file ) {
         try {
-            URI uri = URIUtils.createURI( "http", AERONAV_HOST, 80, path, null, null );
-            return NetworkUtils.doHttpGet( this, mHttpClient, uri, file, null, null );
+            return NetworkUtils.doHttpGet( this, mHttpClient, AERONAV_HOST, 80, path, null, file );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "Error: "+e.getMessage() );
         }
