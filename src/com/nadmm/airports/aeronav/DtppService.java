@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import android.content.Intent;
+import android.os.Bundle;
 
 public class DtppService extends AeroNavService {
 
@@ -97,12 +98,11 @@ public class DtppService extends AeroNavService {
         String[] files = dir.list();
         int count = files != null? files.length : 0;
 
-        Intent result = new Intent();
-        result.setAction( ACTION_COUNT_CHARTS );
-        result.putExtra( CYCLE_NAME, tppCycle );
-        result.putExtra( TPP_VOLUME, tppVolume );
-        result.putExtra( PDF_COUNT, count );
-        sendBroadcast( result );
+        Bundle extras = new Bundle();
+        extras.putString( CYCLE_NAME, tppCycle );
+        extras.putString( TPP_VOLUME, tppVolume );
+        extras.putInt( PDF_COUNT, count );
+        sendResult( ACTION_COUNT_CHARTS, extras );
     }
 
     protected void downloadChart( String tppCycle, File pdfFile ) {

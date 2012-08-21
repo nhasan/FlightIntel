@@ -25,6 +25,8 @@ import org.apache.http.client.HttpClient;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.nadmm.airports.utils.FileUtils;
 import com.nadmm.airports.utils.NetworkUtils;
@@ -88,14 +90,21 @@ public abstract class AeroNavService extends IntentService {
     }
 
     protected void sendResult( String action, String cycle, File pdfFile ) {
+        Bundle extras = new Bundle();
+        extras.putString( CYCLE_NAME, cycle );
+        extras.putString( PDF_NAME, pdfFile.getName() );
+        if ( pdfFile.exists() ) {
+            extras.putString( PDF_PATH, pdfFile.getAbsolutePath() );
+        }
+        sendResult( action, extras );
+    }
+
+    protected void sendResult( String action, Bundle extras ) {
         Intent result = new Intent();
         result.setAction( action );
-        result.putExtra( CYCLE_NAME, cycle );
-        result.putExtra( PDF_NAME, pdfFile.getName() );
-        if ( pdfFile.exists() ) {
-            result.putExtra( PDF_PATH, pdfFile.getAbsolutePath() );
-        }
-        sendBroadcast( result );
+        result.putExtras( extras );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
+        bm.sendBroadcast( result );
     }
 
     protected void cleanupOldCycles() {
