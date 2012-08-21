@@ -66,8 +66,6 @@ public class LibraryFragment extends FragmentBase {
         Bundle args = getArguments();
         mCategory = args.getString( Library.CATEGORY_CODE );
 
-        mActivity = (LibraryActivity) getActivity();
-
         mReceiver = new BroadcastReceiver() {
 
             @Override
@@ -134,6 +132,7 @@ public class LibraryFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        mActivity = (LibraryActivity) getActivity();
         LibraryTask task = new LibraryTask();
         task.execute( mCategory );
 
