@@ -28,6 +28,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,7 +93,8 @@ public class PirepFragment extends FragmentBase {
 
     @Override
     public void onResume() {
-        getActivity().registerReceiver( mReceiver, mFilter );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+        bm.registerReceiver( mReceiver, mFilter );
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         setBackgroundTask( new PirepDetailTask() ).execute( stationId );
@@ -102,7 +104,8 @@ public class PirepFragment extends FragmentBase {
 
     @Override
     public void onPause() {
-        getActivity().unregisterReceiver( mReceiver );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+        bm.unregisterReceiver( mReceiver );
 
         super.onPause();
     }

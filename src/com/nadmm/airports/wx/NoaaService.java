@@ -36,6 +36,7 @@ import org.apache.http.client.utils.URIUtils;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
@@ -132,7 +133,8 @@ public abstract class NoaaService extends IntentService {
         Intent intent = makeResultIntent( action, TYPE_TEXT );
         intent.putExtra( STATION_ID, stationId );
         intent.putExtra( RESULT, result );
-        sendBroadcast( intent );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
+        bm.sendBroadcast( intent );
     }
 
     protected void sendResultIntent( String action, String code, File result ) {
@@ -141,7 +143,8 @@ public abstract class NoaaService extends IntentService {
         if ( result.exists() ) {
             intent.putExtra( RESULT, result.getAbsolutePath() );
         }
-        sendBroadcast( intent );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
+        bm.sendBroadcast( intent );
     }
 
     private Intent makeResultIntent( String action, String type ) {

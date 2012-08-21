@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,6 +43,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
 
     private String mAction;
     private BroadcastReceiver mReceiver;
+    private IntentFilter mFilter;
     private String[] mWxTypeCodes;
     private String[] mWxTypeNames;
     private String[] mWxMapCodes;
@@ -87,20 +89,23 @@ public abstract class WxMapFragmentBase extends FragmentBase {
                 }
             }
         };
+
+        mFilter = new IntentFilter();
+        mFilter.addAction( mAction );
     }
 
     @Override
     public void onResume() {
         mPendingRow = null;
-        IntentFilter filter = new IntentFilter();
-        filter.addAction( mAction );
-        getActivity().registerReceiver( mReceiver, filter );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+        bm.registerReceiver( mReceiver, mFilter );
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        getActivity().unregisterReceiver( mReceiver );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+        bm.unregisterReceiver( mReceiver );
         super.onPause();
     }
 

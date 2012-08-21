@@ -32,6 +32,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,7 +95,8 @@ public class MetarFragment extends FragmentBase {
 
     @Override
     public void onResume() {
-        getActivity().registerReceiver( mReceiver, mFilter );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+        bm.registerReceiver( mReceiver, mFilter );
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         setBackgroundTask( new MetarTask() ).execute( stationId );
@@ -104,7 +106,8 @@ public class MetarFragment extends FragmentBase {
 
     @Override
     public void onPause() {
-        getActivity().unregisterReceiver( mReceiver );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+        bm.unregisterReceiver( mReceiver );
 
         super.onPause();
     }

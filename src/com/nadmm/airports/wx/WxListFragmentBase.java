@@ -28,6 +28,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
@@ -44,26 +45,31 @@ public class WxListFragmentBase extends ListFragmentBase {
 
     private HashMap<String, Metar> mStationWx = new HashMap<String, Metar>();
     private BroadcastReceiver mReceiver;
+    private IntentFilter mFilter;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        mReceiver = new WxReceiver();
         setHasOptionsMenu( true );
+
+        mReceiver = new WxReceiver();
+        mFilter = new IntentFilter();
+        mFilter.addAction( NoaaService.ACTION_GET_METAR );
+
         super.onCreate( savedInstanceState );
     }
 
     @Override
     public void onResume() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction( NoaaService.ACTION_GET_METAR );
-        getActivity().registerReceiver( mReceiver, filter );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+        bm.registerReceiver( mReceiver, mFilter );
 
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        getActivity().unregisterReceiver( mReceiver );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+        bm.unregisterReceiver( mReceiver );
 
         super.onPause();
     }
