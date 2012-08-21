@@ -39,7 +39,6 @@ import com.nadmm.airports.DatabaseManager.BookCategories;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.TabsAdapter;
-import com.nadmm.airports.utils.UiUtils;
 
 public class LibraryActivity extends ActivityBase {
 
@@ -69,14 +68,12 @@ public class LibraryActivity extends ActivityBase {
 
                 // Show the PDF here as the Fragment requesting it may be paused
                 String action = intent.getAction();
+
                 if ( action.equals( LibraryService.ACTION_GET_BOOK ) ) {
                     String path = intent.getStringExtra( LibraryService.PDF_PATH );
                     mPending = false;
                     if ( path != null ) {
                         SystemUtils.startPDFViewer( LibraryActivity.this, path );
-                    } else {
-                        UiUtils.showToast( LibraryActivity.this,
-                                "Unable to download the PDF file" );
                     }
                 }
             }
