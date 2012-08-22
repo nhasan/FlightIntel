@@ -36,6 +36,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -240,8 +241,6 @@ public class AirportDetailsActivity extends ActivityBase {
 
         @Override
         public void onCreate( Bundle savedInstanceState ) {
-            super.onCreate( savedInstanceState );
-
             mMetarFilter = new IntentFilter();
             mMetarFilter.addAction( NoaaService.ACTION_GET_METAR );
             mMetarReceiver = new BroadcastReceiver() {
@@ -274,6 +273,8 @@ public class AirportDetailsActivity extends ActivityBase {
                     handleDafdBroadcast( intent );
                 }
             };
+
+            super.onCreate( savedInstanceState );
         }
 
         @Override
@@ -294,17 +295,21 @@ public class AirportDetailsActivity extends ActivityBase {
 
         @Override
         public void onResume() {
-            super.onResume();
-            getActivityBase().registerReceiver( mMetarReceiver, mMetarFilter );
-            getActivityBase().registerReceiver( mDafdReceiver, mDafdFilter );
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+            bm.registerReceiver( mMetarReceiver, mMetarFilter );
+            bm.registerReceiver( mDafdReceiver, mDafdFilter );
             requestMetars( false );
+
+            super.onResume();
         }
 
         @Override
         public void onPause() {
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+            bm.unregisterReceiver( mMetarReceiver );
+            bm.unregisterReceiver( mDafdReceiver );
+
             super.onPause();
-            getActivityBase().unregisterReceiver( mMetarReceiver );
-            getActivityBase().unregisterReceiver( mDafdReceiver );
         }
 
         protected void showDetails( Cursor[] result ) {
@@ -438,8 +443,10 @@ public class AirportDetailsActivity extends ActivityBase {
                     if ( awos1.getPosition() == MAX_WX_STATIONS ) {
                         break;
                     }
-                    String icaoCode = awos1.getString( awos1.getColumnIndex( Wxs.STATION_ID ) );
-                    String sensorId = awos1.getString( awos1.getColumnIndex( Awos1.WX_SENSOR_IDENT ) );
+                    String icaoCode = awos1.getString(
+                            awos1.getColumnIndex( Wxs.STATION_ID ) );
+                    String sensorId = awos1.getString(
+                            awos1.getColumnIndex( Awos1.WX_SENSOR_IDENT ) );
                     if ( icaoCode == null || icaoCode.length() == 0 ) {
                         icaoCode = "K"+sensorId;
                     }
@@ -452,14 +459,24 @@ public class AirportDetailsActivity extends ActivityBase {
                     String name = awos1.getString( awos1.getColumnIndex( Wxs.STATION_NAME ) );
                     float distance = awos1.getFloat( awos1.getColumnIndex( "DISTANCE" ) );
                     float bearing = awos1.getFloat( awos1.getColumnIndex( "BEARING" ) );
-                    Intent intent = new Intent( getActivity(), WxDetailActivity.class );
-                    Bundle args = new Bundle();
-                    args.putString( NoaaService.STATION_ID, icaoCode );
-                    args.putString( Awos1.WX_SENSOR_IDENT, sensorId );
-                    intent.putExtras( args );
+
+                    final Bundle extras = new Bundle();
+                    extras.putString( NoaaService.STATION_ID, icaoCode );
+                    extras.putString( Awos1.WX_SENSOR_IDENT, sensorId );
+
+                    Runnable runnable = new Runnable() {
+
+                        @Override
+                        public void run() {
+                            cacheMetars();
+                            Intent intent = new Intent( getActivity(), WxDetailActivity.class );
+                            intent.putExtras( extras );
+                            startActivity( intent );
+                        }
+                    };
                     int resid = getSelectorResourceForRow( awos1.getPosition(), awos1.getCount() );
                     addAwosRow( layout, icaoCode, name, type, freq, phone, distance,
-                            bearing, intent, resid );
+                            bearing, runnable, resid );
                 } while ( awos1.moveToNext() );
 
                 if ( !awos1.isAfterLast() ) {
@@ -741,7 +758,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
         protected void addAwosRow( LinearLayout layout, String id, String name, String type, 
                 String freq, String phone, float distance, float bearing,
-                final Intent intent, int resid ) {
+                final Runnable runnable, int resid ) {
             StringBuilder sb = new StringBuilder();
             sb.append( id );
             if ( name != null && name.length() > 0 ) {
@@ -770,7 +787,7 @@ public class AirportDetailsActivity extends ActivityBase {
             String label2 = sb.toString();
             String value2 = phone;
 
-            View row = addClickableRow( layout, label1, value1, label2, value2, intent, resid );
+            View row = addClickableRow( layout, label1, value1, label2, value2, runnable, resid );
 
             TextView tv = (TextView) row.findViewById( R.id.item_label );
             tv.setTag( id );
@@ -884,13 +901,21 @@ public class AirportDetailsActivity extends ActivityBase {
             return heading;
         }
 
+        protected void cacheMetars() {
+            requestMetars( NoaaService.ACTION_CACHE_METAR, false, false );
+        }
+
         protected void requestMetars( boolean force ) {
+            boolean cacheOnly = NetworkUtils.useCacheContentOnly( getActivity() );
+            requestMetars( NoaaService.ACTION_GET_METAR, force, cacheOnly );
+        }
+
+        protected void requestMetars( String action, boolean force, boolean cacheOnly ) {
             if ( mAwosViews.size() == 0 ) {
                 return;
             }
 
             // Now get the METAR if already in the cache
-            boolean cacheOnly = NetworkUtils.useCacheContentOnly( getActivity() );
             if ( force || !cacheOnly ) {
                 getActivityBase().startRefreshAnimation();
             }
@@ -901,7 +926,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 stationIds.add( stationId );
             }
             Intent service = new Intent( getActivityBase(), MetarService.class );
-            service.setAction( NoaaService.ACTION_GET_METAR );
+            service.setAction( action );
             service.putExtra( NoaaService.STATION_IDS, stationIds );
             service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
             if ( force ) {

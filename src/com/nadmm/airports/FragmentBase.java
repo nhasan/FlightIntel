@@ -54,9 +54,15 @@ public class FragmentBase extends SherlockFragment {
     private final OnClickListener mOnRowClickListener = new OnClickListener() {
         @Override
         public void onClick( View v ) {
-            Intent intent = (Intent) v.getTag();
-            if ( intent != null ) {
-                startActivity( intent );
+            Object tag = v.getTag();
+            if ( tag != null ) {
+                if ( tag instanceof Intent ) {
+                    Intent intent = (Intent) tag;
+                    startActivity( intent );
+                } else if ( tag instanceof Runnable ) {
+                    Runnable runnable = (Runnable) tag;
+                    runnable.run();
+                }
             }
         }
     };
@@ -257,9 +263,9 @@ public class FragmentBase extends SherlockFragment {
         }
     }
 
-    protected void makeRowClickable( View row, Intent intent, int resid ) {
+    protected void makeRowClickable( View row, Object tag, int resid ) {
         row.setBackgroundResource( resid );
-        row.setTag( intent );
+        row.setTag( tag );
         row.setOnClickListener( mOnRowClickListener );
     }
 
@@ -279,33 +285,32 @@ public class FragmentBase extends SherlockFragment {
         }
     }
 
-    protected View addClickableRow( LinearLayout layout, View row, Intent intent, int resid ) {
+    protected View addClickableRow( LinearLayout layout, View row, Object tag, int resid ) {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
         }
 
-        makeRowClickable( row, intent, resid );
+        makeRowClickable( row, tag, resid );
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
         return row;
     }
 
-    protected View addClickableRow( LinearLayout layout, String label,
-            Intent intent, int resid ) {
-        return addClickableRow( layout, label, null, intent, resid );
+    protected View addClickableRow( LinearLayout layout, String label, Object tag, int resid ) {
+        return addClickableRow( layout, label, null, tag, resid );
     }
 
     protected View addClickableRow( LinearLayout layout, String label, String value,
-            Intent intent, int resid ) {
+            Object tag, int resid ) {
         View row = addRow( layout, label+"...", value );
-        makeRowClickable( row, intent, resid );
+        makeRowClickable( row, tag, resid );
         return row;
     }
 
     protected View addClickableRow( LinearLayout layout, String label1, String value1,
-            String label2, String value2, Intent intent, int resid ) {
+            String label2, String value2, Object tag, int resid ) {
         View row = addRow( layout, label1, value1, label2, value2 );
-        makeRowClickable( row, intent, resid );
+        makeRowClickable( row, tag, resid );
         return row;
     }
 

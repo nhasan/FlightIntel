@@ -66,6 +66,7 @@ public abstract class NoaaService extends IntentService {
     public static final String TYPE_IMAGE = "TYPE_IMAGE";
 
     public static final String ACTION_GET_METAR = "flightintel.intent.wx.action.GET_METAR";
+    public static final String ACTION_CACHE_METAR = "flightintel.intent.wx.action.CACHE_METAR";
     public static final String ACTION_GET_TAF = "flightintel.intent.wx.action.GET_TAF";
     public static final String ACTION_GET_PIREP = "flightintel.intent.wx.action.GET_PIREP";
     public static final String ACTION_GET_AIRSIGMET = "flightintel.intent.wx.action.GET_AIRSIGMET";

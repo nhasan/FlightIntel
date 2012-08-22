@@ -53,7 +53,7 @@ public class MetarService extends NoaaService {
     @Override
     protected void onHandleIntent( Intent intent ) {
         String action = intent.getAction();
-        if ( action.equals( ACTION_GET_METAR ) ) {
+        if ( action.equals( ACTION_GET_METAR ) || action.equals( ACTION_CACHE_METAR ) ) {
             String type = intent.getStringExtra( TYPE );
             if ( type.equals( TYPE_TEXT ) ) {
                 // Get request parameters
@@ -70,15 +70,15 @@ public class MetarService extends NoaaService {
                         }
                     }
 
-                    StringBuilder param = new StringBuilder();
-                    for ( String stationId : missing ) {
-                        if ( param.length() > 0 ) {
-                            param.append( "," );
+                    if ( !missing.isEmpty() ) {
+                        StringBuilder param = new StringBuilder();
+                        for ( String stationId : missing ) {
+                            if ( param.length() > 0 ) {
+                                param.append( "," );
+                            }
+                            param.append( stationId );
                         }
-                        param.append( stationId );
-                    }
 
-                    if ( param.length() > 0 ) {
                         File tmpFile = null;
                         try {
                             tmpFile = File.createTempFile( "metar", null );
@@ -95,17 +95,19 @@ public class MetarService extends NoaaService {
                     }
                 }
 
-                for ( String stationId : stationIds ) {
-                    File objFile = getObjFile( stationId );
-                    Metar metar;
-                    if ( objFile.exists() ) {
-                        metar = (Metar) readObject( objFile );
-                    } else {
-                        metar = new Metar();
-                    }
+                if ( action.equals( ACTION_GET_METAR ) ) {
+                    for ( String stationId : stationIds ) {
+                        File objFile = getObjFile( stationId );
+                        Metar metar;
+                        if ( objFile.exists() ) {
+                            metar = (Metar) readObject( objFile );
+                        } else {
+                            metar = new Metar();
+                        }
 
-                    // Broadcast the result
-                    sendResultIntent( action, stationId, metar );
+                        // Broadcast the result
+                        sendResultIntent( action, stationId, metar );
+                    }
                 }
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
