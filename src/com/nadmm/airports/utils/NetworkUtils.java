@@ -174,7 +174,7 @@ public class NetworkUtils {
         }
 
         if ( receiver != null && result == null ) {
-            throw new Exception( "Result cannot be null" );
+            throw new Exception( "Result cannot be null when receiver is passed" );
         }
 
         InputStream f = null;
