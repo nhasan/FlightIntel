@@ -20,6 +20,7 @@
 package com.nadmm.airports;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,6 +41,7 @@ public class AboutActivity extends ActivityBase {
 
         Button btnDonate = (Button) findViewById( R.id.btn_donate );
         btnDonate.setOnClickListener( new OnClickListener() {
+
             @Override
             public void onClick( View v ) {
                 Intent intent = new Intent( AboutActivity.this, DonateActivity.class );
@@ -54,7 +56,17 @@ public class AboutActivity extends ActivityBase {
             public void onClick( View v ) {
                 finish();
             }
+        } );
 
+        Button btnRate = (Button) findViewById( R.id.btn_rate );
+        btnRate.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                Intent urlIntent = new Intent( Intent.ACTION_VIEW,
+                        Uri.parse( "market://details?id=" + getPackageName() ) );
+                startActivity( urlIntent );
+            }
         } );
     }
 

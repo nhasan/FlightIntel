@@ -41,6 +41,13 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content" />
         <Button
+                android:id="@+id/btn_rate"
+                style="@style/Widget.Sherlock.Light.Button.Small"
+                android:text="@string/rate_it"
+                android:layout_gravity="center"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content" />
+        <Button
                 android:id="@+id/btn_close"
                 style="@style/Widget.Sherlock.Light.Button.Small"
                 android:text="@string/close"
