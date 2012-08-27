@@ -109,6 +109,10 @@ public class WxListFragmentBase extends ListFragmentBase {
     }
 
     protected void requestMetars( Boolean force ) {
+        requestMetars( NoaaService.ACTION_GET_METAR, force );
+    }
+
+    protected void requestMetars( String action, Boolean force ) {
         if ( mStationWx.size() == 0 ) {
             return;
         }
@@ -121,7 +125,7 @@ public class WxListFragmentBase extends ListFragmentBase {
 
         ArrayList<String> stationIds = new ArrayList<String>( mStationWx.keySet() );
         Intent service = new Intent( activity, MetarService.class );
-        service.setAction( NoaaService.ACTION_GET_METAR );
+        service.setAction( action );
         service.putExtra( NoaaService.STATION_IDS, stationIds );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
         if ( force ) {
@@ -180,6 +184,8 @@ public class WxListFragmentBase extends ListFragmentBase {
 
     @Override
     protected void onListItemClick( ListView l, View v, int position ) {
+        // When getting wx for one station, get for all others too
+        requestMetars( NoaaService.ACTION_CACHE_METAR, false );
         Cursor c = (Cursor) l.getItemAtPosition( position );
         String icaoCode = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
         Intent intent = new Intent( getActivity(), WxDetailActivity.class );
