@@ -51,6 +51,7 @@ public class WxDetailActivity extends ActivityBase {
         mTabsAdapter.addTab( "SIG WX", SigWxFragment.class, args );
         mTabsAdapter.addTab( "CEILING & VISIBILIY", CvaFragment.class, args );
         mTabsAdapter.addTab( "ICING", IcingFragment.class, args );
+        mTabsAdapter.addTab( "AREA FORECAST", AreaForecastFragment.class, args );
 
         PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
         tabs.setTabIndicatorColor( getResources().getColor( R.color.tab_indicator ) );
