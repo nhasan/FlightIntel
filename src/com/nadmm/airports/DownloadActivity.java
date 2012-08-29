@@ -890,16 +890,15 @@ public final class DownloadActivity extends ActivityBase {
 
                     // Delete the db file on the external device
                     File file = new File( DatabaseManager.DATABASE_DIR, dbName );
-                    if ( file.delete() ) {
-                        // Now delete the catalog entry for the file
-                        int rows = catalogDb.delete( Catalog.TABLE_NAME, "_id=?", 
-                                new String[] { Integer.toString( _id ) } );
-                        if ( rows != 1 ) {
-                            // If we could not delete the row, remember the error
-                            result = -1;
-                        }
-                    } else {
+                    // Now delete the catalog entry for the file
+                    int rows = catalogDb.delete( Catalog.TABLE_NAME, "_id=?",
+                            new String[] { Integer.toString( _id ) } );
+                    if ( rows != 1 ) {
+                        // If we could not delete the row, remember the error
                         result = -1;
+                    }
+                    if ( file.exists() ) {
+                        file.delete();
                     }
                 } while ( cursor.moveToNext() );
             }
