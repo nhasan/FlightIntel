@@ -85,7 +85,7 @@ public class PirepService extends NoaaService {
                 }
 
                 // Broadcast the result
-                sendResultIntent( action, stationId, pirep );
+                sendSerializableResultIntent( action, stationId, pirep );
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );

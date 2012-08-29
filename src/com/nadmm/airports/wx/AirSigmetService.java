@@ -80,7 +80,7 @@ public class AirSigmetService extends NoaaService {
                 }
 
                 // Broadcast the result
-                sendResultIntent( action, stationId, airSigmet );
+                sendSerializableResultIntent( action, stationId, airSigmet );
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
                 String imageName = String.format( AIRSIGMET_IMAGE_ZOOM_NAME, code );

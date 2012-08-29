@@ -84,7 +84,7 @@ public class TafService extends NoaaService {
                 }
 
                 // Broadcast the result
-                sendResultIntent( action, stationId, taf );
+                sendSerializableResultIntent( action, stationId, taf );
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
                 String imageName = String.format( TAF_IMAGE_NAME, code );

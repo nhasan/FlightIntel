@@ -106,7 +106,7 @@ public class MetarService extends NoaaService {
                         }
 
                         // Broadcast the result
-                        sendResultIntent( action, stationId, metar );
+                        sendSerializableResultIntent( action, stationId, metar );
                     }
                 }
             } else if ( type.equals( TYPE_IMAGE ) ) {
