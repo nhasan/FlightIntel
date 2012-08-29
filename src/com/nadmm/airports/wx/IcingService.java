@@ -58,7 +58,7 @@ public class IcingService extends NoaaService {
                 }
 
                 // Broadcast the result
-                sendResultIntent( action, code, imageFile );
+                sendImageResultIntent( action, code, imageFile );
             }
         }
     }

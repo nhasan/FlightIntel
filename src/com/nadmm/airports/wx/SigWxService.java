@@ -30,14 +30,14 @@ public class SigWxService extends NoaaService {
                 if ( !imageFile.exists() ) {
                     try {
                         String path = SIGWX_IMAGE_PATH+imageName;
-                        fetch( ADDS_HOST, path, null, imageFile, false );
+                        fetch( AWC_HOST, path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch SIGWX image: "+e.getMessage() );
                     }
                 }
 
                 // Broadcast the result
-                sendResultIntent( action, code, imageFile );
+                sendImageResultIntent( action, code, imageFile );
             }
         }
     }
