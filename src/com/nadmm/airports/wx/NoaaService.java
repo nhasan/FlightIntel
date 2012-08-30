@@ -45,7 +45,7 @@ public abstract class NoaaService extends IntentService {
 
     protected final String NOAA_HOST = "weather.aero";
     protected final String RADAR_HOST = "radar.weather.gov";
-    protected final String ADDS_HOST = "aviationweather.gov";
+    protected final String AWC_HOST = "aviationweather.gov";
 
     protected final String NOAA_DATASERVER_PATH = "/dataserver1_4/httpparam";
 
@@ -76,6 +76,7 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_SIGWX = "flightintel.intent.action.wx.GET_SIGWX";
     public static final String ACTION_GET_CVA = "flightintel.intent.wx.action.GET_CVA";
     public static final String ACTION_GET_ICING = "flightintel.intent.action.wx.GET_ICING";
+    public static final String ACTION_GET_FA = "flightintel.intent.action.wx.GET_FA";
 
     private File mDataDir;
     private HttpClient mHttpClient;
@@ -130,22 +131,30 @@ public abstract class NoaaService extends IntentService {
         return new File( mDataDir, name );
     }
 
-    protected void sendResultIntent( String action, String stationId, Serializable result ) {
+    protected void sendSerializableResultIntent( String action, String stationId,
+            Serializable result ) {
         Intent intent = makeResultIntent( action, TYPE_TEXT );
         intent.putExtra( STATION_ID, stationId );
         intent.putExtra( RESULT, result );
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
-        bm.sendBroadcast( intent );
+        sendResultIntent( intent );
     }
 
-    protected void sendResultIntent( String action, String code, File result ) {
+    protected void sendImageResultIntent( String action, String code, File result ) {
         Intent intent = makeResultIntent( action, TYPE_IMAGE );
         intent.putExtra( IMAGE_CODE, code );
         if ( result.exists() ) {
             intent.putExtra( RESULT, result.getAbsolutePath() );
         }
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
-        bm.sendBroadcast( intent );
+        sendResultIntent( intent );
+    }
+
+    protected void sendFileResultIntent( String action, String stationId, File result ) {
+        Intent intent = makeResultIntent( action, TYPE_TEXT );
+        intent.putExtra( STATION_ID, stationId );
+        if ( result.exists() ) {
+            intent.putExtra( RESULT, result.getAbsolutePath() );
+        }
+        sendResultIntent( intent );
     }
 
     private Intent makeResultIntent( String action, String type ) {
@@ -153,6 +162,11 @@ public abstract class NoaaService extends IntentService {
         intent.setAction( action );
         intent.putExtra( TYPE, type );
         return intent;
+    }
+
+    private void sendResultIntent( Intent intent ) {
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
+        bm.sendBroadcast( intent );
     }
 
     protected void writeObject( Object object, File objFile ) {
