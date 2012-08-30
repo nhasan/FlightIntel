@@ -63,12 +63,12 @@ public class AreaForecastFragment extends FragmentBase {
     };
 
     private final String[] mFaAreaNames = {
-            "Alaska North 1",
-            "Alaska North 2",
-            "Alaska Southcentral 1",
-            "Alaska Southcentral 2",
-            "Alaska Southeast 1",
-            "Alaska Southeast 2",
+            "Alaska North Part 1",
+            "Alaska North Part 2",
+            "Alaska Southcentral Part 1",
+            "Alaska Southcentral Part 2",
+            "Alaska Southeast Part 1",
+            "Alaska Southeast Part 2",
             "Alaska Southwest",
             "Boston",
             "Carribean",
