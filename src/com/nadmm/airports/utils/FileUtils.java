@@ -19,7 +19,12 @@
 
 package com.nadmm.airports.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 public class FileUtils {
 
@@ -35,6 +40,22 @@ public class FileUtils {
             }
         }
         dir.delete();
+    }
+
+    public static String readFile( String path ) throws IOException {
+        FileInputStream is = new FileInputStream( path );
+        try {
+            StringBuilder sb = new StringBuilder();
+            Reader reader = new BufferedReader( new InputStreamReader( is ) );
+            char[] buffer = new char[8192];
+            int read;
+            while ( ( read = reader.read( buffer ) ) > 0 ) {
+                sb.append( buffer, 0, read );
+            }
+            return sb.toString();
+        } finally {
+            is.close();
+        }
     }
 
 }
