@@ -234,4 +234,5 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     }
 
     protected abstract Intent getServiceIntent();
+
 }
