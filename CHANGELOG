@@ -1,3 +1,10 @@
+v4.4.0 (9/1/2012)
+==================
+* Added "Area Forecast" (FA text product) to wx
+* Added "Winds Aloft" (FB text product) to wx
+* Pre-cache other wx stations when fetching wx for a station on mobile network 
+* Performance improvements when fetching wx and charts
+
 v4.3.1 (8/21/2012)
 ==================
 * Fixed book download when device is rotated
