@@ -35,6 +35,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -143,14 +144,16 @@ public class ChartsDownloadActivity extends ActivityBase {
 
         @Override
         public void onResume() {
-            getActivity().registerReceiver( mReceiver, mFilter );
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+            bm.registerReceiver( mReceiver, mFilter );
 
             super.onResume();
         }
 
         @Override
         public void onPause() {
-            getActivity().unregisterReceiver( mReceiver );
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+            bm.unregisterReceiver( mReceiver );
             finishOperation();
 
             super.onPause();
