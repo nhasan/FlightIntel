@@ -72,7 +72,7 @@ public class PreferencesActivity extends PreferenceActivity
         Preference pref = findPreference( key );
        if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
             String radius = mSharedPrefs.getString( key, "20" );
-            pref.setSummary( "Use "+radius+ " NM radius" );
+            pref.setSummary( "Using "+radius+ " NM radius" );
         }
     }
 
