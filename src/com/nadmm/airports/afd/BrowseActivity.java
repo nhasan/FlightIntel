@@ -178,9 +178,9 @@ public final class BrowseActivity extends ActivityBase {
             String stateCode = args.getString( States.STATE_CODE );
             String stateName = args.getString( States.STATE_NAME );
             if ( stateCode == null ) {
-                getSupportActionBar().setSubtitle( "All Locations" );
+                setActionBarSubtitle( "All Locations" );
             } else {
-                getSupportActionBar().setSubtitle( stateName );
+                setActionBarSubtitle( stateName );
             }
             setBackgroundTask( new BrowseTask() ).execute( stateCode, stateName );
 
@@ -198,7 +198,7 @@ public final class BrowseActivity extends ActivityBase {
                 adapter = new BrowseCursorAdapter( getActivity(),
                         R.layout.browse_state_item, c, R.id.browse_state_section,
                         BrowseCursorAdapter.CITY_MODE );
-                getSupportActionBar().setSubtitle( String.format( "%s  (%d)",
+                setActionBarSubtitle( String.format( "%s  (%d)",
                         getSupportActionBar().getSubtitle(), c.getCount() ) );
             }
             return adapter;
