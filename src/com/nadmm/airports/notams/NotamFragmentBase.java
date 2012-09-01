@@ -34,6 +34,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -65,14 +66,18 @@ public class NotamFragmentBase extends FragmentBase {
 
     @Override
     public void onResume() {
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+        bm.registerReceiver( mReceiver, mFilter );
+
         super.onResume();
-        getActivity().registerReceiver( mReceiver, mFilter );
     }
 
     @Override
     public void onPause() {
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+        bm.unregisterReceiver( mReceiver );
+
         super.onPause();
-        getActivity().unregisterReceiver( mReceiver );
     }
 
     protected void handleNotamBroadcast( Intent intent ) {

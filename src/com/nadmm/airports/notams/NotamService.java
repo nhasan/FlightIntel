@@ -37,6 +37,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
 
 import com.nadmm.airports.utils.SystemUtils;
@@ -167,7 +168,8 @@ public class NotamService extends IntentService {
         if ( notamFile.exists() ) {
             result.putExtra( NOTAM_PATH, notamFile.getAbsolutePath() );
         }
-        sendBroadcast( result );
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
+        bm.sendBroadcast( result );
     }
 
     private void cleanupCache() {
