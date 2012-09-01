@@ -47,11 +47,9 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
         mListView.setOnItemClickListener( new OnItemClickListener() {
 
             @Override
-            public void onItemClick( AdapterView<?> parent, View view,
-                    int position, long id ) {
+            public void onItemClick( AdapterView<?> parent, View view, int position, long id ) {
                 onListItemClick( mListView, view, position );
             }
-
         } );
 
         return createContentView( view );
