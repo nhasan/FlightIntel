@@ -329,7 +329,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
             requestMetars( false );
 
-            getActivityBase().setContentShown( true );
+            setContentShown( true );
         }
 
         protected void showCommunicationsDetails( Cursor[] result ) {
