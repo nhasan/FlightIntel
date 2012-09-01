@@ -72,7 +72,7 @@ public class PreferencesActivity extends PreferenceActivity
         Preference pref = findPreference( key );
        if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
             String radius = mSharedPrefs.getString( key, "20" );
-            pref.setSummary( "Show airports within a radius of "+radius+ " NM" );
+            pref.setSummary( "Use "+radius+ " NM radius" );
         }
     }
 

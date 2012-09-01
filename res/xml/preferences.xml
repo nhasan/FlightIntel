@@ -39,8 +39,8 @@
         <CheckBoxPreference
                 android:key="extra_runway_data"
                 android:title="Show extra runway data"
-                android:summaryOn="Show extended runway information"
-                android:summaryOff="Show basic runway information"
+                android:summaryOn="Showing extended runway information"
+                android:summaryOff="Showing basic runway information"
                 defaultValue="false" />
         <CheckBoxPreference
                 android:key="show_gps_notams"
@@ -59,8 +59,8 @@
         <CheckBoxPreference
                 android:key="show_local_time"
                 android:title="Show local time"
-                android:summaryOn="Show date/time in local timezone"
-                android:summaryOff="Show date/time in UTC timezone"
+                android:summaryOn="Showing time in local timezone"
+                android:summaryOff="Showing time in UTC timezone"
                 defaultValue="false" />
     </PreferenceCategory>
 </PreferenceScreen>
