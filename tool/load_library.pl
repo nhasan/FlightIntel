@@ -79,6 +79,7 @@ my $sth_categories = $dbh->prepare( $insert_categories_record );
 insert_category( "handbooks", "HANDBOOKS" );
 insert_category( "manuals", "MANUALS" );
 insert_category( "periodicals", "PERIODICALS" );
+insert_category( "safety", "SAFETY" );
 insert_category( "regs", "REGULATIONS" );
 insert_category( "risk", "RISK MANAGEMENT" );
 insert_category( "circular", "ADVISORY CIRCULARS" );
@@ -112,6 +113,10 @@ insert_book( "handbooks", "faa-h-8083-2-2009.pdf", "Risk Management Handbook",
         "2009", "FAA-H-8083-2", 11163579 );
 insert_book( "handbooks", "faa-fs-i-8700-1-2003.pdf", "Information for Banner Tow Operations",
         "2003", "FAA/FS-I-8799-1", 845400 );
+insert_book( "handbooks", "fcm-h1-2005.pdf", "Federal Meteorological Handbook No. 1",
+        "2005", "NOAA", 1860432 );
+insert_book( "handbooks", "fcm-h2-1988.pdf", "Federal Meteorological Handbook No. 2",
+        "1988", "NOAA", 16091462 );
 
 insert_book( "manuals", "Chart_Users_Guide_10thEd.pdf", "Aeronautical Chart User's Guide",
         "10th Edition", "FAA", 17159844 );
@@ -136,6 +141,35 @@ insert_book( "periodicals", "MayJun2012.pdf", "FAA Safety Briefing",
         "May/Jun 2012", "FAA", 3162563 );
 insert_book( "periodicals", "MarApr2012.pdf", "FAA Safety Briefing",
         "Mar/Apr 2012", "FAA", 6996937 );
+insert_book( "periodicals", "20120809_flying_lessons.pdf", "Flying Lessons", "Aug 9",
+        "Mastery Flight Training", 160231 );
+insert_book( "periodicals", "20120816_flying_lessons.pdf", "Flying Lessons", "Aug 16",
+        "Mastery Flight Training", 210106 );
+insert_book( "periodicals", "20120824_flying_lessons.pdf", "Flying Lessons", "Aug 24",
+        "Mastery Flight Training", 181668 );
+insert_book( "periodicals", "20120830_flying_lessons.pdf", "Flying Lessons", "Aug 30",
+        "Mastery Flight Training", 207146 );
+
+insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
+        "2008", "FAA", 829656 );
+insert_book( "safety", "faa-p-8740-12-2008.pdf", "Thunderstorms",
+        "2008", "FAA", 615586 );
+insert_book( "safety", "faa-p-8740-30-2008.pdf", "How to Obtain a Good Weather Briefing",
+        "2008", "FAA", 768237 );
+insert_book( "safety", "faa-p-8740-36-2008.pdf", "Proficiency and the Private Pilot",
+        "2008", "FAA", 728809 );
+insert_book( "safety", "faa-p-8740-40-2008.pdf", "Wind Shear",
+        "2008", "FAA", 1572833 );
+insert_book( "safety", "faa-p-8740-48-2008.pdf", "On Landings Part 1",
+        "2008", "FAA", 7959581 );
+insert_book( "safety", "faa-p-8740-49-2008.pdf", "On Landings Part 2",
+        "2008", "FAA", 2122307 );
+insert_book( "safety", "faa-p-8740-50-2008.pdf", "On Landings Part 3",
+        "2008", "FAA", 2478467 );
+insert_book( "safety", "faa-p-8740-66-2008.pdf", "Flying Light Twins Safely",
+        "2008", "FAA", 988401 );
+insert_book( "safety", "faa-p-8740-69-2008.pdf", "Aeronautical Decision Making",
+        "2008", "FAA", 1331791 );
 
 insert_book( "regs", "aim_2012_r1.pdf", "Aeronautical Information Manual (AIM)",
         "2012", "FAA", 8640900 );
