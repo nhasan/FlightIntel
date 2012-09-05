@@ -141,6 +141,8 @@ public class AirportDetailsActivity extends ActivityBase {
                 mLocation.setLongitude( lon );
                 mLocation.setAltitude( elev_msl );
 
+                mDeclination = GeoUtils.getMagneticDeclination( mLocation );
+
                 SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
                 builder.setTables( Runways.TABLE_NAME );
                 Cursor c = builder.query( db, new String[] { Runways.SITE_NUMBER, Runways.RUNWAY_ID,
