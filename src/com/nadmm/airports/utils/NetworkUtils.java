@@ -142,8 +142,16 @@ public class NetworkUtils {
         return doHttpGet( context, httpClient, uri, file, receiver, result, filter );
     }
 
+    /*
+     *  An input stream that works as a pass-through filter but counts the bytes read from
+     *  the underlying stream. It is needed for compressed streams that are wrapped by a 
+     *  GzipInputStream filter that only reports the decompressed byte count. Wrapping raw
+     *  stream with this filter stream allows us to keep track of the download progress
+     *  when all we know is the compressed size not the decompressed size.
+     */
     private static class CountingInputStream extends BufferedInputStream {
 
+        // Count of bytes actually read from the raw stream
         private int mCount;
 
         public CountingInputStream( InputStream in ) {
