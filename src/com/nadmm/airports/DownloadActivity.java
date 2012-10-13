@@ -21,9 +21,6 @@ package com.nadmm.airports;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -31,8 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -87,9 +83,7 @@ public final class DownloadActivity extends ActivityBase {
     private static final Integer PORT = 80;
     //private static final String PATH = "/~nhasan/fadds";
     private static final String PATH = "/files";
-    private static final String MANIFEST = "manifest.xml";
-
-    private static final File CACHE_DIR = SystemUtils.getExternalDir( "cache" );
+    private static final String MANIFEST = "manifest1.xml";
 
     private final Map<String, ProgressTracker> mTrackers = new HashMap<String, ProgressTracker>();
 
@@ -99,7 +93,6 @@ public final class DownloadActivity extends ActivityBase {
         public String desc;
         public int version;
         public String fileName;
-        public String dbName;
         public int size;
         public Time start;
         public Time end;
@@ -223,10 +216,10 @@ public final class DownloadActivity extends ActivityBase {
         public TextView statusText;
         public ProgressBar progressBar;
 
-        public ProgressTracker( View convertView ) {
-            msgText = (TextView) convertView.findViewById( R.id.download_msg );
-            statusText = (TextView) convertView.findViewById( R.id.download_status );
-            progressBar = (ProgressBar) convertView.findViewById( R.id.download_progress );
+        public ProgressTracker( View v ) {
+            msgText = (TextView) v.findViewById( R.id.download_msg );
+            statusText = (TextView) v.findViewById( R.id.download_status );
+            progressBar = (ProgressBar) v.findViewById( R.id.download_progress );
         }
 
         public void initProgress( int resid, int max ) {
@@ -663,11 +656,6 @@ public final class DownloadActivity extends ActivityBase {
                     return result;
                 }
 
-                result = installData( data );
-                if ( result < 0 ) {
-                    return result;
-                }
-
                 result = updateCatalog( data );
                 if ( result < 0 ) {
                     return result;
@@ -716,21 +704,20 @@ public final class DownloadActivity extends ActivityBase {
             mHandler.post( new Runnable() {
                 @Override
                 public void run() {
-                    mTracker.initProgress( R.string.downloading, data.size );
+                    mTracker.initProgress( R.string.installing, data.size );
                 }
             } );
 
             try {
                 DefaultHttpClient httpClient = new DefaultHttpClient();
 
-                if ( !CACHE_DIR.exists() ) {
-                    if ( !CACHE_DIR.mkdirs() ) {
-                        UiUtils.showToast( mActivity, "Unable to create folder on external storage" );
-                        return -3;
-                    }
+                if ( !DatabaseManager.DATABASE_DIR.exists()
+                        && !DatabaseManager.DATABASE_DIR.mkdirs() ) {
+                    UiUtils.showToast( mActivity, "Unable to create folder on external storage" );
+                    return -3;
                 }
 
-                File zipFile = new File( CACHE_DIR, data.fileName );
+                File dbFile = new File( DatabaseManager.DATABASE_DIR, data.fileName );
 
                 ResultReceiver receiver = new ResultReceiver( mHandler ) {
                     protected void onReceiveResult( int resultCode, Bundle resultData ) {
@@ -740,84 +727,15 @@ public final class DownloadActivity extends ActivityBase {
                 };
 
                 Bundle result = new Bundle();
-                NetworkUtils.doHttpGet( mActivity, httpClient, HOST, PORT, PATH+"/"+data.fileName,
-                        "uuid="+UUID.randomUUID().toString(), zipFile, receiver, result, null );
+                NetworkUtils.doHttpGet( mActivity, httpClient, HOST, PORT,
+                        PATH+"/"+data.fileName+".gz", "uuid="+UUID.randomUUID().toString(),
+                        dbFile, receiver, result, GZIPInputStream.class );
             } catch ( Exception e ) {
                 UiUtils.showToast( mActivity, e.getMessage() );
                 return -1;
             }
 
             return 0;
-        }
-
-        protected int installData( final DataInfo data ) {
-            File cacheFile = new File( CACHE_DIR, data.fileName );
-            ZipFile zipFile;
-            try {
-                zipFile = new ZipFile( cacheFile );
-            } catch ( Exception e ) {
-                UiUtils.showToast( mActivity, e.getMessage() );
-                return -1;
-            }
-
-            final ZipEntry entry = (ZipEntry) zipFile.entries().nextElement();
-
-            mHandler.post( new Runnable() {
-
-                @Override
-                public void run() {
-                    mTracker.initProgress( R.string.installing, (int) entry.getSize() );
-                }
-
-            } );
-
-            if ( !DatabaseManager.DATABASE_DIR.exists() ) {
-                if ( !DatabaseManager.DATABASE_DIR.mkdirs() ) {
-                    UiUtils.showToast( mActivity, "Unable to create folder on external storage" );
-                    return -3;
-                }
-            }
-
-            data.dbName = entry.getName();
-
-            InputStream in = null;
-            FileOutputStream out = null;
-
-            try {
-                in = zipFile.getInputStream( entry );
-                File dbFile = new File( DatabaseManager.DATABASE_DIR, data.dbName );
-                out = new FileOutputStream( dbFile );
-
-                byte[] buffer = new byte[ 32*1024 ];
-                int len = buffer.length;
-                int count;
-                int total = 0;
-
-                // Try to read the type of record first
-                while ( ( count = in.read( buffer, 0, len ) ) != -1 )  {
-                    out.write( buffer, 0, count );
-                    total += count;
-                    publishProgress( total );
-                }
-
-                return 0;
-            } catch ( Exception e ) {
-                UiUtils.showToast( mActivity, e.getMessage() );
-               return -1;
-            } finally {
-                cacheFile.delete();
-
-                try {
-                    if ( in != null ) {
-                        in.close();
-                    }
-                    if ( out != null ) {
-                        out.close();
-                    }
-                    zipFile.close();
-                } catch ( IOException e ) {
-                }
-            }
         }
 
         protected int updateCatalog( DataInfo data ) {
@@ -829,11 +747,11 @@ public final class DownloadActivity extends ActivityBase {
             values.put( Catalog.VERSION, data.version );
             values.put( Catalog.START_DATE, data.start.format3339( false ) );
             values.put( Catalog.END_DATE, data.end.format3339( false ) );
-            values.put( Catalog.DB_NAME, data.dbName );
+            values.put( Catalog.DB_NAME, data.fileName );
             values.put( Catalog.INSTALL_DATE, now.format3339( false ) );
 
             Log.i( TAG, "Inserting catalog: type="+data.type
-                    +", version="+data.version+", db="+data.dbName );
+                    +", version="+data.version+", db="+data.fileName );
             int rc = mDbManager.insertCatalogEntry( values );
             if ( rc < 0 ) {
                 UiUtils.showToast( mActivity, "Failed to update catalog database" );
@@ -847,14 +765,16 @@ public final class DownloadActivity extends ActivityBase {
         AlertDialog.Builder builder = new AlertDialog.Builder( this );
         builder.setMessage( "Are you sure you want to delete all installed data?" )
                .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
-                    @Override
+
+                   @Override
                     public void onClick( DialogInterface dialog, int id ) {
                         DeleteDataTask deleteTask = new DeleteDataTask();
                         deleteTask.execute( (Void)null );
                     }
                } )
                .setNegativeButton( "No", new DialogInterface.OnClickListener() {
-                    @Override
+
+                   @Override
                     public void onClick( DialogInterface dialog, int id ) {
                     }
                } );
