@@ -129,24 +129,22 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072 );
 
-insert_book( "periodicals", "cb_389.pdf", "Callback", "Issue 389", "NASA", 167235 );
-insert_book( "periodicals", "cb_390.pdf", "Callback", "Issue 390", "NASA", 227541 );
+insert_book( "periodicals", "cb_392.pdf", "Callback", "Issue 392", "NASA", 160898 );
 insert_book( "periodicals", "cb_391.pdf", "Callback", "Issue 391", "NASA", 211511 );
+insert_book( "periodicals", "cb_390.pdf", "Callback", "Issue 390", "NASA", 227541 );
 insert_book( "periodicals", "12jul-front.pdf", "The Front", "Jul 2012", "NOAA", 2071900 );
 insert_book( "periodicals", "11nov-front.pdf", "The Front", "Nov 2011", "NOAA", 1030336 );
 insert_book( "periodicals", "11jul-front.pdf", "The Front", "Jul 2011", "NOAA", 588846 );
+insert_book( "periodicals", "SepOct2012.pdf", "FAA Safety Briefing",
+        "Sep/Oct 2012", "FAA", 2682469 );
 insert_book( "periodicals", "JulAug2012.pdf", "FAA Safety Briefing",
         "Jul/Aug 2012", "FAA", 3930710 );
 insert_book( "periodicals", "MayJun2012.pdf", "FAA Safety Briefing",
         "May/Jun 2012", "FAA", 3162563 );
-insert_book( "periodicals", "MarApr2012.pdf", "FAA Safety Briefing",
-        "Mar/Apr 2012", "FAA", 6996937 );
-insert_book( "periodicals", "20120809_flying_lessons.pdf", "Flying Lessons", "Aug 9",
-        "Mastery Flight Training", 160231 );
-insert_book( "periodicals", "20120816_flying_lessons.pdf", "Flying Lessons", "Aug 16",
-        "Mastery Flight Training", 210106 );
-insert_book( "periodicals", "20120824_flying_lessons.pdf", "Flying Lessons", "Aug 24",
-        "Mastery Flight Training", 181668 );
+insert_book( "periodicals", "20120913_flying_lessons.pdf", "Flying Lessons", "Sep 13",
+        "Mastery Flight Training", 533217 );
+insert_book( "periodicals", "20120906_flying_lessons.pdf", "Flying Lessons", "Sep 9",
+        "Mastery Flight Training", 475993 );
 insert_book( "periodicals", "20120830_flying_lessons.pdf", "Flying Lessons", "Aug 30",
         "Mastery Flight Training", 207146 );
 

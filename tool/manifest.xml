@@ -10,15 +10,6 @@
         <end>2012-09-20T09:01:00Z</end>
     </datafile>
     <datafile>
-        <type>DTPP</type>
-        <desc>AeroNav d-TPP #1208 (FAA)</desc>
-        <version>1208</version>
-        <filename>dtpp_20120726.zip</filename>
-        <size>462859</size>
-        <start>2012-07-26T09:01:00Z</start>
-        <end>2012-08-23T09:01:00Z</end>
-    </datafile>
-    <datafile>
         <type>DAFD</type>
         <desc>AeroNav d-A/FD 26JUL2012 (FAA)</desc>
         <version>20120726</version>
@@ -44,6 +35,42 @@
         <size>3178</size>
         <start>2012-07-26T09:01:00Z</start>
         <end>2012-09-20T09:01:00Z</end>
+    </datafile>
+    <datafile>
+        <type>FADDS</type>
+        <desc>National Airspace System (FAA)</desc>
+        <version>20120920</version>
+        <filename>fadds_20120920.zip</filename>
+        <size>5087280</size>
+        <start>2012-09-20T09:01:00Z</start>
+        <end>2012-11-15T09:01:00Z</end>
+    </datafile>
+    <datafile>
+        <type>DAFD</type>
+        <desc>AeroNav d-A/FD 20Sep2012 (FAA)</desc>
+        <version>20120920</version>
+        <filename>dafd_20120920.zip</filename>
+        <size>82431</size>
+        <start>2012-09-20T09:01:00Z</start>
+        <end>2012-11-15T09:01:00Z</end>
+    </datafile>
+    <datafile>
+        <type>DTPP</type>
+        <desc>AeroNav d-TPP #1210 (FAA)</desc>
+        <version>1210</version>
+        <filename>dtpp_20120920.zip</filename>
+        <size>465977</size>
+        <start>2012-09-20T09:01:00Z</start>
+        <end>2012-10-18T09:01:00Z</end>
+    </datafile>
+    <datafile>
+        <type>LIBRARY</type>
+        <desc>Documents Library 20Sep2012</desc>
+        <version>20120920</version>
+        <filename>library_20120920.zip</filename>
+        <size>3829</size>
+        <start>2012-09-20T09:01:00Z</start>
+        <end>2012-10-18T09:01:00Z</end>
     </datafile>
 </manifest>
 
