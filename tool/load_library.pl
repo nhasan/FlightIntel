@@ -141,12 +141,14 @@ insert_book( "periodicals", "JulAug2012.pdf", "FAA Safety Briefing",
         "Jul/Aug 2012", "FAA", 3930710 );
 insert_book( "periodicals", "MayJun2012.pdf", "FAA Safety Briefing",
         "May/Jun 2012", "FAA", 3162563 );
+insert_book( "periodicals", "20121004flying_lessons.pdf", "Flying Lessons", "Oct 4",
+        "Mastery Flight Training", 523663 );
+insert_book( "periodicals", "20120927flying_lessons.pdf", "Flying Lessons", "Sep 27",
+        "Mastery Flight Training", 511363 );
+insert_book( "periodicals", "20120920flying_lessons.pdf", "Flying Lessons", "Sep 20",
+        "Mastery Flight Training", 554199 );
 insert_book( "periodicals", "20120913_flying_lessons.pdf", "Flying Lessons", "Sep 13",
         "Mastery Flight Training", 533217 );
-insert_book( "periodicals", "20120906_flying_lessons.pdf", "Flying Lessons", "Sep 9",
-        "Mastery Flight Training", 475993 );
-insert_book( "periodicals", "20120830_flying_lessons.pdf", "Flying Lessons", "Aug 30",
-        "Mastery Flight Training", 207146 );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656 );
