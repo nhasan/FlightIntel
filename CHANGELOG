@@ -1,5 +1,10 @@
+v4.5.0 (10/14/2012)
+===================
+* Much faster data installation.
+* Improved navigation for Wx allowing direct access to tabs.
+
 v4.4.0 (9/1/2012)
-==================
+=================
 * Added "Area Forecast" (FA text product) to wx
 * Added "Winds Aloft" (FB text product) to wx
 * Pre-cache other wx stations when fetching wx for a station on mobile network 
