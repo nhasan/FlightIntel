@@ -269,8 +269,8 @@ public class PirepFragment extends FragmentBase {
         }
 
         if ( entry.windSpeedKnots < Integer.MAX_VALUE ) {
-            addRow( details, "Winds", String.format( "%d\u00B0 (true) at %d knots",
-                    entry.windDirDegrees, entry.windSpeedKnots ) );
+            addRow( details, "Winds", String.format( "%s (true) at %d knots",
+                    FormatUtils.formatDegrees( entry.windDirDegrees ), entry.windSpeedKnots ) );
         }
 
         if ( !entry.wxList.isEmpty() ) {
