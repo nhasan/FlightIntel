@@ -1,4 +1,9 @@
-v4.5.0 (10/14/2012)
+v4.6.0 (11/11/2012)
+===================
+* Added "Home Airport" setting
+* Show distance and bearing from home airport to the displayed airport
+
+v4.5.0 (10/28/2012)
 ===================
 * Much faster data installation.
 * Improved navigation for Wx allowing direct access to tabs.
