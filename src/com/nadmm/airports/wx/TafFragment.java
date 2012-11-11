@@ -400,7 +400,7 @@ public class TafFragment extends FragmentBase {
 
             if ( forecast.visibilitySM < Float.MAX_VALUE ) {
                 String value = forecast.visibilitySM > 6? "6+ SM"
-                        : FormatUtils.formatVisibility( forecast.visibilitySM );
+                        : FormatUtils.formatStatuteMiles( forecast.visibilitySM );
                 addRow( fcst_layout, "Visibility", value );
             }
 

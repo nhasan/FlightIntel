@@ -261,7 +261,7 @@ public class PirepFragment extends FragmentBase {
         }
 
         if ( entry.visibilitySM < Integer.MAX_VALUE ) {
-            addRow( details, "Visibility", FormatUtils.formatVisibility( entry.visibilitySM ) );
+            addRow( details, "Visibility", FormatUtils.formatStatuteMiles( entry.visibilitySM ) );
         }
 
         if ( entry.tempCelsius < Integer.MAX_VALUE ) {

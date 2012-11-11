@@ -31,7 +31,8 @@ public class FormatUtils {
     private static DecimalFormat sFeetFormatAgl;
     private static DecimalFormat sNumberFormat;
     private static DecimalFormat sFreqFormat;
-    private static DecimalFormat sVisFormat;
+    private static DecimalFormat sSMFormat;
+    private static DecimalFormat sNMFormat;
     private static NumberFormat sDollarFormat;
 
     static {
@@ -45,8 +46,10 @@ public class FormatUtils {
         sNumberFormat.applyPattern( "#,##0.##" );
         sFreqFormat = new DecimalFormat();
         sFreqFormat.applyPattern( "##0.000" );
-        sVisFormat = new DecimalFormat();
-        sVisFormat.applyPattern( "#0.## SM" );
+        sSMFormat = new DecimalFormat();
+        sSMFormat.applyPattern( "#0.## SM" );
+        sNMFormat = new DecimalFormat();
+        sNMFormat.applyPattern( "#0.# NM" );
         sDollarFormat = DecimalFormat.getCurrencyInstance();
     }
 
@@ -100,8 +103,12 @@ public class FormatUtils {
         return sFreqFormat.format( value );
     }
 
-    public static String formatVisibility( float value ) {
-        return sVisFormat.format( value );
+    public static String formatStatuteMiles( float value ) {
+        return sSMFormat.format( value );
+    }
+
+    public static String formatNauticalMiles( float value ) {
+        return sNMFormat.format( value );
     }
 
     public static String formatTemperature( float temp ) {
@@ -117,6 +124,10 @@ public class FormatUtils {
 
     public static String formatDegrees( float degrees ) {
         return String.format( "%.02f\u00B0", degrees );
+    }
+
+    public static String formatDegrees( int degrees ) {
+        return String.format( "%03d\u00B0", degrees );
     }
 
     public static String formatCurrency( double amount ) {
