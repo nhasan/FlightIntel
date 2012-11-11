@@ -230,7 +230,8 @@ public class AirSigmetFragment extends FragmentBase {
 
         if ( entry.movementDirDegrees < Integer.MAX_VALUE ) {
             StringBuilder sb = new StringBuilder();
-            sb.append( String.format( "%d\u00B0 (%s)", entry.movementDirDegrees,
+            sb.append( String.format( "%s (%s)",
+                    FormatUtils.formatDegrees( entry.movementDirDegrees ),
                     GeoUtils.getCardinalDirection( entry.movementDirDegrees ) ) );
             if ( entry.movementSpeedKnots < Integer.MAX_VALUE ) {
                 sb.append( String.format( " at %d knots", entry.movementSpeedKnots ) );
