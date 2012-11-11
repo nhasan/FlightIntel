@@ -464,9 +464,9 @@ public class MetarFragment extends FragmentBase {
         } else if ( metar.windDirDegrees == 0 ) {
             s.append( String.format( "Winds variable at %d knots", metar.windSpeedKnots ) );
         } else {
-            s.append( String.format( "From %s (%03d\u00B0 true) at %d knots",
+            s.append( String.format( "From %s (%s true) at %d knots",
                     GeoUtils.getCardinalDirection( metar.windDirDegrees ),
-                    metar.windDirDegrees, metar.windSpeedKnots ) );
+                    FormatUtils.formatDegrees( metar.windDirDegrees ), metar.windSpeedKnots ) );
             if ( metar.windGustKnots < Integer.MAX_VALUE ) {
                 s.append( String.format( " gusting to %d knots", metar.windGustKnots ) );
             }
