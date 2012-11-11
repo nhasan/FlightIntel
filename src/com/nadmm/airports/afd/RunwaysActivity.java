@@ -203,7 +203,7 @@ public class RunwaysActivity extends ActivityBase {
                 if ( dir.equals( "E" ) ) {
                     variation *= -1;
                 }
-                addRow( layout, "Magnetic heading", String.format( "%03d\u00B0",
+                addRow( layout, "Magnetic heading", FormatUtils.formatDegrees(
                         DataUtils.calculateMagneticHeading( heading, variation ) ) );
             }
             String ilsType = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ILS_TYPE ) );
@@ -354,7 +354,7 @@ public class RunwaysActivity extends ActivityBase {
                 if ( dir.equals( "E" ) ) {
                     variation *= -1;
                 }
-                addRow( layout, "Magnetic heading", String.format( "%03d\u00B0",
+                addRow( layout, "Magnetic heading", FormatUtils.formatDegrees(
                         DataUtils.calculateMagneticHeading( heading, variation ) ) );
             }
             String ilsType = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ILS_TYPE ) );

@@ -387,9 +387,10 @@ public class TafFragment extends FragmentBase {
                 } else if ( forecast.windDirDegrees == 0 ) {
                     wind = String.format( "Variable at %d knots", forecast.windSpeedKnots );
                 } else {
-                    wind = String.format( "%s (%03d\u00B0 true) at %d knots",
+                    wind = String.format( "%s (%s true) at %d knots",
                             GeoUtils.getCardinalDirection( forecast.windDirDegrees ),
-                            forecast.windDirDegrees, forecast.windSpeedKnots );
+                            FormatUtils.formatDegrees( forecast.windDirDegrees ),
+                            forecast.windSpeedKnots );
                 }
                 String gust = "";
                 if ( forecast.windGustKnots < Integer.MAX_VALUE ) {
@@ -418,9 +419,10 @@ public class TafFragment extends FragmentBase {
             }
 
             if ( forecast.windShearSpeedKnots < Integer.MAX_VALUE ) {
-                String shear = String.format( "%s (%03d\u00B0 true) at %d knots",
+                String shear = String.format( "%s (%s true) at %d knots",
                         GeoUtils.getCardinalDirection( forecast.windShearDirDegrees ),
-                        forecast.windShearDirDegrees, forecast.windShearSpeedKnots );
+                        FormatUtils.formatDegrees( forecast.windShearDirDegrees ),
+                        forecast.windShearSpeedKnots );
                 String height = FormatUtils.formatFeetAgl( forecast.windShearHeightFeetAGL );
                 addRow( fcst_layout, "Wind shear", shear, height );
             }
