@@ -21,6 +21,12 @@
  -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+            android:key="home_airport"
+            android:title="Home airport"
+            android:dialogTitle="Enter home airport code"
+            android:capitalize="characters"
+            android:summary="Set the code for your home airport" />
     <PreferenceCategory android:title="Location settings">
         <CheckBoxPreference
                 android:key="location_use_gps"

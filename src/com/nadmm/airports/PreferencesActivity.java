@@ -28,6 +28,7 @@ import android.preference.PreferenceActivity;
 public class PreferencesActivity extends PreferenceActivity 
             implements OnSharedPreferenceChangeListener {
 
+    public static final String KEY_HOME_AIRPORT = "home_airport";
     public static final String KEY_STARTUP_CHECK_EXPIRED_DATA = "startup_check_expired_data";
     public static final String KEY_LOCATION_USE_GPS = "location_use_gps";
     public static final String KEY_LOCATION_NEARBY_RADIUS = "location_nearby_radius";
@@ -54,6 +55,7 @@ public class PreferencesActivity extends PreferenceActivity
         super.onResume();
         // Initialize the preference screen
         onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
+        onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_AIRPORT );
 
         // Set up a listener whenever a key changes
         mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
@@ -70,9 +72,16 @@ public class PreferencesActivity extends PreferenceActivity
     @Override
     public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
         Preference pref = findPreference( key );
-       if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
+        if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
             String radius = mSharedPrefs.getString( key, "20" );
-            pref.setSummary( "Using "+radius+ " NM radius" );
+            pref.setSummary( "Using "+radius+" NM radius" );
+        } else if ( key.equals( KEY_HOME_AIRPORT ) ) {
+            String code = mSharedPrefs.getString( KEY_HOME_AIRPORT, "" );
+            if ( code.length() > 0 ) {
+                pref.setSummary( "Home airport set to "+code );
+            } else {
+                pref.setSummary( "Set the code for your home airport" );
+            }
         }
     }
 

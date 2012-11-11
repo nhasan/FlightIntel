@@ -114,17 +114,19 @@ public class AirportDetailsActivity extends ActivityBase {
         private String mIcaoCode;
         private int mRadius;
         private int mWxUpdates = 0;
+        private String mHome;
+        private String mSiteNumber;
 
         private final class AirportDetailsTask extends CursorAsyncTask {
 
             @Override
             protected Cursor[] doInBackground( String... params ) {
-                String siteNumber = params[ 0 ];
+                mSiteNumber = params[ 0 ];
 
                 SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-                Cursor[] cursors = new Cursor[ 13 ];
+                Cursor[] cursors = new Cursor[ 14 ];
 
-                Cursor apt = getAirportDetails( siteNumber );
+                Cursor apt = getAirportDetails( mSiteNumber );
                 cursors[ 0 ] = apt;
 
                 String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
@@ -149,7 +151,7 @@ public class AirportDetailsActivity extends ActivityBase {
                         Runways.RUNWAY_LENGTH, Runways.RUNWAY_WIDTH, Runways.SURFACE_TYPE,
                         Runways.BASE_END_HEADING, Runways.BASE_END_ID, Runways.RECIPROCAL_END_ID },
                         Runways.SITE_NUMBER+"=? AND "+Runways.RUNWAY_LENGTH+" > 0",
-                        new String[] { siteNumber }, null, null, null, null );
+                        new String[] { mSiteNumber }, null, null, null, null );
                 cursors[ 1 ] = c;
 
                 builder = new SQLiteQueryBuilder();
@@ -157,21 +159,21 @@ public class AirportDetailsActivity extends ActivityBase {
                 c = builder.query( db, new String[] { Remarks.REMARK_TEXT },
                         Runways.SITE_NUMBER+"=?"
                         +"AND "+Remarks.REMARK_NAME+" in ('E147', 'A3', 'A24', 'A70', 'A75', 'A82')",
-                        new String[] { siteNumber }, null, null, null, null );
+                        new String[] { mSiteNumber }, null, null, null, null );
                 cursors[ 2 ] = c;
 
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Tower1.TABLE_NAME );
                 c = builder.query( db, new String[] { "*" },
                         Tower1.SITE_NUMBER+"=?",
-                        new String[] { siteNumber }, null, null, null, null );
+                        new String[] { mSiteNumber }, null, null, null, null );
                 cursors[ 3 ] = c;
 
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Tower7.TABLE_NAME );
                 c = builder.query( db, new String[] { "*" },
                         Tower7.SATELLITE_AIRPORT_SITE_NUMBER+"=?",
-                        new String[] { siteNumber }, null, null, null, null );
+                        new String[] { mSiteNumber }, null, null, null, null );
                 cursors[ 4 ] = c;
 
                 if ( !c.moveToFirst() ) {
@@ -202,7 +204,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 builder.setTables( Attendance.TABLE_NAME );
                 c = builder.query( db,
                         new String[] { Attendance.ATTENDANCE_SCHEDULE },
-                        Attendance.SITE_NUMBER+"=?", new String[] { siteNumber },
+                        Attendance.SITE_NUMBER+"=?", new String[] { mSiteNumber },
                         null, null, Attendance.SEQUENCE_NUMBER, null );
                 cursors[ 9 ] = c;
 
@@ -228,6 +230,21 @@ public class AirportDetailsActivity extends ActivityBase {
                     c = builder.query( db, new String[] { "*" }, Dafd.FAA_CODE+"=? ",
                             new String[] { faaCode }, null, null, null, null );
                     cursors[ 12 ] = c;
+                }
+
+                if ( mHome.length() > 0 ) {
+                    db = getDatabase( DatabaseManager.DB_FADDS );
+                    builder = new SQLiteQueryBuilder();
+                    builder.setTables( Airports.TABLE_NAME );
+                    c = builder.query( db,
+                            new String[] {
+                                Airports.SITE_NUMBER,
+                                Airports.REF_LATTITUDE_DEGREES,
+                                Airports.REF_LONGITUDE_DEGREES
+                            },
+                            Airports.FAA_CODE+"=? OR "+Airports.ICAO_CODE+"=?",
+                            new String[] { mHome, mHome }, null, null, null, null );
+                    cursors[ 13 ] = c;
                 }
 
                 return cursors;
@@ -266,6 +283,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     PreferenceManager.getDefaultSharedPreferences( getActivity() );
             mRadius = Integer.valueOf( prefs.getString(
                     PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
+            mHome = prefs.getString( PreferencesActivity.KEY_HOME_AIRPORT, "" );
 
             mDafdFilter = new IntentFilter();
             mDafdFilter.addAction( DafdService.ACTION_GET_AFD );
@@ -324,6 +342,7 @@ public class AirportDetailsActivity extends ActivityBase {
             showRemarks( result );
             showAwosDetails( result );
             showNearbyFacilities( result );
+            showHomeDistance( result );
             showOperationsDetails( result );
             showAeroNavDetails( result );
             showServicesDetails( result );
@@ -513,6 +532,45 @@ public class AirportDetailsActivity extends ActivityBase {
             addClickableRow( layout, "Navaids", navaids, R.drawable.row_selector_bottom );
         }
 
+        protected void showHomeDistance( Cursor[] result ) {
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_home_layout );
+            Cursor home = result[ 13 ];
+            if ( home == null ) {
+                addRow( layout, "Home airport is not set" );
+            } else if ( home.moveToFirst() ) {
+                String siteNumber = home.getString( home.getColumnIndex( Airports.SITE_NUMBER ) );
+                if ( siteNumber.equals( mSiteNumber ) ) {
+                    addRow( layout, mHome+" is your home airport" );
+                } else {
+                    double lat = home.getDouble( home.getColumnIndex(
+                            Airports.REF_LATTITUDE_DEGREES ) );
+                    double lon = home.getDouble( home.getColumnIndex(
+                            Airports.REF_LONGITUDE_DEGREES ) );
+                    float[] results = new float[ 3 ];
+                    Location.distanceBetween( lat, lon,
+                            mLocation.getLatitude(), mLocation.getLongitude(), results );
+                    float distance = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
+                    if ( distance >= 100 ) {
+                        distance = Math.round( distance );
+                    }
+                    int initialBearing = Math.round( ( results[ 1 ]+mDeclination+360 )%360 );
+                    int finalBearing = Math.round( ( results[ 2 ]+mDeclination+360 )%360 );
+    
+                    addRow( layout, "Distance from "+mHome, String.format( "%s %s",
+                            FormatUtils.formatNauticalMiles( distance ),
+                            GeoUtils.getCardinalDirection( initialBearing ) ) );
+                    addRow( layout, "Initial bearing",
+                            FormatUtils.formatDegrees( initialBearing )+" M" );
+                    if ( Math.abs( finalBearing-initialBearing ) >= 10 ) {
+                        addRow( layout, "Final bearing",
+                                FormatUtils.formatDegrees( finalBearing )+" M" );
+                    }
+                }
+            } else {
+                addRow( layout, "Home airport '"+mHome+"' not found" );                
+            }
+        }
+
         protected void showOperationsDetails( Cursor[] result ) {
             Cursor apt = result[ 0 ];
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_operations_layout );
@@ -680,7 +738,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     if ( dtpp.moveToFirst() ) {
                         Intent intent = new Intent( getActivity(), DtppActivity.class );
                         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                        addClickableRow( layout, "Instrument charts", intent,
+                        addClickableRow( layout, "Instrument procedures", intent,
                                 R.drawable.row_selector_bottom );
                     } else {
                         addRow( layout, "No instrument procedures available" );
@@ -693,6 +751,10 @@ public class AirportDetailsActivity extends ActivityBase {
                 addClickableRow( layout, "Please donate to enable this section",
                         intent, R.drawable.row_selector );
             }
+        }
+
+        protected void showdistance( Cursor[] result ) {
+            
         }
 
         protected void getAfdPage( String afdCycle, String pdfName ) {
