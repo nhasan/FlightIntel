@@ -20,24 +20,6 @@
     </datafile>
     <datafile>
         <type>DTPP</type>
-        <desc>AeroNav d-TPP #1210 (FAA)</desc>
-        <version>1210</version>
-        <filename>dtpp_20120920.db</filename>
-        <size>465830</size>
-        <start>2012-09-20T09:01:00Z</start>
-        <end>2012-10-18T09:01:00Z</end>
-    </datafile>
-    <datafile>
-        <type>LIBRARY</type>
-        <desc>Documents Library 20Sep2012</desc>
-        <version>20120920</version>
-        <filename>library_20120920.db</filename>
-        <size>3679</size>
-        <start>2012-09-20T09:01:00Z</start>
-        <end>2012-10-18T09:01:00Z</end>
-    </datafile>
-    <datafile>
-        <type>DTPP</type>
         <desc>AeroNav d-TPP #1211 (FAA)</desc>
         <version>1211</version>
         <filename>dtpp_20121018.db</filename>
@@ -53,6 +35,42 @@
         <size>3717</size>
         <start>2012-10-18T09:01:00Z</start>
         <end>2012-11-15T09:01:00Z</end>
+    </datafile>
+    <datafile>
+        <type>FADDS</type>
+        <desc>National Airspace System (FAA)</desc>
+        <version>20121115</version>
+        <filename>fadds_20121115.db</filename>
+        <size>5094352</size>
+        <start>2012-11-15T09:01:00Z</start>
+        <end>2013-01-10T09:01:00Z</end>
+    </datafile>
+    <datafile>
+        <type>DAFD</type>
+        <desc>AeroNav d-A/FD 15Nov2012 (FAA)</desc>
+        <version>20121115</version>
+        <filename>dafd_20121115.db</filename>
+        <size>82244</size>
+        <start>2012-11-15T09:01:00Z</start>
+        <end>2013-01-10T09:01:00Z</end>
+    </datafile>
+    <datafile>
+        <type>DTPP</type>
+        <desc>AeroNav d-TPP #1212 (FAA)</desc>
+        <version>1212</version>
+        <filename>dtpp_20121115.db</filename>
+        <size>472166</size>
+        <start>2012-11-15T09:01:00Z</start>
+        <end>2012-12-13T09:01:00Z</end>
+    </datafile>
+    <datafile>
+        <type>LIBRARY</type>
+        <desc>Documents Library 15Nov2012</desc>
+        <version>20121115</version>
+        <filename>library_20121115.db</filename>
+        <size>3756</size>
+        <start>2012-11-15T09:01:00Z</start>
+        <end>2012-12-13T09:01:00Z</end>
     </datafile>
 </manifest>
 
