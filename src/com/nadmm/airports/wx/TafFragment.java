@@ -19,6 +19,8 @@
 
 package com.nadmm.airports.wx;
 
+import java.util.Locale;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -385,16 +387,18 @@ public class TafFragment extends FragmentBase {
                 if ( forecast.windDirDegrees == 0 && forecast.windSpeedKnots == 0 ) {
                     wind = "Calm";
                 } else if ( forecast.windDirDegrees == 0 ) {
-                    wind = String.format( "Variable at %d knots", forecast.windSpeedKnots );
+                    wind = String.format( Locale.US, "Variable at %d knots",
+                            forecast.windSpeedKnots );
                 } else {
-                    wind = String.format( "%s (%s true) at %d knots",
+                    wind = String.format( Locale.US, "%s (%s true) at %d knots",
                             GeoUtils.getCardinalDirection( forecast.windDirDegrees ),
                             FormatUtils.formatDegrees( forecast.windDirDegrees ),
                             forecast.windSpeedKnots );
                 }
                 String gust = "";
                 if ( forecast.windGustKnots < Integer.MAX_VALUE ) {
-                    gust = String.format( "Gusting to %d knots", forecast.windGustKnots );
+                    gust = String.format( Locale.US,
+                            "Gusting to %d knots", forecast.windGustKnots );
                 }
                 addRow( fcst_layout, "Winds", wind, gust );
             }
@@ -419,7 +423,7 @@ public class TafFragment extends FragmentBase {
             }
 
             if ( forecast.windShearSpeedKnots < Integer.MAX_VALUE ) {
-                String shear = String.format( "%s (%s true) at %d knots",
+                String shear = String.format( Locale.US, "%s (%s true) at %d knots",
                         GeoUtils.getCardinalDirection( forecast.windShearDirDegrees ),
                         FormatUtils.formatDegrees( forecast.windShearDirDegrees ),
                         forecast.windShearSpeedKnots );

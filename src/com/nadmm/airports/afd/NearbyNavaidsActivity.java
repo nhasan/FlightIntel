@@ -20,6 +20,7 @@
 package com.nadmm.airports.afd;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -185,7 +186,9 @@ public class NearbyNavaidsActivity extends ActivityBase {
                     // Sort the navaids list by distance from current location
                     Arrays.sort( navaids );
 
+                    @SuppressWarnings("resource")
                     MatrixCursor vor = new MatrixCursor( mNavColumns );
+                    @SuppressWarnings("resource")
                     MatrixCursor ndb = new MatrixCursor( mNavColumns );
                     for ( NavaidData navaid : navaids ) {
                         if ( navaid.DISTANCE <= navaid.RANGE ) {
@@ -311,7 +314,7 @@ public class NearbyNavaidsActivity extends ActivityBase {
                 String name, String type, String freq, int radial, float distance, int resid ) {
             String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
             String label2 = name+" "+type;
-            String value2 = String.format( "r%03d/%.1fNM", radial, distance );
+            String value2 = String.format( Locale.US, "r%03d/%.1fNM", radial, distance );
             Intent intent = new Intent( getActivity(), NavaidDetailsActivity.class );
             intent.putExtra( Nav1.NAVAID_ID, navaidId );
             intent.putExtra( Nav1.NAVAID_TYPE, type );
@@ -323,7 +326,7 @@ public class NearbyNavaidsActivity extends ActivityBase {
                 String name, String type, String freq, int heading, float distance, int resid ) {
             String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
             String label2 = name+" "+type;
-            String value2 = String.format( "%03d\u00B0M/%.1fNM", heading, distance );
+            String value2 = String.format( Locale.US, "%03d\u00B0M/%.1fNM", heading, distance );
             Intent intent = new Intent( getActivity(), NavaidDetailsActivity.class );
             intent.putExtra( Nav1.NAVAID_ID, navaidId );
             intent.putExtra( Nav1.NAVAID_TYPE, type );

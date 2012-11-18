@@ -19,6 +19,8 @@
 
 package com.nadmm.airports.afd;
 
+import java.util.Locale;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -647,7 +649,7 @@ public class RunwaysActivity extends ActivityBase {
                             Runways.BASE_END_CONTROLLING_OBJECT_SLOPE ) );
         
                     text = String.format( "%s %s, ",
-                            FormatUtils.formatFeet( height ), object.toLowerCase() );
+                            FormatUtils.formatFeet( height ), object.toLowerCase( Locale.US ) );
                     if ( lighted.length() > 0 ) {
                         text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
                     }
@@ -692,7 +694,7 @@ public class RunwaysActivity extends ActivityBase {
                             Runways.RECIPROCAL_END_CONTROLLING_OBJECT_SLOPE ) );
         
                     text = String.format( "%s %s, ",
-                            FormatUtils.formatFeet( height ), object.toLowerCase() );
+                            FormatUtils.formatFeet( height ), object.toLowerCase( Locale.US ) );
                     if ( lighted.length() > 0 ) {
                         text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
                     }

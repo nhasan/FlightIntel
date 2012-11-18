@@ -20,6 +20,7 @@
 package com.nadmm.airports.providers;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import android.app.SearchManager;
 import android.content.ContentProvider;
@@ -120,7 +121,7 @@ public class AirportsProvider extends ContentProvider {
                 "selectionArgs must be provided for the Uri: " + uri);
         }
 
-        String query = selectionArgs[ 0 ].toUpperCase().trim();
+        String query = selectionArgs[ 0 ].toUpperCase( Locale.US ).trim();
         switch ( sUriMatcher.match( uri ) ) {
             case SEARCH_SUGGEST:
                 return suggestAirports( uri, query );

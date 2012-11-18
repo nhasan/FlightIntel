@@ -32,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -137,14 +138,14 @@ public class NotamService extends IntentService {
         while ( ( line = reader.readLine() ) != null ) {
             if ( !inside ) {
                 // Inspect the contents of all <pre> tags to find NOTAMs
-                if ( line.toUpperCase().contains( "<PRE>" ) ) {
+                if ( line.toUpperCase( Locale.US ).contains( "<PRE>" ) ) {
                     builder = new StringBuilder();
                     inside = true;
                 }
             }
             if ( inside ) {
                 builder.append( line+" " );
-                if ( line.toUpperCase().contains( "</PRE>" ) ) {
+                if ( line.toUpperCase( Locale.US ).contains( "</PRE>" ) ) {
                     inside = false;
                     int start = builder.indexOf( "!" );
                     if ( start >= 0 ) {

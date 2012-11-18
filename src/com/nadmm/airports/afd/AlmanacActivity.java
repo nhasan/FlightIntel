@@ -22,6 +22,7 @@ package com.nadmm.airports.afd;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import android.database.Cursor;
@@ -115,7 +116,7 @@ public class AlmanacActivity extends ActivityBase {
             Calendar morningTwilight = solarCalc.getSunriseTime( SolarCalculator.CIVIL, now );
             Calendar eveningTwilight = solarCalc.getSunsetTime( SolarCalculator.CIVIL, now );
 
-            DateFormat format = new SimpleDateFormat( "HH:mm" );
+            DateFormat format = new SimpleDateFormat( "HH:mm", Locale.US );
             TimeZone local = now.getTimeZone();
             TimeZone utc = TimeZone.getTimeZone( "GMT" );
 

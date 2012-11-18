@@ -970,7 +970,7 @@ public class AirportDetailsActivity extends ActivityBase {
         }
 
         protected void requestMetars( boolean force ) {
-            boolean cacheOnly = NetworkUtils.useCacheContentOnly( getActivity() );
+            boolean cacheOnly = !NetworkUtils.canDownloadData( getActivity() );
             requestMetars( NoaaService.ACTION_GET_METAR, force, cacheOnly );
         }
 

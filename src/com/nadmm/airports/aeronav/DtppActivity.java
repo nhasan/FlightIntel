@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -233,7 +234,7 @@ public class DtppActivity extends ActivityBase {
             String to = cycle.getString( cycle.getColumnIndex( DtppCycle.TO_DATE ) );
 
             // Parse chart cycle effective dates
-            SimpleDateFormat df = new SimpleDateFormat( "HHmm'Z' MM/dd/yy" );
+            SimpleDateFormat df = new SimpleDateFormat( "HHmm'Z' MM/dd/yy", Locale.US );
             df.setTimeZone( java.util.TimeZone.getTimeZone( "UTC" ) );
             Date fromDate = null;
             Date toDate = null;

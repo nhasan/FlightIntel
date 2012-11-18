@@ -20,6 +20,7 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
+import java.util.Locale;
 
 import android.content.Intent;
 import android.location.Location;
@@ -65,7 +66,7 @@ public class PirepService extends NoaaService {
 
                 if ( forceRefresh || ( !cacheOnly && !xmlFile.exists() ) ) {
                     try {
-                        String query = String.format( PIREP_TEXT_QUERY, hours,
+                        String query = String.format( Locale.US, PIREP_TEXT_QUERY, hours,
                                 radiusNM*GeoUtils.STATUTE_MILES_PER_NAUTICAL_MILES,
                                 location.getLongitude(), location.getLatitude() );
                         fetchFromNoaa( query, xmlFile, true );

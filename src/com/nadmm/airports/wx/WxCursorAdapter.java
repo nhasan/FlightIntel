@@ -20,6 +20,7 @@
 package com.nadmm.airports.wx;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -161,7 +162,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                     for ( WxSymbol wx : metar.wxList ) {
                         if ( !wx.getSymbol().equals( "NSW" ) ) {
                             info.append( ", " );
-                            info.append( wx.toString().toLowerCase() );
+                            info.append( wx.toString().toLowerCase( Locale.US ) );
                         }
                     }
                 }

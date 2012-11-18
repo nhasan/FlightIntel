@@ -22,6 +22,7 @@ package com.nadmm.airports.wx;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -82,7 +83,7 @@ public class MetarService extends NoaaService {
                         File tmpFile = null;
                         try {
                             tmpFile = File.createTempFile( "metar", null );
-                            String query = String.format( METAR_TEXT_QUERY, hours, param );
+                            String query = String.format( Locale.US, METAR_TEXT_QUERY, hours, param );
                             fetchFromNoaa( query, tmpFile, true );
                             parseMetars( tmpFile, missing );
                         } catch ( Exception e ) {

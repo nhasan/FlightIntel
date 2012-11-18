@@ -161,6 +161,7 @@ public class FssCommActivity extends ActivityBase {
                 }
                 columnNames[ i++ ] = BEARING;
                 columnNames[ i++ ] = DISTANCE;
+                @SuppressWarnings("resource")
                 MatrixCursor matrix = new MatrixCursor( columnNames );
 
                 if ( c.moveToFirst() ) {

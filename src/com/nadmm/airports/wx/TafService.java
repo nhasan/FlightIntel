@@ -20,6 +20,7 @@
 package com.nadmm.airports.wx;
 
 import java.io.File;
+import java.util.Locale;
 
 import android.content.Intent;
 import android.text.format.DateUtils;
@@ -62,7 +63,7 @@ public class TafService extends NoaaService {
                     File tmpFile = null;
                     try {
                         tmpFile = File.createTempFile( "taf", null );
-                        String query = String.format( TAF_TEXT_QUERY, hours, stationId );
+                        String query = String.format( Locale.US, TAF_TEXT_QUERY, hours, stationId );
                         fetchFromNoaa( query, tmpFile, true );
                         taf = mParser.parse( tmpFile );
                         writeObject( taf, objFile );

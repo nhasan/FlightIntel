@@ -118,7 +118,7 @@ public class WxListFragmentBase extends ListFragmentBase {
         }
 
         ActivityBase activity = (ActivityBase) getActivity();
-        boolean cacheOnly = NetworkUtils.useCacheContentOnly( activity );
+        boolean cacheOnly = !NetworkUtils.canDownloadData( activity );
         if ( force || !cacheOnly ) {
             activity.startRefreshAnimation();
         }

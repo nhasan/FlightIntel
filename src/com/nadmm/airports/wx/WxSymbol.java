@@ -22,6 +22,7 @@ package com.nadmm.airports.wx;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.nadmm.airports.R;
@@ -52,9 +53,9 @@ public abstract class WxSymbol implements Serializable, Cloneable {
         String desc = getDescription();
         if ( mIntensity.length() > 0 ) {
             if ( mIntensity.equals( "+" ) ) {
-                desc = "Heavy "+desc.toLowerCase();
+                desc = "Heavy "+desc.toLowerCase( Locale.US );
             } else if ( mIntensity.equals( "-" ) ) {
-                desc = "Light "+desc.toLowerCase();
+                desc = "Light "+desc.toLowerCase( Locale.US );
             }
         }
         return desc;

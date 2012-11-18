@@ -21,6 +21,7 @@ package com.nadmm.airports.utils;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Locale;
 
 import com.nadmm.airports.wx.WxUtils;
 
@@ -112,22 +113,22 @@ public class FormatUtils {
     }
 
     public static String formatTemperature( float temp ) {
-        return String.format( "%.1f\u00B0C (%.0f\u00B0F)",
+        return String.format( Locale.US, "%.1f\u00B0C (%.0f\u00B0F)",
                 temp, WxUtils.celsiusToFahrenheit( temp ) );
     }
 
     public static String formatAltimeter( float altimeterHg ) {
         float altimeterMb = WxUtils.hgToMillibar( altimeterHg );
-        return String.format( "%.2f\" Hg (%s mb)",
+        return String.format( Locale.US, "%.2f\" Hg (%s mb)",
                 altimeterHg, FormatUtils.formatNumber( altimeterMb ) );
     }
 
     public static String formatDegrees( float degrees ) {
-        return String.format( "%.02f\u00B0", degrees );
+        return String.format( Locale.US, "%.02f\u00B0", degrees );
     }
 
     public static String formatDegrees( int degrees ) {
-        return String.format( "%03d\u00B0", degrees );
+        return String.format( Locale.US, "%03d\u00B0", degrees );
     }
 
     public static String formatCurrency( double amount ) {

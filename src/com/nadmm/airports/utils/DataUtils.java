@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
@@ -799,7 +800,7 @@ public final class DataUtils {
     public static String getTimeZoneAsString( TimeZone tz ) {
         Date now = new Date();
         String tzName = tz.getDisplayName( tz.inDaylightTime( now ), TimeZone.SHORT );
-        DateFormat tzFormat = new SimpleDateFormat( "'(UTC'Z')'" );
+        DateFormat tzFormat = new SimpleDateFormat( "'(UTC'Z')'", Locale.US );
         tzFormat.setTimeZone( tz );
         return String.format( "%s %s", tzName, tzFormat.format( now ) );
     }
