@@ -313,12 +313,10 @@ public class ChartsDownloadActivity extends ActivityBase {
             }
 
             tv = (TextView) findViewById( R.id.charts_download_msg );
-            tv.setText( "Each chart volume is about 150-250MB in size and may take 15-30 mins"
-                    +" to download. Charts are stored on the external SD card storage."
-                    +" Press 'Back' button to stop a running download."
-                    +" Download will not start if you are connected to a metered network"
-                    +" such as mobile data or tethered WiFi due to the large size of the"
-                    +" downloads.\n\n"
+            tv.setText( "Each TPP volume is about 150-250MB in size and may take 15-30 mins"
+                    +" to download. The Instrument Procedure charts are in PDF format and"
+                    +" stored on the external SD card storage. These are not the sectional charts."
+                    +" Press 'Back' button to stop a running download.\n\n"
                     +"All charts for a cycle are automatically deleted at the end of that cycle" );
 
             String msg;
