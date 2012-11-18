@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -288,7 +289,7 @@ public class ChartsDownloadActivity extends ActivityBase {
             getSupportActionBar().setSubtitle( String.format( "AeroNav Cycle %s", mTppCycle ) );
 
             String expiry = c.getString( c.getColumnIndex( DtppCycle.TO_DATE ) );
-            SimpleDateFormat df = new SimpleDateFormat( "HHmm'Z' MM/dd/yy" );
+            SimpleDateFormat df = new SimpleDateFormat( "HHmm'Z' MM/dd/yy", Locale.US );
             df.setTimeZone( java.util.TimeZone.getTimeZone( "UTC" ) );
             Date endDate = null;
             try {
@@ -330,12 +331,12 @@ public class ChartsDownloadActivity extends ActivityBase {
             } else if ( !NetworkUtils.isNetworkAvailable( getActivity() ) ) {
                 msg = "Not connected to the internet";
                 mIsOk = false;
-            } else if ( NetworkUtils.isConnectedToMeteredNetwork( getActivity() ) ) {
-                msg = "Connected to a metered network";
-                mIsOk = false;
-            } else {
+            } else if ( NetworkUtils.canDownloadData( getActivity() ) ) {
                 msg = "Connected to an unmetered network";
                 mIsOk = true;
+            } else {
+                msg = "Connected to a metered network";
+                mIsOk = false;
             }
             tv = (TextView) findViewById( R.id.charts_download_warning );
             tv.setText( msg );

@@ -205,12 +205,12 @@ public class LibraryFragment extends FragmentBase {
         } else if ( !NetworkUtils.isNetworkAvailable( getActivity() ) ) {
             msg = "Not connected to the internet";
             mIsOk = false;
-        } else if ( NetworkUtils.isConnectedToMeteredNetwork( getActivity() ) ) {
-            msg = "Connected to a metered network";
-            mIsOk = false;
-        } else {
+        } else if ( NetworkUtils.canDownloadData( getActivity() ) ) {
             msg = "Connected to an unmetered network";
             mIsOk = true;
+        } else {
+            msg = "Connected to a metered network";
+            mIsOk = false;
         }
         TextView tv = (TextView) findViewById( R.id.msg_txt );
         tv.setText( msg );

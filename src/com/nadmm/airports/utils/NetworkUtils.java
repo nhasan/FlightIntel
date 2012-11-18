@@ -111,14 +111,13 @@ public class NetworkUtils {
         }
     }
 
-    public static boolean useCacheContentOnly( Context context ) {
+    public static boolean canDownloadData( Context context ) {
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences( context );
         boolean alwaysAutoFetch = prefs.getBoolean(
                 PreferencesActivity.KEY_AUTO_DOWNLOAD_ON_3G, false );
-        boolean cacheOnly = ( !alwaysAutoFetch 
-                && NetworkUtils.isConnectedToMeteredNetwork( context ) );
-        return cacheOnly;
+        return ( alwaysAutoFetch 
+                || !NetworkUtils.isConnectedToMeteredNetwork( context ) );
     }
 
     public static HttpClient getHttpClient() {
