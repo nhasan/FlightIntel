@@ -1,3 +1,8 @@
+v4.6.1 (11/24/2012)
+===================
+* Allow library and chart download on 3G/4G if allowed in settings
+* Allow library items to be deleted (recover from corrupted files)
+
 v4.6.0 (11/14/2012)
 ===================
 * Added "Home Airport" setting
