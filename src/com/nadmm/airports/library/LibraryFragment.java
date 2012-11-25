@@ -31,7 +31,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.text.format.Formatter;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -60,6 +64,7 @@ public class LibraryFragment extends FragmentBase {
     private String mCategory;
     private HashMap<String, View> mBookRowMap = new HashMap<String, View>();
     private LibraryActivity mActivity;
+    private View mContextMenuRow;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -271,6 +276,10 @@ public class LibraryFragment extends FragmentBase {
             showStatus( row, path != null );
             if ( path != null ) {
                 row.setTag( R.id.LIBRARY_PDF_PATH, path );
+                registerForContextMenu( row );
+            } else {
+                row.setTag( R.id.LIBRARY_PDF_PATH, null );
+                unregisterForContextMenu( row );
             }
             // Hide the progressbar
             ProgressBar progressBar = (ProgressBar) row.findViewById( R.id.progress );
@@ -313,6 +322,12 @@ public class LibraryFragment extends FragmentBase {
         getActivity().startService( service );
     }
 
+    protected void deleteBook( String name ) {
+        Intent service = makeServiceIntent( LibraryService.ACTION_DELETE_BOOK );
+        service.putExtra( LibraryService.BOOK_NAME, name );
+        getActivity().startService( service );
+    }
+
     protected void checkBooks() {
         Intent service = makeServiceIntent( LibraryService.ACTION_CHECK_BOOKS );
         ArrayList<String> books = new ArrayList<String>( mBookRowMap.keySet() );
@@ -325,6 +340,29 @@ public class LibraryFragment extends FragmentBase {
         service.setAction( action );
         service.putExtra( LibraryService.CATEGORY, mCategory );
         return service;
+    }
+
+    @Override
+    public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
+        super.onCreateContextMenu( menu, v, menuInfo );
+
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate( R.menu.library_context_menu, menu );
+        mContextMenuRow = v;
+    }
+
+    @Override
+    public boolean onContextItemSelected( MenuItem item ) {
+        switch ( item.getItemId() ) {
+            case R.id.menu_delete:
+                if ( mContextMenuRow != null ) {
+                    String name = (String) mContextMenuRow.getTag( R.id.LIBRARY_PDF_NAME );
+                    deleteBook( name );
+                }
+                break;
+            default:
+        }
+        return super.onContextItemSelected( item );
     }
 
 }

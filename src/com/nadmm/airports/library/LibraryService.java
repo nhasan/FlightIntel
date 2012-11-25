@@ -44,6 +44,7 @@ public class LibraryService extends IntentService {
     public static final String LIBRARY_HOST = "commondatastorage.googleapis.com";
     public static final String LIBRARY_PATH = "/flightintel/library";
     public static final String ACTION_GET_BOOK = "flightintel.library.action.GET_BOOK";
+    public static final String ACTION_DELETE_BOOK = "flightintel.library.action.DELETE_BOOK";
     public static final String ACTION_CHECK_BOOKS = "flightintel.library.action.CHECK_BOOKS";
     public static final String ACTION_DOWNLOAD_PROGRESS = "flightintel.library.action.PROGRESS";
     public static final String CATEGORY = "CATEGORY";
@@ -72,6 +73,8 @@ public class LibraryService extends IntentService {
             checkBooks( intent );
         } else if ( action.equals( ACTION_GET_BOOK ) ) {
             getBook( intent );
+        } else if ( action.equals( ACTION_DELETE_BOOK ) ) {
+            deleteBook( intent );
         }
     }
 
@@ -99,6 +102,19 @@ public class LibraryService extends IntentService {
         }
 
         sendResult( intent.getAction(), category, pdfFile );
+    }
+
+    private void deleteBook( Intent intent ) {
+        String category = intent.getStringExtra( CATEGORY );
+        String book = intent.getStringExtra( BOOK_NAME );
+        File categoryDir = getCategoryDir( category );
+
+        File pdfFile = new File( categoryDir, book );
+        if ( pdfFile.exists() ) {
+            pdfFile.delete();
+        }
+
+        sendResult( ACTION_CHECK_BOOKS, category, pdfFile );
     }
 
     private boolean fetch( String category, File pdfFile ) {
