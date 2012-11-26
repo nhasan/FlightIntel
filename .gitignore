@@ -4,3 +4,7 @@
 .settings
 bin/
 gen/
+ant.properties
+local.properties
+proguard.cfg
+project.properties
