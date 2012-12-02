@@ -53,7 +53,7 @@ public class AirSigmet implements Serializable {
         public String hazardType;
         public String hazardSeverity;
         public String type;
-        ArrayList<AirSigmetPoint> points;
+        public ArrayList<AirSigmetPoint> points;
 
         public AirSigmetEntry() {
             fromTime = Long.MAX_VALUE;
