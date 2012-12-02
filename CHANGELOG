@@ -1,3 +1,8 @@
+v4.7.0 (12/1/2012)
+==================
+* Added TFR listing and details accesible from airport details
+* More refinements to TFR function to come
+
 v4.6.1 (11/24/2012)
 ===================
 * Allow library and chart download on 3G/4G if allowed in settings
