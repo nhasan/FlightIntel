@@ -64,7 +64,7 @@ public class TfrDetailFragment extends FragmentBase {
         if ( mTfr.createTime < Long.MAX_VALUE ) {
             addRow( layout, "Created", TimeUtils.formatDateTimeYear( context, mTfr.createTime ) );
         }
-        if ( mTfr.modifyTime < Long.MAX_VALUE ) {
+        if ( mTfr.modifyTime < Long.MAX_VALUE && mTfr.modifyTime > mTfr.createTime ) {
             addRow( layout, "Modified", TimeUtils.formatDateTimeYear( context, mTfr.modifyTime ) );
         }
 
