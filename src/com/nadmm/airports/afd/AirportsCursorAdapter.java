@@ -45,9 +45,8 @@ public class AirportsCursorAdapter extends ResourceCursorAdapter {
         TextView other;
     }
 
-    @SuppressWarnings("deprecation")
     public AirportsCursorAdapter( Context context, Cursor c ) {
-        super( context, R.layout.airport_list_item, c );
+        super( context, R.layout.airport_list_item, c, 0 );
     }
 
     @Override
