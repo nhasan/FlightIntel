@@ -46,6 +46,16 @@ public class TimeUtils {
         }
     }
 
+    public static String formatDateTimeYear( Context context, long millis ) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( context );
+        boolean local = prefs.getBoolean( PreferencesActivity.SHOW_LOCAL_TIME, false );
+        if ( local ) {
+            return formatDateTimeYearLocal( context, millis );
+        } else {
+            return formatDateTimeYearUTC( context, millis );
+        }
+    }
+
     public static String formatDateRange( Context context, long startMillis, long endMillis ) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( context );
         boolean local = prefs.getBoolean( PreferencesActivity.SHOW_LOCAL_TIME, false );
@@ -68,12 +78,34 @@ public class TimeUtils {
         return String.format( "%s UTC", s );
     }
 
+    @SuppressWarnings("deprecation")
+    public static String formatDateTimeYearUTC( Context context, long millis ) {
+        String s = DateUtils.formatDateRange( context, millis, millis,
+                DateUtils.FORMAT_24HOUR
+                | DateUtils.FORMAT_SHOW_DATE
+                | DateUtils.FORMAT_SHOW_TIME
+                | DateUtils.FORMAT_ABBREV_ALL
+                | DateUtils.FORMAT_UTC );
+        return String.format( "%s UTC", s );
+    }
+
+    @SuppressWarnings("deprecation")
     public static String formatDateTimeLocal( Context context, long millis ) {
         String s = DateUtils.formatDateRange( context, millis, millis,
                 DateUtils.FORMAT_24HOUR
                 | DateUtils.FORMAT_SHOW_DATE
                 | DateUtils.FORMAT_SHOW_TIME
                 | DateUtils.FORMAT_NO_YEAR
+                | DateUtils.FORMAT_ABBREV_ALL );
+        return String.format( "%s %s", s, getLocalTimeZoneName() );
+    }
+
+    @SuppressWarnings("deprecation")
+    public static String formatDateTimeYearLocal( Context context, long millis ) {
+        String s = DateUtils.formatDateRange( context, millis, millis,
+                DateUtils.FORMAT_24HOUR
+                | DateUtils.FORMAT_SHOW_DATE
+                | DateUtils.FORMAT_SHOW_TIME
                 | DateUtils.FORMAT_ABBREV_ALL );
         return String.format( "%s %s", s, getLocalTimeZoneName() );
     }
@@ -91,6 +123,7 @@ public class TimeUtils {
         return String.format( "%s UTC", s );
     }
 
+    @SuppressWarnings("deprecation")
     public static String formatDateRangeLocal( Context context,
             long startMillis, long endMillis ) {
         String s = DateUtils.formatDateRange( context, startMillis, endMillis,
