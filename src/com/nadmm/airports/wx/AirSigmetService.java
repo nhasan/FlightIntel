@@ -37,7 +37,7 @@ public class AirSigmetService extends NoaaService {
 
     private static final long AIRSIGMET_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
 
-    AirSigmetParser mParser;
+    private final AirSigmetParser mParser;
 
     public AirSigmetService() {
         super( "airsigmet", AIRSIGMET_CACHE_MAX_AGE );
