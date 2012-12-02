@@ -20,7 +20,10 @@
  */
  -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:padding="8dp"
+        android:paddingLeft="@dimen/padding_left"
+        android:paddingTop="@dimen/padding_top"
+        android:paddingRight="@dimen/padding_right"
+        android:paddingBottom="@dimen/padding_bottom"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/wx_station_id"

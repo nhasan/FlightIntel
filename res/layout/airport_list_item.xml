@@ -20,12 +20,15 @@
  */
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/padding_left"
+        android:paddingTop="@dimen/padding_top"
+        android:paddingRight="@dimen/padding_right"
+        android:paddingBottom="@dimen/padding_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
         <TextView android:id="@+id/facility_name"
@@ -42,14 +45,14 @@
     </LinearLayout>
     <TextView android:id="@+id/location"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/other_info"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/distance"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 </LinearLayout>
