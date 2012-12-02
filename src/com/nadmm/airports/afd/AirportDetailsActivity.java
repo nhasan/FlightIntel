@@ -72,6 +72,7 @@ import com.nadmm.airports.aeronav.DafdService;
 import com.nadmm.airports.aeronav.DtppActivity;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.notams.AirportNotamActivity;
+import com.nadmm.airports.tfr.TfrActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
@@ -344,6 +345,7 @@ public class AirportDetailsActivity extends ActivityBase {
             showNearbyFacilities( result );
             showHomeDistance( result );
             showOperationsDetails( result );
+            showNotamAndTfr();
             showAeroNavDetails( result );
             showServicesDetails( result );
             showOtherDetails( result );
@@ -695,12 +697,17 @@ public class AirportDetailsActivity extends ActivityBase {
                 }
             }
             Intent intent = new Intent( getActivity(), AlmanacActivity.class );
-            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "Sunrise and sunset", intent, R.drawable.row_selector_middle );
-            intent = new Intent( getActivity(), AirportNotamActivity.class );
-            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_bottom );
+            intent.putExtra( Airports.SITE_NUMBER, mSiteNumber );
+            addClickableRow( layout, "Sunrise and sunset", intent, R.drawable.row_selector_bottom );
+        }
+
+        private void showNotamAndTfr() {
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_notam_faa_layout );
+            Intent intent = new Intent( getActivity(), AirportNotamActivity.class );
+            intent.putExtra( Airports.SITE_NUMBER, mSiteNumber );
+            addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_top );
+            intent = new Intent( getActivity(), TfrActivity.class );
+            addClickableRow( layout, "TFRs", intent, R.drawable.row_selector_bottom );
         }
 
         protected void showAeroNavDetails( Cursor[] result ) {
@@ -751,10 +758,6 @@ public class AirportDetailsActivity extends ActivityBase {
                 addClickableRow( layout, "Please donate to enable this section",
                         intent, R.drawable.row_selector );
             }
-        }
-
-        protected void showdistance( Cursor[] result ) {
-            
         }
 
         protected void getAfdPage( String afdCycle, String pdfName ) {

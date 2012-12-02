@@ -119,6 +119,10 @@
     <string name="try_now">Try Now</string>
     <string name="view_maps">View Maps</string>
     <string name="charts_download">Charts Download</string>
+    <string name="tfr_list">TFR List</string>
+    <string name="notam_tfr">NOTAM &amp; TFR</string>
+    <string name="tfr_text">TFR Text</string>
+    <string name="tfr_time">TFR Time</string>
     <string name="select_charts_volume">Select Charts Volume</string>
     <string name="select_type">Select Type</string>
     <string name="ceiling">Ceiling</string>
