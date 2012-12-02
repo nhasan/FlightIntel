@@ -137,6 +137,26 @@ public class WxListFragmentBase extends ListFragmentBase {
         activity.startService( service );
     }
 
+    @Override
+    protected CursorAdapter newListAdapter( Context context, Cursor c ) {
+        WxCursorAdapter adapter = new WxCursorAdapter( context, c );
+        adapter.setMetars( mStationWx );
+        return adapter;
+    }
+
+    @Override
+    protected void onListItemClick( ListView l, View v, int position ) {
+        // When getting wx for one station, get for all others too
+        requestMetars( NoaaService.ACTION_CACHE_METAR, false );
+        Cursor c = (Cursor) l.getItemAtPosition( position );
+        String icaoCode = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
+        Intent intent = new Intent( getActivity(), WxDetailActivity.class );
+        Bundle args = new Bundle();
+        args.putString( NoaaService.STATION_ID, icaoCode );
+        intent.putExtras( args );
+        startActivity( intent );
+    }
+
     private final class WxReceiver extends BroadcastReceiver {
 
         protected int mWxUpdates = 0;
@@ -173,26 +193,6 @@ public class WxListFragmentBase extends ListFragmentBase {
             }
         }
 
-    }
-
-    @Override
-    protected CursorAdapter newListAdapter( Context context, Cursor c ) {
-        WxCursorAdapter adapter = new WxCursorAdapter( context, c );
-        adapter.setMetars( mStationWx );
-        return adapter;
-    }
-
-    @Override
-    protected void onListItemClick( ListView l, View v, int position ) {
-        // When getting wx for one station, get for all others too
-        requestMetars( NoaaService.ACTION_CACHE_METAR, false );
-        Cursor c = (Cursor) l.getItemAtPosition( position );
-        String icaoCode = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
-        Intent intent = new Intent( getActivity(), WxDetailActivity.class );
-        Bundle args = new Bundle();
-        args.putString( NoaaService.STATION_ID, icaoCode );
-        intent.putExtras( args );
-        startActivity( intent );
     }
 
 }
