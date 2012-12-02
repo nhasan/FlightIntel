@@ -98,25 +98,13 @@ public class TfrListFragment extends FragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         setActionBarTitle( "TFR List" );
-        requestTfrList();
+        requestTfrList( false );
     }
 
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
         ActivityBase activity = (ActivityBase) getActivity();
         activity.setRefreshItemVisible( true );
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_refresh:
-            requestTfrList();
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
-        }
     }
 
     private void onListItemClick( ListView l, View v, int position ) {
@@ -127,9 +115,10 @@ public class TfrListFragment extends FragmentBase {
         startActivity( activity );
     }
 
-    private void requestTfrList() {
+    private void requestTfrList( boolean force ) {
         Intent service = new Intent( getActivity(), TfrService.class );
         service.setAction( TfrService.ACTION_GET_TFR_LIST );
+        service.putExtra( TfrService.FORCE_REFRESH, force );
         getActivity().startService( service );
     }
 
@@ -144,7 +133,21 @@ public class TfrListFragment extends FragmentBase {
                     tfrList.entries.size() ) );
             TextView tv = (TextView) findViewById( R.id.tfr_fetch_time );
             tv.setText( "Fetched on "+TimeUtils.formatDateTime( context, tfrList.fetchTime )  );
+            stopRefreshAnimation();
             setContentShown( true );
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+        case R.id.menu_refresh:
+            requestTfrList( true );
+            startRefreshAnimation();
+            return true;
+        default:
+            return super.onOptionsItemSelected( item );
         }
     }
 

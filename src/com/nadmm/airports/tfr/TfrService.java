@@ -43,6 +43,7 @@ public class TfrService extends IntentService {
     public static final String TFR_PATH = "/tfr/Query.asp";
     public static final String TFR_QUERY = "UserID=Public&DeletedMinutes=180&ExpiredMinutes=0";
     public static final String ACTION_GET_TFR_LIST = "flightintel.tfr.action.GET_TFR_LIST";
+    public static final String FORCE_REFRESH = "FORCE_REFRESH";
     public static final String TFR_LIST = "TFR_LIST";
 
     private static final String TFR_CACHE_NAME = "tfr.xml";
@@ -88,8 +89,10 @@ public class TfrService extends IntentService {
     }
 
     private void getTfrList( Intent intent ) {
+        boolean force = intent.getBooleanExtra( FORCE_REFRESH, false );
+
         File tfrFile = new File( mDataDir, TFR_CACHE_NAME );
-        if ( !tfrFile.exists() ) {
+        if ( !tfrFile.exists() || force ) {
             fetch( tfrFile );
         }
 
