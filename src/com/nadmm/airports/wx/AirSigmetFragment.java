@@ -109,8 +109,8 @@ public class AirSigmetFragment extends FragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.airsigmet_detail_view, container, false );
-        Button btnImages = (Button) view.findViewById( R.id.btnViewMaps );
-        btnImages.setOnClickListener( new OnClickListener() {
+        Button btnGraphic = (Button) view.findViewById( R.id.btnViewGraphic );
+        btnGraphic.setOnClickListener( new OnClickListener() {
 
             @Override
             public void onClick( View v ) {

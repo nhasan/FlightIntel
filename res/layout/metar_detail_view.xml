@@ -28,9 +28,9 @@
             android:orientation="vertical">
         <include layout="@layout/wx_title_layout" />
         <include layout="@layout/wx_subtitle_layout" />
-        <Button android:id="@+id/btnViewMaps"
+        <Button android:id="@+id/btnViewGraphic"
                 style="@style/FlatButton"
-                android:text="@string/view_maps"
+                android:text="@string/view_graphic"
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:layout_marginTop="6dp"
