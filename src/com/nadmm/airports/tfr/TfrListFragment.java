@@ -66,6 +66,15 @@ public class TfrListFragment extends FragmentBase {
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.tfr_list_view, container, false );
         mListView = (ListView) view.findViewById( android.R.id.list );
+        View footer = inflater.inflate( R.layout.tfr_list_footer_view, null, false );
+        footer.setLayoutParams( new ListView.LayoutParams(
+                ListView.LayoutParams.MATCH_PARENT, ListView.LayoutParams.WRAP_CONTENT ) );
+        TextView tv = (TextView) footer.findViewById( R.id.tfr_warning_text );
+        tv.setText( "Depicted TFR data may not be a complete listing. Pilots should not use "
+                + "the information for flight planning purposes. For the latest information, "
+                + "call your local Flight Service Station at 1-800-WX-BRIEF." );
+        mListView.addFooterView( footer );
+        mListView.setFooterDividersEnabled( true );
         mListView.setOnItemClickListener( new OnItemClickListener() {
 
             @Override
