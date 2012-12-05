@@ -53,7 +53,7 @@ public abstract class TfrServiceBase extends IntentService {
         }
 
         // Remove any old files from cache first
-        //cleanupCache( mDataDir, TFR_CACHE_MAX_AGE );
+        cleanupCache( mDataDir, TFR_CACHE_MAX_AGE );
     }
 
     protected void cleanupCache( File dir, long maxAge ) {
