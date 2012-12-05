@@ -178,6 +178,7 @@
         <service android:name=".notams.NotamService" />
         <service android:name=".billing.BillingService" />
         <service android:name=".tfr.TfrService" />
+        <service android:name=".tfr.TfrImageService" />
 
         <receiver android:name=".billing.BillingReceiver">
             <intent-filter>

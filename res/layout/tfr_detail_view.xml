@@ -30,6 +30,15 @@
             android:paddingBottom="@dimen/padding_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+        <Button android:id="@+id/btnViewGraphic"
+                style="@style/FlatButton"
+                android:text="@string/view_graphic"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
         <LinearLayout android:id="@+id/tfr_header_layout"
                 android:background="@drawable/rounded_rectangle"
                 android:orientation="vertical"

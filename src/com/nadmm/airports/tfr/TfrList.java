@@ -54,7 +54,7 @@ public class TfrList implements Serializable {
         }
     }
 
-    public static class Tfr implements Serializable {
+    public static class Tfr implements Serializable, Comparable<Tfr> {
 
         private static final long serialVersionUID = 1L;
 
@@ -148,6 +148,11 @@ public class TfrList implements Serializable {
             } else {
                 return false;
             }
+        }
+
+        @Override
+        public int compareTo( Tfr another ) {
+            return name.compareTo( another.name );
         }
     }
 

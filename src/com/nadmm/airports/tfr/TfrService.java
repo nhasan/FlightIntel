@@ -21,63 +21,32 @@ package com.nadmm.airports.tfr;
 
 import java.io.File;
 import java.net.URI;
-import java.util.Date;
+import java.net.URISyntaxException;
+import java.util.Collections;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.utils.URIUtils;
 
-import android.app.IntentService;
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
-import android.text.format.DateUtils;
 
-import com.nadmm.airports.utils.NetworkUtils;
-import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 
-public class TfrService extends IntentService {
-
-    private static final String SERVICE_NAME = "tfr";
+public class TfrService extends TfrServiceBase {
 
     public static final String TFR_HOST = "www.jepptech.com";
     public static final String TFR_PATH = "/tfr/Query.asp";
     public static final String TFR_QUERY = "UserID=Public&DeletedMinutes=180&ExpiredMinutes=0";
+
     public static final String ACTION_GET_TFR_LIST = "flightintel.tfr.action.GET_TFR_LIST";
     public static final String FORCE_REFRESH = "FORCE_REFRESH";
     public static final String TFR_LIST = "TFR_LIST";
 
     private static final String TFR_CACHE_NAME = "tfr.xml";
-    private static final long TFR_CACHE_MAX_AGE = 15*DateUtils.MINUTE_IN_MILLIS;
 
-    private final File mDataDir;
-    private final HttpClient mHttpClient;
     private final TfrParser mParser;
 
     public TfrService() {
-        super( SERVICE_NAME );
-
-        mHttpClient = NetworkUtils.getHttpClient();
-        mDataDir = SystemUtils.getExternalDir( SERVICE_NAME );
+        super();
         mParser = new TfrParser();
-
-        if ( !mDataDir.exists() ) {
-            mDataDir.mkdirs();
-        }
-
-        // Remove any old files from cache first
-        cleanupCache( mDataDir, TFR_CACHE_MAX_AGE );
-    }
-
-    private void cleanupCache( File dir, long maxAge ) {
-        // Delete all files that are older
-        Date now = new Date();
-        File[] files = dir.listFiles();
-        for ( File file : files ) {
-            long age = now.getTime()-file.lastModified();
-            if ( age > maxAge ) {
-                file.delete();
-            }
-        }
     }
 
     @Override
@@ -91,38 +60,24 @@ public class TfrService extends IntentService {
     private void getTfrList( Intent intent ) {
         boolean force = intent.getBooleanExtra( FORCE_REFRESH, false );
 
-        File tfrFile = new File( mDataDir, TFR_CACHE_NAME );
+        File tfrFile = getFile( TFR_CACHE_NAME );
         if ( !tfrFile.exists() || force ) {
-            fetch( tfrFile );
+            URI uri;
+            try {
+                uri = URIUtils.createURI( "http", TFR_HOST, 80, TFR_PATH, TFR_QUERY, null );
+                fetch( uri, tfrFile );
+            } catch ( URISyntaxException e ) {
+                UiUtils.showToast( this, "TFR: "+e.getMessage() );
+            }
         }
 
         TfrList tfrList = new TfrList();
         mParser.parse( tfrFile, tfrList );
+        Collections.sort( tfrList.entries );
 
         Intent result = makeResultIntent( intent.getAction() );
         result.putExtra( TFR_LIST, tfrList );
         sendResultIntent( result );
-    }
-
-    private void fetch( File tfrFile ) {
-        try {
-            URI uri = URIUtils.createURI( "http", TFR_HOST, 80, TFR_PATH, TFR_QUERY, null );
-
-            NetworkUtils.doHttpGet( this, mHttpClient, uri, tfrFile, null, null, null );
-        } catch ( Exception e ) {
-            UiUtils.showToast( this, "TFR: "+e.getMessage() );
-        }
-    }
-
-    private Intent makeResultIntent( String action ) {
-        Intent intent = new Intent();
-        intent.setAction( action );
-        return intent;
-    }
-
-    private void sendResultIntent( Intent intent ) {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
-        bm.sendBroadcast( intent );
     }
 
 }

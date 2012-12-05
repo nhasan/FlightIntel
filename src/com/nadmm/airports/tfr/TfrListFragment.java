@@ -98,6 +98,8 @@ public class TfrListFragment extends FragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         setActionBarTitle( "TFR List" );
+        getSherlockActivity().setSupportProgressBarIndeterminateVisibility( false );
+
         requestTfrList( false );
     }
 
