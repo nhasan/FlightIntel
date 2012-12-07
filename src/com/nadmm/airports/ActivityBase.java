@@ -73,6 +73,8 @@ import com.nadmm.airports.afd.NearbyActivity;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
 import com.nadmm.airports.library.LibraryActivity;
+import com.nadmm.airports.scratchpad.ScratchPadActivity;
+import com.nadmm.airports.tfr.TfrActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
@@ -554,6 +556,14 @@ public class ActivityBase extends SherlockFragmentActivity {
         case R.id.menu_library:
             Intent library = new Intent( this, LibraryActivity.class );
             startActivity( library );
+            return true;
+        case R.id.menu_tfr:
+            Intent tfr = new Intent( this, TfrActivity.class );
+            startActivity( tfr );
+            return true;
+        case R.id.menu_scratchpad:
+            Intent scratchpad = new Intent( this, ScratchPadActivity.class );
+            startActivity( scratchpad );
             return true;
         default:
             return super.onOptionsItemSelected( item );

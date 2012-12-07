@@ -138,6 +138,9 @@
         <activity android:label="@string/library"
                   android:name=".library.LibraryActivity" />
 
+        <activity android:label="@string/scratch_pad"
+                  android:name=".scratchpad.ScratchPadActivity" />
+
         <activity android:label=""
                   android:name=".utils.TextFileViewActivity" />
 

@@ -42,6 +42,10 @@
           android:icon="@drawable/ic_action_charts_download" />
     <item android:id="@+id/menu_library"
           android:title="@string/library" />
+    <item android:id="@+id/menu_tfr"
+          android:title="@string/tfrs" />
+    <item android:id="@+id/menu_scratchpad"
+          android:title="@string/scratch_pad" />
     <item android:id="@+id/menu_donate"
           android:title="@string/donate" />
     <item android:id="@+id/menu_about"
