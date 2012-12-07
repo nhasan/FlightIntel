@@ -143,11 +143,13 @@ public class TfrDetailFragment extends FragmentBase {
         @Override
         public void onReceive( Context context, Intent intent ) {
             String path = (String) intent.getSerializableExtra( TfrImageService.TFR_IMAGE_PATH );
-            Intent activity = new Intent( getActivity(), ImageViewActivity.class );
-            activity.putExtra( ImageViewActivity.IMAGE_PATH, path );
-            activity.putExtra( ImageViewActivity.IMAGE_TITLE, "TFR Graphic" );
-            activity.putExtra( ImageViewActivity.IMAGE_SUBTITLE, mTfr.name );
-            startActivity( activity );
+            if ( path != null ) {
+                Intent activity = new Intent( getActivity(), ImageViewActivity.class );
+                activity.putExtra( ImageViewActivity.IMAGE_PATH, path );
+                activity.putExtra( ImageViewActivity.IMAGE_TITLE, "TFR Graphic" );
+                activity.putExtra( ImageViewActivity.IMAGE_SUBTITLE, mTfr.name );
+                startActivity( activity );
+            }
 
             getSherlockActivity().setSupportProgressBarIndeterminateVisibility( false );
             Button btnGraphic = (Button) findViewById( R.id.btnViewGraphic );

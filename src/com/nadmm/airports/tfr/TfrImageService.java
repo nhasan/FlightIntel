@@ -20,7 +20,6 @@
 package com.nadmm.airports.tfr;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -76,16 +75,10 @@ public class TfrImageService extends TfrServiceBase {
         }
 
         Intent result = makeResultIntent( intent.getAction() );
-        try {
-            if ( imageFile.exists() ) {
-                result.putExtra( TFR_IMAGE_PATH, imageFile.getCanonicalPath() );
-                sendResultIntent( result );
-            } else {
-                UiUtils.showToast( this, "TFR: Unable to fetch graphic for TFR "+tfr.notamId );
-            }
-        } catch ( IOException e ) {
-            UiUtils.showToast( this, "TFR: "+e.getMessage() );
+        if ( imageFile.exists() ) {
+            result.putExtra( TFR_IMAGE_PATH, imageFile.getAbsolutePath() );
         }
+        sendResultIntent( result );
     }
 
 }
