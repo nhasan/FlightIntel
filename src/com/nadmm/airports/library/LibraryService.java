@@ -60,10 +60,6 @@ public class LibraryService extends IntentService {
 
         mHttpClient = NetworkUtils.getHttpClient();
         mDataDir = SystemUtils.getExternalDir( SERVICE_NAME );
-
-        if ( !mDataDir.exists() ) {
-            mDataDir.mkdirs();
-        }
     }
 
     @Override

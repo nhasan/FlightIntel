@@ -70,15 +70,16 @@ public class SystemUtils {
         }
     }
 
-    public static File getExternalDir( String dir ) {
-        return new File( EXTERNAL_STORAGE_DATA_DIRECTORY, dir );
+    public static File getExternalDir( String dirName ) {
+        File dir = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, dirName );
+        if ( !dir.exists() ) {
+            dir.mkdirs();
+        }
+        return dir;
     }
 
     public static File getExternalFile( String dirName, String fileName ) {
         File dir = SystemUtils.getExternalDir( dirName );
-        if ( !dir.exists() ) {
-            dir.mkdirs();
-        }
         return new File( dir, fileName );
     }
 

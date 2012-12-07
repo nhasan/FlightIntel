@@ -46,20 +46,22 @@ import com.nadmm.airports.utils.UiUtils;
 
 public class NotamService extends IntentService {
 
+    private static final String SERVICE_NAME = "notam";
+
     public static final String ACTION_GET_NOTAM = "flightintel.intent.action.GET_NOTAM";
 
     public static final String ICAO_CODE = "ICAO_CODE";
     public static final String NOTAM_PATH = "NOTAM_PATH";
-
-    private static final File NOTAM_DIR = SystemUtils.getExternalDir( "notam" );
     private static final long NOTAM_CACHE_MAX_AGE = 5*DateUtils.MINUTE_IN_MILLIS;
 
+    private final File NOTAM_DIR;
     private final URL NOTAM_URL;
     private final String NOTAM_PARAM = "formatType=ICAO&retrieveLocId=%s&reportType=RAW"
             +"&actionType=notamRetrievalByICAOs&openItems=&submit=View%%20NOTAMs";
 
     public NotamService() throws MalformedURLException {
-        super( "notam" );
+        super( SERVICE_NAME );
+        NOTAM_DIR = SystemUtils.getExternalDir( SERVICE_NAME );
         NOTAM_URL = new URL( "https://pilotweb.nas.faa.gov"
                 +"/PilotWeb/notamRetrievalByICAOAction.do?method=displayByICAOs" );
     }
@@ -68,9 +70,6 @@ public class NotamService extends IntentService {
     public void onCreate() {
         super.onCreate();
 
-        if ( !NOTAM_DIR.exists() ) {
-            NOTAM_DIR.mkdirs();
-        }
         cleanupCache();
     }
 

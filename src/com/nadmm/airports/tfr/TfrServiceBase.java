@@ -48,10 +48,6 @@ public abstract class TfrServiceBase extends IntentService {
         mHttpClient = NetworkUtils.getHttpClient();
         mDataDir = SystemUtils.getExternalDir( SERVICE_NAME );
 
-        if ( !mDataDir.exists() ) {
-            mDataDir.mkdirs();
-        }
-
         // Remove any old files from cache first
         cleanupCache( mDataDir, TFR_CACHE_MAX_AGE );
     }

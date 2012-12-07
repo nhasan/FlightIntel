@@ -87,10 +87,6 @@ public abstract class NoaaService extends IntentService {
         mHttpClient = NetworkUtils.getHttpClient();
         mDataDir = SystemUtils.getExternalDir( "wx/"+name );
 
-        if ( !mDataDir.exists() ) {
-            mDataDir.mkdirs();
-        }
-
         // Remove any old files from cache first
         cleanupCache( mDataDir, age );
     }
