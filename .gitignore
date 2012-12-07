@@ -1,5 +1,5 @@
 *.db
-*.gz
+*.db.gz
 *.zip
 *.txt
 .settings
