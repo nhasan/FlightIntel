@@ -24,13 +24,12 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Path.FillType;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class FreeHandDrawView extends View {
 
-    private static final int STROKE_WIDTH = 5;
+    private static final int STROKE_WIDTH = 4;
 
     private Bitmap mBitmap;
     private Bitmap mInitialBitmap;
@@ -60,6 +59,9 @@ public class FreeHandDrawView extends View {
     @Override
     protected void onSizeChanged( int w, int h, int oldw, int oldh ) {
         super.onSizeChanged( w, h, oldw, oldh );
+        if ( mBitmap != null ) {
+            mBitmap.recycle();
+        }
         mBitmap = Bitmap.createBitmap( w, h, Bitmap.Config.ARGB_8888 );
         mCanvas = new Canvas( mBitmap );
         if ( mInitialBitmap != null ) {

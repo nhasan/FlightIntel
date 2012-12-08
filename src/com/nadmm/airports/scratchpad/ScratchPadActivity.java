@@ -61,13 +61,20 @@ public class ScratchPadActivity extends ActivityBase {
         loadBitmap();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Bitmap bitmap = mView.getBitmap();
+        bitmap.recycle();
+    }
+
     private void saveBitmap() {
         try {
             File file = SystemUtils.getExternalFile( DIR_NAME, FILE_NAME );
             FileOutputStream stream = new FileOutputStream( file );
             Bitmap bitmap = mView.getBitmap();
             bitmap.compress( CompressFormat.PNG, 0, stream );
-            bitmap.recycle();
         } catch ( FileNotFoundException e ) {
         }
     }
