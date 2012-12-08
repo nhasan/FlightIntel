@@ -20,6 +20,6 @@
  */
  -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#ffc0c0b8" />
+    <solid android:color="#fff4f4f4" />
     <size android:height="1dp" />
 </shape>

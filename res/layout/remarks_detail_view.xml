@@ -21,10 +21,6 @@
  -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:paddingLeft="12dp"
-        android:paddingTop="6dp"
-        android:paddingRight="12dp"
-        android:paddingBottom="6dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -32,13 +28,13 @@
             style="@style/TextSmall.Bold"
             android:padding="4dp"
             android:text="@string/airport_remarks"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/detail_remarks_layout"
             android:background="@drawable/rounded_rectangle"
             android:orientation="vertical"
             android:layout_marginTop="4dp"
             android:padding="6dp"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 </LinearLayout>

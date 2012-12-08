@@ -22,21 +22,17 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
-        android:paddingLeft="12dp"
-        android:paddingTop="6dp"
-        android:paddingRight="12dp"
-        android:paddingBottom="6dp"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/rwy_common_label"
             style="@style/TextSmall.Bold"
             android:padding="6dp"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/rwy_common_details"
             android:orientation="vertical"
             android:background="@drawable/rounded_rectangle"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/rwy_common_remarks"
             android:orientation="vertical"
@@ -44,18 +40,18 @@
             android:visibility="gone"
             android:layout_marginTop="8dp"
             android:padding="6dp"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/rwy_base_end_label"
             style="@style/TextSmall.Bold"
             android:padding="6dp"
             android:layout_marginTop="4dp"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/rwy_base_end_details"
             android:orientation="vertical"
             android:background="@drawable/rounded_rectangle"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/rwy_base_end_remarks"
             android:orientation="vertical"
@@ -63,19 +59,19 @@
             android:visibility="gone"
             android:layout_marginTop="8dp"
             android:padding="6dp"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
     </LinearLayout>
     <TextView android:id="@+id/rwy_reciprocal_end_label"
             style="@style/TextSmall.Bold"
             android:padding="6dp"
             android:layout_marginTop="4dp"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/rwy_reciprocal_end_details"
             android:orientation="vertical"
             android:background="@drawable/rounded_rectangle"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/rwy_reciprocal_end_remarks"
             android:orientation="vertical"
@@ -83,7 +79,7 @@
             android:visibility="gone"
             android:layout_marginTop="8dp"
             android:padding="6dp"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
     </LinearLayout>
 </LinearLayout>

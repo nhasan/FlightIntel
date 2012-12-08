@@ -22,11 +22,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/fss_detail_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="12dp"
-        android:paddingTop="6dp"
-        android:paddingRight="12dp"
-        android:paddingBottom="6dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 </LinearLayout>

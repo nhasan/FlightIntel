@@ -21,11 +21,11 @@
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/navaid_title_layout"
-        android:background="@drawable/top_bar"
+        android:background="@drawable/ab_stacked_transparent_light_holo"
         android:padding="6dp"
         android:baselineAligned="false"
         android:orientation="horizontal"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <LinearLayout android:id="@+id/header_inner1_layout"
          android:orientation="vertical"
@@ -36,7 +36,7 @@
                 style="@style/TextMedium.Bold"
                 android:singleLine="true"
                 android:ellipsize="marquee"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         <TextView android:id="@+id/navaid_info"
                 style="@style/TextSmall.Bold"
@@ -81,6 +81,6 @@
                 style="@style/TextMedium.Bold"
                 android:gravity="top"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent" />
+                android:layout_height="match_parent" />
     </LinearLayout>
 </LinearLayout>

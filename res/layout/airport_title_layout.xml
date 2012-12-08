@@ -21,7 +21,7 @@
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/airport_title_layout"
-        android:background="@drawable/top_bar"
+        android:background="@drawable/ab_stacked_transparent_light_holo"
         android:padding="6dp"
         android:orientation="vertical"
         android:layout_width="fill_parent"

@@ -21,16 +21,20 @@
  -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <LinearLayout android:id="@+id/navaid_top_layout"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
         <include layout="@layout/navaid_title_layout" />
         <LinearLayout android:id="@+id/fragment_container"
                 android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"/>
+                android:paddingTop="@dimen/padding_top"
+                android:paddingLeft="@dimen/padding_left"
+                android:paddingRight="@dimen/padding_right"
+                android:paddingBottom="@dimen/padding_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
         </LinearLayout>
 </ScrollView>

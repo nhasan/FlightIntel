@@ -22,7 +22,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <LinearLayout android:id="@+id/buttons_layout"
             android:orientation="horizontal"
@@ -35,28 +35,24 @@
                 android:visibility="gone"
                 android:gravity="center"
                 android:layout_marginRight="4dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent" />
+                android:layout_height="match_parent" />
         <Button android:id="@+id/btnDelete"
                 style="@style/FlatButton"
                 android:text="@string/delete_all"
                 android:visibility="gone"
                 android:gravity="center"
                 android:layout_marginLeft="4dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent" />
+                android:layout_height="match_parent" />
     </LinearLayout>
     <LinearLayout android:id="@+id/dtpp_detail_layout"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="12dp"
-            android:paddingTop="0dp"
-            android:paddingRight="12dp"
-            android:paddingBottom="12dp"
             android:orientation="vertical">
     </LinearLayout>
 </LinearLayout>
