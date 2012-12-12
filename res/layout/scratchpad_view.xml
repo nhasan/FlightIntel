@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp">
         <ImageButton android:id="@+id/action_draw"
-                android:src="@drawable/content_edit"
+                android:src="@drawable/content_draw"
                 style="@style/Widget.Sherlock.ActionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
