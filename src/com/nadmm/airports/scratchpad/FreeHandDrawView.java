@@ -20,60 +20,62 @@
 package com.nadmm.airports.scratchpad;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
+import android.graphics.MaskFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class FreeHandDrawView extends View {
 
     private static final int STROKE_WIDTH = 4;
+    private static final int ERASE_WIDTH = 12;
+    private static final int BACKGROUND_COLOR = 0xFFDDDDDD;
+    private static final int DRAW_COLOR = 0xFF000000;
 
     private Bitmap mBitmap;
-    private Bitmap mInitialBitmap;
     private Canvas mCanvas;
     private Path mPath;
     private Paint mFingerPaint;
     private Paint mBitmapPaint;
     private float mLastX;
     private float mLastY;
+    private MaskFilter mBlurFilter;
 
-    public FreeHandDrawView( Context context ) {
-        super( context );
+    public FreeHandDrawView( Context context, AttributeSet attr ) {
+        super( context, attr );
 
         mPath = new Path();
         mBitmapPaint = new Paint( Paint.DITHER_FLAG );
+        mBlurFilter = new BlurMaskFilter( 8, BlurMaskFilter.Blur.SOLID );
 
         mFingerPaint = new Paint();
         mFingerPaint.setAntiAlias( true );
         mFingerPaint.setDither( true );
-        mFingerPaint.setColor( 0xFF000000 );
         mFingerPaint.setStyle( Paint.Style.STROKE );
         mFingerPaint.setStrokeJoin( Paint.Join.ROUND );
         mFingerPaint.setStrokeCap( Paint.Cap.ROUND );
-        mFingerPaint.setStrokeWidth( STROKE_WIDTH );
-    }
 
-    @Override
-    protected void onSizeChanged( int w, int h, int oldw, int oldh ) {
-        super.onSizeChanged( w, h, oldw, oldh );
-        if ( mBitmap != null ) {
-            mBitmap.recycle();
-        }
-        mBitmap = Bitmap.createBitmap( w, h, Bitmap.Config.ARGB_8888 );
+        setDrawMode();
+
+        Resources res = context.getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        int w = dm.widthPixels;
+        int h = dm.heightPixels;
+        int size = Math.max( w, h );
+        mBitmap = Bitmap.createBitmap( size, size, Bitmap.Config.ARGB_8888 );
+        mBitmap.eraseColor( BACKGROUND_COLOR );
         mCanvas = new Canvas( mBitmap );
-        if ( mInitialBitmap != null ) {
-            mCanvas.drawBitmap( mInitialBitmap, 0, 0, mBitmapPaint );
-            mInitialBitmap.recycle();
-            mInitialBitmap = null;
-        }
     }
 
     @Override
     protected void onDraw( Canvas canvas ) {
-        canvas.drawColor( 0xFFAAAAAA );
         canvas.drawBitmap( mBitmap, 0, 0, mBitmapPaint );
         canvas.drawPath( mPath, mFingerPaint );
     }
@@ -134,7 +136,24 @@ public class FreeHandDrawView extends View {
     }
 
     public void setBitmap( Bitmap bitmap ) {
-        mInitialBitmap = bitmap;
+        mCanvas.drawBitmap( bitmap, 0, 0, mBitmapPaint );
+    }
+
+    public void discardBitmap() {
+        mBitmap.eraseColor( BACKGROUND_COLOR );
+        invalidate();
+    }
+
+    public void setDrawMode() {
+        mFingerPaint.setColor( DRAW_COLOR );
+        mFingerPaint.setMaskFilter( null );
+        mFingerPaint.setStrokeWidth( STROKE_WIDTH );
+    }
+
+    public void setEraseMode() {
+        mFingerPaint.setColor( BACKGROUND_COLOR );
+        mFingerPaint.setMaskFilter( mBlurFilter );
+        mFingerPaint.setStrokeWidth( ERASE_WIDTH );
     }
 
 }

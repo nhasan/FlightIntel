@@ -24,12 +24,18 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.SystemUtils;
 
 public class ScratchPadActivity extends ActivityBase {
@@ -43,8 +49,50 @@ public class ScratchPadActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mView = new FreeHandDrawView( this );
-        setContentView( mView );
+        setContentView( R.layout.scratchpad_view );
+        mView = (FreeHandDrawView) findViewById( R.id.drawing );
+
+        ImageButton draw = (ImageButton) findViewById( R.id.action_draw );
+        draw.setOnClickListener( new OnClickListener() {
+            
+            @Override
+            public void onClick( View v ) {
+                mView.setDrawMode();
+            }
+        } );
+
+        ImageButton erase = (ImageButton) findViewById( R.id.action_erase );
+        erase.setOnClickListener( new OnClickListener() {
+            
+            @Override
+            public void onClick( View v ) {
+                mView.setEraseMode();
+            }
+        } );
+
+        ImageButton discard = (ImageButton) findViewById( R.id.action_discard );
+        discard.setOnClickListener( new OnClickListener() {
+            
+            @Override
+            public void onClick( View v ) {
+                mView.discardBitmap();
+            }
+        } );
+
+        ImageButton share = (ImageButton) findViewById( R.id.action_share );
+        share.setOnClickListener( new OnClickListener() {
+            
+            @Override
+            public void onClick( View v ) {
+                saveBitmap();
+                Intent intent = new Intent( Intent.ACTION_SEND );
+                intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
+                intent.setType( "image/*" );
+                Uri uri = Uri.fromFile( SystemUtils.getExternalFile( DIR_NAME, FILE_NAME ) );
+                intent.putExtra( Intent.EXTRA_STREAM, uri );
+                startActivity( Intent.createChooser( intent, "Share Scratchpad" ) );
+            }
+        } );
     }
 
     @Override
@@ -86,6 +134,7 @@ public class ScratchPadActivity extends ActivityBase {
                 FileInputStream stream = new FileInputStream( file );
                 Bitmap bitmap = BitmapFactory.decodeStream( stream );
                 mView.setBitmap( bitmap );
+                bitmap.recycle();
             }
         } catch ( FileNotFoundException e ) {
         }
