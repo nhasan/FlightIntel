@@ -21,7 +21,7 @@
  -->
 <resources>
     <string name="app_name">FlightIntel for Pilots</string>
-    <string name="downloads">Download</string>
+    <string name="downloads">Downloads</string>
     <string name="settings">Settings</string>
     <string name="favorites">Favorites</string>
     <string name="search">Search</string>
