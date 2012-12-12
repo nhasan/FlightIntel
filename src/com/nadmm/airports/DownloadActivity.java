@@ -83,7 +83,7 @@ public final class DownloadActivity extends ActivityBase {
     private static final Integer PORT = 80;
     //private static final String PATH = "/~nhasan/fadds";
     private static final String PATH = "/files";
-    private static final String MANIFEST = "manifest1.xml";
+    private static final String MANIFEST = "manifest.xml";
 
     private final Map<String, ProgressTracker> mTrackers = new HashMap<String, ProgressTracker>();
 
