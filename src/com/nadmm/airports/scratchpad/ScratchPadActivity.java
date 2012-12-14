@@ -32,32 +32,39 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.SystemUtils;
+import com.nadmm.airports.utils.UiUtils;
 
-public class ScratchPadActivity extends ActivityBase {
+public class ScratchPadActivity extends ActivityBase
+                implements FreeHandDrawView.EventListener {
 
     private static final String DIR_NAME = "scratchpad";
     private static final String FILE_NAME = "scratchpad.png";
 
-    private FreeHandDrawView mView;
+    private FreeHandDrawView mDrawView;
+    private View mToolbar;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
         setContentView( R.layout.scratchpad_view );
-        mView = (FreeHandDrawView) findViewById( R.id.drawing );
+
+        mToolbar = findViewById( R.id.toolbar );
+        mDrawView = (FreeHandDrawView) findViewById( R.id.drawing );
+        mDrawView.setEventListener( this );
 
         ImageButton draw = (ImageButton) findViewById( R.id.action_draw );
         draw.setOnClickListener( new OnClickListener() {
             
             @Override
             public void onClick( View v ) {
-                mView.setDrawMode();
+                mDrawView.setDrawMode();
             }
         } );
 
@@ -66,7 +73,7 @@ public class ScratchPadActivity extends ActivityBase {
             
             @Override
             public void onClick( View v ) {
-                mView.setEraseMode();
+                mDrawView.setEraseMode();
             }
         } );
 
@@ -75,7 +82,9 @@ public class ScratchPadActivity extends ActivityBase {
             
             @Override
             public void onClick( View v ) {
-                mView.discardBitmap();
+                mDrawView.discardBitmap();
+                File file = SystemUtils.getExternalFile( DIR_NAME, FILE_NAME );
+                file.delete();
             }
         } );
 
@@ -113,7 +122,7 @@ public class ScratchPadActivity extends ActivityBase {
     protected void onDestroy() {
         super.onDestroy();
 
-        Bitmap bitmap = mView.getBitmap();
+        Bitmap bitmap = mDrawView.getBitmap();
         bitmap.recycle();
     }
 
@@ -121,23 +130,38 @@ public class ScratchPadActivity extends ActivityBase {
         try {
             File file = SystemUtils.getExternalFile( DIR_NAME, FILE_NAME );
             FileOutputStream stream = new FileOutputStream( file );
-            Bitmap bitmap = mView.getBitmap();
+            Bitmap bitmap = mDrawView.getBitmap();
             bitmap.compress( CompressFormat.PNG, 0, stream );
         } catch ( FileNotFoundException e ) {
+            UiUtils.showToast( this, "Unable to save scratchpad data" );
         }
     }
 
     private void loadBitmap() {
-        try {
-            File file = SystemUtils.getExternalFile( DIR_NAME, FILE_NAME );
-            if ( file.exists() ) {
+        File file = SystemUtils.getExternalFile( DIR_NAME, FILE_NAME );
+        if ( file.exists() ) {
+            try {
                 FileInputStream stream = new FileInputStream( file );
                 Bitmap bitmap = BitmapFactory.decodeStream( stream );
-                mView.setBitmap( bitmap );
+                mDrawView.setBitmap( bitmap );
                 bitmap.recycle();
+            } catch ( FileNotFoundException e ) {
+                file.delete();
+                UiUtils.showToast( this, "Unable to restore scratchpad data" );
             }
-        } catch ( FileNotFoundException e ) {
         }
+    }
+
+    @Override
+    public void actionDown() {
+        mToolbar.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_out ) );
+        mToolbar.setVisibility( View.INVISIBLE );
+    }
+
+    @Override
+    public void actionUp() {
+        mToolbar.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_in ) );
+        mToolbar.setVisibility( View.VISIBLE );
     }
 
 }

@@ -34,10 +34,15 @@ import android.view.View;
 
 public class FreeHandDrawView extends View {
 
-    private static final int STROKE_WIDTH = 4;
-    private static final int ERASE_WIDTH = 12;
-    private static final int BACKGROUND_COLOR = 0xFFDDDDDD;
-    private static final int DRAW_COLOR = 0xFF000000;
+    public interface EventListener {
+        public void actionDown();
+        public void actionUp();
+    }
+
+    private static final int STROKE_WIDTH = 3;
+    private static final int ERASE_WIDTH = 5*STROKE_WIDTH;
+    private static final int PAPER_COLOR = 0xffe0e0e0;
+    private static final int PEN_COLOR = 0xff000000;
 
     private Bitmap mBitmap;
     private Canvas mCanvas;
@@ -47,9 +52,10 @@ public class FreeHandDrawView extends View {
     private float mLastX;
     private float mLastY;
     private MaskFilter mBlurFilter;
+    private EventListener mEventListener;
 
-    public FreeHandDrawView( Context context, AttributeSet attr ) {
-        super( context, attr );
+    public FreeHandDrawView( Context context, AttributeSet attrs ) {
+        super( context, attrs );
 
         mPath = new Path();
         mBitmapPaint = new Paint( Paint.DITHER_FLAG );
@@ -70,7 +76,7 @@ public class FreeHandDrawView extends View {
         int h = dm.heightPixels;
         int size = Math.max( w, h );
         mBitmap = Bitmap.createBitmap( size, size, Bitmap.Config.ARGB_8888 );
-        mBitmap.eraseColor( BACKGROUND_COLOR );
+        mBitmap.eraseColor( PAPER_COLOR );
         mCanvas = new Canvas( mBitmap );
     }
 
@@ -103,6 +109,10 @@ public class FreeHandDrawView extends View {
     }
 
     private void touch_start( float x, float y ) {
+        if ( mEventListener != null ) {
+            mEventListener.actionDown();
+        }
+
         mPath.reset();
         mPath.moveTo( x, y );
         mLastX = x;
@@ -120,6 +130,10 @@ public class FreeHandDrawView extends View {
     }
 
     private void touch_up() {
+        if ( mEventListener != null ) {
+            mEventListener.actionUp();
+        }
+
         if ( mPath.isEmpty() ) {
             // If this was just a touch, make sure to draw a point
             mPath.addCircle( mLastX, mLastY, STROKE_WIDTH/2, Path.Direction.CW );
@@ -140,20 +154,24 @@ public class FreeHandDrawView extends View {
     }
 
     public void discardBitmap() {
-        mBitmap.eraseColor( BACKGROUND_COLOR );
+        mBitmap.eraseColor( PAPER_COLOR );
         invalidate();
     }
 
     public void setDrawMode() {
-        mFingerPaint.setColor( DRAW_COLOR );
+        mFingerPaint.setColor( PEN_COLOR );
         mFingerPaint.setMaskFilter( null );
         mFingerPaint.setStrokeWidth( STROKE_WIDTH );
     }
 
     public void setEraseMode() {
-        mFingerPaint.setColor( BACKGROUND_COLOR );
+        mFingerPaint.setColor( PAPER_COLOR );
         mFingerPaint.setMaskFilter( mBlurFilter );
         mFingerPaint.setStrokeWidth( ERASE_WIDTH );
+    }
+
+    public void setEventListener( EventListener listener ) {
+        mEventListener = listener;
     }
 
 }
