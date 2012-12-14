@@ -1,3 +1,9 @@
+v4.8.0 (12/14/2012)
+===================
+* Added a freehand scratchpad for quickly noting down ATC/ATIS/AWOS.
+* Scratchpad contents are retained and can be shared or exported.
+* Tweaked visual style to make it simpler and cleaner.
+
 v4.7.2 (12/4/2012)
 ==================
 * Show graphic depiction of the TFR on a sectional image
