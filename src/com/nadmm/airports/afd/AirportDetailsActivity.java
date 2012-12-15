@@ -776,7 +776,9 @@ public class AirportDetailsActivity extends ActivityBase {
             String action = intent.getAction();
             if ( action.equals( DafdService.ACTION_GET_AFD ) ) {
                 String path = intent.getStringExtra( DafdService.PDF_PATH );
-                SystemUtils.startPDFViewer( getActivity(), path );
+                if ( path != null ) {
+                    SystemUtils.startPDFViewer( getActivity(), path );
+                }
             }
         }
 
