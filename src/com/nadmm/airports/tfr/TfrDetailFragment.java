@@ -81,6 +81,7 @@ public class TfrDetailFragment extends FragmentBase {
 
             @Override
             public void onClick( View v ) {
+                v.setEnabled( false );
                 requestTfrGraphic();
             }
         } );
@@ -120,7 +121,6 @@ public class TfrDetailFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
-        getSherlockActivity().setSupportProgressBarIndeterminateVisibility( false );
         setActionBarTitle( "TFR Details" );
         setActionBarSubtitle( mTfr.name );
 
@@ -128,10 +128,8 @@ public class TfrDetailFragment extends FragmentBase {
     }
 
     private void requestTfrGraphic() {
-        Button btnGraphic = (Button) findViewById( R.id.btnViewGraphic );
-        btnGraphic.setEnabled( false );
-        getSherlockActivity().setSupportProgressBarIndeterminateVisibility( true );
-
+        setRefreshItemVisible( true );
+        startRefreshAnimation();
         Intent service = new Intent( getActivity(), TfrImageService.class );
         service.setAction( TfrImageService.ACTION_GET_TFR_IMAGE );
         service.putExtra( TfrImageService.TFR_ENTRY, mTfr );
@@ -151,7 +149,8 @@ public class TfrDetailFragment extends FragmentBase {
                 startActivity( activity );
             }
 
-            getSherlockActivity().setSupportProgressBarIndeterminateVisibility( false );
+            stopRefreshAnimation();
+            setRefreshItemVisible( false );
             Button btnGraphic = (Button) findViewById( R.id.btnViewGraphic );
             btnGraphic.setEnabled( true );
         }

@@ -21,7 +21,6 @@ package com.nadmm.airports.tfr;
 
 import android.os.Bundle;
 
-import com.actionbarsherlock.view.Window;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
 
@@ -33,7 +32,6 @@ public class TfrActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        requestWindowFeature( Window.FEATURE_INDETERMINATE_PROGRESS );
         setContentView( createContentView( R.layout.fragment_activity_layout ) );
 
         Bundle args = getIntent().getExtras();
