@@ -69,8 +69,12 @@ public class TfrListAdapter extends BaseAdapter {
 
         Tfr tfr = (Tfr) getItem( position );
 
-        TextView tv = (TextView) convertView.findViewById( R.id.tfr_agency );
-        tv.setText( tfr.notamId.substring( 0, tfr.notamId.indexOf( ' ' ) ) );
+        TextView tv;
+        int index = tfr.notamId.indexOf( ' ' );
+        if ( index > 0 ) {
+            tv = (TextView) convertView.findViewById( R.id.tfr_agency );
+            tv.setText( tfr.notamId.substring( 0, index ) );
+        }
         tv = (TextView) convertView.findViewById( R.id.tfr_name );
         tv.setText( tfr.name );
         tv = (TextView) convertView.findViewById( R.id.tfr_time );
