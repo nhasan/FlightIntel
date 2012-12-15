@@ -1,3 +1,10 @@
+v4.8.1 (12/15/2012)
+===================
+* Fixed crash when fetching A/FD PDF from AeroNav while offline
+* Fixed crash in some cases when showing the TFR list
+* Don't show bogus date/time when fetching TFR fails
+* Enabled actionbar home button navigation
+
 v4.8.0 (12/14/2012)
 ===================
 * Added a freehand scratchpad for quickly noting down ATC/ATIS/AWOS.
