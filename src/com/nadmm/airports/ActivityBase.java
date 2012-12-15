@@ -107,6 +107,12 @@ public class ActivityBase extends SherlockFragmentActivity {
         mFilter.addAction( Intent.ACTION_MEDIA_REMOVED );
         mFilter.addDataScheme( "file" );
 
+        Class<?> clss = getHomeActivityClass();
+        if ( getClass() != clss ) {
+            getSupportActionBar().setHomeButtonEnabled( true );
+            getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+        }
+
         mExternalStorageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive( Context context, Intent intent ) {
@@ -608,7 +614,7 @@ public class ActivityBase extends SherlockFragmentActivity {
                 +c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
     }
 
-    protected void startHomeActivity() {
+    protected Class<?> getHomeActivityClass() {
         ArrayList<String> fav = mDbManager.getAptFavorites();
         Class<?> clss;
         if ( fav.size() > 0 ) {
@@ -616,6 +622,11 @@ public class ActivityBase extends SherlockFragmentActivity {
         } else {
             clss = BrowseActivity.class;
         }
+        return clss;
+    }
+
+    protected void startHomeActivity() {
+        Class<?> clss = getHomeActivityClass();
         if ( getClass() != clss ) {
             // Start home activity if it is not the current activity
             Intent intent = new Intent( this, clss );
