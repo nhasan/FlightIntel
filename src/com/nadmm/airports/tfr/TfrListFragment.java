@@ -143,7 +143,11 @@ public class TfrListFragment extends FragmentBase {
             setActionBarSubtitle( String.format( Locale.US, "%d TFRs found",
                     tfrList.entries.size() ) );
             TextView tv = (TextView) findViewById( R.id.tfr_fetch_time );
-            tv.setText( "Fetched on "+TimeUtils.formatDateTime( context, tfrList.fetchTime )  );
+            if ( tfrList.fetchTime > 0 ) {
+                tv.setText( "Fetched on "+TimeUtils.formatDateTime( context, tfrList.fetchTime )  );
+            } else {
+                tv.setText( "Unable to fetch TFR list. Please try again later" );
+            }
             stopRefreshAnimation();
             setContentShown( true );
         }
