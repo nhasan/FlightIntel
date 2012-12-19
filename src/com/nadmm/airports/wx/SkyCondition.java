@@ -161,7 +161,7 @@ public abstract class SkyCondition implements Serializable {
                 }
             };
         } else if ( skyCover.equalsIgnoreCase( "NSC" ) ) {
-            sky = new SkyCondition( skyCover, 0 ) {
+            sky = new SkyCondition( skyCover, cloudBaseAGL ) {
                 private static final long serialVersionUID = 1L;
 
                 @Override
