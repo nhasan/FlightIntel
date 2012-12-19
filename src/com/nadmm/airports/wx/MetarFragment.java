@@ -275,18 +275,11 @@ public class MetarFragment extends FragmentBase {
         tv = (TextView) findViewById( R.id.wx_wind_label );
         layout = (LinearLayout) findViewById( R.id.wx_wind_layout );
         layout.removeAllViews();
+        int visibility = View.GONE;
         if ( metar.windSpeedKnots < Integer.MAX_VALUE ) {
-            addWindRow( layout, metar );
-            if ( metar.wshft ) {
-                StringBuilder sb = new StringBuilder();
-                sb.append( "Wind shift of 45\u00B0 or more detected during past hour" );
-                if ( metar.fropa ) {
-                    sb.append( " due to frontal passage" );
-                }
-                addRow( layout, sb.toString() );
-            }
+            showWindInfo( layout, metar );
+            visibility = View.VISIBLE;
         }
-        int visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;
         tv.setVisibility( visibility );
         layout.setVisibility( visibility );
 
@@ -294,6 +287,7 @@ public class MetarFragment extends FragmentBase {
         tv = (TextView) findViewById( R.id.wx_vis_label );
         layout = (LinearLayout) findViewById( R.id.wx_vis_layout );
         layout.removeAllViews();
+        visibility = View.GONE;
         if ( metar.visibilitySM < Float.MAX_VALUE ) {
             if ( metar.flags.contains( Flags.AutoReport ) && metar.visibilitySM == 10 ) {
                 addRow( layout, "10 statute miles or more horizontal visibility" );
@@ -308,8 +302,8 @@ public class MetarFragment extends FragmentBase {
                 addRow( layout, String.format( "%s vertical",
                         FormatUtils.formatFeetAgl( metar.vertVisibilityFeet ) ) );
             }
+            visibility = View.VISIBLE;
         }
-        visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;
         tv.setVisibility( visibility );
         layout.setVisibility( visibility );
 
@@ -324,12 +318,13 @@ public class MetarFragment extends FragmentBase {
         tv = (TextView) findViewById( R.id.wx_sky_cond_label );
         layout = (LinearLayout) findViewById( R.id.wx_sky_cond_layout );
         layout.removeAllViews();
+        visibility = View.GONE;
         if ( !metar.skyConditions.isEmpty() ) {
             for ( SkyCondition sky : metar.skyConditions ) {
                 addSkyConditionRow( layout, sky, metar.flightCategory );
             }
+            visibility = View.VISIBLE;
         }
-        visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;
         tv.setVisibility( visibility );
         layout.setVisibility( visibility );
 
@@ -337,6 +332,7 @@ public class MetarFragment extends FragmentBase {
         tv = (TextView) findViewById( R.id.wx_temp_label );
         layout = (LinearLayout) findViewById( R.id.wx_temp_layout );
         layout.removeAllViews();
+        visibility = View.GONE;
         if ( metar.tempCelsius < Float.MAX_VALUE ) {
             addRow( layout, "Temperature",
                     FormatUtils.formatTemperature( metar.tempCelsius ) );
@@ -370,8 +366,8 @@ public class MetarFragment extends FragmentBase {
                 addRow( layout, "24-hour minimum",
                         FormatUtils.formatTemperature( metar.minTemp24HrCentigrade ) );
             }
+            visibility = View.VISIBLE;
         }
-        visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;
         tv.setVisibility( visibility );
         layout.setVisibility( visibility );
 
@@ -379,6 +375,7 @@ public class MetarFragment extends FragmentBase {
         tv = (TextView) findViewById( R.id.wx_pressure_label );
         layout = (LinearLayout) findViewById( R.id.wx_pressure_layout );
         layout.removeAllViews();
+        visibility = View.GONE;
         if ( metar.altimeterHg < Float.MAX_VALUE ) {
             addRow( layout, "Altimeter",
                     FormatUtils.formatAltimeter( metar.altimeterHg ) );
@@ -399,8 +396,8 @@ public class MetarFragment extends FragmentBase {
             } if ( metar.presrr ) {
                 addRow( layout, "Pressure rising rapidly" );
             }
+            visibility = View.VISIBLE;
         }
-        visibility = layout.getChildCount() > 0? View.VISIBLE : View.GONE;
         tv.setVisibility( visibility );
         layout.setVisibility( visibility );
 
@@ -477,7 +474,7 @@ public class MetarFragment extends FragmentBase {
         return s.toString();
     }
 
-    protected void addWindRow( LinearLayout layout, Metar metar ) {
+    protected void showWindInfo( LinearLayout layout, Metar metar ) {
         View row = addRow( layout, getWindsDescription( metar ) );
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         if ( metar.windDirDegrees > 0 ) {
@@ -485,6 +482,19 @@ public class MetarFragment extends FragmentBase {
             Drawable wind= WxUtils.getWindBarbDrawable( tv.getContext(), metar, declination );
             tv.setCompoundDrawablesWithIntrinsicBounds( wind, null, null, null );
             tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 6 ) );
+        }
+        if ( metar.windGustKnots < Integer.MAX_VALUE ) {
+            double gustFactor = metar.windGustKnots - metar.windSpeedKnots;
+            addRow( layout, String.format( "Add %d knots to your normal approach speed",
+                    Math.round( gustFactor/2 ) ) );
+        }
+        if ( metar.wshft ) {
+            StringBuilder sb = new StringBuilder();
+            sb.append( "Wind shift of 45\u00B0 or more detected during past hour" );
+            if ( metar.fropa ) {
+                sb.append( " due to frontal passage" );
+            }
+            addRow( layout, sb.toString() );
         }
     }
 
