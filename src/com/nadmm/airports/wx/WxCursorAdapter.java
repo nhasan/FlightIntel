@@ -111,6 +111,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         info.append( ", " );
         int elevation = c.getInt( c.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
         info.append( FormatUtils.formatFeetMsl( DataUtils.metersToFeet( elevation ) ) );
+        info.append( " elev." );
         tv = (TextView) view.findViewById( R.id.wx_station_info2 );
         tv.setText( info.toString() );
 
@@ -122,7 +123,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             tv.setText( "" );
         }
 
-        tv = (TextView) view.findViewById( R.id.distance );
+        tv = (TextView) view.findViewById( R.id.wx_station_distance );
         if ( c.getColumnIndex( LocationColumns.DISTANCE ) >= 0 
                 && c.getColumnIndex( LocationColumns.BEARING ) >= 0 ) {
             float distance = c.getFloat( c.getColumnIndex( LocationColumns.DISTANCE ) );
@@ -167,26 +168,54 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                     }
                 }
 
-                info.append( ", " );
-                if ( metar.windGustKnots < Integer.MAX_VALUE ) {
-                    info.append( "gusting winds" );
-                } else if ( metar.windSpeedKnots > 0 && metar.windDirDegrees == 0 ) {
-                    info.append( "variable winds" );
-                } else if ( metar.windSpeedKnots > 48 ) {
-                    info.append( "storm winds" );
-                } else if ( metar.windSpeedKnots > 32 ) {
-                    info.append( "gale winds" );
-                } else if ( metar.windSpeedKnots > 12 ) {
-                    info.append( "strong winds" );
-                } else if ( metar.windSpeedKnots > 6 ) {
-                    info.append( "moderate winds" );
-                } else if ( metar.windSpeedKnots > 0 ) {
-                    info.append( "light winds" );
+                info.append( ", winds " );
+                if ( metar.windSpeedKnots == 0 ) {
+                    info.append( "calm" );
+                } else if ( metar.windGustKnots < Integer.MAX_VALUE ) {
+                    info.append( String.format( "%dG%dKT", 
+                            metar.windSpeedKnots, metar.windGustKnots ) );
                 } else {
-                    info.append( "calm winds" );
+                    info.append( String.format( "%dKT", metar.windSpeedKnots ) );
+                }
+
+                if ( metar.windSpeedKnots > 0 && metar.windDirDegrees == 0 ) {
+                    info.append( " variable" );
+                } else {
+                    info.append( " from "+FormatUtils.formatDegrees( metar.windDirDegrees ) );
                 }
 
                 tv = (TextView) view.findViewById( R.id.wx_station_wx );
+                tv.setVisibility( View.VISIBLE );
+                tv.setText( info.toString() );
+
+                info.setLength( 0 );
+                SkyCondition sky = WxUtils.getCeiling( metar.skyConditions );
+                int ceiling = sky.getCloudBaseAGL();
+                String skyCover = sky.getSkyCover();
+                if ( !skyCover.equals( "NSC" ) ) {
+                    info.append( "Ceiling "+skyCover+" "+FormatUtils.formatFeet( ceiling ) );
+                } else {
+                    if ( !metar.skyConditions.isEmpty() ) {
+                        sky = metar.skyConditions.get( 0 );
+                        skyCover = sky.getSkyCover();
+                        if ( skyCover.equals( "CLR" ) || skyCover.equals( "SKC" ) ) {
+                            info.append( "Sky clear" );
+                        } else {
+                            info.append( skyCover );
+                            info.append( " "+FormatUtils.formatFeet( ceiling ) );
+                        }
+                    } else {
+                        info.append( "No sky" );
+                    }
+                }
+                info.append( ", " );
+                info.append( FormatUtils.formatTemperatureF( metar.tempCelsius ) );
+                info.append( "/" );
+                info.append( FormatUtils.formatTemperatureF( metar.dewpointCelsius ) );
+                info.append( ", " );
+                info.append( FormatUtils.formatAltimeterHg( metar.altimeterHg ) );
+
+                tv = (TextView) view.findViewById( R.id.wx_station_wx2 );
                 tv.setVisibility( View.VISIBLE );
                 tv.setText( info.toString() );
 
@@ -198,6 +227,8 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 WxUtils.setColorizedWxDrawable( tv, metar, 0 );
                 tv = (TextView) view.findViewById( R.id.wx_station_wx );
                 tv.setVisibility( View.GONE );
+                tv = (TextView) view.findViewById( R.id.wx_station_wx2 );
+                tv.setVisibility( View.GONE );
                 tv = (TextView) view.findViewById( R.id.wx_report_age );
                 tv.setVisibility( View.GONE );
             }
@@ -205,6 +236,8 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
             UiUtils.setTextViewDrawable( tv, null );
             tv = (TextView) view.findViewById( R.id.wx_station_wx );
+            tv.setVisibility( View.GONE );
+            tv = (TextView) view.findViewById( R.id.wx_station_wx2 );
             tv.setVisibility( View.GONE );
             tv = (TextView) view.findViewById( R.id.wx_report_age );
             tv.setVisibility( View.GONE );
