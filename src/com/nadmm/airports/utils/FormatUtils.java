@@ -112,15 +112,32 @@ public class FormatUtils {
         return sNMFormat.format( value );
     }
 
-    public static String formatTemperature( float temp ) {
-        return String.format( Locale.US, "%.1f\u00B0C (%.0f\u00B0F)",
-                temp, WxUtils.celsiusToFahrenheit( temp ) );
+    public static String formatTemperature( float tempC ) {
+        return String.format( Locale.US, "%s (%s)",
+                formatTemperatureC( tempC ), formatTemperatureF( tempC ) );
+    }
+
+    public static String formatTemperatureC( float tempC ) {
+        return String.format( Locale.US, "%.1f\u00B0C", tempC );
+    }
+
+    public static String formatTemperatureF( float tempC ) {
+        return String.format( Locale.US, "%.0f\u00B0F", WxUtils.celsiusToFahrenheit( tempC ) );
     }
 
     public static String formatAltimeter( float altimeterHg ) {
         float altimeterMb = WxUtils.hgToMillibar( altimeterHg );
         return String.format( Locale.US, "%.2f\" Hg (%s mb)",
                 altimeterHg, FormatUtils.formatNumber( altimeterMb ) );
+    }
+
+    public static String formatAltimeterHg( float altimeterHg ) {
+        return String.format( Locale.US, "%.2f\" Hg", altimeterHg );
+    }
+
+    public static String formatAltimeterMb( float altimeterHg ) {
+        float altimeterMb = WxUtils.hgToMillibar( altimeterHg );
+        return String.format( Locale.US, "%s mb", FormatUtils.formatNumber( altimeterMb ) );
     }
 
     public static String formatDegrees( float degrees ) {
