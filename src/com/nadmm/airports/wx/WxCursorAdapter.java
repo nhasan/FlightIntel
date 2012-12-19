@@ -178,10 +178,12 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                     info.append( String.format( "%dKT", metar.windSpeedKnots ) );
                 }
 
-                if ( metar.windSpeedKnots > 0 && metar.windDirDegrees == 0 ) {
-                    info.append( " variable" );
-                } else {
-                    info.append( " from "+FormatUtils.formatDegrees( metar.windDirDegrees ) );
+                if ( metar.windSpeedKnots > 0 ) {
+                    if ( metar.windDirDegrees == 0 ) {
+                        info.append( " variable" );
+                    } else {
+                        info.append( " from "+FormatUtils.formatDegrees( metar.windDirDegrees ) );
+                    }
                 }
 
                 tv = (TextView) view.findViewById( R.id.wx_station_wx );
@@ -200,9 +202,11 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                         skyCover = sky.getSkyCover();
                         if ( skyCover.equals( "CLR" ) || skyCover.equals( "SKC" ) ) {
                             info.append( "Sky clear" );
-                        } else {
+                        } else if ( !skyCover.equals( "SKM" ) ) {
                             info.append( skyCover );
                             info.append( " "+FormatUtils.formatFeet( ceiling ) );
+                        } else {
+                            info.append( "No sky" );
                         }
                     } else {
                         info.append( "No sky" );
