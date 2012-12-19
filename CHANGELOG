@@ -1,3 +1,8 @@
+v4.8.2 (12/19/2012)
+===================
+* Show additional wx info in the listview (requested)
+* Fix wx graphic screen crashing all the time due to a regression in the last release
+
 v4.8.1 (12/15/2012)
 ===================
 * Fixed crash when fetching A/FD PDF from AeroNav while offline
