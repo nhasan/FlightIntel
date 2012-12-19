@@ -58,6 +58,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
@@ -109,8 +110,11 @@ public class ActivityBase extends SherlockFragmentActivity {
 
         Class<?> clss = getHomeActivityClass();
         if ( getClass() != clss ) {
-            getSupportActionBar().setHomeButtonEnabled( true );
-            getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+            ActionBar actionBar = getSupportActionBar();
+            if ( actionBar != null ) {
+                getSupportActionBar().setHomeButtonEnabled( true );
+                getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+            }
         }
 
         mExternalStorageReceiver = new BroadcastReceiver() {
