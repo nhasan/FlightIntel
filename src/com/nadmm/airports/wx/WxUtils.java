@@ -223,25 +223,24 @@ public class WxUtils {
         return Math.round( ws*Math.sin( Math.toRadians( wd-rd ) ) );
     }
 
-    static public int getCeiling( ArrayList<SkyCondition> skyConditions ) {
-        int ceiling = 12000;
+    static public SkyCondition getCeiling( ArrayList<SkyCondition> skyConditions ) {
         for ( SkyCondition sky : skyConditions ) {
             // Ceiling is defined as the lowest layer aloft reported as broken or overcast;
             // or the vertical visibility into an indefinite ceiling
             if ( sky.getSkyCover().equals( "BKN" )
                     || sky.getSkyCover().equals( "OVC" )
                     || sky.getSkyCover().equals( "OVX" ) ) {
-                ceiling = sky.getCloudBaseAGL();
-                break;
+                return sky;
             }
         }
-        return ceiling;
+        return SkyCondition.create( "NSC", 12000 );
     }
 
     static public String computeFlightCategory( ArrayList<SkyCondition> skyConditions,
             float visibilitySM ) {
-        String flightCategory = "";
-        int ceiling = getCeiling( skyConditions );
+        String flightCategory;
+        SkyCondition sky = getCeiling( skyConditions );
+        int ceiling = sky.getCloudBaseAGL();
         if ( ceiling < 500 || visibilitySM < 1.0 ) {
             flightCategory = "LIFR";
         } else if ( ceiling < 1000 || visibilitySM < 3.0 ) {
