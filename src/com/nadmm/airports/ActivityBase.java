@@ -69,7 +69,6 @@ import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.afd.BrowseActivity;
-import com.nadmm.airports.afd.FavoritesActivity;
 import com.nadmm.airports.afd.NearbyActivity;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
