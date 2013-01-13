@@ -159,16 +159,11 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
 
                 StringBuilder info = new StringBuilder();
                 info.append( metar.flightCategory );
-                if ( metar.wxList.size() > 0 ) {
-                    for ( WxSymbol wx : metar.wxList ) {
-                        if ( !wx.getSymbol().equals( "NSW" ) ) {
-                            info.append( ", " );
-                            info.append( wx.toString().toLowerCase( Locale.US ) );
-                        }
-                    }
-                }
 
-                info.append( ", winds " );
+                info.append( ", " );
+                info.append( FormatUtils.formatStatuteMiles( metar.visibilitySM ) );
+
+                info.append( ", " );
                 if ( metar.windSpeedKnots == 0 ) {
                     info.append( "calm" );
                 } else if ( metar.windGustKnots < Integer.MAX_VALUE ) {
@@ -177,12 +172,18 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 } else {
                     info.append( String.format( "%dKT", metar.windSpeedKnots ) );
                 }
-
                 if ( metar.windSpeedKnots > 0 ) {
-                    if ( metar.windDirDegrees == 0 ) {
-                        info.append( " variable" );
-                    } else {
+                    if ( metar.windDirDegrees >= 0 ) {
                         info.append( " from "+FormatUtils.formatDegrees( metar.windDirDegrees ) );
+                    }
+                }
+
+                if ( metar.wxList.size() > 0 ) {
+                    for ( WxSymbol wx : metar.wxList ) {
+                        if ( !wx.getSymbol().equals( "NSW" ) ) {
+                            info.append( ", " );
+                            info.append( wx.toString().toLowerCase( Locale.US ) );
+                        }
                     }
                 }
 
@@ -203,13 +204,9 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                         if ( skyCover.equals( "CLR" ) || skyCover.equals( "SKC" ) ) {
                             info.append( "Sky clear" );
                         } else if ( !skyCover.equals( "SKM" ) ) {
-                            info.append( skyCover );
-                            info.append( " "+FormatUtils.formatFeet( ceiling ) );
-                        } else {
-                            info.append( "No sky" );
+                            info.append(
+                                    skyCover+" "+FormatUtils.formatFeet( sky.getCloudBaseAGL() ) );
                         }
-                    } else {
-                        info.append( "No sky" );
                     }
                 }
                 info.append( ", " );
