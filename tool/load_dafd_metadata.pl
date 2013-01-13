@@ -32,6 +32,7 @@ my $dafd_url = "http://aeronav.faa.gov/afd/afd_$cycle.xml";
 my $count = 0;
 
 print "Downloading the d-AFD metafile: ".$dafd_url."...";
+#my $ret = 200;
 my $ret = getstore( $dafd_url, $AFD_METADATA_FILE );
 if ( $ret != 200 )
 {
@@ -39,7 +40,7 @@ if ( $ret != 200 )
 }
 print "done\n";
 
-my $dbfile = "dafd.db";
+my $dbfile = "$BASE_DIR/dafd.db";
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );
@@ -69,15 +70,17 @@ my $insert_cycle_record = "INSERT INTO cycle ("
 
 my $create_dafd_table = "CREATE TABLE dafd ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."STATE TEXT, "
         ."FAA_CODE TEXT, "
         ."PDF_NAME TEXT"
         .")";
 
 my $insert_dafd_record = "INSERT INTO dafd ("
+        ."STATE, "
         ."FAA_CODE, "
         ."PDF_NAME"
         .") VALUES ("
-        ."?, ?"
+        ."?, ?, ?"
         .")";
 
 $dbh->do( "DROP TABLE IF EXISTS cycle" );
@@ -92,8 +95,7 @@ my $sth_dafd = $dbh->prepare( $insert_dafd_record );
 my $twig= new XML::Twig(
                         start_tag_handlers => { 
                             airports => \&airports,
-                            city_name => \&city_name,
-                            airport_name => \&airport_name },
+                            location => \&location },
                         twig_handlers => {
                             airport => \&airport } );
 
@@ -103,17 +105,15 @@ print "\rDone loading $count records\n";
 
 exit;
 
-my $cycle;
 my $from_date;
 my $to_date;
-my $volume;
 my $faa_code;
-my $military_use;
+my $state;
 
 sub airports
 {
     my( $twig, $dafd )= @_;
-    my $from_date = $dafd->{'att'}->{'from_edate'};
+    my $from_date = $dafd->{'att'}->{'from_edate1'};
     my $to_date = $dafd->{'att'}->{'to_edate'};
 
     #AFD_CYCLE
@@ -128,6 +128,12 @@ sub airports
     return 1;
 }
 
+sub location
+{
+    my( $twig, $location )= @_;
+    $state = $location->{'att'}->{'state'};
+}
+
 sub airport
 {
     my( $twig, $airport )= @_;
@@ -136,10 +142,12 @@ sub airport
 
     if ( length( $faa_code ) > 0 )
     {
+        #STATE
+        $sth_dafd->bind_param( 1, $state );
         #FAA_CODE
-        $sth_dafd->bind_param( 1, $faa_code );
+        $sth_dafd->bind_param( 2, $faa_code );
         #PDF_NAME
-        $sth_dafd->bind_param( 2, $pdf_name );
+        $sth_dafd->bind_param( 3, $pdf_name );
     
         print "\rLoading # $count...";
     
