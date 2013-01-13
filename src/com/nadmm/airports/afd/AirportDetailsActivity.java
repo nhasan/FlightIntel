@@ -150,7 +150,8 @@ public class AirportDetailsActivity extends ActivityBase {
                 builder.setTables( Runways.TABLE_NAME );
                 Cursor c = builder.query( db, new String[] { Runways.SITE_NUMBER, Runways.RUNWAY_ID,
                         Runways.RUNWAY_LENGTH, Runways.RUNWAY_WIDTH, Runways.SURFACE_TYPE,
-                        Runways.BASE_END_HEADING, Runways.BASE_END_ID, Runways.RECIPROCAL_END_ID },
+                        Runways.BASE_END_HEADING, Runways.BASE_END_ID, Runways.RECIPROCAL_END_ID,
+                        Runways.BASE_END_RIGHT_TRAFFIC, Runways.RECIPROCAL_END_RIGHT_TRAFFIC },
                         Runways.SITE_NUMBER+"=? AND "+Runways.RUNWAY_LENGTH+" > 0",
                         new String[] { mSiteNumber }, null, null, null, null );
                 cursors[ 1 ] = c;
@@ -342,10 +343,10 @@ public class AirportDetailsActivity extends ActivityBase {
             showRunwayDetails( result );
             showRemarks( result );
             showAwosDetails( result );
-            showNearbyFacilities( result );
             showHomeDistance( result );
-            showOperationsDetails( result );
+            showNearbyFacilities( result );
             showNotamAndTfr();
+            showOperationsDetails( result );
             showAeroNavDetails( result );
             showServicesDetails( result );
             showOtherDetails( result );
@@ -367,7 +368,8 @@ public class AirportDetailsActivity extends ActivityBase {
             addRow( layout, "Unicom", unicom.length() > 0? unicom : "None" );
             Intent intent = new Intent( getActivity(), CommunicationsActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "ATC", intent, R.drawable.row_selector_bottom );
+            addClickableRow( layout, "ATC", intent );
+            setRowBackgroundResource( layout );
         }
 
         protected void showRunwayDetails( Cursor[] result ) {
@@ -379,28 +381,15 @@ public class AirportDetailsActivity extends ActivityBase {
 
             Cursor rwy = result[ 1 ];
             if ( rwy.moveToFirst() ) {
-                int rwyTot = 0;
-                int heliTot = 0;
-                do {
-                    String rwyId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
-                    if ( rwyId.startsWith( "H" ) ) {
-                        ++heliTot;
-                    } else {
-                        ++rwyTot;
-                    }
-                } while ( rwy.moveToNext() );
-
-                rwy.moveToFirst();
                 do {
                     String rwyId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
                     if ( rwyId.startsWith( "H" ) ) {
                         // This is a helipad
-                        int resId = getSelectorResourceForRow( heliNum, heliTot );
-                        addRunwayRow( heliLayout, rwy, resId );
+                        addRunwayRow( heliLayout, rwy );
+                        ++heliNum;
                     } else {
                         // This is a runway
-                        int resId = getSelectorResourceForRow( rwyNum, rwyTot );
-                        addRunwayRow( rwyLayout, rwy, resId );
+                        addRunwayRow( rwyLayout, rwy );
                         ++rwyNum;
                     }
                 } while ( rwy.moveToNext() );
@@ -411,12 +400,16 @@ public class AirportDetailsActivity extends ActivityBase {
                 tv = (TextView) findViewById( R.id.detail_rwy_label );
                 tv.setVisibility( View.GONE );
                 rwyLayout.setVisibility( View.GONE );
+            } else {
+                setRowBackgroundResource( rwyLayout );
             }
             if ( heliNum == 0 ) {
                 // No helipads so remove the section
                 tv = (TextView) findViewById( R.id.detail_heli_label );
                 tv.setVisibility( View.GONE );
                 heliLayout.setVisibility( View.GONE );
+            } else {
+                setRowBackgroundResource( heliLayout );
             }
         }
 
@@ -497,41 +490,22 @@ public class AirportDetailsActivity extends ActivityBase {
                             startActivity( intent );
                         }
                     };
-                    int resid = getSelectorResourceForRow( awos1.getPosition(), awos1.getCount() );
                     addAwosRow( layout, icaoCode, name, type, freq, phone, distance,
-                            bearing, runnable, resid );
+                            bearing, runnable );
                 } while ( awos1.moveToNext() );
 
                 if ( !awos1.isAfterLast() ) {
                     Intent intent = new Intent( getActivity(), NearbyWxActivity.class );
                     intent.putExtra( LocationColumns.LOCATION, mLocation );
                     intent.putExtra( LocationColumns.RADIUS, mRadius );
-                    addClickableRow( layout,
-                            String.format( "View all %d nearby Wx stations", awos1.getCount() ), 
-                            intent, R.drawable.row_selector_bottom );
+                    addClickableRow( layout, String.format( "View all %d nearby Wx stations",
+                            awos1.getCount() ), intent );
                 }
+                setRowBackgroundResource( layout );
             } else {
                 label.setVisibility( View.GONE );
                 layout.setVisibility( View.GONE );
             }
-        }
-
-        protected void showNearbyFacilities( Cursor[] result ) {
-            Cursor apt = result[ 0 ];
-            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-
-            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_nearby_layout );
-
-            Intent airport = new Intent( getActivity(), NearbyAirportsActivity.class );
-            airport.putExtra( LocationColumns.LOCATION, mLocation );
-            airport.putExtra( LocationColumns.RADIUS, mRadius );
-            addClickableRow( layout, "Airports", airport, R.drawable.row_selector_top );
-            Intent fss = new Intent( getActivity(), FssCommActivity.class );
-            fss.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "FSS outlets", fss, R.drawable.row_selector_middle );
-            Intent navaids = new Intent( getActivity(), NearbyNavaidsActivity.class );
-            navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "Navaids", navaids, R.drawable.row_selector_bottom );
         }
 
         protected void showHomeDistance( Cursor[] result ) {
@@ -571,6 +545,35 @@ public class AirportDetailsActivity extends ActivityBase {
             } else {
                 addRow( layout, "Home airport '"+mHome+"' not found" );                
             }
+        }
+
+        protected void showNearbyFacilities( Cursor[] result ) {
+            Cursor apt = result[ 0 ];
+            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
+
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_nearby_layout );
+
+            Intent airport = new Intent( getActivity(), NearbyAirportsActivity.class );
+            airport.putExtra( LocationColumns.LOCATION, mLocation );
+            airport.putExtra( LocationColumns.RADIUS, mRadius );
+            addClickableRow( layout, "Airports", airport );
+            Intent fss = new Intent( getActivity(), FssCommActivity.class );
+            fss.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addClickableRow( layout, "FSS outlets", fss );
+            Intent navaids = new Intent( getActivity(), NearbyNavaidsActivity.class );
+            navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
+            addClickableRow( layout, "Navaids", navaids );
+            setRowBackgroundResource( layout );
+        }
+
+        private void showNotamAndTfr() {
+            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_notam_faa_layout );
+            Intent intent = new Intent( getActivity(), AirportNotamActivity.class );
+            intent.putExtra( Airports.SITE_NUMBER, mSiteNumber );
+            addClickableRow( layout, "NOTAMs", intent );
+            intent = new Intent( getActivity(), TfrActivity.class );
+            addClickableRow( layout, "TFRs", intent );
+            setRowBackgroundResource( layout );
         }
 
         protected void showOperationsDetails( Cursor[] result ) {
@@ -690,24 +693,15 @@ public class AirportDetailsActivity extends ActivityBase {
                     Uri uri = Uri.parse( String.format(
                             "http://skyvector.com/?ll=%s,%s&zoom=1", lat, lon ) );
                     Intent intent = new Intent( Intent.ACTION_VIEW, uri );
-                    addClickableRow( layout, "Sectional chart", sectional, intent, 
-                            R.drawable.row_selector_middle );
+                    addClickableRow( layout, "Sectional chart", sectional, intent );
                 } else {
                     addRow( layout, "Sectional chart", sectional );
                 }
             }
             Intent intent = new Intent( getActivity(), AlmanacActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, mSiteNumber );
-            addClickableRow( layout, "Sunrise and sunset", intent, R.drawable.row_selector_bottom );
-        }
-
-        private void showNotamAndTfr() {
-            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_notam_faa_layout );
-            Intent intent = new Intent( getActivity(), AirportNotamActivity.class );
-            intent.putExtra( Airports.SITE_NUMBER, mSiteNumber );
-            addClickableRow( layout, "NOTAMs", intent, R.drawable.row_selector_top );
-            intent = new Intent( getActivity(), TfrActivity.class );
-            addClickableRow( layout, "TFRs", intent, R.drawable.row_selector_bottom );
+            addClickableRow( layout, "Sunrise and sunset", intent );
+            setRowBackgroundResource( layout );
         }
 
         protected void showAeroNavDetails( Cursor[] result ) {
@@ -721,8 +715,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     Cursor dafd = result[ 12 ];
                     if ( dafd.moveToFirst() ) {
                         String pdfName = dafd.getString( dafd.getColumnIndex( Dafd.PDF_NAME ) );
-                        View row = addClickableRow( layout, "A/FD page", null,
-                                R.drawable.row_selector_top );
+                        View row = addClickableRow( layout, "A/FD page", null );
                         row.setTag( R.id.DAFD_CYCLE, afdCycle );
                         row.setTag( R.id.DAFD_PDF_NAME, pdfName );
                         row.setOnClickListener( new OnClickListener() {
@@ -745,8 +738,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     if ( dtpp.moveToFirst() ) {
                         Intent intent = new Intent( getActivity(), DtppActivity.class );
                         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                        addClickableRow( layout, "Instrument procedures", intent,
-                                R.drawable.row_selector_bottom );
+                        addClickableRow( layout, "Instrument procedures", intent );
                     } else {
                         addRow( layout, "No instrument procedures available" );
                     }
@@ -755,9 +747,9 @@ public class AirportDetailsActivity extends ActivityBase {
                 }
             } else {
                 Intent intent = new Intent( getActivity(), DonateActivity.class );
-                addClickableRow( layout, "Please donate to enable this section",
-                        intent, R.drawable.row_selector );
+                addClickableRow( layout, "Please donate to enable this section", intent );
             }
+            setRowBackgroundResource( layout );
         }
 
         protected void getAfdPage( String afdCycle, String pdfName ) {
@@ -804,7 +796,8 @@ public class AirportDetailsActivity extends ActivityBase {
             Intent intent = new Intent( getActivity(), ServicesActivity.class );
             intent.putExtra( Airports.SITE_NUMBER,
                     apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) ) );
-            addClickableRow( layout, "Other services", intent, R.drawable.row_selector_bottom );
+            addClickableRow( layout, "Other services", intent );
+            setRowBackgroundResource( layout );
         }
 
         protected void showOtherDetails( Cursor[] result ) {
@@ -813,21 +806,22 @@ public class AirportDetailsActivity extends ActivityBase {
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_other_layout );
             Intent intent = new Intent( getActivity(), OwnershipActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "Ownership and contact", intent, R.drawable.row_selector_top );
+            addClickableRow( layout, "Ownership and contact", intent );
             intent = new Intent( getActivity(), AircraftOpsActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "Aircraft operations", intent, R.drawable.row_selector_middle );
+            addClickableRow( layout, "Aircraft operations", intent );
             intent = new Intent( getActivity(), RemarksActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "Additional remarks", intent, R.drawable.row_selector_middle );
+            addClickableRow( layout, "Additional remarks", intent );
             intent = new Intent( getActivity(), AttendanceActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "Attendance", intent, R.drawable.row_selector_bottom );
+            addClickableRow( layout, "Attendance", intent );
+            setRowBackgroundResource( layout );
         }
 
         protected void addAwosRow( LinearLayout layout, String id, String name, String type, 
                 String freq, String phone, float distance, float bearing,
-                final Runnable runnable, int resid ) {
+                final Runnable runnable ) {
             StringBuilder sb = new StringBuilder();
             sb.append( id );
             if ( name != null && name.length() > 0 ) {
@@ -856,7 +850,7 @@ public class AirportDetailsActivity extends ActivityBase {
             String label2 = sb.toString();
             String value2 = phone;
 
-            View row = addClickableRow( layout, label1, value1, label2, value2, runnable, resid );
+            View row = addClickableRow( layout, label1, value1, label2, value2, runnable );
 
             TextView tv = (TextView) row.findViewById( R.id.item_label );
             tv.setTag( id );
@@ -868,7 +862,7 @@ public class AirportDetailsActivity extends ActivityBase {
             }
         }
 
-        protected void addRunwayRow( LinearLayout layout, Cursor c, int resid ) {
+        protected void addRunwayRow( LinearLayout layout, Cursor c ) {
             String siteNumber = c.getString( c.getColumnIndex( Runways.SITE_NUMBER ) );
             String runwayId = c.getString( c.getColumnIndex( Runways.RUNWAY_ID ) );
             int length = c.getInt( c.getColumnIndex( Runways.RUNWAY_LENGTH ) );
@@ -876,6 +870,18 @@ public class AirportDetailsActivity extends ActivityBase {
             String surfaceType = c.getString( c.getColumnIndex( Runways.SURFACE_TYPE ) );
             String baseId = c.getString( c.getColumnIndex( Runways.BASE_END_ID ) );
             String reciprocalId = c.getString( c.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
+            String baseRP = c.getString( c.getColumnIndex( Runways.BASE_END_RIGHT_TRAFFIC ) );
+            String reciprocalRP = c.getString(
+                    c.getColumnIndex( Runways.RECIPROCAL_END_RIGHT_TRAFFIC ) );
+
+            String rp = null;
+            if ( baseRP.equals( "Y" ) && reciprocalRP.equals( "Y" ) ) {
+                rp = " (RP)";
+            } else if ( baseRP.equals( "Y" ) ) {
+                rp = " (RP "+baseId+")";
+            } else if ( reciprocalRP.equals( "Y" ) ) {
+                rp = " (RP "+reciprocalId+")";
+            }
 
             int heading = c.getInt( c.getColumnIndex( Runways.BASE_END_HEADING ) );
             if ( heading > 0 ) {
@@ -886,11 +892,16 @@ public class AirportDetailsActivity extends ActivityBase {
             }
 
             LinearLayout row = (LinearLayout) inflate( R.layout.runway_detail_item );
-            row.setBackgroundResource( resid );
 
             TextView tv = (TextView) row.findViewById( R.id.runway_id );
             tv.setText( runwayId );
             setRunwayDrawable( tv, runwayId, length, heading );
+
+            if ( rp != null ) {
+                tv = (TextView) row.findViewById( R.id.runway_rp );
+                tv.setText( rp );
+                tv.setVisibility( View.VISIBLE );
+            }
 
             tv = (TextView) row.findViewById( R.id.runway_size );
             tv.setText( String.format( "%s x %s",
@@ -916,7 +927,7 @@ public class AirportDetailsActivity extends ActivityBase {
             Intent intent = new Intent( getActivityBase(), RunwaysActivity.class );
             intent.putExtras( bundle );
 
-            addClickableRow( layout, row, intent, resid );
+            addClickableRow( layout, row, intent );
         }
 
         protected void setRunwayDrawable( TextView tv, String runwayId, int length, int heading ) {
