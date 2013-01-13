@@ -37,7 +37,7 @@ if ( $ret != 200 )
     die "Unable to download d-TPP metadata.";
 }
 
-my $dbfile = "dtpp.db";
+my $dbfile = "$BASE_DIR/dtpp.db";
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );
