@@ -20,6 +20,7 @@
 package com.nadmm.airports.afd;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.TimeZone;
 
@@ -125,7 +126,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 mSiteNumber = params[ 0 ];
 
                 SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-                Cursor[] cursors = new Cursor[ 14 ];
+                Cursor[] cursors = new Cursor[ 15 ];
 
                 Cursor apt = getAirportDetails( mSiteNumber );
                 cursors[ 0 ] = apt;
@@ -172,35 +173,42 @@ public class AirportDetailsActivity extends ActivityBase {
                 cursors[ 3 ] = c;
 
                 builder = new SQLiteQueryBuilder();
+                builder.setTables( Tower3.TABLE_NAME );
+                c = builder.query( db, new String[] { "*" },
+                        Tower3.FACILITY_ID+"=?",
+                        new String[] { faaCode }, null, null, null, null );
+                cursors[ 4 ] = c;
+
+                builder = new SQLiteQueryBuilder();
                 builder.setTables( Tower7.TABLE_NAME );
                 c = builder.query( db, new String[] { "*" },
                         Tower7.SATELLITE_AIRPORT_SITE_NUMBER+"=?",
                         new String[] { mSiteNumber }, null, null, null, null );
-                cursors[ 4 ] = c;
+                cursors[ 5 ] = c;
 
                 if ( !c.moveToFirst() ) {
                     builder = new SQLiteQueryBuilder();
                     builder.setTables( Tower6.TABLE_NAME );
                     c = builder.query( db, new String[] { "*" },
-                            Tower3.FACILITY_ID+"=?",
+                            Tower6.FACILITY_ID+"=?",
                             new String[] { faaCode }, null, null, Tower6.ELEMENT_NUMBER, null );
-                    cursors[ 5 ] = c;
+                    cursors[ 6 ] = c;
                 }
 
-                cursors[ 6 ] = new NearbyWxCursor( db, mLocation, mRadius );
+                cursors[ 7 ] = new NearbyWxCursor( db, mLocation, mRadius );
 
                 String faa_code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Aff3.TABLE_NAME );
                 c = builder.query( db, new String[] { "*" }, Aff3.IFR_FACILITY_ID+"=?",
                         new String[] { faa_code }, null, null, null, null );
-                cursors[ 7 ] = c;
+                cursors[ 8 ] = c;
 
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Tower8.TABLE_NAME );
                 c = builder.query( db, new String[] { "*" }, Tower8.FACILITY_ID+"=? ",
                         new String[] { faaCode }, null, null, null, null );
-                cursors[ 8 ] = c;
+                cursors[ 9 ] = c;
 
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Attendance.TABLE_NAME );
@@ -208,7 +216,7 @@ public class AirportDetailsActivity extends ActivityBase {
                         new String[] { Attendance.ATTENDANCE_SCHEDULE },
                         Attendance.SITE_NUMBER+"=?", new String[] { mSiteNumber },
                         null, null, Attendance.SEQUENCE_NUMBER, null );
-                cursors[ 9 ] = c;
+                cursors[ 10 ] = c;
 
                 db = getDatabase( DatabaseManager.DB_DTPP );
                 if ( db != null ) {
@@ -216,7 +224,7 @@ public class AirportDetailsActivity extends ActivityBase {
                     builder.setTables( Dtpp.TABLE_NAME );
                     c = builder.query( db, new String[] { "*" }, Dtpp.FAA_CODE+"=? ",
                             new String[] { faaCode }, null, null, null, null );
-                    cursors[ 10 ] = c;
+                    cursors[ 11 ] = c;
                 }
 
                 db = getDatabase( DatabaseManager.DB_DAFD );
@@ -225,13 +233,13 @@ public class AirportDetailsActivity extends ActivityBase {
                     builder.setTables( DafdCycle.TABLE_NAME );
                     c = builder.query( db, new String[] { "*" },
                             null, null, null, null, null, null );
-                    cursors[ 11 ] = c;
+                    cursors[ 12 ] = c;
 
                     builder = new SQLiteQueryBuilder();
                     builder.setTables( Dafd.TABLE_NAME );
                     c = builder.query( db, new String[] { "*" }, Dafd.FAA_CODE+"=? ",
                             new String[] { faaCode }, null, null, null, null );
-                    cursors[ 12 ] = c;
+                    cursors[ 13 ] = c;
                 }
 
                 if ( mHome.length() > 0 ) {
@@ -246,7 +254,7 @@ public class AirportDetailsActivity extends ActivityBase {
                             },
                             Airports.FAA_CODE+"=? OR "+Airports.ICAO_CODE+"=?",
                             new String[] { mHome, mHome }, null, null, null, null );
-                    cursors[ 13 ] = c;
+                    cursors[ 14 ] = c;
                 }
 
                 return cursors;
@@ -365,11 +373,67 @@ public class AirportDetailsActivity extends ActivityBase {
             String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
             addRow( layout, "CTAF", ctaf.length() > 0? ctaf : "None" );
             String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
-            addRow( layout, "Unicom", unicom.length() > 0? unicom : "None" );
+            if ( unicom.length() > 0 ) {
+                addRow( layout, "Unicom", unicom );
+            }
+
+            Cursor twr3 = result[ 4 ];
+            if ( twr3.moveToFirst() ) {
+                HashMap<String, ArrayList<Float>> freqMap
+                    = new HashMap<String, ArrayList<Float>>();
+                do {
+                    String freqUse = twr3.getString(
+                            twr3.getColumnIndex( Tower3.MASTER_AIRPORT_FREQ_USE ) );
+                    String value = twr3.getString(
+                            twr3.getColumnIndex( Tower3.MASTER_AIRPORT_FREQ ) );
+                    if ( freqUse.contains( "LCL" ) || freqUse.contains( "LC/P" ) ) {
+                        addFrequencyToMap( freqMap, "Tower", value );
+                    } else if ( freqUse.contains( "GND" ) ) {
+                        addFrequencyToMap( freqMap, "Ground", value );
+                    } else if ( freqUse.contains( "ATIS" ) ) {
+                        addFrequencyToMap( freqMap, "ATIS", value );
+                    }
+                } while ( twr3.moveToNext() );
+
+                if ( freqMap.size() > 0 ) {
+                    for ( String key : freqMap.keySet() ) {
+                        ArrayList<Float> freqs = freqMap.get( key );
+                        // Do not show here if multiple frequencies are listed
+                        if ( freqs.size() == 1 ) {
+                            addRow( layout, key, FormatUtils.formatFreq( freqs.get( 0 ) ) );
+                        }
+                    }
+                }
+            }
+
             Intent intent = new Intent( getActivity(), CommunicationsActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "ATC", intent );
+            addClickableRow( layout, "More", intent );
             setRowBackgroundResource( layout );
+        }
+
+        protected void addFrequencyToMap( HashMap<String, ArrayList<Float>> freqMap,
+                String key, String value ) {
+            ArrayList<Float> freqs = freqMap.get( key );
+            if ( freqs == null ) {
+                freqs = new ArrayList<Float>();
+            }
+            int i = 0;
+            Float freq = 0F;
+            while ( i < value.length() ) {
+                char c = value.charAt( i );
+                if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
+                    ++i;
+                    continue;
+                }
+                value = value.substring( 0, i );
+                break;
+            }
+            freq = Float.valueOf( value );
+            if ( freq <= 136 && !freqs.contains( freq ) ) {
+                freqs.add( freq );
+            }
+            freqMap.put( key, freqs );
         }
 
         protected void showRunwayDetails( Cursor[] result ) {
@@ -427,12 +491,12 @@ public class AirportDetailsActivity extends ActivityBase {
              }
 
             Cursor twr1 = result[ 3 ];
-            Cursor twr7 = result[ 4 ];
+            Cursor twr7 = result[ 5 ];
             if ( twr1.moveToFirst() ) {
                 String facilityType = twr1.getString( twr1.getColumnIndex( Tower1.FACILITY_TYPE ) );
                 if ( facilityType.equals( "NON-ATCT" ) && twr7.getCount() == 0 ) {
                     // Show remarks, if any, since there are no frequencies listed
-                    Cursor twr6 = result[ 5 ];
+                    Cursor twr6 = result[ 6 ];
                     if ( twr6.moveToFirst() ) {
                         do {
                             String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
@@ -452,7 +516,7 @@ public class AirportDetailsActivity extends ActivityBase {
         protected void showAwosDetails( Cursor[] result ) {
             TextView label = (TextView) findViewById( R.id.detail_awos_label );
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_awos_layout );
-            Cursor awos1 = result[ 6 ];
+            Cursor awos1 = result[ 7 ];
 
             if ( awos1.moveToFirst() ) {
                 do {
@@ -510,7 +574,7 @@ public class AirportDetailsActivity extends ActivityBase {
 
         protected void showHomeDistance( Cursor[] result ) {
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_home_layout );
-            Cursor home = result[ 13 ];
+            Cursor home = result[ 14 ];
             if ( home == null ) {
                 addRow( layout, "Home airport is not set" );
             } else if ( home.moveToFirst() ) {
@@ -592,7 +656,7 @@ public class AirportDetailsActivity extends ActivityBase {
             if ( activation.length() > 0 ) {
                 addRow( layout, "Activation date", activation );
             }
-            Cursor twr8 = result[ 8 ];
+            Cursor twr8 = result[ 9 ];
             if ( twr8.moveToFirst() ) {
                 String airspace = twr8.getString( twr8.getColumnIndex( Tower8.AIRSPACE_TYPES ) );
                 String value = DataUtils.decodeAirspace( airspace );
@@ -602,7 +666,7 @@ public class AirportDetailsActivity extends ActivityBase {
             String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
             String towerValue;
             if ( tower.equals( "Y" ) ) {
-                Cursor att = result[ 9 ];
+                Cursor att = result[ 10 ];
                 String hours = null;
                 if ( att.moveToFirst() && att.getCount() == 1 ) {
                     String schedule = att.getString( att.getColumnIndex(
@@ -709,10 +773,10 @@ public class AirportDetailsActivity extends ActivityBase {
             if ( Application.sDonationDone ) {
                 Cursor apt = result[ 0 ];
                 String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-                Cursor cycle = result[ 11 ];
+                Cursor cycle = result[ 12 ];
                 if ( cycle != null && cycle.moveToFirst() ) {
                     String afdCycle = cycle.getString( cycle.getColumnIndex( DafdCycle.AFD_CYCLE ) );
-                    Cursor dafd = result[ 12 ];
+                    Cursor dafd = result[ 13 ];
                     if ( dafd.moveToFirst() ) {
                         String pdfName = dafd.getString( dafd.getColumnIndex( Dafd.PDF_NAME ) );
                         View row = addClickableRow( layout, "A/FD page", null );
@@ -733,7 +797,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 } else {
                     addRow( layout, "d-A/FD data not found" );
                 }
-                Cursor dtpp = result[ 10 ];
+                Cursor dtpp = result[ 11 ];
                 if ( dtpp != null ) {
                     if ( dtpp.moveToFirst() ) {
                         Intent intent = new Intent( getActivity(), DtppActivity.class );
