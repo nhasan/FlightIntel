@@ -1,3 +1,10 @@
+v4.8.3 (1/13/2013)
+==================
+* Show visibility in the wx list (request)
+* Show if runway has right pattern in the runway summary section (request)
+* Show more frequencies in the comm summary section (request)
+* Fix a bug with display of cloud cover in some cases in wx list (report)
+
 v4.8.2 (12/19/2012)
 ===================
 * Show additional wx info in the listview (requested)
