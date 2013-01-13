@@ -32,6 +32,9 @@
         <activity android:label="@string/settings"
                   android:name=".PreferencesActivity" />
 
+        <activity android:label="@string/favorites"
+                  android:name=".FavoritesActivity" />
+
         <activity android:label="@string/browse_airports"
                   android:name=".afd.BrowseActivity" />
 
@@ -40,9 +43,6 @@
 
         <activity android:label="@string/nearby_airports"
                   android:name=".afd.NearbyAirportsActivity" />
-
-        <activity android:label="@string/favorites"
-                  android:name=".afd.FavoritesActivity" />
 
         <activity android:label="@string/airport_details"
                   android:name=".afd.AirportDetailsActivity" />
