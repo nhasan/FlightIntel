@@ -1122,13 +1122,13 @@ public class AirportDetailsActivity extends ActivityBase {
                 crossWind = Math.abs( crossWind );
                 StringBuilder windInfo = new StringBuilder();
                 if ( crossWind > 0 ) {
-                    windInfo.append( String.format( "%d %s x-wind from %s",
+                    windInfo.append( String.format( "%d %s %s x-wind",
                             crossWind, crossWind > 1? "knots" : "knot", side ) );
                 } else {
                     windInfo.append( "no x-wind" );
                 }
                 if ( metar.windGustKnots < Integer.MAX_VALUE ) {
-                    double gustFactor = metar.windGustKnots-metar.windSpeedKnots/2;
+                    double gustFactor = (metar.windGustKnots-metar.windSpeedKnots)/2;
                     windInfo.append( String.format( ", %d knots gust factor",
                             Math.round( gustFactor ) ) );
                 }
