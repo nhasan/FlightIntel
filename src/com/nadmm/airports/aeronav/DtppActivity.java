@@ -298,10 +298,10 @@ public class DtppActivity extends ActivityBase {
                     String chartName = c.getString( c.getColumnIndex( Dtpp.CHART_NAME ) );
                     String pdfName = c.getString( c.getColumnIndex( Dtpp.PDF_NAME ) );
                     String userAction = c.getString( c.getColumnIndex( Dtpp.USER_ACTION ) );
-                    int resid = UiUtils.getRowSelectorForCursor( c );
                     String faanfd18 = c.getString( c.getColumnIndex( Dtpp.FAANFD18_CODE ) );
-                    addChartRow( group, chartCode, chartName, pdfName, userAction, faanfd18, resid );
+                    addChartRow( group, chartCode, chartName, pdfName, userAction, faanfd18 );
                 } while ( c.moveToNext() );
+                setRowBackgroundResource( group );
                 layout.addView( item, new LinearLayout.LayoutParams( LayoutParams.MATCH_PARENT,
                         LayoutParams.WRAP_CONTENT ) );
             }
@@ -312,16 +312,15 @@ public class DtppActivity extends ActivityBase {
             TextView tv = (TextView) item.findViewById( R.id.group_name );
             LinearLayout group = (LinearLayout) item.findViewById( R.id.group_details );
             tv.setText( "Other" );
-            addChartRow( group, "", "Airport Diagram Legend", "legendAD.pdf", "", "",
-                    R.drawable.row_selector_top );
-            addChartRow( group, "", "Legends & General Information", "frntmatter.pdf", "", "",
-                    R.drawable.row_selector_bottom );
+            addChartRow( group, "", "Airport Diagram Legend", "legendAD.pdf", "", "" );
+            addChartRow( group, "", "Legends & General Information", "frntmatter.pdf", "", "" );
+            setRowBackgroundResource( group );
             layout.addView( item, new LinearLayout.LayoutParams( LayoutParams.MATCH_PARENT,
                     LayoutParams.WRAP_CONTENT ) );
         }
 
         protected View addChartRow( LinearLayout layout, String chartCode, String chartName,
-                String pdfName, String userAction, String faanfd18, int resid ) {
+                String pdfName, String userAction, String faanfd18 ) {
             View row;
             if ( userAction.length() > 0 ) {
                 row= addRow( layout, chartName, DataUtils.decodeUserAction( userAction ) );
@@ -330,7 +329,6 @@ public class DtppActivity extends ActivityBase {
             }
 
             if ( !userAction.equals( "D" ) ) {
-                row.setBackgroundResource( resid );
                 row.setOnClickListener( mOnClickListener );
                 row.setTag( R.id.DTPP_CHART_CODE, chartCode );
                 row.setTag( R.id.DTPP_PDF_NAME, pdfName );

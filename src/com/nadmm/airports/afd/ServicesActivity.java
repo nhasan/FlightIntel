@@ -144,10 +144,10 @@ public class ServicesActivity extends ActivityBase {
             String notamFacility = apt.getString( apt.getColumnIndex( Airports.NOTAM_FACILITY_ID ) );
             Intent intent = new Intent( getActivity(), AirportNotamActivity.class );
             intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            addClickableRow( layout, "NOTAM facility", notamFacility, intent,
-                    R.drawable.row_selector_middle );
+            addClickableRow( layout, "NOTAM facility", notamFacility, intent );
             String notamD = apt.getString( apt.getColumnIndex( Airports.NOTAM_D_AVAILABLE ) );
             addRow( layout, "NOTAM D available", notamD.equals( "Y" )? "Yes" : "No" );
+            setRowBackgroundResource( layout );
         }
 
         protected void showFssServices( Cursor[] result ) {

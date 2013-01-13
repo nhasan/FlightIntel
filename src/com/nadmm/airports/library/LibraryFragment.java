@@ -235,9 +235,9 @@ public class LibraryFragment extends FragmentBase {
                     String edition = c.getString( c.getColumnIndex( Library.EDITION ) );
                     String author = c.getString( c.getColumnIndex( Library.AUTHOR ) );
                     long size = c.getLong( c.getColumnIndex( Library.DOWNLOAD_SIZE ) );
-                    int resid = UiUtils.getRowSelectorForCursor( c );
-                    addLibraryRow( layout, name, desc, edition, author, size, resid );
+                    addLibraryRow( layout, name, desc, edition, author, size );
                 } while ( c.moveToNext() );
+                setRowBackgroundResource( layout );
             }
         }
 
@@ -245,7 +245,7 @@ public class LibraryFragment extends FragmentBase {
     }
 
     private View addLibraryRow( LinearLayout layout, String name, String desc, String edition,
-            String author, long size, int resid ) {
+            String author, long size ) {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
         }
@@ -260,7 +260,6 @@ public class LibraryFragment extends FragmentBase {
         tv.setText( Formatter.formatShortFileSize( getActivity(), size ) );
         row.setTag( R.id.LIBRARY_PDF_NAME, name );
         row.setOnClickListener( mOnClickListener );
-        row.setBackgroundResource( resid );
         showStatus( row, false );
         mBookRowMap.put( name, row );
         layout.addView( row, new LinearLayout.LayoutParams(

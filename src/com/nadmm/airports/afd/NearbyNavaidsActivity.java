@@ -281,6 +281,7 @@ public class NearbyNavaidsActivity extends ActivityBase {
                     addDirectionalNavaidRow( layout, navaidId, name, type, freq, radial,
                             distance, resid );
                 } while ( vor.moveToNext() );
+                setRowBackgroundResource( layout );
             } else {
                 LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_vor_layout );
                 layout.setVisibility( View.GONE );
@@ -302,6 +303,7 @@ public class NearbyNavaidsActivity extends ActivityBase {
                     addNonDirectionalNavaidRow( layout, navaidId, name, type, freq, heading,
                             distance, resid );
                 } while ( ndb.moveToNext() );
+                setRowBackgroundResource( layout );
             } else {
                 LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_ndb_layout );
                 layout.setVisibility( View.GONE );
@@ -319,7 +321,7 @@ public class NearbyNavaidsActivity extends ActivityBase {
             intent.putExtra( Nav1.NAVAID_ID, navaidId );
             intent.putExtra( Nav1.NAVAID_TYPE, type );
 
-            addClickableRow( table, label1, freq, label2, value2, intent, resid );
+            addClickableRow( table, label1, freq, label2, value2, intent );
         }
 
         protected void addNonDirectionalNavaidRow( LinearLayout table, String navaidId,
@@ -331,7 +333,7 @@ public class NearbyNavaidsActivity extends ActivityBase {
             intent.putExtra( Nav1.NAVAID_ID, navaidId );
             intent.putExtra( Nav1.NAVAID_TYPE, type );
 
-            addClickableRow( table, label1, freq, label2, value2, intent, resid );
+            addClickableRow( table, label1, freq, label2, value2, intent );
         }
     }
 

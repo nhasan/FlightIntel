@@ -218,8 +218,7 @@ public class RunwaysActivity extends ActivityBase {
                 args.putString( Ils1.ILS_TYPE, ilsType );
                 Intent intent = new Intent( getActivity(), IlsActivity.class );
                 intent.putExtras( args );
-                addClickableRow( layout, "Instrument approach", ilsType, intent, 
-                        R.drawable.row_selector_middle );
+                addClickableRow( layout, "Instrument approach", ilsType, intent );
             }
             Float elevation = rwy.getFloat( rwy.getColumnIndex( Runways.BASE_END_RUNWAY_ELEVATION ) );
             if ( elevation != null && elevation > 0 ) {
@@ -327,6 +326,7 @@ public class RunwaysActivity extends ActivityBase {
                     }
                 }
             }
+            setRowBackgroundResource( layout );
 
             // Show remarks
             showBaseEndRemarks( result );
@@ -369,8 +369,7 @@ public class RunwaysActivity extends ActivityBase {
                 args.putString( Ils1.ILS_TYPE, ilsType );
                 Intent intent = new Intent( getActivity(), IlsActivity.class );
                 intent.putExtras( args );
-                addClickableRow( layout, "Instrument approach", ilsType, intent, 
-                        R.drawable.row_selector_middle );
+                addClickableRow( layout, "Instrument approach", ilsType, intent );
             }
             Float elevation = rwy.getFloat( rwy.getColumnIndex(
                     Runways.RECIPROCAL_END_RUNWAY_ELEVATION ) );
@@ -481,6 +480,7 @@ public class RunwaysActivity extends ActivityBase {
                     }
                 }
             }
+            setRowBackgroundResource( layout );
 
             // Show remarks
             showReciprocalEndRemarks( result );

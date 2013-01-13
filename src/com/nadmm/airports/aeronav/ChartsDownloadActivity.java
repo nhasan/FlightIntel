@@ -348,9 +348,9 @@ public class ChartsDownloadActivity extends ActivityBase {
                 do {
                     String tppVolume = c.getString( c.getColumnIndex( Dtpp.TPP_VOLUME ) );
                     int total = c.getInt( c.getColumnIndex( "total" ) );
-                    int resid = UiUtils.getRowSelectorForCursor( c );
-                    addTppVolumeRow( layout, tppVolume, total, resid );
+                    addTppVolumeRow( layout, tppVolume, total );
                 } while ( c.moveToNext() );
+                setRowBackgroundResource( layout );
             }
 
             setFragmentContentShown( true );
@@ -495,8 +495,7 @@ public class ChartsDownloadActivity extends ActivityBase {
             getActivity().startService( service );
         }
 
-        protected View addTppVolumeRow( LinearLayout layout, String tppVolume,
-                int total, int resid ) {
+        protected View addTppVolumeRow( LinearLayout layout, String tppVolume, int total ) {
             if ( layout.getChildCount() > 0 ) {
                 addSeparator( layout );
             }
@@ -510,7 +509,6 @@ public class ChartsDownloadActivity extends ActivityBase {
 
             row.setTag( R.id.DTPP_VOLUME_NAME, tppVolume );
             row.setTag( R.id.DTPP_CHART_TOTAL, total );
-            row.setBackgroundResource( resid );
 
             showStatus( row, 0, total );
 

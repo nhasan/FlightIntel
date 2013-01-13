@@ -263,12 +263,6 @@ public class FragmentBase extends SherlockFragment {
         }
     }
 
-    protected void makeRowClickable( View row, Object tag, int resid ) {
-        row.setBackgroundResource( resid );
-        row.setTag( tag );
-        row.setOnClickListener( mOnRowClickListener );
-    }
-
     protected void makeClickToCall( TextView tv ) {
         PackageManager pm = mActivity.getPackageManager();
         boolean hasTelephony = pm.hasSystemFeature( PackageManager.FEATURE_TELEPHONY );
@@ -285,32 +279,45 @@ public class FragmentBase extends SherlockFragment {
         }
     }
 
-    protected View addClickableRow( LinearLayout layout, View row, Object tag, int resid ) {
-        if ( layout.getChildCount() > 0 ) {
-            addSeparator( layout );
-        }
+    protected void makeRowClickable( View row, Object tag ) {
+        row.setTag( tag );
+        row.setOnClickListener( mOnRowClickListener );
+    }
 
-        makeRowClickable( row, tag, resid );
-        layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+    protected void setRowBackgroundResource( LinearLayout layout ) {
+        int count = layout.getChildCount();
+        int index = 0;
+        while ( index < count ) {
+            View row = layout.getChildAt( index );
+            if ( row.isClickable() ) {
+                int resId = getSelectorResourceForRow( index, count );
+                row.setBackgroundResource( resId );
+            }
+            index += 2;
+        }
+    }
+
+    protected View addClickableRow( LinearLayout layout, View row, Object tag ) {
+        addRow( layout, row );
+        makeRowClickable( row, tag );
         return row;
     }
 
-    protected View addClickableRow( LinearLayout layout, String label, Object tag, int resid ) {
-        return addClickableRow( layout, label, null, tag, resid );
+    protected View addClickableRow( LinearLayout layout, String label, Object tag ) {
+        return addClickableRow( layout, label, null, tag );
     }
 
-    protected View addClickableRow( LinearLayout layout, String label, String value,
-            Object tag, int resid ) {
+    protected View addClickableRow( LinearLayout layout, String label, String value, Object tag ) {
         View row = addRow( layout, label+"...", value );
-        makeRowClickable( row, tag, resid );
+        makeRowClickable( row, tag );
         return row;
     }
 
     protected View addClickableRow( LinearLayout layout, String label1, String value1,
-            String label2, String value2, Object tag, int resid ) {
+            String label2, String value2, Object tag ) {
         View row = addRow( layout, label1, value1, label2, value2 );
-        makeRowClickable( row, tag, resid );
+        row.setTag( tag );
+        row.setOnClickListener( mOnRowClickListener );
         return row;
     }
 
@@ -438,6 +445,16 @@ public class FragmentBase extends SherlockFragment {
                 0, LayoutParams.WRAP_CONTENT, 1f ) );
         layout.addView( innerLayout, new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+    }
+
+    protected View addRow( LinearLayout layout, View row ) {
+        if ( layout.getChildCount() > 0 ) {
+            addSeparator( layout );
+        }
+
+        layout.addView( row, new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return row;
     }
 
     protected void addSeparator( LinearLayout layout ) {
