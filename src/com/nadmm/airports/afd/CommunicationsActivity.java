@@ -214,7 +214,6 @@ public class CommunicationsActivity extends ActivityBase {
                     String extra = "";
                     String freqUse = twr3.getString( twr3.getColumnIndex(
                             Tower3.MASTER_AIRPORT_FREQ_USE ) );
-                    // Remove any text past the frequency
                     int i = 0;
                     while ( i < freq.length() ) {
                         char c = freq.charAt( i );
