@@ -1118,23 +1118,19 @@ public class AirportDetailsActivity extends ActivityBase {
                 }
                 long crossWind = WxUtils.getCrossWindComponent( metar.windSpeedKnots,
                         windDir, rwyHeading );
-                String side = "right";
-                if ( crossWind < 0 ) {
-                    side = "left";
-                    crossWind = Math.abs( crossWind );
-                }
+                String side = ( crossWind >= 0 )? "right" : "left";
+                crossWind = Math.abs( crossWind );
                 StringBuilder windInfo = new StringBuilder();
                 if ( crossWind > 0 ) {
-                    boolean gusting = ( metar.windGustKnots < Integer.MAX_VALUE );
-                    windInfo.append( String.format( "%d %s%s x-wind from %s",
-                            crossWind, crossWind > 1? "knots" : "knot",
-                            gusting? " gusting" : "" , side ) );
+                    windInfo.append( String.format( "%d %s x-wind from %s",
+                            crossWind, crossWind > 1? "knots" : "knot", side ) );
                 } else {
                     windInfo.append( "no x-wind" );
-                    if ( metar.windGustKnots < Integer.MAX_VALUE ) {
-                        long gustFactor = ( metar.windGustKnots-metar.windSpeedKnots )/2;
-                        windInfo.append( String.format( ", %d knots gust factor", gustFactor ) );
-                    }
+                }
+                if ( metar.windGustKnots < Integer.MAX_VALUE ) {
+                    double gustFactor = metar.windGustKnots-metar.windSpeedKnots/2;
+                    windInfo.append( String.format( ", %d knots gust factor",
+                            Math.round( gustFactor ) ) );
                 }
                 tv.setText( String.format( "Rwy %s: %s", id, windInfo.toString() ) );
                 tv.setVisibility( View.VISIBLE );
