@@ -3,55 +3,38 @@
     <datafile>
         <type>FADDS</type>
         <desc>National Airspace System (FAA)</desc>
-        <version>20121115</version>
-        <filename>fadds_20121115.db</filename>
-        <size>5094352</size>
-        <start>2012-11-15T09:01:00Z</start>
-        <end>2013-01-10T09:01:00Z</end>
+        <version>20130110</version>
+        <filename>fadds_20130110.db</filename>
+        <size>5101858</size>
+        <start>2013-01-10T09:01:00Z</start>
+        <end>2013-03-07T09:01:00Z</end>
     </datafile>
     <datafile>
         <type>DAFD</type>
-        <desc>AeroNav d-A/FD 15Nov2012 (FAA)</desc>
-        <version>20121115</version>
-        <filename>dafd_20121115.db</filename>
-        <size>82250</size>
-        <start>2012-11-15T09:01:00Z</start>
-        <end>2013-01-10T09:01:00Z</end>
+        <desc>AeroNav d-A/FD 10Jan2013 (FAA)</desc>
+        <version>20130110</version>
+        <filename>dafd_20130110.db</filename>
+        <size>90730</size>
+        <start>2013-01-10T09:01:00Z</start>
+        <end>2013-03-07T09:01:00Z</end>
     </datafile>
     <datafile>
         <type>DTPP</type>
-        <desc>AeroNav d-TPP #1212 (FAA)</desc>
-        <version>1212</version>
-        <filename>dtpp_20121115.db</filename>
-        <size>472166</size>
-        <start>2012-11-15T09:01:00Z</start>
-        <end>2012-12-13T09:01:00Z</end>
-    </datafile>
-    <datafile>
-        <type>DTPP</type>
-        <desc>AeroNav d-TPP #1213 (FAA)</desc>
-        <version>1213</version>
-        <filename>dtpp_20121213.db</filename>
-        <size>454744</size>
-        <start>2012-12-13T09:01:00Z</start>
-        <end>2013-01-10T09:01:00Z</end>
+        <desc>AeroNav d-TPP #1301 (FAA)</desc>
+        <version>1301</version>
+        <filename>dtpp_20130110.db</filename>
+        <size>473079</size>
+        <start>2013-01-10T09:01:00Z</start>
+        <end>2013-02-07T09:01:00Z</end>
     </datafile>
     <datafile>
         <type>LIBRARY</type>
-        <desc>Documents Library 13Dec2012</desc>
-        <version>20121213</version>
-        <filename>library_20121213.db</filename>
-        <size>3860</size>
-        <start>2012-12-13T09:01:00Z</start>
-        <end>2013-01-10T09:01:00Z</end>
-    </datafile>
-    <datafile>
-        <type>LIBRARY</type>
-        <desc>Documents Library 15Nov2012</desc>
-        <version>20121115</version>
-        <filename>library_20121115.db</filename>
-        <size>3756</size>
-        <start>2012-11-15T09:01:00Z</start>
-        <end>2012-12-13T09:01:00Z</end>
+        <desc>Documents Library 10Jan2013</desc>
+        <version>20130110</version>
+        <filename>library_20130110.db</filename>
+        <size>3775</size>
+        <start>2013-01-10T09:01:00Z</start>
+        <end>2013-02-07T09:01:00Z</end>
     </datafile>
 </manifest>
+
