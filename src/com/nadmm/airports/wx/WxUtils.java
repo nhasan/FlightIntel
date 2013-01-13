@@ -129,7 +129,7 @@ public class WxUtils {
             if ( isWindAvailable( metar ) ) {
                 d2 = getWindBarbDrawable( tv.getContext(), metar, declination );
             }
-            Drawable result = UiUtils.combineDrawables( context, d1, d2 );
+            Drawable result = UiUtils.combineDrawables( context, d1, d2, 2 );
             UiUtils.setTextViewDrawable( tv, result );
         } else {
             UiUtils.setTextViewDrawable( tv, R.drawable.error );

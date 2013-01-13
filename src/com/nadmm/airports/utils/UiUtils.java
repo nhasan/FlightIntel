@@ -21,7 +21,6 @@ package com.nadmm.airports.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -69,18 +68,21 @@ public class UiUtils {
         } );
     }
 
-    public static Drawable combineDrawables( Context context, Drawable d1, Drawable d2 ) {
+    public static Drawable combineDrawables( Context context, Drawable d1, Drawable d2,
+            int paddingDp ) {
         // Assumes both d1 & d2 are same size and square shaped
         int w = d1.getIntrinsicWidth();
         int h = d1.getIntrinsicHeight();
-        Bitmap result = Bitmap.createBitmap( w+( d2!=null? w : 0 ), h, Bitmap.Config.ARGB_8888 );
+        int paddingPx = convertDpToPx( context, paddingDp );
+        Bitmap result = Bitmap.createBitmap( w+( d2!=null? w+paddingPx : 0 ), h,
+                Bitmap.Config.ARGB_8888 );
 
         Canvas canvas = new Canvas( result );
         canvas.setDensity( Bitmap.DENSITY_NONE );
         d1.setBounds( 0, 0, w-1, h-1 );
         d1.draw( canvas );
         if ( d2 != null ) {
-            canvas.translate( w, 0 );
+            canvas.translate( w+paddingPx, 0 );
             d2.setBounds( 0, 0, w-1, h-1 );
             d2.draw( canvas );
         }
@@ -122,20 +124,6 @@ public class UiUtils {
         Resources res = tv.getResources();
         Drawable d = getColorizedDrawable( res, resid, color );
         setTextViewDrawable( tv, d );
-    }
-
-    static public int getRowSelectorForCursor( Cursor c ) {
-        int resid;
-        if ( c.getCount() == 1 ) {
-            resid = R.drawable.row_selector;
-        } else if ( c.isFirst() ) {
-            resid = R.drawable.row_selector_top;
-        } else if ( c.isLast() ) {
-            resid = R.drawable.row_selector_bottom;
-        } else {
-            resid = R.drawable.row_selector_middle;
-        }
-        return resid;
     }
 
     static public int getRowSelector( int row, int count ) {
