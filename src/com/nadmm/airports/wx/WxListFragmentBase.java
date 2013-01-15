@@ -62,6 +62,7 @@ public class WxListFragmentBase extends ListFragmentBase {
     public void onResume() {
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
         bm.registerReceiver( mReceiver, mFilter );
+        requestMetars( NoaaService.ACTION_GET_METAR, false );
 
         super.onResume();
     }
@@ -85,7 +86,7 @@ public class WxListFragmentBase extends ListFragmentBase {
         // Handle item selection
         switch ( item.getItemId() ) {
         case R.id.menu_refresh:
-            requestMetars( true );
+            requestMetars( NoaaService.ACTION_GET_METAR, true );
             return true;
         default:
             return super.onOptionsItemSelected( item );
@@ -105,14 +106,10 @@ public class WxListFragmentBase extends ListFragmentBase {
 
         super.setCursor( c );
 
-        requestMetars( false );
+        requestMetars( NoaaService.ACTION_GET_METAR, false );
     }
 
-    protected void requestMetars( Boolean force ) {
-        requestMetars( NoaaService.ACTION_GET_METAR, force );
-    }
-
-    protected void requestMetars( String action, Boolean force ) {
+    protected void requestMetars( String action, boolean force ) {
         if ( mStationWx.size() == 0 ) {
             return;
         }
@@ -130,8 +127,7 @@ public class WxListFragmentBase extends ListFragmentBase {
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
         if ( force ) {
             service.putExtra( NoaaService.FORCE_REFRESH, true );
-        }
-        else if ( cacheOnly ) {
+        } else if ( cacheOnly ) {
             service.putExtra( NoaaService.CACHE_ONLY, true );
         }
         activity.startService( service );

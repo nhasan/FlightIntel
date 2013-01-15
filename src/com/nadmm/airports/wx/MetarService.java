@@ -63,6 +63,11 @@ public class MetarService extends NoaaService {
                 boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
                 boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
 
+                if ( action.equals( ACTION_CACHE_METAR ) ) {
+                    // Do not try to use the cache. We are populating the cache.
+                    cacheOnly = false;
+                }
+
                 if ( forceRefresh || !cacheOnly ) {
                     ArrayList<String> missing = new ArrayList<String>();
                     for ( String stationId : stationIds ) {

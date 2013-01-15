@@ -69,9 +69,6 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         StringBuilder info = new StringBuilder();
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
         if ( city != null && city.length() > 0 ) {
-            if ( info.length() > 0 ) {
-                info.append( ", " );
-            }
             info.append( city );
         }
         String state = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
@@ -97,6 +94,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             try {
                 tv.setText( FormatUtils.formatFreq( Float.valueOf( freq ) ) );
             } catch ( NumberFormatException e ) {
+                tv.setText( freq );
             }
         } else {
             tv.setText( "" );
@@ -128,8 +126,11 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 && c.getColumnIndex( LocationColumns.BEARING ) >= 0 ) {
             float distance = c.getFloat( c.getColumnIndex( LocationColumns.DISTANCE ) );
             float bearing = c.getFloat( c.getColumnIndex( LocationColumns.BEARING ) );
-            tv.setText( String.format( "%.1f NM %s",
-                    distance, GeoUtils.getCardinalDirection( bearing ) ) );
+            info.setLength( 0 );
+            info.append( FormatUtils.formatNauticalMiles( distance ) );
+            info.append( " " );
+            info.append( GeoUtils.getCardinalDirection( bearing ) );
+            tv.setText( info.toString() );
             tv.setVisibility( View.VISIBLE );
         } else {
             tv.setVisibility( View.GONE );
