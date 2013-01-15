@@ -43,6 +43,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.view.Menu;
@@ -955,7 +956,7 @@ public class AirportDetailsActivity extends ActivityBase {
                 heading = getRunwayHeading( runwayId );
             }
 
-            LinearLayout row = (LinearLayout) inflate( R.layout.runway_detail_item );
+            RelativeLayout row = (RelativeLayout) inflate( R.layout.runway_detail_item );
 
             TextView tv = (TextView) row.findViewById( R.id.runway_id );
             tv.setText( runwayId );
