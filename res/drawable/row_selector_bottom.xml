@@ -24,8 +24,9 @@
     <item android:state_pressed="true">
         <shape>
             <solid android:color="#ff66b3ff" />
-            <corners android:bottomLeftRadius="4dp"
-                    android:bottomRightRadius="4dp" />
+            <corners
+                android:bottomLeftRadius="4dp"
+                android:bottomRightRadius="4dp" />
         </shape>
     </item>
 </selector>
