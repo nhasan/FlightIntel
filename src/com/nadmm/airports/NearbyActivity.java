@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports.afd;
+package com.nadmm.airports;
 
 import java.util.ArrayList;
 
@@ -34,10 +34,8 @@ import android.support.v4.view.ViewPager;
 import android.text.format.DateUtils;
 import android.view.View;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
-import com.nadmm.airports.PreferencesActivity;
-import com.nadmm.airports.R;
+import com.nadmm.airports.afd.NearbyAirportsFragment;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TabsAdapter;
 import com.nadmm.airports.wx.NearbyWxFragment;
@@ -95,6 +93,7 @@ public class NearbyActivity extends ActivityBase {
     @Override
     protected void onResume() {
         requestLocationUpdates();
+        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_AFD );
 
         super.onResume();
     }
