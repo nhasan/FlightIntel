@@ -52,7 +52,7 @@ public class NotamService extends IntentService {
 
     public static final String ICAO_CODE = "ICAO_CODE";
     public static final String NOTAM_PATH = "NOTAM_PATH";
-    private static final long NOTAM_CACHE_MAX_AGE = 5*DateUtils.MINUTE_IN_MILLIS;
+    private static final long NOTAM_CACHE_MAX_AGE = 15*DateUtils.MINUTE_IN_MILLIS;
 
     private final File NOTAM_DIR;
     private final URL NOTAM_URL;
