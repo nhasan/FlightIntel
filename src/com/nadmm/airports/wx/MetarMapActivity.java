@@ -22,16 +22,13 @@ package com.nadmm.airports.wx;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.R;
+import com.nadmm.airports.FragmentActivityBase;
 
-public class MetarMapActivity extends ActivityBase {
+public class MetarMapActivity extends FragmentActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( R.layout.fragment_activity_layout );
 
         Bundle args = getIntent().getExtras();
         addFragment( MetarMapFragment.class, args );

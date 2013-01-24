@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,36 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports.wx;
+package com.nadmm.airports;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 
-import com.nadmm.airports.FragmentActivityBase;
-
-public class TafMapActivity extends FragmentActivityBase {
+public class FragmentActivityBase extends ActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        Bundle args = getIntent().getExtras();
-        addFragment( TafMapFragment.class, args );
+        setContentView( R.layout.fragment_activity_layout );
     }
 
-    public static class TafMapFragment extends WxMapFragmentBase {
-
-        public TafMapFragment() {
-            super( NoaaService.ACTION_GET_TAF, WxRegions.sWxRegionCodes,
-                    WxRegions.sWxRegionNames );
-            setLabel( "Select Region" );
-        }
-
-        @Override
-        protected Intent getServiceIntent() {
-            return new Intent( getActivity(), TafService.class );
-        }
-
+    @Override
+    public void setContentShown( boolean shown ) {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentBase f = (FragmentBase) fm.findFragmentById( R.id.fragment_container );
+        f.setFragmentContentShown( shown );
     }
 
 }

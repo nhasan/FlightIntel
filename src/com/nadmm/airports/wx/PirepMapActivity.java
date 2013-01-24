@@ -22,10 +22,9 @@ package com.nadmm.airports.wx;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.R;
+import com.nadmm.airports.FragmentActivityBase;
 
-public class PirepMapActivity extends ActivityBase {
+public class PirepMapActivity extends FragmentActivityBase {
 
     private static final String[] sTypeCodes = {
         "IC",
@@ -64,8 +63,6 @@ public class PirepMapActivity extends ActivityBase {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( R.layout.fragment_activity_layout );
 
         Bundle args = getIntent().getExtras();
         addFragment( PirepMapFragment.class, args );

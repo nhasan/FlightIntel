@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import com.actionbarsherlock.app.ActionBar.LayoutParams;
 import com.nadmm.airports.views.ImageZoomView;
 
-public class ImageViewActivity extends ActivityBase {
+public class ImageViewActivity extends FragmentActivityBase {
 
     public static final String IMAGE_TITLE = "IMAGE_TITLE";
     public static final String IMAGE_SUBTITLE = "IMAGE_SUBTITLE";
@@ -37,8 +37,6 @@ public class ImageViewActivity extends ActivityBase {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( R.layout.fragment_activity_layout );
 
         Bundle args = getIntent().getExtras();
         String title = args.getString( IMAGE_TITLE );
