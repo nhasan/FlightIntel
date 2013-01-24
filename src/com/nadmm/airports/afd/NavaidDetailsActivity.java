@@ -47,10 +47,13 @@ public class NavaidDetailsActivity extends AfdActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( createContentView( R.layout.navaid_activity_layout ) );
-
         Bundle args = getIntent().getExtras();
         addFragment( NavaidDetailsFragment.class, args );
+    }
+
+    @Override
+    protected View getContentView() {
+        return createContentView( R.layout.navaid_activity_layout );
     }
 
     public static class NavaidDetailsFragment extends FragmentBase {

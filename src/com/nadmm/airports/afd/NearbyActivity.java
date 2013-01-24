@@ -53,10 +53,6 @@ public class NearbyActivity extends AfdActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        View view = inflate( R.layout.fragment_pager_layout );
-        view.setKeepScreenOn( true );
-        setContentView( view );
-
         mLocationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
         mLocationListener = new AirportsLocationListener();
 
@@ -89,6 +85,13 @@ public class NearbyActivity extends AfdActivityBase {
         if ( savedInstanceState != null ) {
             pager.setCurrentItem( savedInstanceState.getInt( "nearbytab" ) );
         }
+    }
+
+    @Override
+    protected View getContentView() {
+        View v = inflate( R.layout.fragment_pager_layout );
+        v.setKeepScreenOn( true );
+        return v;
     }
 
     @Override

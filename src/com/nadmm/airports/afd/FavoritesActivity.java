@@ -23,6 +23,7 @@ package com.nadmm.airports.afd;
 import android.os.Bundle;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 
 import com.actionbarsherlock.view.Menu;
 import com.nadmm.airports.R;
@@ -34,8 +35,6 @@ public class FavoritesActivity extends AfdActivityBase {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( R.layout.fragment_pager_layout );
 
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
 
@@ -49,6 +48,11 @@ public class FavoritesActivity extends AfdActivityBase {
         if ( savedInstanceState != null ) {
             pager.setCurrentItem( savedInstanceState.getInt( "favtab" ) );
         }
+    }
+
+    @Override
+    protected View getContentView() {
+        return inflate( R.layout.fragment_pager_layout );
     }
 
     @Override

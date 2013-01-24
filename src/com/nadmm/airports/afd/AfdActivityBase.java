@@ -20,6 +20,7 @@
 package com.nadmm.airports.afd;
 
 import android.os.Bundle;
+import android.view.View;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
@@ -31,7 +32,10 @@ public class AfdActivityBase extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( createContentView( R.layout.airport_activity_layout ) );
+        View v = getContentView();
+        if ( v != null ) {
+            setContentView( v );
+        }
     }
 
     @Override
@@ -39,6 +43,10 @@ public class AfdActivityBase extends ActivityBase {
         setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_AFD );
 
         super.onResume();
+    }
+
+    protected View getContentView() {
+        return createContentView( R.layout.airport_activity_layout );
     }
 
 }

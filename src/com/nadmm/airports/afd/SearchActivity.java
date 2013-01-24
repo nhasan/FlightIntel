@@ -45,6 +45,11 @@ public class SearchActivity extends AfdActivityBase {
     }
 
     @Override
+    protected View getContentView() {
+        return null;
+    }
+
+    @Override
     protected void onNewIntent( Intent intent ) {
         setIntent( intent );
         handleIntent( intent );
