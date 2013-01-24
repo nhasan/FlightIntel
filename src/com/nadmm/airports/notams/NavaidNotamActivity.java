@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,23 +27,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.R;
+import com.nadmm.airports.afd.AfdActivityBase;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
-public class NavaidNotamActivity extends ActivityBase {
+public class NavaidNotamActivity extends AfdActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( createContentView( R.layout.fragment_activity_layout ) );
-
         Bundle args = getIntent().getExtras();
         addFragment( NavaidNotamFragment.class, args );
+    }
+
+    @Override
+    protected View getContentView() {
+        return createContentView( R.layout.navaid_activity_layout );
     }
 
     public static class NavaidNotamFragment extends NotamFragmentBase {
