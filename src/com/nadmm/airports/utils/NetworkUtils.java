@@ -79,8 +79,7 @@ public class NetworkUtils {
     public static boolean isConnectedToMeteredNetwork( Context context ) {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService( 
                 Context.CONNECTIVITY_SERVICE );
-        ConnectivityManagerCompat cm2 = new ConnectivityManagerCompat();
-        return cm2.isActiveNetworkMetered( cm );
+        return ConnectivityManagerCompat.isActiveNetworkMetered( cm );
     }
 
     public static void checkNetworkAndDownload( Context context, final Runnable runnable ) {
