@@ -67,6 +67,7 @@ public class NearbyWxFragment extends WxListFragmentBase {
         if ( location != null ) {
             onLocationChanged( location );
         }
+        getListView().setCacheColorHint( 0xffffffff );
 
         super.onActivityCreated( savedInstanceState );
     }
