@@ -106,6 +106,10 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
         return mListView.getAdapter();
     }
 
+    public ListView getListView() {
+        return mListView;
+    }
+
     abstract protected CursorAdapter newListAdapter( Context context, Cursor c );
 
     abstract protected void onListItemClick( ListView l, View v, int position );
