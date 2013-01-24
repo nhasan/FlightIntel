@@ -18,8 +18,9 @@
     <application android:icon="@drawable/icon"
             android:name=".Application"
             android:label="@string/app_name"
+            android:allowBackup="true"
             android:theme="@style/Theme.Light.DarkActionBar">
-        <activity android:label="@string/app_name" android:name=".FlightIntel">
+        <activity android:label="" android:name=".FlightIntel">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -33,7 +34,7 @@
                   android:name=".PreferencesActivity" />
 
         <activity android:label="@string/favorites"
-                  android:name=".FavoritesActivity" />
+                  android:name=".afd.FavoritesActivity" />
 
         <activity android:label="@string/browse_airports"
                   android:name=".afd.BrowseActivity" />
@@ -92,25 +93,28 @@
         <activity android:label="@string/weather"
                   android:name=".wx.WxDetailActivity" />
 
-        <activity android:label="@string/metar_maps"
+        <activity android:label="@string/metar_graphics"
                   android:name=".wx.MetarMapActivity"
                   android:theme="@style/Theme.Light.Dialog" />
 
-        <activity android:label="@string/taf_maps"
+        <activity android:label="@string/taf_graphics"
                   android:name=".wx.TafMapActivity"
                   android:theme="@style/Theme.Light.Dialog" />
 
-        <activity android:label="@string/pirep_images"
+        <activity android:label="@string/pirep_graphics"
                   android:name=".wx.PirepMapActivity"
                   android:theme="@style/Theme.Light.Dialog" />
 
-        <activity android:label="@string/airsigmet_images"
+        <activity android:label="@string/airsigmet_graphics"
                   android:name=".wx.AirSigmetMapActivity"
                   android:theme="@style/Theme.Light.Dialog" />
 
         <activity android:label="@string/nearby_wx"
                   android:name=".wx.NearbyWxActivity" />
 
+        <activity android:label=""
+                  android:name=".wx.WxImageViewActivity" />
+        
         <activity android:label="@string/instrument_procedures"
                   android:name=".aeronav.DtppActivity" />
 
@@ -119,6 +123,9 @@
 
         <activity android:label=""
                   android:name=".tfr.TfrActivity" />
+
+        <activity android:label=""
+                  android:name=".tfr.TfrImageViewActivity" />
 
         <activity android:label="@string/app_name"
                   android:name=".utils.ExternalStorageActivity" />

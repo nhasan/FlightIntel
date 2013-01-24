@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Remarks;
@@ -37,13 +36,11 @@ import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
-public class RemarksActivity extends ActivityBase {
+public class RemarksActivity extends AfdActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( createContentView( R.layout.airport_activity_layout ) );
 
         Bundle args = getIntent().getExtras();
         addFragment( RemarksFragment.class, args );

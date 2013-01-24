@@ -26,23 +26,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.SlidingMenuFragment;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
 
-public class AircraftOpsActivity extends ActivityBase {
+public class AircraftOpsActivity extends AfdActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( createContentView( R.layout.airport_activity_layout ) );
-
         Bundle args = getIntent().getExtras();
         addFragment( AircraftOpsFragment.class, args );
+    }
+
+    @Override
+    protected void onResume() {
+        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_AFD );
+
+        super.onResume();
     }
 
     public static class AircraftOpsFragment extends FragmentBase {

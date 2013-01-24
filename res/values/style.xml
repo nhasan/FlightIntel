@@ -22,7 +22,7 @@
 <resources>
     <style name="FlatButton">
         <item name="android:background">@drawable/flat_button</item>
-        <item name="android:textSize">15dp</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@color/button_color</item>
         <item name="android:paddingTop">4dp</item>
@@ -50,9 +50,10 @@
     <style name="TextNormal.Bold">
         <item name="android:textStyle">bold</item>
     </style>
-
     <style name="Theme.Light.DarkActionBar" parent="@style/Theme.Sherlock.Light.DarkActionBar">
         <item name="icon">@drawable/icon</item>
         <item name="android:icon">@drawable/icon</item>
+    </style>
+    <style name="ListItemActivated">
     </style>
 </resources>

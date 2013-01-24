@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports;
+package com.nadmm.airports.afd;
 
 import java.util.ArrayList;
 
@@ -35,12 +35,13 @@ import android.text.format.DateUtils;
 import android.view.View;
 
 import com.nadmm.airports.DatabaseManager.LocationColumns;
-import com.nadmm.airports.afd.NearbyAirportsFragment;
+import com.nadmm.airports.PreferencesActivity;
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TabsAdapter;
 import com.nadmm.airports.wx.NearbyWxFragment;
 
-public class NearbyActivity extends ActivityBase {
+public class NearbyActivity extends AfdActivityBase {
 
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
@@ -92,8 +93,19 @@ public class NearbyActivity extends ActivityBase {
 
     @Override
     protected void onResume() {
-        requestLocationUpdates();
-        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_AFD );
+        if ( mLocationManager != null ) {
+            mLocationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
+                    30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
+                    mLocationListener );
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
+            boolean useGps = prefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
+            if ( useGps ) {
+                mLocationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
+                        30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
+                        mLocationListener );
+            }
+        }
 
         super.onResume();
     }
@@ -125,22 +137,6 @@ public class NearbyActivity extends ActivityBase {
         super.onAttachFragment( fragment );
     }
 
-    protected void requestLocationUpdates() {
-        if ( mLocationManager != null ) {
-            mLocationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
-                    30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
-                    mLocationListener );
-
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-            boolean useGps = prefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
-            if ( useGps ) {
-                mLocationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
-                        30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
-                        mLocationListener );
-            }
-        }
-    }
-
     private final class AirportsLocationListener implements LocationListener {
 
         @Override
@@ -149,11 +145,13 @@ public class NearbyActivity extends ActivityBase {
                 return;
             }
 
+            // Is this location an improvement from the last?
             if ( GeoUtils.isBetterLocation( location, mLastLocation ) ) {
-                mLastLocation = location;
+                // Propagate the location update to all fragments
                 for ( LocationListener l : mLocationListeners ) {
                     l.onLocationChanged( location );
                 }
+                mLastLocation = location;
             }
         }
 

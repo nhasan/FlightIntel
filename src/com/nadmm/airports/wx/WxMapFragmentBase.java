@@ -182,7 +182,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     private void showWxMap( Intent intent ) {
         String path = intent.getStringExtra( NoaaService.RESULT );
         if ( path != null ) {
-            Intent view = new Intent( getActivity(), ImageViewActivity.class );
+            Intent view = new Intent( getActivity(), WxImageViewActivity.class );
             view.putExtra( ImageViewActivity.IMAGE_PATH, path );
             if ( mTitle != null ) {
                 view.putExtra( ImageViewActivity.IMAGE_TITLE, mTitle );

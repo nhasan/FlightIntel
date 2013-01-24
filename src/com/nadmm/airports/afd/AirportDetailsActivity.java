@@ -48,7 +48,6 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.Application;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Aff3;
@@ -90,13 +89,11 @@ import com.nadmm.airports.wx.NoaaService;
 import com.nadmm.airports.wx.WxDetailActivity;
 import com.nadmm.airports.wx.WxUtils;
 
-public class AirportDetailsActivity extends ActivityBase {
+public class AirportDetailsActivity extends AfdActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( createContentView( R.layout.airport_activity_layout ) );
 
         Bundle args = getIntent().getExtras();
         addFragment( AirportDetailsFragment.class, args );
@@ -367,7 +364,6 @@ public class AirportDetailsActivity extends ActivityBase {
 
         protected void showCommunicationsDetails( Cursor[] result ) {
             Cursor apt = result[ 0 ];
-            String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
 
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_comm_layout );
 
@@ -408,7 +404,7 @@ public class AirportDetailsActivity extends ActivityBase {
             }
 
             Intent intent = new Intent( getActivity(), CommunicationsActivity.class );
-            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+            intent.putExtras( getArguments() );
             addClickableRow( layout, "More", intent );
             setRowBackgroundResource( layout );
         }
@@ -432,6 +428,7 @@ public class AirportDetailsActivity extends ActivityBase {
             }
             freq = Float.valueOf( value );
             if ( freq <= 136 && !freqs.contains( freq ) ) {
+                // Add VHF frequencies only
                 freqs.add( freq );
             }
             freqMap.put( key, freqs );

@@ -37,6 +37,7 @@ import android.widget.ImageButton;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.SlidingMenuFragment;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 
@@ -115,6 +116,7 @@ public class ScratchPadActivity extends ActivityBase
     protected void onResume() {
         super.onResume();
 
+        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_SCRATCHPAD );
         loadBitmap();
     }
 

@@ -29,7 +29,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Ils1;
 import com.nadmm.airports.DatabaseManager.Ils2;
@@ -42,13 +41,11 @@ import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
 
-public class IlsActivity extends ActivityBase {
+public class IlsActivity extends AfdActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( createContentView( R.layout.airport_activity_layout ) );
 
         Bundle args = getIntent().getExtras();
         addFragment( IlsFragment.class, args );

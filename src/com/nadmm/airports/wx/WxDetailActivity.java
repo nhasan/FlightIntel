@@ -29,6 +29,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.SlidingMenuFragment;
 import com.nadmm.airports.utils.TabsAdapter;
 
 public class WxDetailActivity extends ActivityBase
@@ -40,6 +41,8 @@ public class WxDetailActivity extends ActivityBase
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+
         setContentView( R.layout.fragment_pager_layout );
 
         Intent intent = getIntent();
@@ -95,8 +98,13 @@ public class WxDetailActivity extends ActivityBase
                 }
             } );
         }
+    }
 
-        super.onCreate( savedInstanceState );
+    @Override
+    protected void onResume() {
+        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_AFD );
+
+        super.onResume();
     }
 
     @Override

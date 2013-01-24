@@ -59,7 +59,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -67,27 +66,27 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
-import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.afd.BrowseActivity;
+import com.nadmm.airports.afd.FavoritesActivity;
 import com.nadmm.airports.afd.NearbyActivity;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
-import com.nadmm.airports.library.LibraryActivity;
-import com.nadmm.airports.scratchpad.ScratchPadActivity;
-import com.nadmm.airports.tfr.TfrActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.SystemUtils;
+import com.slidingmenu.lib.SlidingMenu;
+import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
-public class ActivityBase extends SherlockFragmentActivity {
+public class ActivityBase extends SlidingFragmentActivity {
 
     private DatabaseManager mDbManager;
     private MenuItem mRefreshItem;
     private Drawable mRefreshDrawable;
     private LayoutInflater mInflater;
     private CursorAsyncTask mTask;
+    private SlidingMenuFragment mSlidingMenuFragment;
 
     private Handler mHandler = new Handler();
     IntentFilter mFilter;
@@ -107,13 +106,10 @@ public class ActivityBase extends SherlockFragmentActivity {
         mFilter.addAction( Intent.ACTION_MEDIA_REMOVED );
         mFilter.addDataScheme( "file" );
 
-        Class<?> clss = getHomeActivityClass();
-        if ( getClass() != clss ) {
-            ActionBar actionBar = getSupportActionBar();
-            if ( actionBar != null ) {
-                getSupportActionBar().setHomeButtonEnabled( true );
-                getSupportActionBar().setDisplayHomeAsUpEnabled( true );
-            }
+        ActionBar actionBar = getSupportActionBar();
+        if ( actionBar != null ) {
+            actionBar.setHomeButtonEnabled( true );
+            actionBar.setDisplayHomeAsUpEnabled( true );
         }
 
         mExternalStorageReceiver = new BroadcastReceiver() {
@@ -131,6 +127,17 @@ public class ActivityBase extends SherlockFragmentActivity {
         }
 
         super.onCreate( savedInstanceState );
+
+        SlidingMenu menu = getSlidingMenu();
+        menu.setTouchModeAbove( SlidingMenu.TOUCHMODE_MARGIN );
+        menu.setBehindWidthRes( R.dimen.slidingmenu_width );
+        menu.setShadowWidthRes( R.dimen.slidingmenu_shadow_width );
+        menu.setShadowDrawable( R.drawable.slidingmenu_shadow );
+        setBehindContentView( R.layout.menu_frame );
+        setSlidingActionBarEnabled( false );
+
+        Fragment f = replaceFragment( SlidingMenuFragment.class, null, R.id.menu_frame, false );
+        mSlidingMenuFragment = (SlidingMenuFragment) f;
     }
 
     @Override
@@ -165,6 +172,10 @@ public class ActivityBase extends SherlockFragmentActivity {
         return mDbManager;
     }
 
+    protected void setSlidingMenuActivatedItem( int position ) {
+        mSlidingMenuFragment.setActivatedItem( position );
+    }
+
     protected View createContentView( int id ) {
         View view = inflate( id );
         return createContentView( view );
@@ -177,7 +188,6 @@ public class ActivityBase extends SherlockFragmentActivity {
 
         LinearLayout pframe = new LinearLayout( this );
         pframe.setId( R.id.INTERNAL_PROGRESS_CONTAINER_ID );
-        pframe.setOrientation( LinearLayout.VERTICAL );
         pframe.setGravity( Gravity.CENTER );
 
         ProgressBar progress = new ProgressBar( this, null, android.R.attr.progressBarStyleLarge );
@@ -219,6 +229,7 @@ public class ActivityBase extends SherlockFragmentActivity {
     protected void setContentShown( View view, boolean shown, boolean animation ) {
         View progress = view.findViewById( R.id.INTERNAL_PROGRESS_CONTAINER_ID );
         View content = view.findViewById( R.id.INTERNAL_FRAGMENT_CONTAINER_ID );
+
         if ( shown ) {
             if ( animation ) {
                 progress.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_out ) );
@@ -244,11 +255,35 @@ public class ActivityBase extends SherlockFragmentActivity {
         setContentView( createContentView( tv ) );
     }
 
-    protected Fragment addFragment( Class<?> clss, Bundle args ) {
+    public Fragment replaceFragment( Class<?> clss, Bundle args ) {
+        return replaceFragment( clss, args, R.id.fragment_container );
+    }
+
+    public Fragment replaceFragment( Class<?> clss, Bundle args, int id  ) {
+        return replaceFragment( clss, args, id, true );
+    }
+
+    public Fragment replaceFragment( Class<?> clss, Bundle args, int id, boolean addTostack  ) {
+        String tag = clss.getSimpleName();
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment f = fm.findFragmentByTag( tag );
+        if ( f == null ) {
+            f = Fragment.instantiate( this, clss.getName(), args );
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace( id, f, tag );
+            if ( addTostack ) {
+                ft.addToBackStack( clss.getSimpleName() );
+            }
+            ft.commit();
+        }
+        return f;
+    }
+
+    public Fragment addFragment( Class<?> clss, Bundle args ) {
         return addFragment( clss, args, R.id.fragment_container );
     }
 
-    protected Fragment addFragment( Class<?> clss, Bundle args, int id ) {
+    public Fragment addFragment( Class<?> clss, Bundle args, int id ) {
         String tag = clss.getSimpleName();
         FragmentManager fm = getSupportFragmentManager();
         Fragment f = fm.findFragmentByTag( tag );
@@ -558,22 +593,6 @@ public class ActivityBase extends SherlockFragmentActivity {
             Intent about = new Intent( this, AboutActivity.class );
             startActivity( about );
             return true;
-        case R.id.menu_charts:
-            Intent charts = new Intent( this, ChartsDownloadActivity.class );
-            startActivity( charts );
-            return true;
-        case R.id.menu_library:
-            Intent library = new Intent( this, LibraryActivity.class );
-            startActivity( library );
-            return true;
-        case R.id.menu_tfr:
-            Intent tfr = new Intent( this, TfrActivity.class );
-            startActivity( tfr );
-            return true;
-        case R.id.menu_scratchpad:
-            Intent scratchpad = new Intent( this, ScratchPadActivity.class );
-            startActivity( scratchpad );
-            return true;
         default:
             return super.onOptionsItemSelected( item );
         }
@@ -635,6 +654,8 @@ public class ActivityBase extends SherlockFragmentActivity {
             Intent intent = new Intent( this, clss );
             intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
             startActivity( intent );
+        } else {
+            toggle();
         }
     }
 

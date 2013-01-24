@@ -21,17 +21,15 @@ package com.nadmm.airports.afd;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
-import com.nadmm.airports.R;
+import com.nadmm.airports.FragmentActivityBase;
+import com.nadmm.airports.SlidingMenuFragment;
 
-public class NearbyAirportsActivity extends ActivityBase {
+public class NearbyAirportsActivity extends FragmentActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( R.layout.fragment_activity_layout );
 
         Bundle args = getIntent().getExtras();
         int radius = args.getInt( LocationColumns.RADIUS );
@@ -39,6 +37,13 @@ public class NearbyAirportsActivity extends ActivityBase {
         setActionBarSubtitle( String.format( "Within %d NM Radius", radius ) );
 
         addFragment( NearbyAirportsFragment.class, args );
+    }
+
+    @Override
+    protected void onResume() {
+        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_AFD );
+
+        super.onResume();
     }
 
 }

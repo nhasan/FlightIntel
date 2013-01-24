@@ -30,7 +30,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
@@ -38,13 +37,11 @@ import com.nadmm.airports.notams.AirportNotamActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 
-public class ServicesActivity extends ActivityBase {
+public class ServicesActivity extends AfdActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( createContentView( R.layout.airport_activity_layout ) );
 
         Bundle args = getIntent().getExtras();
         addFragment( ServicesFragment.class, args );

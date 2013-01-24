@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
- -->
 
-<resources>
-    <dimen name="padding_left">12dip</dimen>
-    <dimen name="padding_top">8dip</dimen>
-    <dimen name="padding_right">12dip</dimen>
-    <dimen name="padding_bottom">8dip</dimen>
+package com.nadmm.airports.wx;
 
-    <dimen name="slidingmenu_width">220dp</dimen>
-    <dimen name="slidingmenu_shadow_width">16dp</dimen>
-</resources>
+import com.nadmm.airports.ImageViewActivity;
+import com.nadmm.airports.SlidingMenuFragment;
+
+public class WxImageViewActivity extends ImageViewActivity {
+
+    @Override
+    protected void onResume() {
+        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_AFD );
+
+        super.onResume();
+    }
+
+}

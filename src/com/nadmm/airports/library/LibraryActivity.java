@@ -35,6 +35,7 @@ import android.support.v4.view.ViewPager;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
+import com.nadmm.airports.SlidingMenuFragment;
 import com.nadmm.airports.DatabaseManager.BookCategories;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.SystemUtils;
@@ -53,7 +54,7 @@ public class LibraryActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( R.layout.fragment_pager_layout );
+        setContentView( createContentView( R.layout.fragment_pager_layout ) );
 
         mReceivers = new HashMap<String, BroadcastReceiver>();
         mReceiver = new BroadcastReceiver() {
@@ -111,9 +112,16 @@ public class LibraryActivity extends ActivityBase {
     }
 
     @Override
+    protected void onStart() {
+        setContentShown( true );
+        super.onStart();
+    }
+
+    @Override
     protected void onResume() {
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
         bm.registerReceiver( mReceiver, mFilter );
+        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_LIBRARY );
 
         super.onResume();
     }

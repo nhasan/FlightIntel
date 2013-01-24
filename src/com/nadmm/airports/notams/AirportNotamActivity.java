@@ -27,19 +27,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
+import com.nadmm.airports.afd.AfdActivityBase;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
-public class AirportNotamActivity extends ActivityBase {
+public class AirportNotamActivity extends AfdActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( createContentView( R.layout.airport_activity_layout ) );
 
         Bundle args = getIntent().getExtras();
         addFragment( AirportNotamFragment.class, args );

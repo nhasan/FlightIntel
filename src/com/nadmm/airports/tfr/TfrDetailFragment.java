@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,7 +142,7 @@ public class TfrDetailFragment extends FragmentBase {
         public void onReceive( Context context, Intent intent ) {
             String path = (String) intent.getSerializableExtra( TfrImageService.TFR_IMAGE_PATH );
             if ( path != null ) {
-                Intent activity = new Intent( getActivity(), ImageViewActivity.class );
+                Intent activity = new Intent( getActivity(), TfrImageViewActivity.class );
                 activity.putExtra( ImageViewActivity.IMAGE_PATH, path );
                 activity.putExtra( ImageViewActivity.IMAGE_TITLE, "TFR Graphic" );
                 activity.putExtra( ImageViewActivity.IMAGE_SUBTITLE, mTfr.name );

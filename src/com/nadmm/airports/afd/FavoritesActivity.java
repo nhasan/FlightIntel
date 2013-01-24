@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports;
+package com.nadmm.airports.afd;
 
 
 import android.os.Bundle;
@@ -26,11 +26,10 @@ import android.support.v4.view.ViewPager;
 
 import com.actionbarsherlock.view.Menu;
 import com.nadmm.airports.R;
-import com.nadmm.airports.afd.FavoriteAirportsFragment;
 import com.nadmm.airports.utils.TabsAdapter;
 import com.nadmm.airports.wx.FavoriteWxFragment;
 
-public class FavoritesActivity extends ActivityBase {
+public class FavoritesActivity extends AfdActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {

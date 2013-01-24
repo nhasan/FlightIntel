@@ -33,29 +33,35 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.DownloadActivity;
+import com.nadmm.airports.FragmentActivityBase;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.SlidingMenuFragment;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 
-public final class BrowseActivity extends ActivityBase {
+public final class BrowseActivity extends FragmentActivityBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( R.layout.fragment_activity_layout );
 
         Bundle args = getIntent().getExtras();
         if ( args == null ) {
             args = new Bundle();
         }
         addFragment( BrowseFragment.class, args );
+    }
+
+    @Override
+    protected void onResume() {
+        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_AFD );
+
+        super.onResume();
     }
 
     public static class BrowseFragment extends ListFragmentBase {
@@ -182,6 +188,8 @@ public final class BrowseActivity extends ActivityBase {
             } else {
                 setActionBarSubtitle( stateName );
             }
+            getListView().setCacheColorHint( 0xffffffff );
+
             setBackgroundTask( new BrowseTask() ).execute( stateCode, stateName );
 
             super.onActivityCreated( savedInstanceState );

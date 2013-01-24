@@ -37,6 +37,7 @@ public class NearbyAirportsFragment extends AirportListFragmentBase {
         if ( location != null ) {
             onLocationChanged( location );
         }
+        getListView().setCacheColorHint( 0xffffffff );
 
         super.onActivityCreated( savedInstanceState );
     }

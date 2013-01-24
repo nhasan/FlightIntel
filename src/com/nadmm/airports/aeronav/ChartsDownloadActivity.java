@@ -47,37 +47,33 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.actionbarsherlock.view.Menu;
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.Application;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Dtpp;
 import com.nadmm.airports.DatabaseManager.DtppCycle;
+import com.nadmm.airports.FragmentActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.SlidingMenuFragment;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 
-public class ChartsDownloadActivity extends ActivityBase {
+public class ChartsDownloadActivity extends FragmentActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        View view = inflate( R.layout.fragment_activity_layout );
-        setContentView( view );
-        view.setKeepScreenOn( true );
 
         Bundle args = getIntent().getExtras();
         addFragment( ChartsDownloadFragment.class, args );
     }
 
     @Override
-    public boolean onPrepareOptionsMenu( Menu menu ) {
-        menu.findItem( R.id.menu_charts ).setVisible( false );
-        return super.onPrepareOptionsMenu( menu );
+    protected void onResume() {
+        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_CHARTS );
+        super.onResume();
     }
 
     public static class ChartsDownloadFragment extends FragmentBase {
@@ -98,20 +94,20 @@ public class ChartsDownloadActivity extends ActivityBase {
         @Override
         public void onCreate( Bundle savedInstanceState ) {
             mFilter = new IntentFilter();
-            mFilter.addAction( DtppService.ACTION_GET_CHARTS );
-            mFilter.addAction( DtppService.ACTION_CHECK_CHARTS );
-            mFilter.addAction( DtppService.ACTION_COUNT_CHARTS );
+            mFilter.addAction( AeroNavService.ACTION_GET_CHARTS );
+            mFilter.addAction( AeroNavService.ACTION_CHECK_CHARTS );
+            mFilter.addAction( AeroNavService.ACTION_COUNT_CHARTS );
 
             mReceiver = new BroadcastReceiver() {
                 
                 @Override
                 public void onReceive( Context context, Intent intent ) {
                     String action = intent.getAction();
-                    if ( action.equals( DtppService.ACTION_GET_CHARTS ) ) {
+                    if ( action.equals( AeroNavService.ACTION_GET_CHARTS ) ) {
                         onChartDownload( context, intent );
-                    } else if ( action.equals( DtppService.ACTION_CHECK_CHARTS ) ) {
+                    } else if ( action.equals( AeroNavService.ACTION_CHECK_CHARTS ) ) {
                         onChartDelete( context, intent );
-                    } else if ( action.equals( DtppService.ACTION_COUNT_CHARTS ) ) {
+                    } else if ( action.equals( AeroNavService.ACTION_COUNT_CHARTS ) ) {
                         onChartCount( context, intent );
                     }
                 }
@@ -408,10 +404,10 @@ public class ChartsDownloadActivity extends ActivityBase {
             ArrayList<String> pdfNames = new ArrayList<String>();
             pdfNames.add( pdfName );
             Intent service = new Intent( getActivity(), DtppService.class );
-            service.setAction( DtppService.ACTION_GET_CHARTS );
-            service.putExtra( DtppService.CYCLE_NAME, mTppCycle );
-            service.putExtra( DtppService.TPP_VOLUME, mTppVolume );
-            service.putExtra( DtppService.PDF_NAMES, pdfNames );
+            service.setAction( AeroNavService.ACTION_GET_CHARTS );
+            service.putExtra( AeroNavService.CYCLE_NAME, mTppCycle );
+            service.putExtra( AeroNavService.TPP_VOLUME, mTppVolume );
+            service.putExtra( AeroNavService.PDF_NAMES, pdfNames );
             getActivity().startService( service );
         }
 
@@ -467,10 +463,10 @@ public class ChartsDownloadActivity extends ActivityBase {
             ArrayList<String> pdfNames = new ArrayList<String>();
             pdfNames.add( pdfName );
             Intent service = new Intent( getActivity(), DtppService.class );
-            service.setAction( DtppService.ACTION_DELETE_CHARTS );
-            service.putExtra( DtppService.CYCLE_NAME, mTppCycle );
-            service.putExtra( DtppService.TPP_VOLUME, mTppVolume );
-            service.putExtra( DtppService.PDF_NAMES, pdfNames );
+            service.setAction( AeroNavService.ACTION_DELETE_CHARTS );
+            service.putExtra( AeroNavService.CYCLE_NAME, mTppCycle );
+            service.putExtra( AeroNavService.TPP_VOLUME, mTppVolume );
+            service.putExtra( AeroNavService.PDF_NAMES, pdfNames );
             getActivity().startService( service );
         }
 
@@ -489,9 +485,9 @@ public class ChartsDownloadActivity extends ActivityBase {
 
         protected void getChartCount( String tppCycle, String tppVolume ) {
             Intent service = new Intent( getActivity(), DtppService.class );
-            service.setAction( DtppService.ACTION_COUNT_CHARTS );
-            service.putExtra( DtppService.CYCLE_NAME, tppCycle );
-            service.putExtra( DtppService.TPP_VOLUME, tppVolume );
+            service.setAction( AeroNavService.ACTION_COUNT_CHARTS );
+            service.putExtra( AeroNavService.CYCLE_NAME, tppCycle );
+            service.putExtra( AeroNavService.TPP_VOLUME, tppVolume );
             getActivity().startService( service );
         }
 
@@ -522,8 +518,8 @@ public class ChartsDownloadActivity extends ActivityBase {
         }
 
         protected void onChartCount( Context context, Intent intent ) {
-            String tppVolume = intent.getStringExtra( DtppService.TPP_VOLUME );
-            int avail = (int) intent.getIntExtra( DtppService.PDF_COUNT, 0 );
+            String tppVolume = intent.getStringExtra( AeroNavService.TPP_VOLUME );
+            int avail = intent.getIntExtra( AeroNavService.PDF_COUNT, 0 );
             View row = mVolumeRowMap.get( tppVolume );
             if ( row != null ) {
                 row.setOnClickListener( mOnClickListener );

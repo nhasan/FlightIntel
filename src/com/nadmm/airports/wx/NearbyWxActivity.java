@@ -21,18 +21,16 @@ package com.nadmm.airports.wx;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
-import com.nadmm.airports.R;
+import com.nadmm.airports.FragmentActivityBase;
+import com.nadmm.airports.SlidingMenuFragment;
 
 
-public class NearbyWxActivity extends ActivityBase {
+public class NearbyWxActivity extends FragmentActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( R.layout.fragment_activity_layout );
 
         Bundle args = getIntent().getExtras();
         int radius = args.getInt( LocationColumns.RADIUS );
@@ -40,6 +38,13 @@ public class NearbyWxActivity extends ActivityBase {
         setActionBarSubtitle( String.format( "Within %d NM Radius", radius ) );
 
         addFragment( NearbyWxFragment.class, args );
+    }
+
+    @Override
+    protected void onResume() {
+        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_AFD );
+
+        super.onResume();
     }
 
 }

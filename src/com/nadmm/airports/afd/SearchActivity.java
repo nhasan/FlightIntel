@@ -29,12 +29,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.R;
 import com.nadmm.airports.providers.AirportsProvider;
 
-public class SearchActivity extends ActivityBase {
+public class SearchActivity extends AfdActivityBase {
 
     private CursorAdapter mListAdapter = null;
 

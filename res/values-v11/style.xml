@@ -3,4 +3,8 @@
 <resources>
     <style name="Widget.Sherlock.Light.ActionButton.Overflow"
             parent="android:Widget.Holo.ActionButton.Overflow"></style>
+    <style name="ListItemActivated">
+        <item name="android:background">?android:attr/activatedBackgroundIndicator</item>
+        <item name="android:minHeight">?android:attr/listPreferredItemHeightSmall</item>
+    </style>
 </resources>
