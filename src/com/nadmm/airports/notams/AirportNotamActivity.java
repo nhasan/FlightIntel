@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,9 @@ public class AirportNotamActivity extends AfdActivityBase {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        View tv = findViewById( R.id.effective_date );
+        tv.setVisibility( View.GONE );
 
         Bundle args = getIntent().getExtras();
         addFragment( AirportNotamFragment.class, args );
