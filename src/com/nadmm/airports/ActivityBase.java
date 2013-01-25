@@ -229,6 +229,10 @@ public class ActivityBase extends SlidingFragmentActivity {
         View progress = view.findViewById( R.id.INTERNAL_PROGRESS_CONTAINER_ID );
         View content = view.findViewById( R.id.INTERNAL_FRAGMENT_CONTAINER_ID );
 
+        if ( progress == null || content == null ) {
+            return;
+        }
+
         if ( shown ) {
             if ( animation ) {
                 progress.startAnimation( AnimationUtils.loadAnimation( this, R.anim.fade_out ) );
