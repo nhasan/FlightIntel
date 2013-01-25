@@ -25,13 +25,11 @@
         <item name="android:textSize">15sp</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@color/button_color</item>
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">4dp</item>
+        <item name="android:gravity">center_vertical|center_horizontal</item>
         <item name="android:paddingLeft">12dp</item>
         <item name="android:paddingRight">12dp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center_vertical|center_horizontal</item>
     </style>
     <style name="TextSmall" parent="@android:style/TextAppearance.Small" />
     <style name="TextSmall.Bold">
