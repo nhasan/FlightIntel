@@ -110,18 +110,20 @@ public class SlidingMenuFragment extends ListFragmentBase {
 
     protected void startActivity( final Class<?> clss ) {
         ActivityBase activity = getActivityBase();
-        activity.setContentShown( false );
-        activity.toggle();
-        if ( getActivity().getClass() != clss ) {
-            mHandler.postDelayed( new Runnable() {
+        if ( clss != activity.getClass() ) {
+            activity.setContentShown( false );
+            if ( getActivity().getClass() != clss ) {
+                mHandler.postDelayed( new Runnable() {
 
-                @Override
-                public void run() {
-                    Intent activity = new Intent( getActivity(), clss );
-                    startActivity( activity );
-                }
-            }, 200 );
+                    @Override
+                    public void run() {
+                        Intent activity = new Intent( getActivity(), clss );
+                        startActivity( activity );
+                    }
+                }, 200 );
+            }
         }
+        activity.toggle();
     }
 
     protected class SlidingMenuAdapter extends CursorAdapter {
