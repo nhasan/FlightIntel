@@ -27,7 +27,8 @@
           android:title="@string/settings"
           android:icon="@android:drawable/ic_menu_preferences" />
     <item android:id="@+id/menu_donate"
-          android:title="@string/donate" />
+          android:title="@string/donate"
+          android:icon="@drawable/ic_menu_star" />
     <item android:id="@+id/menu_about"
           android:title="@string/about"
           android:icon="@android:drawable/ic_menu_info_details" />
