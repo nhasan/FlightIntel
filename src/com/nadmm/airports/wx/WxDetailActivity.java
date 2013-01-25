@@ -21,7 +21,6 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.widget.ArrayAdapter;
 
@@ -43,7 +42,7 @@ public class WxDetailActivity extends ActivityBase
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( R.layout.fragment_pager_layout );
+        setContentView( R.layout.fragment_pager_no_tab_layout );
 
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
@@ -81,10 +80,6 @@ public class WxDetailActivity extends ActivityBase
         adapter.setDropDownViewResource( R.layout.sherlock_spinner_dropdown_item );
         mActionBar.setListNavigationCallbacks( adapter, this );
         mActionBar.setDisplayShowTitleEnabled( false );
-
-        // Setup the pager tabs as an alternate navigation mechanism
-        PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
-        tabs.setTabIndicatorColor( getResources().getColor( R.color.tab_indicator ) );
 
         if ( savedInstanceState != null ) {
             // Workaround for race conditions in ViewPager
