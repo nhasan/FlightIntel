@@ -20,6 +20,7 @@
 package com.nadmm.airports.afd;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -41,27 +42,22 @@ import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TabsAdapter;
 import com.nadmm.airports.wx.NearbyWxFragment;
 
-public class NearbyActivity extends AfdActivityBase {
+public class NearbyActivity extends HomeActivityBase {
 
-    private LocationManager mLocationManager;
     private LocationListener mLocationListener;
     private Location mLastLocation;
     private TabsAdapter mTabsAdapter;
     private ArrayList<LocationListener> mLocationListeners;
 
+    private final long TOO_OLD = 5*DateUtils.MINUTE_IN_MILLIS;
+
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mLocationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
         mLocationListener = new AirportsLocationListener();
 
-        // Get the last known location to use a starting point
-        Location location = mLocationManager.getLastKnownLocation( LocationManager.GPS_PROVIDER );
-        if ( location == null ) {
-            // Try to get last location from network provider
-            location = mLocationManager.getLastKnownLocation( LocationManager.NETWORK_PROVIDER );
-        }
+        Location location = getLastKnownGoodLocation();
 
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences( this );
@@ -96,15 +92,16 @@ public class NearbyActivity extends AfdActivityBase {
 
     @Override
     protected void onResume() {
-        if ( mLocationManager != null ) {
-            mLocationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
+        LocationManager lm = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+        if ( lm != null ) {
+            lm.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
                     30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
                     mLocationListener );
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
             boolean useGps = prefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
             if ( useGps ) {
-                mLocationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
+                lm.requestLocationUpdates( LocationManager.GPS_PROVIDER,
                         30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
                         mLocationListener );
             }
@@ -115,8 +112,9 @@ public class NearbyActivity extends AfdActivityBase {
 
     @Override
     protected void onPause() {
-        if ( mLocationManager != null ) {
-            mLocationManager.removeUpdates( mLocationListener );
+        LocationManager lm = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+        if ( lm != null ) {
+            lm.removeUpdates( mLocationListener );
         }
 
         super.onPause();
@@ -138,6 +136,32 @@ public class NearbyActivity extends AfdActivityBase {
             mLocationListeners.add( (LocationListener)fragment );
         }
         super.onAttachFragment( fragment );
+    }
+
+    @Override
+    protected int getActivityId() {
+        return ID_NEARBY;
+    };
+
+    protected Location getLastKnownGoodLocation() {
+        // Get the last known location to use a starting point
+        LocationManager lm = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+        Location location = lm.getLastKnownLocation( LocationManager.GPS_PROVIDER );
+        if ( location == null ) {
+            // Try to get last location from network provider
+            location = lm.getLastKnownLocation( LocationManager.NETWORK_PROVIDER );
+        }
+
+        if ( location != null ) {
+            Date now = new Date();
+            long age = now.getTime()-location.getTime();
+            if ( age > TOO_OLD ) {
+                // Discard too old
+                location = null;
+            }
+        }
+
+        return location;
     }
 
     private final class AirportsLocationListener implements LocationListener {
@@ -170,6 +194,6 @@ public class NearbyActivity extends AfdActivityBase {
         public void onStatusChanged( String provider, int status, Bundle extras ) {
         }
         
-    };
+    }
 
 }

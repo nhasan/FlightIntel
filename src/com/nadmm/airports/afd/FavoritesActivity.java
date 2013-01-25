@@ -25,12 +25,11 @@ import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
-import com.actionbarsherlock.view.Menu;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TabsAdapter;
 import com.nadmm.airports.wx.FavoriteWxFragment;
 
-public class FavoritesActivity extends AfdActivityBase {
+public class FavoritesActivity extends HomeActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -63,9 +62,8 @@ public class FavoritesActivity extends AfdActivityBase {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu( Menu menu ) {
-        menu.findItem( R.id.menu_favorites ).setEnabled( false );
-        return super.onPrepareOptionsMenu( menu );
+    protected int getActivityId() {
+        return ID_FAVORITES;
     }
 
 }

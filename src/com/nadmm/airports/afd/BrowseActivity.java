@@ -37,14 +37,13 @@ import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.DownloadActivity;
-import com.nadmm.airports.FragmentActivityBase;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.SlidingMenuFragment;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 
-public final class BrowseActivity extends FragmentActivityBase {
+public final class BrowseActivity extends HomeActivityBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -55,6 +54,16 @@ public final class BrowseActivity extends FragmentActivityBase {
             args = new Bundle();
         }
         addFragment( BrowseFragment.class, args );
+    }
+
+    @Override
+    protected int getActivityId() {
+        return ID_BROWSE;
+    }
+
+    @Override
+    protected View getContentView() {
+        return inflate( R.layout.fragment_activity_layout );
     }
 
     @Override
