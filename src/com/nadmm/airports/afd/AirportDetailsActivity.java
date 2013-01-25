@@ -574,7 +574,16 @@ public class AirportDetailsActivity extends AfdActivityBase {
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_home_layout );
             Cursor home = result[ 14 ];
             if ( home == null ) {
-                addRow( layout, "Home airport is not set" );
+                Runnable runnable = new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Intent prefs = new Intent( getActivity(), PreferencesActivity.class );
+                        startActivity( prefs );
+                        getActivity().finish();
+                    }
+                };
+                addClickableRow( layout, "Tap here to set home airport", runnable );
             } else if ( home.moveToFirst() ) {
                 String siteNumber = home.getString( home.getColumnIndex( Airports.SITE_NUMBER ) );
                 if ( siteNumber.equals( mSiteNumber ) ) {
@@ -607,6 +616,7 @@ public class AirportDetailsActivity extends AfdActivityBase {
             } else {
                 addRow( layout, "Home airport '"+mHome+"' not found" );                
             }
+            setRowBackgroundResource( layout );
         }
 
         protected void showNearbyFacilities( Cursor[] result ) {
