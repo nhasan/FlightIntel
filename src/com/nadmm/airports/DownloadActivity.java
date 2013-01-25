@@ -876,9 +876,6 @@ public final class DownloadActivity extends ActivityBase {
         Cursor c = mDbManager.getCurrentFromCatalog();
         boolean enabled = c.moveToFirst();
         c.close();
-        menu.findItem( R.id.menu_browse ).setEnabled( enabled );
-        menu.findItem( R.id.menu_favorites ).setEnabled( enabled );
-        menu.findItem( R.id.menu_nearby ).setEnabled( enabled );
         menu.findItem( R.id.menu_search ).setEnabled( enabled );
 
         return super.onPrepareOptionsMenu( menu );

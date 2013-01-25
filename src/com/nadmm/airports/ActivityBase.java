@@ -68,7 +68,6 @@ import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.afd.BrowseActivity;
 import com.nadmm.airports.afd.FavoritesActivity;
-import com.nadmm.airports.afd.NearbyActivity;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
 import com.nadmm.airports.utils.CursorAsyncTask;
@@ -563,19 +562,6 @@ public class ActivityBase extends SlidingFragmentActivity {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                 onSearchRequested();
             }
-            return true;
-        case R.id.menu_browse:
-            Intent browse = new Intent( this, BrowseActivity.class );
-            browse.putExtras( new Bundle() );
-            startActivity( browse );
-            return true;
-        case R.id.menu_nearby:
-            Intent nearby = new Intent( this, NearbyActivity.class );
-            startActivity( nearby );
-            return true;
-        case R.id.menu_favorites:
-            Intent favorites = new Intent( this, FavoritesActivity.class );
-            startActivity( favorites );
             return true;
         case R.id.menu_download:
             Intent download = new Intent( this, DownloadActivity.class );
