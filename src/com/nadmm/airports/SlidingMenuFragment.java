@@ -157,7 +157,7 @@ public class SlidingMenuFragment extends ListFragmentBase {
             newRow().add( ITEM_ID_TFR ).add( "TFRs" ).add( 0 );
             newRow().add( ITEM_ID_LIBRARY ).add( "Library" ).add( 0 );
             newRow().add( ITEM_ID_SCRATCHPAD ).add( "Scratch Pad" ).add( 0 );
-            newRow().add( ITEM_ID_CHARTS ).add( "Get Charts" ).add( 0 );
+            newRow().add( ITEM_ID_CHARTS ).add( "Manage Charts" ).add( 0 );
         }
 
     }
