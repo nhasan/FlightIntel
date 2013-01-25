@@ -117,7 +117,7 @@ public class WxDetailActivity extends ActivityBase
     @Override
     public boolean onNavigationItemSelected( int itemPosition, long itemId ) {
         mViewPager.setCurrentItem( itemPosition );
-        return false;
+        return true;
     }
 
     @Override
