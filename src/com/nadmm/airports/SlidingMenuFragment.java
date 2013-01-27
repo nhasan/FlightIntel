@@ -161,7 +161,7 @@ public class SlidingMenuFragment extends ListFragmentBase {
             super( sColumnNames );
             newRow().add( ITEM_ID_AFD ).add( "A/FD" ).add( R.drawable.airport );
             newRow().add( ITEM_ID_TFR ).add( "TFRs" ).add( R.drawable.stop );
-            newRow().add( ITEM_ID_LIBRARY ).add( "Library" ).add( R.drawable.library );
+            newRow().add( ITEM_ID_LIBRARY ).add( "Library" ).add( R.drawable.book );
             newRow().add( ITEM_ID_SCRATCHPAD ).add( "Scratch Pad" ).add( R.drawable.notepad );
             newRow().add( ITEM_ID_CHARTS ).add( "Manage Charts" ).add( R.drawable.folder );
         }
