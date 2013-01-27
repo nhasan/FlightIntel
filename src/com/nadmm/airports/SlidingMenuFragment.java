@@ -29,6 +29,7 @@ import android.provider.BaseColumns;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -135,8 +136,11 @@ public class SlidingMenuFragment extends ListFragmentBase {
         @Override
         public void bindView( View view, Context context, Cursor c ) {
             String text = c.getString( c.getColumnIndex( SlidingMenuCursor.ITEM_TEXT ) );
+            int id = c.getInt( c.getColumnIndex( SlidingMenuCursor.ITEM_ICON ) );
             TextView tv = (TextView) view.findViewById( R.id.item_text );
             tv.setText( text );
+            ImageView iv = (ImageView) view.findViewById( R.id.item_icon );
+            iv.setImageResource( id );
         }
 
         @Override
@@ -155,11 +159,11 @@ public class SlidingMenuFragment extends ListFragmentBase {
 
         public SlidingMenuCursor() {
             super( sColumnNames );
-            newRow().add( ITEM_ID_AFD ).add( "A/FD" ).add( 0 );
-            newRow().add( ITEM_ID_TFR ).add( "TFRs" ).add( 0 );
-            newRow().add( ITEM_ID_LIBRARY ).add( "Library" ).add( 0 );
-            newRow().add( ITEM_ID_SCRATCHPAD ).add( "Scratch Pad" ).add( 0 );
-            newRow().add( ITEM_ID_CHARTS ).add( "Manage Charts" ).add( 0 );
+            newRow().add( ITEM_ID_AFD ).add( "A/FD" ).add( R.drawable.airport );
+            newRow().add( ITEM_ID_TFR ).add( "TFRs" ).add( R.drawable.stop );
+            newRow().add( ITEM_ID_LIBRARY ).add( "Library" ).add( R.drawable.library );
+            newRow().add( ITEM_ID_SCRATCHPAD ).add( "Scratch Pad" ).add( R.drawable.notepad );
+            newRow().add( ITEM_ID_CHARTS ).add( "Manage Charts" ).add( R.drawable.folder );
         }
 
     }
