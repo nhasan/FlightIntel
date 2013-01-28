@@ -15,7 +15,7 @@
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
    sodipodi:docname="stop.svg"
-   inkscape:export-filename="/home/nhasan/Downloads/art/stop.png"
+   inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/stop.png"
    inkscape:export-xdpi="320"
    inkscape:export-ydpi="320">
   <defs
@@ -28,7 +28,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="136.68902"
+     inkscape:cx="51.836207"
      inkscape:cy="105.49591"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -57,7 +57,7 @@
      transform="translate(0,-777.36218)">
     <path
        sodipodi:type="star"
-       style="fill:#ff3000;fill-opacity:1;stroke:#ffffff;stroke-width:38.18672260000000307;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#ff3000;fill-opacity:1;stroke:#ffffff;stroke-width:22.91203356;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="path2987"
        sodipodi:sides="8"
        sodipodi:cx="217.1828"
