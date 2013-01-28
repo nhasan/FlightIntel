@@ -28,7 +28,7 @@
             android:id="@+id/button_bar"
             android:orientation="horizontal"
             android:padding="6dp"
-            android:background="@android:color/darker_gray"
+            android:background="#ffcccccc"
             android:layout_alignParentBottom="true"
             android:gravity="center_horizontal"
             android:layout_width="fill_parent"
@@ -37,6 +37,7 @@
                 android:id="@+id/btn_donate"
                 style="@style/Widget.Sherlock.Light.Button.Small"
                 android:text="@string/donate"
+                android:textSize="14sp"
                 android:layout_gravity="center"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content" />
@@ -44,6 +45,7 @@
                 android:id="@+id/btn_rate"
                 style="@style/Widget.Sherlock.Light.Button.Small"
                 android:text="@string/rate_it"
+                android:textSize="14sp"
                 android:layout_gravity="center"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content" />
@@ -51,6 +53,7 @@
                 android:id="@+id/btn_close"
                 style="@style/Widget.Sherlock.Light.Button.Small"
                 android:text="@string/close"
+                android:textSize="14sp"
                 android:layout_gravity="center"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content" />
