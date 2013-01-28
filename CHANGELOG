@@ -1,3 +1,10 @@
+v4.9.0 (1/27/2013)
+==================
+* Major navigation upgrade
+* Now uses the sliding menu drawer (like Google+)
+* A/FD screens (Browse/Favorite/Nearby) navigation using actionbar list mavigation
+* Swipe for the left screen edge to open the sliding menu drawer
+
 v4.8.4 (1/14/2013)
 ==================
 * Bug fixes
