@@ -46,8 +46,6 @@ public class SlidingMenuFragment extends ListFragmentBase {
     public static final int ITEM_ID_SCRATCHPAD = 3;
     public static final int ITEM_ID_CHARTS = 4;
 
-    private static final String SELECTED_ITEM = "SELECTED_ITEM";
-
     private final Handler mHandler = new Handler();
 
     @Override
@@ -57,13 +55,6 @@ public class SlidingMenuFragment extends ListFragmentBase {
         lv.setBackgroundResource( R.color.slidingmenu_background );
         lv.setCacheColorHint( 0x00000000 );
         lv.setChoiceMode( ListView.CHOICE_MODE_SINGLE );
-
-        if ( savedInstanceState != null ) {
-            int position = savedInstanceState.getInt( SELECTED_ITEM, 0 );
-            lv.setItemChecked( position, true );
-        } else {
-            lv.setItemChecked( 0, true );
-        }
 
         setCursor( new SlidingMenuCursor() );
     }
@@ -75,12 +66,6 @@ public class SlidingMenuFragment extends ListFragmentBase {
     @Override
     protected View createContentView( View view ) {
         return view;
-    }
-
-    @Override
-    public void onSaveInstanceState( Bundle outState ) {
-        super.onSaveInstanceState( outState );
-        outState.putInt( SELECTED_ITEM, getListView().getCheckedItemPosition() );
     }
 
     @Override
@@ -112,7 +97,6 @@ public class SlidingMenuFragment extends ListFragmentBase {
     protected void startActivity( final Class<?> clss ) {
         ActivityBase activity = getActivityBase();
         if ( clss != activity.getClass() ) {
-            activity.setContentShown( false );
             if ( getActivity().getClass() != clss ) {
                 mHandler.postDelayed( new Runnable() {
 
