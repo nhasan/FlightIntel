@@ -26,6 +26,7 @@
     <Button android:id="@+id/btnDownload"
         style="@style/FlatButton"
         android:text="@string/download_all"
+        android:layout_gravity="center"
         android:layout_margin="10dp"
         android:visibility="gone" />
     <ListView android:id="@android:id/list"

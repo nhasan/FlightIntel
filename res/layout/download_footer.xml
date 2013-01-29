@@ -26,7 +26,8 @@
     >
     <Button android:id="@+id/btnDelete"
         style="@style/FlatButton"
-        android:text="@string/delete_all" 
+        android:text="@string/delete_all"
+        android:layout_gravity="center"
         android:layout_marginTop="14dp"
         android:layout_marginBottom="14dp"
         android:visibility="gone" />
