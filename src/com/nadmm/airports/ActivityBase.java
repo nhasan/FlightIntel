@@ -269,16 +269,13 @@ public class ActivityBase extends SlidingFragmentActivity {
     public Fragment replaceFragment( Class<?> clss, Bundle args, int id, boolean addTostack  ) {
         String tag = clss.getSimpleName();
         FragmentManager fm = getSupportFragmentManager();
-        Fragment f = fm.findFragmentByTag( tag );
-        if ( f == null ) {
-            f = Fragment.instantiate( this, clss.getName(), args );
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.replace( id, f, tag );
-            if ( addTostack ) {
-                ft.addToBackStack( clss.getSimpleName() );
-            }
-            ft.commit();
+        Fragment f = Fragment.instantiate( this, clss.getName(), args );
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace( id, f, tag );
+        if ( addTostack ) {
+            ft.addToBackStack( clss.getSimpleName() );
         }
+        ft.commit();
         return f;
     }
 
