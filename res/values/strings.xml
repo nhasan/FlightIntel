@@ -129,6 +129,10 @@
     <string name="select_type">Select Type</string>
     <string name="ceiling">Ceiling</string>
     <string name="flight_category">Flight Category</string>
+    <string name="utc_time">UTC Time</string>
+    <string name="home_time">Home Time</string>
+    <string name="local_time">Local Time</string>
+    <string name="e6b_calculator">E6B Calculator</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>

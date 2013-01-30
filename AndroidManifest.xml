@@ -130,6 +130,9 @@
         <activity android:label="@string/app_name"
                   android:name=".utils.ExternalStorageActivity" />
 
+        <activity android:label="@string/e6b_calculator"
+                  android:name=".e6b.E6bActivity" />
+        
         <activity android:label="@string/about"
                   android:name=".AboutActivity" />
 
