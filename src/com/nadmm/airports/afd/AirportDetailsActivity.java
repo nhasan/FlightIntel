@@ -80,6 +80,7 @@ import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
+import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.MetarService;
@@ -658,7 +659,7 @@ public class AirportDetailsActivity extends AfdActivityBase {
             String timezoneId = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
             if ( timezoneId.length() > 0 ) {
                 TimeZone tz = TimeZone.getTimeZone( timezoneId );
-                addRow( layout, "Local time zone", DataUtils.getTimeZoneAsString( tz ) );
+                addRow( layout, "Local time zone", TimeUtils.getTimeZoneAsString( tz ) );
             }
             String activation = apt.getString( apt.getColumnIndex( Airports.ACTIVATION_DATE ) );
             if ( activation.length() > 0 ) {
