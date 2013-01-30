@@ -19,7 +19,9 @@
 
 package com.nadmm.airports.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import android.content.Context;
@@ -31,7 +33,7 @@ import android.text.format.DateUtils;
 import com.nadmm.airports.PreferencesActivity;
 
 public class TimeUtils {
-    
+
     public static CharSequence formatLongDateTime( long time ) {
         return DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( time ) );
     }
@@ -148,6 +150,14 @@ public class TimeUtils {
     public static CharSequence formatElapsedTime( long time1, long time2 ) {
         return DateUtils.getRelativeTimeSpanString( time2, time1,
                 DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE );
+    }
+
+    public static String getTimeZoneAsString( TimeZone tz ) {
+        Date now = new Date();
+        String tzName = tz.getDisplayName( tz.inDaylightTime( now ), TimeZone.SHORT );
+        SimpleDateFormat tzFormat = new SimpleDateFormat( "'(UTC'Z')'", Locale.US );
+        tzFormat.setTimeZone( tz );
+        return String.format( "%s %s", tzName, tzFormat.format( now ) );
     }
 
 }
