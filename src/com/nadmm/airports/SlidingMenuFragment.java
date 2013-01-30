@@ -27,13 +27,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.BaseColumns;
 import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.ResourceCursorAdapter;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nadmm.airports.aeronav.ChartsDownloadActivity;
+import com.nadmm.airports.e6b.E6bActivity;
 import com.nadmm.airports.library.LibraryActivity;
 import com.nadmm.airports.scratchpad.ScratchPadActivity;
 import com.nadmm.airports.tfr.TfrActivity;
@@ -45,6 +46,7 @@ public class SlidingMenuFragment extends ListFragmentBase {
     public static final int ITEM_ID_LIBRARY = 2;
     public static final int ITEM_ID_SCRATCHPAD = 3;
     public static final int ITEM_ID_CHARTS = 4;
+    public static final int ITEM_ID_E6B = 5;
 
     private final Handler mHandler = new Handler();
 
@@ -87,6 +89,8 @@ public class SlidingMenuFragment extends ListFragmentBase {
             startActivity( ScratchPadActivity.class );
         } else if ( id == ITEM_ID_CHARTS ) {
             startActivity( ChartsDownloadActivity.class );
+        } else if ( id == ITEM_ID_E6B ) {
+            startActivity( E6bActivity.class );
         }
     }
 
@@ -111,26 +115,22 @@ public class SlidingMenuFragment extends ListFragmentBase {
         activity.toggle();
     }
 
-    protected class SlidingMenuAdapter extends CursorAdapter {
+    protected class SlidingMenuAdapter extends ResourceCursorAdapter {
 
         public SlidingMenuAdapter( Context context, Cursor c ) {
-            super( context, c, 0 );
+            super( context, R.layout.sliding_menu_item, c, 0 );
         }
 
         @Override
         public void bindView( View view, Context context, Cursor c ) {
             String text = c.getString( c.getColumnIndex( SlidingMenuCursor.ITEM_TEXT ) );
-            int id = c.getInt( c.getColumnIndex( SlidingMenuCursor.ITEM_ICON ) );
+            int icon = c.getInt( c.getColumnIndex( SlidingMenuCursor.ITEM_ICON ) );
             TextView tv = (TextView) view.findViewById( R.id.item_text );
             tv.setText( text );
             ImageView iv = (ImageView) view.findViewById( R.id.item_icon );
-            iv.setImageResource( id );
+            iv.setImageResource( icon );
         }
 
-        @Override
-        public View newView( Context context, Cursor c, ViewGroup container ) {
-            return inflate( R.layout.sliding_menu_item, container );
-        }
     }
 
     protected static class SlidingMenuCursor extends MatrixCursor {
@@ -148,6 +148,7 @@ public class SlidingMenuFragment extends ListFragmentBase {
             newRow().add( ITEM_ID_LIBRARY ).add( "Library" ).add( R.drawable.book );
             newRow().add( ITEM_ID_SCRATCHPAD ).add( "Scratch Pad" ).add( R.drawable.notepad );
             newRow().add( ITEM_ID_CHARTS ).add( "Manage Charts" ).add( R.drawable.folder );
+            newRow().add( ITEM_ID_E6B ).add( "E6B Calculator" ).add( 0 );
         }
 
     }
