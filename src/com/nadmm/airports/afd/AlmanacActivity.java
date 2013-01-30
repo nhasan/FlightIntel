@@ -39,8 +39,8 @@ import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.SlidingMenuFragment;
 import com.nadmm.airports.utils.CursorAsyncTask;
-import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.SolarCalculator;
+import com.nadmm.airports.utils.TimeUtils;
 
 public class AlmanacActivity extends AfdActivityBase {
 
@@ -169,7 +169,7 @@ public class AlmanacActivity extends AfdActivityBase {
 
             layout = (LinearLayout) findViewById( R.id.current_time_layout );
             format.setTimeZone( local );
-            addRow( layout, "Local time zone", DataUtils.getTimeZoneAsString( local ) );
+            addRow( layout, "Local time zone", TimeUtils.getTimeZoneAsString( local ) );
             addRow( layout, "Current time (Local)", format.format( now.getTime() ) );
             format.setTimeZone( utc );
             addRow( layout, "Current time (UTC)", format.format( now.getTime() ) );
