@@ -464,7 +464,8 @@ public class FragmentBase extends SherlockFragment {
     }
 
     protected View findViewById( int id ) {
-        return getView().findViewById( id );
+        View view = getView();
+        return view!=null? view.findViewById( id ) : null;
     }
 
     protected View inflate( int id ) {
