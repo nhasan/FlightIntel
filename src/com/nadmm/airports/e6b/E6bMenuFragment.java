@@ -43,12 +43,15 @@ public class E6bMenuFragment extends ListFragmentBase {
         mDispatchMap.put( (long)R.id.CATEGORY_MAIN, E6bMenuFragment.class );
         mDispatchMap.put( (long)R.id.CATEGORY_TIME, E6bMenuFragment.class );
         mDispatchMap.put( (long)R.id.TIME_CLOCKS, ClockFragment.class );
+        mDispatchMap.put( (long)R.id.TIME_STOPWATCH, StopWatchFragment.class );
     }
 
     private static final HashMap<Long, String> mTitleMap = new HashMap<Long, String>();
     static {
         mTitleMap.put( (long)R.id.CATEGORY_MAIN, "Main Menu" );
         mTitleMap.put( (long)R.id.CATEGORY_TIME, "Time" );
+        mTitleMap.put( (long)R.id.TIME_CLOCKS, "Clocks" );
+        mTitleMap.put( (long)R.id.TIME_STOPWATCH, "Stopwatch" );
     }
 
     @Override
@@ -81,6 +84,7 @@ public class E6bMenuFragment extends ListFragmentBase {
         if ( clss != null ) {
             Bundle args = new Bundle();
             args.putLong( MENU_ID, id );
+            getSupportActionBar().setSubtitle( mTitleMap.get( id ) );
             getActivityBase().replaceFragment( clss, args );
         }
     }

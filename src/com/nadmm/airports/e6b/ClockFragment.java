@@ -31,7 +31,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,9 +47,11 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 public class ClockFragment extends FragmentBase {
 
     private final Handler mHandler = new Handler();
+    private final DateFormat mFormat = new SimpleDateFormat( "HH:mm:ss", Locale.US );
+
+    private Runnable mRunnable;
     private String mHome;
     private String mHomeTzId;
-    private DateFormat mFormat = new SimpleDateFormat( "HH:mm:ss", Locale.US );
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -65,6 +66,65 @@ public class ClockFragment extends FragmentBase {
                 PreferenceManager.getDefaultSharedPreferences( getActivity() );
         mHome = prefs.getString( PreferencesActivity.KEY_HOME_AIRPORT, "" );
         setBackgroundTask( new ClockTask() ).execute();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if ( mRunnable != null ) {
+            // Stop updates
+            mHandler.removeCallbacks( mRunnable );
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if ( mRunnable != null ) {
+            // Restart updates
+            updateTime();
+        }
+    }
+
+    protected void updateTime() {
+        Date now = new Date();
+
+        TimeZone utcTz = TimeZone.getTimeZone( "GMT" );
+        mFormat.setTimeZone( utcTz );
+        TextView tv = (TextView) findViewById( R.id.utc_time_value );
+        tv.setText( mFormat.format( now )+" UTC" );
+
+        TimeZone localTz = TimeZone.getDefault();
+        mFormat.setTimeZone( localTz );
+        tv = (TextView) findViewById( R.id.local_time_value );
+        tv.setText( mFormat.format( now )
+                +" "+localTz.getDisplayName( localTz.inDaylightTime( now ), TimeZone.SHORT ) );
+
+        if ( mHomeTzId != null && mHomeTzId.length() > 0 ) {
+            TimeZone homeTz = TimeZone.getTimeZone( mHomeTzId );
+            mFormat.setTimeZone( homeTz );
+            tv = (TextView) findViewById( R.id.home_time_value );
+            tv.setText( mFormat.format( now )
+                    +" "+homeTz.getDisplayName( homeTz.inDaylightTime( now ), TimeZone.SHORT ) );
+        }
+
+        scheduleUpdate();
+    }
+
+    protected void scheduleUpdate() {
+        if ( mRunnable == null ) {
+            mRunnable = new Runnable() {
+
+                @Override
+                public void run() {
+                    updateTime();
+                }
+            };
+        }
+        // Reschedule at the next second boundary
+        long now = new Date().getTime();
+        long delay = 1000-(now%1000);
+        mHandler.postDelayed( mRunnable, delay );
     }
 
     private final class ClockTask extends CursorAsyncTask {
@@ -105,40 +165,6 @@ public class ClockFragment extends FragmentBase {
             }
             updateTime();
             return true;
-        }
-
-        protected void updateTime() {
-            Date now = new Date();
-
-            TimeZone utcTz = TimeZone.getTimeZone( "GMT" );
-            mFormat.setTimeZone( utcTz );
-            TextView tv = (TextView) findViewById( R.id.utc_time_value );
-            tv.setText( mFormat.format( now )+" UTC" );
-
-            TimeZone localTz = TimeZone.getDefault();
-            mFormat.setTimeZone( localTz );
-            tv = (TextView) findViewById( R.id.local_time_value );
-            tv.setText( mFormat.format( now )
-                    +" "+localTz.getDisplayName( localTz.inDaylightTime( now ), TimeZone.SHORT ) );
-
-            if ( mHomeTzId != null && mHomeTzId.length() > 0 ) {
-                TimeZone homeTz = TimeZone.getTimeZone( mHomeTzId );
-                mFormat.setTimeZone( homeTz );
-                tv = (TextView) findViewById( R.id.home_time_value );
-                tv.setText( mFormat.format( now )
-                        +" "+homeTz.getDisplayName( homeTz.inDaylightTime( now ), TimeZone.SHORT ) );
-            }
-
-            long millis = SystemClock.uptimeMillis();
-            // Calculate the next second boundary
-            long future = ( ( millis+1000 )/1000 )*1000;            
-            mHandler.postAtTime( new Runnable() {
-
-                @Override
-                public void run() {
-                    updateTime();
-                }
-            }, future );
         }
 
     }

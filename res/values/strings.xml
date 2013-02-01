@@ -133,6 +133,10 @@
     <string name="home_time">Home Time</string>
     <string name="local_time">Local Time</string>
     <string name="e6b_calculator">E6B Calculator</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="reset">Reset</string>
+    <string name="leg">Leg</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>

@@ -49,7 +49,11 @@ public class E6bMenuCursor extends MatrixCursor {
             newRow().add( R.id.TIME_STOPWATCH )
                 .add( R.drawable.airport )
                 .add( "Stop Watch" )
-                .add( "Display IFR stop watch" );
+                .add( "Stop watch for timing legs and approaches" );
+            newRow().add( R.id.TIME_COUNTDOWN )
+                .add( R.drawable.airport )
+                .add( "Countdown Timer" )
+                .add( "Countdown timer for timing approaches" );
         }
     }
 
