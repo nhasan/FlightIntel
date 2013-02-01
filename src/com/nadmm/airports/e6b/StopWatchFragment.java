@@ -19,6 +19,8 @@
 
 package com.nadmm.airports.e6b;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
@@ -41,10 +43,13 @@ public class StopWatchFragment extends FragmentBase {
     private Handler mHandler;
     private Runnable mRunnable;
     private long mElapsedMillis;
+    private int mState;
 
     private Button mBtnAction;
     private Button mBtnReset;
     private Button mBtnLeg;
+
+    private ArrayList<Long> mLegs;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -56,11 +61,11 @@ public class StopWatchFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
         mHandler = new Handler();
-        mElapsedMillis = 0;
+        mLegs = new ArrayList<Long>();
 
         mBtnAction = (Button) findViewById( R.id.stopwatch_action );
         mBtnAction.setOnClickListener( new OnClickListener() {
-            
+
             @Override
             public void onClick( View v ) {
                 actionPressed();
@@ -68,7 +73,7 @@ public class StopWatchFragment extends FragmentBase {
         } );
         mBtnReset = (Button) findViewById( R.id.stopwatch_reset );
         mBtnReset.setOnClickListener( new OnClickListener() {
-            
+
             @Override
             public void onClick( View v ) {
                 resetPressed();
@@ -76,34 +81,46 @@ public class StopWatchFragment extends FragmentBase {
         } );
         mBtnLeg = (Button) findViewById( R.id.stopwatch_leg );
         mBtnLeg.setOnClickListener( new OnClickListener() {
-            
+
             @Override
             public void onClick( View v ) {
                 legPressed();
             }
         } );
 
-        scheduleUpdate();
+        mElapsedMillis = 0;
+        setState( STATE_STOPPED );
+
+        showElapsedTime();
     }
 
-    protected void actionPressed() {        
+    protected void actionPressed() {
+        setState( mState==STATE_RUNNING? STATE_STOPPED : STATE_RUNNING );
     }
 
     protected void resetPressed() {
+        mElapsedMillis = 0;
+        mLegs.clear();
+        showElapsedTime();
+        showLegs();
     }
 
     protected void legPressed() {
+        mLegs.add( mElapsedMillis );
     }
 
     protected void setState( int state ) {
+        mState = state;
         if ( state == STATE_STOPPED ) {
             mBtnAction.setText( R.string.start );
             mBtnReset.setVisibility( mElapsedMillis > 0? View.VISIBLE : View.GONE );
             mBtnLeg.setVisibility( View.GONE );
+            removeUpdate();
         } else if ( state == STATE_RUNNING ) {
             mBtnAction.setText( R.string.stop );
             mBtnReset.setVisibility( View.GONE );
             mBtnLeg.setVisibility( View.VISIBLE );
+            scheduleUpdate();
         }
     }
 
@@ -114,28 +131,40 @@ public class StopWatchFragment extends FragmentBase {
                 @Override
                 public void run() {
                     mElapsedMillis += DELAY_MILLIS;
-                    updateTime();
                     scheduleUpdate();
+                    showElapsedTime();
                 }
             };
         }
         mHandler.postDelayed( mRunnable, DELAY_MILLIS );
     }
 
-    protected void updateTime() {
+    protected void removeUpdate() {
+        mHandler.removeCallbacks( mRunnable );
+    }
+
+    protected void showElapsedTime() {
         long hrs = mElapsedMillis/DateUtils.HOUR_IN_MILLIS;
         long mins = (mElapsedMillis%DateUtils.HOUR_IN_MILLIS)/DateUtils.MINUTE_IN_MILLIS;
         long secs = (mElapsedMillis%DateUtils.MINUTE_IN_MILLIS)/DateUtils.SECOND_IN_MILLIS;
         long tenths = (mElapsedMillis%DateUtils.SECOND_IN_MILLIS)/(DateUtils.SECOND_IN_MILLIS/10);
 
         TextView tv = (TextView) findViewById( R.id.stopwatch_time );
-        if ( hrs > 0 ) {
-            tv.setText( String.format( "%02d:%02d:%02d", hrs, mins, secs ) );
+        if ( tv != null ) {
+            if ( hrs > 0 ) {
+                tv.setText( String.format( "%02d:%02d:%02d", hrs, mins, secs ) );
+            } else {
+                tv.setText( String.format( "%02d:%02d", mins, secs ) );
+            }
+            tv = (TextView) findViewById( R.id.stopwatch_tenths );
+            tv.setText( String.format( ".%01d", tenths ) );
         } else {
-            tv.setText( String.format( "%02d:%02d", mins, secs ) );
+            // Fragment is no longer active
+            removeUpdate();
         }
-        tv = (TextView) findViewById( R.id.stopwatch_tenths );
-        tv.setText( String.format( ".%01d", tenths ) );
+    }
+
+    protected void showLegs() {
     }
 
 }

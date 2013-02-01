@@ -48,30 +48,30 @@
     <LinearLayout
             android:orientation="horizontal"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="4dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+        <Button android:id="@+id/stopwatch_action"
+                style="@style/FlatButton"
+                android:text="@string/start"
+                android:layout_margin="8dp"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
         <Button android:id="@+id/stopwatch_reset"
                 style="@style/FlatButton"
                 android:text="@string/reset"
                 android:visibility="gone"
                 android:layout_margin="8dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        <Button android:id="@+id/stopwatch_action"
-                style="@style/FlatButton"
-                android:text="@string/start"
-                android:layout_margin="8dp"
-                android:layout_width="wrap_content"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content" />
         <Button android:id="@+id/stopwatch_leg"
                 style="@style/FlatButton"
                 android:text="@string/leg"
                 android:visibility="gone"
                 android:layout_margin="8dp"
-                android:layout_width="wrap_content"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content" />
     </LinearLayout>
 </LinearLayout>
