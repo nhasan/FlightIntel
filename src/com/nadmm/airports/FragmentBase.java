@@ -80,8 +80,6 @@ public class FragmentBase extends SherlockFragment {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        setRetainInstance( true );
-
         super.onCreate( savedInstanceState );
     }
 
