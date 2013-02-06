@@ -32,14 +32,15 @@ public class StopWatchService extends Service {
 
     private final long DELAY_MILLIS = 100;
 
-    private final int STATE_STOPPED = 1;
+    private final int STATE_PAUSED = 1;
     private final int STATE_RUNNING = 2;
 
     private IBinder mBinder = new StopWatchBinder();
     private OnTickHandler mTickHandler = null;
-    private long mStartMillis = 0;
-    private long mLastMillis = 0;
-    private int mState = STATE_STOPPED;
+    private long mStartMillis;
+    private long mLastMillis;
+    private long mLastDuration;
+    private int mState;
     private Handler mHandler = new Handler();
 
     private Runnable mRunnable = new Runnable() {
@@ -60,6 +61,7 @@ public class StopWatchService extends Service {
     public void onCreate() {
         super.onCreate();
         mLegsList = new ArrayList<Long>();
+        reset();
     }
 
     @Override
@@ -82,8 +84,9 @@ public class StopWatchService extends Service {
     }
 
     public void startTimimg() {
-        if ( mState == STATE_STOPPED ) {
+        if ( mState == STATE_PAUSED ) {
             mState = STATE_RUNNING;
+            mLastDuration = getElapsedTime();
             mStartMillis = SystemClock.elapsedRealtime();
             mLastMillis = mStartMillis;
             scheduleNextUpdate();
@@ -93,7 +96,7 @@ public class StopWatchService extends Service {
     public void stopTimimg() {
         if ( mState == STATE_RUNNING ) {
             removeUpdate();
-            mState = STATE_STOPPED;
+            mState = STATE_PAUSED;
             mLastMillis = SystemClock.elapsedRealtime();
             if ( mTickHandler != null ) {
                 mTickHandler.onTick( getElapsedTime() );
@@ -102,21 +105,23 @@ public class StopWatchService extends Service {
     }
 
     protected void reset() {
-        if ( mState == STATE_STOPPED ) {
-            mStartMillis = 0;
-            mLastMillis = 0;
-            mLegsList.clear();
-        }
+        mState = STATE_PAUSED;
+        mStartMillis = 0;
+        mLastMillis = 0;
+        mLastDuration = 0;
+        mLegsList.clear();
     }
 
     public void addLeg() {
-        if ( mState == STATE_RUNNING ) {
-            mLegsList.add( getElapsedTime() );
-        }
+        mLegsList.add( getElapsedTime() );
     }
 
     public boolean isRunning() {
         return mState == STATE_RUNNING;
+    }
+
+    public boolean isPaused() {
+        return mState == STATE_PAUSED;
     }
 
     protected void scheduleNextUpdate() {
@@ -128,7 +133,7 @@ public class StopWatchService extends Service {
     }
 
     protected long getElapsedTime() {
-        return mLastMillis-mStartMillis;
+        return (mLastMillis-mStartMillis)+mLastDuration;
     }
 
     protected ArrayList<Long> getLegs() {

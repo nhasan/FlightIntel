@@ -154,7 +154,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
 
     protected void updateUiState() {
         if ( mService != null && mService.isRunning() ) {
-            mBtnAction.setText( R.string.stop );
+            mBtnAction.setText( R.string.pause );
             mBtnReset.setVisibility( View.GONE );
             mBtnLeg.setVisibility( View.VISIBLE );
         } else {
