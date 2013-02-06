@@ -73,7 +73,7 @@
             style="@style/TextSmall"
             android:layout_below="@id/runway_id"
             android:paddingLeft="4dp"
-            android:paddingTop="0dp"
+            android:paddingTop="4dp"
             android:paddingRight="4dp"
             android:paddingBottom="0dp"
             android:gravity="left"
