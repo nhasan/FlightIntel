@@ -27,6 +27,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -44,6 +45,8 @@ import com.nadmm.airports.e6b.StopWatchService.StopWatchBinder;
 
 public class StopWatchFragment extends FragmentBase implements OnTickHandler {
 
+    private final int BLINK_DELAY = 500;
+
     private Button mBtnAction;
     private Button mBtnReset;
     private Button mBtnLeg;
@@ -53,6 +56,14 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
 
     private StopWatchService mService = null;
     private StopWatchConnection mConnection = new StopWatchConnection();
+    private Handler mHandler = new Handler();
+    private Runnable mBlink = new Runnable() {
+
+        @Override
+        public void run() {
+            blink();
+        }
+    };
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -125,13 +136,18 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
 
         Activity activity = getActivity();
         activity.unbindService( mConnection );
+        mHandler.removeCallbacks( mBlink );
     }
 
     protected void actionPressed() {
         if ( !mService.isRunning() ) {
             mService.startTimimg();
+            mTimeSeconds.setVisibility( View.VISIBLE );
+            mTimeTenths.setVisibility( View.VISIBLE );
+            mHandler.removeCallbacks( mBlink );
         } else {
             mService.stopTimimg();
+            mHandler.postDelayed( mBlink, BLINK_DELAY );
         }
         updateUiState();
     }
@@ -150,6 +166,13 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     @Override
     public void onTick( long millis ) {
         showElapsedTime();
+    }
+
+    protected void blink() {
+        mHandler.postDelayed( mBlink, BLINK_DELAY );
+        boolean visible = ( mTimeSeconds.getVisibility()==View.VISIBLE );
+        mTimeSeconds.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
+        mTimeTenths.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
     }
 
     protected void updateUiState() {
