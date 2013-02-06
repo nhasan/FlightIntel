@@ -36,12 +36,14 @@ public class StopWatchService extends Service {
     private final int STATE_RUNNING = 2;
 
     private IBinder mBinder = new StopWatchBinder();
-    private OnTickHandler mTickHandler = null;
+    private Handler mHandler = new Handler();
+    private OnTickHandler mClient = null;
+
     private long mStartMillis;
     private long mLastMillis;
     private long mLastDuration;
     private int mState;
-    private Handler mHandler = new Handler();
+    private ArrayList<Long> mLegsList;
 
     private Runnable mRunnable = new Runnable() {
 
@@ -49,13 +51,9 @@ public class StopWatchService extends Service {
         public void run() {
             mLastMillis = SystemClock.elapsedRealtime();
             scheduleNextUpdate();
-            if ( mTickHandler != null ) {
-                mTickHandler.onTick( getElapsedTime() );
-            }
+            notifyClient();
         }
     };
-
-    private ArrayList<Long> mLegsList;
 
     @Override
     public void onCreate() {
@@ -79,8 +77,8 @@ public class StopWatchService extends Service {
         }
     }
 
-    public void setOnTickHandler( OnTickHandler handler ) {
-        mTickHandler = handler;
+    public void setOnTickHandler( OnTickHandler client ) {
+        mClient = client;
     }
 
     public void startTimimg() {
@@ -98,9 +96,7 @@ public class StopWatchService extends Service {
             removeUpdate();
             mState = STATE_PAUSED;
             mLastMillis = SystemClock.elapsedRealtime();
-            if ( mTickHandler != null ) {
-                mTickHandler.onTick( getElapsedTime() );
-            }
+            notifyClient();
         }
     }
 
@@ -126,6 +122,12 @@ public class StopWatchService extends Service {
 
     protected void scheduleNextUpdate() {
         mHandler.postDelayed( mRunnable, DELAY_MILLIS );
+    }
+
+    protected void notifyClient() {
+        if ( mClient != null ) {
+            mClient.onTick( getElapsedTime() );
+        }
     }
 
     protected void removeUpdate() {
