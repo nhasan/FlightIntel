@@ -21,35 +21,55 @@ package com.nadmm.airports.e6b;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.IBinder;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.e6b.StopWatchService.OnTickHandler;
+import com.nadmm.airports.e6b.StopWatchService.StopWatchBinder;
 
-public class StopWatchFragment extends FragmentBase {
-
-    private final long DELAY_MILLIS = 100;
-    private final int STATE_STOPPED = 1;
-    private final int STATE_RUNNING = 2;
-
-    private Handler mHandler;
-    private Runnable mRunnable;
-    private long mElapsedMillis;
-    private int mState;
+public class StopWatchFragment extends FragmentBase implements OnTickHandler {
 
     private Button mBtnAction;
     private Button mBtnReset;
     private Button mBtnLeg;
+    private TextView mTimeSeconds;
+    private TextView mTimeTenths;
+    private LinearLayout mLegsLayout;
 
-    private ArrayList<Long> mLegs;
+    private StopWatchService mService = null;
+    private StopWatchConnection mConnection = new StopWatchConnection();
+
+    @Override
+    public void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+        Activity activity = getActivity();
+        Intent service = new Intent( activity, StopWatchService.class );
+        activity.startService( service );
+        setRetainInstance( true );
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if ( mService != null ) {
+            mService.stopSelf();
+        }
+    }
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -60,9 +80,9 @@ public class StopWatchFragment extends FragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
-        mHandler = new Handler();
-        mLegs = new ArrayList<Long>();
 
+        mTimeSeconds = (TextView) findViewById( R.id.stopwatch_time );
+        mTimeTenths = (TextView) findViewById( R.id.stopwatch_tenths );
         mBtnAction = (Button) findViewById( R.id.stopwatch_action );
         mBtnAction.setOnClickListener( new OnClickListener() {
 
@@ -87,84 +107,132 @@ public class StopWatchFragment extends FragmentBase {
                 legPressed();
             }
         } );
+        mLegsLayout = (LinearLayout) findViewById( R.id.legs_view );
+    }
 
-        mElapsedMillis = 0;
-        setState( STATE_STOPPED );
+    @Override
+    public void onResume() {
+        super.onResume();
 
-        showElapsedTime();
+        Activity activity = getActivity();
+        Intent service = new Intent( activity, StopWatchService.class );
+        activity.bindService( service, mConnection, 0 );
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        Activity activity = getActivity();
+        activity.unbindService( mConnection );
     }
 
     protected void actionPressed() {
-        setState( mState==STATE_RUNNING? STATE_STOPPED : STATE_RUNNING );
+        if ( !mService.isRunning() ) {
+            mService.startTimimg();
+        } else {
+            mService.stopTimimg();
+        }
+        updateUiState();
     }
 
     protected void resetPressed() {
-        mElapsedMillis = 0;
-        mLegs.clear();
+        mService.reset();
         showElapsedTime();
         showLegs();
     }
 
     protected void legPressed() {
-        mLegs.add( mElapsedMillis );
+        mService.addLeg();
+        showLegs();
     }
 
-    protected void setState( int state ) {
-        mState = state;
-        if ( state == STATE_STOPPED ) {
-            mBtnAction.setText( R.string.start );
-            mBtnReset.setVisibility( mElapsedMillis > 0? View.VISIBLE : View.GONE );
-            mBtnLeg.setVisibility( View.GONE );
-            removeUpdate();
-        } else if ( state == STATE_RUNNING ) {
+    @Override
+    public void onTick( long millis ) {
+        showElapsedTime();
+    }
+
+    protected void updateUiState() {
+        if ( mService != null && mService.isRunning() ) {
             mBtnAction.setText( R.string.stop );
             mBtnReset.setVisibility( View.GONE );
             mBtnLeg.setVisibility( View.VISIBLE );
-            scheduleUpdate();
+        } else {
+            mBtnAction.setText( R.string.start );
+            mBtnReset.setVisibility( mService.getElapsedTime() > 0? View.VISIBLE : View.GONE );
+            mBtnLeg.setVisibility( View.GONE );
         }
-    }
-
-    protected void scheduleUpdate() {
-        if ( mRunnable == null ) {
-            mRunnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    mElapsedMillis += DELAY_MILLIS;
-                    scheduleUpdate();
-                    showElapsedTime();
-                }
-            };
-        }
-        mHandler.postDelayed( mRunnable, DELAY_MILLIS );
-    }
-
-    protected void removeUpdate() {
-        mHandler.removeCallbacks( mRunnable );
+        showElapsedTime();
+        showLegs();
     }
 
     protected void showElapsedTime() {
-        long hrs = mElapsedMillis/DateUtils.HOUR_IN_MILLIS;
-        long mins = (mElapsedMillis%DateUtils.HOUR_IN_MILLIS)/DateUtils.MINUTE_IN_MILLIS;
-        long secs = (mElapsedMillis%DateUtils.MINUTE_IN_MILLIS)/DateUtils.SECOND_IN_MILLIS;
-        long tenths = (mElapsedMillis%DateUtils.SECOND_IN_MILLIS)/(DateUtils.SECOND_IN_MILLIS/10);
+        String time = formatElapsedTime( mService.getElapsedTime() );
+        int dot = time.indexOf( '.' );
+        mTimeSeconds.setText( time.substring( 0, dot ) );
+        mTimeTenths.setText( time.substring( dot ) );
+    }
 
-        TextView tv = (TextView) findViewById( R.id.stopwatch_time );
-        if ( tv != null ) {
-            if ( hrs > 0 ) {
-                tv.setText( String.format( "%02d:%02d:%02d", hrs, mins, secs ) );
-            } else {
-                tv.setText( String.format( "%02d:%02d", mins, secs ) );
-            }
-            tv = (TextView) findViewById( R.id.stopwatch_tenths );
-            tv.setText( String.format( ".%01d", tenths ) );
+    @SuppressLint("DefaultLocale")
+    protected String formatElapsedTime( long millis ) {
+        long hrs = millis / DateUtils.HOUR_IN_MILLIS;
+        long mins = ( millis % DateUtils.HOUR_IN_MILLIS ) / DateUtils.MINUTE_IN_MILLIS;
+        long secs = ( millis % DateUtils.MINUTE_IN_MILLIS ) / DateUtils.SECOND_IN_MILLIS;
+        long tenths = ( millis % DateUtils.SECOND_IN_MILLIS )/( DateUtils.SECOND_IN_MILLIS/10 );
+        if ( hrs > 0 ) {
+            return String.format( "%02d:%02d:%02d.%01d", hrs, mins, secs, tenths );
         } else {
-            // Fragment is no longer active
-            removeUpdate();
+            return String.format( "%02d:%02d.%01d", mins, secs, tenths );
         }
     }
 
     protected void showLegs() {
+        ArrayList<Long> legsList = mService.getLegs();
+        int size = legsList.size();
+        View parent = findViewById( R.id.legs_view_parent );
+
+        if ( size > 0 ) {
+            int count = mLegsLayout.getChildCount();
+            while ( count < size ) {
+                long leg = legsList.get( count );
+                long prev = count==0? 0 : legsList.get( count-1 );
+                addLeg( ++count, leg, prev );
+            }
+            parent.setVisibility( View.VISIBLE );
+        } else {
+            mLegsLayout.removeAllViews();
+            parent.setVisibility( View.GONE );
+        }
+    }
+
+    protected void addLeg( int count, long leg, long prev ) {
+        long delta = leg-prev;
+        View view = inflate( R.layout.leg_item_view );
+        TextView tv = (TextView) view.findViewById( R.id.leg_label );
+        tv.setText( String.format( "Leg %d", count ) );
+        tv = (TextView) view.findViewById( R.id.leg_delta );
+        tv.setText( formatElapsedTime( delta ) );
+        tv = (TextView) view.findViewById( R.id.leg_total );
+        tv.setText( formatElapsedTime( leg ) );
+        mLegsLayout.addView( view, 0 );
+    }
+
+    private class StopWatchConnection implements ServiceConnection {
+
+        @Override
+        public void onServiceConnected( ComponentName name, IBinder service ) {
+            StopWatchBinder binder = (StopWatchBinder) service;
+            mService = binder.getService();
+            mService.setOnTickHandler( StopWatchFragment.this );
+            updateUiState();
+        }
+
+        @Override
+        public void onServiceDisconnected( ComponentName name ) {
+            mService.setOnTickHandler( null );
+            mService = null;
+        }
+        
     }
 
 }
