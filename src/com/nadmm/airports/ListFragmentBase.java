@@ -57,10 +57,12 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
 
     @Override
     public void onDestroy() {
-        CursorAdapter adapter = (CursorAdapter) mListView.getAdapter();
-        if ( adapter != null ) {
-            Cursor c = adapter.getCursor();
-            c.close();
+        if ( mListView != null ) {
+            CursorAdapter adapter = (CursorAdapter) mListView.getAdapter();
+            if ( adapter != null ) {
+                Cursor c = adapter.getCursor();
+                c.close();
+            }
         }
 
         super.onDestroy();
