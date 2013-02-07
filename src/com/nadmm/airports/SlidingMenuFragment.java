@@ -45,8 +45,8 @@ public class SlidingMenuFragment extends ListFragmentBase {
     public static final int ITEM_ID_TFR = 1;
     public static final int ITEM_ID_LIBRARY = 2;
     public static final int ITEM_ID_SCRATCHPAD = 3;
-    public static final int ITEM_ID_CHARTS = 4;
-    public static final int ITEM_ID_E6B = 5;
+    public static final int ITEM_ID_CLOCKS = 4;
+    public static final int ITEM_ID_CHARTS = 5;
 
     private final Handler mHandler = new Handler();
 
@@ -89,7 +89,7 @@ public class SlidingMenuFragment extends ListFragmentBase {
             startActivity( ScratchPadActivity.class );
         } else if ( id == ITEM_ID_CHARTS ) {
             startActivity( ChartsDownloadActivity.class );
-        } else if ( id == ITEM_ID_E6B ) {
+        } else if ( id == ITEM_ID_CLOCKS ) {
             startActivity( E6bActivity.class );
         }
     }
@@ -147,8 +147,8 @@ public class SlidingMenuFragment extends ListFragmentBase {
             newRow().add( ITEM_ID_TFR ).add( "TFRs" ).add( R.drawable.stop );
             newRow().add( ITEM_ID_LIBRARY ).add( "Library" ).add( R.drawable.book );
             newRow().add( ITEM_ID_SCRATCHPAD ).add( "Scratch Pad" ).add( R.drawable.notepad );
+            newRow().add( ITEM_ID_CLOCKS ).add( "Clocks" ).add( R.drawable.clock );
             newRow().add( ITEM_ID_CHARTS ).add( "Manage Charts" ).add( R.drawable.folder );
-            newRow().add( ITEM_ID_E6B ).add( "E6B Calculator" ).add( 0 );
         }
 
     }

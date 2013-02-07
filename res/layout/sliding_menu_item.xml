@@ -34,7 +34,7 @@
             android:textSize="18sp"
             android:textColor="#ffffffff"
             android:gravity="left|center_vertical"
-            android:paddingLeft="4dp"
+            android:paddingLeft="8dp"
             android:paddingRight="4dp"
             android:layout_weight="1"
             android:layout_width="0dp"
