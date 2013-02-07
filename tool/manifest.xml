@@ -20,21 +20,21 @@
     </datafile>
     <datafile>
         <type>DTPP</type>
-        <desc>AeroNav d-TPP #1301 (FAA)</desc>
-        <version>1301</version>
-        <filename>dtpp_20130110.db</filename>
-        <size>473079</size>
-        <start>2013-01-10T09:01:00Z</start>
-        <end>2013-02-07T09:01:00Z</end>
+        <desc>AeroNav d-TPP #1302 (FAA)</desc>
+        <version>1302</version>
+        <filename>dtpp_20130207.db</filename>
+        <size>469112</size>
+        <start>2013-02-07T09:01:00Z</start>
+        <end>2013-03-07T09:01:00Z</end>
     </datafile>
     <datafile>
         <type>LIBRARY</type>
-        <desc>Documents Library 10Jan2013</desc>
-        <version>20130110</version>
-        <filename>library_20130110.db</filename>
-        <size>3775</size>
-        <start>2013-01-10T09:01:00Z</start>
-        <end>2013-02-07T09:01:00Z</end>
+        <desc>Documents Library 7Feb2013</desc>
+        <version>20130207</version>
+        <filename>library_20130207.db</filename>
+        <size>3826</size>
+        <start>2013-02-07T09:01:00Z</start>
+        <end>2013-03-07T09:01:00Z</end>
     </datafile>
 </manifest>
 

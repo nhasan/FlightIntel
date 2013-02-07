@@ -129,10 +129,10 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072 );
 
+insert_book( "periodicals", "cb_396.pdf", "Callback", "Issue 396 (Jan 2013)", "NASA", 232299 );
 insert_book( "periodicals", "cb_395.pdf", "Callback", "Issue 395 (Dec 2012)", "NASA", 351768 );
 insert_book( "periodicals", "cb_394.pdf", "Callback", "Issue 394 (Nov 2012)", "NASA", 197346 );
 insert_book( "periodicals", "cb_393.pdf", "Callback", "Issue 393 (Oct 2012)", "NASA", 261522 );
-insert_book( "periodicals", "cb_392.pdf", "Callback", "Issue 392 (Sep 2012)", "NASA", 160898 );
 insert_book( "periodicals", "12jul-front.pdf", "The Front", "Jul 2012", "NOAA", 2071900 );
 insert_book( "periodicals", "11nov-front.pdf", "The Front", "Nov 2011", "NOAA", 1030336 );
 insert_book( "periodicals", "11jul-front.pdf", "The Front", "Jul 2011", "NOAA", 588846 );
@@ -144,14 +144,16 @@ insert_book( "periodicals", "SepOct2012.pdf", "FAA Safety Briefing",
         "Sep/Oct 2012", "FAA", 2682469 );
 insert_book( "periodicals", "JulAug2012.pdf", "FAA Safety Briefing",
         "Jul/Aug 2012", "FAA", 3930710 );
+insert_book( "periodicals", "20130207flying_lessons.pdf", "Flying Lessons", "Feb 07",
+        "Mastery Flight Training", 347305 );
+insert_book( "periodicals", "20130131flying_lessons.pdf", "Flying Lessons", "Jan 31",
+        "Mastery Flight Training", 485291 );
+insert_book( "periodicals", "20130124flying_lessons.pdf", "Flying Lessons", "Jan 24",
+        "Mastery Flight Training", 405165 );
+insert_book( "periodicals", "20130110flying_lessons.pdf", "Flying Lessons", "Jan 10",
+        "Mastery Flight Training", 344723 );
 insert_book( "periodicals", "20130103flying_lessons.pdf", "Flying Lessons", "Jan 3",
         "Mastery Flight Training", 344844 );
-insert_book( "periodicals", "20121227flying_lessons.pdf", "Flying Lessons", "Dec 27",
-        "Mastery Flight Training", 312227 );
-insert_book( "periodicals", "20121220flying_lessons.pdf", "Flying Lessons", "Dec 20",
-        "Mastery Flight Training", 421194 );
-insert_book( "periodicals", "20121213flying_lessons.pdf", "Flying Lessons", "Dec 13",
-        "Mastery Flight Training", 646179 );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656 );
@@ -176,16 +178,16 @@ insert_book( "safety", "faa-p-8740-69-2008.pdf", "Aeronautical Decision Making",
 
 insert_book( "regs", "aim_2012_r1.pdf", "Aeronautical Information Manual (AIM)",
         "2012", "FAA", 8640900 );
-insert_book( "regs", "cfr-2012-title14-vol1.pdf", "Federal Aviation Regulations (FAR)",
+insert_book( "regs", "cfr-2012-title14-vol1.pdf", "Federal Aviation Regulations (FAR) 2012",
         "Parts 1-59", "US GPO", 9855793 );
-insert_book( "regs", "cfr-2012-title14-vol2.pdf", "Federal Aviation Regulations (FAR)",
+insert_book( "regs", "cfr-2012-title14-vol2.pdf", "Federal Aviation Regulations (FAR) 2012",
         "Parts 60-109", "US GPO", 15171981 );
-insert_book( "regs", "cfr-2012-title14-vol3.pdf", "Federal Aviation Regulations (FAR)",
+insert_book( "regs", "cfr-2012-title14-vol3.pdf", "Federal Aviation Regulations (FAR) 2012",
         "Parts 110-199", "US GPO", 4961436 );
-insert_book( "regs", "cfr-2012-title14-vol4.pdf", "Federal Aviation Regulations (FAR)",
+insert_book( "regs", "cfr-2012-title14-vol4.pdf", "Federal Aviation Regulations (FAR) 2012",
         "Parts 200-1199", "US GPO", 16738367 );
-insert_book( "regs", "cfr-2012-title14-vol5.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 1200-End", "US GPO", 2181427 );
+insert_book( "regs", "cfr-2013-title14-vol5.pdf", "Federal Aviation Regulations (FAR) 2013",
+        "Parts 1200-1310", "US GPO", 2400725 );
 
 insert_book( "risk", "ga_weather_decision_making.pdf", "General Aviation Pilot’s Guide",
         "2009", "FAA", 659230 );
