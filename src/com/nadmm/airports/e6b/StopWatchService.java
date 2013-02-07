@@ -45,7 +45,7 @@ public class StopWatchService extends Service {
     private int mState;
     private ArrayList<Long> mLegsList;
 
-    private Runnable mRunnable = new Runnable() {
+    private Runnable mTicker = new Runnable() {
 
         @Override
         public void run() {
@@ -54,6 +54,16 @@ public class StopWatchService extends Service {
             notifyClient();
         }
     };
+
+    public interface OnTickHandler {
+        public void onTick( long millis );
+    }
+
+    public class StopWatchBinder extends Binder {
+        public StopWatchService getService() {
+            return StopWatchService.this;
+        }
+    }
 
     @Override
     public void onCreate() {
@@ -65,16 +75,6 @@ public class StopWatchService extends Service {
     @Override
     public IBinder onBind( Intent intent ) {
         return mBinder;
-    }
-
-    public interface OnTickHandler {
-        public void onTick( long millis );
-    }
-
-    public class StopWatchBinder extends Binder {
-        public StopWatchService getService() {
-            return StopWatchService.this;
-        }
     }
 
     public void setOnTickHandler( OnTickHandler client ) {
@@ -121,17 +121,17 @@ public class StopWatchService extends Service {
     }
 
     protected void scheduleNextUpdate() {
-        mHandler.postDelayed( mRunnable, DELAY_MILLIS );
+        mHandler.postDelayed( mTicker, DELAY_MILLIS );
+    }
+
+    protected void removeUpdate() {
+        mHandler.removeCallbacks( mTicker );
     }
 
     protected void notifyClient() {
         if ( mClient != null ) {
             mClient.onTick( getElapsedTime() );
         }
-    }
-
-    protected void removeUpdate() {
-        mHandler.removeCallbacks( mRunnable );
     }
 
     protected long getElapsedTime() {

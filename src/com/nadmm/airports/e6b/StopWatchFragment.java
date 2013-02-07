@@ -83,6 +83,24 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        Activity activity = getActivity();
+        Intent service = new Intent( activity, StopWatchService.class );
+        activity.bindService( service, mConnection, 0 );
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        Activity activity = getActivity();
+        activity.unbindService( mConnection );
+        mHandler.removeCallbacks( mBlink );
+    }
+
+    @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         return inflate( R.layout.e6b_stopwatch_layout );
@@ -119,24 +137,6 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
             }
         } );
         mLegsLayout = (LinearLayout) findViewById( R.id.legs_view );
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        Activity activity = getActivity();
-        Intent service = new Intent( activity, StopWatchService.class );
-        activity.bindService( service, mConnection, 0 );
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        Activity activity = getActivity();
-        activity.unbindService( mConnection );
-        mHandler.removeCallbacks( mBlink );
     }
 
     protected void actionPressed() {
