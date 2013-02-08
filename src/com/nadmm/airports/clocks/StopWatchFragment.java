@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports.e6b;
+package com.nadmm.airports.clocks;
 
 import java.util.ArrayList;
 
@@ -40,8 +40,8 @@ import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
-import com.nadmm.airports.e6b.StopWatchService.OnTickHandler;
-import com.nadmm.airports.e6b.StopWatchService.StopWatchBinder;
+import com.nadmm.airports.clocks.StopWatchService.OnTickHandler;
+import com.nadmm.airports.clocks.StopWatchService.StopWatchBinder;
 
 public class StopWatchFragment extends FragmentBase implements OnTickHandler {
 

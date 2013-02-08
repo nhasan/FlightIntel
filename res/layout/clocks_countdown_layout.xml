@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * FlightIntel for Pilots
+ *
+ * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+ -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="bottom|center_horizontal"
+            android:padding="8dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/rounded_rectangle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView android:id="@+id/countdown_time"
+                android:textSize="48sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        <TextView android:id="@+id/countdown_tenths"
+                android:textSize="24sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <Button android:id="@+id/countdown_action"
+                style="@style/FlatButton"
+                android:text="@string/start"
+                android:layout_margin="8dp"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+        <Button android:id="@+id/countdown_reset"
+                style="@style/FlatButton"
+                android:text="@string/reset"
+                android:visibility="gone"
+                android:layout_margin="8dp"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>

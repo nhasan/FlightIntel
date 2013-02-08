@@ -29,7 +29,6 @@
     <item type="id" name="LIBRARY_PDF_PATH" />
     <item type="id" name="LIBRARY_PDF_NAME" />
     <item type="id" name="CATEGORY_MAIN" />
-    <item type="id" name="CATEGORY_TIME" />
     <item type="id" name="TIME_CLOCKS" />
     <item type="id" name="TIME_STOPWATCH" />
     <item type="id" name="TIME_COUNTDOWN" />

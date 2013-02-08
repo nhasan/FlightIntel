@@ -132,7 +132,7 @@
     <string name="utc_time">UTC Time</string>
     <string name="home_time">Home Time</string>
     <string name="local_time">Local Time</string>
-    <string name="e6b_calculator">E6B Calculator</string>
+    <string name="clocks">Clocks</string>
     <string name="start">Start</string>
     <string name="pause">Pause</string>
     <string name="reset">Reset</string>

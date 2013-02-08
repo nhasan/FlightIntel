@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports.e6b;
+package com.nadmm.airports.clocks;
 
 import java.util.ArrayList;
 

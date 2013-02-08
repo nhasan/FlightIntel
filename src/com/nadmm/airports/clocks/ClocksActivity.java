@@ -17,20 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports.e6b;
+package com.nadmm.airports.clocks;
 
 import android.os.Bundle;
 
 import com.nadmm.airports.FragmentActivityBase;
 import com.nadmm.airports.SlidingMenuFragment;
 
-public class E6bActivity extends FragmentActivityBase {
+public class ClocksActivity extends FragmentActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        addFragment( E6bMenuFragment.class, getIntent().getExtras() );
+        addFragment( ClocksMenuFragment.class, getIntent().getExtras() );
     }
 
     @Override

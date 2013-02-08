@@ -34,7 +34,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nadmm.airports.aeronav.ChartsDownloadActivity;
-import com.nadmm.airports.e6b.E6bActivity;
+import com.nadmm.airports.clocks.ClocksActivity;
 import com.nadmm.airports.library.LibraryActivity;
 import com.nadmm.airports.scratchpad.ScratchPadActivity;
 import com.nadmm.airports.tfr.TfrActivity;
@@ -90,7 +90,7 @@ public class SlidingMenuFragment extends ListFragmentBase {
         } else if ( id == ITEM_ID_CHARTS ) {
             startActivity( ChartsDownloadActivity.class );
         } else if ( id == ITEM_ID_CLOCKS ) {
-            startActivity( E6bActivity.class );
+            startActivity( ClocksActivity.class );
         }
     }
 

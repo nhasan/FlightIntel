@@ -17,13 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports.e6b;
-
-import java.util.HashMap;
+package com.nadmm.airports;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.ResourceCursorAdapter;
 import android.view.View;
@@ -31,28 +31,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nadmm.airports.ListFragmentBase;
-import com.nadmm.airports.R;
-
-public class E6bMenuFragment extends ListFragmentBase {
+public abstract class ListMenuFragment extends ListFragmentBase {
 
     private static final String MENU_ID = "MENU_ID";
-
-    private static final HashMap<Long, Class<?>> mDispatchMap = new HashMap<Long, Class<?>>();
-    static {
-        mDispatchMap.put( (long)R.id.CATEGORY_MAIN, E6bMenuFragment.class );
-        mDispatchMap.put( (long)R.id.CATEGORY_TIME, E6bMenuFragment.class );
-        mDispatchMap.put( (long)R.id.TIME_CLOCKS, ClockFragment.class );
-        mDispatchMap.put( (long)R.id.TIME_STOPWATCH, StopWatchFragment.class );
-    }
-
-    private static final HashMap<Long, String> mTitleMap = new HashMap<Long, String>();
-    static {
-        mTitleMap.put( (long)R.id.CATEGORY_MAIN, "Main Menu" );
-        mTitleMap.put( (long)R.id.CATEGORY_TIME, "Time" );
-        mTitleMap.put( (long)R.id.TIME_CLOCKS, "Clocks" );
-        mTitleMap.put( (long)R.id.TIME_STOPWATCH, "Stopwatch" );
-    }
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -66,40 +47,44 @@ public class E6bMenuFragment extends ListFragmentBase {
         Bundle args = getArguments();
         long menuId = args != null? args.getLong( MENU_ID ) : R.id.CATEGORY_MAIN;
 
-        getSupportActionBar().setSubtitle( mTitleMap.get( menuId ) );
+        getSupportActionBar().setSubtitle( getItemTitle( menuId ) );
 
-        Cursor c = new E6bMenuCursor( menuId );
+        Cursor c = getMenuCursor();
         setCursor( c );
     }
 
     @Override
     protected CursorAdapter newListAdapter( Context context, Cursor c ) {
-        return new E6bMenuAdapter( context, c );
+        return new ListMenuAdapter( context, c );
     }
 
     @Override
     protected void onListItemClick( ListView l, View v, int position ) {
         long id = getListAdapter().getItemId( position );
-        Class<?> clss = mDispatchMap.get( id );
+        Class<?> clss = getItemFragmentClass( id );
         if ( clss != null ) {
             Bundle args = new Bundle();
             args.putLong( MENU_ID, id );
-            getSupportActionBar().setSubtitle( mTitleMap.get( id ) );
+            getSupportActionBar().setSubtitle( getItemTitle( id ) );
             getActivityBase().replaceFragment( clss, args );
         }
     }
 
-    private class E6bMenuAdapter extends ResourceCursorAdapter {
+    protected abstract String getItemTitle( long itemId );
+    protected abstract Class<?> getItemFragmentClass( long itemId );
+    protected abstract Cursor getMenuCursor();
 
-        public E6bMenuAdapter( Context context, Cursor c ) {
-            super( context, R.layout.e6b_menu_item, c, 0 );
+    private class ListMenuAdapter extends ResourceCursorAdapter {
+
+        public ListMenuAdapter( Context context, Cursor c ) {
+            super( context, R.layout.list_menu_item, c, 0 );
         }
 
         @Override
         public void bindView( View view, Context context, Cursor c ) {
-            int icon = c.getInt( c.getColumnIndex( E6bMenuCursor.ITEM_ICON ) );
-            String title = c.getString( c.getColumnIndex( E6bMenuCursor.ITEM_TITLE ) );
-            String summary = c.getString( c.getColumnIndex( E6bMenuCursor.ITEM_SUMMARY ) );
+            int icon = c.getInt( c.getColumnIndex( ListMenuCursor.ITEM_ICON ) );
+            String title = c.getString( c.getColumnIndex( ListMenuCursor.ITEM_TITLE ) );
+            String summary = c.getString( c.getColumnIndex( ListMenuCursor.ITEM_SUMMARY ) );
 
             ImageView iv = (ImageView) view.findViewById( R.id.item_icon );
             iv.setImageResource( icon );
@@ -109,6 +94,23 @@ public class E6bMenuFragment extends ListFragmentBase {
             tv.setText( summary );
         }
 
+    }
+
+    public abstract static class ListMenuCursor extends MatrixCursor {
+
+        public static final String ITEM_ICON = "ITEM_ICON";
+        public static final String ITEM_TITLE = "ITEM_TITLE";
+        public static final String ITEM_SUMMARY = "ITEM_SUMMARY";
+
+        private final static String[] sColumnNames = new String[]
+                { BaseColumns._ID, ITEM_ICON, ITEM_TITLE, ITEM_SUMMARY };
+
+        public ListMenuCursor( long menuId ) {
+            super( sColumnNames );
+            populateMenuItems( menuId );
+        }
+
+        protected abstract void populateMenuItems( long menuId );
     }
 
 }

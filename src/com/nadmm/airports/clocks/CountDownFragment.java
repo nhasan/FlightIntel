@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-package com.nadmm.airports.e6b;
+package com.nadmm.airports.clocks;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -37,8 +37,8 @@ import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
-import com.nadmm.airports.e6b.CountDownService.CountDownBinder;
-import com.nadmm.airports.e6b.CountDownService.OnTickHandler;
+import com.nadmm.airports.clocks.CountDownService.CountDownBinder;
+import com.nadmm.airports.clocks.CountDownService.OnTickHandler;
 
 public class CountDownFragment extends FragmentBase implements OnTickHandler {
 
