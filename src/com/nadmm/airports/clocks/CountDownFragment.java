@@ -99,7 +99,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_countdown_layout );
+        return inflate( R.layout.clocks_countdown_layout );
     }
 
     @Override

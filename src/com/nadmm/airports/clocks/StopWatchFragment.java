@@ -103,7 +103,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_stopwatch_layout );
+        return inflate( R.layout.clocks_stopwatch_layout );
     }
 
     @Override

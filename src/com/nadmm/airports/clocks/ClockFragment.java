@@ -56,7 +56,7 @@ public class ClockFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_clock_layout );
+        return inflate( R.layout.clocks_clock_layout );
     }
 
     @Override
