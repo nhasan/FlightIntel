@@ -192,7 +192,7 @@
         <service android:name=".billing.BillingService" />
         <service android:name=".tfr.TfrService" />
         <service android:name=".tfr.TfrImageService" />
-        <service android:name=".e6b.StopWatchService" />
+        <service android:name=".clocks.StopWatchService" />
 
         <receiver android:name=".billing.BillingReceiver">
             <intent-filter>

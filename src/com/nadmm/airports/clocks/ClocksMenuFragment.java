@@ -40,8 +40,8 @@ public class ClocksMenuFragment extends ListMenuFragment {
     static {
         mTitleMap = new HashMap<Long, String>();
         mTitleMap.put( (long)R.id.CATEGORY_MAIN, "Clocks for Instrument Flying" );
-        mTitleMap.put( (long)R.id.TIME_CLOCKS, "Clocks" );
-        mTitleMap.put( (long)R.id.TIME_STOPWATCH, "Stopwatch" );
+        mTitleMap.put( (long)R.id.TIME_CLOCKS, "Current Time" );
+        mTitleMap.put( (long)R.id.TIME_STOPWATCH, "Stop Watch" );
         mTitleMap.put( (long)R.id.TIME_COUNTDOWN, "Countdown Timer" );
     }
 
@@ -70,7 +70,7 @@ public class ClocksMenuFragment extends ListMenuFragment {
         protected void populateMenuItems( long menuId ) {
             newRow().add( R.id.TIME_CLOCKS )
                 .add( R.drawable.clock )
-                .add( "Clocks" )
+                .add( "Current Time" )
                 .add( "Display UTC clock, local clock" );
             newRow().add( R.id.TIME_STOPWATCH )
                 .add( R.drawable.stopwatch )

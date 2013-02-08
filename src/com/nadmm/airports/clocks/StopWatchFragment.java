@@ -154,8 +154,10 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
 
     protected void resetPressed() {
         mService.reset();
-        showElapsedTime();
-        showLegs();
+        mTimeSeconds.setVisibility( View.VISIBLE );
+        mTimeTenths.setVisibility( View.VISIBLE );
+        mHandler.removeCallbacks( mBlink );
+        updateUiState();
     }
 
     protected void legPressed() {
