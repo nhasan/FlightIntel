@@ -142,17 +142,14 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     protected void actionPressed() {
         if ( !mService.isRunning() ) {
             mService.startTimimg();
-            stopBlink();
         } else {
             mService.stopTimimg();
-            mHandler.postDelayed( mBlink, BLINK_DELAY );
         }
         updateUiState();
     }
 
     protected void resetPressed() {
         mService.reset();
-        stopBlink();
         updateUiState();
     }
 
@@ -173,6 +170,10 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
         mTimeTenths.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
     }
 
+    protected void startBlink() {
+        mHandler.postDelayed( mBlink, BLINK_DELAY );
+    }
+
     protected void stopBlink() {
         mTimeSeconds.setVisibility( View.VISIBLE );
         mTimeTenths.setVisibility( View.VISIBLE );
@@ -184,10 +185,18 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
             mBtnAction.setText( R.string.pause );
             mBtnReset.setVisibility( View.GONE );
             mBtnLeg.setVisibility( View.VISIBLE );
+            stopBlink();
         } else {
             mBtnAction.setText( R.string.start );
             mBtnReset.setVisibility( mService.getElapsedTime() > 0? View.VISIBLE : View.GONE );
             mBtnLeg.setVisibility( View.GONE );
+            if ( mService.getElapsedTime() > 0 ) {
+                mBtnReset.setVisibility( View.VISIBLE );
+                startBlink();
+            } else {
+                mBtnReset.setVisibility( View.GONE );
+                stopBlink();
+            }
         }
         showElapsedTime();
         showLegs();
