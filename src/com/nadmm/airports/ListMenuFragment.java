@@ -105,12 +105,12 @@ public abstract class ListMenuFragment extends ListFragmentBase {
         private final static String[] sColumnNames = new String[]
                 { BaseColumns._ID, ITEM_ICON, ITEM_TITLE, ITEM_SUMMARY };
 
-        public ListMenuCursor( long menuId ) {
+        public ListMenuCursor() {
             super( sColumnNames );
-            populateMenuItems( menuId );
+            populateMenuItems();
         }
 
-        protected abstract void populateMenuItems( long menuId );
+        protected abstract void populateMenuItems();
     }
 
 }

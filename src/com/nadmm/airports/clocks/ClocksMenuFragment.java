@@ -63,25 +63,24 @@ public class ClocksMenuFragment extends ListMenuFragment {
     public class ClocksMenuCursor extends ListMenuCursor {
 
         public ClocksMenuCursor() {
-            super( 0 );
+            super();
         }
 
         @Override
-        protected void populateMenuItems( long menuId ) {
+        protected void populateMenuItems() {
             newRow().add( R.id.TIME_CLOCKS )
                 .add( R.drawable.clock )
-                .add( "Current Time" )
+                .add( getItemTitle( R.id.TIME_CLOCKS ) )
                 .add( "Display UTC clock, local clock" );
             newRow().add( R.id.TIME_STOPWATCH )
                 .add( R.drawable.stopwatch )
-                .add( "Stop Watch" )
+                .add( getItemTitle( R.id.TIME_STOPWATCH ) )
                 .add( "Stop watch for timing legs and approaches" );
             newRow().add( R.id.TIME_COUNTDOWN )
                 .add( R.drawable.countdown )
-                .add( "Countdown Timer" )
-                .add( "Countdown timer for timing approaches" );
+                .add( getItemTitle( R.id.TIME_COUNTDOWN ) )
+                .add( "Countdown timer for timing approaches and holds" );
         }
-
     }
 
 }
