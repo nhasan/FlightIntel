@@ -26,14 +26,15 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/leg_label"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textSize="18sp"
+            android:textStyle="bold"
             android:gravity="left"
             android:paddingRight="8dp"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/leg_delta"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textSize="18sp"
             android:gravity="center"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
@@ -41,7 +42,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/leg_total"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textSize="18sp"
             android:gravity="right"
             android:paddingLeft="8dp"
             android:layout_weight="1"
