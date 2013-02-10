@@ -29,13 +29,15 @@ public class CountDownService extends Service {
 
     private final long TICK_MILLIS = 100;
 
-    private final int STATE_RUNNING = 1;
-    private final int STATE_FINISHED = 2;
+    private final int STATE_PAUSED = 1;
+    private final int STATE_RUNNING = 2;
+    private final int STATE_FINISHED = 3;
+    private final int STATE_RESET = 4;
 
     private IBinder mBinder = new CountDownBinder();
     private OnTickHandler mClient = null;
     private CountDownTimer mTimer = null;
-    private int mState;
+    private int mState = STATE_RESET;
 
     public interface OnTickHandler {
         public void onTick( long millis );
@@ -63,11 +65,11 @@ public class CountDownService extends Service {
             public void onTick( long millisRemain ) {
                 notifyClient( millisRemain );
             }
-            
+
             @Override
             public void onFinish() {
-                notifyClient( 0 );
                 mState = STATE_FINISHED;
+                notifyClient( 0 );
             }
         };
         mTimer.start();
@@ -79,7 +81,11 @@ public class CountDownService extends Service {
             mTimer.cancel();
             mTimer = null;
         }
-        mState = STATE_FINISHED;
+        mState = STATE_PAUSED;
+    }
+
+    public void resetCountDown() {
+        mState = STATE_RESET;
     }
 
     protected void notifyClient( long millisRemain ) {
@@ -88,12 +94,20 @@ public class CountDownService extends Service {
         }
     }
 
+    public boolean isPaused() {
+        return mState == STATE_PAUSED;
+    }
+
     public boolean isRunning() {
         return mState == STATE_RUNNING;
     }
 
     public boolean isFinished() {
         return mState == STATE_FINISHED;
+    }
+
+    public boolean isReset() {
+        return mState == STATE_RESET;
     }
 
 }

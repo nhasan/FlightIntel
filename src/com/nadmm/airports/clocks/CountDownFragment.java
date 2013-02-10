@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
@@ -43,16 +44,28 @@ import com.nadmm.airports.clocks.CountDownService.OnTickHandler;
 public class CountDownFragment extends FragmentBase implements OnTickHandler {
 
     private final int BLINK_DELAY = 500;
+    private final int COUNTDOWN_MODE = 1;
+    private final int EDIT_MODE = 2;
 
     private Button mBtnAction;
     private Button mBtnReset;
+    private Button mBtnRestart;
+    private ImageButton mBtnMinsPlus;
+    private ImageButton mBtnMinsMinus;
+    private ImageButton mBtnSecsPlus;
+    private ImageButton mBtnSecsMinus;
+    private TextView mTimeMinutes;
+    private TextView mTimeColon;
     private TextView mTimeSeconds;
     private TextView mTimeTenths;
 
+    private long mLastMillis;
     private long mRemainMillis = 0;
+    private int mMode = EDIT_MODE;
     private CountDownService mService = null;
     private CountDownConnection mConnection = new CountDownConnection();
     private Handler mHandler = new Handler();
+
     private Runnable mBlink = new Runnable() {
 
         @Override
@@ -65,7 +78,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         Activity activity = getActivity();
-        Intent service = new Intent( activity, StopWatchService.class );
+        Intent service = new Intent( activity, CountDownService.class );
         activity.startService( service );
         setRetainInstance( true );
     }
@@ -93,7 +106,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
 
         Activity activity = getActivity();
         activity.unbindService( mConnection );
-        mHandler.removeCallbacks( mBlink );
+        stopBlink();
     }
 
     @Override
@@ -106,8 +119,63 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mTimeSeconds = (TextView) findViewById( R.id.countdown_time );
+        mTimeMinutes = (TextView) findViewById( R.id.countdown_mins );
+        mTimeColon = (TextView) findViewById( R.id.countdown_colon );
+        mTimeSeconds = (TextView) findViewById( R.id.countdown_secs );
         mTimeTenths = (TextView) findViewById( R.id.countdown_tenths );
+
+        mBtnMinsPlus = (ImageButton) findViewById( R.id.countdown_mins_plus );
+        mBtnMinsPlus.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                mRemainMillis += DateUtils.MINUTE_IN_MILLIS;
+                if ( mRemainMillis >= DateUtils.HOUR_IN_MILLIS ) {
+                    mRemainMillis -= DateUtils.HOUR_IN_MILLIS;
+                }
+                updateUiState();
+            }
+        } );
+
+        mBtnMinsMinus = (ImageButton) findViewById( R.id.countdown_mins_minus );
+        mBtnMinsMinus.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                mRemainMillis -= DateUtils.MINUTE_IN_MILLIS;
+                if ( mRemainMillis < 0 ) {
+                    mRemainMillis += DateUtils.HOUR_IN_MILLIS;
+                }
+                updateUiState();
+            }
+        } );
+
+        mBtnSecsPlus = (ImageButton) findViewById( R.id.countdown_secs_plus );
+        mBtnSecsPlus.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                mRemainMillis += DateUtils.SECOND_IN_MILLIS;
+                if ( mRemainMillis >= DateUtils.HOUR_IN_MILLIS ) {
+                    mRemainMillis -= DateUtils.HOUR_IN_MILLIS;
+                }
+                updateUiState();
+            }
+        } );
+
+        mBtnSecsMinus = (ImageButton) findViewById( R.id.countdown_secs_minus );
+        mBtnSecsMinus.setOnClickListener( new OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                mRemainMillis -= DateUtils.SECOND_IN_MILLIS;
+                if ( mRemainMillis < 0 ) {
+                    mRemainMillis += DateUtils.HOUR_IN_MILLIS;
+                }
+                updateUiState();
+            }
+        } );
+
         mBtnAction = (Button) findViewById( R.id.countdown_action );
         mBtnAction.setOnClickListener( new OnClickListener() {
 
@@ -116,7 +184,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
                 actionPressed();
             }
         } );
-        mBtnReset = (Button) findViewById( R.id.stopwatch_reset );
+        mBtnReset = (Button) findViewById( R.id.countdown_reset );
         mBtnReset.setOnClickListener( new OnClickListener() {
 
             @Override
@@ -124,68 +192,150 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
                 resetPressed();
             }
         } );
-    }
+        mBtnRestart = (Button) findViewById( R.id.countdown_restart );
+        mBtnRestart.setOnClickListener( new OnClickListener() {
 
-    protected void actionPressed() {
-        if ( !mService.isRunning() ) {
-            mService.startCountDown( 20000 );
-            mTimeSeconds.setVisibility( View.VISIBLE );
-            mTimeTenths.setVisibility( View.VISIBLE );
-            mHandler.removeCallbacks( mBlink );
-        } else {
-            mService.stopCountDown();
-            mHandler.postDelayed( mBlink, BLINK_DELAY );
-        }
-        updateUiState();
-    }
-
-    protected void resetPressed() {
+            @Override
+            public void onClick( View v ) {
+                restartPressed();
+            }
+        } );
     }
 
     @Override
     public void onTick( long millis ) {
         mRemainMillis = millis;
         showRemainingTime();
+        if ( millis == 0 ) {
+            showRemainingTime();
+            mHandler.postDelayed( new Runnable() {
+
+                @Override
+                public void run() {
+                    updateUiState();
+                }
+            }, DateUtils.SECOND_IN_MILLIS );
+        }
+    }
+
+    protected void actionPressed() {
+        if ( !mService.isRunning() ) {
+            if ( mService.isReset() ) {
+                mLastMillis = mRemainMillis;
+            }
+            mService.startCountDown( mRemainMillis );
+        } else {
+            mService.stopCountDown();
+        }
+        updateUiState();
+    }
+
+    protected void resetPressed() {
+        if ( mMode == COUNTDOWN_MODE ) {
+            mService.resetCountDown();
+            mRemainMillis = mLastMillis;
+        } else {
+            mRemainMillis = 0;
+        }
+        updateUiState();
+    }
+
+    protected void restartPressed() {
+        mRemainMillis = mLastMillis;
+        mService.startCountDown( mRemainMillis );
+        updateUiState();
+    }
+
+    protected void startBlink() {
+        mHandler.postDelayed( mBlink, BLINK_DELAY );
+    }
+
+    protected void stopBlink() {
+        mHandler.removeCallbacks( mBlink );
+        setTimeVisibility( View.VISIBLE );
     }
 
     protected void blink() {
         mHandler.postDelayed( mBlink, BLINK_DELAY );
-        boolean visible = ( mTimeSeconds.getVisibility()==View.VISIBLE );
-        mTimeSeconds.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
-        mTimeTenths.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
+        int visibility = ( mTimeSeconds.getVisibility()==View.VISIBLE )?
+                View.INVISIBLE : View.VISIBLE;
+        setTimeVisibility( visibility );
     }
 
-    protected void updateUiState() {
-        if ( mService != null && mService.isRunning() ) {
-            mBtnAction.setText( R.string.pause );
-            mBtnReset.setVisibility( View.GONE );
-        } else {
-            mBtnAction.setText( R.string.start );
-            mBtnReset.setVisibility( mRemainMillis > 0? View.VISIBLE : View.GONE );
-        }
-        showRemainingTime();
+    protected void setTimeVisibility( int visibility ) {
+        mTimeMinutes.setVisibility( visibility );
+        mTimeColon.setVisibility( visibility );
+        mTimeSeconds.setVisibility( visibility );
+        mTimeTenths.setVisibility( visibility );
     }
 
     protected void showRemainingTime() {
         String time = formatElapsedTime( mRemainMillis );
-        int dot = time.indexOf( '.' );
-        mTimeSeconds.setText( time.substring( 0, dot ) );
-        mTimeTenths.setText( time.substring( dot ) );
-        if ( mRemainMillis == 0 && mService.isFinished() ) {
-            mHandler.postDelayed( mBlink, BLINK_DELAY );
-        }
+        mTimeMinutes.setText( time.substring( 0, 2 ) );
+        mTimeSeconds.setText( time.substring( 3, 5 ) );
+        mTimeTenths.setText( time.substring( 5 ) );
     }
 
     @SuppressLint("DefaultLocale")
     protected String formatElapsedTime( long millis ) {
-        long hrs = millis / DateUtils.HOUR_IN_MILLIS;
-        long mins = ( millis % DateUtils.HOUR_IN_MILLIS ) / DateUtils.MINUTE_IN_MILLIS;
+        long mins = millis / DateUtils.MINUTE_IN_MILLIS;
         long secs = ( millis % DateUtils.MINUTE_IN_MILLIS ) / DateUtils.SECOND_IN_MILLIS;
         long tenths = ( millis % DateUtils.SECOND_IN_MILLIS )/( DateUtils.SECOND_IN_MILLIS/10 );
-        if ( hrs > 0 ) {
-            return String.format( "%02d:%02d:%02d.%01d", hrs, mins, secs, tenths );
+        return String.format( "%02d:%02d.%01d", mins, secs, tenths );
+    }
+
+    protected void setCountdownMode() {
+        mMode = COUNTDOWN_MODE;
+        mTimeMinutes.setTextColor( 0xff000000 );
+        mTimeSeconds.setTextColor( 0xff000000 );
+        mBtnMinsPlus.setVisibility( View.INVISIBLE );
+        mBtnMinsMinus.setVisibility( View.INVISIBLE );
+        mBtnSecsPlus.setVisibility( View.INVISIBLE );
+        mBtnSecsMinus.setVisibility( View.INVISIBLE );
+    }
+
+    protected void setEditMode() {
+        mMode = EDIT_MODE;
+        mTimeMinutes.setTextColor( 0xffe84242 );
+        mTimeSeconds.setTextColor( 0xffe84242 );
+        mBtnMinsPlus.setVisibility( View.VISIBLE );
+        mBtnMinsMinus.setVisibility( View.VISIBLE );
+        mBtnSecsPlus.setVisibility( View.VISIBLE );
+        mBtnSecsMinus.setVisibility( View.VISIBLE );
+    }
+
+    protected void updateUiState() {
+        showRemainingTime();
+        if ( mService.isRunning() ) {
+            stopBlink();
+            setCountdownMode();
+            mBtnAction.setText( R.string.pause );
+            mBtnAction.setVisibility( View.VISIBLE );
+            mBtnAction.setEnabled( true );
+            mBtnReset.setVisibility( View.GONE );
+            mBtnRestart.setVisibility( View.GONE );
+        } else if ( mService.isReset() ) {
+            stopBlink();
+            setEditMode();
+            mBtnAction.setText( R.string.start );
+            mBtnAction.setVisibility( View.VISIBLE );
+            mBtnAction.setEnabled( mRemainMillis>0 );
+            mBtnReset.setVisibility( mRemainMillis > 0? View.VISIBLE : View.GONE );
+            mBtnRestart.setVisibility( View.GONE );
+        } else if ( mService.isFinished() ) {
+            startBlink();
+            setCountdownMode();
+            mBtnAction.setVisibility( View.GONE );
+            mBtnReset.setVisibility( View.VISIBLE );
+            mBtnRestart.setVisibility( View.VISIBLE );
         } else {
-            return String.format( "%02d:%02d.%01d", mins, secs, tenths );
+            startBlink();
+            setCountdownMode();
+            mBtnAction.setText( R.string.start );
+            mBtnAction.setVisibility( View.VISIBLE );
+            mBtnAction.setEnabled( true );
+            mBtnReset.setVisibility( mRemainMillis > 0? View.VISIBLE : View.GONE );
+            mBtnRestart.setVisibility( View.GONE );
         }
     }
 
