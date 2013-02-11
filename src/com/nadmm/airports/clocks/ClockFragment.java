@@ -168,10 +168,10 @@ public class ClockFragment extends FragmentBase {
                 mHomeTzId = c.getString( c.getColumnIndex( Airports.TIMEZONE_ID ) );
             }
             if ( mHomeTzId == null || mHomeTzId.length() == 0 ) {
-                TextView tv = (TextView) findViewById( R.id.home_time_label );
-                tv.setVisibility( View.GONE );
-                tv = (TextView) findViewById( R.id.home_time_value );
-                tv.setVisibility( View.GONE );
+                View v = findViewById( R.id.home_time_label );
+                v.setVisibility( View.GONE );
+                v = findViewById( R.id.home_time_layout );
+                v.setVisibility( View.GONE );
             }
             updateTime();
             return true;
