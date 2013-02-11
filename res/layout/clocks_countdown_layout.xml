@@ -22,13 +22,14 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
-        android:padding="32dp"
+        android:padding="24dp"
         android:gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <TableLayout
             android:orientation="horizontal"
             android:padding="8dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/rounded_rectangle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -65,6 +66,7 @@
             <TextView android:id="@+id/countdown_colon"
                     android:text="@string/colon"
                     android:textSize="64sp"
+                    android:gravity="center"
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -114,21 +116,21 @@
                 style="@style/FlatButton"
                 android:text="@string/start"
                 android:layout_margin="8dp"
-                android:layout_width="80dp"
+                android:layout_width="90dp"
                 android:layout_height="wrap_content" />
         <Button android:id="@+id/countdown_restart"
                 style="@style/FlatButton"
                 android:text="@string/restart"
                 android:visibility="gone"
                 android:layout_margin="8dp"
-                android:layout_width="80dp"
+                android:layout_width="90dp"
                 android:layout_height="wrap_content" />
         <Button android:id="@+id/countdown_reset"
                 style="@style/FlatButton"
                 android:text="@string/reset"
                 android:visibility="gone"
                 android:layout_margin="8dp"
-                android:layout_width="80dp"
+                android:layout_width="90dp"
                 android:layout_height="wrap_content" />
     </LinearLayout>
 </LinearLayout>
