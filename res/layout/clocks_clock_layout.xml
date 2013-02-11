@@ -87,7 +87,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        <LinearLayout
+        <LinearLayout android:id="@+id/home_time_layout"
                 android:orientation="vertical"
                 android:padding="8dp"
                 android:background="@drawable/rounded_rectangle"
