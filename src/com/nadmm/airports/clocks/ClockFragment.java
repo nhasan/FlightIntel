@@ -47,7 +47,8 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 public class ClockFragment extends FragmentBase {
 
     private final Handler mHandler = new Handler();
-    private final DateFormat mFormat = new SimpleDateFormat( "HH:mm:ss", Locale.US );
+    private final DateFormat mTimeFormat = new SimpleDateFormat( "HH:mm:ss", Locale.US );
+    private final DateFormat mDateFormat = new SimpleDateFormat( "dd MMM yyyy", Locale.US );
 
     private Runnable mRunnable;
     private String mHome;
@@ -90,22 +91,31 @@ public class ClockFragment extends FragmentBase {
         Date now = new Date();
 
         TimeZone utcTz = TimeZone.getTimeZone( "GMT" );
-        mFormat.setTimeZone( utcTz );
+        mTimeFormat.setTimeZone( utcTz );
+        mDateFormat.setTimeZone( utcTz );
         TextView tv = (TextView) findViewById( R.id.utc_time_value );
-        tv.setText( mFormat.format( now )+" UTC" );
+        tv.setText( mTimeFormat.format( now )+" UTC" );
+        tv = (TextView) findViewById( R.id.utc_date_value );
+        tv.setText( mDateFormat.format( now ) );
 
         TimeZone localTz = TimeZone.getDefault();
-        mFormat.setTimeZone( localTz );
+        mTimeFormat.setTimeZone( localTz );
+        mDateFormat.setTimeZone( localTz );
         tv = (TextView) findViewById( R.id.local_time_value );
-        tv.setText( mFormat.format( now )
+        tv.setText( mTimeFormat.format( now )
                 +" "+localTz.getDisplayName( localTz.inDaylightTime( now ), TimeZone.SHORT ) );
+        tv = (TextView) findViewById( R.id.local_date_value );
+        tv.setText( mDateFormat.format( now ) );
 
         if ( mHomeTzId != null && mHomeTzId.length() > 0 ) {
             TimeZone homeTz = TimeZone.getTimeZone( mHomeTzId );
-            mFormat.setTimeZone( homeTz );
+            mTimeFormat.setTimeZone( homeTz );
+            mDateFormat.setTimeZone( homeTz );
             tv = (TextView) findViewById( R.id.home_time_value );
-            tv.setText( mFormat.format( now )
+            tv.setText( mTimeFormat.format( now )
                     +" "+homeTz.getDisplayName( homeTz.inDaylightTime( now ), TimeZone.SHORT ) );
+            tv = (TextView) findViewById( R.id.home_date_value );
+            tv.setText( mDateFormat.format( now ) );
         }
 
         scheduleUpdate();
