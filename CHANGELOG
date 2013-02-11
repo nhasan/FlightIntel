@@ -1,3 +1,10 @@
+v5.0.0 (2/10/2013)
+==================
+* Added following clocks function
+* - Realtime clocks (UTC, local and home)
+* - Stopwatch
+* - Countdown timer
+
 v4.9.0 (1/29/2013)
 ==================
 * Major navigation upgrade
