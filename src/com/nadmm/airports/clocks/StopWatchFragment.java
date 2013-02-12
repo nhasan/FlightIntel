@@ -86,6 +86,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     public void onResume() {
         super.onResume();
 
+        getView().setKeepScreenOn( false );
         Activity activity = getActivity();
         Intent service = new Intent( activity, StopWatchService.class );
         activity.bindService( service, mConnection, 0 );
@@ -142,6 +143,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     protected void actionPressed() {
         if ( !mService.isRunning() ) {
             mService.startTimimg();
+            getView().setKeepScreenOn( true );
         } else {
             mService.stopTimimg();
         }
@@ -149,6 +151,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     }
 
     protected void resetPressed() {
+        getView().setKeepScreenOn( false );
         mService.reset();
         updateUiState();
     }

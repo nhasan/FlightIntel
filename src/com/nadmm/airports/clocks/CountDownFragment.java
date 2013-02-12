@@ -104,6 +104,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
     public void onPause() {
         super.onPause();
 
+        getView().setKeepScreenOn( false );
         Activity activity = getActivity();
         activity.unbindService( mConnection );
         stopBlink();
@@ -155,9 +156,12 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
 
             @Override
             public void onClick( View v ) {
-                mRemainMillis += DateUtils.SECOND_IN_MILLIS;
-                if ( mRemainMillis >= DateUtils.HOUR_IN_MILLIS ) {
-                    mRemainMillis -= DateUtils.HOUR_IN_MILLIS;
+                if ( ( mRemainMillis % DateUtils.MINUTE_IN_MILLIS )
+                            / DateUtils.SECOND_IN_MILLIS < 59 ) {
+                    mRemainMillis += DateUtils.SECOND_IN_MILLIS;
+                } else {
+                    mRemainMillis = ( mRemainMillis / DateUtils.MINUTE_IN_MILLIS )
+                            * DateUtils.MINUTE_IN_MILLIS;
                 }
                 updateUiState();
             }
@@ -168,9 +172,11 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
 
             @Override
             public void onClick( View v ) {
-                mRemainMillis -= DateUtils.SECOND_IN_MILLIS;
-                if ( mRemainMillis < 0 ) {
-                    mRemainMillis += DateUtils.HOUR_IN_MILLIS;
+                if ( ( mRemainMillis % DateUtils.MINUTE_IN_MILLIS ) > 0 ) {
+                    mRemainMillis -= DateUtils.SECOND_IN_MILLIS;
+                } else {
+                    mRemainMillis = ( ( ( mRemainMillis / DateUtils.MINUTE_IN_MILLIS ) + 1 )
+                            * DateUtils.MINUTE_IN_MILLIS ) - DateUtils.SECOND_IN_MILLIS;
                 }
                 updateUiState();
             }
@@ -224,6 +230,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
                 mLastMillis = mRemainMillis;
             }
             mService.startCountDown( mRemainMillis );
+            getView().setKeepScreenOn( true );
         } else {
             mService.stopCountDown();
         }
@@ -234,6 +241,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
         if ( mMode == COUNTDOWN_MODE ) {
             mService.resetCountDown();
             mRemainMillis = mLastMillis;
+            getView().setKeepScreenOn( false );
         } else {
             mRemainMillis = 0;
         }
@@ -241,6 +249,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
     }
 
     protected void restartPressed() {
+        getView().setKeepScreenOn( false );
         mRemainMillis = mLastMillis;
         mService.startCountDown( mRemainMillis );
         updateUiState();
