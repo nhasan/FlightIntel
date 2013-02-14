@@ -86,7 +86,6 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     public void onResume() {
         super.onResume();
 
-        getView().setKeepScreenOn( false );
         Activity activity = getActivity();
         Intent service = new Intent( activity, StopWatchService.class );
         activity.bindService( service, mConnection, 0 );
@@ -96,6 +95,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     public void onPause() {
         super.onPause();
 
+        getView().setKeepScreenOn( false );
         Activity activity = getActivity();
         activity.unbindService( mConnection );
         mHandler.removeCallbacks( mBlink );
@@ -104,7 +104,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.clocks_stopwatch_layout );
+        return inflate( R.layout.clocks_stopwatch_view );
     }
 
     @Override
