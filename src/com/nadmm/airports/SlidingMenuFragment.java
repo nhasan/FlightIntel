@@ -35,6 +35,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.clocks.ClocksActivity;
+import com.nadmm.airports.e6b.E6bActivity;
 import com.nadmm.airports.library.LibraryActivity;
 import com.nadmm.airports.scratchpad.ScratchPadActivity;
 import com.nadmm.airports.tfr.TfrActivity;
@@ -46,7 +47,8 @@ public class SlidingMenuFragment extends ListFragmentBase {
     public static final int ITEM_ID_LIBRARY = 2;
     public static final int ITEM_ID_SCRATCHPAD = 3;
     public static final int ITEM_ID_CLOCKS = 4;
-    public static final int ITEM_ID_CHARTS = 5;
+    public static final int ITEM_ID_E6B = 5;
+    public static final int ITEM_ID_CHARTS = 6;
 
     private final Handler mHandler = new Handler();
 
@@ -91,6 +93,8 @@ public class SlidingMenuFragment extends ListFragmentBase {
             startActivity( ChartsDownloadActivity.class );
         } else if ( id == ITEM_ID_CLOCKS ) {
             startActivity( ClocksActivity.class );
+        } else if ( id == ITEM_ID_E6B ) {
+            startActivity( E6bActivity.class );
         }
     }
 
@@ -148,6 +152,7 @@ public class SlidingMenuFragment extends ListFragmentBase {
             newRow().add( ITEM_ID_LIBRARY ).add( "Library" ).add( R.drawable.book );
             newRow().add( ITEM_ID_SCRATCHPAD ).add( "Scratch Pad" ).add( R.drawable.notepad );
             newRow().add( ITEM_ID_CLOCKS ).add( "Clocks" ).add( R.drawable.clock );
+            newRow().add( ITEM_ID_E6B ).add( "E6B" ).add( 0 );
             newRow().add( ITEM_ID_CHARTS ).add( "Manage Charts" ).add( R.drawable.folder );
         }
 

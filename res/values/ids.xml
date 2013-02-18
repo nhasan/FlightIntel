@@ -32,4 +32,5 @@
     <item type="id" name="TIME_CLOCKS" />
     <item type="id" name="TIME_STOPWATCH" />
     <item type="id" name="TIME_COUNTDOWN" />
+    <item type="id" name="E6B_CONVERSIONS" />
 </resources>
