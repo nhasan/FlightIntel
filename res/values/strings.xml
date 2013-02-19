@@ -141,7 +141,9 @@
     <string name="colon">:</string>
     <string name="plus">+</string>
     <string name="minus">-</string>
+    <string name="equal">=</string>
     <string name="e6b">E6B Computer</string>
+    <string name="convert">Convert</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>

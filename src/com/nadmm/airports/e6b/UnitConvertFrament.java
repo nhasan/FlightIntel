@@ -20,16 +20,20 @@
 package com.nadmm.airports.e6b;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Set;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
@@ -38,105 +42,84 @@ import com.nadmm.airports.R;
 
 public class UnitConvertFrament extends FragmentBase implements OnItemSelectedListener {
 
-    // Temperature
-    private final static String UNIT_CELCIUS = "Celcius";
-    private final static String UNIT_FAHRENHEIT = "Fahrenheit";
-    private final static String UNIT_RANKINE = "Rankine";
-    private final static String UNIT_KELVINS = "Kelvins";
-    // Distance
-    private final static String UNIT_SM = "SM";
-    private final static String UNIT_NM = "NM";
-    private final static String UNIT_YARDS = "Yards";
-    private final static String UNIT_FEET = "Feet";
-    private final static String UNIT_INCHES = "Inches";
-    private final static String UNIT_KILOMETERS = "Km";
-    private final static String UNIT_CENTIMETERS = "cm";
-    private final static String UNIT_MILLIMETERS = "mm";
-    private final static String UNIT_METERS = "Meters";
-    // Speed
-    private final static String UNIT_KNOTS = "Knots";
-    private final static String UNIT_MILES_PER_HOUR = "Miles/h";
-    private final static String UNIT_KILOMETERS_PER_HOUR = "Km/h";
-    private final static String UNIT_FEET_PER_SECOND = "Feet/s";
-    private final static String UNIT_METERS_PER_SECOND = "Meters/s";
-    // Volume
-    private final static String UNIT_GALONS = "Gallons";
-    private final static String UNIT_FL_OZ = "Fl. Oz";
-    private final static String UNIT_MILLILITERS = "mL";
-    private final static String UNIT_LITERS = "Liters";
-    // Pressure
-    private final static String UNIT_INCHES_HG = "inHg";
-    private final static String UNIT_HECTOPASCALS = "hPa";
-    private final static String UNIT_MILLIBARS = "mBar";
-    // Weight
-    private final static String UNIT_POUNDS = "Lbs";
-    private final static String UNIT_OUNCES = "Oz";
-    private final static String UNIT_KILOGRAMS = "Kgs";
-    private final static String UNIT_GRAMS = "Grams";
-
-    private static HashMap<String, Unit> mTemperatureUnits 
+    private static final HashMap<String, Unit> mTemperatureUnits 
         = new HashMap<String, Unit>();
     static {
-        mTemperatureUnits.put( UNIT_CELCIUS, new Celcius() );
-        mTemperatureUnits.put( UNIT_FAHRENHEIT, new Fahrenheit() );
-        mTemperatureUnits.put( UNIT_RANKINE, new Rankine() );
-        mTemperatureUnits.put( UNIT_KELVINS, new Kelvins() );
+        mTemperatureUnits.put( "Celcius", new Celcius() );
+        mTemperatureUnits.put( "Fahrenheit", new Fahrenheit() );
+        mTemperatureUnits.put( "Rankine", new Rankine() );
+        mTemperatureUnits.put( "Kelvins", new Kelvins() );
     }
 
-    private static HashMap<String, Unit> mDistanceUnits 
+    private static final HashMap<String, Unit> mLengthUnits 
         = new HashMap<String, Unit>();
     static {
-        mDistanceUnits.put( UNIT_SM, new StatuteMiles() );
-        mDistanceUnits.put( UNIT_NM, new NauticalMiles() );
-        mDistanceUnits.put( UNIT_YARDS, new Yards() );
-        mDistanceUnits.put( UNIT_FEET, new Feet() );
-        mDistanceUnits.put( UNIT_INCHES, new Inches() );
-        mDistanceUnits.put( UNIT_KILOMETERS, new KiloMeters() );
-        mDistanceUnits.put( UNIT_CENTIMETERS, new Centimeters() );
-        mDistanceUnits.put( UNIT_MILLIMETERS, new Millimeters() );
-        mDistanceUnits.put( UNIT_METERS, new Meters() );
+        mLengthUnits.put( "mi", new StatuteMiles() );
+        mLengthUnits.put( "nm", new NauticalMiles() );
+        mLengthUnits.put( "yd", new Yards() );
+        mLengthUnits.put( "ft", new Feet() );
+        mLengthUnits.put( "in", new Inches() );
+        mLengthUnits.put( "km", new KiloMeters() );
+        mLengthUnits.put( "cm", new Centimeters() );
+        mLengthUnits.put( "mm", new Millimeters() );
+        mLengthUnits.put( "m", new Meters() );
     }
 
-    private static HashMap<String, Unit> mSpeedUnits 
+    private static final HashMap<String, Unit> mSpeedUnits 
         = new HashMap<String, Unit>();
     static {
-        mSpeedUnits.put( UNIT_KNOTS, new Knots() );
-        mSpeedUnits.put( UNIT_MILES_PER_HOUR, new MilesPerHour() );
-        mSpeedUnits.put( UNIT_KILOMETERS_PER_HOUR, new KilometersPerHour() );
-        mSpeedUnits.put( UNIT_FEET_PER_SECOND, new FeetPerSecond() );
-        mSpeedUnits.put( UNIT_METERS_PER_SECOND, new MetersPerSecond() );
+        mSpeedUnits.put( "knots", new Knots() );
+        mSpeedUnits.put( "mi/h", new MilesPerHour() );
+        mSpeedUnits.put( "km/h", new KilometersPerHour() );
+        mSpeedUnits.put( "ft/s", new FeetPerSecond() );
+        mSpeedUnits.put( "m/s", new MetersPerSecond() );
     }
 
-    private static HashMap<String, Unit> mVolumeUnits
+    private static final HashMap<String, Unit> mVolumeUnits
         = new HashMap<String, Unit>();
     static {
-        mVolumeUnits.put( UNIT_GALONS, new Gallons() );
-        mVolumeUnits.put( UNIT_FL_OZ, new FluidOunces() );
-        mVolumeUnits.put( UNIT_MILLILITERS, new MilliLiters() );
-        mVolumeUnits.put( UNIT_LITERS, new Liters() );
+        mVolumeUnits.put( "gal", new Gallons() );
+        mVolumeUnits.put( "fl oz", new FluidOunces() );
+        mVolumeUnits.put( "mL", new MilliLiters() );
+        mVolumeUnits.put( "L", new Liters() );
     }
 
-    private static HashMap<String, Unit> mPressureUnits
+    private static final HashMap<String, Unit> mPressureUnits
         = new HashMap<String, Unit>();
     static {
-        mPressureUnits.put( UNIT_INCHES_HG, new InchesOfHg() );
-        mPressureUnits.put( UNIT_HECTOPASCALS, new HectoPascals() );
-        mPressureUnits.put( UNIT_MILLIBARS, new Millibars() );
+        mPressureUnits.put( "inHg", new InchesOfHg() );
+        mPressureUnits.put( "hPa", new HectoPascals() );
+        mPressureUnits.put( "mbar", new Millibars() );
     }
 
-    private static HashMap<String, Unit> mWeightUnits
+    private static final HashMap<String, Unit> mMassUnits
         = new HashMap<String, Unit>();
     static {
-        mWeightUnits.put( UNIT_POUNDS, new Pounds() );
-        mWeightUnits.put( UNIT_OUNCES, new Ounces() );
-        mWeightUnits.put( UNIT_KILOGRAMS, new KiloGrams() );
-        mWeightUnits.put( UNIT_GRAMS, new Grams() );
+        mMassUnits.put( "lb", new Pounds() );
+        mMassUnits.put( "oz", new Ounces() );
+        mMassUnits.put( "kg", new KiloGrams() );
+        mMassUnits.put( "g", new Grams() );
     }
 
-    private HashMap<String, ArrayAdapter<String>> mUnitAdapters;
+    private static final HashMap<String, HashMap<String, Unit>> mUnitTypeMap
+        = new HashMap<String, HashMap<String,Unit>>();
+    static {
+        mUnitTypeMap.put( "Temperature", mTemperatureUnits );
+        mUnitTypeMap.put( "Length", mLengthUnits );
+        mUnitTypeMap.put( "Speed", mSpeedUnits );
+        mUnitTypeMap.put( "Volume", mVolumeUnits );
+        mUnitTypeMap.put( "Mass", mMassUnits );
+        mUnitTypeMap.put( "Pressure", mPressureUnits );
+    }
+
+    private final HashMap<String, ArrayAdapter<String>> mUnitAdapters
+            = new HashMap<String, ArrayAdapter<String>>();
+
     private Spinner mUnitTypeSpinner;
     private Spinner mFromUnitSpinner;
     private Spinner mToUnitSpinner;
+    private EditText mFromUnitValue;
+    private EditText mToUnitValue;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -148,13 +131,10 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mUnitAdapters = new HashMap<String, ArrayAdapter<String>>();
-        mUnitAdapters.put( "Temperature", getArrayAdapter( mTemperatureUnits.keySet() ) );
-        mUnitAdapters.put( "Distance", getArrayAdapter( mDistanceUnits.keySet() ) );
-        mUnitAdapters.put( "Speed", getArrayAdapter( mSpeedUnits.keySet() ) );
-        mUnitAdapters.put( "Volume", getArrayAdapter( mVolumeUnits.keySet() ) );
-        mUnitAdapters.put( "Weight", getArrayAdapter( mWeightUnits.keySet() ) );
-        mUnitAdapters.put( "Pressure", getArrayAdapter( mPressureUnits.keySet() ) );
+        // Create the adapters for all unit types
+        for ( String type : mUnitTypeMap.keySet() ) {
+            mUnitAdapters.put( type, getArrayAdapter( mUnitTypeMap.get( type ).keySet() ) );
+        }
 
         mUnitTypeSpinner = (Spinner) findViewById( R.id.unit_type_spinner );
         ArrayAdapter<String> adapter = getArrayAdapter( mUnitAdapters.keySet() );
@@ -165,6 +145,25 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         mFromUnitSpinner.setOnItemSelectedListener( this );
         mToUnitSpinner = (Spinner) findViewById( R.id.unit_to_spinner );
         mToUnitSpinner.setOnItemSelectedListener( this );
+
+        mFromUnitValue = (EditText) findViewById( R.id.unit_from_value );
+        mToUnitValue = (EditText) findViewById( R.id.unit_to_value );
+        mToUnitValue.setFocusable( false );
+
+        Button btn = (Button) findViewById( R.id.btnConvert );
+        btn.setOnClickListener( new OnClickListener() {
+            
+            @Override
+            public void onClick( View v ) {
+                String type = (String) mUnitTypeSpinner.getSelectedItem();
+                HashMap<String, Unit> mUnits = mUnitTypeMap.get( type );
+                Unit fromUnit = mUnits.get( (String) mFromUnitSpinner.getSelectedItem() );
+                Unit toUnit = mUnits.get( (String) mToUnitSpinner.getSelectedItem() );
+                double fromValue = Double.valueOf( mFromUnitValue.getText().toString() );
+                double toValue = fromUnit.convertTo( toUnit, fromValue );
+                mToUnitValue.setText( String.format( Locale.US, "%.03f", toValue ) );
+            }
+        } );
     }
 
     @Override
@@ -240,7 +239,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         protected double toNormalized( double value ) {
-            return ( value+459.67 )*5/9;
+            return ( value+459.67 )*5.0/9.0;
         }
 
         @Override
@@ -253,7 +252,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         protected double multiplicationFactor() {
-            return 5/9;
+            return 5.0/9.0;
         }
     }
 
@@ -261,7 +260,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         protected double multiplicationFactor() {
-            return 1;
+            return 1.0;
         }
     }
 
@@ -278,7 +277,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         protected double multiplicationFactor() {
-            return 1852;
+            return 1852.0;
         }
     }
 
@@ -326,7 +325,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         protected double multiplicationFactor() {
-            return 1000;
+            return 1000.0;
         }
     }
 
@@ -334,7 +333,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         protected double multiplicationFactor() {
-            return 1;
+            return 1.0;
         }
     }
 
@@ -375,7 +374,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         protected double multiplicationFactor() {
-            return 1;
+            return 1.0;
         }        
     }
 
@@ -408,7 +407,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         public double multiplicationFactor() {
-            return 1;
+            return 1.0;
         }
     }
 
@@ -417,7 +416,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         public double multiplicationFactor() {
-            return 33.86389;
+            return 33.863753;
         }
     }
 
@@ -425,7 +424,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         public double multiplicationFactor() {
-            return 1;
+            return 1.0;
         }
     }
 
@@ -433,7 +432,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         public double multiplicationFactor() {
-            return 1;
+            return 1.0;
         }
     }
 
@@ -458,7 +457,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         public double multiplicationFactor() {
-            return 1000;
+            return 1000.0;
         }
     }
 
@@ -466,7 +465,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         @Override
         public double multiplicationFactor() {
-            return 1;
+            return 1.0;
         }
     }
 
