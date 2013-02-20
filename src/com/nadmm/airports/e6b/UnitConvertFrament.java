@@ -19,16 +19,17 @@
 
 package com.nadmm.airports.e6b;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Set;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -42,67 +43,55 @@ import com.nadmm.airports.R;
 
 public class UnitConvertFrament extends FragmentBase implements OnItemSelectedListener {
 
-    private static final HashMap<String, Unit> mTemperatureUnits 
-        = new HashMap<String, Unit>();
-    static {
-        mTemperatureUnits.put( "Celcius", new Celcius() );
-        mTemperatureUnits.put( "Fahrenheit", new Fahrenheit() );
-        mTemperatureUnits.put( "Rankine", new Rankine() );
-        mTemperatureUnits.put( "Kelvins", new Kelvins() );
-    }
+    private static final Unit[] mTemperatureUnits = new Unit[] {
+        new Celcius(),
+        new Fahrenheit(),
+        new Rankine(),
+        new Kelvins()
+    };
 
-    private static final HashMap<String, Unit> mLengthUnits 
-        = new HashMap<String, Unit>();
-    static {
-        mLengthUnits.put( "mi", new StatuteMiles() );
-        mLengthUnits.put( "nm", new NauticalMiles() );
-        mLengthUnits.put( "yd", new Yards() );
-        mLengthUnits.put( "ft", new Feet() );
-        mLengthUnits.put( "in", new Inches() );
-        mLengthUnits.put( "km", new KiloMeters() );
-        mLengthUnits.put( "cm", new Centimeters() );
-        mLengthUnits.put( "mm", new Millimeters() );
-        mLengthUnits.put( "m", new Meters() );
-    }
+    private static final Unit[] mLengthUnits = new Unit[] {
+        new StatuteMiles(),
+        new NauticalMiles(),
+        new Yards(),
+        new Feet(),
+        new Inches(),
+        new KiloMeters(),
+        new Centimeters(),
+        new Millimeters(),
+        new Meters()
+    };
 
-    private static final HashMap<String, Unit> mSpeedUnits 
-        = new HashMap<String, Unit>();
-    static {
-        mSpeedUnits.put( "knots", new Knots() );
-        mSpeedUnits.put( "mi/h", new MilesPerHour() );
-        mSpeedUnits.put( "km/h", new KilometersPerHour() );
-        mSpeedUnits.put( "ft/s", new FeetPerSecond() );
-        mSpeedUnits.put( "m/s", new MetersPerSecond() );
-    }
+    private static final Unit[] mSpeedUnits = new Unit[] {
+        new Knots(),
+        new MilesPerHour(),
+        new KilometersPerHour(),
+        new FeetPerSecond(),
+        new MetersPerSecond()
+    };
 
-    private static final HashMap<String, Unit> mVolumeUnits
-        = new HashMap<String, Unit>();
-    static {
-        mVolumeUnits.put( "gal", new Gallons() );
-        mVolumeUnits.put( "fl oz", new FluidOunces() );
-        mVolumeUnits.put( "mL", new MilliLiters() );
-        mVolumeUnits.put( "L", new Liters() );
-    }
+    private static final Unit[] mVolumeUnits = new Unit[] {
+        new Gallons(),
+        new FluidOunces(),
+        new MilliLiters(),
+        new Liters()
+    };
 
-    private static final HashMap<String, Unit> mPressureUnits
-        = new HashMap<String, Unit>();
-    static {
-        mPressureUnits.put( "inHg", new InchesOfHg() );
-        mPressureUnits.put( "hPa", new HectoPascals() );
-        mPressureUnits.put( "mbar", new Millibars() );
-    }
+    private static final Unit[] mPressureUnits = new Unit[] {
+        new InchesOfHg(),
+        new HectoPascals(),
+        new Millibars()
+    };
 
-    private static final HashMap<String, Unit> mMassUnits
-        = new HashMap<String, Unit>();
-    static {
-        mMassUnits.put( "lb", new Pounds() );
-        mMassUnits.put( "oz", new Ounces() );
-        mMassUnits.put( "kg", new KiloGrams() );
-        mMassUnits.put( "g", new Grams() );
-    }
+    private static final Unit[] mMassUnits = new Unit[] {
+        new Pounds(),
+        new Ounces(),
+        new KiloGrams(),
+        new Grams()
+    };
 
-    private static final HashMap<String, HashMap<String, Unit>> mUnitTypeMap
-        = new HashMap<String, HashMap<String,Unit>>();
+    private static final HashMap<String, Unit[]> mUnitTypeMap
+        = new HashMap<String, Unit[]>();
     static {
         mUnitTypeMap.put( "Temperature", mTemperatureUnits );
         mUnitTypeMap.put( "Length", mLengthUnits );
@@ -112,8 +101,10 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         mUnitTypeMap.put( "Pressure", mPressureUnits );
     }
 
-    private final HashMap<String, ArrayAdapter<String>> mUnitAdapters
-            = new HashMap<String, ArrayAdapter<String>>();
+    private final HashMap<String, ArrayAdapter<Unit>> mUnitAdapters
+            = new HashMap<String, ArrayAdapter<Unit>>();
+
+    private DecimalFormat mFormat;
 
     private Spinner mUnitTypeSpinner;
     private Spinner mFromUnitSpinner;
@@ -133,8 +124,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
         // Create the adapters for all unit types
         for ( String type : mUnitTypeMap.keySet() ) {
-            mUnitAdapters.put( type, getArrayAdapter( mUnitTypeMap.get( type ).keySet() ) );
+            Unit[] units = mUnitTypeMap.get( type );
+            mUnitAdapters.put( type, getArrayAdapter( units ) );
         }
+
+        mFormat = new DecimalFormat( "#,##0.###" );
 
         mUnitTypeSpinner = (Spinner) findViewById( R.id.unit_type_spinner );
         ArrayAdapter<String> adapter = getArrayAdapter( mUnitAdapters.keySet() );
@@ -146,22 +140,32 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         mToUnitSpinner = (Spinner) findViewById( R.id.unit_to_spinner );
         mToUnitSpinner.setOnItemSelectedListener( this );
 
-        mFromUnitValue = (EditText) findViewById( R.id.unit_from_value );
         mToUnitValue = (EditText) findViewById( R.id.unit_to_value );
         mToUnitValue.setFocusable( false );
+        mFromUnitValue = (EditText) findViewById( R.id.unit_from_value );
+        mFromUnitValue.addTextChangedListener( new TextWatcher() {
+            
+            @Override
+            public void onTextChanged( CharSequence s, int start, int before, int count ) {
+            }
+            
+            @Override
+            public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
+            }
+            
+            @Override
+            public void afterTextChanged( Editable s ) {
+                doConversion();
+            }
+        } );
 
-        Button btn = (Button) findViewById( R.id.btnConvert );
+        Button btn = (Button) findViewById( R.id.btnReset );
         btn.setOnClickListener( new OnClickListener() {
             
             @Override
             public void onClick( View v ) {
-                String type = (String) mUnitTypeSpinner.getSelectedItem();
-                HashMap<String, Unit> mUnits = mUnitTypeMap.get( type );
-                Unit fromUnit = mUnits.get( (String) mFromUnitSpinner.getSelectedItem() );
-                Unit toUnit = mUnits.get( (String) mToUnitSpinner.getSelectedItem() );
-                double fromValue = Double.valueOf( mFromUnitValue.getText().toString() );
-                double toValue = fromUnit.convertTo( toUnit, fromValue );
-                mToUnitValue.setText( String.format( Locale.US, "%.03f", toValue ) );
+                mFromUnitValue.setText( "" );
+                mToUnitValue.setText( "" );
             }
         } );
     }
@@ -170,13 +174,14 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
     public void onItemSelected( AdapterView<?> parent, View view, int pos, long id ) {
         int spinnerId = parent.getId();
         if ( spinnerId == R.id.unit_type_spinner ) {
-            Adapter adapter = mUnitTypeSpinner.getAdapter();
-            String type = (String) adapter.getItem( pos );
+            String type = (String) mUnitTypeSpinner.getSelectedItem();
             SpinnerAdapter unitAdapter = mUnitAdapters.get( type );
             mFromUnitSpinner.setAdapter( unitAdapter );
+            mFromUnitSpinner.setSelection( 0, true );
             mToUnitSpinner.setAdapter( unitAdapter );
+            mToUnitSpinner.setSelection( 1, true );
         } else {
-
+            doConversion();
         }
     }
 
@@ -184,10 +189,31 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
     public void onNothingSelected( AdapterView<?> parent ) {
     }
 
-    protected ArrayAdapter<String> getArrayAdapter( Set<String> entries ) {
+    protected void doConversion() {
+        String from = mFromUnitValue.getText().toString().trim();
+        if ( !from.equals( "" )
+                && mFromUnitSpinner.getSelectedItemPosition() >= 0
+                && mToUnitSpinner.getSelectedItemPosition() >= 0 ) {
+            Unit fromUnit = (Unit) mFromUnitSpinner.getSelectedItem();
+            Unit toUnit = (Unit) mToUnitSpinner.getSelectedItem();
+            double fromValue = Double.valueOf( from );
+            double toValue = fromUnit.convertTo( toUnit, fromValue );
+            mToUnitValue.setText( mFormat.format( toValue ) );
+        } else {
+            mToUnitValue.setText( "" );
+        }
+    }
+
+    protected ArrayAdapter<Unit> getArrayAdapter( Unit[] units ) {
+        ArrayAdapter<Unit> adapter = new ArrayAdapter<Unit>( getActivity(),
+                android.R.layout.simple_spinner_item, units );
+        adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
+        return adapter;
+    }
+
+    protected ArrayAdapter<String> getArrayAdapter( Set<String> list ) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>( getActivity(),
-                android.R.layout.simple_spinner_item,
-                entries.toArray( new String[ entries.size() ]) );
+                android.R.layout.simple_spinner_item, list.toArray( new String[ list.size() ] ) );
         adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
         return adapter;
     }
@@ -228,6 +254,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         protected double fromNormalized( double value ) {
             return value-273.15;
         }
+
+        @Override
+        public String toString() {
+            return "Celcius";
+        }
     }
 
     private static class Fahrenheit extends Unit {
@@ -246,6 +277,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         protected double fromNormalized( double value ) {
             return ( value*9/5 )-459.67;
         }
+
+        @Override
+        public String toString() {
+            return "Fahrenheit";
+        }
     }
 
     private static class Rankine extends Unit {
@@ -254,6 +290,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         protected double multiplicationFactor() {
             return 5.0/9.0;
         }
+
+        @Override
+        public String toString() {
+            return "Rankine";
+        }
     }
 
     private static class Kelvins extends Unit {
@@ -261,6 +302,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         protected double multiplicationFactor() {
             return 1.0;
+        }
+
+        @Override
+        public String toString() {
+            return "Kelvins";
         }
     }
 
@@ -271,6 +317,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         protected double multiplicationFactor() {
             return 1609.344;
         }
+
+        @Override
+        public String toString() {
+            return "mi";
+        }
     }
 
     private static class NauticalMiles extends Unit {
@@ -278,6 +329,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         protected double multiplicationFactor() {
             return 1852.0;
+        }
+
+        @Override
+        public String toString() {
+            return "nm";
         }
     }
 
@@ -287,6 +343,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         protected double multiplicationFactor() {
             return 0.9144;
         }
+
+        @Override
+        public String toString() {
+            return "yd";
+        }
     }
 
     private static class Feet extends Unit {
@@ -294,6 +355,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         protected double multiplicationFactor() {
             return 0.3048;
+        }
+
+        @Override
+        public String toString() {
+            return "ft";
         }
     }
 
@@ -303,6 +369,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         protected double multiplicationFactor() {
             return 0.0254;
         }
+
+        @Override
+        public String toString() {
+            return "in";
+        }
     }
 
     private static class Centimeters extends Unit {
@@ -310,6 +381,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         protected double multiplicationFactor() {
             return 0.01;
+        }
+
+        @Override
+        public String toString() {
+            return "cm";
         }
     }
 
@@ -319,6 +395,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         protected double multiplicationFactor() {
             return 0.001;
         }
+
+        @Override
+        public String toString() {
+            return "mm";
+        }
     }
 
     private static class KiloMeters extends Unit {
@@ -326,6 +407,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         protected double multiplicationFactor() {
             return 1000.0;
+        }
+
+        @Override
+        public String toString() {
+            return "km";
         }
     }
 
@@ -335,6 +421,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         protected double multiplicationFactor() {
             return 1.0;
         }
+
+        @Override
+        public String toString() {
+            return "m";
+        }
     }
 
     // Speed conversion via meters/s
@@ -343,6 +434,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         protected double multiplicationFactor() {
             return 0.514444;
+        }
+
+        @Override
+        public String toString() {
+            return "knots";
         }        
     }
 
@@ -351,6 +447,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         protected double multiplicationFactor() {
             return 0.44704;
+        }
+
+        @Override
+        public String toString() {
+            return "mi/h";
         }        
     }
 
@@ -359,6 +460,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         protected double multiplicationFactor() {
             return 0.277778;
+        }
+
+        @Override
+        public String toString() {
+            return "km/h";
         }        
     }
 
@@ -367,6 +473,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         protected double multiplicationFactor() {
             return 0.3048;
+        }
+
+        @Override
+        public String toString() {
+            return "ft/s";
         }        
     }
 
@@ -375,6 +486,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         protected double multiplicationFactor() {
             return 1.0;
+        }
+
+        @Override
+        public String toString() {
+            return "m/s";
         }        
     }
 
@@ -385,6 +501,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         public double multiplicationFactor() {
             return 3.785411784;
         }
+
+        @Override
+        public String toString() {
+            return "gal";
+        }
     }
 
     private static class FluidOunces extends Unit {
@@ -392,6 +513,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         public double multiplicationFactor() {
             return 0.0295735296;
+        }
+
+        @Override
+        public String toString() {
+            return "fl oz";
         }
     }
 
@@ -401,6 +527,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         public double multiplicationFactor() {
             return 0.001;
         }
+
+        @Override
+        public String toString() {
+            return "mL";
+        }
     }
 
     private static class Liters extends Unit {
@@ -408,6 +539,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         public double multiplicationFactor() {
             return 1.0;
+        }
+
+        @Override
+        public String toString() {
+            return "L";
         }
     }
 
@@ -418,6 +554,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         public double multiplicationFactor() {
             return 33.863753;
         }
+
+        @Override
+        public String toString() {
+            return "inHg";
+        }
     }
 
     private static class HectoPascals extends Unit {
@@ -426,6 +567,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         public double multiplicationFactor() {
             return 1.0;
         }
+
+        @Override
+        public String toString() {
+            return "hPa";
+        }
     }
 
     private static class Millibars extends Unit {
@@ -433,6 +579,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         public double multiplicationFactor() {
             return 1.0;
+        }
+
+        @Override
+        public String toString() {
+            return "mbar";
         }
     }
 
@@ -443,6 +594,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         public double multiplicationFactor() {
             return 453.59237;
         }
+
+        @Override
+        public String toString() {
+            return "lb";
+        }
     }
 
     private static class Ounces extends Unit {
@@ -450,6 +606,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         public double multiplicationFactor() {
             return 28.349523;
+        }
+
+        @Override
+        public String toString() {
+            return "oz";
         }
     }
 
@@ -459,6 +620,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         public double multiplicationFactor() {
             return 1000.0;
         }
+
+        @Override
+        public String toString() {
+            return "kg";
+        }
     }
 
     private static class Grams extends Unit {
@@ -466,6 +632,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         public double multiplicationFactor() {
             return 1.0;
+        }
+
+        @Override
+        public String toString() {
+            return "g";
         }
     }
 
