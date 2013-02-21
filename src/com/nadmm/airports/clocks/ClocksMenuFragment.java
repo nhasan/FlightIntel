@@ -56,18 +56,18 @@ public class ClocksMenuFragment extends ListMenuFragment {
     }
 
     @Override
-    protected Cursor getMenuCursor() {
+    protected Cursor getMenuCursor( long id ) {
         return new ClocksMenuCursor();
     }
 
     public class ClocksMenuCursor extends ListMenuCursor {
 
         public ClocksMenuCursor() {
-            super();
+            super( 0 );
         }
 
         @Override
-        protected void populateMenuItems() {
+        protected void populateMenuItems( long id ) {
             newRow().add( R.id.TIME_CLOCKS )
                 .add( R.drawable.clock )
                 .add( getItemTitle( R.id.TIME_CLOCKS ) )
