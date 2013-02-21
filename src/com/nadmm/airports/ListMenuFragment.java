@@ -33,7 +33,8 @@ import android.widget.TextView;
 
 public abstract class ListMenuFragment extends ListFragmentBase {
 
-    private static final String MENU_ID = "MENU_ID";
+    public static final String MENU_ID = "MENU_ID";
+    public static final String SUBTITLE_TEXT = "SUBTITLE_TEXT";
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -45,11 +46,11 @@ public abstract class ListMenuFragment extends ListFragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         Bundle args = getArguments();
-        long menuId = args != null? args.getLong( MENU_ID ) : R.id.CATEGORY_MAIN;
+        long id = args.getLong( MENU_ID );
 
-        getSupportActionBar().setSubtitle( getItemTitle( menuId ) );
+        getSupportActionBar().setSubtitle( getItemTitle( id ) );
 
-        Cursor c = getMenuCursor();
+        Cursor c = getMenuCursor( id );
         setCursor( c );
     }
 
@@ -65,14 +66,14 @@ public abstract class ListMenuFragment extends ListFragmentBase {
         if ( clss != null ) {
             Bundle args = new Bundle();
             args.putLong( MENU_ID, id );
-            getSupportActionBar().setSubtitle( getItemTitle( id ) );
+            args.putString( SUBTITLE_TEXT, getItemTitle( id ) );
             getActivityBase().replaceFragment( clss, args );
         }
     }
 
-    protected abstract String getItemTitle( long itemId );
-    protected abstract Class<?> getItemFragmentClass( long itemId );
-    protected abstract Cursor getMenuCursor();
+    protected abstract String getItemTitle( long id );
+    protected abstract Class<?> getItemFragmentClass( long id );
+    protected abstract Cursor getMenuCursor( long id );
 
     private class ListMenuAdapter extends ResourceCursorAdapter {
 
@@ -105,12 +106,12 @@ public abstract class ListMenuFragment extends ListFragmentBase {
         private final static String[] sColumnNames = new String[]
                 { BaseColumns._ID, ITEM_ICON, ITEM_TITLE, ITEM_SUMMARY };
 
-        public ListMenuCursor() {
+        public ListMenuCursor( long id ) {
             super( sColumnNames );
-            populateMenuItems();
+            populateMenuItems( id );
         }
 
-        protected abstract void populateMenuItems();
+        protected abstract void populateMenuItems( long id );
     }
 
 }
