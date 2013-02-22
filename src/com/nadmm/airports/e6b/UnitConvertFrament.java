@@ -198,21 +198,17 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
     }
 
     protected void doConversion() {
-        String from = mFromUnitValue.getText().toString().trim();
-        if ( !from.equals( "" )
-                && mFromUnitSpinner.getSelectedItemPosition() >= 0
-                && mToUnitSpinner.getSelectedItemPosition() >= 0 ) {
-            Unit fromUnit = (Unit) mFromUnitSpinner.getSelectedItem();
-            Unit toUnit = (Unit) mToUnitSpinner.getSelectedItem();
+        if ( mFromUnitSpinner.getSelectedItemPosition() >= 0
+             && mToUnitSpinner.getSelectedItemPosition() >= 0 ) {
             try {
-                double fromValue = Double.valueOf( from );
+                double fromValue = Double.valueOf( mFromUnitValue.getText().toString() );
+                Unit fromUnit = (Unit) mFromUnitSpinner.getSelectedItem();
+                Unit toUnit = (Unit) mToUnitSpinner.getSelectedItem();
                 double toValue = fromUnit.convertTo( toUnit, fromValue );
                 mToUnitValue.setText( mFormat.format( toValue ) );
             } catch ( NumberFormatException e ) {
                 mToUnitValue.setText( "" );
             }
-        } else {
-            mToUnitValue.setText( "" );
         }
     }
 

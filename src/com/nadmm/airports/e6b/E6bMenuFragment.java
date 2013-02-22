@@ -31,43 +31,56 @@ public class E6bMenuFragment extends ListMenuFragment {
     private static final HashMap<Long, Class<?>> mDispatchMap;
     static {
         mDispatchMap = new HashMap<Long, Class<?>>();
-        mDispatchMap.put( (long)R.id.E6B_CONVERSIONS, UnitConvertFrament.class );
+        mDispatchMap.put( (long)R.id.E6B_UNIT_CONVERSIONS, UnitConvertFrament.class );
+        mDispatchMap.put( (long)R.id.E6B_WIND_CALCS, E6bMenuFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE, WindTriangleFragment.class );
     }
 
     private static final HashMap<Long, String> mTitleMap;
     static {
         mTitleMap = new HashMap<Long, String>();
         mTitleMap.put( (long)R.id.CATEGORY_MAIN, "E6B Flight Computer" );
-        mTitleMap.put( (long)R.id.E6B_CONVERSIONS, "Unit Conversion" );
+        mTitleMap.put( (long)R.id.E6B_UNIT_CONVERSIONS, "Unit Conversions" );
+        mTitleMap.put( (long)R.id.E6B_WIND_CALCS, "Wind Calculations" );
+        mTitleMap.put( (long)R.id.E6B_WIND_TRIANGLE, "Wind Triangle" );
     }
 
     @Override
-    protected String getItemTitle( long itemId ) {
-        return mTitleMap.get( itemId );
+    protected String getItemTitle( long id ) {
+        return mTitleMap.get( id );
     }
 
     @Override
-    protected Class<?> getItemFragmentClass( long itemId ) {
-        return mDispatchMap.get( itemId );
+    protected Class<?> getItemFragmentClass( long id ) {
+        return mDispatchMap.get( id );
     }
 
     @Override
-    protected Cursor getMenuCursor() {
-        return new ClocksMenuCursor();
+    protected Cursor getMenuCursor( long id ) {
+        return new E6bMenuCursor( id );
     }
 
-    public class ClocksMenuCursor extends ListMenuCursor {
+    public class E6bMenuCursor extends ListMenuCursor {
 
-        public ClocksMenuCursor() {
-            super();
+        public E6bMenuCursor( long id ) {
+            super( id );
         }
 
         @Override
-        protected void populateMenuItems() {
-            newRow().add( R.id.E6B_CONVERSIONS )
+        protected void populateMenuItems( long id ) {
+            if ( id == R.id.CATEGORY_MAIN ) {
+                addRow( R.id.E6B_UNIT_CONVERSIONS, "Convert between units of measurement" );
+                addRow( R.id.E6B_WIND_CALCS, "Calculate x-wind, h-wind, heading and course" );
+            } else if ( id == R.id.E6B_WIND_CALCS ) {
+                addRow( R.id.E6B_WIND_TRIANGLE, "Calculate x-wind and h-wind for a runway" );
+            }
+        }
+
+        private void addRow( long id, String summary ) {
+            newRow().add( id )
                 .add( 0 )
-                .add( getItemTitle( R.id.E6B_CONVERSIONS ) )
-                .add( "Convert between units of measurement" );
+                .add( getItemTitle( id ) )
+                .add( summary );
         }
     }
 
