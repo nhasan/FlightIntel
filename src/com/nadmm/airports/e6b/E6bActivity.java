@@ -22,8 +22,9 @@ package com.nadmm.airports.e6b;
 import android.os.Bundle;
 
 import com.nadmm.airports.FragmentActivityBase;
+import com.nadmm.airports.ListMenuFragment;
+import com.nadmm.airports.R;
 import com.nadmm.airports.SlidingMenuFragment;
-import com.nadmm.airports.clocks.ClocksMenuFragment;
 
 public class E6bActivity extends FragmentActivityBase {
 
@@ -31,7 +32,9 @@ public class E6bActivity extends FragmentActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        addFragment( E6bMenuFragment.class, getIntent().getExtras() );
+        Bundle args = new Bundle();
+        args.putLong( ListMenuFragment.MENU_ID, R.id.CATEGORY_MAIN );
+        addFragment( E6bMenuFragment.class, args );
     }
 
     @Override

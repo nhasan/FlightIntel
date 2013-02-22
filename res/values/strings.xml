@@ -143,7 +143,11 @@
     <string name="minus">-</string>
     <string name="equal">=</string>
     <string name="e6b">E6B Computer</string>
-    <string name="convert">Convert</string>
+    <string name="wind_speed">Wind speed</string>
+    <string name="wind_dir">Wind direction</string>
+    <string name="runway">Runway</string>
+    <string name="head_wind">Head wind</string>
+    <string name="cross_wind">Cross wind</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>
