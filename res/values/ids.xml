@@ -34,5 +34,5 @@
     <item type="id" name="TIME_COUNTDOWN" />
     <item type="id" name="E6B_UNIT_CONVERSIONS" />
     <item type="id" name="E6B_WIND_CALCS" />
-    <item type="id" name="E6B_WIND_TRIANGLE" />
+    <item type="id" name="E6B_CROSS_WIND" />
 </resources>

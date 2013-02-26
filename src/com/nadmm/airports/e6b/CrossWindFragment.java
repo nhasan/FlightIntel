@@ -32,7 +32,7 @@ import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.wx.WxUtils;
 
-public class WindTriangleFragment extends FragmentBase {
+public class CrossWindFragment extends FragmentBase {
 
     private EditText mWindSpeed;
     private EditText mWindDir;
@@ -60,7 +60,7 @@ public class WindTriangleFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_wind_triangle_view );
+        return inflate( R.layout.e6b_cross_wind_view );
     }
 
     @Override
