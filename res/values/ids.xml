@@ -35,4 +35,5 @@
     <item type="id" name="E6B_UNIT_CONVERSIONS" />
     <item type="id" name="E6B_WIND_CALCS" />
     <item type="id" name="E6B_CROSS_WIND" />
+    <item type="id" name="E6B_WIND_TRIANGLE" />
 </resources>

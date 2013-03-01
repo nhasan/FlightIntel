@@ -148,6 +148,10 @@
     <string name="runway">Runway</string>
     <string name="head_wind">Head wind</string>
     <string name="cross_wind">Cross wind</string>
+    <string name="tas">TAS</string>
+    <string name="gs">GS</string>
+    <string name="hdg">HDG</string>
+    <string name="crs">CRS</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>

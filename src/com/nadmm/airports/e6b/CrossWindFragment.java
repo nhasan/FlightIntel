@@ -76,7 +76,7 @@ public class CrossWindFragment extends FragmentBase {
 
         TextView tv = (TextView) findViewById( R.id.e6b_wind_label );
         tv.setText( "Enter values for wind speed, wind direction and runway " +
-        		"to calculate head wind and cross wind components" );
+        		"to calculate head wind and cross wind components." );
 
         mHeadWind.setFocusable( false );
         mCrossWind.setFocusable( false );

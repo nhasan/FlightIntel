@@ -34,6 +34,7 @@ public class E6bMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.E6B_UNIT_CONVERSIONS, UnitConvertFrament.class );
         mDispatchMap.put( (long)R.id.E6B_WIND_CALCS, E6bMenuFragment.class );
         mDispatchMap.put( (long)R.id.E6B_CROSS_WIND, CrossWindFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE, WindTriangleFragment.class );
     }
 
     private static final HashMap<Long, String> mTitleMap;
@@ -43,6 +44,7 @@ public class E6bMenuFragment extends ListMenuFragment {
         mTitleMap.put( (long)R.id.E6B_UNIT_CONVERSIONS, "Unit Conversions" );
         mTitleMap.put( (long)R.id.E6B_WIND_CALCS, "Wind Calculations" );
         mTitleMap.put( (long)R.id.E6B_CROSS_WIND, "Crosswind and Headwind" );
+        mTitleMap.put( (long)R.id.E6B_WIND_TRIANGLE, "Wind Triangle" );
     }
 
     @Override
@@ -72,7 +74,8 @@ public class E6bMenuFragment extends ListMenuFragment {
                 addRow( R.id.E6B_UNIT_CONVERSIONS, "Convert between units of measurement" );
                 addRow( R.id.E6B_WIND_CALCS, "Calculate x-wind, h-wind, heading and course" );
             } else if ( id == R.id.E6B_WIND_CALCS ) {
-                addRow( R.id.E6B_CROSS_WIND, "Calculate x-wind and h-wind for a runway" );
+                addRow( R.id.E6B_CROSS_WIND, "Calculate cross wind and head wind for a runway" );
+                addRow( R.id.E6B_WIND_TRIANGLE, "Calculate GS, CRS, HDG, WS, WDIR" );
             }
         }
 

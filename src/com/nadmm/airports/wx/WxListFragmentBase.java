@@ -163,6 +163,11 @@ public class WxListFragmentBase extends ListFragmentBase {
             mStationWx.put( metar.stationId, metar );
 
             ListView l = (ListView) findViewById( android.R.id.list );
+            if ( l == null ) {
+                // Seen some crashes here
+                return;
+            }
+
             int first = l.getFirstVisiblePosition();
 
             int pos = 0;
