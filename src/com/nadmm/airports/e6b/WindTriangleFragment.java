@@ -40,6 +40,12 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
 
     private static final double TWO_PI = 2*Math.PI;
 
+    private static final String[] mModes = {
+        "Find Wind Speed and Direction",
+        "Find Heading and Ground Speed",
+        "Find Course and Ground Speed"
+    };
+
     private TextView mTasLabel;
     private TextView mGsLabel;
     private TextView mHdgLabel;
@@ -96,13 +102,8 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
         mWsEdit = (EditText) findViewById( R.id.e6b_ws_edit );
         mWdirEdit = (EditText) findViewById( R.id.e6b_wdir_edit );
 
-        String[] modes = {
-                "Wind Speed and Direction",
-                "Heading and Ground Speed",
-                "Course and Ground Speed"
-        };
         ArrayAdapter<String> adapter = new ArrayAdapter<String>( getActivity(),
-                android.R.layout.simple_spinner_item, modes );
+                android.R.layout.simple_spinner_item, mModes );
         adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
         Spinner spinner = (Spinner) findViewById( R.id.e6b_wind_triangle_mode );
         spinner.setAdapter( adapter );
@@ -112,19 +113,19 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
     }
 
     private void processInput() {
-        long tas = -1;
-        long gs = -1;
-        long hdg = -1;
-        long crs = -1;
-        long ws = -1;
-        long wdir = -1;
+        double tas = -1;
+        double gs = -1;
+        double hdg = -1;
+        double crs = -1;
+        double ws = -1;
+        double wdir = -1;
 
         if ( mSelectedPos == 0 ) {
             try {
-                tas = Long.valueOf( mTasEdit.getText().toString() );
-                gs = Long.valueOf( mGsEdit.getText().toString() );
-                hdg = Long.valueOf( mHdgEdit.getText().toString() );
-                crs = Long.valueOf( mCrsEdit.getText().toString() );
+                tas = Double.valueOf( mTasEdit.getText().toString() );
+                gs = Double.valueOf( mGsEdit.getText().toString() );
+                hdg = Double.valueOf( mHdgEdit.getText().toString() );
+                crs = Double.valueOf( mCrsEdit.getText().toString() );
 
                 // Check bounds
                 if ( hdg == 0 || hdg > 360 ) {
@@ -132,14 +133,13 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
                     hdg = -1;
                 }
                 if ( crs == 0 || crs > 360 ) {
-                    mCrsEdit.setError( "Enter a value between 1-360" );
+                    mCrsEdit    .setError( "Enter a value between 1-360" );
                     crs = -1;
                 }
             } catch ( NumberFormatException e ) {
             }
 
             if ( tas != -1 && gs != -1 && hdg != -1 && crs != -1 ) {
-                // Convert to radians
                 double hdgRad = Math.toRadians( hdg );
                 double crsRad = Math.toRadians( crs );
 
@@ -149,20 +149,20 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
                 double wdirRad = crsRad + Math.atan2( tas*Math.sin( hdgRad-crsRad ),
                             ( tas*Math.cos( hdgRad-crsRad ) )-gs );
                 wdirRad = normalizeDir( wdirRad );
-                wdir = Math.round( Math.toDegrees( wdirRad ) );
+                wdir = Math.toDegrees( wdirRad );
 
-                mWsEdit.setText( String.valueOf( ws ) );
-                mWdirEdit.setText( String.valueOf( wdir ) );
+                mWsEdit.setText( String.valueOf( Math.round( ws ) ) );
+                mWdirEdit.setText( String.valueOf( Math.round( wdir ) ) );
             } else {
                 mWsEdit.setText( "" );
                 mWdirEdit.setText( "" );
             }
         } else if ( mSelectedPos == 1 ) {
             try {
-                tas = Long.valueOf( mTasEdit.getText().toString() );
-                crs = Long.valueOf( mCrsEdit.getText().toString() );
-                ws = Long.valueOf( mWsEdit.getText().toString() );
-                wdir = Long.valueOf( mWdirEdit.getText().toString() );
+                tas = Double.valueOf( mTasEdit.getText().toString() );
+                crs = Double.valueOf( mCrsEdit.getText().toString() );
+                ws = Double.valueOf( mWsEdit.getText().toString() );
+                wdir = Double.valueOf( mWdirEdit.getText().toString() );
 
                 // Check bounds
                 if ( wdir == 0 || wdir > 360 ) {
@@ -177,12 +177,11 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
             }
 
             if ( tas != -1 && crs != -1 && ws != -1 && wdir != -1 ) {
-                // Convert to radians
                 double wdirRad = Math.toRadians( wdir );
                 double crsRad = Math.toRadians( crs );
 
                 // Calculate heading and ground speed
-                double swc = ( ws*1.0/tas )*Math.sin( wdirRad-crsRad );
+                double swc = ( ws/tas )*Math.sin( wdirRad-crsRad );
                 if ( Math.abs( swc ) > 1 ) {
                     mWsEdit.setError( "Course cannot be flown, wind too strong" );
                     mGsEdit.setText( "" );
@@ -190,21 +189,56 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
                 } else {
                     double hdgRad = crsRad+Math.asin( swc );
                     hdgRad = normalizeDir( hdgRad );
-                    hdg = Math.round( Math.toDegrees( hdgRad ) );
-                    gs = Math.round( tas*Math.sqrt( 1.0-Math.pow( swc, 2 ) )
-                                - ws*Math.cos( wdirRad-crsRad ) );
+                    hdg = Math.toDegrees( hdgRad );
+                    gs = tas * Math.sqrt( 1.0-Math.pow( swc, 2 ) ) - ws*Math.cos( wdirRad-crsRad );
                     if ( gs <= 0 ) {
                         mWsEdit.setError( "Course cannot be flown, wind too strong" );
                         mGsEdit.setText( "" );
                         mHdgEdit.setText( "" );
                     } else {
-                        mGsEdit.setText( String.valueOf( gs ) );
-                        mHdgEdit.setText( String.valueOf( hdg ) );
+                        mGsEdit.setText( String.valueOf( Math.round( gs ) ) );
+                        mHdgEdit.setText( String.valueOf( Math.round( hdg ) ) );
                     }
                 }
             } else {
                 mGsEdit.setText( "" );
                 mHdgEdit.setText( "" );
+            }
+        } else if ( mSelectedPos == 2 ) {
+            try {
+                tas = Double.valueOf( mTasEdit.getText().toString() );
+                hdg = Double.valueOf( mHdgEdit.getText().toString() );
+                ws = Double.valueOf( mWsEdit.getText().toString() );
+                wdir = Double.valueOf( mWdirEdit.getText().toString() );
+
+                // Check bounds
+                if ( wdir == 0 || wdir > 360 ) {
+                    mWdirEdit.setError( "Enter a value between 1-360" );
+                    wdir = -1;
+                }
+                if ( hdg == 0 || hdg > 360 ) {
+                    mHdgEdit.setError( "Enter a value between 1-360" );
+                    hdg = -1;
+                }
+            } catch ( NumberFormatException e ) {
+            }
+
+            if ( tas != -1 && hdg != -1 && ws != -1 && wdir != -1 ) {
+                double wdirRad = Math.toRadians( wdir );
+                double hdgRad = Math.toRadians( hdg );
+
+                // Calculate course and ground speed
+                gs = Math.sqrt( Math.pow( ws, 2 ) + Math.pow( tas, 2 )
+                        - 2*ws*tas*Math.cos( hdgRad-wdirRad ) );
+                double wca = Math.atan2( ws*Math.sin( hdgRad-wdirRad ),
+                        tas-( ws*Math.cos( hdgRad-wdirRad ) ) );
+                crs = Math.toDegrees( ( hdgRad+wca )%TWO_PI );
+
+                mGsEdit.setText( String.valueOf( Math.round( gs ) ) );
+                mCrsEdit.setText( String.valueOf( Math.round( crs ) ) );
+            } else {
+                mGsEdit.setText( "" );
+                mCrsEdit.setText( "" );
             }
         }
     }
@@ -218,97 +252,98 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
         return radians;
     }
 
-    private void clearFields() {
+    @Override
+    public void onItemSelected( AdapterView<?> parent, View view, int pos, long id ) {
+        mSelectedPos = pos;
+
+        mTasLabel.setTypeface( null, Typeface.NORMAL );
+        mGsLabel.setTypeface( null, Typeface.NORMAL );
+        mHdgLabel.setTypeface( null, Typeface.NORMAL );
+        mCrsLabel.setTypeface( null, Typeface.NORMAL );
+        mWsLabel.setTypeface( null, Typeface.NORMAL );
+        mWdirLabel.setTypeface( null, Typeface.NORMAL );
+
+        mTasEdit.setFocusable( true );
+        mTasEdit.setFocusableInTouchMode( true );
+        mGsEdit.setFocusable( true );
+        mGsEdit.setFocusableInTouchMode( true );
+        mHdgEdit.setFocusable( true );
+        mHdgEdit.setFocusableInTouchMode( true );
+        mCrsEdit.setFocusable( true );
+        mCrsEdit.setFocusableInTouchMode( true );
+        mWsEdit.setFocusable( true );
+        mWsEdit.setFocusableInTouchMode( true );
+        mWdirEdit.setFocusable( true );
+        mWdirEdit.setFocusableInTouchMode( true );
+
+        mTasEdit.removeTextChangedListener( mTextWatcher );
+        mHdgEdit.removeTextChangedListener( mTextWatcher );
+        mGsEdit.removeTextChangedListener( mTextWatcher );
+        mCrsEdit.removeTextChangedListener( mTextWatcher );
+        mWsEdit.removeTextChangedListener( mTextWatcher );
+        mWdirEdit.removeTextChangedListener( mTextWatcher );
+
         mTasEdit.setText( "" );
         mGsEdit.setText( "" );
         mHdgEdit.setText( "" );
         mCrsEdit.setText( "" );
         mWsEdit.setText( "" );
         mWdirEdit.setText( "" );
-    }
 
-    @Override
-    public void onItemSelected( AdapterView<?> parent, View view, int pos, long id ) {
-        mSelectedPos = pos;
-        clearFields();
+        mTasEdit.setHint( "" );
+        mGsEdit.setHint( "" );
+        mHdgEdit.setHint( "" );
+        mCrsEdit.setHint( "" );
+        mWsEdit.setHint( "" );
+        mWdirEdit.setHint( "" );
 
         if ( mSelectedPos == 0 ) {
             // Find wind speed and direction
             mTasLabel.setTypeface( null, Typeface.BOLD );
-            mTasEdit.setFocusable( true );
-            mTasEdit.setFocusableInTouchMode( true );
             mTasEdit.addTextChangedListener( mTextWatcher );
             mGsLabel.setTypeface( null, Typeface.BOLD );
-            mGsEdit.setFocusable( true );
-            mGsEdit.setFocusableInTouchMode( true );
             mGsEdit.addTextChangedListener( mTextWatcher );
             mHdgLabel.setTypeface( null, Typeface.BOLD );
-            mHdgEdit.setFocusable( true );
-            mHdgEdit.setFocusableInTouchMode( true );
             mHdgEdit.addTextChangedListener( mTextWatcher );
             mCrsLabel.setTypeface( null, Typeface.BOLD );
-            mCrsEdit.setFocusable( true );
-            mCrsEdit.setFocusableInTouchMode( true );
             mCrsEdit.addTextChangedListener( mTextWatcher );
-            mWsLabel.setTypeface( null, Typeface.NORMAL );
             mWsEdit.setFocusable( false );
             mWsEdit.setFocusableInTouchMode( false );
-            mWsEdit.removeTextChangedListener( mTextWatcher );
-            mWdirLabel.setTypeface( null, Typeface.NORMAL );
+            mWsEdit.setHint( "?" );
             mWdirEdit.setFocusable( false );
             mWdirEdit.setFocusableInTouchMode( false );
-            mWdirEdit.removeTextChangedListener( mTextWatcher );
+            mWdirEdit.setHint( "?" );
         } else if ( mSelectedPos == 1 ) {
             // Find HDG and GS
             mTasLabel.setTypeface( null, Typeface.BOLD );
-            mTasEdit.setFocusable( true );
-            mTasEdit.setFocusableInTouchMode( true );
             mTasEdit.addTextChangedListener( mTextWatcher );
-            mGsLabel.setTypeface( null, Typeface.NORMAL );
             mGsEdit.setFocusable( false );
             mGsEdit.setFocusableInTouchMode( false );
-            mGsEdit.removeTextChangedListener( mTextWatcher );
-            mHdgLabel.setTypeface( null, Typeface.NORMAL );
+            mGsEdit.setHint( "?" );
             mHdgEdit.setFocusable( false );
             mHdgEdit.setFocusableInTouchMode( false );
-            mHdgEdit.removeTextChangedListener( mTextWatcher );
+            mHdgEdit.setHint( "?" );
             mCrsLabel.setTypeface( null, Typeface.BOLD );
-            mCrsEdit.setFocusable( true );
-            mCrsEdit.setFocusableInTouchMode( true );
             mCrsEdit.addTextChangedListener( mTextWatcher );
             mWsLabel.setTypeface( null, Typeface.BOLD );
-            mWsEdit.setFocusable( true );
-            mWsEdit.setFocusableInTouchMode( true );
             mWsEdit.addTextChangedListener( mTextWatcher );
             mWdirLabel.setTypeface( null, Typeface.BOLD );
-            mWdirEdit.setFocusable( true );
-            mWdirEdit.setFocusableInTouchMode( true );
             mWdirEdit.addTextChangedListener( mTextWatcher );
         } else if ( mSelectedPos == 2 ) {
             // Find CRS and GS
             mTasLabel.setTypeface( null, Typeface.BOLD );
-            mTasEdit.setFocusable( true );
-            mTasEdit.setFocusableInTouchMode( true );
             mTasEdit.addTextChangedListener( mTextWatcher );
-            mGsLabel.setTypeface( null, Typeface.NORMAL );
             mGsEdit.setFocusable( false );
             mGsEdit.setFocusableInTouchMode( false );
-            mGsEdit.removeTextChangedListener( mTextWatcher );
+            mGsEdit.setHint( "?" );
             mHdgLabel.setTypeface( null, Typeface.BOLD );
-            mHdgEdit.setFocusable( true );
-            mHdgEdit.setFocusableInTouchMode( true );
             mHdgEdit.addTextChangedListener( mTextWatcher );
-            mCrsLabel.setTypeface( null, Typeface.NORMAL );
             mCrsEdit.setFocusable( false );
             mCrsEdit.setFocusableInTouchMode( false );
-            mCrsEdit.removeTextChangedListener( mTextWatcher );
+            mCrsEdit.setHint( "?" );
             mWsLabel.setTypeface( null, Typeface.BOLD );
-            mWsEdit.setFocusable( true );
-            mWsEdit.setFocusableInTouchMode( true );
             mWsEdit.addTextChangedListener( mTextWatcher );
             mWdirLabel.setTypeface( null, Typeface.BOLD );
-            mWdirEdit.setFocusable( true );
-            mWdirEdit.setFocusableInTouchMode( true );
             mWdirEdit.addTextChangedListener( mTextWatcher );
         }
     }

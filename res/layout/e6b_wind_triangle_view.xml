@@ -51,7 +51,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <TextView android:id="@+id/e6b_ws_label"
-                        android:text="@string/wind_speed"
+                        android:text="@string/ws"
                         android:textSize="18sp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="8dp"
@@ -86,7 +86,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <TextView android:id="@+id/e6b_wdir_label"
-                        android:text="@string/wind_dir"
+                        android:text="@string/wdir"
                         android:textSize="18sp"
                         android:paddingLeft="16dp"
                         android:layout_width="wrap_content"

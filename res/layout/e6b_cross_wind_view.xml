@@ -47,7 +47,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView
-                        android:text="@string/wind_speed"
+                        android:text="@string/ws"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:layout_marginLeft="8dp"
@@ -55,7 +55,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <TextView
-                        android:text="@string/head_wind"
+                        android:text="@string/hwnd"
                         android:textSize="18sp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="8dp"
@@ -84,14 +84,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView
-                        android:text="@string/wind_dir"
+                        android:text="@string/wdir"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:paddingLeft="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <TextView
-                        android:text="@string/cross_wind"
+                        android:text="@string/xwnd"
                         android:textSize="18sp"
                         android:paddingLeft="16dp"
                         android:layout_width="wrap_content"
@@ -119,7 +119,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView
-                        android:text="@string/runway"
+                        android:text="@string/rwy"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:paddingLeft="8dp"

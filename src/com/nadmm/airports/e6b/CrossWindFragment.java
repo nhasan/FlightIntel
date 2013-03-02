@@ -34,11 +34,11 @@ import com.nadmm.airports.wx.WxUtils;
 
 public class CrossWindFragment extends FragmentBase {
 
-    private EditText mWindSpeed;
-    private EditText mWindDir;
-    private EditText mRunway;
-    private EditText mHeadWind;
-    private EditText mCrossWind;
+    private EditText mWsEdit;
+    private EditText mWdirEdit;
+    private EditText mRwy;
+    private EditText mHwndEdit;
+    private EditText mXwndEdit;
     private TextView mWindMsg;
 
     private TextWatcher mTextWatcher = new TextWatcher() {
@@ -67,22 +67,25 @@ public class CrossWindFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mWindSpeed = (EditText) findViewById( R.id.e6b_wind_speed );
-        mWindDir = (EditText) findViewById( R.id.e6b_wind_dir );
-        mRunway = (EditText) findViewById( R.id.e6b_runway_id );
-        mHeadWind = (EditText) findViewById( R.id.e6b_head_wind );
-        mCrossWind = (EditText) findViewById( R.id.e6b_cross_wind );
+        mWsEdit = (EditText) findViewById( R.id.e6b_wind_speed );
+        mWdirEdit = (EditText) findViewById( R.id.e6b_wind_dir );
+        mRwy = (EditText) findViewById( R.id.e6b_runway_id );
+        mHwndEdit = (EditText) findViewById( R.id.e6b_head_wind );
+        mXwndEdit = (EditText) findViewById( R.id.e6b_cross_wind );
         mWindMsg = (TextView) findViewById( R.id.e6b_wind_msg );
 
         TextView tv = (TextView) findViewById( R.id.e6b_wind_label );
         tv.setText( "Enter values for wind speed, wind direction and runway " +
         		"to calculate head wind and cross wind components." );
 
-        mHeadWind.setFocusable( false );
-        mCrossWind.setFocusable( false );
-        mWindSpeed.addTextChangedListener( mTextWatcher );
-        mWindDir.addTextChangedListener( mTextWatcher );
-        mRunway.addTextChangedListener( mTextWatcher );
+        mHwndEdit.setFocusable( false );
+        mHwndEdit.setHint( "?" );
+        mXwndEdit.setFocusable( false );
+        mXwndEdit.setHint( "?" );
+
+        mWsEdit.addTextChangedListener( mTextWatcher );
+        mWdirEdit.addTextChangedListener( mTextWatcher );
+        mRwy.addTextChangedListener( mTextWatcher );
     }
 
     protected void processInput() {
@@ -90,37 +93,37 @@ public class CrossWindFragment extends FragmentBase {
         int windDir = -1;
         int runwayId = -1;
         try {
-            windSpeed = Integer.valueOf( mWindSpeed.getText().toString() );
+            windSpeed = Integer.valueOf( mWsEdit.getText().toString() );
         } catch ( NumberFormatException e ) {
         }
         try {
-            windDir = Integer.valueOf( mWindDir.getText().toString() );
+            windDir = Integer.valueOf( mWdirEdit.getText().toString() );
             if ( windDir == 0 || windDir > 360 ) {
-                mWindDir.setError( "Enter a value between 1-360" );
+                mWdirEdit.setError( "Enter a value between 1-360" );
                 windDir = -1;
             }
         } catch ( NumberFormatException e ) {
         }
         try {
-            runwayId = Integer.valueOf( mRunway.getText().toString() );
+            runwayId = Integer.valueOf( mRwy.getText().toString() );
             if ( runwayId == 0 || runwayId > 36 ) {
-                mRunway.setError( "Enter a value between 1 and 36" );
+                mRwy.setError( "Enter a value between 1 and 36" );
                 runwayId = -1;
             }
         } catch ( NumberFormatException e ) {
         }
 
         if ( windSpeed == -1 || windDir == -1 || runwayId == -1 ) {
-            mHeadWind.setText( "" );
-            mCrossWind.setText( "" );
+            mHwndEdit.setText( "" );
+            mXwndEdit.setText( "" );
             mWindMsg.setText( "" );
             return;
         }
 
         long headWind = WxUtils.getHeadWindComponent( windSpeed, windDir, runwayId*10 );
         long crossWind = WxUtils.getCrossWindComponent( windSpeed, windDir, runwayId*10 );
-        mHeadWind.setText( String.valueOf( headWind ) );
-        mCrossWind.setText( String.valueOf( crossWind ) );
+        mHwndEdit.setText( String.valueOf( headWind ) );
+        mXwndEdit.setText( String.valueOf( crossWind ) );
 
         if ( headWind > 0 && crossWind > 0 ) {
             mWindMsg.setText( "Right quartering cross wind with head wind" );
@@ -140,8 +143,6 @@ public class CrossWindFragment extends FragmentBase {
             mWindMsg.setText( "Tail wind only, no cross wind" );
         } else if ( headWind == 0 && crossWind == 0 ) {
             mWindMsg.setText( "Calm winds" );
-        } else {
-            mWindMsg.setText( "Unknown wind condition, please report" );
         }
     }
 
