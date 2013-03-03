@@ -45,13 +45,9 @@ public abstract class ListMenuFragment extends ListFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        long id = 0;
         Bundle args = getArguments();
-        if ( args != null ) {
-            id = args.getLong( MENU_ID );
-        }
-
-        getSupportActionBar().setSubtitle( getItemTitle( id ) );
+        getSupportActionBar().setSubtitle( args.getString( SUBTITLE_TEXT ) );
+        long id = args.getLong( MENU_ID );
         Cursor c = getMenuCursor( id );
         setCursor( c );
     }
@@ -63,17 +59,18 @@ public abstract class ListMenuFragment extends ListFragmentBase {
 
     @Override
     protected void onListItemClick( ListView l, View v, int position ) {
-        long id = getListAdapter().getItemId( position );
+        Cursor c = (Cursor) getListAdapter().getItem( position );
+        long id = c.getLong( c.getColumnIndex( BaseColumns._ID ) );
+        String title = c.getString( c.getColumnIndex( ListMenuCursor.ITEM_TITLE ) );
         Class<?> clss = getItemFragmentClass( id );
         if ( clss != null ) {
             Bundle args = new Bundle();
             args.putLong( MENU_ID, id );
-            args.putString( SUBTITLE_TEXT, getItemTitle( id ) );
+            args.putString( SUBTITLE_TEXT, title );
             getActivityBase().replaceFragment( clss, args );
         }
     }
 
-    protected abstract String getItemTitle( long id );
     protected abstract Class<?> getItemFragmentClass( long id );
     protected abstract Cursor getMenuCursor( long id );
 

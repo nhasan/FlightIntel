@@ -36,20 +36,6 @@ public class ClocksMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.TIME_COUNTDOWN, CountDownFragment.class );
     }
 
-    private static final HashMap<Long, String> mTitleMap;
-    static {
-        mTitleMap = new HashMap<Long, String>();
-        mTitleMap.put( (long)R.id.CATEGORY_MAIN, "Clocks for Instrument Flying" );
-        mTitleMap.put( (long)R.id.TIME_CLOCKS, "Current Time" );
-        mTitleMap.put( (long)R.id.TIME_STOPWATCH, "Stop Watch" );
-        mTitleMap.put( (long)R.id.TIME_COUNTDOWN, "Countdown Timer" );
-    }
-
-    @Override
-    protected String getItemTitle( long itemId ) {
-        return mTitleMap.get( itemId );
-    }
-
     @Override
     protected Class<?> getItemFragmentClass( long itemId ) {
         return mDispatchMap.get( itemId );
@@ -70,15 +56,15 @@ public class ClocksMenuFragment extends ListMenuFragment {
         protected void populateMenuItems( long id ) {
             newRow().add( R.id.TIME_CLOCKS )
                 .add( R.drawable.clock )
-                .add( getItemTitle( R.id.TIME_CLOCKS ) )
+                .add( "Current Time" )
                 .add( "Display UTC clock, local clock" );
             newRow().add( R.id.TIME_STOPWATCH )
                 .add( R.drawable.stopwatch )
-                .add( getItemTitle( R.id.TIME_STOPWATCH ) )
+                .add( "Stop Watch" )
                 .add( "Stop watch for timing legs and approaches" );
             newRow().add( R.id.TIME_COUNTDOWN )
                 .add( R.drawable.countdown )
-                .add( getItemTitle( R.id.TIME_COUNTDOWN ) )
+                .add( "Countdown Timer" )
                 .add( "Countdown timer for timing approaches and holds" );
         }
     }

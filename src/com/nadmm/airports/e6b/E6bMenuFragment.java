@@ -39,23 +39,6 @@ public class E6bMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_CRS_GS, WindTriangleFragment.class );
     }
 
-    private static final HashMap<Long, String> mTitleMap;
-    static {
-        mTitleMap = new HashMap<Long, String>();
-        mTitleMap.put( (long)R.id.CATEGORY_MAIN, "E6B Flight Computer" );
-        mTitleMap.put( (long)R.id.E6B_UNIT_CONVERSIONS, "Unit Conversions" );
-        mTitleMap.put( (long)R.id.E6B_WIND_CALCS, "Wind Calculations" );
-        mTitleMap.put( (long)R.id.E6B_CROSS_WIND, "Crosswind and Headwind" );
-        mTitleMap.put( (long)R.id.E6B_WIND_TRIANGLE_WIND, "Find Wind Speed and Direction" );
-        mTitleMap.put( (long)R.id.E6B_WIND_TRIANGLE_HDG_GS, "Find Heading and Ground Speed" );
-        mTitleMap.put( (long)R.id.E6B_WIND_TRIANGLE_CRS_GS, "Find Course and Ground Speed" );
-    }
-
-    @Override
-    protected String getItemTitle( long id ) {
-        return mTitleMap.get( id );
-    }
-
     @Override
     protected Class<?> getItemFragmentClass( long id ) {
         return mDispatchMap.get( id );
@@ -75,21 +58,36 @@ public class E6bMenuFragment extends ListMenuFragment {
         @Override
         protected void populateMenuItems( long id ) {
             if ( id == R.id.CATEGORY_MAIN ) {
-                addRow( R.id.E6B_WIND_CALCS, "Calculate x-wind, h-wind, heading and course" );
-                addRow( R.id.E6B_UNIT_CONVERSIONS, "Convert between units of measurement" );
+                addRow( R.id.E6B_WIND_CALCS,
+                        "Wind Calculations",
+                        "Cross wind, head wind and wind triangle" );
+                addRow( R.id.E6B_ALTIMETRY,
+                        "Altimetry",
+                        "Altimeter, altitude and the standard atmosphere");
+                addRow( R.id.E6B_UNIT_CONVERSIONS,
+                        "Unit Conversions",
+                        "Convert between units of measurement" );
             } else if ( id == R.id.E6B_WIND_CALCS ) {
-                addRow( R.id.E6B_CROSS_WIND, "Cross wind and head wind for a runway" );
-                addRow( R.id.E6B_WIND_TRIANGLE_WIND, "WS and WDIR using Wind Triangle" );
-                addRow( R.id.E6B_WIND_TRIANGLE_HDG_GS, "HDG and GS using Wind Triangle" );
-                addRow( R.id.E6B_WIND_TRIANGLE_CRS_GS, "CRS and GS using Wind Triangle" );
+                addRow( R.id.E6B_CROSS_WIND,
+                        "Crosswind and Headwind",
+                        "Cross wind and head wind for a runway" );
+                addRow( R.id.E6B_WIND_TRIANGLE_WIND,
+                        "Find Wind Speed and Direction",
+                        "WS and WDIR using Wind Triangle" );
+                addRow( R.id.E6B_WIND_TRIANGLE_HDG_GS,
+                        "Find Heading and Ground Speed",
+                        "HDG and GS using Wind Triangle" );
+                addRow( R.id.E6B_WIND_TRIANGLE_CRS_GS,
+                        "Find Course and Ground Speed",
+                        "CRS and GS using Wind Triangle" );
             }
         }
 
-        private void addRow( long id, String summary ) {
+        private void addRow( long id, String title, String subtitle ) {
             newRow().add( id )
                 .add( 0 )
-                .add( getItemTitle( id ) )
-                .add( summary );
+                .add( title )
+                .add( subtitle );
         }
     }
 
