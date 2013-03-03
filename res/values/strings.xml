@@ -153,6 +153,14 @@
     <string name="crs">CRS</string>
     <string name="ws">WS</string>
     <string name="wdir">WDIR</string>
+    <string name="altitude">Altitude</string>
+    <string name="temperature">Temperature</string>
+    <string name="ft">ft</string>
+    <string name="degC">\u00B0C</string>
+    <string name="degF">\u00B0F</string>
+    <string name="inHg">inHg</string>
+    <string name="mbar">mBar</string>
+    <string name="pressure">Pressure</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>

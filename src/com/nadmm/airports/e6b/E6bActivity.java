@@ -34,7 +34,7 @@ public class E6bActivity extends FragmentActivityBase {
 
         Bundle args = new Bundle();
         args.putLong( ListMenuFragment.MENU_ID, R.id.CATEGORY_MAIN );
-        args.putString( ListMenuFragment.SUBTITLE_TEXT, "E6B Flight Computer" );
+        args.putString( ListMenuFragment.SUBTITLE_TEXT, "No More Slide Rule" );
         addFragment( E6bMenuFragment.class, args );
     }
 

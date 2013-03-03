@@ -37,6 +37,8 @@ public class E6bMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_WIND, WindTriangleFragment.class );
         mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_HDG_GS, WindTriangleFragment.class );
         mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_CRS_GS, WindTriangleFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY, E6bMenuFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_ISA, IsaFragment.class );
     }
 
     @Override
@@ -80,6 +82,10 @@ public class E6bMenuFragment extends ListMenuFragment {
                 addRow( R.id.E6B_WIND_TRIANGLE_CRS_GS,
                         "Find Course and Ground Speed",
                         "CRS and GS using Wind Triangle" );
+            } else if ( id == R.id.E6B_ALTIMETRY ) {
+                addRow( R.id.E6B_ALTIMETRY_ISA,
+                        "Standard Atmosphere",
+                        "International Standard Atmosphere (ISA 1976 model)" );
             }
         }
 
