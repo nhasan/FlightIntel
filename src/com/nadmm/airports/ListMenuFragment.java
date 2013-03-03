@@ -45,11 +45,13 @@ public abstract class ListMenuFragment extends ListFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        long id = 0;
         Bundle args = getArguments();
-        long id = args.getLong( MENU_ID );
+        if ( args != null ) {
+            id = args.getLong( MENU_ID );
+        }
 
         getSupportActionBar().setSubtitle( getItemTitle( id ) );
-
         Cursor c = getMenuCursor( id );
         setCursor( c );
     }
