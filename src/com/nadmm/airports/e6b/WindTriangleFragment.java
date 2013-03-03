@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.e6b;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -61,6 +62,8 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
     private EditText mWdirEdit;
 
     private int mSelectedPos;
+    private int mNormalTextColor;
+    private int mHighlightTextColor;
 
     private TextWatcher mTextWatcher = new TextWatcher() {
 
@@ -87,6 +90,9 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
+
+        mNormalTextColor = getResources().getColor( android.R.color.primary_text_light );
+        mHighlightTextColor = Color.rgb( 0, 112, 64 );
 
         mTasLabel = (TextView) findViewById( R.id.e6b_tas_label );
         mGsLabel = (TextView) findViewById( R.id.e6b_gs_label );
@@ -297,54 +303,80 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
         mWsEdit.setHint( "" );
         mWdirEdit.setHint( "" );
 
+        mTasEdit.setTextColor( mNormalTextColor );
+        mGsEdit.setTextColor( mNormalTextColor );
+        mHdgEdit.setTextColor( mNormalTextColor );
+        mCrsEdit.setTextColor( mNormalTextColor );
+        mWsEdit.setTextColor( mNormalTextColor );
+        mWdirEdit.setTextColor( mNormalTextColor );
+
+        mTasEdit.setTypeface( null, Typeface.NORMAL );
+        mGsEdit.setTypeface( null, Typeface.NORMAL );
+        mHdgEdit.setTypeface( null, Typeface.NORMAL );
+        mCrsEdit.setTypeface( null, Typeface.NORMAL );
+        mWsEdit.setTypeface( null, Typeface.NORMAL );
+        mWdirEdit.setTypeface( null, Typeface.NORMAL );
+
         if ( mSelectedPos == 0 ) {
             // Find wind speed and direction
-            mTasLabel.setTypeface( null, Typeface.BOLD );
             mTasEdit.addTextChangedListener( mTextWatcher );
-            mGsLabel.setTypeface( null, Typeface.BOLD );
+            mTasEdit.setHint( "?" );
             mGsEdit.addTextChangedListener( mTextWatcher );
-            mHdgLabel.setTypeface( null, Typeface.BOLD );
-            mHdgEdit.addTextChangedListener( mTextWatcher );
-            mCrsLabel.setTypeface( null, Typeface.BOLD );
-            mCrsEdit.addTextChangedListener( mTextWatcher );
-            mWsEdit.setFocusable( false );
-            mWsEdit.setFocusableInTouchMode( false );
-            mWsEdit.setHint( "?" );
-            mWdirEdit.setFocusable( false );
-            mWdirEdit.setFocusableInTouchMode( false );
-            mWdirEdit.setHint( "?" );
-        } else if ( mSelectedPos == 1 ) {
-            // Find HDG and GS
-            mTasLabel.setTypeface( null, Typeface.BOLD );
-            mTasEdit.addTextChangedListener( mTextWatcher );
-            mGsEdit.setFocusable( false );
-            mGsEdit.setFocusableInTouchMode( false );
             mGsEdit.setHint( "?" );
-            mHdgEdit.setFocusable( false );
-            mHdgEdit.setFocusableInTouchMode( false );
+            mHdgEdit.addTextChangedListener( mTextWatcher );
             mHdgEdit.setHint( "?" );
-            mCrsLabel.setTypeface( null, Typeface.BOLD );
             mCrsEdit.addTextChangedListener( mTextWatcher );
-            mWsLabel.setTypeface( null, Typeface.BOLD );
-            mWsEdit.addTextChangedListener( mTextWatcher );
-            mWdirLabel.setTypeface( null, Typeface.BOLD );
-            mWdirEdit.addTextChangedListener( mTextWatcher );
-        } else if ( mSelectedPos == 2 ) {
-            // Find CRS and GS
-            mTasLabel.setTypeface( null, Typeface.BOLD );
-            mTasEdit.addTextChangedListener( mTextWatcher );
-            mGsEdit.setFocusable( false );
-            mGsEdit.setFocusableInTouchMode( false );
-            mGsEdit.setHint( "?" );
-            mHdgLabel.setTypeface( null, Typeface.BOLD );
-            mHdgEdit.addTextChangedListener( mTextWatcher );
-            mCrsEdit.setFocusable( false );
-            mCrsEdit.setFocusableInTouchMode( false );
             mCrsEdit.setHint( "?" );
             mWsLabel.setTypeface( null, Typeface.BOLD );
-            mWsEdit.addTextChangedListener( mTextWatcher );
+            mWsEdit.setFocusable( false );
+            mWsEdit.setFocusableInTouchMode( false );
+            mWsEdit.setTextColor( mHighlightTextColor );
+            mWsEdit.setTypeface( null, Typeface.BOLD );
             mWdirLabel.setTypeface( null, Typeface.BOLD );
+            mWdirEdit.setFocusable( false );
+            mWdirEdit.setFocusableInTouchMode( false );
+            mWdirEdit.setTextColor( mHighlightTextColor );
+            mWdirEdit.setTypeface( null, Typeface.BOLD );
+        } else if ( mSelectedPos == 1 ) {
+            // Find HDG and GS
+            mTasEdit.addTextChangedListener( mTextWatcher );
+            mTasEdit.setHint( "?" );
+            mGsLabel.setTypeface( null, Typeface.BOLD );
+            mGsEdit.setFocusable( false );
+            mGsEdit.setFocusableInTouchMode( false );
+            mGsEdit.setTextColor( mHighlightTextColor );
+            mGsEdit.setTypeface( null, Typeface.BOLD );
+            mHdgLabel.setTypeface( null, Typeface.BOLD );
+            mHdgEdit.setFocusable( false );
+            mHdgEdit.setFocusableInTouchMode( false );
+            mHdgEdit.setTextColor( mHighlightTextColor );
+            mHdgEdit.setTypeface( null, Typeface.BOLD );
+            mCrsEdit.addTextChangedListener( mTextWatcher );
+            mCrsEdit.setHint( "?" );
+            mWsEdit.addTextChangedListener( mTextWatcher );
+            mWsEdit.setHint( "?" );
             mWdirEdit.addTextChangedListener( mTextWatcher );
+            mWdirEdit.setHint( "?" );
+        } else if ( mSelectedPos == 2 ) {
+            // Find CRS and GS
+            mTasEdit.addTextChangedListener( mTextWatcher );
+            mTasEdit.setHint( "?" );
+            mGsLabel.setTypeface( null, Typeface.BOLD );
+            mGsEdit.setFocusable( false );
+            mGsEdit.setFocusableInTouchMode( false );
+            mGsEdit.setTextColor( mHighlightTextColor );
+            mGsEdit.setTypeface( null, Typeface.BOLD );
+            mHdgEdit.addTextChangedListener( mTextWatcher );
+            mHdgEdit.setHint( "?" );
+            mCrsLabel.setTypeface( null, Typeface.BOLD );
+            mCrsEdit.setFocusable( false );
+            mCrsEdit.setFocusableInTouchMode( false );
+            mCrsEdit.setTextColor( mHighlightTextColor );
+            mCrsEdit.setTypeface( null, Typeface.BOLD );
+            mWsEdit.addTextChangedListener( mTextWatcher );
+            mWsEdit.setHint( "?" );
+            mWdirEdit.addTextChangedListener( mTextWatcher );
+            mWdirEdit.setHint( "?" );
         }
     }
 
