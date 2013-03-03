@@ -142,6 +142,7 @@
     <string name="plus">+</string>
     <string name="minus">-</string>
     <string name="equal">=</string>
+    <string name="question">\?</string>
     <string name="e6b">E6B Computer</string>
     <string name="rwy">RWY</string>
     <string name="hwnd">HWND</string>

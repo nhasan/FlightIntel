@@ -27,27 +27,17 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
-public class WindTriangleFragment extends FragmentBase implements OnItemSelectedListener {
+public class WindTriangleFragment extends FragmentBase {
 
     private static final double TWO_PI = 2*Math.PI;
 
-    private static final String[] mModes = {
-        "Find Wind Speed and Direction",
-        "Find Heading and Ground Speed",
-        "Find Course and Ground Speed"
-    };
-
-    private TextView mTasLabel;
     private TextView mGsLabel;
     private TextView mHdgLabel;
     private TextView mCrsLabel;
@@ -61,8 +51,7 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
     private EditText mWsEdit;
     private EditText mWdirEdit;
 
-    private int mSelectedPos;
-    private int mNormalTextColor;
+    private long mMode;
     private int mHighlightTextColor;
 
     private TextWatcher mTextWatcher = new TextWatcher() {
@@ -91,10 +80,8 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mNormalTextColor = getResources().getColor( android.R.color.primary_text_light );
         mHighlightTextColor = Color.rgb( 0, 112, 64 );
 
-        mTasLabel = (TextView) findViewById( R.id.e6b_tas_label );
         mGsLabel = (TextView) findViewById( R.id.e6b_gs_label );
         mHdgLabel = (TextView) findViewById( R.id.e6b_hdg_label );
         mCrsLabel = (TextView) findViewById( R.id.e6b_crs_label );
@@ -108,14 +95,13 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
         mWsEdit = (EditText) findViewById( R.id.e6b_ws_edit );
         mWdirEdit = (EditText) findViewById( R.id.e6b_wdir_edit );
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>( getActivity(),
-                android.R.layout.simple_spinner_item, mModes );
-        adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
-        Spinner spinner = (Spinner) findViewById( R.id.e6b_wind_triangle_mode );
-        spinner.setAdapter( adapter );
-        spinner.setOnItemSelectedListener( this );
+        Bundle args = getArguments();
+        mMode = args.getLong( ListMenuFragment.MENU_ID );
+        String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
+        TextView label = (TextView) findViewById( R.id.e6b_label );
+        label.setText( title );
 
-        mSelectedPos = 0;
+        setupUi();
     }
 
     private void processInput() {
@@ -126,7 +112,7 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
         double ws = -1;
         double wdir = -1;
 
-        if ( mSelectedPos == 0 ) {
+        if ( mMode == R.id.E6B_WIND_TRIANGLE_WIND ) {
             try {
                 tas = Double.valueOf( mTasEdit.getText().toString() );
                 gs = Double.valueOf( mGsEdit.getText().toString() );
@@ -163,7 +149,7 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
                 mWsEdit.setText( "" );
                 mWdirEdit.setText( "" );
             }
-        } else if ( mSelectedPos == 1 ) {
+        } else if ( mMode == R.id.E6B_WIND_TRIANGLE_HDG_GS ) {
             try {
                 tas = Double.valueOf( mTasEdit.getText().toString() );
                 crs = Double.valueOf( mCrsEdit.getText().toString() );
@@ -210,7 +196,7 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
                 mGsEdit.setText( "" );
                 mHdgEdit.setText( "" );
             }
-        } else if ( mSelectedPos == 2 ) {
+        } else if ( mMode == R.id.E6B_WIND_TRIANGLE_CRS_GS ) {
             try {
                 tas = Double.valueOf( mTasEdit.getText().toString() );
                 hdg = Double.valueOf( mHdgEdit.getText().toString() );
@@ -258,66 +244,8 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
         return radians;
     }
 
-    @Override
-    public void onItemSelected( AdapterView<?> parent, View view, int pos, long id ) {
-        mSelectedPos = pos;
-
-        mTasLabel.setTypeface( null, Typeface.NORMAL );
-        mGsLabel.setTypeface( null, Typeface.NORMAL );
-        mHdgLabel.setTypeface( null, Typeface.NORMAL );
-        mCrsLabel.setTypeface( null, Typeface.NORMAL );
-        mWsLabel.setTypeface( null, Typeface.NORMAL );
-        mWdirLabel.setTypeface( null, Typeface.NORMAL );
-
-        mTasEdit.setFocusable( true );
-        mTasEdit.setFocusableInTouchMode( true );
-        mGsEdit.setFocusable( true );
-        mGsEdit.setFocusableInTouchMode( true );
-        mHdgEdit.setFocusable( true );
-        mHdgEdit.setFocusableInTouchMode( true );
-        mCrsEdit.setFocusable( true );
-        mCrsEdit.setFocusableInTouchMode( true );
-        mWsEdit.setFocusable( true );
-        mWsEdit.setFocusableInTouchMode( true );
-        mWdirEdit.setFocusable( true );
-        mWdirEdit.setFocusableInTouchMode( true );
-
-        mTasEdit.removeTextChangedListener( mTextWatcher );
-        mHdgEdit.removeTextChangedListener( mTextWatcher );
-        mGsEdit.removeTextChangedListener( mTextWatcher );
-        mCrsEdit.removeTextChangedListener( mTextWatcher );
-        mWsEdit.removeTextChangedListener( mTextWatcher );
-        mWdirEdit.removeTextChangedListener( mTextWatcher );
-
-        mTasEdit.setText( "" );
-        mGsEdit.setText( "" );
-        mHdgEdit.setText( "" );
-        mCrsEdit.setText( "" );
-        mWsEdit.setText( "" );
-        mWdirEdit.setText( "" );
-
-        mTasEdit.setHint( "" );
-        mGsEdit.setHint( "" );
-        mHdgEdit.setHint( "" );
-        mCrsEdit.setHint( "" );
-        mWsEdit.setHint( "" );
-        mWdirEdit.setHint( "" );
-
-        mTasEdit.setTextColor( mNormalTextColor );
-        mGsEdit.setTextColor( mNormalTextColor );
-        mHdgEdit.setTextColor( mNormalTextColor );
-        mCrsEdit.setTextColor( mNormalTextColor );
-        mWsEdit.setTextColor( mNormalTextColor );
-        mWdirEdit.setTextColor( mNormalTextColor );
-
-        mTasEdit.setTypeface( null, Typeface.NORMAL );
-        mGsEdit.setTypeface( null, Typeface.NORMAL );
-        mHdgEdit.setTypeface( null, Typeface.NORMAL );
-        mCrsEdit.setTypeface( null, Typeface.NORMAL );
-        mWsEdit.setTypeface( null, Typeface.NORMAL );
-        mWdirEdit.setTypeface( null, Typeface.NORMAL );
-
-        if ( mSelectedPos == 0 ) {
+    public void setupUi() {
+        if ( mMode == R.id.E6B_WIND_TRIANGLE_WIND ) {
             // Find wind speed and direction
             mTasEdit.addTextChangedListener( mTextWatcher );
             mTasEdit.setHint( "?" );
@@ -337,7 +265,7 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
             mWdirEdit.setFocusableInTouchMode( false );
             mWdirEdit.setTextColor( mHighlightTextColor );
             mWdirEdit.setTypeface( null, Typeface.BOLD );
-        } else if ( mSelectedPos == 1 ) {
+        } else if ( mMode == R.id.E6B_WIND_TRIANGLE_HDG_GS ) {
             // Find HDG and GS
             mTasEdit.addTextChangedListener( mTextWatcher );
             mTasEdit.setHint( "?" );
@@ -357,7 +285,7 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
             mWsEdit.setHint( "?" );
             mWdirEdit.addTextChangedListener( mTextWatcher );
             mWdirEdit.setHint( "?" );
-        } else if ( mSelectedPos == 2 ) {
+        } else if ( mMode == R.id.E6B_WIND_TRIANGLE_CRS_GS ) {
             // Find CRS and GS
             mTasEdit.addTextChangedListener( mTextWatcher );
             mTasEdit.setHint( "?" );
@@ -378,10 +306,6 @@ public class WindTriangleFragment extends FragmentBase implements OnItemSelected
             mWdirEdit.addTextChangedListener( mTextWatcher );
             mWdirEdit.setHint( "?" );
         }
-    }
-
-    @Override
-    public void onNothingSelected( AdapterView<?> arg0 ) {
     }
 
 }

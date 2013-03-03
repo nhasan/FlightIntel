@@ -34,7 +34,9 @@ public class E6bMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.E6B_UNIT_CONVERSIONS, UnitConvertFrament.class );
         mDispatchMap.put( (long)R.id.E6B_WIND_CALCS, E6bMenuFragment.class );
         mDispatchMap.put( (long)R.id.E6B_CROSS_WIND, CrossWindFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE, WindTriangleFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_WIND, WindTriangleFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_HDG_GS, WindTriangleFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_CRS_GS, WindTriangleFragment.class );
     }
 
     private static final HashMap<Long, String> mTitleMap;
@@ -44,7 +46,9 @@ public class E6bMenuFragment extends ListMenuFragment {
         mTitleMap.put( (long)R.id.E6B_UNIT_CONVERSIONS, "Unit Conversions" );
         mTitleMap.put( (long)R.id.E6B_WIND_CALCS, "Wind Calculations" );
         mTitleMap.put( (long)R.id.E6B_CROSS_WIND, "Crosswind and Headwind" );
-        mTitleMap.put( (long)R.id.E6B_WIND_TRIANGLE, "Wind Triangle" );
+        mTitleMap.put( (long)R.id.E6B_WIND_TRIANGLE_WIND, "Find Wind Speed and Direction" );
+        mTitleMap.put( (long)R.id.E6B_WIND_TRIANGLE_HDG_GS, "Find Heading and Ground Speed" );
+        mTitleMap.put( (long)R.id.E6B_WIND_TRIANGLE_CRS_GS, "Find Course and Ground Speed" );
     }
 
     @Override
@@ -71,11 +75,13 @@ public class E6bMenuFragment extends ListMenuFragment {
         @Override
         protected void populateMenuItems( long id ) {
             if ( id == R.id.CATEGORY_MAIN ) {
-                addRow( R.id.E6B_UNIT_CONVERSIONS, "Convert between units of measurement" );
                 addRow( R.id.E6B_WIND_CALCS, "Calculate x-wind, h-wind, heading and course" );
+                addRow( R.id.E6B_UNIT_CONVERSIONS, "Convert between units of measurement" );
             } else if ( id == R.id.E6B_WIND_CALCS ) {
-                addRow( R.id.E6B_CROSS_WIND, "Calculate cross wind and head wind for a runway" );
-                addRow( R.id.E6B_WIND_TRIANGLE, "Calculate GS, CRS, HDG, WS, WDIR" );
+                addRow( R.id.E6B_CROSS_WIND, "Cross wind and head wind for a runway" );
+                addRow( R.id.E6B_WIND_TRIANGLE_WIND, "WS and WDIR using Wind Triangle" );
+                addRow( R.id.E6B_WIND_TRIANGLE_HDG_GS, "HDG and GS using Wind Triangle" );
+                addRow( R.id.E6B_WIND_TRIANGLE_CRS_GS, "CRS and GS using Wind Triangle" );
             }
         }
 
