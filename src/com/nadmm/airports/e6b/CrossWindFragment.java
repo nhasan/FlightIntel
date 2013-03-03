@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 import com.nadmm.airports.wx.WxUtils;
 
@@ -36,7 +37,7 @@ public class CrossWindFragment extends FragmentBase {
 
     private EditText mWsEdit;
     private EditText mWdirEdit;
-    private EditText mRwy;
+    private EditText mRwyEdit;
     private EditText mHwndEdit;
     private EditText mXwndEdit;
     private TextView mWindMsg;
@@ -67,25 +68,20 @@ public class CrossWindFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        String title = getArguments().getString( ListMenuFragment.SUBTITLE_TEXT );
+        TextView label = (TextView) findViewById( R.id.e6b_label );
+        label.setText( title );
+
         mWsEdit = (EditText) findViewById( R.id.e6b_wind_speed );
         mWdirEdit = (EditText) findViewById( R.id.e6b_wind_dir );
-        mRwy = (EditText) findViewById( R.id.e6b_runway_id );
+        mRwyEdit = (EditText) findViewById( R.id.e6b_runway_id );
         mHwndEdit = (EditText) findViewById( R.id.e6b_head_wind );
         mXwndEdit = (EditText) findViewById( R.id.e6b_cross_wind );
         mWindMsg = (TextView) findViewById( R.id.e6b_wind_msg );
 
-        TextView tv = (TextView) findViewById( R.id.e6b_wind_label );
-        tv.setText( "Enter values for wind speed, wind direction and runway " +
-        		"to calculate head wind and cross wind components." );
-
-        mHwndEdit.setFocusable( false );
-        mHwndEdit.setHint( "?" );
-        mXwndEdit.setFocusable( false );
-        mXwndEdit.setHint( "?" );
-
         mWsEdit.addTextChangedListener( mTextWatcher );
         mWdirEdit.addTextChangedListener( mTextWatcher );
-        mRwy.addTextChangedListener( mTextWatcher );
+        mRwyEdit.addTextChangedListener( mTextWatcher );
     }
 
     protected void processInput() {
@@ -105,9 +101,9 @@ public class CrossWindFragment extends FragmentBase {
         } catch ( NumberFormatException e ) {
         }
         try {
-            runwayId = Integer.valueOf( mRwy.getText().toString() );
+            runwayId = Integer.valueOf( mRwyEdit.getText().toString() );
             if ( runwayId == 0 || runwayId > 36 ) {
-                mRwy.setError( "Enter a value between 1 and 36" );
+                mRwyEdit.setError( "Enter a value between 1 and 36" );
                 runwayId = -1;
             }
         } catch ( NumberFormatException e ) {

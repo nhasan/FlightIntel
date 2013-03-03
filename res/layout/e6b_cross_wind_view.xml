@@ -30,9 +30,10 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <TextView android:id="@+id/e6b_wind_label"
+        <TextView android:id="@+id/e6b_label"
                 android:textIsSelectable="false"
-                android:background="@android:drawable/divider_horizontal_textfield"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 android:gravity="left"
                 android:paddingBottom="12dp"
                 android:layout_width="match_parent"
@@ -49,7 +50,6 @@
                 <TextView
                         android:text="@string/ws"
                         android:textSize="18sp"
-                        android:textStyle="bold"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
@@ -57,6 +57,7 @@
                 <TextView
                         android:text="@string/hwnd"
                         android:textSize="18sp"
+                        android:textStyle="bold"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
@@ -68,12 +69,16 @@
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_wind_speed"
                         android:inputType="number"
+                        android:hint="@string/question"
                         android:layout_marginTop="-8dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content" />
                 <EditText android:id="@+id/e6b_head_wind"
                         android:inputType="none"
+                        android:textColor="#007040"
+                        android:textStyle="bold"
+                        android:focusable="false"
                         android:layout_marginTop="-8dp"
                         android:layout_marginRight="6dp"
                         android:layout_marginLeft="14dp"
@@ -86,13 +91,13 @@
                 <TextView
                         android:text="@string/wdir"
                         android:textSize="18sp"
-                        android:textStyle="bold"
                         android:paddingLeft="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <TextView
                         android:text="@string/xwnd"
                         android:textSize="18sp"
+                        android:textStyle="bold"
                         android:paddingLeft="16dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
@@ -103,12 +108,16 @@
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_wind_dir"
                         android:inputType="number"
+                        android:hint="@string/question"
                         android:layout_marginTop="-8dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content" />
                 <EditText android:id="@+id/e6b_cross_wind"
                         android:inputType="none"
+                        android:textColor="#007040"
+                        android:textStyle="bold"
+                        android:focusable="false"
                         android:layout_marginTop="-8dp"
                         android:layout_marginRight="6dp"
                         android:layout_marginLeft="14dp"
@@ -121,7 +130,6 @@
                 <TextView
                         android:text="@string/rwy"
                         android:textSize="18sp"
-                        android:textStyle="bold"
                         android:paddingLeft="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
@@ -132,6 +140,7 @@
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_runway_id"
                         android:inputType="number"
+                        android:hint="@string/question"
                         android:layout_marginTop="-8dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="120dp"
