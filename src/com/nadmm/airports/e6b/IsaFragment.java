@@ -107,6 +107,9 @@ public class IsaFragment extends FragmentBase {
             double isaPressureInHg = 0;
             if ( altitude < 36090 ) {
                 isaPressureInHg = 29.92126*Math.pow( 1-6.8755856e-6*altitude, 5.2558797 );
+            } else {
+                altitude -= 36089.24;
+                isaPressureInHg = 29.92126*0.2233609*Math.exp( -4.806346*10e-5*altitude );
             }
             double isaPressureMbar = isaPressureInHg*33.863753;
             mPressureInEdit.setText( String.format( "%.2f", isaPressureInHg ) );
