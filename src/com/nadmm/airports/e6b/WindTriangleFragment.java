@@ -38,12 +38,6 @@ public class WindTriangleFragment extends FragmentBase {
 
     private static final double TWO_PI = 2*Math.PI;
 
-    private TextView mGsLabel;
-    private TextView mHdgLabel;
-    private TextView mCrsLabel;
-    private TextView mWsLabel;
-    private TextView mWdirLabel;
-
     private EditText mTasEdit;
     private EditText mGsEdit;
     private EditText mHdgEdit;
@@ -81,12 +75,6 @@ public class WindTriangleFragment extends FragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         mHighlightTextColor = Color.rgb( 0, 112, 64 );
-
-        mGsLabel = (TextView) findViewById( R.id.e6b_gs_label );
-        mHdgLabel = (TextView) findViewById( R.id.e6b_hdg_label );
-        mCrsLabel = (TextView) findViewById( R.id.e6b_crs_label );
-        mWsLabel = (TextView) findViewById( R.id.e6b_ws_label );
-        mWdirLabel = (TextView) findViewById( R.id.e6b_wdir_label );
 
         mTasEdit = (EditText) findViewById( R.id.e6b_tas_edit );
         mGsEdit = (EditText) findViewById( R.id.e6b_gs_edit );
@@ -255,12 +243,10 @@ public class WindTriangleFragment extends FragmentBase {
             mHdgEdit.setHint( "?" );
             mCrsEdit.addTextChangedListener( mTextWatcher );
             mCrsEdit.setHint( "?" );
-            mWsLabel.setTypeface( null, Typeface.BOLD );
             mWsEdit.setFocusable( false );
             mWsEdit.setFocusableInTouchMode( false );
             mWsEdit.setTextColor( mHighlightTextColor );
             mWsEdit.setTypeface( null, Typeface.BOLD );
-            mWdirLabel.setTypeface( null, Typeface.BOLD );
             mWdirEdit.setFocusable( false );
             mWdirEdit.setFocusableInTouchMode( false );
             mWdirEdit.setTextColor( mHighlightTextColor );
@@ -269,12 +255,10 @@ public class WindTriangleFragment extends FragmentBase {
             // Find HDG and GS
             mTasEdit.addTextChangedListener( mTextWatcher );
             mTasEdit.setHint( "?" );
-            mGsLabel.setTypeface( null, Typeface.BOLD );
             mGsEdit.setFocusable( false );
             mGsEdit.setFocusableInTouchMode( false );
             mGsEdit.setTextColor( mHighlightTextColor );
             mGsEdit.setTypeface( null, Typeface.BOLD );
-            mHdgLabel.setTypeface( null, Typeface.BOLD );
             mHdgEdit.setFocusable( false );
             mHdgEdit.setFocusableInTouchMode( false );
             mHdgEdit.setTextColor( mHighlightTextColor );
@@ -289,14 +273,12 @@ public class WindTriangleFragment extends FragmentBase {
             // Find CRS and GS
             mTasEdit.addTextChangedListener( mTextWatcher );
             mTasEdit.setHint( "?" );
-            mGsLabel.setTypeface( null, Typeface.BOLD );
             mGsEdit.setFocusable( false );
             mGsEdit.setFocusableInTouchMode( false );
             mGsEdit.setTextColor( mHighlightTextColor );
             mGsEdit.setTypeface( null, Typeface.BOLD );
             mHdgEdit.addTextChangedListener( mTextWatcher );
             mHdgEdit.setHint( "?" );
-            mCrsLabel.setTypeface( null, Typeface.BOLD );
             mCrsEdit.setFocusable( false );
             mCrsEdit.setFocusableInTouchMode( false );
             mCrsEdit.setTextColor( mHighlightTextColor );
