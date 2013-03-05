@@ -21,13 +21,13 @@
  -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:padding="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <LinearLayout
             android:orientation="vertical"
+            android:padding="24dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <TextView android:id="@+id/e6b_label"
@@ -68,7 +68,7 @@
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_wind_speed"
                         android:inputType="number"
-                        android:hint="@string/question"
+                        android:hint="@string/input_kts"
                         android:layout_marginTop="-8dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="120dp"
@@ -77,6 +77,7 @@
                         android:inputType="none"
                         android:textColor="#007040"
                         android:textStyle="bold"
+                        android:hint="@string/kts"
                         android:focusable="false"
                         android:layout_marginTop="-8dp"
                         android:layout_marginRight="6dp"
@@ -106,7 +107,7 @@
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_wind_dir"
                         android:inputType="number"
-                        android:hint="@string/question"
+                        android:hint="@string/input_deg"
                         android:layout_marginTop="-8dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="120dp"
@@ -116,6 +117,7 @@
                         android:textColor="#007040"
                         android:textStyle="bold"
                         android:focusable="false"
+                        android:hint="@string/kts"
                         android:layout_marginTop="-8dp"
                         android:layout_marginRight="6dp"
                         android:layout_marginLeft="14dp"
