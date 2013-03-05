@@ -236,57 +236,63 @@ public class WindTriangleFragment extends FragmentBase {
         if ( mMode == R.id.E6B_WIND_TRIANGLE_WIND ) {
             // Find wind speed and direction
             mTasEdit.addTextChangedListener( mTextWatcher );
-            mTasEdit.setHint( "?" );
+            mTasEdit.setHint( R.string.input_kts );
             mGsEdit.addTextChangedListener( mTextWatcher );
-            mGsEdit.setHint( "?" );
+            mGsEdit.setHint( R.string.input_kts );
             mHdgEdit.addTextChangedListener( mTextWatcher );
-            mHdgEdit.setHint( "?" );
+            mHdgEdit.setHint( R.string.input_deg );
             mCrsEdit.addTextChangedListener( mTextWatcher );
-            mCrsEdit.setHint( "?" );
+            mCrsEdit.setHint( R.string.input_deg );
             mWsEdit.setFocusable( false );
             mWsEdit.setFocusableInTouchMode( false );
             mWsEdit.setTextColor( mHighlightTextColor );
             mWsEdit.setTypeface( null, Typeface.BOLD );
+            mWsEdit.setHint( R.string.kts );
             mWdirEdit.setFocusable( false );
             mWdirEdit.setFocusableInTouchMode( false );
             mWdirEdit.setTextColor( mHighlightTextColor );
             mWdirEdit.setTypeface( null, Typeface.BOLD );
+            mWdirEdit.setHint( R.string.deg );
         } else if ( mMode == R.id.E6B_WIND_TRIANGLE_HDG_GS ) {
             // Find HDG and GS
             mTasEdit.addTextChangedListener( mTextWatcher );
-            mTasEdit.setHint( "?" );
+            mTasEdit.setHint( R.string.input_kts );
             mGsEdit.setFocusable( false );
             mGsEdit.setFocusableInTouchMode( false );
             mGsEdit.setTextColor( mHighlightTextColor );
             mGsEdit.setTypeface( null, Typeface.BOLD );
+            mGsEdit.setHint( R.string.kts );
             mHdgEdit.setFocusable( false );
             mHdgEdit.setFocusableInTouchMode( false );
             mHdgEdit.setTextColor( mHighlightTextColor );
             mHdgEdit.setTypeface( null, Typeface.BOLD );
+            mHdgEdit.setHint( R.string.deg );
             mCrsEdit.addTextChangedListener( mTextWatcher );
-            mCrsEdit.setHint( "?" );
+            mCrsEdit.setHint( R.string.input_deg );
             mWsEdit.addTextChangedListener( mTextWatcher );
-            mWsEdit.setHint( "?" );
+            mWsEdit.setHint( R.string.input_kts );
             mWdirEdit.addTextChangedListener( mTextWatcher );
-            mWdirEdit.setHint( "?" );
+            mWdirEdit.setHint( R.string.input_deg );
         } else if ( mMode == R.id.E6B_WIND_TRIANGLE_CRS_GS ) {
             // Find CRS and GS
             mTasEdit.addTextChangedListener( mTextWatcher );
-            mTasEdit.setHint( "?" );
+            mTasEdit.setHint( R.string.input_kts );
             mGsEdit.setFocusable( false );
             mGsEdit.setFocusableInTouchMode( false );
             mGsEdit.setTextColor( mHighlightTextColor );
             mGsEdit.setTypeface( null, Typeface.BOLD );
+            mGsEdit.setHint( R.string.kts );
             mHdgEdit.addTextChangedListener( mTextWatcher );
-            mHdgEdit.setHint( "?" );
+            mHdgEdit.setHint( R.string.input_deg );
             mCrsEdit.setFocusable( false );
             mCrsEdit.setFocusableInTouchMode( false );
             mCrsEdit.setTextColor( mHighlightTextColor );
             mCrsEdit.setTypeface( null, Typeface.BOLD );
+            mCrsEdit.setHint( R.string.deg );
             mWsEdit.addTextChangedListener( mTextWatcher );
-            mWsEdit.setHint( "?" );
+            mWsEdit.setHint( R.string.input_kts );
             mWdirEdit.addTextChangedListener( mTextWatcher );
-            mWdirEdit.setHint( "?" );
+            mWdirEdit.setHint( R.string.input_deg );
         }
     }
 
