@@ -71,8 +71,9 @@ public class IsaFragment extends FragmentBase {
         label.setText( title );
 
         TextView msg = (TextView) findViewById( R.id.e6b_isa_msg );
-        msg.setText( "ISA temperature lapse rate is 1.98\u00B0C/1,000 ft or 3.56\u00B0F/1,000 ft" +
-        		" upto 36,090 ft, then constant at -56.5\u00B0C or -69.7\u00B0F upto 65,620 ft" );
+        msg.setText( "ISA temperature lapse rate is 1.9812\u00B0C/1,000 ft" +
+        		" or 3.56\u00B0F/1,000 ft upto 36,090 ft, then constant at" +
+        		" -56.5\u00B0C or -69.7\u00B0F upto 65,620 ft" );
 
         mAltitudeEdit = (EditText) findViewById( R.id.e6b_isa_altitude );
         mTemperatureCEdit = (EditText) findViewById( R.id.e6b_isa_temperature_c );
@@ -84,10 +85,10 @@ public class IsaFragment extends FragmentBase {
     }
 
     private void processInput() {
-        int altitude = -1;
+        double altitude = -1;
 
         try {
-            altitude = Integer.valueOf( mAltitudeEdit.getText().toString() );
+            altitude = Double.valueOf( mAltitudeEdit.getText().toString() );
             if ( altitude < 0 || altitude > 65620 ) {
                 mAltitudeEdit.setError( "Enter a value between 0 and 65,620" );
                 altitude = -1;
@@ -97,7 +98,7 @@ public class IsaFragment extends FragmentBase {
 
         if ( altitude != -1 ) {
             double isaTempC = -56.5;
-            if ( altitude <= 36090 ) {
+            if ( altitude <= 36089.24 ) {
                 isaTempC = 15.0 - 0.0019812*altitude;
             }
             double isaTempF = ( isaTempC*9/5 )+32;
@@ -105,7 +106,7 @@ public class IsaFragment extends FragmentBase {
             mTemperatureFEdit.setText( String.format( "%.2f", isaTempF ) );
 
             double isaPressureInHg = 0;
-            if ( altitude < 36090 ) {
+            if ( altitude < 36089.24 ) {
                 isaPressureInHg = 29.92126*Math.pow( 1-6.8755856e-6*altitude, 5.2558797 );
             } else {
                 altitude -= 36089.24;
