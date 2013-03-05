@@ -39,6 +39,7 @@ public class E6bMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_CRS_GS, WindTriangleFragment.class );
         mDispatchMap.put( (long)R.id.E6B_ALTIMETRY, E6bMenuFragment.class );
         mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_ISA, IsaFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_ALTITUDES, AltitudesFragment.class );
     }
 
     @Override
@@ -86,6 +87,9 @@ public class E6bMenuFragment extends ListMenuFragment {
                 addRow( R.id.E6B_ALTIMETRY_ISA,
                         "Standard Atmosphere",
                         "International Standard Atmosphere (ISA 1976 model)" );
+                addRow( R.id.E6B_ALTIMETRY_ALTITUDES,
+                        "Pressure & Density Altitude",
+                        "altimeter and temperature" );
             }
         }
 

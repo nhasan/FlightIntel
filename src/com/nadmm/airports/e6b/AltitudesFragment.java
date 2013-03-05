@@ -32,7 +32,7 @@ import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
-public class AltitudeFragment extends FragmentBase {
+public class AltitudesFragment extends FragmentBase {
 
     private EditText mElevationEdit;
     private EditText mAltimeterEdit;
