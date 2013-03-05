@@ -40,4 +40,5 @@
     <item type="id" name="E6B_WIND_TRIANGLE_CRS_GS" />
     <item type="id" name="E6B_ALTIMETRY" />
     <item type="id" name="E6B_ALTIMETRY_ISA" />
+    <item type="id" name="E6B_ALTIMETRY_ALTITUDES" />
 </resources>
