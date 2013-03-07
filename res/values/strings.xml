@@ -170,6 +170,8 @@
     <string name="elevation">Elevation</string>
     <string name="pa">Pressure Altitude</string>
     <string name="da">Density Altitude</string>
+    <string name="ias">IAS</string>
+    <string name="tas">TAS</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>

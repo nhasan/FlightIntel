@@ -41,4 +41,9 @@
     <item type="id" name="E6B_ALTIMETRY" />
     <item type="id" name="E6B_ALTIMETRY_ISA" />
     <item type="id" name="E6B_ALTIMETRY_ALTITUDES" />
+    <item type="id" name="E6B_ALTIMETRY_TAS" />
+    <item type="id" name="E6B_TIME_SPEED_DISTANCE"></item>
+    <item type="id" name="E6B_TSD_TIME"></item>
+    <item type="id" name="E6B_TSD_SPEED"></item>
+    <item type="id" name="E6B_TSD_DISTANCE"></item>
 </resources>

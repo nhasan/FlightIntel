@@ -40,6 +40,11 @@ public class E6bMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.E6B_ALTIMETRY, E6bMenuFragment.class );
         mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_ISA, IsaFragment.class );
         mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_ALTITUDES, AltitudesFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_TAS, TrueAirspeedFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_TIME_SPEED_DISTANCE, E6bMenuFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_TSD_TIME, TimeSpeedDistanceFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_TSD_SPEED, TimeSpeedDistanceFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_TSD_DISTANCE, TimeSpeedDistanceFragment.class );
     }
 
     @Override
@@ -67,6 +72,9 @@ public class E6bMenuFragment extends ListMenuFragment {
                 addRow( R.id.E6B_ALTIMETRY,
                         "Altimetry",
                         "Altimeter, altitude and the standard atmosphere");
+                addRow( R.id.E6B_TIME_SPEED_DISTANCE,
+                        "Time, Speed and Distance",
+                        "Solve for time, speed and distance");
                 addRow( R.id.E6B_UNIT_CONVERSIONS,
                         "Unit Conversions",
                         "Convert between units of measurement" );
@@ -89,7 +97,20 @@ public class E6bMenuFragment extends ListMenuFragment {
                         "International Standard Atmosphere (ISA 1976 model)" );
                 addRow( R.id.E6B_ALTIMETRY_ALTITUDES,
                         "Pressure & Density Altitude",
-                        "altimeter and temperature" );
+                        "Altimeter and temperature" );
+                addRow( R.id.E6B_ALTIMETRY_TAS,
+                        "True Airspeed",
+                        "True airspeed at a given altitude" );
+            } else if ( id == R.id.E6B_TIME_SPEED_DISTANCE ) {
+                addRow( R.id.E6B_TSD_TIME,
+                        "Find Flight Time",
+                        "Find flight time based on speed and distance" );
+                addRow( R.id.E6B_TSD_SPEED,
+                        "Find Ground Speed",
+                        "Find ground speed based on time and distance" );
+                addRow( R.id.E6B_TSD_DISTANCE,
+                        "Find Distance Flown",
+                        "Find distance flown based on time and speed" );
             }
         }
 
