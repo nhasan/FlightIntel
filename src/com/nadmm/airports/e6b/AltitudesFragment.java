@@ -88,22 +88,22 @@ public class AltitudesFragment extends FragmentBase {
     private void processInput() {
         long elevation = -1;
         double altimeter = -1;
-        double temperature = -1;
+        double temperatureC = -1;
 
         try {
             elevation = Long.valueOf( mElevationEdit.getText().toString() );
             altimeter = Double.valueOf( mAltimeterEdit.getText().toString() );
-            temperature = Double.valueOf( mTemperatureEdit.getText().toString() );
+            temperatureC = Double.valueOf( mTemperatureEdit.getText().toString() );
         } catch ( NumberFormatException e ) {
         }
 
-        if ( elevation != -1 && altimeter != -1 ) {
+        if ( elevation != -1 && altimeter != -1 && temperatureC != -1 ) {
             long delta = Math.round( 145442.2*( 1-Math.pow( altimeter/29.92126, 0.190261 ) ) );
             long pressureAltitude = elevation+delta;
             mPressureAltitudeEdit.setText( String.valueOf( pressureAltitude ) );
 
             double stdTempK = 15.0-( 0.0019812*elevation )+273.15;
-            double actTempK = temperature+273.15;
+            double actTempK = temperatureC+273.15;
             long densityAltitude = Math.round( pressureAltitude
                     +( stdTempK/0.0019812 )*( 1-Math.pow( stdTempK/actTempK, 0.234969 ) ) );
             mDensityAltitudeEdit.setText( String.valueOf( densityAltitude ) );
