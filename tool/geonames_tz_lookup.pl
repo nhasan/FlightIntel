@@ -50,8 +50,8 @@ while ( ( $site_number, $latitude, $longitude, $tz ) = $sth->fetchrow_array )
 {
     if ( length( $tz ) > 0 )
     {
-        print "Skipping row=[$row], site=[$site_number], lat=[$latitude], lon=[$longitude]\n";
-        print "timezone=[$tz]\n";
+        #print "Skipping row=[$row], site=[$site_number], lat=[$latitude], lon=[$longitude]\n";
+        #print "timezone=[$tz]\n";
         ++$row;
         next;
     }
