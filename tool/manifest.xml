@@ -3,38 +3,38 @@
     <datafile>
         <type>FADDS</type>
         <desc>National Airspace System (FAA)</desc>
-        <version>20130110</version>
-        <filename>fadds_20130110.db</filename>
-        <size>5101858</size>
-        <start>2013-01-10T09:01:00Z</start>
-        <end>2013-03-07T09:01:00Z</end>
+        <version>20130307</version>
+        <filename>fadds_20130307.db</filename>
+        <size>5103237</size>
+        <start>2013-03-07T09:01:00Z</start>
+        <end>2013-05-02T09:01:00Z</end>
     </datafile>
     <datafile>
         <type>DAFD</type>
-        <desc>AeroNav d-A/FD 10Jan2013 (FAA)</desc>
-        <version>20130110</version>
-        <filename>dafd_20130110.db</filename>
-        <size>90730</size>
-        <start>2013-01-10T09:01:00Z</start>
-        <end>2013-03-07T09:01:00Z</end>
+        <desc>AeroNav d-A/FD 07Mar2013 (FAA)</desc>
+        <version>20130307</version>
+        <filename>dafd_20130307.db</filename>
+        <size>91977</size>
+        <start>2013-03-07T09:01:00Z</start>
+        <end>2013-05-02T09:01:00Z</end>
     </datafile>
     <datafile>
         <type>DTPP</type>
-        <desc>AeroNav d-TPP #1302 (FAA)</desc>
-        <version>1302</version>
-        <filename>dtpp_20130207.db</filename>
-        <size>469112</size>
-        <start>2013-02-07T09:01:00Z</start>
-        <end>2013-03-07T09:01:00Z</end>
+        <desc>AeroNav d-TPP #1303 (FAA)</desc>
+        <version>1303</version>
+        <filename>dtpp_20130307.db</filename>
+        <size>476939</size>
+        <start>2013-03-07T09:01:00Z</start>
+        <end>2013-04-04T09:01:00Z</end>
     </datafile>
     <datafile>
         <type>LIBRARY</type>
-        <desc>Documents Library 7Feb2013</desc>
-        <version>20130207</version>
-        <filename>library_20130207.db</filename>
-        <size>3826</size>
-        <start>2013-02-07T09:01:00Z</start>
-        <end>2013-03-07T09:01:00Z</end>
+        <desc>Documents Library 07Mar2013</desc>
+        <version>20130307</version>
+        <filename>library_20130307.db</filename>
+        <size>3835</size>
+        <start>2013-03-07T09:01:00Z</start>
+        <end>2013-04-04T09:01:00Z</end>
     </datafile>
 </manifest>
 
