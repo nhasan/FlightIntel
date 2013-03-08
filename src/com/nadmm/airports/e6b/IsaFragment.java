@@ -59,7 +59,7 @@ public class IsaFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_altimetry_isa );
+        return inflate( R.layout.e6b_altimetry_isa_view );
     }
 
     @Override
@@ -113,7 +113,7 @@ public class IsaFragment extends FragmentBase {
                 isaPressureInHg = 29.92126*0.2233609*Math.exp( -4.806346*10e-5*altitude );
             }
             double isaPressureMbar = isaPressureInHg*33.863753;
-            mPressureInEdit.setText( String.format( "%.2f", isaPressureInHg ) );
+            mPressureInEdit.setText( String.format( "%.5f", isaPressureInHg ) );
             mPressureMbEdit.setText( String.format( "%.2f", isaPressureMbar ) );
         } else {
             mTemperatureCEdit.setText( "" );
