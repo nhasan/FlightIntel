@@ -19,7 +19,6 @@
 
 package com.nadmm.airports.e6b;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -74,7 +73,7 @@ public class WindTriangleFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mHighlightTextColor = Color.rgb( 0, 112, 64 );
+        mHighlightTextColor = getResources().getColor( R.color.e6b_highlight );
 
         mTasEdit = (EditText) findViewById( R.id.e6b_tas_edit );
         mGsEdit = (EditText) findViewById( R.id.e6b_gs_edit );

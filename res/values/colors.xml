@@ -24,4 +24,5 @@
     <color name="tab_indicator">#ff33b5e5</color>
     <color name="scratchpad_toolbar_color">#f0e0e0e0</color>
     <color name="slidingmenu_background">#ff606060</color>
+    <color name="e6b_highlight">#ff007040</color>
 </resources>
