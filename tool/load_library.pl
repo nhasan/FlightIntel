@@ -58,8 +58,8 @@ my $create_library_table = "CREATE TABLE library ("
         ."BOOK_DESC TEXT, "
         ."EDITION TEXT, "
         ."AUTHOR TEXT, "
-        ."FLAG TEXT, "
-        ."DOWNLOAD_SIZE INTEGER"
+        ."DOWNLOAD_SIZE INTEGER, "
+        ."FLAG TEXT"
         .")";
 
 my $insert_library_record = "INSERT INTO library ("
@@ -68,8 +68,8 @@ my $insert_library_record = "INSERT INTO library ("
         ."BOOK_DESC, "
         ."EDITION, "
         ."AUTHOR, "
-        ."FLAG, "
-        ."DOWNLOAD_SIZE"
+        ."DOWNLOAD_SIZE, "
+        ."FLAG"
         .") VALUES ("
         ."?, ?, ?, ?, ?, ?, ?"
         .")";
@@ -94,126 +94,131 @@ $dbh->do( "CREATE INDEX idx_library_book on library ( CATEGORY_CODE, BOOK_NAME )
 my $sth_library = $dbh->prepare( $insert_library_record );
 
 insert_book( "handbooks", "faa-h-8083-3a-2004.pdf", "Airplane Flying Handbook", 
-        "2004", "FAA-H-8083-3A", "", 14042341 );
+        "2004", "FAA-H-8083-3A", 14042341, "" );
 insert_book( "handbooks", "faa-h-8083-25a-2008.pdf", "Pilot's Handbook of Aeronautical Knowledge",
-        "2008", "FAA-H-8083-25A", "", 56064788 );
+        "2008", "FAA-H-8083-25A", 56064788, "" );
 insert_book( "handbooks", "faa-h-8083-15a-2008.pdf", "Instrument Flying Handbook",
-        "2008", "FAA-H-8083-15A", "", 36124885 );
+        "2008", "FAA-H-8083-15A", 36124885, "" );
 insert_book( "handbooks", "faa-h-8261-1a-2007.pdf", "Instrument Procedures Handbook",
-        "2007", "FAA-H-8261-1A", "", 18019772 );
+        "2007", "FAA-H-8261-1A", 18019772, "" );
 insert_book( "handbooks", "faa-h-8083-6-2009.pdf", "Advanced Avionics Handbook",
-        "2009", "FAA-H-8083-6", "", 20664164 );
+        "2009", "FAA-H-8083-6", 20664164, "" );
 insert_book( "handbooks", "faa-h-8083-27a-2006.pdf", "Student Pilot Guide",
-        "2008", "FAA-H-8083-27A", "", 231353 );
+        "2008", "FAA-H-8083-27A", 231353, "" );
 insert_book( "handbooks", "faa-h-8083-9a-2008.pdf", "Aviation Instructor's Handbook",
-        "2008", "FAA-H-8083-9A", "", 13672806 );
+        "2008", "FAA-H-8083-9A", 13672806, "" );
 insert_book( "handbooks", "faa-h-8083-1a-2007.pdf", "Aircraft Weight and Balance Handbook",
-        "2007", "FAA-H-8083-1A", "", 12373020 );
+        "2007", "FAA-H-8083-1A", 12373020, "" );
 insert_book( "handbooks", "faa-h-8083-21-2000.pdf", "Rotorcraft Flying Handbook",
-        "2000", "FAA-H-8083-21", "", 16859688 );
+        "2000", "FAA-H-8083-21", 16859688, "" );
 insert_book( "handbooks", "faa-h-8083-2-2009.pdf", "Risk Management Handbook",
-        "2009", "FAA-H-8083-2", "", 11163579 );
+        "2009", "FAA-H-8083-2", 11163579, "" );
 insert_book( "handbooks", "faa-fs-i-8700-1-2003.pdf", "Information for Banner Tow Operations",
-        "2003", "FAA/FS-I-8799-1", "", 845400 );
+        "2003", "FAA/FS-I-8799-1", 845400, "" );
 insert_book( "handbooks", "fcm-h1-2005.pdf", "Federal Meteorological Handbook No. 1",
-        "2005", "NOAA", "", 1860432 );
+        "2005", "NOAA", 1860432, "" );
 insert_book( "handbooks", "fcm-h2-1988.pdf", "Federal Meteorological Handbook No. 2",
-        "1988", "NOAA", "", 16091462 );
+        "1988", "NOAA", 16091462, "" );
 
 insert_book( "manuals", "Chart_Users_Guide_11thEd.pdf", "Aeronautical Chart User's Guide",
-        "11th Edition", "FAA", "N", 17533800 );
+        "11th Edition", "FAA", 17533800, "N" );
 insert_book( "manuals", "faa-h-8083-19a-2008.pdf", "Plane Sense - General Aviation Information",
-        "2008", "FAA-H-8083-19A", "", 13246143 );
+        "2008", "FAA-H-8083-19A", 13246143, "" );
 insert_book( "manuals", "ac-00-6a-1975.pdf", "Aviation Weather",
-        "1975", "AC-00-6A", "", 29916885 );
+        "1975", "AC-00-6A", 29916885, "" );
 insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
-        "2010", "AC-00-45G", "", 12250011 );
+        "2010", "AC-00-45G", 12250011, "" );
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
-        "1965", "H. H. Hurt, Jr.", "", 23020072 );
+        "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
-insert_book( "periodicals", "cb_397.pdf", "Callback", "Issue 397 (Feb 2013)", "NASA", "N", 230821 );
-insert_book( "periodicals", "cb_396.pdf", "Callback", "Issue 396 (Jan 2013)", "NASA", "", 232299 );
-insert_book( "periodicals", "cb_395.pdf", "Callback", "Issue 395 (Dec 2012)", "NASA", "", 351768 );
-insert_book( "periodicals", "cb_394.pdf", "Callback", "Issue 394 (Nov 2012)", "NASA", "", 197346 );
-insert_book( "periodicals", "12jul-front.pdf", "The Front", "Jul 2012", "NOAA", "", 2071900 );
-insert_book( "periodicals", "11nov-front.pdf", "The Front", "Nov 2011", "NOAA", "", 1030336 );
-insert_book( "periodicals", "11jul-front.pdf", "The Front", "Jul 2011", "NOAA", "", 588846 );
+insert_book( "periodicals", "cb_397.pdf", "Callback", "Issue 397 (Feb 2013)", "NASA", 230821, "N" );
+insert_book( "periodicals", "cb_396.pdf", "Callback", "Issue 396 (Jan 2013)", "NASA", 232299, "" );
+insert_book( "periodicals", "cb_395.pdf", "Callback", "Issue 395 (Dec 2012)", "NASA", 351768, "" );
+insert_book( "periodicals", "cb_394.pdf", "Callback", "Issue 394 (Nov 2012)", "NASA", 197346, "" );
+insert_book( "periodicals", "12dec-front.pdf", "The Front", "Dec 2012", "NOAA", 2150530, "N" );
+insert_book( "periodicals", "12jul-front.pdf", "The Front", "Jul 2012", "NOAA", 2071900, "" );
+insert_book( "periodicals", "11nov-front.pdf", "The Front", "Nov 2011", "NOAA", 1030336, "" );
+insert_book( "periodicals", "11jul-front.pdf", "The Front", "Jul 2011", "NOAA", 588846, "" );
 insert_book( "periodicals", "MarApr2013.pdf", "FAA Safety Briefing",
-        "Mar/Apr 2013", "FAA", "N", 2751314 );
+        "Mar/Apr 2013", "FAA", 2751314, "N" );
 insert_book( "periodicals", "JanFeb2013.pdf", "FAA Safety Briefing",
-        "Jan/Feb 2013", "FAA", "", 2815002 );
+        "Jan/Feb 2013", "FAA", 2815002, "" );
 insert_book( "periodicals", "NovDec2012.pdf", "FAA Safety Briefing",
-        "Nov/Dec 2012", "FAA", "", 3685820 );
+        "Nov/Dec 2012", "FAA", 3685820, "" );
 insert_book( "periodicals", "SepOct2012.pdf", "FAA Safety Briefing",
-        "Sep/Oct 2012", "FAA", "", 2682469 );
+        "Sep/Oct 2012", "FAA", 2682469, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
-        "2008", "FAA", "", 829656 );
+        "2008", "FAA", 829656, "" );
 insert_book( "safety", "faa-p-8740-12-2008.pdf", "Thunderstorms",
-        "2008", "FAA", "", 615586 );
+        "2008", "FAA", 615586, "" );
 insert_book( "safety", "faa-p-8740-30-2008.pdf", "How to Obtain a Good Weather Briefing",
-        "2008", "FAA", "", 768237 );
+        "2008", "FAA", 768237, "" );
 insert_book( "safety", "faa-p-8740-36-2008.pdf", "Proficiency and the Private Pilot",
-        "2008", "FAA", "", 728809 );
+        "2008", "FAA", 728809, "" );
 insert_book( "safety", "faa-p-8740-40-2008.pdf", "Wind Shear",
-        "2008", "FAA", "", 1572833 );
+        "2008", "FAA", 1572833, "" );
 insert_book( "safety", "faa-p-8740-48-2008.pdf", "On Landings Part 1",
-        "2008", "FAA", "", 7959581 );
+        "2008", "FAA", 7959581, "" );
 insert_book( "safety", "faa-p-8740-49-2008.pdf", "On Landings Part 2",
-        "2008", "FAA", "", 2122307 );
+        "2008", "FAA", 2122307, "" );
 insert_book( "safety", "faa-p-8740-50-2008.pdf", "On Landings Part 3",
-        "2008", "FAA", "", 2478467 );
+        "2008", "FAA", 2478467, "" );
 insert_book( "safety", "faa-p-8740-66-2008.pdf", "Flying Light Twins Safely",
-        "2008", "FAA", "", 988401 );
+        "2008", "FAA", 988401, "" );
 insert_book( "safety", "faa-p-8740-69-2008.pdf", "Aeronautical Decision Making",
-        "2008", "FAA", "", 1331791 );
+        "2008", "FAA", 1331791, "" );
+insert_book( "safety", "takeoff_safety.pdf.gz", "Pilot Guide to Takeoff Safety",
+        "2008", "FAA", 2678525, "N" );
 
 insert_book( "regs", "aim_2012_r1.pdf", "Aeronautical Information Manual (AIM)",
-        "2012", "FAA", "", 8640900 );
+        "2012", "FAA", 8640900, "" );
 insert_book( "regs", "cfr-2012-title14-vol1.pdf", "Federal Aviation Regulations (FAR) 2012",
-        "Parts 1-59", "US GPO", "", 9855793 );
+        "Parts 1-59", "US GPO", 9855793, "" );
 insert_book( "regs", "cfr-2012-title14-vol2.pdf", "Federal Aviation Regulations (FAR) 2012",
-        "Parts 60-109", "US GPO", "", 15171981 );
+        "Parts 60-109", "US GPO", 15171981, "" );
 insert_book( "regs", "cfr-2012-title14-vol3.pdf", "Federal Aviation Regulations (FAR) 2012",
-        "Parts 110-199", "US GPO", "", 4961436 );
+        "Parts 110-199", "US GPO", 4961436, "" );
 insert_book( "regs", "cfr-2012-title14-vol4.pdf", "Federal Aviation Regulations (FAR) 2012",
-        "Parts 200-1199", "US GPO", "", 16738367 );
+        "Parts 200-1199", "US GPO", 16738367, "" );
 insert_book( "regs", "cfr-2013-title14-vol5.pdf", "Federal Aviation Regulations (FAR) 2013",
-        "Parts 1200-1310", "US GPO", "", 2400725 );
+        "Parts 1200-1310", "US GPO", 2400725, "" );
 
 insert_book( "risk", "ga_weather_decision_making.pdf", "General Aviation Pilot’s Guide",
-        "2009", "FAA", "", 659230 );
-insert_book( "risk", "local_vfr.pdf", "Local VFR Flying", "2012", "FAA", "", 300310 );
-insert_book( "risk", "night_vfr.pdf", "Night VFR Flying", "2012", "FAA", "", 294394 );
-insert_book( "risk", "pract_riskman.pdf", "Practical Risk Management", "2012", "FAA", "", 452295 );
-insert_book( "risk", "vfr_xc.pdf", "VFR XC Flying", "2012", "FAA", "", 488931 );
+        "2009", "FAA", 659230, "" );
+insert_book( "risk", "local_vfr.pdf", "Local VFR Flying", "2012", "FAA", 300310, "" );
+insert_book( "risk", "night_vfr.pdf", "Night VFR Flying", "2012", "FAA", 294394, "" );
+insert_book( "risk", "pract_riskman.pdf", "Practical Risk Management", "2012", "FAA", 452295, "" );
+insert_book( "risk", "vfr_xc.pdf", "VFR XC Flying", "2012", "FAA", 488931, "" );
 
 insert_book( "circular", "ac-60-22-1991.pdf", "Aeronautical Decision Making",
-        "1991", "AC-60-22", "", 3915178 );
+        "1991", "AC-60-22", 3915178, "" );
 insert_book( "circular", "ac-91-13c-1979.pdf", "Cold Weather Operation of Aircraft",
-        "1979", "AC-91-13C", "", 553456 );
+        "1979", "AC-91-13C", 553456, "" );
 insert_book( "circular", "ac-91-74a-2007.pdf", "Flight In Icing Conditions",
-        "2007", "AC-91-74A", "", 584587 );
+        "2007", "AC-91-74A", 584587, "" );
 insert_book( "circular", "ac-00-54-1988.pdf", "Pilot Windshear Guide",
-        "1988", "AC-00-54", "", 4475314 );
+        "1988", "AC-00-54", 4475314, "" );
 insert_book( "circular", "ac-00-46e-2011.pdf", "Aviation Safety Reporting Program",
-        "2011", "AC-00-46E", "", 46601 );
+        "2011", "AC-00-46E", 46601, "" );
 
 insert_book( "testguide", "FAA-G-8082-17F.pdf", "Private Pilot Knowledge Test Guide",
-        "2011", "FAA-G-8082-17F", "", 559673 );
+        "2011", "FAA-G-8082-17F", 559673, "" );
 insert_book( "testguide", "FAA-G-8082-13F.pdf", "Instrument Rating Knowledge Test Guide",
-        "2012", "FAA-G-8082-13F", "", 432103 );
+        "2012", "FAA-G-8082-13F", 432103, "" );
 insert_book( "testguide", "FAA-G-8082-5E.pdf", "Commercial Pilot Knowledge Test Guide",
-        "2011", "FAA-G-8082-5E", "", 708182 );
+        "2011", "FAA-G-8082-5E", 708182, "" );
 insert_book( "testguide", "FAA-G-8082-7F.pdf", "Flight & Ground Instructor Knowledge Test Guide",
-        "2012", "FAA-G-8082-7F", "", 578458 );
+        "2012", "FAA-G-8082-7F", 578458, "" );
 
 insert_book( "misc", "AIP_22nd_Edition.pdf", "Aeronautical Information Publication",
-        "22nd Edition", "FAA", "N", 15562404 );
+        "22nd Edition", "FAA", 15562404, "N" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
-        "3rd Edition", "USA", "", 717842 );
+        "3rd Edition", "USA", 717842, "" );
 insert_book( "misc", "pcg.pdf", "Pilot/Controller Glossary",
-        "2012", "FAA", "", 436621 );
+        "2012", "FAA", 436621, "" );
+insert_book( "misc", "RNProadmap.pdf", "Roadmap for Performance-Based Navigation",
+        "2006", "FAA", 1513616, "N" );
 
 exit;
 
@@ -245,12 +250,12 @@ sub insert_book( $$$$$$$ )
     #EDITION
     my $edition = shift;
     $sth_library->bind_param( 5, $edition );
-    #FLAG
-    my $flag = shift;
-    $sth_library->bind_param( 6, $flag );
     #DOWNLOAD_SIZE
     my $size = shift;
-    $sth_library->bind_param( 7, $size );
+    $sth_library->bind_param( 6, $size );
+    #FLAG
+    my $flag = shift;
+    $sth_library->bind_param( 7, $flag );
 
     $sth_library->execute();
 }
