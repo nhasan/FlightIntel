@@ -59,7 +59,7 @@ public class TrueAirspeedFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_altimetry_tas );
+        return inflate( R.layout.e6b_altimetry_tas_view );
     }
 
     @Override
