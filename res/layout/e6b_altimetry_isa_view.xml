@@ -56,7 +56,7 @@
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
-                <EditText android:id="@+id/e6b_isa_altitude"
+                <EditText android:id="@+id/e6b_edit_altitude"
                         android:inputType="number"
                         android:hint="@string/question"
                         android:layout_marginLeft="6dp"
@@ -82,7 +82,7 @@
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
-                <EditText android:id="@+id/e6b_isa_temperature_c"
+                <EditText android:id="@+id/e6b_edit_temperature_c"
                         android:inputType="none"
                         android:textStyle="bold"
                         android:textColor="#007040"
@@ -107,7 +107,7 @@
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
-                <EditText android:id="@+id/e6b_isa_temperature_f"
+                <EditText android:id="@+id/e6b_edit_temperature_f"
                         android:inputType="none"
                         android:textStyle="bold"
                         android:textColor="#007040"
@@ -134,7 +134,7 @@
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
-                <EditText android:id="@+id/e6b_isa_pressure_in"
+                <EditText android:id="@+id/e6b_edit_pressure_inHg"
                         android:inputType="none"
                         android:textStyle="bold"
                         android:textColor="#007040"
@@ -159,7 +159,7 @@
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
-                <EditText android:id="@+id/e6b_isa_pressure_mb"
+                <EditText android:id="@+id/e6b_edit_pressure_mb"
                         android:inputType="none"
                         android:textStyle="bold"
                         android:textColor="#007040"
@@ -175,7 +175,7 @@
                         android:layout_height="wrap_content" />
             </TableRow>
         </TableLayout>
-        <TextView android:id="@+id/e6b_isa_msg"
+        <TextView android:id="@+id/e6b_msg"
                 android:textIsSelectable="false"
                 android:gravity="center"
                 android:padding="8dp"

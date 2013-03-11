@@ -70,16 +70,16 @@ public class IsaFragment extends FragmentBase {
         TextView label = (TextView) findViewById( R.id.e6b_label );
         label.setText( title );
 
-        TextView msg = (TextView) findViewById( R.id.e6b_isa_msg );
+        TextView msg = (TextView) findViewById( R.id.e6b_msg );
         msg.setText( "ISA temperature lapse rate is 1.9812\u00B0C/1,000 ft" +
         		" or 3.56\u00B0F/1,000 ft upto 36,090 ft, then constant at" +
         		" -56.5\u00B0C or -69.7\u00B0F upto 65,620 ft" );
 
-        mAltitudeEdit = (EditText) findViewById( R.id.e6b_isa_altitude );
-        mTemperatureCEdit = (EditText) findViewById( R.id.e6b_isa_temperature_c );
-        mTemperatureFEdit = (EditText) findViewById( R.id.e6b_isa_temperature_f );
-        mPressureInEdit = (EditText) findViewById( R.id.e6b_isa_pressure_in );
-        mPressureMbEdit = (EditText) findViewById( R.id.e6b_isa_pressure_mb );
+        mAltitudeEdit = (EditText) findViewById( R.id.e6b_edit_altitude );
+        mTemperatureCEdit = (EditText) findViewById( R.id.e6b_edit_temperature_c );
+        mTemperatureFEdit = (EditText) findViewById( R.id.e6b_edit_temperature_f );
+        mPressureInEdit = (EditText) findViewById( R.id.e6b_edit_pressure_inHg );
+        mPressureMbEdit = (EditText) findViewById( R.id.e6b_edit_pressure_mb );
 
         mAltitudeEdit.addTextChangedListener( mTextWatcher );
     }
