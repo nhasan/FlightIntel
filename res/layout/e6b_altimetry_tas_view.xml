@@ -101,7 +101,7 @@
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_edit_ia"
                         android:inputType="numberDecimal"
-                        android:hint="@string/input_degc"
+                        android:hint="@string/input_degC"
                         android:layout_marginTop="-8dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="100dp"
@@ -124,7 +124,7 @@
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_edit_altimeter"
                         android:inputType="numberDecimal"
-                        android:hint="@string/input_inhg"
+                        android:hint="@string/input_inHg"
                         android:layout_marginTop="-6dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="100dp"
@@ -147,7 +147,7 @@
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_edit_temperature_c"
                         android:inputType="numberDecimal"
-                        android:hint="@string/input_degc"
+                        android:hint="@string/input_degC"
                         android:layout_marginTop="-8dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="100dp"
