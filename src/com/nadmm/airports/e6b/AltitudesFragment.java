@@ -70,7 +70,7 @@ public class AltitudesFragment extends FragmentBase {
         TextView label = (TextView) findViewById( R.id.e6b_label );
         label.setText( title );
 
-        TextView msg = (TextView) findViewById( R.id.e6b_isa_msg );
+        TextView msg = (TextView) findViewById( R.id.e6b_msg );
         msg.setText( "At sea level on a standard day, temperature is 15\u00B0C or 59\u00B0F" +
         		" and pressure is 29.92126 inHg or 1013.25 mB" );
 
