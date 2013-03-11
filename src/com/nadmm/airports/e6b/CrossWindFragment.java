@@ -72,11 +72,11 @@ public class CrossWindFragment extends FragmentBase {
         TextView label = (TextView) findViewById( R.id.e6b_label );
         label.setText( title );
 
-        mWsEdit = (EditText) findViewById( R.id.e6b_wind_speed );
-        mWdirEdit = (EditText) findViewById( R.id.e6b_wind_dir );
-        mRwyEdit = (EditText) findViewById( R.id.e6b_runway_id );
-        mHwndEdit = (EditText) findViewById( R.id.e6b_head_wind );
-        mXwndEdit = (EditText) findViewById( R.id.e6b_cross_wind );
+        mWsEdit = (EditText) findViewById( R.id.e6b_edit_wind_speed );
+        mWdirEdit = (EditText) findViewById( R.id.e6b_edit_wind_dir );
+        mRwyEdit = (EditText) findViewById( R.id.e6b_edit_runway_id );
+        mHwndEdit = (EditText) findViewById( R.id.e6b_edit_head_wind );
+        mXwndEdit = (EditText) findViewById( R.id.e6b_edit_cross_wind );
         mWindMsg = (TextView) findViewById( R.id.e6b_wind_msg );
 
         mWsEdit.addTextChangedListener( mTextWatcher );
