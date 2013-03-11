@@ -154,9 +154,9 @@
     <string name="ws">WS</string>
     <string name="wdir">WDIR</string>
     <string name="altitude">Altitude</string>
-    <string name="input_degc">\? \u00B0C</string>
+    <string name="input_degC">\? \u00B0C</string>
     <string name="input_feet">\? ft</string>
-    <string name="input_inhg">\? inHg</string>
+    <string name="input_inHg">\? inHg</string>
     <string name="input_kts">\? kts</string>
     <string name="input_deg">\? \u00B0</string>
     <string name="input_min">\? min</string>
@@ -176,6 +176,10 @@
     <string name="da">Density Altitude</string>
     <string name="ias">IAS</string>
     <string name="tas">TAS</string>
+    <string name="iat">IAT</string>
+    <string name="oat">OAT</string>
+    <string name="mach">Mach Number</string>
+    <string name="recovery_factor">Recovery Factor</string>
     <string name="time_flown">Time Flown</string>
     <string name="distance_flown">Distance Flown</string>
     <string name="ground_speed">Ground Speed</string>
