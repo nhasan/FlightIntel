@@ -109,36 +109,35 @@ public class CrossWindFragment extends FragmentBase {
         } catch ( NumberFormatException e ) {
         }
 
-        if ( windSpeed == -1 || windDir == -1 || runwayId == -1 ) {
+        if ( windSpeed != -1 && windDir != -1 && runwayId != -1 ) {
+            long headWind = WxUtils.getHeadWindComponent( windSpeed, windDir, runwayId*10 );
+            long crossWind = WxUtils.getCrossWindComponent( windSpeed, windDir, runwayId*10 );
+            mHwndEdit.setText( String.valueOf( headWind ) );
+            mXwndEdit.setText( String.valueOf( crossWind ) );
+
+            if ( headWind > 0 && crossWind > 0 ) {
+                mWindMsg.setText( "Right quartering cross wind with head wind" );
+            } else if ( headWind > 0 && crossWind < 0 ) {
+                mWindMsg.setText( "Left quartering cross wind with head wind" );
+            } else if ( headWind > 0 && crossWind == 0 ) {
+                mWindMsg.setText( "Head wind only, no cross wind" );
+            } else if ( headWind == 0 && crossWind > 0 ) {
+                mWindMsg.setText( "Right cross wind only, no head wind" );
+            } else if ( headWind == 0 && crossWind < 0 ) {
+                mWindMsg.setText( "Left cross wind only, no head wind" );
+            } else if ( headWind < 0 && crossWind < 0 ) {
+                mWindMsg.setText( "Left quartering cross wind with tail wind" );
+            } else if ( headWind < 0 && crossWind > 0 ) {
+                mWindMsg.setText( "Right quartering cross wind with tail wind" );
+            } else if ( headWind < 0 && crossWind == 0 ) {
+                mWindMsg.setText( "Tail wind only, no cross wind" );
+            } else if ( headWind == 0 && crossWind == 0 ) {
+                mWindMsg.setText( "Calm winds" );
+            }
+        } else {
             mHwndEdit.setText( "" );
             mXwndEdit.setText( "" );
             mWindMsg.setText( "" );
-            return;
-        }
-
-        long headWind = WxUtils.getHeadWindComponent( windSpeed, windDir, runwayId*10 );
-        long crossWind = WxUtils.getCrossWindComponent( windSpeed, windDir, runwayId*10 );
-        mHwndEdit.setText( String.valueOf( headWind ) );
-        mXwndEdit.setText( String.valueOf( crossWind ) );
-
-        if ( headWind > 0 && crossWind > 0 ) {
-            mWindMsg.setText( "Right quartering cross wind with head wind" );
-        } else if ( headWind > 0 && crossWind < 0 ) {
-            mWindMsg.setText( "Left quartering cross wind with head wind" );
-        } else if ( headWind > 0 && crossWind == 0 ) {
-            mWindMsg.setText( "Head wind only, no cross wind" );
-        } else if ( headWind == 0 && crossWind > 0 ) {
-            mWindMsg.setText( "Right cross wind only, no head wind" );
-        } else if ( headWind == 0 && crossWind < 0 ) {
-            mWindMsg.setText( "Left cross wind only, no head wind" );
-        } else if ( headWind < 0 && crossWind < 0 ) {
-            mWindMsg.setText( "Left quartering cross wind with tail wind" );
-        } else if ( headWind < 0 && crossWind > 0 ) {
-            mWindMsg.setText( "Right quartering cross wind with tail wind" );
-        } else if ( headWind < 0 && crossWind == 0 ) {
-            mWindMsg.setText( "Tail wind only, no cross wind" );
-        } else if ( headWind == 0 && crossWind == 0 ) {
-            mWindMsg.setText( "Calm winds" );
         }
     }
 
