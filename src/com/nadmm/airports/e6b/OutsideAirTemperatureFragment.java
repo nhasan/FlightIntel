@@ -19,8 +19,6 @@
 
 package com.nadmm.airports.e6b;
 
-import java.util.Locale;
-
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -34,7 +32,7 @@ import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
-public class TrueAirTemperatureFragment extends FragmentBase {
+public class OutsideAirTemperatureFragment extends FragmentBase {
 
     private EditText mIatEdit;
     private EditText mRecoveryFactorEdit;
@@ -103,7 +101,7 @@ public class TrueAirTemperatureFragment extends FragmentBase {
 
         if ( iat != Double.MAX_VALUE && k != Double.MAX_VALUE && tas != Double.MAX_VALUE ) {
             oat = iat - k*Math.pow( tas, 2 )/7592;
-            mOatEdit.setText( String.format( Locale.US, "%.1f", oat ) );
+            mOatEdit.setText( String.valueOf( Math.round( oat ) ) );
         } else {
             mOatEdit.setText( "" );
         }
