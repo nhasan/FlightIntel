@@ -59,13 +59,13 @@
                     android:paddingBottom="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                <EditText android:id="@+id/e6b_time_edit"
+                <EditText android:id="@+id/e6b_edit_time"
                         android:inputType="numberDecimal"
                         android:layout_marginTop="-6dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
-                <EditText android:id="@+id/e6b_time2_edit"
+                <EditText android:id="@+id/e6b_edit_time2"
                         android:inputType="none"
                         android:focusable="false"
                         android:layout_marginTop="-6dp"
@@ -88,7 +88,7 @@
                     android:paddingBottom="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                <EditText android:id="@+id/e6b_gs_edit"
+                <EditText android:id="@+id/e6b_edit_gs"
                         android:inputType="number"
                         android:layout_marginTop="-6dp"
                         android:layout_marginLeft="6dp"
@@ -110,7 +110,7 @@
                     android:paddingBottom="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                <EditText android:id="@+id/e6b_distance_edit"
+                <EditText android:id="@+id/e6b_edit_distance"
                         android:inputType="numberDecimal"
                         android:layout_marginTop="-8dp"
                         android:layout_marginLeft="6dp"

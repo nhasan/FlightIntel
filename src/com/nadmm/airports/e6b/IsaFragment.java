@@ -85,18 +85,18 @@ public class IsaFragment extends FragmentBase {
     }
 
     private void processInput() {
-        double altitude = -1;
+        double altitude = Double.MAX_VALUE;
 
         try {
-            altitude = Double.valueOf( mAltitudeEdit.getText().toString() );
+            altitude = Double.parseDouble( mAltitudeEdit.getText().toString() );
             if ( altitude < 0 || altitude > 65620 ) {
                 mAltitudeEdit.setError( "Enter a value between 0 and 65,620" );
-                altitude = -1;
+                altitude = Double.MAX_VALUE;
             }
         } catch ( NumberFormatException e ) {
         }
 
-        if ( altitude != -1 ) {
+        if ( altitude != Double.MAX_VALUE ) {
             double isaTempC = -56.5;
             if ( altitude <= 36089.24 ) {
                 isaTempC = 15.0 - 0.0019812*altitude;
@@ -118,6 +118,8 @@ public class IsaFragment extends FragmentBase {
         } else {
             mTemperatureCEdit.setText( "" );
             mTemperatureFEdit.setText( "" );
+            mPressureInEdit.setText( "" );
+            mPressureMbEdit.setText( "" );
         }
     }
 

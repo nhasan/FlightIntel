@@ -73,10 +73,10 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
 
         mHighlightTextColor = getResources().getColor( R.color.e6b_highlight );
 
-        mTimeEdit = (EditText) findViewById( R.id.e6b_time_edit );
-        mTime2Edit = (EditText) findViewById( R.id.e6b_time2_edit );
-        mDistanceEdit = (EditText) findViewById( R.id.e6b_distance_edit );
-        mGsEdit = (EditText) findViewById( R.id.e6b_gs_edit );
+        mTimeEdit = (EditText) findViewById( R.id.e6b_edit_time );
+        mTime2Edit = (EditText) findViewById( R.id.e6b_edit_time2 );
+        mDistanceEdit = (EditText) findViewById( R.id.e6b_edit_distance );
+        mGsEdit = (EditText) findViewById( R.id.e6b_edit_gs );
 
         Bundle args = getArguments();
         mMode = args.getLong( ListMenuFragment.MENU_ID );
@@ -88,9 +88,9 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
     }
 
     private void processInput() {
-        double time = -1;
-        double speed = -1;
-        double distance = -1;
+        double time = Double.MAX_VALUE;
+        double speed = Double.MAX_VALUE;
+        double distance = Double.MAX_VALUE;
 
         if ( mMode == R.id.E6B_TSD_TIME ) {
             try {
@@ -99,7 +99,7 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
             } catch ( NumberFormatException e ) {
             }
 
-            if ( speed != -1 && distance != -1 ) {
+            if ( speed != Double.MAX_VALUE && distance != Double.MAX_VALUE ) {
                 time = distance*60/speed;
                 mTimeEdit.setText( String.format( Locale.US, "%.3f", time ) );
             } else {
@@ -112,7 +112,7 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
             } catch ( NumberFormatException e ) {
             }
 
-            if ( time != -1 && distance != -1 ) {
+            if ( time != Double.MAX_VALUE && distance != Double.MAX_VALUE ) {
                 speed = distance/(time/60);
                 mGsEdit.setText( String.valueOf( Math.round( speed ) ) );
             } else {
@@ -125,7 +125,7 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
             } catch ( NumberFormatException e ) {
             }
 
-            if ( time != -1 && speed != -1 ) {
+            if ( time != Double.MAX_VALUE && speed != Double.MAX_VALUE ) {
                 distance = ( time/60 )*speed;
                 mDistanceEdit.setText( String.format( Locale.US, "%.1f", distance ) );
             } else {
@@ -133,8 +133,10 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
             }
         }
 
-        if ( time != -1 ) {
+        if ( time != Double.MAX_VALUE ) {
             mTime2Edit.setText( getFormattedTime( time ) );
+        } else {
+            mTime2Edit.setText( "" );
         }
     }
 
