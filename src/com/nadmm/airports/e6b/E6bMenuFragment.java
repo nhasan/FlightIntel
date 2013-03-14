@@ -41,8 +41,9 @@ public class E6bMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_ISA, IsaFragment.class );
         mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_ALTITUDES, AltitudesFragment.class );
         mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_TAS, TrueAirspeedFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_TAT, TrueAirTemperatureFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_OAT, OutsideAirTemperatureFragment.class );
         mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_MACH, MachNumberFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_TA, TrueAltitudeFragment.class );
         mDispatchMap.put( (long)R.id.E6B_TIME_SPEED_DISTANCE, E6bMenuFragment.class );
         mDispatchMap.put( (long)R.id.E6B_TSD_TIME, TimeSpeedDistanceFragment.class );
         mDispatchMap.put( (long)R.id.E6B_TSD_SPEED, TimeSpeedDistanceFragment.class );
@@ -103,9 +104,9 @@ public class E6bMenuFragment extends ListMenuFragment {
                 addRow( R.id.E6B_ALTIMETRY_TAS,
                         "True Airspeed",
                         "True airspeed at a given altitude and temperature" );
-                addRow( R.id.E6B_ALTIMETRY_TAT,
-                        "True Air Temperature",
-                        "Also known as TAT or OAT" );
+                addRow( R.id.E6B_ALTIMETRY_OAT,
+                        "Outside Air Temperature",
+                        "Also known as True Air Temperature" );
                 addRow( R.id.E6B_ALTIMETRY_MACH,
                         "Mach Number",
                         "Supersonic or subsonic" );
