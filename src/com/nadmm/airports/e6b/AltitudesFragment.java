@@ -74,11 +74,11 @@ public class AltitudesFragment extends FragmentBase {
         msg.setText( "At sea level on a standard day, temperature is 15\u00B0C or 59\u00B0F" +
         		" and pressure is 29.92126 inHg or 1013.25 mB" );
 
-        mElevationEdit = (EditText) findViewById( R.id.e6b_elevation );
-        mAltimeterEdit = (EditText) findViewById( R.id.e6b_altimeter_in );
-        mTemperatureEdit = (EditText) findViewById( R.id.e6b_temperature_c );
-        mPressureAltitudeEdit = (EditText) findViewById( R.id.e6b_pressure_altitude );
-        mDensityAltitudeEdit = (EditText) findViewById( R.id.e6b_density_altitude );
+        mElevationEdit = (EditText) findViewById( R.id.e6b_edit_elevation );
+        mAltimeterEdit = (EditText) findViewById( R.id.e6b_edit_altimeter_inhg );
+        mTemperatureEdit = (EditText) findViewById( R.id.e6b_edit_temperature_c );
+        mPressureAltitudeEdit = (EditText) findViewById( R.id.e6b_edit_pa );
+        mDensityAltitudeEdit = (EditText) findViewById( R.id.e6b_edit_da );
 
         mElevationEdit.addTextChangedListener( mTextWatcher );
         mAltimeterEdit.addTextChangedListener( mTextWatcher );
@@ -86,27 +86,29 @@ public class AltitudesFragment extends FragmentBase {
     }
 
     private void processInput() {
-        long elevation = -1;
-        double altimeter = -1;
-        double temperatureC = -1;
+        double elevation = Double.MAX_VALUE;
+        double altimeter = Double.MAX_VALUE;
+        double temperatureC = Double.MAX_VALUE;
 
         try {
-            elevation = Long.valueOf( mElevationEdit.getText().toString() );
-            altimeter = Double.valueOf( mAltimeterEdit.getText().toString() );
-            temperatureC = Double.valueOf( mTemperatureEdit.getText().toString() );
+            elevation = Double.parseDouble( mElevationEdit.getText().toString() );
+            altimeter = Double.parseDouble( mAltimeterEdit.getText().toString() );
+            temperatureC = Double.parseDouble( mTemperatureEdit.getText().toString() );
         } catch ( NumberFormatException e ) {
         }
 
-        if ( elevation != -1 && altimeter != -1 && temperatureC != -1 ) {
-            long delta = Math.round( 145442.2*( 1-Math.pow( altimeter/29.92126, 0.190261 ) ) );
-            long pressureAltitude = elevation+delta;
-            mPressureAltitudeEdit.setText( String.valueOf( pressureAltitude ) );
+        if ( elevation != Double.MAX_VALUE
+                && altimeter != Double.MAX_VALUE
+                && temperatureC != Double.MAX_VALUE ) {
+            double delta = 145442.2*( 1-Math.pow( altimeter/29.92126, 0.190261 ) );
+            long pa = Math.round( elevation+delta );
+            mPressureAltitudeEdit.setText( String.valueOf( pa ) );
 
             double stdTempK = 15.0-( 0.0019812*elevation )+273.15;
             double actTempK = temperatureC+273.15;
-            long densityAltitude = Math.round( pressureAltitude
+            long da = Math.round( pa
                     +( stdTempK/0.0019812 )*( 1-Math.pow( stdTempK/actTempK, 0.234969 ) ) );
-            mDensityAltitudeEdit.setText( String.valueOf( densityAltitude ) );
+            mDensityAltitudeEdit.setText( String.valueOf( da ) );
         } else {
             mPressureAltitudeEdit.setText( "" );
             mDensityAltitudeEdit.setText( "" );
