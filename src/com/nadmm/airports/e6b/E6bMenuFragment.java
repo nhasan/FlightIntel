@@ -48,6 +48,13 @@ public class E6bMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.E6B_TSD_TIME, TimeSpeedDistanceFragment.class );
         mDispatchMap.put( (long)R.id.E6B_TSD_SPEED, TimeSpeedDistanceFragment.class );
         mDispatchMap.put( (long)R.id.E6B_TSD_DISTANCE, TimeSpeedDistanceFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_FUEL_CALCS, E6bMenuFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_FUEL_ENDURANCE_GALLONS, FuelCalcsFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_FUEL_ENDURANCE_LBS, FuelCalcsFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_FUEL_BURN_RATE_GALLONS, FuelCalcsFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_FUEL_BURN_RATE_LBS, FuelCalcsFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_FUEL_TOTAL_BURNED_GALLONS, FuelCalcsFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_FUEL_TOTAL_BURNED_LBS, FuelCalcsFragment.class );
     }
 
     @Override
@@ -74,10 +81,13 @@ public class E6bMenuFragment extends ListMenuFragment {
                         "Cross wind, head wind and wind triangle" );
                 addRow( R.id.E6B_ALTIMETRY,
                         "Altimetry",
-                        "Altimeter, altitude and the standard atmosphere");
+                        "Altimeter, altitude and the standard atmosphere" );
                 addRow( R.id.E6B_TIME_SPEED_DISTANCE,
                         "Time, Speed and Distance",
-                        "Solve for time, speed and distance");
+                        "Solve for time, speed and distance" );
+                addRow( R.id.E6B_FUEL_CALCS,
+                        "Fuel Calculations",
+                        "Find endurance, burn rate and fuel required" );
                 addRow( R.id.E6B_UNIT_CONVERSIONS,
                         "Unit Conversions",
                         "Convert between units of measurement" );
@@ -123,6 +133,25 @@ public class E6bMenuFragment extends ListMenuFragment {
                 addRow( R.id.E6B_TSD_DISTANCE,
                         "Find Distance Flown",
                         "Find distance flown based on time and speed" );
+            } else if ( id == R.id.E6B_FUEL_CALCS ) {
+                addRow( R.id.E6B_FUEL_ENDURANCE_GALLONS,
+                        "Endurance",
+                        "Find endurance in flight" );
+                addRow( R.id.E6B_FUEL_TOTAL_BURNED_GALLONS,
+                        "Total Fuel Burn",
+                        "Find total fuel burned during the flight" );
+                addRow( R.id.E6B_FUEL_BURN_RATE_GALLONS,
+                        "Fuel Burn Rate",
+                        "Find rate of fuel burn during the flight" );
+                addRow( R.id.E6B_FUEL_ENDURANCE_LBS,
+                        "Endurance (lbs)",
+                        "Find endurance in flight" );
+                addRow( R.id.E6B_FUEL_TOTAL_BURNED_LBS,
+                        "Total Fuel Burn (lbs)",
+                        "Find total fuel burned during the flight" );
+                addRow( R.id.E6B_FUEL_BURN_RATE_LBS,
+                        "Fuel Burn Rate (lbs)",
+                        "Find rate of fuel burn during the flight" );
             }
         }
 
