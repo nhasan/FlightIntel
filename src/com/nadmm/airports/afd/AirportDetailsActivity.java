@@ -276,13 +276,15 @@ public class AirportDetailsActivity extends AfdActivityBase {
                 @Override
                 public void onReceive( Context context, Intent intent ) {
                     Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
-                    showWxInfo( metar );
+                    if ( metar != null ) {
+                        showWxInfo( metar );
 
-                    ++mWxUpdates;
-                    if ( mWxUpdates == mAwosViews.size() ) {
-                        // We have all the wx updates, stop the refresh animation
-                        mWxUpdates = 0;
-                        stopRefreshAnimation();
+                        ++mWxUpdates;
+                        if ( mWxUpdates == mAwosViews.size() ) {
+                            // We have all the wx updates, stop the refresh animation
+                            mWxUpdates = 0;
+                            stopRefreshAnimation();
+                        }
                     }
                 }
 
