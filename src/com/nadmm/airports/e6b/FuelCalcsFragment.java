@@ -71,18 +71,20 @@ public class FuelCalcsFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        Bundle args = getArguments();
+        String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
+        TextView label = (TextView) findViewById( R.id.e6b_label );
+        label.setText( title );
+
+        TextView msg = (TextView) findViewById( R.id.e6b_msg );
+        msg.setText( "Fuel is typically measured in Gallons for 100LL and Pounds for Jet fuel" );
+
         mHighlightTextColor = getResources().getColor( R.color.e6b_highlight );
 
         mFuelTotalEdit = (EditText) findViewById( R.id.e6b_edit_total_fuel );
         mFuelRateEdit = (EditText) findViewById( R.id.e6b_edit_burn_rate );
         mTimeEdit = (EditText) findViewById( R.id.e6b_edit_time );
         mTime2Edit = (EditText) findViewById( R.id.e6b_edit_time2 );
-
-        Bundle args = getArguments();
-        mMode = args.getLong( ListMenuFragment.MENU_ID );
-        String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
-        TextView label = (TextView) findViewById( R.id.e6b_label );
-        label.setText( title );
 
         setupUi();
     }
@@ -166,6 +168,33 @@ public class FuelCalcsFragment extends FragmentBase {
             mFuelTotalEdit.setHint( R.string.gal );
             mFuelRateEdit.addTextChangedListener( mTextWatcher );
             mFuelRateEdit.setHint( R.string.input_gph );
+            mTimeEdit.addTextChangedListener( mTextWatcher );
+            mTimeEdit.setHint( R.string.input_min );
+        } else if ( mMode == R.id.E6B_FUEL_ENDURANCE_POUNDS ) {
+            mFuelTotalEdit.addTextChangedListener( mTextWatcher );
+            mFuelTotalEdit.setHint( R.string.input_lbs );
+            mFuelRateEdit.addTextChangedListener( mTextWatcher );
+            mFuelRateEdit.setHint( R.string.input_lbsph );
+            mTimeEdit.setFocusable( false );
+            mTimeEdit.setTextColor( mHighlightTextColor );
+            mTimeEdit.setTypeface( null, Typeface.BOLD );
+            mTimeEdit.setHint( R.string.min );
+        } else if ( mMode == R.id.E6B_FUEL_BURN_RATE_POUNDS ) {
+            mFuelTotalEdit.addTextChangedListener( mTextWatcher );
+            mFuelTotalEdit.setHint( R.string.input_lbs );
+            mFuelRateEdit.setFocusable( false );
+            mFuelRateEdit.setTextColor( mHighlightTextColor );
+            mFuelRateEdit.setTypeface( null, Typeface.BOLD );
+            mFuelRateEdit.setHint( R.string.lbsph );
+            mTimeEdit.addTextChangedListener( mTextWatcher );
+            mTimeEdit.setHint( R.string.input_min );
+        } else if ( mMode == R.id.E6B_FUEL_TOTAL_BURNED_GALLONS ) {
+            mFuelTotalEdit.setFocusable( false );
+            mFuelTotalEdit.setTextColor( mHighlightTextColor );
+            mFuelTotalEdit.setTypeface( null, Typeface.BOLD );
+            mFuelTotalEdit.setHint( R.string.lbs );
+            mFuelRateEdit.addTextChangedListener( mTextWatcher );
+            mFuelRateEdit.setHint( R.string.input_lbsph );
             mTimeEdit.addTextChangedListener( mTextWatcher );
             mTimeEdit.setHint( R.string.input_min );
         }
