@@ -53,9 +53,9 @@
     <item type="id" name="E6B_FUEL_ENDURANCE_GALLONS" />
     <item type="id" name="E6B_FUEL_TOTAL_BURNED_GALLONS" />
     <item type="id" name="E6B_FUEL_BURN_RATE_GALLONS" />
-    <item type="id" name="E6B_FUEL_ENDURANCE_LBS" />
-    <item type="id" name="E6B_FUEL_TOTAL_BURNED_LBS" />
-    <item type="id" name="E6B_FUEL_BURN_RATE_LBS" />
+    <item type="id" name="E6B_FUEL_ENDURANCE_POUNDS" />
+    <item type="id" name="E6B_FUEL_TOTAL_BURNED_POUNDS" />
+    <item type="id" name="E6B_FUEL_BURN_RATE_POUNDS" />
     <item type="id" name="E6B_CLIMB_DESCENT" />
     <item type="id" name="E6B_CLIMB_DESCENT_REQCLIMB" />
     <item type="id" name="E6B_CLIMB_DESCENT_REQDSCNT" />
