@@ -55,6 +55,10 @@ public class E6bMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.E6B_FUEL_BURN_RATE_LBS, FuelCalcsFragment.class );
         mDispatchMap.put( (long)R.id.E6B_FUEL_TOTAL_BURNED_GALLONS, FuelCalcsFragment.class );
         mDispatchMap.put( (long)R.id.E6B_FUEL_TOTAL_BURNED_LBS, FuelCalcsFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT, E6bMenuFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_REQCLIMB, ClimbRateFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_REQDSCNT, DescentRateFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_TOPDSCNT, TopOfDescentFragment.class );
     }
 
     @Override
@@ -79,15 +83,18 @@ public class E6bMenuFragment extends ListMenuFragment {
                 addRow( R.id.E6B_WIND_CALCS,
                         "Wind Calculations",
                         "Cross wind, head wind and wind triangle" );
-                addRow( R.id.E6B_ALTIMETRY,
-                        "Altimetry",
-                        "Altimeter, altitude and the standard atmosphere" );
                 addRow( R.id.E6B_TIME_SPEED_DISTANCE,
                         "Time, Speed and Distance",
                         "Solve for time, speed and distance" );
                 addRow( R.id.E6B_FUEL_CALCS,
                         "Fuel Calculations",
                         "Find endurance, burn rate and fuel required" );
+                addRow( R.id.E6B_ALTIMETRY,
+                        "Altimetry",
+                        "Altimeter, altitude and the standard atmosphere" );
+                addRow( R.id.E6B_CLIMB_DESCENT,
+                        "Climb and Descent",
+                        "Climb and descent rates" );
                 addRow( R.id.E6B_UNIT_CONVERSIONS,
                         "Unit Conversions",
                         "Convert between units of measurement" );
@@ -114,12 +121,12 @@ public class E6bMenuFragment extends ListMenuFragment {
                 addRow( R.id.E6B_ALTIMETRY_TAS,
                         "True Airspeed",
                         "True airspeed at a given altitude and temperature" );
-                addRow( R.id.E6B_ALTIMETRY_OAT,
-                        "Outside Air Temperature",
-                        "Also known as True Air Temperature" );
                 addRow( R.id.E6B_ALTIMETRY_MACH,
                         "Mach Number",
                         "Supersonic or subsonic" );
+                addRow( R.id.E6B_ALTIMETRY_OAT,
+                        "Outside Air Temperature",
+                        "Also known as True Air Temperature" );
                 addRow( R.id.E6B_ALTIMETRY_TA,
                         "True Altitude",
                         "True altitude at a given altitude and temperature" );
@@ -152,6 +159,16 @@ public class E6bMenuFragment extends ListMenuFragment {
                 addRow( R.id.E6B_FUEL_BURN_RATE_LBS,
                         "Fuel Burn Rate (lbs)",
                         "Find rate of fuel burn during the flight" );
+            } else if ( id == R.id.E6B_CLIMB_DESCENT ) {
+                addRow( R.id.E6B_CLIMB_DESCENT_REQCLIMB,
+                        "Required Rate of Climb",
+                        "Minimum rate of climb on a departure procedures" );
+                addRow( R.id.E6B_CLIMB_DESCENT_REQDSCNT,
+                        "Required Rate of Descent",
+                        "Rate of descent or climb to cross a fix" );
+                addRow( R.id.E6B_CLIMB_DESCENT_TOPDSCNT,
+                        "Top of Descent",
+                        "Calculate how far out to begin the descent" );
             }
         }
 

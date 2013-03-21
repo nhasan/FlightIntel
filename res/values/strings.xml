@@ -164,6 +164,8 @@
     <string name="input_gal">\? Gal</string>
     <string name="input_gph">\? Gal/h</string>
     <string name="input_lbs">\? lbs</string>
+    <string name="input_ftpnm">\? ft/nm</string>
+    <string name="input_ftpmin">\? ft/min</string>
     <string name="ft">ft</string>
     <string name="degC">\u00B0C</string>
     <string name="degF">\u00B0F</string>
@@ -176,6 +178,8 @@
     <string name="gal">Gal</string>
     <string name="gph">Gal/h</string>
     <string name="lbs">lbs</string>
+    <string name="ftpmin">ft/min</string>
+    <string name="pct">%</string>
     <string name="altimeter">Altimeter</string>
     <string name="elevation">Elevation</string>
     <string name="pa">Pressure Altitude</string>
@@ -195,6 +199,14 @@
     <string name="total_fuel">Total Fuel</string>
     <string name="burn_rate">Burn Rate</string>
     <string name="endurance">Endurance</string>
+    <string name="climb_grad">Climb Gradient</string>
+    <string name="climb_rate">Climb Rate</string>
+    <string name="initial_alt">Initial Altitude</string>
+    <string name="crossing_alt">Crossing Altitude</string>
+    <string name="fix_dist">Distance to Fix</string>
+    <string name="descent_rate">Descent Rate</string>
+    <string name="desired_alt">Desired Altitude</string>
+    <string name="distance">Distance</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>
