@@ -57,7 +57,7 @@ public class NearbyWxCursor extends MatrixCursor {
     public NearbyWxCursor( SQLiteDatabase db, Location location, int radius ) {
         super( sColumns );
 
-        float declination = GeoUtils.getMagneticDeclination( location );
+        double declination = GeoUtils.getMagneticDeclination( location );
 
         // Get the bounding box first to do a quick query as a first cut
         double[] box = GeoUtils.getBoundingBoxRadians( location, radius );
@@ -137,10 +137,10 @@ public class NearbyWxCursor extends MatrixCursor {
         public int ELEVATION;
         public double LATITUDE;
         public double LONGITUDE;
-        public float DISTANCE;
-        public float BEARING;
+        public double DISTANCE;
+        public double BEARING;
 
-        public AwosData( Cursor c, Location location, float declination ) {
+        public AwosData( Cursor c, Location location, double declination ) {
             ICAO_CODE = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
             NAME = c.getString( c.getColumnIndex( Wxs.STATION_NAME ) );
             STATUS = c.getString( c.getColumnIndex( Awos1.COMMISSIONING_STATUS ) );

@@ -215,12 +215,12 @@ public class WxUtils {
         return Math.round( 145366*( 1-Math.pow( 17.326*stationPressureHg/tvRankine, 0.235 ) ) );
     }
 
-    static public long getHeadWindComponent( long ws, long wd, long rd ) {
-        return Math.round(ws*Math.cos( Math.toRadians( wd-rd ) ) );
+    static public long getHeadWindComponent( double windSpeed, double windDir, double d ) {
+        return Math.round(windSpeed*Math.cos( Math.toRadians( windDir-d ) ) );
     }
 
-    static public long getCrossWindComponent( long ws, long wd, long rd ) {
-        return Math.round( ws*Math.sin( Math.toRadians( wd-rd ) ) );
+    static public long getCrossWindComponent( double windSpeed, double windDir, double d ) {
+        return Math.round( windSpeed*Math.sin( Math.toRadians( windDir-d ) ) );
     }
 
     static public SkyCondition getCeiling( ArrayList<SkyCondition> skyConditions ) {
