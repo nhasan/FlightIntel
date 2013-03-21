@@ -31,12 +31,14 @@ import android.widget.TextView;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
+import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.wx.WxUtils;
 
 public class CrossWindFragment extends FragmentBase {
 
     private EditText mWsEdit;
     private EditText mWdirEdit;
+    private EditText mMagVar;
     private EditText mRwyEdit;
     private EditText mHwndEdit;
     private EditText mXwndEdit;
@@ -74,10 +76,13 @@ public class CrossWindFragment extends FragmentBase {
 
         mWsEdit = (EditText) findViewById( R.id.e6b_edit_wind_speed );
         mWdirEdit = (EditText) findViewById( R.id.e6b_edit_wind_dir );
+        mMagVar = (EditText) findViewById( R.id.e6b_edit_mag_var );
         mRwyEdit = (EditText) findViewById( R.id.e6b_edit_runway_id );
         mHwndEdit = (EditText) findViewById( R.id.e6b_edit_head_wind );
         mXwndEdit = (EditText) findViewById( R.id.e6b_edit_cross_wind );
-        mWindMsg = (TextView) findViewById( R.id.e6b_wind_msg );
+        mWindMsg = (TextView) findViewById( R.id.e6b_msg );
+
+        mMagVar.setText( "0" );
 
         mWsEdit.addTextChangedListener( mTextWatcher );
         mWdirEdit.addTextChangedListener( mTextWatcher );
@@ -85,23 +90,26 @@ public class CrossWindFragment extends FragmentBase {
     }
 
     protected void processInput() {
-        int windSpeed = -1;
-        int windDir = -1;
-        int runwayId = -1;
+        double windSpeed = Double.MAX_VALUE;
+        double windDir = Double.MAX_VALUE;
+        double magVar = Double.MAX_VALUE;
+        double runwayId = Double.MAX_VALUE;
+
         try {
-            windSpeed = Integer.valueOf( mWsEdit.getText().toString() );
+            windSpeed = Double.parseDouble( mWsEdit.getText().toString() );
+            magVar = Double.parseDouble( mMagVar.getText().toString() );
         } catch ( NumberFormatException e ) {
         }
         try {
-            windDir = Integer.valueOf( mWdirEdit.getText().toString() );
+            windDir = Double.parseDouble( mWdirEdit.getText().toString() );
             if ( windDir == 0 || windDir > 360 ) {
-                mWdirEdit.setError( "Enter a value between 1-360" );
-                windDir = -1;
+                mWdirEdit.setError( "Enter a value between 1 and 360" );
+                windDir = Double.MAX_VALUE;
             }
         } catch ( NumberFormatException e ) {
         }
         try {
-            runwayId = Integer.valueOf( mRwyEdit.getText().toString() );
+            runwayId = Double.parseDouble( mRwyEdit.getText().toString() );
             if ( runwayId == 0 || runwayId > 36 ) {
                 mRwyEdit.setError( "Enter a value between 1 and 36" );
                 runwayId = -1;
@@ -109,7 +117,9 @@ public class CrossWindFragment extends FragmentBase {
         } catch ( NumberFormatException e ) {
         }
 
-        if ( windSpeed != -1 && windDir != -1 && runwayId != -1 ) {
+        if ( windSpeed != Double.MAX_VALUE && windDir != Double.MAX_VALUE
+                && magVar != Double.MAX_VALUE && runwayId != Double.MAX_VALUE ) {
+            windDir = GeoUtils.applyDeclination( windDir, magVar );
             long headWind = WxUtils.getHeadWindComponent( windSpeed, windDir, runwayId*10 );
             long crossWind = WxUtils.getCrossWindComponent( windSpeed, windDir, runwayId*10 );
             mHwndEdit.setText( String.valueOf( headWind ) );

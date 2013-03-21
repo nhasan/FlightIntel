@@ -107,7 +107,7 @@
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_edit_wind_dir"
                         android:inputType="number"
-                        android:hint="@string/input_deg"
+                        android:hint="@string/input_deg_true"
                         android:layout_marginTop="-8dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="120dp"
@@ -121,6 +121,28 @@
                         android:layout_marginTop="-8dp"
                         android:layout_marginRight="6dp"
                         android:layout_marginLeft="14dp"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content" />
+            </TableRow>
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <TextView
+                        android:text="@string/var"
+                        android:textSize="18sp"
+                        android:paddingLeft="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+            </TableRow>
+            <TableRow
+                    android:paddingBottom="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <EditText android:id="@+id/e6b_edit_mag_var"
+                        android:inputType="number|numberSigned"
+                        android:hint="@string/input_deg"
+                        android:layout_marginTop="-8dp"
+                        android:layout_marginLeft="6dp"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content" />
             </TableRow>
@@ -147,7 +169,7 @@
                         android:layout_height="wrap_content" />
             </TableRow>
         </TableLayout>
-        <TextView android:id="@+id/e6b_wind_msg"
+        <TextView android:id="@+id/e6b_msg"
                 android:textIsSelectable="false"
                 android:gravity="center"
                 android:padding="8dp"
