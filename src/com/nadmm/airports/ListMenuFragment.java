@@ -87,7 +87,11 @@ public abstract class ListMenuFragment extends ListFragmentBase {
             String summary = c.getString( c.getColumnIndex( ListMenuCursor.ITEM_SUMMARY ) );
 
             ImageView iv = (ImageView) view.findViewById( R.id.item_icon );
-            iv.setImageResource( icon );
+            if ( icon != 0 ) {
+                iv.setImageResource( icon );
+            } else {
+                iv.setVisibility( View.GONE );
+            }
             TextView tv = (TextView) view.findViewById( R.id.item_title );
             tv.setText( title );
             tv = (TextView) view.findViewById( R.id.item_summary );
