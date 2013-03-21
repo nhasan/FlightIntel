@@ -58,7 +58,7 @@ public class OutsideAirTemperatureFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_altimetry_tat_view );
+        return inflate( R.layout.e6b_altimetry_oat_view );
     }
 
     @Override
