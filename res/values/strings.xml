@@ -145,6 +145,7 @@
     <string name="question">\?</string>
     <string name="e6b">E6B Computer</string>
     <string name="rwy">RWY</string>
+    <string name="var">VAR</string>
     <string name="hwnd">HWND</string>
     <string name="xwnd">XWND</string>
     <string name="tas">TAS</string>
@@ -159,11 +160,13 @@
     <string name="input_inHg">\? inHg</string>
     <string name="input_kts">\? kts</string>
     <string name="input_deg">\? \u00B0</string>
+    <string name="input_deg_true">\? \u00B0T</string>
     <string name="input_min">\? min</string>
     <string name="input_nm">\? nm</string>
     <string name="input_gal">\? Gal</string>
     <string name="input_gph">\? Gal/h</string>
     <string name="input_lbs">\? lbs</string>
+    <string name="input_lbsph">\? lbs/h</string>
     <string name="input_ftpnm">\? ft/nm</string>
     <string name="input_ftpmin">\? ft/min</string>
     <string name="ft">ft</string>
@@ -178,6 +181,7 @@
     <string name="gal">Gal</string>
     <string name="gph">Gal/h</string>
     <string name="lbs">lbs</string>
+    <string name="lbsph">lbsph</string>
     <string name="ftpmin">ft/min</string>
     <string name="pct">%</string>
     <string name="altimeter">Altimeter</string>
