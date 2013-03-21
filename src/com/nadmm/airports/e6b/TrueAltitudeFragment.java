@@ -70,6 +70,9 @@ public class TrueAltitudeFragment extends FragmentBase {
         TextView label = (TextView) findViewById( R.id.e6b_label );
         label.setText( title );
 
+        TextView msg = (TextView) findViewById( R.id.e6b_msg );
+        msg.setText( "Use altitude of the wx station whose altimeter setting is being used" );
+
         mIaEdit = (EditText) findViewById( R.id.e6b_edit_ia );
         mOatEdit = (EditText) findViewById( R.id.e6b_edit_oat );
         mAltimeterEdit = (EditText) findViewById( R.id.e6b_edit_altimeter );

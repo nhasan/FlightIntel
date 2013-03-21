@@ -70,6 +70,10 @@ public class TrueAirspeedFragment extends FragmentBase {
         TextView label = (TextView) findViewById( R.id.e6b_label );
         label.setText( title );
 
+        TextView msg = (TextView) findViewById( R.id.e6b_msg );
+        msg.setText( "True airspeed is affected by density altitude. True airspeed" +
+                " exceeds indicated airspeed as density altitude increases." );
+
         mIndicatedAirSpeedEdit = (EditText) findViewById( R.id.e6b_edit_ias );
         mIndicatedAltitudeEdit = (EditText) findViewById( R.id.e6b_edit_ia );
         mAltimeterEdit = (EditText) findViewById( R.id.e6b_edit_altimeter );
