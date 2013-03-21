@@ -49,12 +49,9 @@ public class E6bMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.E6B_TSD_SPEED, TimeSpeedDistanceFragment.class );
         mDispatchMap.put( (long)R.id.E6B_TSD_DISTANCE, TimeSpeedDistanceFragment.class );
         mDispatchMap.put( (long)R.id.E6B_FUEL_CALCS, E6bMenuFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_FUEL_ENDURANCE_GALLONS, FuelCalcsFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_FUEL_ENDURANCE_POUNDS, FuelCalcsFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_FUEL_BURN_RATE_GALLONS, FuelCalcsFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_FUEL_BURN_RATE_POUNDS, FuelCalcsFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_FUEL_TOTAL_BURNED_GALLONS, FuelCalcsFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_FUEL_TOTAL_BURNED_POUNDS, FuelCalcsFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_FUEL_ENDURANCE, FuelCalcsFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_FUEL_BURN_RATE, FuelCalcsFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_FUEL_TOTAL_BURNED, FuelCalcsFragment.class );
         mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT, E6bMenuFragment.class );
         mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_REQCLIMB, ClimbRateFragment.class );
         mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_REQDSCNT, DescentRateFragment.class );
@@ -141,23 +138,14 @@ public class E6bMenuFragment extends ListMenuFragment {
                         "Find Distance Flown",
                         "Find distance flown based on time and speed" );
             } else if ( id == R.id.E6B_FUEL_CALCS ) {
-                addRow( R.id.E6B_FUEL_ENDURANCE_GALLONS,
+                addRow( R.id.E6B_FUEL_ENDURANCE,
                         "Endurance",
                         "Find endurance in flight" );
-                addRow( R.id.E6B_FUEL_TOTAL_BURNED_GALLONS,
+                addRow( R.id.E6B_FUEL_TOTAL_BURNED,
                         "Total Fuel Burn",
                         "Find total fuel burned during the flight" );
-                addRow( R.id.E6B_FUEL_BURN_RATE_GALLONS,
+                addRow( R.id.E6B_FUEL_BURN_RATE,
                         "Fuel Burn Rate",
-                        "Find rate of fuel burn during the flight" );
-                addRow( R.id.E6B_FUEL_ENDURANCE_POUNDS,
-                        "Endurance (lbs)",
-                        "Find endurance in flight" );
-                addRow( R.id.E6B_FUEL_TOTAL_BURNED_POUNDS,
-                        "Total Fuel Burn (lbs)",
-                        "Find total fuel burned during the flight" );
-                addRow( R.id.E6B_FUEL_BURN_RATE_POUNDS,
-                        "Fuel Burn Rate (lbs)",
                         "Find rate of fuel burn during the flight" );
             } else if ( id == R.id.E6B_CLIMB_DESCENT ) {
                 addRow( R.id.E6B_CLIMB_DESCENT_REQCLIMB,
