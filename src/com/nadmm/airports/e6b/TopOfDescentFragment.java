@@ -68,6 +68,15 @@ public class TopOfDescentFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        Bundle args = getArguments();
+        String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
+        TextView label = (TextView) findViewById( R.id.e6b_label );
+        label.setText( title );
+
+        TextView msg = (TextView) findViewById( R.id.e6b_msg );
+        msg.setText( "Find the distance at which to start the descent to arrive at the" +
+                " destination at the desired altitude." );
+
         mInitAltEdit = (EditText) findViewById( R.id.e6b_edit_initial_alt );
         mDesiredAltEdit = (EditText) findViewById( R.id.e6b_edit_desired_alt );
         mGsEdit = (EditText) findViewById( R.id.e6b_edit_gs );
@@ -78,15 +87,6 @@ public class TopOfDescentFragment extends FragmentBase {
         mDesiredAltEdit.addTextChangedListener( mTextWatcher );
         mGsEdit.addTextChangedListener( mTextWatcher );
         mDscntRateEdit.addTextChangedListener( mTextWatcher );
-
-        TextView msg = (TextView) findViewById( R.id.e6b_msg );
-        msg.setText( "Find the distance at which to start the descent to arrive at the" +
-        		" destination at the desired altitude." );
-
-        Bundle args = getArguments();
-        String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
-        TextView label = (TextView) findViewById( R.id.e6b_label );
-        label.setText( title );
     }
 
     private void processInput() {

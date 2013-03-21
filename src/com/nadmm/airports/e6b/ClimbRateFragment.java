@@ -67,6 +67,14 @@ public class ClimbRateFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        Bundle args = getArguments();
+        String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
+        TextView label = (TextView) findViewById( R.id.e6b_label );
+        label.setText( title );
+
+        TextView msg = (TextView) findViewById( R.id.e6b_msg );
+        msg.setText( "Find the minimum required climb rate for a departure procedure" );
+
         mClimbGradEdit = (EditText) findViewById( R.id.e6b_edit_climb_grad );
         mGsEdit = (EditText) findViewById( R.id.e6b_edit_gs );
         mClimbRateEdit = (EditText) findViewById( R.id.e6b_edit_climb_rate );
@@ -74,14 +82,6 @@ public class ClimbRateFragment extends FragmentBase {
 
         mClimbGradEdit.addTextChangedListener( mTextWatcher );
         mGsEdit.addTextChangedListener( mTextWatcher );
-
-        TextView msg = (TextView) findViewById( R.id.e6b_msg );
-        msg.setText( "Find the minimum required climb rate for a departure procedure" );
-
-        Bundle args = getArguments();
-        String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
-        TextView label = (TextView) findViewById( R.id.e6b_label );
-        label.setText( title );
     }
 
     private void processInput() {
