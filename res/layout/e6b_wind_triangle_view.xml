@@ -157,7 +157,7 @@
                         android:layout_height="wrap_content" />
             </TableRow>
         </TableLayout>
-        <TextView android:id="@+id/e6b_wind_msg"
+        <TextView android:id="@+id/e6b_msg"
                 android:textIsSelectable="false"
                 android:gravity="center"
                 android:padding="8dp"
