@@ -211,6 +211,7 @@
     <string name="descent_rate">Descent Rate</string>
     <string name="desired_alt">Desired Altitude</string>
     <string name="distance">Distance</string>
+    <string name="range">Range</string>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>
