@@ -42,7 +42,7 @@ public class FuelCalcsFragment extends FragmentBase {
     private EditText mTimeEdit;
     private EditText mTime2Edit;
 
-    private long mMode;
+    private long mMenuId;
     private int mHighlightTextColor;
 
     private TextWatcher mTextWatcher = new TextWatcher() {
@@ -77,8 +77,9 @@ public class FuelCalcsFragment extends FragmentBase {
         label.setText( title );
 
         TextView msg = (TextView) findViewById( R.id.e6b_msg );
-        msg.setText( "You can directly sustitude Gallons with Pounds for Jet fuel" );
+        msg.setText( "You can directly substitute Gallons with Pounds for Jet fuel" );
 
+        mMenuId = args.getLong( ListMenuFragment.MENU_ID );
         mHighlightTextColor = getResources().getColor( R.color.e6b_highlight );
 
         mFuelTotalEdit = (EditText) findViewById( R.id.e6b_edit_total_fuel );
@@ -94,7 +95,7 @@ public class FuelCalcsFragment extends FragmentBase {
         double fuelRate = Double.MAX_VALUE;
         double endurance = Double.MAX_VALUE;
 
-        if ( mMode == R.id.E6B_FUEL_ENDURANCE ) {
+        if ( mMenuId == R.id.E6B_FUEL_ENDURANCE ) {
             try {
                 fuelTotal = Double.parseDouble( mFuelTotalEdit.getText().toString() );
                 fuelRate = Double.parseDouble( mFuelRateEdit.getText().toString() );
@@ -102,33 +103,41 @@ public class FuelCalcsFragment extends FragmentBase {
             }
 
             if ( fuelTotal != Double.MAX_VALUE && fuelRate != Double.MAX_VALUE ) {
-                endurance = ( fuelTotal/fuelRate )*60;
-                mTimeEdit.setText( String.valueOf( Math.round( endurance ) ) );
+                endurance = fuelTotal/( fuelRate/60 );
+                mTimeEdit.setText( String.format( Locale.US, "%.1f", endurance ) );
             } else {
                 mTimeEdit.setText( "" );
             }
-        } else if ( mMode == R.id.E6B_FUEL_BURN_RATE ) {
+        } else if ( mMenuId == R.id.E6B_FUEL_BURN_RATE ) {
             try {
                 fuelTotal = Double.parseDouble( mFuelTotalEdit.getText().toString() );
+            } catch ( NumberFormatException e ) {
+            }
+            try {
                 endurance = Double.parseDouble( mTimeEdit.getText().toString() );
             } catch ( NumberFormatException e ) {
             }
 
+
             if ( fuelTotal != Double.MAX_VALUE && endurance != Double.MAX_VALUE ) {
-                fuelRate = ( fuelTotal/endurance )/60;
+                fuelRate = fuelTotal/( endurance/60 );
                 mFuelRateEdit.setText( String.format( Locale.US, "%.1f", fuelRate  ) );
             } else {
                 mFuelRateEdit.setText( "" );
             }
-        } else if ( mMode == R.id.E6B_FUEL_TOTAL_BURNED ) {
+        } else if ( mMenuId == R.id.E6B_FUEL_TOTAL_BURNED ) {
             try {
                 fuelRate = Double.parseDouble( mFuelRateEdit.getText().toString() );
+            } catch ( NumberFormatException e ) {
+            }
+            try {
                 endurance = Double.parseDouble( mTimeEdit.getText().toString() );
             } catch ( NumberFormatException e ) {
             }
 
+
             if ( fuelRate != Double.MAX_VALUE && endurance != Double.MAX_VALUE ) {
-                fuelTotal = ( fuelRate*endurance )/60;
+                fuelTotal = ( endurance/60 )*fuelRate;
                 mFuelTotalEdit.setText( String.format( Locale.US, "%.1f", fuelTotal  ) );
             } else {
                 mFuelTotalEdit.setText( "" );
@@ -143,7 +152,7 @@ public class FuelCalcsFragment extends FragmentBase {
     }
 
     private void setupUi() {
-        if ( mMode == R.id.E6B_FUEL_ENDURANCE ) {
+        if ( mMenuId == R.id.E6B_FUEL_ENDURANCE ) {
             mFuelTotalEdit.addTextChangedListener( mTextWatcher );
             mFuelTotalEdit.setHint( R.string.input_gal );
             mFuelRateEdit.addTextChangedListener( mTextWatcher );
@@ -152,7 +161,7 @@ public class FuelCalcsFragment extends FragmentBase {
             mTimeEdit.setTextColor( mHighlightTextColor );
             mTimeEdit.setTypeface( null, Typeface.BOLD );
             mTimeEdit.setHint( R.string.min );
-        } else if ( mMode == R.id.E6B_FUEL_BURN_RATE ) {
+        } else if ( mMenuId == R.id.E6B_FUEL_BURN_RATE ) {
             mFuelTotalEdit.addTextChangedListener( mTextWatcher );
             mFuelTotalEdit.setHint( R.string.input_gal );
             mFuelRateEdit.setFocusable( false );
@@ -161,7 +170,7 @@ public class FuelCalcsFragment extends FragmentBase {
             mFuelRateEdit.setHint( R.string.gph );
             mTimeEdit.addTextChangedListener( mTextWatcher );
             mTimeEdit.setHint( R.string.input_min );
-        } else if ( mMode == R.id.E6B_FUEL_TOTAL_BURNED ) {
+        } else if ( mMenuId == R.id.E6B_FUEL_TOTAL_BURNED ) {
             mFuelTotalEdit.setFocusable( false );
             mFuelTotalEdit.setTextColor( mHighlightTextColor );
             mFuelTotalEdit.setTypeface( null, Typeface.BOLD );
