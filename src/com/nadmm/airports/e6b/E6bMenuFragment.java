@@ -52,6 +52,7 @@ public class E6bMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.E6B_FUEL_ENDURANCE, FuelCalcsFragment.class );
         mDispatchMap.put( (long)R.id.E6B_FUEL_BURN_RATE, FuelCalcsFragment.class );
         mDispatchMap.put( (long)R.id.E6B_FUEL_TOTAL_BURNED, FuelCalcsFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_FUEL_SPECIFIC_RANGE, SpecificRangeFragment.class );
         mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT, E6bMenuFragment.class );
         mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_REQCLIMB, ClimbRateFragment.class );
         mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_REQDSCNT, DescentRateFragment.class );
@@ -147,6 +148,9 @@ public class E6bMenuFragment extends ListMenuFragment {
                 addRow( R.id.E6B_FUEL_BURN_RATE,
                         "Fuel Burn Rate",
                         "Find rate of fuel burn during the flight" );
+                addRow( R.id.E6B_FUEL_SPECIFIC_RANGE,
+                        "Specific Range",
+                        "Find range based on ground speed and fuel burn" );
             } else if ( id == R.id.E6B_CLIMB_DESCENT ) {
                 addRow( R.id.E6B_CLIMB_DESCENT_REQCLIMB,
                         "Required Rate of Climb",

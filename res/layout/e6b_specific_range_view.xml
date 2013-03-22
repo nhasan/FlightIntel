@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * FlightIntel for Pilots
+ *
+ * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+ -->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView android:id="@+id/e6b_label"
+                android:textIsSelectable="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="left"
+                android:padding="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        <TableLayout
+                android:background="@drawable/rounded_rectangle"
+                android:stretchColumns="0,1"
+                android:padding="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <TextView
+                        android:text="@string/total_fuel"
+                        android:textSize="18sp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                <TextView
+                        android:text="@string/range"
+                        android:textSize="18sp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+            <TableRow
+                    android:paddingBottom="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <EditText android:id="@+id/e6b_edit_total_fuel"
+                        android:inputType="numberDecimal"
+                        android:hint="@string/input_gal"
+                        android:layout_marginTop="-6dp"
+                        android:layout_marginLeft="6dp"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content" />
+                <EditText android:id="@+id/e6b_edit_range"
+                        android:inputType="numberDecimal"
+                        android:hint="@string/nm"
+                        android:layout_marginTop="-6dp"
+                        android:layout_marginLeft="6dp"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content" />
+            </TableRow>
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <TextView
+                        android:text="@string/burn_rate"
+                        android:textSize="18sp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+            </TableRow>
+            <TableRow
+                    android:paddingBottom="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <EditText android:id="@+id/e6b_edit_burn_rate"
+                        android:inputType="numberDecimal"
+                        android:hint="@string/input_gph"
+                        android:layout_marginTop="-8dp"
+                        android:layout_marginLeft="6dp"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content" />
+            </TableRow>
+            <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <TextView
+                        android:text="@string/gs"
+                        android:textSize="18sp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+            </TableRow>
+            <TableRow
+                    android:paddingBottom="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <EditText android:id="@+id/e6b_edit_gs"
+                        android:inputType="numberDecimal"
+                        android:hint="@string/input_kts"
+                        android:layout_marginTop="-6dp"
+                        android:layout_marginLeft="6dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+            </TableRow>
+        </TableLayout>
+        <TextView android:id="@+id/e6b_msg"
+                android:textIsSelectable="false"
+                android:gravity="center"
+                android:padding="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+    </LinearLayout>
+</ScrollView>
