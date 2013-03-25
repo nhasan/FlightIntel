@@ -70,7 +70,7 @@ public class FuelWeightFragment extends FragmentBase {
     
             @Override
             public double lbsPerGallon() {
-                return 6.0;
+                return 6.08;
             }
     
             @Override
