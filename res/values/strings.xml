@@ -201,8 +201,10 @@
     <string name="ground_speed">Ground Speed</string>
     <string name="station_altitude">Station Altitude</string>
     <string name="total_fuel">Total Fuel</string>
+    <string name="total_weight">Total Weight</string>
     <string name="burn_rate">Burn Rate</string>
     <string name="endurance">Endurance</string>
+    <string name="fuel_type">Fuel Type</string>
     <string name="climb_grad">Climb Gradient</string>
     <string name="climb_rate">Climb Rate</string>
     <string name="initial_alt">Initial Altitude</string>
