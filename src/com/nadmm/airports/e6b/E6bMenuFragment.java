@@ -21,10 +21,15 @@ package com.nadmm.airports.e6b;
 
 import java.util.HashMap;
 
+import android.app.Application;
 import android.database.Cursor;
+import android.provider.BaseColumns;
+import android.view.View;
+import android.widget.ListView;
 
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
+import com.nadmm.airports.utils.UiUtils;
 
 public class E6bMenuFragment extends ListMenuFragment {
 
@@ -68,6 +73,18 @@ public class E6bMenuFragment extends ListMenuFragment {
     @Override
     protected Cursor getMenuCursor( long id ) {
         return new E6bMenuCursor( id );
+    }
+
+    @Override
+    protected void onListItemClick( ListView l, View v, int position ) {
+        Cursor c = (Cursor) getListAdapter().getItem( position );
+        long id = c.getLong( c.getColumnIndex( BaseColumns._ID ) );
+        Class<?> clss = getItemFragmentClass( id );
+        if ( clss == E6bMenuFragment.class || com.nadmm.airports.Application.sDonationDone ) {
+            super.onListItemClick( l, v, position );
+        } else {
+            UiUtils.showToast( getActivity(), "This function is only available after a donation" );
+        }
     }
 
     public class E6bMenuCursor extends ListMenuCursor {
