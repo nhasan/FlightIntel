@@ -516,6 +516,7 @@ public class DatabaseManager {
         public static final String AUTHOR = "AUTHOR";
         public static final String EDITION = "EDITION";
         public static final String DOWNLOAD_SIZE = "DOWNLOAD_SIZE";
+        public static final String FLAG = "FLAG";
     }
 
     public static final class Catalog implements BaseColumns {

@@ -22,6 +22,7 @@ package com.nadmm.airports.library;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -174,6 +175,7 @@ public class LibraryFragment extends FragmentBase {
                     String edition = c.getString( c.getColumnIndex( Library.EDITION ) );
                     String author = c.getString( c.getColumnIndex( Library.AUTHOR ) );
                     long size = c.getLong( c.getColumnIndex( Library.DOWNLOAD_SIZE ) );
+                    String flag = c.getString( c.getColumnIndex( Library.FLAG ) );
 
                     if ( !desc.equals( prevDesc ) ) {
                         matrix = new MatrixCursor( c.getColumnNames() );
@@ -188,7 +190,8 @@ public class LibraryFragment extends FragmentBase {
                         .add( desc )
                         .add( edition )
                         .add( author )
-                        .add( size );
+                        .add( size )
+                        .add( flag );
                 } while ( c.moveToNext() );
             }
 
@@ -235,7 +238,8 @@ public class LibraryFragment extends FragmentBase {
                     String edition = c.getString( c.getColumnIndex( Library.EDITION ) );
                     String author = c.getString( c.getColumnIndex( Library.AUTHOR ) );
                     long size = c.getLong( c.getColumnIndex( Library.DOWNLOAD_SIZE ) );
-                    addLibraryRow( layout, name, desc, edition, author, size );
+                    String flag = c.getString( c.getColumnIndex( Library.FLAG ) );
+                    addLibraryRow( layout, name, desc, edition, author, flag, size );
                 } while ( c.moveToNext() );
                 setRowBackgroundResource( layout );
             }
@@ -244,8 +248,9 @@ public class LibraryFragment extends FragmentBase {
         checkBooks();
     }
 
+    @SuppressLint("InlinedApi")
     private View addLibraryRow( LinearLayout layout, String name, String desc, String edition,
-            String author, long size ) {
+            String author, String flag, long size ) {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
         }
@@ -254,6 +259,9 @@ public class LibraryFragment extends FragmentBase {
         tv.setText( desc );
         tv = (TextView) row.findViewById( R.id.book_edition );
         tv.setText( edition );
+        if ( flag.equals( "N" ) ) {
+            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.star, 0, 0, 0 );
+        }
         tv = (TextView) row.findViewById( R.id.book_author );
         tv.setText( author );
         tv = (TextView) row.findViewById( R.id.book_size );
