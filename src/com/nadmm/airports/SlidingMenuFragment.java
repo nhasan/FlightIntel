@@ -152,7 +152,7 @@ public class SlidingMenuFragment extends ListFragmentBase {
             newRow().add( ITEM_ID_LIBRARY ).add( "Library" ).add( R.drawable.book );
             newRow().add( ITEM_ID_SCRATCHPAD ).add( "Scratch Pad" ).add( R.drawable.notepad );
             newRow().add( ITEM_ID_CLOCKS ).add( "Clocks" ).add( R.drawable.clock );
-            newRow().add( ITEM_ID_E6B ).add( "E6B" ).add( 0 );
+            newRow().add( ITEM_ID_E6B ).add( "E6B" ).add( R.drawable.e6b );
             newRow().add( ITEM_ID_CHARTS ).add( "Manage Charts" ).add( R.drawable.folder );
         }
 
