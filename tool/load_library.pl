@@ -121,7 +121,7 @@ insert_book( "handbooks", "fcm-h2-1988.pdf", "Federal Meteorological Handbook No
         "1988", "NOAA", 16091462, "" );
 
 insert_book( "manuals", "Chart_Users_Guide_11thEd.pdf", "Aeronautical Chart User's Guide",
-        "11th Edition", "FAA", 17533800, "N" );
+        "11th Edition", "FAA", 17533800, "" );
 insert_book( "manuals", "faa-h-8083-19a-2008.pdf", "Plane Sense - General Aviation Information",
         "2008", "FAA-H-8083-19A", 13246143, "" );
 insert_book( "manuals", "ac-00-6a-1975.pdf", "Aviation Weather",
@@ -131,22 +131,28 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
-insert_book( "periodicals", "cb_397.pdf", "Callback", "Issue 397 (Feb 2013)", "NASA", 230821, "N" );
+insert_book( "periodicals", "cb_397.pdf", "Callback", "Issue 397 (Feb 2013)", "NASA", 230821, "" );
 insert_book( "periodicals", "cb_396.pdf", "Callback", "Issue 396 (Jan 2013)", "NASA", 232299, "" );
 insert_book( "periodicals", "cb_395.pdf", "Callback", "Issue 395 (Dec 2012)", "NASA", 351768, "" );
 insert_book( "periodicals", "cb_394.pdf", "Callback", "Issue 394 (Nov 2012)", "NASA", 197346, "" );
-insert_book( "periodicals", "12dec-front.pdf", "The Front", "Dec 2012", "NOAA", 2150530, "N" );
+insert_book( "periodicals", "12dec-front.pdf", "The Front", "Dec 2012", "NOAA", 2150530, "" );
 insert_book( "periodicals", "12jul-front.pdf", "The Front", "Jul 2012", "NOAA", 2071900, "" );
 insert_book( "periodicals", "11nov-front.pdf", "The Front", "Nov 2011", "NOAA", 1030336, "" );
 insert_book( "periodicals", "11jul-front.pdf", "The Front", "Jul 2011", "NOAA", 588846, "" );
 insert_book( "periodicals", "MarApr2013.pdf", "FAA Safety Briefing",
-        "Mar/Apr 2013", "FAA", 2751314, "N" );
+        "Mar/Apr 2013", "FAA", 2751314, "" );
 insert_book( "periodicals", "JanFeb2013.pdf", "FAA Safety Briefing",
         "Jan/Feb 2013", "FAA", 2815002, "" );
 insert_book( "periodicals", "NovDec2012.pdf", "FAA Safety Briefing",
         "Nov/Dec 2012", "FAA", 3685820, "" );
 insert_book( "periodicals", "SepOct2012.pdf", "FAA Safety Briefing",
         "Sep/Oct 2012", "FAA", 2682469, "" );
+insert_book( "periodicals", "ATB-2013-1.pdf", "Air Traffic Bulletin",
+        "2013-Q1", "FAA", 46744, "N" );
+insert_book( "periodicals", "ATB-2012-4.pdf", "Air Traffic Bulletin",
+        "2012-Q4", "FAA", 243345, "N" );
+insert_book( "periodicals", "ATB-2012-3.pdf", "Air Traffic Bulletin",
+        "2012-Q3", "FAA", 167092, "N" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -169,18 +175,18 @@ insert_book( "safety", "faa-p-8740-66-2008.pdf", "Flying Light Twins Safely",
 insert_book( "safety", "faa-p-8740-69-2008.pdf", "Aeronautical Decision Making",
         "2008", "FAA", 1331791, "" );
 insert_book( "safety", "takeoff_safety.pdf.gz", "Pilot Guide to Takeoff Safety",
-        "2008", "FAA", 2678525, "N" );
+        "2008", "FAA", 2678525, "" );
 
-insert_book( "regs", "aim_2012_r1.pdf", "Aeronautical Information Manual (AIM)",
-        "2012", "FAA", 8640900, "" );
+insert_book( "regs", "aim_2012_r2.pdf", "Aeronautical Information Manual (AIM)",
+        "Mar 2013 (Change 2)", "FAA", 9017835, "N" );
 insert_book( "regs", "cfr-2012-title14-vol1.pdf", "Federal Aviation Regulations (FAR) 2012",
         "Parts 1-59", "US GPO", 9855793, "" );
 insert_book( "regs", "cfr-2012-title14-vol2.pdf", "Federal Aviation Regulations (FAR) 2012",
         "Parts 60-109", "US GPO", 15171981, "" );
 insert_book( "regs", "cfr-2012-title14-vol3.pdf", "Federal Aviation Regulations (FAR) 2012",
         "Parts 110-199", "US GPO", 4961436, "" );
-insert_book( "regs", "cfr-2012-title14-vol4.pdf", "Federal Aviation Regulations (FAR) 2012",
-        "Parts 200-1199", "US GPO", 16738367, "" );
+insert_book( "regs", "cfr-2013-title14-vol4.pdf", "Federal Aviation Regulations (FAR) 2013",
+        "Parts 200-1199", "US GPO", 16915045, "N" );
 insert_book( "regs", "cfr-2013-title14-vol5.pdf", "Federal Aviation Regulations (FAR) 2013",
         "Parts 1200-1310", "US GPO", 2400725, "" );
 
@@ -202,23 +208,46 @@ insert_book( "circular", "ac-00-54-1988.pdf", "Pilot Windshear Guide",
 insert_book( "circular", "ac-00-46e-2011.pdf", "Aviation Safety Reporting Program",
         "2011", "AC-00-46E", 46601, "" );
 
-insert_book( "testguide", "FAA-G-8082-17F.pdf", "Private Pilot Knowledge Test Guide",
-        "2011", "FAA-G-8082-17F", 559673, "" );
-insert_book( "testguide", "FAA-G-8082-13F.pdf", "Instrument Rating Knowledge Test Guide",
-        "2012", "FAA-G-8082-13F", 432103, "" );
-insert_book( "testguide", "FAA-G-8082-5E.pdf", "Commercial Pilot Knowledge Test Guide",
-        "2011", "FAA-G-8082-5E", 708182, "" );
-insert_book( "testguide", "FAA-G-8082-7F.pdf", "Flight & Ground Instructor Knowledge Test Guide",
-        "2012", "FAA-G-8082-7F", 578458, "" );
+insert_book( "testguide", "FAA-G-8082-17I.pdf", "Private Pilot Knowledge Test Guide",
+        "Feb 2013", "FAA-G-8082-17I", 410108, "N" );
+insert_book( "testguide", "FAA-G-8082-13I.pdf", "Instrument Rating Knowledge Test Guide",
+        "Feb 2013", "FAA-G-8082-13I", 331406, "N" );
+insert_book( "testguide", "FAA-G-8082-5H.pdf", "Commercial Pilot Knowledge Test Guide",
+        "Feb 2013", "FAA-G-8082-5H", 559979, "N" );
+insert_book( "testguide", "FAA-G-8082-7I.pdf", "Flight & Ground Instructor Knowledge Test Guide",
+        "Feb 2013", "FAA-G-8082-7I", 812208, "N" );
+insert_book( "testguide", "FAA-G-8082-4D.pdf", "Sport Pilot Knowledge Test Guide",
+        "Feb 2013", "FAA-G-8082-4D", 979987, "N" );
+insert_book( "testguide", "IPC_Guidance.pdf", "Instrument Proficiency Check Guidance",
+        "Mar 2010", "", 340448, "N" );
 
 insert_book( "misc", "AIP_22nd_Edition.pdf", "Aeronautical Information Publication",
-        "22nd Edition", "FAA", 15562404, "N" );
+        "22nd Edition", "FAA", 15562404, "" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
-insert_book( "misc", "pcg.pdf", "Pilot/Controller Glossary",
-        "2012", "FAA", 436621, "" );
+insert_book( "misc", "pcg_030713.pdf", "Pilot/Controller Glossary",
+        "2012", "FAA", 450475, "N" );
 insert_book( "misc", "RNProadmap.pdf", "Roadmap for Performance-Based Navigation",
-        "2006", "FAA", 1513616, "N" );
+        "2006", "FAA", 1513616, "" );
+
+insert_book( "canada", "AWS_Guide_EN.pdf", "Aviation Weather Service Guide",
+        "Aug 2011", "Nav Canada", 1092048, "N" );
+insert_book( "canada", "Customer_Guide_New_en.pdf", "Customer Guide to Charges",
+        "Sep 2008", "Nav Canada", 1838506, "N" );
+insert_book( "canada", "Notam_Manual_Current_en.pdf", "Canadian NOTAM Procedures Manual",
+        "Apr 2012", "Nav Canada", 2033660, "N" );
+insert_book( "canada", "A34E-W.pdf", "The Weather of Atlantic Canada and Eastern Quebec",
+        "Nov 2005", "Nav Canada", 5529975, "N" );
+insert_book( "canada", "BC31E-W.pdf", "The Weather of British Columbia",
+        "Nov 2005", "Nav Canada", 5192648, "N" );
+insert_book( "canada", "N3637E-W.pdf", "The Weather of Nunavut and the Arctic",
+        "Oct 2005", "Nav Canada", 6972336, "N" );
+insert_book( "canada", "OQ33E-W.pdf", "The Weather of Ontario and Quebec",
+        "Nov 2005", "Nav Canada", 5146715, "N" );
+insert_book( "canada", "P32E-W.pdf", "The Weather of the Canadian Prairies",
+        "Nov 2005", "Nav Canada", 6266643, "N" );
+insert_book( "canada", "Y35E-W.pdf", "The Weather of the Yukon, NWT and Western Nunavut",
+        "Nov 2005", "Nav Canada", 5597294, "N" );
 
 exit;
 
