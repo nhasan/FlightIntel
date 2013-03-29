@@ -67,6 +67,15 @@ public class LibraryFragment extends FragmentBase {
     private LibraryActivity mActivity;
     private View mContextMenuRow;
 
+    private String[] mColumns = {
+            Library.BOOK_NAME,
+            Library.BOOK_DESC,
+            Library.EDITION,
+            Library.AUTHOR,
+            Library.DOWNLOAD_SIZE,
+            Library.FLAG
+    };
+
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         Bundle args = getArguments();
@@ -162,7 +171,7 @@ public class LibraryFragment extends FragmentBase {
             if ( c.getCount() > 0 ) {
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Library.TABLE_NAME );
-                c = builder.query( db, new String[] { "*" },
+                c = builder.query( db, mColumns,
                         Library.CATEGORY_CODE+"=?", new String[] { category },
                         null, null, Library._ID );
                 c.moveToFirst();
@@ -178,20 +187,13 @@ public class LibraryFragment extends FragmentBase {
                     String flag = c.getString( c.getColumnIndex( Library.FLAG ) );
 
                     if ( !desc.equals( prevDesc ) ) {
-                        matrix = new MatrixCursor( c.getColumnNames() );
+                        matrix = new MatrixCursor( mColumns );
                         result[ i++ ] = matrix;
+                        prevDesc = desc;
                     }
-                    prevDesc = desc;
 
-                    MatrixCursor.RowBuilder row = matrix.newRow();
-                    row.add( 0 )
-                        .add( category )
-                        .add( name )
-                        .add( desc )
-                        .add( edition )
-                        .add( author )
-                        .add( size )
-                        .add( flag );
+                    Object[] values = new Object[] { name, desc, edition, author, size, flag };
+                    matrix.addRow( values );
                 } while ( c.moveToNext() );
             }
 
