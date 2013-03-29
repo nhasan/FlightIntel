@@ -1,0 +1,4 @@
+#!/bin/bash
+
+pdftk A=${1} cat A${2} output ${3}.pdf
+
