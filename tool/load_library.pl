@@ -131,10 +131,10 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_398.pdf", "Callback", "Issue 398 (Mar 2013)", "NASA", 765060, "N" );
 insert_book( "periodicals", "cb_397.pdf", "Callback", "Issue 397 (Feb 2013)", "NASA", 230821, "" );
 insert_book( "periodicals", "cb_396.pdf", "Callback", "Issue 396 (Jan 2013)", "NASA", 232299, "" );
 insert_book( "periodicals", "cb_395.pdf", "Callback", "Issue 395 (Dec 2012)", "NASA", 351768, "" );
-insert_book( "periodicals", "cb_394.pdf", "Callback", "Issue 394 (Nov 2012)", "NASA", 197346, "" );
 insert_book( "periodicals", "12dec-front.pdf", "The Front", "Dec 2012", "NOAA", 2150530, "" );
 insert_book( "periodicals", "12jul-front.pdf", "The Front", "Jul 2012", "NOAA", 2071900, "" );
 insert_book( "periodicals", "11nov-front.pdf", "The Front", "Nov 2011", "NOAA", 1030336, "" );
@@ -235,7 +235,7 @@ insert_book( "canada", "AWS_Guide_EN.pdf", "Aviation Weather Service Guide",
 insert_book( "canada", "Customer_Guide_New_en.pdf", "Customer Guide to Charges",
         "Sep 2008", "Nav Canada", 1838506, "N" );
 insert_book( "canada", "Notam_Manual_Current_en.pdf", "Canadian NOTAM Procedures Manual",
-        "Apr 2012", "Nav Canada", 2033660, "N" );
+        "Nov 2012", "Nav Canada", 1883233, "N" );
 insert_book( "canada", "A34E-W.pdf", "The Weather of Atlantic Canada and Eastern Quebec",
         "Nov 2005", "Nav Canada", 5529975, "N" );
 insert_book( "canada", "BC31E-W.pdf", "The Weather of British Columbia",
@@ -248,6 +248,18 @@ insert_book( "canada", "P32E-W.pdf", "The Weather of the Canadian Prairies",
         "Nov 2005", "Nav Canada", 6266643, "N" );
 insert_book( "canada", "Y35E-W.pdf", "The Weather of the Yukon, NWT and Western Nunavut",
         "Nov 2005", "Nav Canada", 5597294, "N" );
+insert_book( "canada", "charts_alberta.pdf", "Canadian Airport Charts - Alberta",
+        "7 Mar-2 May", "Nav Canada", 4437187, "N" );
+insert_book( "canada", "charts_atlantic.pdf", "Canadian Airport Charts - Atlantic",
+        "7 Mar-2 May", "Nav Canada", 2369232, "N" );
+insert_book( "canada", "charts_bc.pdf", "Canadian Airport Charts - British Columbia",
+        "7 Mar-2 May", "Nav Canada", 3410769, "N" );
+insert_book( "canada", "charts_ontario.pdf", "Canadian Airport Charts - Ontario",
+        "7 Mar-2 May", "Nav Canada", 5939179, "N" );
+insert_book( "canada", "charts_quebec.pdf", "Canadian Airport Charts - Quebec",
+        "7 Mar-2 May", "Nav Canada", 8590936, "N" );
+insert_book( "canada", "charts_yukon.pdf", "Canadian Airport Charts - Yukon",
+        "7 Mar-2 May", "Nav Canada", 2250919, "N" );
 
 exit;
 
