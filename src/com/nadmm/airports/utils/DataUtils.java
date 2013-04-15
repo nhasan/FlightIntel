@@ -728,9 +728,10 @@ public final class DataUtils {
 
     public static boolean isDirectionalNavaid( String type ) {
         return type.equals( "VOR" )
-            || type.equals( "VOR/DME" ) 
-            || type.equals( "VORTAC" ) 
-            || type.equals( "VOT" ) 
+            || type.equals( "VOR/DME" )
+            || type.equals( "DME" )
+            || type.equals( "VORTAC" )
+            || type.equals( "VOT" )
             || type.equals( "TACAN" );
     }
 
