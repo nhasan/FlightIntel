@@ -28,6 +28,15 @@
         <end>2013-04-04T09:01:00Z</end>
     </datafile>
     <datafile>
+        <type>DTPP</type>
+        <desc>AeroNav d-TPP #1304 (FAA)</desc>
+        <version>1304</version>
+        <filename>dtpp_20130404.db</filename>
+        <size>470835</size>
+        <start>2013-04-04T09:01:00Z</start>
+        <end>2013-05-02T09:01:00Z</end>
+    </datafile>
+    <datafile>
         <type>LIBRARY</type>
         <desc>Documents Library 07Mar2013</desc>
         <version>20130307</version>
@@ -35,6 +44,15 @@
         <size>3835</size>
         <start>2013-03-07T09:01:00Z</start>
         <end>2013-04-04T09:01:00Z</end>
+    </datafile>
+    <datafile>
+        <type>LIBRARY</type>
+        <desc>Documents Library 04Apr2013</desc>
+        <version>20130404</version>
+        <filename>library_20130404.db</filename>
+        <size>4735</size>
+        <start>2013-04-04T09:01:00Z</start>
+        <end>2013-05-02T09:01:00Z</end>
     </datafile>
 </manifest>
 
