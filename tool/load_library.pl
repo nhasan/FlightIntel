@@ -86,6 +86,7 @@ insert_category( "regs", "REGULATIONS" );
 insert_category( "risk", "RISK MANAGEMENT" );
 insert_category( "circular", "ADVISORY CIRCULARS" );
 insert_category( "testguide", "TEST GUIDE" );
+insert_category( "canada", "CANADA" );
 insert_category( "misc", "MISCELLANEOUS" );
 
 $dbh->do( "DROP TABLE IF EXISTS library" );
@@ -174,7 +175,7 @@ insert_book( "safety", "faa-p-8740-66-2008.pdf", "Flying Light Twins Safely",
         "2008", "FAA", 988401, "" );
 insert_book( "safety", "faa-p-8740-69-2008.pdf", "Aeronautical Decision Making",
         "2008", "FAA", 1331791, "" );
-insert_book( "safety", "takeoff_safety.pdf.gz", "Pilot Guide to Takeoff Safety",
+insert_book( "safety", "takeoff_safety.pdf", "Pilot Guide to Takeoff Safety",
         "2008", "FAA", 2678525, "" );
 
 insert_book( "regs", "aim_2012_r2.pdf", "Aeronautical Information Manual (AIM)",
