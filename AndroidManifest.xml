@@ -172,7 +172,7 @@
     	        android:value=".afd.SearchActivity" />
 
 		<provider android:name=".providers.AirportsProvider"
-                  android:exported="false"
+                  android:exported="true"
 		          android:authorities="com.nadmm.airports.providers.AirportsProvider"
 		          android:syncable="false" />
 
