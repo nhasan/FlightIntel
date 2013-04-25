@@ -13,7 +13,7 @@
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 
-    <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="17" />
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17" />
 
     <application android:icon="@drawable/icon"
             android:name=".Application"
