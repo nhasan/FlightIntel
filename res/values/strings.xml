@@ -190,7 +190,6 @@
     <string name="da">Density Altitude</string>
     <string name="ta">True Altitude</string>
     <string name="ias">IAS</string>
-    <string name="tas">TAS</string>
     <string name="iat">IAT</string>
     <string name="oat">OAT</string>
     <string name="ia">Indicated Altitude</string>

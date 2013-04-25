@@ -93,7 +93,7 @@ public class ActivityBase extends SlidingFragmentActivity {
     boolean mExternalStorageAvailable = false;
 
     @Override
-    protected void onCreate( Bundle savedInstanceState ) {
+	protected void onCreate( Bundle savedInstanceState ) {
         mDbManager = DatabaseManager.instance( this );
         mInflater = getLayoutInflater();
         overridePendingTransition( R.anim.fade_in, R.anim.fade_out );

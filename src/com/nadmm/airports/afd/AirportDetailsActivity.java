@@ -1151,8 +1151,8 @@ public class AirportDetailsActivity extends AfdActivityBase {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( true );
+    public boolean onPrepareOptionsMenu(Menu menu) {
+    	setRefreshItemVisible( true );
         return true;
     }
 

@@ -183,9 +183,7 @@ public class NearbyNavaidsActivity extends AfdActivityBase {
                     // Sort the navaids list by distance from current location
                     Arrays.sort( navaids );
 
-                    @SuppressWarnings("resource")
                     MatrixCursor vor = new MatrixCursor( mNavColumns );
-                    @SuppressWarnings("resource")
                     MatrixCursor ndb = new MatrixCursor( mNavColumns );
                     for ( NavaidData navaid : navaids ) {
                         if ( navaid.DISTANCE <= navaid.RANGE ) {
