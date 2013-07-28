@@ -79,10 +79,10 @@ public final class DownloadActivity extends ActivityBase {
     private static final String TAG = DownloadActivity.class.getName();
     //private static final String HOST = "10.0.2.2";
     //private static final String HOST = "192.168.1.117";
-    private static final String HOST = "airports.googlecode.com";
+    private static final String HOST = "commondatastorage.googleapis.com";
     private static final Integer PORT = 80;
     //private static final String PATH = "/~nhasan/fadds";
-    private static final String PATH = "/files";
+    private static final String PATH = "/flightintel/database";
     private static final String MANIFEST = "manifest.xml";
 
     private final Map<String, ProgressTracker> mTrackers = new HashMap<String, ProgressTracker>();
