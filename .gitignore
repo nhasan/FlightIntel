@@ -11,8 +11,3 @@ ant.properties
 local.properties
 proguard.cfg
 project.properties
-tool/d-AFD_Metadata.xml
-tool/d-TPP_Metafile.xml
-tool/manifest.xml
-tool/manifest1.xml
-
