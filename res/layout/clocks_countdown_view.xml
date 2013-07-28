@@ -20,7 +20,7 @@
  */
  -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:padding="24dp"
         android:gravity="center_horizontal"
@@ -133,4 +133,4 @@
                 android:layout_width="90dp"
                 android:layout_height="wrap_content" />
     </LinearLayout>
-</LinearLayout>
+</ScrollView>
