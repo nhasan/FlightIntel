@@ -27,7 +27,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -427,21 +426,10 @@ public class FragmentBase extends SherlockFragment {
     }
 
     protected void addBulletedRow( LinearLayout layout, String text ) {
-        LinearLayout innerLayout = new LinearLayout( mActivity );
-        innerLayout.setOrientation( LinearLayout.HORIZONTAL );
-        TextView tv = new TextView( mActivity );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( UiUtils.convertDpToPx( mActivity, 6 ), 2, 2, 2 );
-        tv.setText( "\u2022 " );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f ) );
-        tv = new TextView( mActivity );
-        tv.setGravity( Gravity.LEFT );
-        tv.setPadding( 2, 2, 12, 2 );
+        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_bullet );
+        TextView tv = (TextView) row.findViewById( R.id.item_value );
         tv.setText( text );
-        innerLayout.addView( tv, new LinearLayout.LayoutParams(
-                0, LayoutParams.WRAP_CONTENT, 1f ) );
-        layout.addView( innerLayout, new LinearLayout.LayoutParams(
+        layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
     }
 
