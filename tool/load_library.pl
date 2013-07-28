@@ -98,8 +98,8 @@ insert_book( "handbooks", "faa-h-8083-3a-2004.pdf", "Airplane Flying Handbook",
         "2004", "FAA-H-8083-3A", 14042341, "" );
 insert_book( "handbooks", "faa-h-8083-25a-2008.pdf", "Pilot's Handbook of Aeronautical Knowledge",
         "2008", "FAA-H-8083-25A", 56064788, "" );
-insert_book( "handbooks", "faa-h-8083-15a-2008.pdf", "Instrument Flying Handbook",
-        "2008", "FAA-H-8083-15A", 36124885, "" );
+insert_book( "handbooks", "faa-h-8083-15b-2012.pdf", "Instrument Flying Handbook",
+        "2012", "FAA-H-8083-15B", 53239138, "N" );
 insert_book( "handbooks", "faa-h-8261-1a-2007.pdf", "Instrument Procedures Handbook",
         "2007", "FAA-H-8261-1A", 18019772, "" );
 insert_book( "handbooks", "faa-h-8083-6-2009.pdf", "Advanced Avionics Handbook",
@@ -110,8 +110,8 @@ insert_book( "handbooks", "faa-h-8083-9a-2008.pdf", "Aviation Instructor's Handb
         "2008", "FAA-H-8083-9A", 13672806, "" );
 insert_book( "handbooks", "faa-h-8083-1a-2007.pdf", "Aircraft Weight and Balance Handbook",
         "2007", "FAA-H-8083-1A", 12373020, "" );
-insert_book( "handbooks", "faa-h-8083-21-2000.pdf", "Rotorcraft Flying Handbook",
-        "2000", "FAA-H-8083-21", 16859688, "" );
+insert_book( "handbooks", "faa-h-8083-21a-2012.pdf", "Rotorcraft Flying Handbook",
+        "2012", "FAA-H-8083-21A", 74947815, "N" );
 insert_book( "handbooks", "faa-h-8083-2-2009.pdf", "Risk Management Handbook",
         "2009", "FAA-H-8083-2", 11163579, "" );
 insert_book( "handbooks", "faa-fs-i-8700-1-2003.pdf", "Information for Banner Tow Operations",
@@ -132,28 +132,28 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
-insert_book( "periodicals", "cb_398.pdf", "Callback", "Issue 398 (Mar 2013)", "NASA", 765060, "N" );
-insert_book( "periodicals", "cb_397.pdf", "Callback", "Issue 397 (Feb 2013)", "NASA", 230821, "" );
-insert_book( "periodicals", "cb_396.pdf", "Callback", "Issue 396 (Jan 2013)", "NASA", 232299, "" );
-insert_book( "periodicals", "cb_395.pdf", "Callback", "Issue 395 (Dec 2012)", "NASA", 351768, "" );
+insert_book( "periodicals", "cb_402.pdf", "Callback", "Issue 402 (Jul 2013)", "NASA", 300935, "N" );
+insert_book( "periodicals", "cb_401.pdf", "Callback", "Issue 401 (Jun 2013)", "NASA", 205505, "" );
+insert_book( "periodicals", "cb_400.pdf", "Callback", "Issue 400 (May 2013)", "NASA", 367935, "" );
+insert_book( "periodicals", "cb_399.pdf", "Callback", "Issue 399 (Apr 2013)", "NASA", 568359, "" );
+insert_book( "periodicals", "13jun-front.pdf", "The Front", "Jun 2013", "NOAA", 2677124, "N" );
+insert_book( "periodicals", "13apr-front.pdf", "The Front", "Apr 2013", "NOAA", 2475943, "" );
 insert_book( "periodicals", "12dec-front.pdf", "The Front", "Dec 2012", "NOAA", 2150530, "" );
 insert_book( "periodicals", "12jul-front.pdf", "The Front", "Jul 2012", "NOAA", 2071900, "" );
-insert_book( "periodicals", "11nov-front.pdf", "The Front", "Nov 2011", "NOAA", 1030336, "" );
-insert_book( "periodicals", "11jul-front.pdf", "The Front", "Jul 2011", "NOAA", 588846, "" );
+insert_book( "periodicals", "JulAug2013.pdf", "FAA Safety Briefing",
+        "Jul/Aug 2013", "FAA", 5423441, "N" );
+insert_book( "periodicals", "MayJun2013.pdf", "FAA Safety Briefing",
+        "May/Jun 2013", "FAA", 5208186, "" );
 insert_book( "periodicals", "MarApr2013.pdf", "FAA Safety Briefing",
         "Mar/Apr 2013", "FAA", 2751314, "" );
 insert_book( "periodicals", "JanFeb2013.pdf", "FAA Safety Briefing",
         "Jan/Feb 2013", "FAA", 2815002, "" );
-insert_book( "periodicals", "NovDec2012.pdf", "FAA Safety Briefing",
-        "Nov/Dec 2012", "FAA", 3685820, "" );
-insert_book( "periodicals", "SepOct2012.pdf", "FAA Safety Briefing",
-        "Sep/Oct 2012", "FAA", 2682469, "" );
 insert_book( "periodicals", "ATB-2013-1.pdf", "Air Traffic Bulletin",
-        "2013-Q1", "FAA", 46744, "N" );
+        "2013-Q1", "FAA", 46744, "" );
 insert_book( "periodicals", "ATB-2012-4.pdf", "Air Traffic Bulletin",
-        "2012-Q4", "FAA", 243345, "N" );
+        "2012-Q4", "FAA", 243345, "" );
 insert_book( "periodicals", "ATB-2012-3.pdf", "Air Traffic Bulletin",
-        "2012-Q3", "FAA", 167092, "N" );
+        "2012-Q3", "FAA", 167092, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -179,15 +179,15 @@ insert_book( "safety", "takeoff_safety.pdf", "Pilot Guide to Takeoff Safety",
         "2008", "FAA", 2678525, "" );
 
 insert_book( "regs", "aim_2012_r2.pdf", "Aeronautical Information Manual (AIM)",
-        "Mar 2013 (Change 2)", "FAA", 9017835, "N" );
-insert_book( "regs", "cfr-2012-title14-vol1.pdf", "Federal Aviation Regulations (FAR) 2012",
-        "Parts 1-59", "US GPO", 9855793, "" );
-insert_book( "regs", "cfr-2012-title14-vol2.pdf", "Federal Aviation Regulations (FAR) 2012",
-        "Parts 60-109", "US GPO", 15171981, "" );
-insert_book( "regs", "cfr-2012-title14-vol3.pdf", "Federal Aviation Regulations (FAR) 2012",
-        "Parts 110-199", "US GPO", 4961436, "" );
+        "Mar 2013 (Change 2)", "FAA", 9017835, "" );
+insert_book( "regs", "cfr-2013-title14-vol1.pdf", "Federal Aviation Regulations (FAR) 2013",
+        "Parts 1-59", "US GPO", 9869469, "" );
+insert_book( "regs", "cfr-2013-title14-vol2.pdf", "Federal Aviation Regulations (FAR) 2013",
+        "Parts 60-109", "US GPO", 15653683, "" );
+insert_book( "regs", "cfr-2013-title14-vol3.pdf", "Federal Aviation Regulations (FAR) 2013",
+        "Parts 110-199", "US GPO", 5352778, "" );
 insert_book( "regs", "cfr-2013-title14-vol4.pdf", "Federal Aviation Regulations (FAR) 2013",
-        "Parts 200-1199", "US GPO", 16915045, "N" );
+        "Parts 200-1199", "US GPO", 16915045, "" );
 insert_book( "regs", "cfr-2013-title14-vol5.pdf", "Federal Aviation Regulations (FAR) 2013",
         "Parts 1200-1310", "US GPO", 2400725, "" );
 
@@ -210,57 +210,57 @@ insert_book( "circular", "ac-00-46e-2011.pdf", "Aviation Safety Reporting Progra
         "2011", "AC-00-46E", 46601, "" );
 
 insert_book( "testguide", "FAA-G-8082-17I.pdf", "Private Pilot Knowledge Test Guide",
-        "Feb 2013", "FAA-G-8082-17I", 410108, "N" );
+        "Feb 2013", "FAA-G-8082-17I", 410108, "" );
 insert_book( "testguide", "FAA-G-8082-13I.pdf", "Instrument Rating Knowledge Test Guide",
-        "Feb 2013", "FAA-G-8082-13I", 331406, "N" );
+        "Feb 2013", "FAA-G-8082-13I", 331406, "" );
 insert_book( "testguide", "FAA-G-8082-5H.pdf", "Commercial Pilot Knowledge Test Guide",
-        "Feb 2013", "FAA-G-8082-5H", 559979, "N" );
+        "Feb 2013", "FAA-G-8082-5H", 559979, "" );
 insert_book( "testguide", "FAA-G-8082-7I.pdf", "Flight & Ground Instructor Knowledge Test Guide",
-        "Feb 2013", "FAA-G-8082-7I", 812208, "N" );
+        "Feb 2013", "FAA-G-8082-7I", 812208, "" );
 insert_book( "testguide", "FAA-G-8082-4D.pdf", "Sport Pilot Knowledge Test Guide",
-        "Feb 2013", "FAA-G-8082-4D", 979987, "N" );
+        "Feb 2013", "FAA-G-8082-4D", 979987, "" );
 insert_book( "testguide", "IPC_Guidance.pdf", "Instrument Proficiency Check Guidance",
-        "Mar 2010", "", 340448, "N" );
+        "Mar 2010", "", 340448, "" );
 
 insert_book( "misc", "AIP_22nd_Edition.pdf", "Aeronautical Information Publication",
         "22nd Edition", "FAA", 15562404, "" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
 insert_book( "misc", "pcg_030713.pdf", "Pilot/Controller Glossary",
-        "2012", "FAA", 450475, "N" );
+        "2012", "FAA", 450475, "" );
 insert_book( "misc", "RNProadmap.pdf", "Roadmap for Performance-Based Navigation",
         "2006", "FAA", 1513616, "" );
 
 insert_book( "canada", "AWS_Guide_EN.pdf", "Aviation Weather Service Guide",
-        "Aug 2011", "Nav Canada", 1092048, "N" );
+        "Aug 2011", "Nav Canada", 1092048, "" );
 insert_book( "canada", "Customer_Guide_New_en.pdf", "Customer Guide to Charges",
-        "Sep 2008", "Nav Canada", 1838506, "N" );
+        "Sep 2008", "Nav Canada", 1838506, "" );
 insert_book( "canada", "Notam_Manual_Current_en.pdf", "Canadian NOTAM Procedures Manual",
-        "Nov 2012", "Nav Canada", 1883233, "N" );
+        "Nov 2012", "Nav Canada", 1883233, "" );
 insert_book( "canada", "A34E-W.pdf", "The Weather of Atlantic Canada and Eastern Quebec",
-        "Nov 2005", "Nav Canada", 5529975, "N" );
+        "Nov 2005", "Nav Canada", 5529975, "" );
 insert_book( "canada", "BC31E-W.pdf", "The Weather of British Columbia",
-        "Nov 2005", "Nav Canada", 5192648, "N" );
+        "Nov 2005", "Nav Canada", 5192648, "" );
 insert_book( "canada", "N3637E-W.pdf", "The Weather of Nunavut and the Arctic",
-        "Oct 2005", "Nav Canada", 6972336, "N" );
+        "Oct 2005", "Nav Canada", 6972336, "" );
 insert_book( "canada", "OQ33E-W.pdf", "The Weather of Ontario and Quebec",
-        "Nov 2005", "Nav Canada", 5146715, "N" );
+        "Nov 2005", "Nav Canada", 5146715, "" );
 insert_book( "canada", "P32E-W.pdf", "The Weather of the Canadian Prairies",
-        "Nov 2005", "Nav Canada", 6266643, "N" );
+        "Nov 2005", "Nav Canada", 6266643, "" );
 insert_book( "canada", "Y35E-W.pdf", "The Weather of the Yukon, NWT and Western Nunavut",
-        "Nov 2005", "Nav Canada", 5597294, "N" );
-insert_book( "canada", "charts_alberta.pdf", "Canadian Airport Charts - Alberta",
-        "7 Mar-2 May", "Nav Canada", 4437187, "N" );
-insert_book( "canada", "charts_atlantic.pdf", "Canadian Airport Charts - Atlantic",
-        "7 Mar-2 May", "Nav Canada", 2369232, "N" );
-insert_book( "canada", "charts_bc.pdf", "Canadian Airport Charts - British Columbia",
-        "7 Mar-2 May", "Nav Canada", 3410769, "N" );
-insert_book( "canada", "charts_ontario.pdf", "Canadian Airport Charts - Ontario",
-        "7 Mar-2 May", "Nav Canada", 5939179, "N" );
-insert_book( "canada", "charts_quebec.pdf", "Canadian Airport Charts - Quebec",
-        "7 Mar-2 May", "Nav Canada", 8590936, "N" );
-insert_book( "canada", "charts_yukon.pdf", "Canadian Airport Charts - Yukon",
-        "7 Mar-2 May", "Nav Canada", 2250919, "N" );
+        "Nov 2005", "Nav Canada", 5597294, "" );
+insert_book( "canada", "charts_alberta_20130502.pdf", "Canadian Airport Charts - Alberta",
+        "2 May-27 Jun", "Nav Canada", 4964294, "" );
+insert_book( "canada", "charts_atlantic_20130502.pdf", "Canadian Airport Charts - Atlantic",
+        "2 May-27 Jun", "Nav Canada", 2452850, "" );
+insert_book( "canada", "charts_bc_20130502.pdf", "Canadian Airport Charts - British Columbia",
+        "2 May-27 Jun", "Nav Canada", 3426437, "" );
+insert_book( "canada", "charts_ontario_20130502.pdf", "Canadian Airport Charts - Ontario",
+        "2 May-27 Jun", "Nav Canada", 6940887, "" );
+insert_book( "canada", "charts_quebec_20130502.pdf", "Canadian Airport Charts - Quebec",
+        "2 May-27 Jun", "Nav Canada", 8726130, "" );
+insert_book( "canada", "charts_yukon_20130502.pdf", "Canadian Airport Charts - Yukon",
+        "2 May-27 Jun", "Nav Canada", 2406846, "" );
 
 exit;
 
