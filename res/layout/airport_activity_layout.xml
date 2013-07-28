@@ -31,6 +31,7 @@
         <include layout="@layout/airport_title_layout" />
         <LinearLayout android:id="@+id/fragment_container"
                 android:layout_weight="1"
+                android:orientation="horizontal"
                 android:paddingTop="@dimen/padding_top"
                 android:paddingLeft="@dimen/padding_left"
                 android:paddingRight="@dimen/padding_right"
@@ -38,7 +39,8 @@
                 android:layout_height="0dp"/>
         <TextView android:id="@+id/effective_date"
                 style="@style/TextSmall"
-                android:padding="4dp"
+                android:layout_marginTop="@dimen/section_margin"
+                android:padding="@dimen/label_padding"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

@@ -27,7 +27,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/airport_name"
-            style="@style/TextMedium.Bold"
+            style="@style/TextLabel.Bold"
             android:singleLine="true"
             android:ellipsize="marquee"
             android:layout_width="fill_parent"

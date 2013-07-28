@@ -22,11 +22,11 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
-        android:padding="8dp"
+        android:padding="@dimen/item_padding"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/item_label"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            style="@style/TextSmall"
             android:gravity="left"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
@@ -34,7 +34,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/item_value"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            style="@style/TextSmall"
             android:gravity="right"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"

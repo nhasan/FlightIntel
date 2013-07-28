@@ -22,7 +22,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
-        android:padding="8dp"
+        android:padding="@dimen/item_padding"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <LinearLayout
@@ -32,7 +32,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
         <TextView android:id="@+id/item_label"
-                android:textAppearance="?android:attr/textAppearanceSmall"
+                style="@style/TextSmall"
                 android:gravity="left"
                 android:ellipsize="end"
                 android:singleLine="true"
@@ -41,7 +41,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
         <TextView android:id="@+id/item_value"
-                android:textAppearance="?android:attr/textAppearanceSmall"
+                style="@style/TextSmall"
                 android:gravity="right"
                 android:paddingLeft="4dp"
                 android:layout_weight="0"
@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content" />
     </LinearLayout>
     <TextView android:id="@+id/item_extra_value"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            style="@style/TextSmall"
             android:gravity="right"
             android:paddingTop="2dp"
             android:paddingRight="4dp"
