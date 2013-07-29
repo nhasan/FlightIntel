@@ -26,9 +26,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/based_aircraft_label"
-            style="@style/TextSmall.Bold"
-            android:padding="@dimen/label_padding"
+            style="@style/TextLabel"
             android:layout_marginTop="@dimen/section_margin"
+            android:padding="@dimen/label_padding"
             android:text="@string/based_aircraft"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -38,9 +38,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/aircraft_ops_label"
-            style="@style/TextSmall.Bold"
-            android:padding="@dimen/label_padding"
+            style="@style/TextLabel"
             android:layout_marginTop="@dimen/section_margin"
+            android:padding="@dimen/label_padding"
             android:text="@string/annual_ops"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

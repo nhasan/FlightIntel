@@ -20,23 +20,23 @@
  */
  -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
-        android:paddingTop="6dp"
-        android:paddingBottom="0dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/group_name"
-            style="@style/TextSmall.Bold"
+            style="@style/TextLabel"
             android:ellipsize="end"
-            android:padding="4dp"
+            android:layout_marginTop="@dimen/section_margin"
+            android:padding="@dimen/label_padding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/group_extra"
-            style="@style/TextSmall.Bold"
+            style="@style/TextSmall"
             android:layout_alignParentRight="true"
             android:gravity="right"
             android:layout_toRightOf="@id/group_name"
-            android:padding="4dp"
+            android:layout_alignBaseline="@id/group_name"
+            android:layout_marginTop="@dimen/section_margin"
+            android:padding="@dimen/label_padding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/group_details"
