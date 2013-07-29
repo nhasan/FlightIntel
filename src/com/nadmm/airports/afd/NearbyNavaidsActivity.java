@@ -274,9 +274,8 @@ public class NearbyNavaidsActivity extends AfdActivityBase {
                     String type = vor.getString( vor.getColumnIndex( Nav1.NAVAID_TYPE ) );
                     int radial = vor.getInt( vor.getColumnIndex( "RADIAL" ) );
                     float distance = vor.getFloat( vor.getColumnIndex( "DISTANCE" ) );
-                    int resid = getSelectorResourceForRow( vor.getPosition(), vor.getCount() );
                     addDirectionalNavaidRow( layout, navaidId, name, type, freq, radial,
-                            distance, resid );
+                            distance );
                 } while ( vor.moveToNext() );
                 setRowBackgroundResource( layout );
             } else {
@@ -296,9 +295,8 @@ public class NearbyNavaidsActivity extends AfdActivityBase {
                     String type = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_TYPE ) );
                     int heading = ndb.getInt( ndb.getColumnIndex( "RADIAL" ) );
                     float distance = ndb.getFloat( ndb.getColumnIndex( "DISTANCE" ) );
-                    int resid = getSelectorResourceForRow( ndb.getPosition(), ndb.getCount() );
                     addNonDirectionalNavaidRow( layout, navaidId, name, type, freq, heading,
-                            distance, resid );
+                            distance );
                 } while ( ndb.moveToNext() );
                 setRowBackgroundResource( layout );
             } else {
@@ -310,7 +308,7 @@ public class NearbyNavaidsActivity extends AfdActivityBase {
         }
 
         protected void addDirectionalNavaidRow( LinearLayout table, String navaidId,
-                String name, String type, String freq, int radial, float distance, int resid ) {
+                String name, String type, String freq, int radial, float distance ) {
             String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
             String label2 = name+" "+type;
             String value2 = String.format( Locale.US, "r%03d/%.1fNM", radial, distance );
@@ -322,7 +320,7 @@ public class NearbyNavaidsActivity extends AfdActivityBase {
         }
 
         protected void addNonDirectionalNavaidRow( LinearLayout table, String navaidId,
-                String name, String type, String freq, int heading, float distance, int resid ) {
+                String name, String type, String freq, int heading, float distance ) {
             String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
             String label2 = name+" "+type;
             String value2 = String.format( Locale.US, "%03d\u00B0M/%.1fNM", heading, distance );

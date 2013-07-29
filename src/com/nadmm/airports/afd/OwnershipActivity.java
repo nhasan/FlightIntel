@@ -27,8 +27,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
-import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -170,23 +168,6 @@ public class OwnershipActivity extends AfdActivityBase {
                 String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
                 addBulletedRow( layout, remark );
             } while ( rmk.moveToNext() );
-        }
-
-        protected void addSimpleRow( LinearLayout layout, String text ) {
-            TextView tv = new TextView( getActivity() );
-            tv.setText( text );
-            tv.setPadding( 0, 1, 0, 1 );
-            layout.addView( tv, new LinearLayout.LayoutParams(
-                    LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
-        }
-
-        protected void addPhoneRow( LinearLayout layout, final String phone ) {
-            TextView tv = new TextView( getActivity() );
-            tv.setPadding( 0, 1, 0, 1 );
-            tv.setText( phone );
-            makeClickToCall( tv );
-            layout.addView( tv, new LinearLayout.LayoutParams(
-                    LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT ) );
         }
 
     }

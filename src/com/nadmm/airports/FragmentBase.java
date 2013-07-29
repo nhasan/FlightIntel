@@ -247,19 +247,6 @@ public class FragmentBase extends SherlockFragment {
         } );
     }
 
-    protected int getSelectorResourceForRow( int curRow, int totRows ) {
-        // TODO: Add more states to the drawables
-        if ( totRows == 1 ) {
-            return R.drawable.row_selector;
-        } else if ( curRow == 0 ) {
-            return R.drawable.row_selector_top;
-        } else if ( curRow == totRows-1 ) {
-            return R.drawable.row_selector_bottom;
-        } else {
-            return R.drawable.row_selector_middle;
-        }
-    }
-
     protected void makeClickToCall( TextView tv ) {
         PackageManager pm = mActivity.getPackageManager();
         boolean hasTelephony = pm.hasSystemFeature( PackageManager.FEATURE_TELEPHONY );
@@ -287,8 +274,7 @@ public class FragmentBase extends SherlockFragment {
         while ( index < count ) {
             View row = layout.getChildAt( index );
             if ( row.isClickable() ) {
-                int resId = getSelectorResourceForRow( index, count );
-                row.setBackgroundResource( resId );
+                row.setBackgroundResource( R.drawable.row_selector_middle );
             }
             index += 2;
         }
@@ -333,6 +319,16 @@ public class FragmentBase extends SherlockFragment {
         return row;
     }
 
+    protected View addPhoneRow( LinearLayout layout, String phone ) {
+        View row = addRow( layout, phone );
+        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        makeClickToCall( tv );
+        if ( row.isClickable() ) {
+            row.setBackgroundResource( R.drawable.row_selector_middle );
+        }
+        return row;
+    }
+
     protected View addProgressRow( LinearLayout layout, String label ) {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
@@ -343,6 +339,14 @@ public class FragmentBase extends SherlockFragment {
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
         return row;
+    }
+
+    protected View addSimpleRow( LinearLayout layout, String value ) {
+        TextView tv = (TextView) inflate( R.layout.detail_row_simple );
+        tv.setText( value );
+        layout.addView( tv, new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+        return tv;
     }
 
     protected View addRow( LinearLayout layout, String label ) {

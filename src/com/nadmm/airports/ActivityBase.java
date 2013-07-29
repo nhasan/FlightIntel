@@ -393,16 +393,16 @@ public class ActivityBase extends SlidingFragmentActivity {
         int color = tower.equals( "Y" )? Color.rgb( 48, 96, 144 ) : Color.rgb( 128, 72, 92 );
         tv.setTextColor( color );
         String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
-        tv.setText( String.format( "%s - %s", code, name ) );
-        tv = (TextView) root.findViewById( R.id.airport_info );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
         String type = DataUtils.decodeLandingFaclityType( siteNumber );
+        tv.setText( String.format( "%s - %s %s", code, name, type ) );
+        tv = (TextView) root.findViewById( R.id.airport_info );
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
         String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );
         if ( state == null ) {
             state = c.getString( c.getColumnIndex( Airports.ASSOC_COUNTY ) );
         }
-        tv.setText( String.format( "%s, %s, %s", type, city, state ) );
+        tv.setText( String.format( "%s, %s", city, state ) );
         tv = (TextView) root.findViewById( R.id.airport_info2 );
         int distance = c.getInt( c.getColumnIndex( Airports.DISTANCE_FROM_CITY_NM ) );
         String dir = c.getString( c.getColumnIndex( Airports.DIRECTION_FROM_CITY ) );
