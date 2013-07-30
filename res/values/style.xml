@@ -40,25 +40,20 @@
     <style name="TextSmall.Bold">
         <item name="android:textStyle">bold</item>
     </style>
-    <style name="TextMedium" parent="@android:style/TextAppearance.Small">
+    <style name="TextSmall.Red">
+        <item name="android:textColor">#ffff0000</item>
+    </style>
+    <style name="TextMedium" parent="@style/TextSmall">
         <item name="android:textSize">18sp</item>
-        <item name="android:textColor">#686868</item>
     </style>
     <style name="TextMedium.Bold">
         <item name="android:textStyle">bold</item>
     </style>
-    <style name="TextLabel" parent="@android:style/TextAppearance.Small">
+    <style name="TextLabel" parent="@style/TextSmall">
         <item name="android:textSize">20sp</item>
-        <item name="android:textColor">#686868</item>
     </style>
     <style name="TextLabel.Bold">
         <item name="android:textStyle">bold</item>
-    </style>
-    <style name="TextSmall.Bold">
-        <item name="android:textStyle">bold</item>
-    </style>
-    <style name="TextSmall.Red">
-        <item name="android:textColor">#ffff0000</item>
     </style>
     <style name="TextNormal">
         <item name="android:textAppearance">?android:attr/textAppearance</item>
