@@ -43,6 +43,9 @@
     <style name="TextSmall.Red">
         <item name="android:textColor">#ffff0000</item>
     </style>
+    <style name="TextSmall.Light">
+        <item name="android:textColor">#909090</item>
+    </style>
     <style name="TextMedium" parent="@style/TextSmall">
         <item name="android:textSize">18sp</item>
     </style>
