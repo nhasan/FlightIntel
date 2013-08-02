@@ -364,6 +364,8 @@ public class TafFragment extends FragmentBase {
             }
             sb.append( TimeUtils.formatDateRange(
                     getActivity(), forecast.timeFrom, forecast.timeTo ) );
+            tv = (TextView) grp_layout.findViewById( R.id.group_extra );
+            tv.setVisibility( View.GONE );
             tv = (TextView) grp_layout.findViewById( R.id.group_name );
             tv.setText( sb.toString() );
             String flightCategory = WxUtils.computeFlightCategory(

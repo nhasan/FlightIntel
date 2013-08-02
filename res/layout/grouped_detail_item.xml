@@ -24,6 +24,7 @@
         android:layout_height="wrap_content">
     <TextView android:id="@+id/group_name"
             style="@style/TextLabel"
+            android:singleLine="true"
             android:ellipsize="end"
             android:layout_marginTop="@dimen/section_margin"
             android:padding="@dimen/label_padding"
