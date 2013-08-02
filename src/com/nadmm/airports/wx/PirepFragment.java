@@ -228,18 +228,19 @@ public class PirepFragment extends FragmentBase {
 
     protected void showPirepEntry( LinearLayout layout, PirepEntry entry ) {
         RelativeLayout item = (RelativeLayout) inflate( R.layout.pirep_detail_item );
-        TextView tv = (TextView) item.findViewById( R.id.pirep_name );
-        String time = TimeUtils.formatDateTime( getActivity(), entry.observationTime );
+
+        TextView tv = (TextView) item.findViewById( R.id.pirep_title );
         if ( entry.flags.contains( Flags.BadLocation ) ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
-            tv.setText( String.format( "%s (%.0f NM %s approx.)", time, entry.distanceNM, dir ) );
+            tv.setText( String.format( "%.0f NM %s approx.", entry.distanceNM, dir ) );
         } else if ( entry.distanceNM > 0 ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
-            tv.setText( String.format( "%s (%.0f NM %s)", time, entry.distanceNM, dir ) );
+            tv.setText( String.format( "%.0f NM %s", entry.distanceNM, dir ) );
         } else {
-            tv.setText( String.format( "%s (0 NM)", time ) );
+            tv.setText( String.format( "On Site" ) );
         }
-        tv = (TextView) item.findViewById( R.id.pirep_age );
+
+        tv = (TextView) item.findViewById( R.id.pirep_title_extra );
         tv.setText( TimeUtils.formatElapsedTime( entry.observationTime ) );
 
         tv = (TextView) item.findViewById( R.id.wx_raw_pirep );
@@ -249,6 +250,9 @@ public class PirepFragment extends FragmentBase {
 
         addRow( details, "Type", entry.reportType );
         addRow( details, "Aircraft", entry.aircraftRef );
+
+        String time = TimeUtils.formatDateTime( getActivity(), entry.observationTime );
+        addRow( details, "Time", time );
 
         if ( entry.altitudeFeetMSL < Integer.MAX_VALUE ) {
             if ( entry.flags.contains( Flags.NoFlightLevel ) ) {

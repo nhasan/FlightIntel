@@ -239,12 +239,12 @@ public class MetarFragment extends FragmentBase {
 
         View detail = findViewById( R.id.wx_detail_layout );
         LinearLayout layout = (LinearLayout) findViewById( R.id.wx_status_layout );
-        TextView tv =(TextView) findViewById( R.id.status_msg );
         layout.removeAllViews();
+        TextView tv =(TextView) findViewById( R.id.status_msg );
         if ( !metar.isValid ) {
             tv.setVisibility( View.VISIBLE );
             layout.setVisibility( View.VISIBLE );
-            tv.setText( "Unable to get METAR for this location." );
+            tv.setText( "Unable to get METAR for this location" );
             addRow( layout, "This could be due to the following reasons:" );
             addBulletedRow( layout, "Network connection is not available" );
             addBulletedRow( layout, "ADDS does not publish METAR for this station" );
