@@ -106,10 +106,10 @@ public class TfrDetailFragment extends FragmentBase {
             addRow( layout, "Modified", TimeUtils.formatDateTimeYear( context, mTfr.modifyTime ) );
         }
 
-        TextView tv = (TextView) view.findViewById( R.id.tfr_text_view );
-        tv.setText( mTfr.comment.replace( "\\n", "\n" ) );
+        layout = (LinearLayout) view.findViewById( R.id.tfr_text_layout );
+        addRow( layout, mTfr.comment.replace( "\\n", "\n" ) );
 
-        tv = (TextView) view.findViewById( R.id.tfr_warning_text );
+        TextView tv = (TextView) view.findViewById( R.id.tfr_warning_text );
         tv.setText( "Depicted TFR data may not be a complete listing. Pilots should not use "
         		+ "the information for flight planning purposes. For the latest information, "
         		+ "call your local Flight Service Station at 1-800-WX-BRIEF." );
@@ -121,8 +121,8 @@ public class TfrDetailFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
-        setActionBarTitle( "TFR Details" );
-        setActionBarSubtitle( mTfr.name );
+        setActionBarTitle( mTfr.name );
+        setActionBarSubtitle( "TFR Details" );
 
         super.onActivityCreated( savedInstanceState );
     }
