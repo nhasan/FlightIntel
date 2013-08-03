@@ -25,13 +25,12 @@
         android:layout_height="fill_parent">
     <LinearLayout android:id="@+id/parent_layout"
             android:orientation="vertical"
-            android:padding="12dp"
+            android:padding="@dimen/item_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <TextView android:id="@+id/msg_txt"
                 style="@style/TextSmall"
-                android:padding="4dp"
-                android:layout_marginBottom="6dp"
+                android:padding="@dimen/label_padding"
                 android:gravity="left|center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

@@ -24,7 +24,7 @@
         android:id="@+id/attendance_detail_item"
         android:orientation="vertical"
         android:background="@drawable/rounded_rectangle"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="@dimen/item_padding"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 </LinearLayout>
