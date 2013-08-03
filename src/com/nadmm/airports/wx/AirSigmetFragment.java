@@ -213,7 +213,7 @@ public class AirSigmetFragment extends FragmentBase {
         tv.setText( entry.type );
         tv = (TextView) item.findViewById( R.id.wx_raw_airsigmet );
         tv.setText( entry.rawText );
-        tv = (TextView) item.findViewById( R.id.airsigmet_age );
+        tv = (TextView) item.findViewById( R.id.airsigmet_time );
         tv.setText( TimeUtils.formatDateRange( getActivity(), entry.fromTime, entry.toTime ) );
 
         LinearLayout details = (LinearLayout) item.findViewById( R.id.airsigmet_details );
