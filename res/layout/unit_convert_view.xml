@@ -25,7 +25,7 @@
         android:layout_height="match_parent">
     <LinearLayout
             android:orientation="vertical"
-            android:padding="24dp"
+            android:padding="@dimen/item_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <Spinner android:id="@+id/unit_type_spinner"
@@ -39,23 +39,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <TableRow
-                    android:padding="8dp"
+                    android:padding="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <EditText android:id="@+id/unit_from_value"
+                        style="@style/TextSmall"
                         android:inputType="none"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content" />
                 <TextView
+                        style="@style/TextSmall"
                         android:text="@string/equal"
                         android:textSize="28sp"
                         android:padding="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <EditText android:id="@+id/unit_to_value"
+                        style="@style/TextSmall"
                         android:inputType="none"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content" />
@@ -71,13 +74,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <Spinner android:id="@+id/unit_from_spinner"
-                        android:layout_width="120dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <Spinner android:id="@+id/unit_to_spinner"
-                        android:layout_width="120dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <TextView
                         android:layout_width="wrap_content"

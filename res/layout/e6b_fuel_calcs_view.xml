@@ -21,45 +21,41 @@
  -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <LinearLayout
             android:orientation="vertical"
-            android:padding="24dp"
+            android:padding="@dimen/item_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <TextView android:id="@+id/e6b_label"
-                android:textIsSelectable="false"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:gravity="left"
-                android:padding="4dp"
+                style="@style/TextLabel"
+                android:padding="@dimen/label_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         <TableLayout
                 android:background="@drawable/rounded_rectangle"
                 android:stretchColumns="0,1"
-                android:padding="12dp"
+                android:padding="@dimen/item_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView
+                        style="@style/TextMedium"
                         android:text="@string/total_fuel"
-                        android:textSize="18sp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_edit_total_fuel"
+                        style="@style/TextSmall"
                         android:inputType="numberDecimal"
                         android:layout_marginTop="-6dp"
                         android:layout_marginLeft="6dp"
@@ -70,20 +66,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView
+                        style="@style/TextMedium"
                         android:text="@string/burn_rate"
-                        android:textSize="18sp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_edit_burn_rate"
+                        style="@style/TextSmall"
                         android:inputType="numberDecimal"
-                        android:layout_marginTop="-8dp"
+                        android:layout_marginTop="-6dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content" />
@@ -92,24 +89,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView
+                        style="@style/TextMedium"
                         android:text="@string/endurance"
-                        android:textSize="18sp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_edit_time"
-                        android:inputType="numberDecimal"
+                        style="@style/TextSmall"
+                        android:inputType="number"
                         android:layout_marginTop="-6dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <EditText android:id="@+id/e6b_edit_time2"
+                        style="@style/TextSmall.Bold"
                         android:inputType="none"
                         android:focusable="false"
                         android:layout_marginTop="-6dp"
@@ -119,9 +118,9 @@
             </TableRow>
         </TableLayout>
         <TextView android:id="@+id/e6b_msg"
-                android:textIsSelectable="false"
+                style="@style/TextSmall.Light"
                 android:gravity="center"
-                android:padding="8dp"
+                android:padding="@dimen/item_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
     </LinearLayout>

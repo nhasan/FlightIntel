@@ -21,52 +21,48 @@
  -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <LinearLayout
             android:orientation="vertical"
-            android:padding="24dp"
+            android:padding="@dimen/item_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <TextView android:id="@+id/e6b_label"
-                android:textIsSelectable="false"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:gravity="left"
-                android:padding="4dp"
+                style="@style/TextLabel"
+                android:padding="@dimen/label_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         <TableLayout
                 android:background="@drawable/rounded_rectangle"
                 android:stretchColumns="0,1"
-                android:padding="12dp"
+                android:padding="@dimen/item_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView
+                        style="@style/TextMedium"
                         android:text="@string/ia"
-                        android:textSize="18sp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <TextView
+                        style="@style/TextMedium"
                         android:text="@string/ta"
-                        android:textSize="18sp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </TableRow>
             <TableRow
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_edit_ia"
+                        style="@style/TextSmall"
                         android:inputType="number"
                         android:hint="@string/input_ft"
                         android:layout_marginTop="-6dp"
@@ -74,9 +70,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <EditText android:id="@+id/e6b_edit_ta"
+                        style="@style/TextSmall.Bold"
                         android:inputType="none"
-                        android:textStyle="bold"
-                        android:textColor="#007040"
                         android:hint="@string/ft"
                         android:focusable="false"
                         android:layout_marginTop="-6dp"
@@ -88,21 +83,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView
+                        style="@style/TextMedium"
                         android:text="@string/oat"
-                        android:textSize="18sp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_edit_oat"
-                        android:inputType="number|numberSigned"
+                        style="@style/TextSmall"
+                        android:inputType="numberDecimal|numberSigned"
                         android:hint="@string/input_degC"
-                        android:layout_marginTop="-8dp"
+                        android:layout_marginTop="-6dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content" />
@@ -111,18 +107,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView
+                        style="@style/TextMedium"
                         android:text="@string/altimeter"
-                        android:textSize="18sp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_edit_altimeter"
+                        style="@style/TextSmall"
                         android:inputType="numberDecimal"
                         android:hint="@string/input_inHg"
                         android:layout_marginTop="-6dp"
@@ -134,30 +131,31 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView
+                        style="@style/TextMedium"
                         android:text="@string/station_altitude"
-                        android:textSize="18sp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_edit_station_altitude"
+                        style="@style/TextSmall"
                         android:inputType="number"
                         android:hint="@string/input_ft"
-                        android:layout_marginTop="-8dp"
+                        android:layout_marginTop="-6dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content" />
             </TableRow>
         </TableLayout>
         <TextView android:id="@+id/e6b_msg"
-                android:textIsSelectable="false"
+                style="@style/TextSmall.Light"
                 android:gravity="center"
-                android:padding="8dp"
+                android:padding="@dimen/item_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
     </LinearLayout>

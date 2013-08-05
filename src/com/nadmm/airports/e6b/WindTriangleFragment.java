@@ -45,7 +45,6 @@ public class WindTriangleFragment extends FragmentBase {
     private EditText mWdirEdit;
 
     private long mMode;
-    private int mHighlightTextColor;
 
     private TextWatcher mTextWatcher = new TextWatcher() {
 
@@ -72,8 +71,6 @@ public class WindTriangleFragment extends FragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
-
-        mHighlightTextColor = getResources().getColor( R.color.e6b_highlight );
 
         mTasEdit = (EditText) findViewById( R.id.e6b_tas_edit );
         mGsEdit = (EditText) findViewById( R.id.e6b_gs_edit );
@@ -244,12 +241,10 @@ public class WindTriangleFragment extends FragmentBase {
             mCrsEdit.setHint( R.string.input_deg );
             mWsEdit.setFocusable( false );
             mWsEdit.setFocusableInTouchMode( false );
-            mWsEdit.setTextColor( mHighlightTextColor );
             mWsEdit.setTypeface( null, Typeface.BOLD );
             mWsEdit.setHint( R.string.kts );
             mWdirEdit.setFocusable( false );
             mWdirEdit.setFocusableInTouchMode( false );
-            mWdirEdit.setTextColor( mHighlightTextColor );
             mWdirEdit.setTypeface( null, Typeface.BOLD );
             mWdirEdit.setHint( R.string.deg );
         } else if ( mMode == R.id.E6B_WIND_TRIANGLE_HDG_GS ) {
@@ -258,12 +253,10 @@ public class WindTriangleFragment extends FragmentBase {
             mTasEdit.setHint( R.string.input_kts );
             mGsEdit.setFocusable( false );
             mGsEdit.setFocusableInTouchMode( false );
-            mGsEdit.setTextColor( mHighlightTextColor );
             mGsEdit.setTypeface( null, Typeface.BOLD );
             mGsEdit.setHint( R.string.kts );
             mHdgEdit.setFocusable( false );
             mHdgEdit.setFocusableInTouchMode( false );
-            mHdgEdit.setTextColor( mHighlightTextColor );
             mHdgEdit.setTypeface( null, Typeface.BOLD );
             mHdgEdit.setHint( R.string.deg );
             mCrsEdit.addTextChangedListener( mTextWatcher );
@@ -278,14 +271,12 @@ public class WindTriangleFragment extends FragmentBase {
             mTasEdit.setHint( R.string.input_kts );
             mGsEdit.setFocusable( false );
             mGsEdit.setFocusableInTouchMode( false );
-            mGsEdit.setTextColor( mHighlightTextColor );
             mGsEdit.setTypeface( null, Typeface.BOLD );
             mGsEdit.setHint( R.string.kts );
             mHdgEdit.addTextChangedListener( mTextWatcher );
             mHdgEdit.setHint( R.string.input_deg );
             mCrsEdit.setFocusable( false );
             mCrsEdit.setFocusableInTouchMode( false );
-            mCrsEdit.setTextColor( mHighlightTextColor );
             mCrsEdit.setTypeface( null, Typeface.BOLD );
             mCrsEdit.setHint( R.string.deg );
             mWsEdit.addTextChangedListener( mTextWatcher );

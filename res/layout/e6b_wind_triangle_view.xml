@@ -21,60 +21,57 @@
  -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <LinearLayout
             android:orientation="vertical"
-            android:padding="24dp"
+            android:padding="@dimen/item_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <TextView android:id="@+id/e6b_label"
-                android:textIsSelectable="false"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:gravity="left"
-                android:padding="4dp"
+                style="@style/TextLabel"
+                android:padding="@dimen/label_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         <TableLayout
                 android:background="@drawable/rounded_rectangle"
                 android:stretchColumns="0,1"
-                android:padding="12dp"
+                android:padding="@dimen/item_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView android:id="@+id/e6b_tas_label"
+                        style="@style/TextMedium"
                         android:text="@string/tas"
-                        android:textSize="18sp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <TextView android:id="@+id/e6b_ws_label"
+                        style="@style/TextMedium"
                         android:text="@string/ws"
-                        android:textSize="18sp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_tas_edit"
+                        style="@style/TextSmall"
                         android:inputType="number"
-                        android:layout_marginTop="-8dp"
+                        android:layout_marginTop="-6dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content" />
                 <EditText android:id="@+id/e6b_ws_edit"
+                        style="@style/TextSmall"
                         android:inputType="number"
-                        android:layout_marginTop="-8dp"
+                        android:layout_marginTop="-6dp"
                         android:layout_marginRight="6dp"
                         android:layout_marginLeft="14dp"
                         android:layout_width="120dp"
@@ -84,31 +81,33 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView android:id="@+id/e6b_gs_label"
+                        style="@style/TextMedium"
                         android:text="@string/gs"
-                        android:textSize="18sp"
                         android:paddingLeft="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <TextView android:id="@+id/e6b_wdir_label"
+                        style="@style/TextMedium"
                         android:text="@string/wdir"
-                        android:textSize="18sp"
                         android:paddingLeft="16dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_gs_edit"
+                        style="@style/TextSmall"
                         android:inputType="number"
-                        android:layout_marginTop="-8dp"
+                        android:layout_marginTop="-6dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content" />
                 <EditText android:id="@+id/e6b_wdir_edit"
+                        style="@style/TextSmall"
                         android:inputType="number"
-                        android:layout_marginTop="-8dp"
+                        android:layout_marginTop="-6dp"
                         android:layout_marginRight="6dp"
                         android:layout_marginLeft="14dp"
                         android:layout_width="120dp"
@@ -118,19 +117,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView android:id="@+id/e6b_hdg_label"
+                        style="@style/TextMedium"
                         android:text="@string/hdg"
-                        android:textSize="18sp"
                         android:paddingLeft="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_hdg_edit"
+                        style="@style/TextSmall"
                         android:inputType="number"
-                        android:layout_marginTop="-8dp"
+                        android:layout_marginTop="-6dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content" />
@@ -139,28 +139,29 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <TextView android:id="@+id/e6b_crs_label"
+                        style="@style/TextMedium"
                         android:text="@string/crs"
-                        android:textSize="18sp"
                         android:paddingLeft="8dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                 <EditText android:id="@+id/e6b_crs_edit"
+                        style="@style/TextSmall"
                         android:inputType="number"
-                        android:layout_marginTop="-8dp"
+                        android:layout_marginTop="-6dp"
                         android:layout_marginLeft="6dp"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content" />
             </TableRow>
         </TableLayout>
         <TextView android:id="@+id/e6b_msg"
-                android:textIsSelectable="false"
+                style="@style/TextSmall.Light"
                 android:gravity="center"
-                android:padding="8dp"
+                android:padding="@dimen/item_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
     </LinearLayout>

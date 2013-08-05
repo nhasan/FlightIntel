@@ -102,8 +102,8 @@ public class IsaFragment extends FragmentBase {
                 isaTempC = 15.0 - 0.0019812*altitude;
             }
             double isaTempF = ( isaTempC*9/5 )+32;
-            mTemperatureCEdit.setText( String.format( "%.2f", isaTempC ) );
-            mTemperatureFEdit.setText( String.format( "%.2f", isaTempF ) );
+            mTemperatureCEdit.setText( String.format( "%.1f", isaTempC ) );
+            mTemperatureFEdit.setText( String.format( "%.1f", isaTempF ) );
 
             double isaPressureInHg = 0;
             if ( altitude < 36089.24 ) {
@@ -113,8 +113,8 @@ public class IsaFragment extends FragmentBase {
                 isaPressureInHg = 29.92126*0.2233609*Math.exp( -4.806346*10e-5*altitude );
             }
             double isaPressureMbar = isaPressureInHg*33.863753;
-            mPressureInEdit.setText( String.format( "%.5f", isaPressureInHg ) );
-            mPressureMbEdit.setText( String.format( "%.2f", isaPressureMbar ) );
+            mPressureInEdit.setText( String.format( "%.2f", isaPressureInHg ) );
+            mPressureMbEdit.setText( String.format( "%.1f", isaPressureMbar ) );
         } else {
             mTemperatureCEdit.setText( "" );
             mTemperatureFEdit.setText( "" );

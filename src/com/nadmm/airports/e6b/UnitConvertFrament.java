@@ -214,15 +214,15 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
     protected ArrayAdapter<Unit> getArrayAdapter( Unit[] units ) {
         ArrayAdapter<Unit> adapter = new ArrayAdapter<Unit>( getActivity(),
-                android.R.layout.simple_spinner_item, units );
-        adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
+                R.layout.spinner_item, units );
+        adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
         return adapter;
     }
 
     protected ArrayAdapter<String> getArrayAdapter( Set<String> list ) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>( getActivity(),
-                android.R.layout.simple_spinner_item, list.toArray( new String[ list.size() ] ) );
-        adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
+                R.layout.spinner_item, list.toArray( new String[ list.size() ] ) );
+        adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
         return adapter;
     }
 

@@ -43,7 +43,6 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
     private EditText mGsEdit;
 
     private long mMode;
-    private int mHighlightTextColor;
 
     private TextWatcher mTextWatcher = new TextWatcher() {
 
@@ -70,8 +69,6 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
-
-        mHighlightTextColor = getResources().getColor( R.color.e6b_highlight );
 
         mTimeEdit = (EditText) findViewById( R.id.e6b_edit_time );
         mTime2Edit = (EditText) findViewById( R.id.e6b_edit_time2 );
@@ -101,7 +98,7 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
 
             if ( speed != Double.MAX_VALUE && distance != Double.MAX_VALUE ) {
                 time = distance*60/speed;
-                mTimeEdit.setText( String.format( Locale.US, "%.3f", time ) );
+                mTimeEdit.setText( String.format( Locale.US, "%.0f", time ) );
             } else {
                 mTimeEdit.setText( "" );
             }
@@ -127,7 +124,7 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
 
             if ( time != Double.MAX_VALUE && speed != Double.MAX_VALUE ) {
                 distance = ( time/60 )*speed;
-                mDistanceEdit.setText( String.format( Locale.US, "%.1f", distance ) );
+                mDistanceEdit.setText( String.format( Locale.US, "%.0f", distance ) );
             } else {
                 mDistanceEdit.setText( "" );
             }
@@ -143,7 +140,6 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
     private void setupUi() {
         if ( mMode == R.id.E6B_TSD_TIME ) {
             mTimeEdit.setFocusable( false );
-            mTimeEdit.setTextColor( mHighlightTextColor );
             mTimeEdit.setTypeface( null, Typeface.BOLD );
             mTimeEdit.setHint( R.string.min );
             mGsEdit.addTextChangedListener( mTextWatcher );
@@ -154,7 +150,6 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
             mTimeEdit.addTextChangedListener( mTextWatcher );
             mTimeEdit.setHint( R.string.input_min );
             mGsEdit.setFocusable( false );
-            mGsEdit.setTextColor( mHighlightTextColor );
             mGsEdit.setTypeface( null, Typeface.BOLD );
             mGsEdit.setHint( R.string.kts );
             mDistanceEdit.addTextChangedListener( mTextWatcher );
@@ -165,7 +160,6 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
             mGsEdit.addTextChangedListener( mTextWatcher );
             mGsEdit.setHint( R.string.input_kts );
             mDistanceEdit.setFocusable( false );
-            mDistanceEdit.setTextColor( mHighlightTextColor );
             mDistanceEdit.setTypeface( null, Typeface.BOLD );
             mDistanceEdit.setHint( R.string.nm );
         }

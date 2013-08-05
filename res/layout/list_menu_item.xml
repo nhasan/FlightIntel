@@ -22,7 +22,7 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
-        android:padding="6dp"
+        android:padding="@dimen/item_padding"
         android:layout_gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -32,8 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
     <TextView android:id="@+id/item_title"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            style="@style/TextLabel"
             android:gravity="left|center_vertical"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
@@ -41,8 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/item_summary"
-            android:textSize="14sp"
-            android:textColor="#ff808080"
+            style="@style/TextSmall.Light"
             android:gravity="left|center_vertical"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"

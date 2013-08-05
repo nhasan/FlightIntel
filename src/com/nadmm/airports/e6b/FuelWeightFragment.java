@@ -168,8 +168,8 @@ public class FuelWeightFragment extends FragmentBase {
 
         mFuelTypes = (Spinner) findViewById( R.id.e6b_fuel_types );
         ArrayAdapter<FuelWeight> adapter = new ArrayAdapter<FuelWeight>( getActivity(),
-                android.R.layout.simple_spinner_item, mFuels );
-        adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
+                R.layout.spinner_item, mFuels );
+        adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
         mFuelTypes.setAdapter( adapter );
 
         mFuelTypes.setOnItemSelectedListener( new OnItemSelectedListener() {
@@ -201,7 +201,7 @@ public class FuelWeightFragment extends FragmentBase {
         if ( fuelTotal != Double.MAX_VALUE ) {
             FuelWeight fuel = (FuelWeight) mFuelTypes.getSelectedItem();
             double weight = fuelTotal*fuel.lbsPerGallon();
-            mFuelWeight.setText( String.format( Locale.US, "%.2f", weight ) );
+            mFuelWeight.setText( String.format( Locale.US, "%.0f", weight ) );
         } else {
             mFuelWeight.setText( "" );
         }
