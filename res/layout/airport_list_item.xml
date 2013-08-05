@@ -32,27 +32,26 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
         <TextView android:id="@+id/facility_name"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="bold"
+                style="@style/TextLabel"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
         <TextView android:id="@+id/facility_id"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                style="@style/TextLabel"
                 android:gravity="right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
     </LinearLayout>
     <TextView android:id="@+id/location"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            style="@style/TextSmall.Light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/other_info"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            style="@style/TextSmall.Light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/distance"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            style="@style/TextSmall.Light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 </LinearLayout>

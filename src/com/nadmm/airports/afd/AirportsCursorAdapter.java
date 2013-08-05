@@ -63,7 +63,9 @@ public class AirportsCursorAdapter extends ResourceCursorAdapter {
         }
 
         String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
-        holder.name.setText( name );
+        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+        String type = DataUtils.decodeLandingFaclityType( siteNumber );
+        holder.name.setText( String.format( "%s %s", name, type ) );
         String id = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
         if ( id == null || id.trim().length() == 0 ) {
             id = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
@@ -86,8 +88,6 @@ public class AirportsCursorAdapter extends ResourceCursorAdapter {
             holder.distance.setVisibility( View.GONE );
         }
 
-        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-        String type = DataUtils.decodeLandingFaclityType( siteNumber );
         String fuel = c.getString( c.getColumnIndex( Airports.FUEL_TYPES ) );
         float elev = c.getFloat( c.getColumnIndex( Airports.ELEVATION_MSL ) );
         String ctaf = c.getString( c.getColumnIndex( Airports.CTAF_FREQ ) );
@@ -95,8 +95,6 @@ public class AirportsCursorAdapter extends ResourceCursorAdapter {
         String status = c.getString( c.getColumnIndex( Airports.STATUS_CODE ) );
         mStringBuilder.setLength( 0 );
         if ( status.equals( "O" ) ) {
-            mStringBuilder.append( type );
-            mStringBuilder.append( ", " );
             mStringBuilder.append( FormatUtils.formatFeetMsl( elev ) );
             if ( ctaf != null && ctaf.length() > 0 ) {
                 mStringBuilder.append( ", " );

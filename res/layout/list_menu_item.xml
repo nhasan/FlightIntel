@@ -22,7 +22,10 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
-        android:padding="@dimen/item_padding"
+        android:paddingLeft="@dimen/padding_left"
+        android:paddingTop="@dimen/padding_top"
+        android:paddingRight="@dimen/padding_right"
+        android:paddingBottom="@dimen/padding_bottom"
         android:layout_gravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
