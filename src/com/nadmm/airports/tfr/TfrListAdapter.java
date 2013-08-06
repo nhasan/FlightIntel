@@ -34,11 +34,15 @@ public class TfrListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private final TfrList mTfrList;
     private Context mContext;
+    private int mActiveColor;
+    private int mInactiveColor;
 
     public TfrListAdapter( Context context, TfrList tfrList ) {
         mContext = context;
         mInflater = LayoutInflater.from( mContext );
         mTfrList = tfrList;
+        mActiveColor = mContext.getResources().getColor( R.color.red );
+        mInactiveColor = mContext.getResources().getColor( R.color.lightgray );
     }
 
     @Override
@@ -81,6 +85,7 @@ public class TfrListAdapter extends BaseAdapter {
         tv.setText( tfr.formatTimeRange( mContext ) );
         tv = (TextView) convertView.findViewById( R.id.tfr_active );
         tv.setText( tfr.isExpired()? "Expired" : tfr.isActive()? "Active" : "Inactive" );
+        tv.setTextColor( tfr.isActive()? mActiveColor : mInactiveColor );
         tv = (TextView) convertView.findViewById( R.id.tfr_type );
         tv.setText( tfr.type );
         tv = (TextView) convertView.findViewById( R.id.tfr_altitudes );

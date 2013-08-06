@@ -29,6 +29,8 @@
     <dimen name="item_padding">12dip</dimen>
     <dimen name="label_padding">4dip</dimen>
     
-    <dimen name="slidingmenu_width">240dp</dimen>
-    <dimen name="slidingmenu_shadow_width">16dp</dimen>
+    <dimen name="slidingmenu_width">240dip</dimen>
+    <dimen name="slidingmenu_shadow_width">24dip</dimen>
+    <dimen name="slidingmenu_item_height">52dip</dimen>
+    <dimen name="slidingmenu_padding">8dip</dimen>
 </resources>
