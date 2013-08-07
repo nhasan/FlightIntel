@@ -41,7 +41,7 @@ public class TfrListAdapter extends BaseAdapter {
         mContext = context;
         mInflater = LayoutInflater.from( mContext );
         mTfrList = tfrList;
-        mActiveColor = mContext.getResources().getColor( R.color.red );
+        mActiveColor = mContext.getResources().getColor( R.color.lightred );
         mInactiveColor = mContext.getResources().getColor( R.color.lightgray );
     }
 

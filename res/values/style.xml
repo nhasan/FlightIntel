@@ -75,8 +75,8 @@
         <item name="android:textStyle">bold</item>
     </style>
     <style name="Theme.Light.DarkActionBar" parent="@style/Theme.Sherlock.Light.DarkActionBar">
-        <item name="icon">@drawable/icon</item>
-        <item name="android:icon">@drawable/icon</item>
+        <item name="icon">@drawable/ab_icon</item>
+        <item name="android:icon">@drawable/ab_icon</item>
     </style>
     <style name="ListItemActivated">
     </style>

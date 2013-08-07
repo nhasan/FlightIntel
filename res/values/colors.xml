@@ -25,7 +25,8 @@
     <color name="scratchpad_toolbar_color">#f0e0e0e0</color>
     <color name="slidingmenu_background">#ff606060</color>
     <color name="e6b_highlight">#ff007040</color>
-    <color name="red">#c02020</color>
-    <color name="lightgray">#909090</color>
-    <color name="gray">#585858</color>
+    <color name="red">#b0ff0000</color>
+    <color name="lightred">#80ff0000</color>
+    <color name="lightgray">#60000000</color>
+    <color name="gray">#a0000000</color>
 </resources>
