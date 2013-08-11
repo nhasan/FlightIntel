@@ -27,6 +27,6 @@
     <color name="e6b_highlight">#ff007040</color>
     <color name="red">#b0ff0000</color>
     <color name="lightred">#80ff0000</color>
-    <color name="lightgray">#60000000</color>
-    <color name="gray">#a0000000</color>
+    <color name="lightgray">#80000000</color>
+    <color name="gray">#b0000000</color>
 </resources>
