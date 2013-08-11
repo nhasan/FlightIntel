@@ -597,8 +597,10 @@ public class ActivityBase extends SlidingFragmentActivity {
         String title = code;
         Boolean showAirportName = getResources().getBoolean( R.bool.ActionbarShowAirportName );
         if ( showAirportName ) {
+            String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+            String type = DataUtils.decodeLandingFaclityType( siteNumber );
             String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
-            title += " - "+name;
+            title = String.format( "%s - %s %s", code, name, type );
         }
 
         setActionBarTitle( title, subtitle );
