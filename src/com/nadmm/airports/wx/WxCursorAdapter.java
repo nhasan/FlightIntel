@@ -210,7 +210,9 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                         }
                     }
                 }
-                info.append( ", " );
+                if ( info.length() > 0 ) {
+                    info.append( ", " );
+                }
                 info.append( FormatUtils.formatTemperatureF( metar.tempCelsius ) );
                 info.append( "/" );
                 info.append( FormatUtils.formatTemperatureF( metar.dewpointCelsius ) );
