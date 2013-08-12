@@ -216,7 +216,6 @@ public class DonateActivity extends ActivityBase {
                 LinearLayout layout = (LinearLayout) findViewById( R.id.donate_level_layout );
                 layout.removeAllViews();
 
-                int count = mDonationLevels.length-donations.size();
                 for ( int i = 0; i < mDonationLevels.length; ++i ) {
                     DonationLevel level = mDonationLevels[ i ];
                     if ( !level.productId.equals( "donate_199" )
@@ -225,7 +224,7 @@ public class DonateActivity extends ActivityBase {
                                 FormatUtils.formatCurrency( level.amount ) );
                         row.setTag( level.productId );
                         row.setOnClickListener( this );
-                        row.setBackgroundResource( UiUtils.getRowSelector( i, count ) );
+                        row.setBackgroundResource( R.drawable.row_selector_middle );
                     }
                 }
 

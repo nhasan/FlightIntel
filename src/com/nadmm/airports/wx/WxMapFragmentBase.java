@@ -37,7 +37,6 @@ import android.widget.TextView;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ImageViewActivity;
 import com.nadmm.airports.R;
-import com.nadmm.airports.utils.UiUtils;
 
 public abstract class WxMapFragmentBase extends FragmentBase {
 
@@ -142,7 +141,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
             View row = addProgressRow( layout, mWxMapNames[ i ] );
             row.setTag( mWxMapCodes[ i ] );
             row.setOnClickListener( listener );
-            row.setBackgroundResource( UiUtils.getRowSelector( i, mWxMapCodes.length ) );
+            row.setBackgroundResource( R.drawable.row_selector_middle );
         }
 
         if ( mWxTypeCodes != null ) {

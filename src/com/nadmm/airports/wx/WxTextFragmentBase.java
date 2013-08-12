@@ -27,15 +27,14 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TextFileViewActivity;
-import com.nadmm.airports.utils.UiUtils;
 
 public abstract class WxTextFragmentBase extends FragmentBase {
 
@@ -122,7 +121,7 @@ public abstract class WxTextFragmentBase extends FragmentBase {
             View row = addProgressRow( layout, mWxAreaNames[ i ] );
             row.setTag( mWxAreaCodes[ i ] );
             row.setOnClickListener( listener );
-            row.setBackgroundResource( UiUtils.getRowSelector( i, mWxAreaNames.length ) );
+            row.setBackgroundResource( R.drawable.row_selector_middle );
         }
 
         return v;
