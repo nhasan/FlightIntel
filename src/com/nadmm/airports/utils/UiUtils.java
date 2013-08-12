@@ -126,18 +126,38 @@ public class UiUtils {
         setTextViewDrawable( tv, d );
     }
 
-    static public int getRowSelector( int row, int count ) {
-        int resid;
-        if ( count == 1 ) {
-            resid = R.drawable.row_selector;
-        } else if ( row == 0 ) {
-            resid = R.drawable.row_selector_top;
-        } else if ( row == count-1 ) {
-            resid = R.drawable.row_selector_bottom;
+    public static void setRunwayDrawable( Context context, TextView tv, String runwayId,
+            int length, int heading ) {
+        int resid = 0;
+        if ( runwayId.startsWith( "H" ) ) {
+            resid = R.drawable.helipad;
         } else {
-            resid = R.drawable.row_selector_middle;
+            if ( length > 10000 ) {
+                resid = R.drawable.runway9;
+            } else if ( length > 9000 ) {
+                resid = R.drawable.runway8;
+            } else if ( length > 8000 ) {
+                resid = R.drawable.runway7;
+            } else if ( length > 7000 ) {
+                resid = R.drawable.runway6;
+            } else if ( length > 6000 ) {
+                resid = R.drawable.runway5;
+            } else if ( length > 5000 ) {
+                resid = R.drawable.runway4;
+            } else if ( length > 4000 ) {
+                resid = R.drawable.runway3;
+            } else if ( length > 3000 ) {
+                resid = R.drawable.runway2;
+            } else if ( length > 2000 ) {
+                resid = R.drawable.runway1;
+            } else {
+                resid = R.drawable.runway0;
+            }
         }
-        return resid;
+
+        Drawable d = UiUtils.getRotatedDrawable( context, resid, heading );
+        tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
+        tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( context, 5 ) );
     }
 
 }

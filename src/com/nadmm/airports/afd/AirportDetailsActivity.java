@@ -32,7 +32,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -963,14 +962,14 @@ public class AirportDetailsActivity extends AfdActivityBase {
                 heading = (int) GeoUtils.applyDeclination( heading, mDeclination );
             } else {
                 // Actual heading is not available, try to deduce it from runway id
-                heading = getRunwayHeading( runwayId );
+                heading = DataUtils.getRunwayHeading( runwayId );
             }
 
             RelativeLayout row = (RelativeLayout) inflate( R.layout.runway_detail_item );
 
             TextView tv = (TextView) row.findViewById( R.id.runway_id );
             tv.setText( runwayId );
-            setRunwayDrawable( tv, runwayId, length, heading );
+            UiUtils.setRunwayDrawable( getActivity(), tv, runwayId, length, heading );
 
             if ( rp != null ) {
                 tv = (TextView) row.findViewById( R.id.runway_rp );
@@ -1003,57 +1002,6 @@ public class AirportDetailsActivity extends AfdActivityBase {
             intent.putExtras( bundle );
 
             addClickableRow( layout, row, intent );
-        }
-
-        protected void setRunwayDrawable( TextView tv, String runwayId, int length, int heading ) {
-            int resid = 0;
-            if ( runwayId.startsWith( "H" ) ) {
-                resid = R.drawable.helipad;
-            } else {
-                if ( length > 10000 ) {
-                    resid = R.drawable.runway9;
-                } else if ( length > 9000 ) {
-                    resid = R.drawable.runway8;
-                } else if ( length > 8000 ) {
-                    resid = R.drawable.runway7;
-                } else if ( length > 7000 ) {
-                    resid = R.drawable.runway6;
-                } else if ( length > 6000 ) {
-                    resid = R.drawable.runway5;
-                } else if ( length > 5000 ) {
-                    resid = R.drawable.runway4;
-                } else if ( length > 4000 ) {
-                    resid = R.drawable.runway3;
-                } else if ( length > 3000 ) {
-                    resid = R.drawable.runway2;
-                } else if ( length > 2000 ) {
-                    resid = R.drawable.runway1;
-                } else {
-                    resid = R.drawable.runway0;
-                }
-            }
-
-            Drawable d = UiUtils.getRotatedDrawable( getActivity(), resid, heading );
-            tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
-            tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 5 ) );
-        }
-
-        protected int getRunwayHeading( String runwayId ) {
-            int index = 0;
-            while ( index < runwayId.length() ) {
-                if ( !Character.isDigit( runwayId.charAt( index ) ) ) {
-                    break;
-                }
-                ++index;
-            }
-
-            int heading = 0;
-            try {
-                heading = Integer.valueOf( runwayId.substring( 0, index ) )*10;
-            } catch ( Exception e ) {
-            }
-
-            return heading;
         }
 
         protected void cacheMetars() {

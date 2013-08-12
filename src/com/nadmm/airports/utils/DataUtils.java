@@ -870,4 +870,22 @@ public final class DataUtils {
         return (float) ( 0.3048*feet );
     }
 
+    public static int getRunwayHeading( String runwayId ) {
+        int index = 0;
+        while ( index < runwayId.length() ) {
+            if ( !Character.isDigit( runwayId.charAt( index ) ) ) {
+                break;
+            }
+            ++index;
+        }
+
+        int heading = 0;
+        try {
+            heading = Integer.valueOf( runwayId.substring( 0, index ) )*10;
+        } catch ( Exception e ) {
+        }
+
+        return heading;
+    }
+
 }
