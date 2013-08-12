@@ -26,6 +26,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -46,6 +47,8 @@ import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
+import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 public class RunwaysActivity extends AfdActivityBase {
 
@@ -59,6 +62,8 @@ public class RunwaysActivity extends AfdActivityBase {
 
     public static class RunwaysFragment extends FragmentBase {
 
+        private float mDeclination;
+
         private final class RunwaysTask extends CursorAsyncTask {
 
             @Override
@@ -68,6 +73,15 @@ public class RunwaysActivity extends AfdActivityBase {
                 Cursor[] cursors = new Cursor[ 5 ];
 
                 cursors[ 0 ] = getAirportDetails( siteNumber );
+
+                Cursor apt = cursors[ 0 ];
+                double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+                double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+
+                Location loc = new Location( "" );
+                loc.setLatitude( lat );
+                loc.setLongitude( lon );
+                mDeclination = GeoUtils.getMagneticDeclination( loc );
 
                 SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
@@ -163,10 +177,20 @@ public class RunwaysActivity extends AfdActivityBase {
             // Common runway information
             Cursor rwy = result[ 1 ];
             String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
+            int length = rwy.getInt( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
+            int heading = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_HEADING ) );
+            if ( heading > 0 ) {
+                heading = (int) DataUtils.calculateMagneticHeading( heading,
+                        Math.round( mDeclination ) );
+            } else {
+                // Actual heading is not available, try to deduce it from runway id
+                heading = DataUtils.getRunwayHeading( runwayId );
+            }
             TextView tv = (TextView) findViewById( R.id.rwy_common_label );
             tv.setText( "Runway "+runwayId );
+            UiUtils.setRunwayDrawable( getActivity(), tv, runwayId, length, heading );
+
             LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_common_details );
-            int length = rwy.getInt( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
             int width = rwy.getInt( rwy.getColumnIndex( Runways.RUNWAY_WIDTH ) );
             addRow( layout, "Dimensions", String.format( "%s x %s",
                     FormatUtils.formatFeet( length ), FormatUtils.formatFeet( width ) ) );
@@ -189,22 +213,20 @@ public class RunwaysActivity extends AfdActivityBase {
             StringBuilder sb = new StringBuilder();
 
             String runwayId = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ID ) );
+            int heading = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_HEADING ) );
+            if ( heading > 0 ) {
+                heading = (int) DataUtils.calculateMagneticHeading( heading,
+                        Math.round( mDeclination ) );
+            } else {
+                // Actual heading is not available, try to deduce it from runway id
+                heading = DataUtils.getRunwayHeading( runwayId );
+            }
             TextView tv = (TextView) findViewById( R.id.rwy_base_end_label );
             tv.setText( "Runway "+runwayId );
 
             LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_base_end_details );
-            int heading = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_HEADING ) );
-            if ( heading > 0 ) {
-                int variation = apt.getInt( apt.getColumnIndex(
-                        Airports.MAGNETIC_VARIATION_DEGREES ) );
-                String dir = apt.getString( apt.getColumnIndex(
-                        Airports.MAGNETIC_VARIATION_DIRECTION ) );
-                if ( dir.equals( "E" ) ) {
-                    variation *= -1;
-                }
-                addRow( layout, "Magnetic heading", FormatUtils.formatDegrees(
-                        DataUtils.calculateMagneticHeading( heading, variation ) ) );
-            }
+            addRow( layout, "Magnetic heading", FormatUtils.formatDegrees( heading ) );
+
             String ilsType = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ILS_TYPE ) );
             if ( ilsType.length() > 0 ) {
                 String siteNumber = apt.getString( apt.getColumnIndex(
@@ -217,10 +239,12 @@ public class RunwaysActivity extends AfdActivityBase {
                 intent.putExtras( args );
                 addClickableRow( layout, "Instrument approach", ilsType, intent );
             }
+
             Float elevation = rwy.getFloat( rwy.getColumnIndex( Runways.BASE_END_RUNWAY_ELEVATION ) );
             if ( elevation != null && elevation > 0 ) {
                 addRow( layout, "Elevation", FormatUtils.formatFeet( elevation ) );
             }
+
             String rhPattern = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_RIGHT_TRAFFIC ) );
             addRow( layout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
             double gradient = rwy.getDouble( rwy.getColumnIndex( Runways.BASE_END_GRADIENT ) );
@@ -340,22 +364,20 @@ public class RunwaysActivity extends AfdActivityBase {
             StringBuilder sb = new StringBuilder();
 
             String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
+            int heading = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_HEADING ) );
+            if ( heading > 0 ) {
+                heading = (int) DataUtils.calculateMagneticHeading( heading,
+                        Math.round( mDeclination ) );
+            } else {
+                // Actual heading is not available, try to deduce it from runway id
+                heading = DataUtils.getRunwayHeading( runwayId );
+            }
             TextView tv = (TextView) findViewById( R.id.rwy_reciprocal_end_label );
             tv.setText( "Runway "+runwayId );
 
             LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_reciprocal_end_details );
-            int heading = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_HEADING ) );
-            if ( heading > 0 ) {
-                int variation = apt.getInt( apt.getColumnIndex(
-                        Airports.MAGNETIC_VARIATION_DEGREES ) );
-                String dir = apt.getString( apt.getColumnIndex(
-                        Airports.MAGNETIC_VARIATION_DIRECTION ) );
-                if ( dir.equals( "E" ) ) {
-                    variation *= -1;
-                }
-                addRow( layout, "Magnetic heading", FormatUtils.formatDegrees(
-                        DataUtils.calculateMagneticHeading( heading, variation ) ) );
-            }
+            addRow( layout, "Magnetic heading", FormatUtils.formatDegrees( heading ) );
+
             String ilsType = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ILS_TYPE ) );
             if ( ilsType.length() > 0 ) {
                 String siteNumber = apt.getString( apt.getColumnIndex(
