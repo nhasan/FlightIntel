@@ -50,6 +50,8 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     private Button mBtnAction;
     private Button mBtnReset;
     private Button mBtnLeg;
+    private TextView mTimeMinutes;
+    private TextView mTimeColon;
     private TextView mTimeSeconds;
     private TextView mTimeTenths;
     private LinearLayout mLegsLayout;
@@ -111,7 +113,9 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mTimeSeconds = (TextView) findViewById( R.id.stopwatch_time );
+        mTimeMinutes = (TextView) findViewById( R.id.stopwatch_mins );
+        mTimeColon = (TextView) findViewById( R.id.stopwatch_colon );
+        mTimeSeconds = (TextView) findViewById( R.id.stopwatch_secs );
         mTimeTenths = (TextView) findViewById( R.id.stopwatch_tenths );
         mBtnAction = (Button) findViewById( R.id.stopwatch_action );
         mBtnAction.setOnClickListener( new OnClickListener() {
@@ -169,6 +173,8 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     protected void blink() {
         mHandler.postDelayed( mBlink, BLINK_DELAY );
         boolean visible = ( mTimeSeconds.getVisibility()==View.VISIBLE );
+        mTimeMinutes.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
+        mTimeColon.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
         mTimeSeconds.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
         mTimeTenths.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
     }
@@ -178,6 +184,8 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     }
 
     protected void stopBlink() {
+        mTimeMinutes.setVisibility( View.VISIBLE );
+        mTimeColon.setVisibility( View.VISIBLE );
         mTimeSeconds.setVisibility( View.VISIBLE );
         mTimeTenths.setVisibility( View.VISIBLE );
         mHandler.removeCallbacks( mBlink );
@@ -207,9 +215,9 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
 
     protected void showElapsedTime() {
         String time = formatElapsedTime( mService.getElapsedTime() );
-        int dot = time.indexOf( '.' );
-        mTimeSeconds.setText( time.substring( 0, dot ) );
-        mTimeTenths.setText( time.substring( dot ) );
+        mTimeMinutes.setText( time.substring( 0, 2 ) );
+        mTimeSeconds.setText( time.substring( 3, 5 ) );
+        mTimeTenths.setText( time.substring( 5 ) );
     }
 
     @SuppressLint("DefaultLocale")

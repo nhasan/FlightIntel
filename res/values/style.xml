@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,8 +71,20 @@
         <item name="android:textColor">@color/gray</item>
         <item name="android:textAppearance">?android:attr/textAppearance</item>
     </style>
-    <style name="TextNormal.Bold">
+    <style name="TextNormal.Bold" >
         <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextClock">
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:textSize">64sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextClock.Light" parent="@style/TextClock">
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="TextClock.Light.Tenths" parent="@style/TextClock.Light">
+        <item name="android:textColor">@color/lightgray</item>
+        <item name="android:textSize">36sp</item>
     </style>
     <style name="Theme.Light.DarkActionBar" parent="@style/Theme.Sherlock.Light.DarkActionBar">
         <item name="icon">@drawable/ab_icon</item>
