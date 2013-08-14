@@ -42,9 +42,14 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.text.format.Time;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -58,10 +63,6 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
@@ -75,10 +76,8 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.SystemUtils;
-import com.slidingmenu.lib.SlidingMenu;
-import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
-public class ActivityBase extends SlidingFragmentActivity {
+public class ActivityBase extends ActionBarActivity {
 
     private DatabaseManager mDbManager;
     private MenuItem mRefreshItem;
@@ -105,12 +104,6 @@ public class ActivityBase extends SlidingFragmentActivity {
         mFilter.addAction( Intent.ACTION_MEDIA_REMOVED );
         mFilter.addDataScheme( "file" );
 
-        ActionBar actionBar = getSupportActionBar();
-        if ( actionBar != null ) {
-            actionBar.setHomeButtonEnabled( true );
-            actionBar.setDisplayHomeAsUpEnabled( true );
-        }
-
         mExternalStorageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive( Context context, Intent intent ) {
@@ -126,17 +119,6 @@ public class ActivityBase extends SlidingFragmentActivity {
         }
 
         super.onCreate( savedInstanceState );
-
-        SlidingMenu menu = getSlidingMenu();
-        menu.setTouchModeAbove( SlidingMenu.TOUCHMODE_MARGIN );
-        menu.setBehindWidthRes( R.dimen.slidingmenu_width );
-        menu.setShadowWidthRes( R.dimen.slidingmenu_shadow_width );
-        menu.setShadowDrawable( R.drawable.slidingmenu_shadow );
-        setBehindContentView( R.layout.menu_frame );
-        setSlidingActionBarEnabled( false );
-
-        Fragment f = replaceFragment( SlidingMenuFragment.class, null, R.id.menu_frame, false );
-        mSlidingMenuFragment = (SlidingMenuFragment) f;
     }
 
     @Override
@@ -153,6 +135,12 @@ public class ActivityBase extends SlidingFragmentActivity {
     protected void onResume() {
         super.onResume();
         registerReceiver( mExternalStorageReceiver, mFilter );
+
+        ActionBar actionBar = getSupportActionBar();
+        if ( actionBar != null ) {
+            actionBar.setHomeButtonEnabled( true );
+            actionBar.setDisplayHomeAsUpEnabled( true );
+        }
     }
 
     protected CursorAsyncTask setBackgroundTask( CursorAsyncTask task ) {
@@ -172,7 +160,7 @@ public class ActivityBase extends SlidingFragmentActivity {
     }
 
     protected void setSlidingMenuActivatedItem( int position ) {
-        mSlidingMenuFragment.setActivatedItem( position );
+        //mSlidingMenuFragment.setActivatedItem( position );
     }
 
     protected View createContentView( int id ) {
@@ -536,7 +524,7 @@ public class ActivityBase extends SlidingFragmentActivity {
     @TargetApi(11)
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
-        MenuInflater inflater = getSupportMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate( R.menu.mainmenu, menu );
         mRefreshItem = menu.findItem( R.id.menu_refresh );
         mRefreshDrawable = mRefreshItem.getIcon();
@@ -643,8 +631,6 @@ public class ActivityBase extends SlidingFragmentActivity {
             Intent intent = new Intent( this, clss );
             intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
             startActivity( intent );
-        } else {
-            toggle();
         }
     }
 

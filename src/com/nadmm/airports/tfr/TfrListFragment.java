@@ -28,6 +28,8 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -36,8 +38,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
@@ -107,7 +107,7 @@ public class TfrListFragment extends FragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         setActionBarTitle( "TFR List" );
-        getSherlockActivity().setSupportProgressBarIndeterminateVisibility( false );
+        getActivity().setProgressBarIndeterminateVisibility( false );
 
         requestTfrList( false );
     }

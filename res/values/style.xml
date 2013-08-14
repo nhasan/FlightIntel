@@ -86,7 +86,7 @@
         <item name="android:textColor">@color/lightgray</item>
         <item name="android:textSize">36sp</item>
     </style>
-    <style name="Theme.Light.DarkActionBar" parent="@style/Theme.Sherlock.Light.DarkActionBar">
+    <style name="Theme.Light.DarkActionBar" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <item name="icon">@drawable/ab_icon</item>
         <item name="android:icon">@drawable/ab_icon</item>
     </style>

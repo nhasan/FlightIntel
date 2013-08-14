@@ -19,7 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
  -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:airports="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/menu_download"
           android:title="@string/downloads" 
           android:icon="@android:drawable/ic_menu_save" />
@@ -34,11 +35,11 @@
           android:icon="@android:drawable/ic_menu_info_details" />
     <item android:id="@+id/menu_refresh"
           android:title="@string/refresh"
-          android:showAsAction="always"
+          airports:showAsAction="always"
           android:visible="false"
           android:icon="@drawable/ic_action_refresh" />
     <item android:id="@+id/menu_search"
           android:title="@string/search"
-          android:showAsAction="collapseActionView|always" 
+          airports:showAsAction="collapseActionView|always" 
           android:icon="@drawable/ic_action_search" />
 </menu>

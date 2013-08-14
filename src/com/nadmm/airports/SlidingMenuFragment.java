@@ -116,7 +116,6 @@ public class SlidingMenuFragment extends ListFragmentBase {
                 }, 200 );
             }
         }
-        activity.toggle();
     }
 
     protected class SlidingMenuAdapter extends ResourceCursorAdapter {

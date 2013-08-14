@@ -22,10 +22,10 @@ package com.nadmm.airports.wx;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.OnNavigationListener;
 import android.widget.ArrayAdapter;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.SlidingMenuFragment;
@@ -76,8 +76,8 @@ public class WxDetailActivity extends ActivityBase
         mActionBar = getSupportActionBar();
         mActionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
         ArrayAdapter<String> adapter = new ArrayAdapter<String>( mActionBar.getThemedContext(),
-                R.layout.sherlock_spinner_item, titles );
-        adapter.setDropDownViewResource( R.layout.sherlock_spinner_dropdown_item );
+                R.layout.spinner_item, titles );
+        adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
         mActionBar.setListNavigationCallbacks( adapter, this );
         mActionBar.setDisplayShowTitleEnabled( false );
 

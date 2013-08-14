@@ -19,7 +19,7 @@
             android:name=".Application"
             android:label="@string/app_name"
             android:allowBackup="true"
-            android:theme="@style/Theme.Light.DarkActionBar">
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         <activity android:label="@string/app_name" android:name=".FlightIntel">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
