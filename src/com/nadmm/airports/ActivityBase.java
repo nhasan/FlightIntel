@@ -67,8 +67,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
-import com.nadmm.airports.afd.BrowseActivity;
-import com.nadmm.airports.afd.FavoritesActivity;
+import com.nadmm.airports.afd.FavoritesFragment;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
 import com.nadmm.airports.utils.CursorAsyncTask;
@@ -84,7 +83,6 @@ public class ActivityBase extends ActionBarActivity {
     private Drawable mRefreshDrawable;
     private LayoutInflater mInflater;
     private CursorAsyncTask mTask;
-    private SlidingMenuFragment mSlidingMenuFragment;
 
     private Handler mHandler = new Handler();
     IntentFilter mFilter;
@@ -615,11 +613,11 @@ public class ActivityBase extends ActionBarActivity {
 
     protected Class<?> getHomeActivityClass() {
         ArrayList<String> fav = mDbManager.getAptFavorites();
-        Class<?> clss;
+        Class<?> clss = null;
         if ( fav.size() > 0 ) {
-            clss = FavoritesActivity.class;
+            clss = FavoritesFragment.class;
         } else {
-            clss = BrowseActivity.class;
+            //clss = BrowseActivity.class;
         }
         return clss;
     }

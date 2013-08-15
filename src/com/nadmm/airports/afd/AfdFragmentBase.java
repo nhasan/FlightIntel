@@ -6,9 +6,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.OnNavigationListener;
 import android.widget.ArrayAdapter;
 
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.MainActivity;
 import com.nadmm.airports.R;
 
-public abstract class HomeActivityBase extends AfdActivityBase implements OnNavigationListener {
+public abstract class AfdFragmentBase extends FragmentBase implements OnNavigationListener {
 
     private final String[] mOptions = new String[] {
             "Favorites",
@@ -21,7 +23,7 @@ public abstract class HomeActivityBase extends AfdActivityBase implements OnNavi
     protected final int ID_BROWSE = 2;
 
     @Override
-    protected void onCreate( Bundle savedInstanceState ) {
+    public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         // Setup list navigation mode
         ActionBar actionBar = getSupportActionBar();
@@ -34,9 +36,8 @@ public abstract class HomeActivityBase extends AfdActivityBase implements OnNavi
         actionBar.setDisplayShowTitleEnabled( false );
     }
 
-    
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         getSupportActionBar().setSelectedNavigationItem( getActivityId() );
     }
@@ -44,13 +45,12 @@ public abstract class HomeActivityBase extends AfdActivityBase implements OnNavi
     @Override
     public boolean onNavigationItemSelected( int itemPosition, long itemId ) {
         if ( itemId != getActivityId() ) {
+            MainActivity activity = (MainActivity) getActivity();
             Intent intent = null;
             if ( itemId == ID_FAVORITES ) {
-                intent = new Intent( this, FavoritesActivity.class );
+                activity.replaceFragment( FavoritesFragment.class, null );
             } else if ( itemId == ID_NEARBY ) {
-                intent = new Intent( this, NearbyActivity.class );
             } else if ( itemId == ID_BROWSE ) {
-                intent = new Intent( this, BrowseActivity.class );
             }
             if ( intent != null ) {
                 intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );

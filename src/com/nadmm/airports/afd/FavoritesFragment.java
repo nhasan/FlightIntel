@@ -23,21 +23,23 @@ package com.nadmm.airports.afd;
 import android.os.Bundle;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TabsAdapter;
 import com.nadmm.airports.wx.FavoriteWxFragment;
 
-public class FavoritesActivity extends HomeActivityBase {
+public class FavoritesFragment extends AfdFragmentBase {
 
     @Override
-    protected void onCreate( Bundle savedInstanceState ) {
+    public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
 
-        TabsAdapter adapter = new TabsAdapter( this, pager );
+        TabsAdapter adapter = new TabsAdapter( getActivity(), getChildFragmentManager(), pager );
         adapter.addTab( "AIRPORTS", FavoriteAirportsFragment.class, null );
         adapter.addTab( "WEATHER", FavoriteWxFragment.class, null );
 
@@ -50,12 +52,14 @@ public class FavoritesActivity extends HomeActivityBase {
     }
 
     @Override
-    protected View getContentView() {
-        return inflate( R.layout.fragment_pager_layout );
+    public View onCreateView( LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState ) {
+        View view = inflater.inflate( R.layout.fragment_pager_layout, container, false );
+        return view;
     }
 
     @Override
-    protected void onSaveInstanceState( Bundle outState ) {
+    public void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
         outState.putInt( "favtab", pager.getCurrentItem() );
