@@ -76,8 +76,8 @@ public class WxDetailActivity extends ActivityBase
         mActionBar = getSupportActionBar();
         mActionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
         ArrayAdapter<String> adapter = new ArrayAdapter<String>( mActionBar.getThemedContext(),
-                R.layout.spinner_item, titles );
-        adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
+                R.layout.support_simple_spinner_dropdown_item, titles );
+        adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
         mActionBar.setListNavigationCallbacks( adapter, this );
         mActionBar.setDisplayShowTitleEnabled( false );
 

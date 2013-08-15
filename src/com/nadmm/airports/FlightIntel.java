@@ -50,7 +50,8 @@ public class FlightIntel extends ActivityBase {
             return;
         }
 
-        startHomeActivity();
+        Intent main = new Intent( this, MainActivity.class );
+        startActivity( main );
         finish();
     }
 

@@ -27,8 +27,9 @@ public abstract class HomeActivityBase extends AfdActivityBase implements OnNavi
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                actionBar.getThemedContext(), R.layout.spinner_item, mOptions );
-        adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
+                actionBar.getThemedContext(), R.layout.support_simple_spinner_dropdown_item,
+                mOptions );
+        adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
         actionBar.setListNavigationCallbacks( adapter, this );
         actionBar.setDisplayShowTitleEnabled( false );
     }
