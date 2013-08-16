@@ -161,21 +161,26 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 StringBuilder info = new StringBuilder();
                 info.append( metar.flightCategory );
 
-                info.append( ", " );
-                info.append( FormatUtils.formatStatuteMiles( metar.visibilitySM ) );
-
-                info.append( ", " );
-                if ( metar.windSpeedKnots == 0 ) {
-                    info.append( "calm" );
-                } else if ( metar.windGustKnots < Integer.MAX_VALUE ) {
-                    info.append( String.format( "%dG%dKT", 
-                            metar.windSpeedKnots, metar.windGustKnots ) );
-                } else {
-                    info.append( String.format( "%dKT", metar.windSpeedKnots ) );
+                if ( metar.visibilitySM < Float.MAX_VALUE ) {
+                    info.append( ", " );
+                    info.append( FormatUtils.formatStatuteMiles( metar.visibilitySM ) );
                 }
-                if ( metar.windSpeedKnots > 0 ) {
-                    if ( metar.windDirDegrees >= 0 ) {
-                        info.append( " from "+FormatUtils.formatDegrees( metar.windDirDegrees ) );
+
+                if ( metar.windSpeedKnots < Integer.MAX_VALUE ) {
+                    info.append( ", " );
+                    if ( metar.windSpeedKnots == 0 ) {
+                        info.append( "calm" );
+                    } else if ( metar.windGustKnots < Integer.MAX_VALUE ) {
+                        info.append( String.format( "%dG%dKT", 
+                                metar.windSpeedKnots, metar.windGustKnots ) );
+                    } else {
+                        info.append( String.format( "%dKT", metar.windSpeedKnots ) );
+                    }
+                    if ( metar.windSpeedKnots > 0 ) {
+                        if ( metar.windDirDegrees >= 0
+                                && metar.windDirDegrees < Integer.MAX_VALUE ) {
+                            info.append( " from "+FormatUtils.formatDegrees( metar.windDirDegrees ) );
+                        }
                     }
                 }
 
@@ -215,14 +220,14 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 }
 
                 // Do some basic sanity checks on values
-                if ( !Float.isInfinite( metar.tempCelsius ) ||
-                        !Float.isInfinite( metar.dewpointCelsius ) ) {
+                if ( metar.tempCelsius < Float.MAX_VALUE
+                        && metar.dewpointCelsius < Float.MAX_VALUE ) {
                     info.append( FormatUtils.formatTemperatureF( metar.tempCelsius ) );
                     info.append( "/" );
                     info.append( FormatUtils.formatTemperatureF( metar.dewpointCelsius ) );
                     info.append( ", " );
                 }
-                if ( metar.altimeterHg > 0 && metar.altimeterHg < 34 ) {
+                if ( metar.altimeterHg < Float.MAX_VALUE ) {
                     info.append( FormatUtils.formatAltimeterHg( metar.altimeterHg ) );
                 }
 

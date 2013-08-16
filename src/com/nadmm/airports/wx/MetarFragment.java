@@ -333,7 +333,7 @@ public class MetarFragment extends FragmentBase {
         layout = (LinearLayout) findViewById( R.id.wx_temp_layout );
         layout.removeAllViews();
         visibility = View.GONE;
-        if ( metar.tempCelsius < Float.MAX_VALUE ) {
+        if ( metar.tempCelsius < Float.MAX_VALUE && metar.dewpointCelsius < Float.MAX_VALUE ) {
             addRow( layout, "Temperature",
                     FormatUtils.formatTemperature( metar.tempCelsius ) );
             if ( metar.dewpointCelsius < Float.MAX_VALUE ) {
