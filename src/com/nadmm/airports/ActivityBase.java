@@ -67,6 +67,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.afd.BrowseFragment;
 import com.nadmm.airports.afd.FavoritesFragment;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
@@ -255,13 +256,16 @@ public class ActivityBase extends ActionBarActivity {
     public Fragment replaceFragment( Class<?> clss, Bundle args, int id, boolean addTostack  ) {
         String tag = clss.getSimpleName();
         FragmentManager fm = getSupportFragmentManager();
-        Fragment f = Fragment.instantiate( this, clss.getName(), args );
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace( id, f, tag );
-        if ( addTostack ) {
-            ft.addToBackStack( clss.getSimpleName() );
+        Fragment f = fm.findFragmentByTag( tag );
+        if ( f == null ) {
+            f = Fragment.instantiate( this, clss.getName(), args );
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace( id, f, tag );
+            if ( addTostack ) {
+                ft.addToBackStack( clss.getSimpleName() );
+            }
+            ft.commit();
         }
-        ft.commit();
         return f;
     }
 
@@ -543,7 +547,7 @@ public class ActivityBase extends ActionBarActivity {
     public boolean onOptionsItemSelected( MenuItem item ) {
         switch ( item.getItemId() ) {
         case android.R.id.home:
-            startHomeActivity();
+            //startHomeActivity();
             return true;
         case R.id.menu_search:
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -611,25 +615,15 @@ public class ActivityBase extends ActionBarActivity {
                 +c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
     }
 
-    protected Class<?> getHomeActivityClass() {
+    protected Class<?> getHomeFragmentClass() {
         ArrayList<String> fav = mDbManager.getAptFavorites();
         Class<?> clss = null;
         if ( fav.size() > 0 ) {
             clss = FavoritesFragment.class;
         } else {
-            //clss = BrowseActivity.class;
+            clss = BrowseFragment.class;
         }
         return clss;
-    }
-
-    protected void startHomeActivity() {
-        Class<?> clss = getHomeActivityClass();
-        if ( getClass() != clss ) {
-            // Start home activity if it is not the current activity
-            Intent intent = new Intent( this, clss );
-            intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
-            startActivity( intent );
-        }
     }
 
 }

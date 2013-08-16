@@ -25,12 +25,26 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Wxs;
 
 public class FavoriteWxFragment extends WxListFragmentBase {
+
+    @Override
+    public void onCreate( Bundle savedInstanceState ) {
+        setEmptyText( "No favorite wx stations selected." );
+        super.onCreate( savedInstanceState );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        new FavoriteWxTask().execute( (Void[]) null );
+    }
 
     public class FavoriteWxTask extends AsyncTask<Void, Void, Cursor> {
 
@@ -62,24 +76,17 @@ public class FavoriteWxFragment extends WxListFragmentBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor c ) {
-            setCursor( c );
+        protected void onPostExecute( final Cursor c ) {
+            // Add delay via the handler to avoid stutter in the closing animation of the drawer
+            new Handler().postDelayed( new Runnable() {
+                
+                @Override
+                public void run() {
+                    setCursor( c );
+                }
+            }, 200 );
         }
 
-    }
-
-    @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        setEmptyText( "No favorite wx stations selected." );
-        super.onCreate( savedInstanceState );
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        setFragmentContentShownNoAnimation( false );
-        new FavoriteWxTask().execute( (Void[]) null );
     }
 
 }

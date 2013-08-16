@@ -19,7 +19,6 @@
 
 package com.nadmm.airports.afd;
 
-
 import android.os.Bundle;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
@@ -31,11 +30,23 @@ import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TabsAdapter;
 import com.nadmm.airports.wx.FavoriteWxFragment;
 
-public class FavoritesFragment extends AfdFragmentBase {
+public final class FavoritesFragment extends AfdFragmentBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+    }
+
+    @Override
+    public View onCreateView( LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState ) {
+        View view = inflater.inflate( R.layout.fragment_pager_layout, container, false );
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
 
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
 
@@ -49,13 +60,6 @@ public class FavoritesFragment extends AfdFragmentBase {
         if ( savedInstanceState != null ) {
             pager.setCurrentItem( savedInstanceState.getInt( "favtab" ) );
         }
-    }
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.fragment_pager_layout, container, false );
-        return view;
     }
 
     @Override

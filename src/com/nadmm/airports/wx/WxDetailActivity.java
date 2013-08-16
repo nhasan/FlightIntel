@@ -50,7 +50,7 @@ public class WxDetailActivity extends ActivityBase
         mViewPager = (ViewPager) findViewById( R.id.content_pager );
         mViewPager.setOnPageChangeListener( this );
 
-        mTabsAdapter = new TabsAdapter( this, mViewPager );
+        mTabsAdapter = new TabsAdapter( this, getSupportFragmentManager(), mViewPager );
         mTabsAdapter.addTab( "METAR", MetarFragment.class, args );
         mTabsAdapter.addTab( "TAF", TafFragment.class, args );
         mTabsAdapter.addTab( "PIREP", PirepFragment.class, args );

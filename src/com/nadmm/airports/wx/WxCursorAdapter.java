@@ -213,11 +213,18 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 if ( info.length() > 0 ) {
                     info.append( ", " );
                 }
-                info.append( FormatUtils.formatTemperatureF( metar.tempCelsius ) );
-                info.append( "/" );
-                info.append( FormatUtils.formatTemperatureF( metar.dewpointCelsius ) );
-                info.append( ", " );
-                info.append( FormatUtils.formatAltimeterHg( metar.altimeterHg ) );
+
+                // Do some basic sanity checks on values
+                if ( !Float.isInfinite( metar.tempCelsius ) ||
+                        !Float.isInfinite( metar.dewpointCelsius ) ) {
+                    info.append( FormatUtils.formatTemperatureF( metar.tempCelsius ) );
+                    info.append( "/" );
+                    info.append( FormatUtils.formatTemperatureF( metar.dewpointCelsius ) );
+                    info.append( ", " );
+                }
+                if ( metar.altimeterHg > 0 && metar.altimeterHg < 34 ) {
+                    info.append( FormatUtils.formatAltimeterHg( metar.altimeterHg ) );
+                }
 
                 tv = (TextView) view.findViewById( R.id.wx_station_wx2 );
                 tv.setVisibility( View.VISIBLE );

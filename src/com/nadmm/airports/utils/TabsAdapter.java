@@ -68,6 +68,10 @@ public class TabsAdapter extends FragmentPagerAdapter  {
 
     @Override
     public Fragment getItem( int position ) {
+        if ( position < 0 || position >= getCount() ) {
+            throw new IllegalArgumentException();
+        }
+
         TabInfo info = mTabs.get( position );
         if ( info.fragment == null ) {
             info.fragment = Fragment.instantiate( mContext, info.clss.getName(), info.args );
@@ -77,6 +81,10 @@ public class TabsAdapter extends FragmentPagerAdapter  {
 
     @Override
     public CharSequence getPageTitle( int position ) {
+        if ( position < 0 || position >= getCount() ) {
+            throw new IllegalArgumentException();
+        }
+
         return mTabs.get( position ).label;
     }
 

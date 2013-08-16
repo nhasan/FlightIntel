@@ -46,15 +46,12 @@ public abstract class AfdFragmentBase extends FragmentBase implements OnNavigati
     public boolean onNavigationItemSelected( int itemPosition, long itemId ) {
         if ( itemId != getActivityId() ) {
             MainActivity activity = (MainActivity) getActivity();
-            Intent intent = null;
             if ( itemId == ID_FAVORITES ) {
                 activity.replaceFragment( FavoritesFragment.class, null );
             } else if ( itemId == ID_NEARBY ) {
+                activity.replaceFragment( NearbyFragment.class, null );
             } else if ( itemId == ID_BROWSE ) {
-            }
-            if ( intent != null ) {
-                intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
-                startActivity( intent );
+                activity.replaceFragment( BrowseFragment.class, null );
             }
         }
         return true;

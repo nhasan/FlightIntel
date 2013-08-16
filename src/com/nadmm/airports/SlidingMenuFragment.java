@@ -82,7 +82,7 @@ public class SlidingMenuFragment extends ListFragmentBase {
         l.setItemChecked( position, true );
         long id = l.getItemIdAtPosition( position );
         if ( id == ITEM_ID_AFD ) {
-            startActivity( getActivityBase().getHomeActivityClass() );
+            //startActivity( getActivityBase().getHomeActivityClass() );
         } else if ( id == ITEM_ID_TFR ) {
             startActivity( TfrActivity.class );
         } else if ( id == ITEM_ID_LIBRARY ) {

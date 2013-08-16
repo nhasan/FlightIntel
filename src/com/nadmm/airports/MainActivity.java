@@ -19,6 +19,8 @@
 
 package com.nadmm.airports;
 
+import com.nadmm.airports.afd.FavoritesFragment;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -27,7 +29,6 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.ResourceCursorAdapter;
 import android.view.Menu;
@@ -138,6 +139,7 @@ public class MainActivity extends ActivityBase {
         Class<?> clss = null;
         long id = mDrawerList.getItemIdAtPosition( position );
         if ( id == ITEM_ID_AFD ) {
+            clss = FavoritesFragment.class;
         } else if ( id == ITEM_ID_TFR ) {
         } else if ( id == ITEM_ID_LIBRARY ) {
         } else if ( id == ITEM_ID_SCRATCHPAD ) {
@@ -146,7 +148,9 @@ public class MainActivity extends ActivityBase {
         } else if ( id == ITEM_ID_E6B ) {
         }
 
-        replaceFragment( clss, null );
+        if ( clss != null ) {
+            replaceFragment( clss, null );
+        }
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked( position, true );

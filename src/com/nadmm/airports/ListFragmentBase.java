@@ -68,6 +68,12 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
         super.onDestroy();
     }
 
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+        setFragmentContentShownNoAnimation( false );
+    }
+
     protected void setCursor( Cursor c ) {
         if ( getActivity() == null ) {
             // We may get called here after activity has detached

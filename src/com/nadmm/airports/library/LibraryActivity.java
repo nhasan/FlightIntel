@@ -86,7 +86,7 @@ public class LibraryActivity extends ActivityBase {
         mFilter.addAction( LibraryService.ACTION_DOWNLOAD_PROGRESS );
 
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
-        mTabsAdapter = new TabsAdapter( this, pager );
+        mTabsAdapter = new TabsAdapter( this, getSupportFragmentManager(), pager );
 
         PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
         tabs.setTabIndicatorColor( getResources().getColor( R.color.tab_indicator ) );
