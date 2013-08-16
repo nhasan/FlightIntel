@@ -19,6 +19,7 @@
 
 package com.nadmm.airports;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar.LayoutParams;
@@ -26,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.ImageZoomView;
 
 public class ImageViewActivity extends FragmentActivityBase {
@@ -57,7 +59,12 @@ public class ImageViewActivity extends FragmentActivityBase {
                     LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT ) );
             Bundle args = getArguments();
             String path = args.getString( IMAGE_PATH );
-            view.setImage( BitmapFactory.decodeFile( path ) );
+            Bitmap bitmap = BitmapFactory.decodeFile( path );
+            if ( bitmap != null ) {
+                view.setImage( bitmap );
+            } else {
+                UiUtils.showToast( getActivity(), "Unable to show image" );
+            }
 
             return view;
         }
