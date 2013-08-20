@@ -40,8 +40,6 @@ public class AfdActivityBase extends ActivityBase {
 
     @Override
     protected void onResume() {
-        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_AFD );
-
         super.onResume();
     }
 
