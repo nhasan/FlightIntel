@@ -259,13 +259,13 @@ public class ActivityBase extends ActionBarActivity {
         Fragment f = fm.findFragmentByTag( tag );
         if ( f == null ) {
             f = Fragment.instantiate( this, clss.getName(), args );
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.replace( id, f, tag );
-            if ( addTostack ) {
-                ft.addToBackStack( clss.getSimpleName() );
-            }
-            ft.commit();
         }
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace( id, f, tag );
+        if ( addTostack ) {
+            ft.addToBackStack( clss.getSimpleName() );
+        }
+        ft.commit();
         return f;
     }
 
