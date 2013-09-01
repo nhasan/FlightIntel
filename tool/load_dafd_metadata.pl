@@ -113,7 +113,7 @@ my $state;
 sub airports
 {
     my( $twig, $dafd )= @_;
-    my $from_date = $dafd->{'att'}->{'from_edate1'};
+    my $from_date = $dafd->{'att'}->{'from_edate'};
     my $to_date = $dafd->{'att'}->{'to_edate'};
 
     #AFD_CYCLE

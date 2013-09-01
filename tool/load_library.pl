@@ -99,7 +99,7 @@ insert_book( "handbooks", "faa-h-8083-3a-2004.pdf", "Airplane Flying Handbook",
 insert_book( "handbooks", "faa-h-8083-25a-2008.pdf", "Pilot's Handbook of Aeronautical Knowledge",
         "2008", "FAA-H-8083-25A", 56064788, "" );
 insert_book( "handbooks", "faa-h-8083-15b-2012.pdf", "Instrument Flying Handbook",
-        "2012", "FAA-H-8083-15B", 53239138, "N" );
+        "2012", "FAA-H-8083-15B", 53239138, "" );
 insert_book( "handbooks", "faa-h-8261-1a-2007.pdf", "Instrument Procedures Handbook",
         "2007", "FAA-H-8261-1A", 18019772, "" );
 insert_book( "handbooks", "faa-h-8083-6-2009.pdf", "Advanced Avionics Handbook",
@@ -111,7 +111,7 @@ insert_book( "handbooks", "faa-h-8083-9a-2008.pdf", "Aviation Instructor's Handb
 insert_book( "handbooks", "faa-h-8083-1a-2007.pdf", "Aircraft Weight and Balance Handbook",
         "2007", "FAA-H-8083-1A", 12373020, "" );
 insert_book( "handbooks", "faa-h-8083-21a-2012.pdf", "Rotorcraft Flying Handbook",
-        "2012", "FAA-H-8083-21A", 74947815, "N" );
+        "2012", "FAA-H-8083-21A", 74947815, "" );
 insert_book( "handbooks", "faa-h-8083-2-2009.pdf", "Risk Management Handbook",
         "2009", "FAA-H-8083-2", 11163579, "" );
 insert_book( "handbooks", "faa-fs-i-8700-1-2003.pdf", "Information for Banner Tow Operations",
@@ -132,10 +132,10 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
-insert_book( "periodicals", "cb_402.pdf", "Callback", "Issue 402 (Jul 2013)", "NASA", 300935, "N" );
+insert_book( "periodicals", "cb_403.pdf", "Callback", "Issue 403 (Aug 2013)", "NASA", 587239, "N" );
+insert_book( "periodicals", "cb_402.pdf", "Callback", "Issue 402 (Jul 2013)", "NASA", 300935, "" );
 insert_book( "periodicals", "cb_401.pdf", "Callback", "Issue 401 (Jun 2013)", "NASA", 205505, "" );
 insert_book( "periodicals", "cb_400.pdf", "Callback", "Issue 400 (May 2013)", "NASA", 367935, "" );
-insert_book( "periodicals", "cb_399.pdf", "Callback", "Issue 399 (Apr 2013)", "NASA", 568359, "" );
 insert_book( "periodicals", "13jun-front.pdf", "The Front", "Jun 2013", "NOAA", 2677124, "N" );
 insert_book( "periodicals", "13apr-front.pdf", "The Front", "Apr 2013", "NOAA", 2475943, "" );
 insert_book( "periodicals", "12dec-front.pdf", "The Front", "Dec 2012", "NOAA", 2150530, "" );
