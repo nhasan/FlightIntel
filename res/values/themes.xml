@@ -20,6 +20,10 @@
  */
  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="Theme.Light.DarkActionBar" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="icon">@drawable/ab_icon</item>
+        <item name="android:icon">@drawable/ab_icon</item>
+    </style>
     <style name="Theme.Light.Dialog" parent="@style/Theme.AppCompat.Light">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">true</item>

@@ -3,20 +3,29 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.5.4'
+        classpath 'com.android.tools.build:gradle:0.5.+'
     }
 }
 apply plugin: 'android'
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
-    compile project(':ActionBarSherlock')
-    compile project(':SlidingMenu')
+    compile ('com.android.support:support-v4:18.0.+')
+    compile ("com.android.support:appcompat-v7:18.0.+")
 }
 
 android {
     compileSdkVersion 18
-    buildToolsVersion "18"
+    buildToolsVersion "18.0.1"
+
+    defaultConfig {
+        minSdkVersion 7
+        targetSdkVersion 18
+    }
 
     sourceSets {
         main {

@@ -263,6 +263,18 @@ public class FragmentBase extends Fragment {
         }
     }
 
+    protected void makeRowClickable( View row, final Class<?> clss, final Bundle args ) {
+        Runnable r = new Runnable() {
+            
+            @Override
+            public void run() {
+                getActivityBase().replaceFragment( clss, args );
+            }
+        };
+        row.setTag( r );
+        row.setOnClickListener( mOnRowClickListener );
+    }
+
     protected void makeRowClickable( View row, Object tag ) {
         row.setTag( tag );
         row.setOnClickListener( mOnRowClickListener );
@@ -278,6 +290,18 @@ public class FragmentBase extends Fragment {
             }
             index += 2;
         }
+    }
+
+    protected View addClickableRow( LinearLayout layout, String label, String value,
+            Class<?> clss, Bundle args ) {
+        View row = addRow( layout, label+"...", value );
+        makeRowClickable( row, clss, args );
+        return row;
+    }
+
+    protected View addClickableRow( LinearLayout layout, String label,
+            Class<?> clss, Bundle args ) {
+        return addClickableRow( layout, label, null, clss, args );
     }
 
     protected View addClickableRow( LinearLayout layout, View row, Object tag ) {

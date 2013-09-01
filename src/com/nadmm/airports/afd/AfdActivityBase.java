@@ -24,10 +24,9 @@ import android.view.View;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
-import com.nadmm.airports.SlidingMenuFragment;
 
 public class AfdActivityBase extends ActivityBase {
-    
+
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );

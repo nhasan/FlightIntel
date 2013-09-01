@@ -219,9 +219,9 @@ public final class BrowseAirportsFragment extends ListFragmentBase {
         } else {
             // An airport was selected - Launch the detail view activity
             String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-            Intent intent = new Intent( getActivity(), AirportDetailsActivity.class );
-            intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-            startActivity( intent );
+            Bundle args = new Bundle();
+            args.putString( Airports.SITE_NUMBER, siteNumber );
+            getActivityBase().replaceFragment( AirportDetailsFragment.class, args );
         }
     }
 

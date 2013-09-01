@@ -5,6 +5,7 @@
       <configuration>
         <option name="UPDATE_PROPERTY_FILES" value="true" />
         <option name="ENABLE_PRE_DEXING" value="false" />
+        <includeAssetsFromLibraries>true</includeAssetsFromLibraries>
       </configuration>
     </facet>
   </component>
@@ -16,8 +17,6 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="jdk" jdkName="Android 4.3" jdkType="Android SDK" />
-    <orderEntry type="module" module-name="SlidingMenu" exported="" />
-    <orderEntry type="module" module-name="ActionBarSherlock" exported="" />
   </component>
 </module>
 

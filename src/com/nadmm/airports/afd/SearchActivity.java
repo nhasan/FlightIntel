@@ -64,9 +64,9 @@ public class SearchActivity extends AfdActivityBase {
             // User clicked on a suggestion
             Bundle extra = intent.getExtras();
             String siteNumber = extra.getString( SearchManager.EXTRA_DATA_KEY );
-            Intent view = new Intent( this, AirportDetailsActivity.class );
-            view.putExtra( Airports.SITE_NUMBER, siteNumber );
-            startActivity( view );
+            Bundle args = new Bundle();
+            args.putString( Airports.SITE_NUMBER, siteNumber );
+            replaceFragment( AirportDetailsFragment.class, args );
             finish();
         }
     }
@@ -87,9 +87,9 @@ public class SearchActivity extends AfdActivityBase {
                     int position, long id ) {
                 Cursor c = mListAdapter.getCursor();
                 String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-                Intent intent = new Intent( SearchActivity.this, AirportDetailsActivity.class );
-                intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-                startActivity( intent );
+                Bundle args = new Bundle();
+                args.putString( Airports.SITE_NUMBER, siteNumber );
+                replaceFragment( AirportDetailsFragment.class, args );
             }
 
         } );

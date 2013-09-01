@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
- -->
 
-<resources>
-    <color name="tab_indicator">#ff33b5e5</color>
-    <color name="scratchpad_toolbar_color">#f0e0e0e0</color>
-    <color name="slidingmenu_background">#ff606060</color>
-    <color name="e6b_highlight">#ff007040</color>
-    <color name="red">#b0ff0000</color>
-    <color name="lightred">#80ff0000</color>
-    <color name="gray">#686868</color>
-    <color name="lightgray">#989898</color>
-</resources>
+package com.nadmm.airports.afd;
+
+import android.os.Bundle;
+
+import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.R;
+
+public final class AfdMainActivity extends ActivityBase {
+
+    @Override
+    protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+
+        setContentView( R.layout.activity_main );
+        Bundle args = getIntent().getExtras();
+        addFragment( AirportDetailsFragment.class, args );
+    }
+
+}

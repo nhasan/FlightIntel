@@ -19,7 +19,6 @@
 
 package com.nadmm.airports;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import android.annotation.TargetApi;
@@ -67,8 +66,6 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
-import com.nadmm.airports.afd.BrowseFragment;
-import com.nadmm.airports.afd.FavoritesFragment;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
 import com.nadmm.airports.utils.CursorAsyncTask;
@@ -613,17 +610,6 @@ public class ActivityBase extends ActionBarActivity {
         TextView tv = (TextView) findViewById( R.id.effective_date );
         tv.setText( "Effective date: "
                 +c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
-    }
-
-    protected Class<?> getHomeFragmentClass() {
-        ArrayList<String> fav = mDbManager.getAptFavorites();
-        Class<?> clss = null;
-        if ( fav.size() > 0 ) {
-            clss = FavoritesFragment.class;
-        } else {
-            clss = BrowseFragment.class;
-        }
-        return clss;
     }
 
 }

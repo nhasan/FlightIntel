@@ -47,7 +47,7 @@ public class AirportListFragmentBase extends ListFragmentBase {
     protected void onListItemClick( ListView l, View v, int position ) {
         Cursor c = (Cursor) l.getItemAtPosition( position );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-        Intent intent = new Intent( getActivity(), AirportDetailsActivity.class );
+        Intent intent = new Intent( getActivity(), AfdMainActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         startActivity( intent );
     }
