@@ -35,8 +35,10 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,6 +47,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.nadmm.airports.Application;
@@ -107,8 +110,15 @@ public final class AirportDetailsFragment extends FragmentBase {
     private String mHome;
     private String mSiteNumber;
 
+    int mScrollPos = -1;
+
     @Override
     public void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+
+        Log.d( getClass().getSimpleName(), "onCreate()" );
+
+        setRetainInstance( true );
         mMetarFilter = new IntentFilter();
         mMetarFilter.addAction( NoaaService.ACTION_GET_METAR );
         mMetarReceiver = new BroadcastReceiver() {
@@ -144,8 +154,6 @@ public final class AirportDetailsFragment extends FragmentBase {
                 handleDafdBroadcast( intent );
             }
         };
-
-        super.onCreate( savedInstanceState );
     }
 
     @Override
@@ -179,6 +187,9 @@ public final class AirportDetailsFragment extends FragmentBase {
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
         bm.unregisterReceiver( mMetarReceiver );
         bm.unregisterReceiver( mDafdReceiver );
+
+        ScrollView view = (ScrollView) findViewById( R.id.scroll_view );
+        mScrollPos = view.getScrollY();
 
         super.onPause();
     }
@@ -218,6 +229,17 @@ public final class AirportDetailsFragment extends FragmentBase {
         showOtherDetails( result );
 
         requestMetars( false );
+
+        if ( mScrollPos > -1 ) {
+            new Handler().post( new Runnable() {
+                
+                @Override
+                public void run() {
+                    ScrollView view = (ScrollView) findViewById( R.id.scroll_view );
+                    view.scrollTo( 0, mScrollPos );
+                }
+            } );
+        }
 
         setContentShown( true );
     }
@@ -263,10 +285,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             }
         }
 
-        Intent intent = new Intent( getActivity(), CommunicationsActivity.class );
-        intent.putExtras( getArguments() );
-        addClickableRow( layout, "More", intent );
-        setRowBackgroundResource( layout );
+        addClickableRow( layout, "More", CommunicationsFragment.class, getArguments() );
     }
 
     protected void addFrequencyToMap( HashMap<String, ArrayList<Float>> freqMap,
@@ -630,9 +649,9 @@ public final class AirportDetailsFragment extends FragmentBase {
                 addRow( layout, "Sectional chart", sectional );
             }
         }
-        Intent intent = new Intent( getActivity(), AlmanacActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER, mSiteNumber );
-        addClickableRow( layout, "Sunrise and sunset", intent );
+        Bundle args = new Bundle();
+        args.putString( Airports.SITE_NUMBER, mSiteNumber );
+        addClickableRow( layout, "Sunrise and sunset", AlmanacFragment.class, args );
         setRowBackgroundResource( layout );
     }
 
@@ -733,21 +752,12 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     protected void showOtherDetails( Cursor[] result ) {
-        Cursor apt = result[ 0 ];
-        String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
+        Bundle args = getArguments();
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_other_layout );
-        Intent intent = new Intent( getActivity(), OwnershipActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addClickableRow( layout, "Ownership and contact", intent );
-        Bundle args = new Bundle();
-        args.putString( Airports.SITE_NUMBER, siteNumber );
+        addClickableRow( layout, "Ownership and contact", OwnershipFragment.class, args );
         addClickableRow( layout, "Aircraft operations", AircraftOpsFragment.class, args );
-        intent = new Intent( getActivity(), RemarksActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addClickableRow( layout, "Additional remarks", intent );
-        intent = new Intent( getActivity(), AttendanceActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addClickableRow( layout, "Attendance", intent );
+        addClickableRow( layout, "Additional remarks", RemarksFragment.class, args );
+        addClickableRow( layout, "Attendance", AttendanceFragment.class, args );
         setRowBackgroundResource( layout );
     }
 

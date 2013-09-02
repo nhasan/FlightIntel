@@ -34,28 +34,6 @@ import com.nadmm.airports.utils.FormatUtils;
 
 public final class AircraftOpsFragment extends FragmentBase {
 
-    private final class OpsDetailsTask extends CursorAsyncTask {
-
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
-
-            Cursor[] cursors = new Cursor[ 1 ];
-
-            Cursor apt = getAirportDetails( siteNumber );
-            cursors[ 0 ] = apt;
-
-            return cursors;
-        }
-
-        @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
-            return true;
-        }
-
-    }
-
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
@@ -115,6 +93,28 @@ public final class AircraftOpsFragment extends FragmentBase {
         addRow( layout, "Military", FormatUtils.formatNumber( count ) );
         String date = apt.getString( apt.getColumnIndex( Airports.OPS_REFERENCE_DATE ) );
         addRow( layout, "As-of", date );
+    }
+
+    private final class OpsDetailsTask extends CursorAsyncTask {
+
+        @Override
+        protected Cursor[] doInBackground( String... params ) {
+            String siteNumber = params[ 0 ];
+
+            Cursor[] cursors = new Cursor[ 1 ];
+
+            Cursor apt = getAirportDetails( siteNumber );
+            cursors[ 0 ] = apt;
+
+            return cursors;
+        }
+
+        @Override
+        protected boolean onResult( Cursor[] result ) {
+            showDetails( result );
+            return true;
+        }
+
     }
 
 }
