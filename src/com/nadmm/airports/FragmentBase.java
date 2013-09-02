@@ -273,11 +273,13 @@ public class FragmentBase extends Fragment {
         };
         row.setTag( r );
         row.setOnClickListener( mOnRowClickListener );
+        row.setBackgroundResource( R.drawable.row_selector_middle );
     }
 
     protected void makeRowClickable( View row, Object tag ) {
         row.setTag( tag );
         row.setOnClickListener( mOnRowClickListener );
+        row.setBackgroundResource( R.drawable.row_selector_middle );
     }
 
     protected void setRowBackgroundResource( LinearLayout layout ) {
@@ -307,6 +309,12 @@ public class FragmentBase extends Fragment {
     protected View addClickableRow( LinearLayout layout, View row, Object tag ) {
         addRow( layout, row );
         makeRowClickable( row, tag );
+        return row;
+    }
+
+    protected View addClickableRow( LinearLayout layout, View row, Class<?> clss, Bundle args ) {
+        addRow( layout, row );
+        makeRowClickable( row, clss, args );
         return row;
     }
 

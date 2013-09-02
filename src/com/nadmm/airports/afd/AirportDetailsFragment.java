@@ -744,11 +744,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             repair = "No";
         }
         addRow( layout, "Powerplant repair", repair );
-        Intent intent = new Intent( getActivity(), ServicesActivity.class );
-        intent.putExtra( Airports.SITE_NUMBER,
-                apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) ) );
-        addClickableRow( layout, "Other services", intent );
-        setRowBackgroundResource( layout );
+        addClickableRow( layout, "Other services", ServicesFragment.class, getArguments() );
     }
 
     protected void showOtherDetails( Cursor[] result ) {
@@ -863,13 +859,10 @@ public final class AirportDetailsFragment extends FragmentBase {
             mRunwayViews.add( tv );
         }
 
-        Bundle bundle = new Bundle();
-        bundle.putString( Runways.SITE_NUMBER, siteNumber );
-        bundle.putString( Runways.RUNWAY_ID, runwayId );
-        Intent intent = new Intent( getActivityBase(), RunwaysActivity.class );
-        intent.putExtras( bundle );
-
-        addClickableRow( layout, row, intent );
+        Bundle args = new Bundle();
+        args.putString( Runways.SITE_NUMBER, siteNumber );
+        args.putString( Runways.RUNWAY_ID, runwayId );
+        addClickableRow( layout, row, RunwaysFragment.class, args );
     }
 
     protected void cacheMetars() {
