@@ -341,16 +341,12 @@ public final class AirportDetailsFragment extends FragmentBase {
             tv = (TextView) findViewById( R.id.detail_rwy_label );
             tv.setVisibility( View.GONE );
             rwyLayout.setVisibility( View.GONE );
-        } else {
-            setRowBackgroundResource( rwyLayout );
         }
         if ( heliNum == 0 ) {
             // No helipads so remove the section
             tv = (TextView) findViewById( R.id.detail_heli_label );
             tv.setVisibility( View.GONE );
             heliLayout.setVisibility( View.GONE );
-        } else {
-            setRowBackgroundResource( heliLayout );
         }
     }
 
@@ -442,7 +438,6 @@ public final class AirportDetailsFragment extends FragmentBase {
                 addClickableRow( layout, String.format( "View all %d nearby Wx stations",
                         awos1.getCount() ), intent );
             }
-            setRowBackgroundResource( layout );
         } else {
             label.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
@@ -495,26 +490,17 @@ public final class AirportDetailsFragment extends FragmentBase {
         } else {
             addRow( layout, "Home airport '"+mHome+"' not found" );                
         }
-        setRowBackgroundResource( layout );
     }
 
     protected void showNearbyFacilities( Cursor[] result ) {
-        Cursor apt = result[ 0 ];
-        String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
-
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_nearby_layout );
 
-        Intent airport = new Intent( getActivity(), NearbyAirportsActivity.class );
-        airport.putExtra( LocationColumns.LOCATION, mLocation );
-        airport.putExtra( LocationColumns.RADIUS, mRadius );
-        addClickableRow( layout, "Airports", airport );
-        Intent fss = new Intent( getActivity(), FssCommActivity.class );
-        fss.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addClickableRow( layout, "FSS outlets", fss );
-        Intent navaids = new Intent( getActivity(), NearbyNavaidsActivity.class );
-        navaids.putExtra( Airports.SITE_NUMBER, siteNumber );
-        addClickableRow( layout, "Navaids", navaids );
-        setRowBackgroundResource( layout );
+        Bundle args = new Bundle();
+        args.putParcelable( LocationColumns.LOCATION, mLocation );
+        args.putInt( LocationColumns.RADIUS, mRadius );
+        addClickableRow( layout, "Airports", NearbyAirportsFragment.class, args );
+        addClickableRow( layout, "FSS outlets", FssCommFragment.class, getArguments() );
+        addClickableRow( layout, "Navaids", NearbyNavaidsFragment.class, getArguments() );
     }
 
     private void showNotamAndTfr() {
@@ -524,7 +510,6 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, "NOTAMs", intent );
         intent = new Intent( getActivity(), TfrActivity.class );
         addClickableRow( layout, "TFRs", intent );
-        setRowBackgroundResource( layout );
     }
 
     protected void showOperationsDetails( Cursor[] result ) {
@@ -652,7 +637,6 @@ public final class AirportDetailsFragment extends FragmentBase {
         Bundle args = new Bundle();
         args.putString( Airports.SITE_NUMBER, mSiteNumber );
         addClickableRow( layout, "Sunrise and sunset", AlmanacFragment.class, args );
-        setRowBackgroundResource( layout );
     }
 
     protected void showAeroNavDetails( Cursor[] result ) {
@@ -700,7 +684,6 @@ public final class AirportDetailsFragment extends FragmentBase {
             Intent intent = new Intent( getActivity(), DonateActivity.class );
             addClickableRow( layout, "Please donate to enable this section", intent );
         }
-        setRowBackgroundResource( layout );
     }
 
     protected void getAfdPage( String afdCycle, String pdfName ) {
@@ -754,7 +737,6 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, "Aircraft operations", AircraftOpsFragment.class, args );
         addClickableRow( layout, "Additional remarks", RemarksFragment.class, args );
         addClickableRow( layout, "Attendance", AttendanceFragment.class, args );
-        setRowBackgroundResource( layout );
     }
 
     protected void addAwosRow( LinearLayout layout, String id, String name, String type, 

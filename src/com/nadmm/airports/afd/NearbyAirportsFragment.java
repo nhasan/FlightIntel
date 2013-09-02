@@ -31,6 +31,12 @@ import com.nadmm.airports.DatabaseManager.LocationColumns;
 public class NearbyAirportsFragment extends AirportListFragmentBase {
 
     @Override
+    public void onCreate( Bundle savedInstanceState ) {
+        setEmptyText( "No airports found nearby." );
+        super.onCreate( savedInstanceState );
+    }
+
+    @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         Bundle args = getArguments();
         Location location = (Location) args.get( LocationColumns.LOCATION );
@@ -39,7 +45,15 @@ public class NearbyAirportsFragment extends AirportListFragmentBase {
         }
         getListView().setCacheColorHint( 0xffffffff );
 
+        int radius = args.getInt( LocationColumns.RADIUS );
+        setActionBarSubtitle( String.format( "Airports Within %d NM Radius", radius ) );
+
         super.onActivityCreated( savedInstanceState );
+    }
+
+    @Override
+    public void onLocationChanged( Location location ) {
+        new NearbyAirportsTask().execute( location );
     }
 
     private final class NearbyAirportsTask extends AsyncTask<Location, Void, Cursor> {
@@ -64,17 +78,6 @@ public class NearbyAirportsFragment extends AirportListFragmentBase {
             setCursor( c );
         }
 
-    }
-
-    @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        setEmptyText( "No airports found nearby." );
-        super.onCreate( savedInstanceState );
-    }
-
-    @Override
-    public void onLocationChanged( Location location ) {
-        new NearbyAirportsTask().execute( location );
     }
 
 }

@@ -39,50 +39,11 @@
         <activity android:label="@string/app_name"
                   android:name=".afd.AfdMainActivity" />
 
-        <activity android:label="@string/nearby_airports"
-                  android:name=".afd.NearbyAirportsActivity" />
-
-        <activity android:label="@string/runways"
-                  android:name=".afd.RunwaysActivity" />
-
-        <activity android:label="@string/other_services"
-                  android:name=".afd.ServicesActivity" />
-
-        <activity android:label="@string/airport_owner"
-                  android:name=".afd.OwnershipActivity" />
-
-        <activity android:label="@string/airport_remarks"
-                  android:name=".afd.RemarksActivity" />
-
-        <activity android:label="@string/airport_attendance"
-                  android:name=".afd.AttendanceActivity" />
-
-        <activity android:label="@string/atc_communications"
-                  android:name=".afd.CommunicationsActivity" />
-
-        <activity android:label="@string/nearby_navaids"
-                  android:name=".afd.NearbyNavaidsActivity" />
-
-        <activity android:label="@string/navaid_details"
-                  android:name=".afd.NavaidDetailsActivity" />
-
         <activity android:label="@string/navaid_notams"
                   android:name=".notams.NavaidNotamActivity" />
 
-        <activity android:label="@string/fss_outlets"
-                  android:name=".afd.FssCommActivity" />
-
-        <activity android:label="@string/ils_details"
-                  android:name=".afd.IlsActivity" />
-
-        <activity android:label="@string/sunrise_sunset"
-                  android:name=".afd.AlmanacActivity" />
-
         <activity android:label="@string/airport_notams"
                   android:name=".notams.AirportNotamActivity" />
-
-        <activity android:label="@string/aircraft_operations"
-                  android:name=".afd.AircraftOpsActivity" />
 
         <activity android:label="@string/weather"
                   android:name=".wx.WxDetailActivity" />

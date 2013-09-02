@@ -331,8 +331,14 @@ public class FragmentBase extends Fragment {
     protected View addClickableRow( LinearLayout layout, String label1, String value1,
             String label2, String value2, Object tag ) {
         View row = addRow( layout, label1, value1, label2, value2 );
-        row.setTag( tag );
-        row.setOnClickListener( mOnRowClickListener );
+        makeRowClickable( row, tag );
+        return row;
+    }
+
+    protected View addClickableRow( LinearLayout layout, String label1, String value1,
+            String label2, String value2, Class<?> clss, Bundle args ) {
+        View row = addRow( layout, label1, value1, label2, value2 );
+        makeRowClickable( row, clss, args );
         return row;
     }
 

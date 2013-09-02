@@ -21,7 +21,6 @@ package com.nadmm.airports.afd;
 
 import java.util.Locale;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -157,9 +156,8 @@ public final class RunwaysFragment extends FragmentBase {
             args.putString( Ils1.SITE_NUMBER, siteNumber );
             args.putString( Ils1.RUNWAY_ID, runwayId );
             args.putString( Ils1.ILS_TYPE, ilsType );
-            Intent intent = new Intent( getActivity(), IlsActivity.class );
-            intent.putExtras( args );
-            addClickableRow( layout, "Instrument approach", ilsType, intent );
+            addClickableRow( layout, "Instrument approach", ilsType,
+                    IlsFragment.class, args );
         }
 
         Float elevation = rwy.getFloat( rwy.getColumnIndex( Runways.BASE_END_RUNWAY_ELEVATION ) );
@@ -308,9 +306,7 @@ public final class RunwaysFragment extends FragmentBase {
             args.putString( Ils1.SITE_NUMBER, siteNumber );
             args.putString( Ils1.RUNWAY_ID, runwayId );
             args.putString( Ils1.ILS_TYPE, ilsType );
-            Intent intent = new Intent( getActivity(), IlsActivity.class );
-            intent.putExtras( args );
-            addClickableRow( layout, "Instrument approach", ilsType, intent );
+            addClickableRow( layout, "Instrument approach", ilsType, IlsFragment.class, args );
         }
         Float elevation = rwy.getFloat( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_RUNWAY_ELEVATION ) );
