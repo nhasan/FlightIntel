@@ -260,7 +260,7 @@ public class ActivityBase extends ActionBarActivity {
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace( id, f, tag );
         if ( addTostack ) {
-            ft.addToBackStack( clss.getSimpleName() );
+            ft.addToBackStack( tag );
         }
         ft.commit();
         return f;
