@@ -341,12 +341,16 @@ public final class AirportDetailsFragment extends FragmentBase {
             tv = (TextView) findViewById( R.id.detail_rwy_label );
             tv.setVisibility( View.GONE );
             rwyLayout.setVisibility( View.GONE );
+        } else {
+            setRowBackgroundResource( rwyLayout );
         }
         if ( heliNum == 0 ) {
             // No helipads so remove the section
             tv = (TextView) findViewById( R.id.detail_heli_label );
             tv.setVisibility( View.GONE );
             heliLayout.setVisibility( View.GONE );
+        } else {
+            setRowBackgroundResource( heliLayout );
         }
     }
 
@@ -438,6 +442,7 @@ public final class AirportDetailsFragment extends FragmentBase {
                 addClickableRow( layout, String.format( "View all %d nearby Wx stations",
                         awos1.getCount() ), intent );
             }
+            setRowBackgroundResource( layout );
         } else {
             label.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
@@ -501,6 +506,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, "Airports", NearbyAirportsFragment.class, args );
         addClickableRow( layout, "FSS outlets", FssCommFragment.class, getArguments() );
         addClickableRow( layout, "Navaids", NearbyNavaidsFragment.class, getArguments() );
+        setRowBackgroundResource( layout );
     }
 
     private void showNotamAndTfr() {
@@ -510,6 +516,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, "NOTAMs", intent );
         intent = new Intent( getActivity(), TfrActivity.class );
         addClickableRow( layout, "TFRs", intent );
+        setRowBackgroundResource( layout );
     }
 
     protected void showOperationsDetails( Cursor[] result ) {
@@ -637,6 +644,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         Bundle args = new Bundle();
         args.putString( Airports.SITE_NUMBER, mSiteNumber );
         addClickableRow( layout, "Sunrise and sunset", AlmanacFragment.class, args );
+        setRowBackgroundResource( layout );
     }
 
     protected void showAeroNavDetails( Cursor[] result ) {
@@ -684,6 +692,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             Intent intent = new Intent( getActivity(), DonateActivity.class );
             addClickableRow( layout, "Please donate to enable this section", intent );
         }
+        setRowBackgroundResource( layout );
     }
 
     protected void getAfdPage( String afdCycle, String pdfName ) {
@@ -728,6 +737,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
         addRow( layout, "Powerplant repair", repair );
         addClickableRow( layout, "Other services", ServicesFragment.class, getArguments() );
+        setRowBackgroundResource( layout );
     }
 
     protected void showOtherDetails( Cursor[] result ) {
@@ -737,6 +747,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, "Aircraft operations", AircraftOpsFragment.class, args );
         addClickableRow( layout, "Additional remarks", RemarksFragment.class, args );
         addClickableRow( layout, "Attendance", AttendanceFragment.class, args );
+        setRowBackgroundResource( layout );
     }
 
     protected void addAwosRow( LinearLayout layout, String id, String name, String type, 
