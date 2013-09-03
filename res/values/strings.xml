@@ -215,6 +215,11 @@
     <string name="range">Range</string>
     <string name="drawer_open">Open Drawer</string>
     <string name="drawer_close">Close Drawer</string>
+    <plurals name="airports_found">
+        <item quantity="zero">No airports found</item>
+        <item quantity="one">1 airport found</item>
+        <item quantity="other">%1$d airports found</item>
+    </plurals>
     <plurals name="notams_found">
         <item quantity="zero">No active NOTAMs found</item>
         <item quantity="one">1 active NOTAM found</item>
