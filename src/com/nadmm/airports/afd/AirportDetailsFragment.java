@@ -74,7 +74,7 @@ import com.nadmm.airports.aeronav.DafdService;
 import com.nadmm.airports.aeronav.DtppActivity;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.notams.AirportNotamActivity;
-import com.nadmm.airports.tfr.TfrActivity;
+import com.nadmm.airports.tfr.TfrListActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
@@ -512,7 +512,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         Intent intent = new Intent( getActivity(), AirportNotamActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, mSiteNumber );
         addClickableRow( layout, "NOTAMs", intent );
-        intent = new Intent( getActivity(), TfrActivity.class );
+        intent = new Intent( getActivity(), TfrListActivity.class );
         addClickableRow( layout, "TFRs", intent );
         setRowBackgroundResource( layout );
     }

@@ -31,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.nadmm.airports.afd.AfdMainActivity;
+import com.nadmm.airports.tfr.TfrListActivity;
 import com.nadmm.airports.views.DrawerListView;
 
 public class MainActivity extends ActivityBase implements ListView.OnItemClickListener {
@@ -81,7 +82,6 @@ public class MainActivity extends ActivityBase implements ListView.OnItemClickLi
         super.onPostCreate( savedInstanceState );
         // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
-        mDrawerList.setItemChecked( DrawerListView.ITEM_ID_AFD, true );
     }
 
     @Override
@@ -137,6 +137,8 @@ public class MainActivity extends ActivityBase implements ListView.OnItemClickLi
             Intent afd = new Intent( this, AfdMainActivity.class );
             startActivity( afd );
         } else if ( id == DrawerListView.ITEM_ID_TFR ) {
+            Intent tfr = new Intent( this, TfrListActivity.class );
+            startActivity( tfr );
         } else if ( id == DrawerListView.ITEM_ID_LIBRARY ) {
         } else if ( id == DrawerListView.ITEM_ID_SCRATCHPAD ) {
         } else if ( id == DrawerListView.ITEM_ID_CHARTS ) {

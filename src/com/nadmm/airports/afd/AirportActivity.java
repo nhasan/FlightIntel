@@ -22,6 +22,7 @@ package com.nadmm.airports.afd;
 import android.os.Bundle;
 
 import com.nadmm.airports.MainActivity;
+import com.nadmm.airports.views.DrawerListView;
 
 public class AirportActivity extends MainActivity {
 
@@ -29,6 +30,7 @@ public class AirportActivity extends MainActivity {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setDrawerItemChecked( DrawerListView.ITEM_ID_AFD );
         setDrawerIndicatorEnabled( false );
 
         Bundle args = getIntent().getExtras();

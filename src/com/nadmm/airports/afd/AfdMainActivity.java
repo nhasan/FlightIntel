@@ -24,12 +24,15 @@ import java.util.ArrayList;
 import android.os.Bundle;
 
 import com.nadmm.airports.MainActivity;
+import com.nadmm.airports.views.DrawerListView;
 
 public final class AfdMainActivity extends MainActivity {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        setDrawerItemChecked( DrawerListView.ITEM_ID_AFD );
 
         Bundle args = getIntent().getExtras();
         addFragment( getHomeFragmentClass(), args );
