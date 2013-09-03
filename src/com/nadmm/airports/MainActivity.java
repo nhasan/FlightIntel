@@ -125,7 +125,7 @@ public class MainActivity extends ActivityBase implements ListView.OnItemClickLi
         addFragment( clss, null );
     }
 
-    public void setDrawerIndicatorEnabled( boolean enable ) {
+    protected void setDrawerIndicatorEnabled( boolean enable ) {
         if ( mDrawerToggle != null ) {
             mDrawerToggle.setDrawerIndicatorEnabled( enable );
         }
