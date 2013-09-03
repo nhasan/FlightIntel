@@ -23,7 +23,6 @@ import android.os.Bundle;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
-import com.nadmm.airports.SlidingMenuFragment;
 
 public class TfrActivity extends ActivityBase {
 
@@ -46,7 +45,6 @@ public class TfrActivity extends ActivityBase {
 
     @Override
     protected void onResume() {
-        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_TFR );
 
         super.onResume();
     }

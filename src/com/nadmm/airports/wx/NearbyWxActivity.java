@@ -23,7 +23,6 @@ import android.os.Bundle;
 
 import com.nadmm.airports.DatabaseManager.LocationColumns;
 import com.nadmm.airports.FragmentActivityBase;
-import com.nadmm.airports.SlidingMenuFragment;
 
 
 public class NearbyWxActivity extends FragmentActivityBase {
@@ -42,7 +41,6 @@ public class NearbyWxActivity extends FragmentActivityBase {
 
     @Override
     protected void onResume() {
-        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_AFD );
 
         super.onResume();
     }

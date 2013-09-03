@@ -54,7 +54,6 @@ import com.nadmm.airports.DatabaseManager.DtppCycle;
 import com.nadmm.airports.FragmentActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
-import com.nadmm.airports.SlidingMenuFragment;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.TimeUtils;
@@ -72,7 +71,6 @@ public class ChartsDownloadActivity extends FragmentActivityBase {
 
     @Override
     protected void onResume() {
-        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_CHARTS );
         super.onResume();
     }
 

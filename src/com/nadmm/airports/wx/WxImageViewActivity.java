@@ -20,13 +20,11 @@
 package com.nadmm.airports.wx;
 
 import com.nadmm.airports.ImageViewActivity;
-import com.nadmm.airports.SlidingMenuFragment;
 
 public class WxImageViewActivity extends ImageViewActivity {
 
     @Override
     protected void onResume() {
-        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_AFD );
 
         super.onResume();
     }

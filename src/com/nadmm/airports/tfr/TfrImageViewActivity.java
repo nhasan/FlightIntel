@@ -20,13 +20,11 @@
 package com.nadmm.airports.tfr;
 
 import com.nadmm.airports.ImageViewActivity;
-import com.nadmm.airports.SlidingMenuFragment;
 
 public class TfrImageViewActivity extends ImageViewActivity {
 
     @Override
     protected void onResume() {
-        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_TFR );
 
         super.onResume();
     }

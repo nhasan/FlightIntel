@@ -35,7 +35,6 @@ import android.support.v4.view.ViewPager;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.SlidingMenuFragment;
 import com.nadmm.airports.DatabaseManager.BookCategories;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.SystemUtils;
@@ -121,7 +120,6 @@ public class LibraryActivity extends ActivityBase {
     protected void onResume() {
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
         bm.registerReceiver( mReceiver, mFilter );
-        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_LIBRARY );
 
         super.onResume();
     }

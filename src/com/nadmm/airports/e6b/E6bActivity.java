@@ -24,7 +24,6 @@ import android.os.Bundle;
 import com.nadmm.airports.FragmentActivityBase;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
-import com.nadmm.airports.SlidingMenuFragment;
 
 public class E6bActivity extends FragmentActivityBase {
 
@@ -40,7 +39,6 @@ public class E6bActivity extends FragmentActivityBase {
 
     @Override
     protected void onResume() {
-        setSlidingMenuActivatedItem( SlidingMenuFragment.ITEM_ID_E6B );
         super.onResume();
     }
 
