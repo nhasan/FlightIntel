@@ -41,15 +41,12 @@ public class MainActivity extends ActivityBase implements ListView.OnItemClickLi
     private DrawerListView mDrawerList;
     private CharSequence mTitle;
     private CharSequence mSubtitle;
-    private CharSequence mDrawerTitle;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
         setContentView();
-
-        mTitle = mDrawerTitle = getTitle();
 
         mDrawerList = (DrawerListView) findViewById( R.id.left_drawer );
         mDrawerList.setOnItemClickListener( this );
@@ -69,7 +66,7 @@ public class MainActivity extends ActivityBase implements ListView.OnItemClickLi
             public void onDrawerOpened( View drawerView ) {
                 mTitle = getSupportActionBar().getTitle();
                 mSubtitle = getSupportActionBar().getSubtitle();
-                getSupportActionBar().setTitle( mDrawerTitle );
+                getSupportActionBar().setTitle( R.string.app_name );
                 getSupportActionBar().setSubtitle( null );
                 supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
