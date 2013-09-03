@@ -19,8 +19,7 @@
 
 package com.nadmm.airports;
 
-import java.util.ArrayList;
-
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -31,8 +30,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.nadmm.airports.afd.FavoritesFragment;
-import com.nadmm.airports.afd.NearbyFragment;
+import com.nadmm.airports.afd.AfdMainActivity;
 import com.nadmm.airports.views.DrawerListView;
 
 public class MainActivity extends ActivityBase implements ListView.OnItemClickListener {
@@ -44,13 +42,11 @@ public class MainActivity extends ActivityBase implements ListView.OnItemClickLi
     private CharSequence mSubtitle;
     private CharSequence mDrawerTitle;
 
-    private long mPrevId = -1;
-
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( R.layout.activity_main );
+        setContentView();
 
         mTitle = mDrawerTitle = getTitle();
 
@@ -78,7 +74,6 @@ public class MainActivity extends ActivityBase implements ListView.OnItemClickLi
             }
         };
         mDrawerLayout.setDrawerListener( mDrawerToggle );
-        setFragment();
     }
 
     @Override
@@ -120,9 +115,12 @@ public class MainActivity extends ActivityBase implements ListView.OnItemClickLi
         getSupportActionBar().setTitle( mTitle );
     }
 
-    protected void setFragment() {
-        Class<?> clss = getHomeFragmentClass();
-        addFragment( clss, null );
+    protected void setContentView() {
+        setContentView( R.layout.activity_main );
+    }
+
+    protected void setDrawerItemChecked( int position ) {
+        mDrawerList.setItemChecked( position, true );
     }
 
     protected void setDrawerIndicatorEnabled( boolean enable ) {
@@ -134,37 +132,19 @@ public class MainActivity extends ActivityBase implements ListView.OnItemClickLi
     protected void updateContent( int position ) {
         // Create a new fragment and specify the planet to show based on position
         long id = mDrawerList.getAdapter().getItemId( position );
-        if ( mPrevId != id ) {
-            Class<?> clss = null;
-            if ( id == DrawerListView.ITEM_ID_AFD ) {
-                clss = getHomeFragmentClass();
-            } else if ( id == DrawerListView.ITEM_ID_TFR ) {
-            } else if ( id == DrawerListView.ITEM_ID_LIBRARY ) {
-            } else if ( id == DrawerListView.ITEM_ID_SCRATCHPAD ) {
-            } else if ( id == DrawerListView.ITEM_ID_CHARTS ) {
-            } else if ( id == DrawerListView.ITEM_ID_CLOCKS ) {
-            } else if ( id == DrawerListView.ITEM_ID_E6B ) {
-            }
 
-            if ( clss != null ) {
-                replaceFragment( clss, null );
-            }
-            mPrevId = id;
-            mDrawerList.setItemChecked( position, true );
+        if ( id == DrawerListView.ITEM_ID_AFD ) {
+            Intent afd = new Intent( this, AfdMainActivity.class );
+            startActivity( afd );
+        } else if ( id == DrawerListView.ITEM_ID_TFR ) {
+        } else if ( id == DrawerListView.ITEM_ID_LIBRARY ) {
+        } else if ( id == DrawerListView.ITEM_ID_SCRATCHPAD ) {
+        } else if ( id == DrawerListView.ITEM_ID_CHARTS ) {
+        } else if ( id == DrawerListView.ITEM_ID_CLOCKS ) {
+        } else if ( id == DrawerListView.ITEM_ID_E6B ) {
         }
 
         mDrawerLayout.closeDrawer( mDrawerList );
-    }
-
-    protected Class<?> getHomeFragmentClass() {
-        ArrayList<String> fav = getDbManager().getAptFavorites();
-        Class<?> clss = null;
-        if ( fav.size() > 0 ) {
-            clss = FavoritesFragment.class;
-        } else {
-            clss = NearbyFragment.class;
-        }
-        return clss;
     }
 
     @Override

@@ -20,6 +20,8 @@
 package com.nadmm.airports;
 
 
+import com.nadmm.airports.afd.AfdMainActivity;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -50,7 +52,7 @@ public class FlightIntel extends ActivityBase {
             return;
         }
 
-        Intent main = new Intent( this, MainActivity.class );
+        Intent main = new Intent( this, AfdMainActivity.class );
         startActivity( main );
         finish();
     }

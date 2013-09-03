@@ -15,122 +15,166 @@
 
     <uses-sdk android:minSdkVersion="7" android:targetSdkVersion="18" />
 
-    <application android:icon="@drawable/ic_launcher"
-            android:name=".Application"
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:name=".Application"
+        android:label="@string/app_name"
+        android:allowBackup="true"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        <activity
             android:label="@string/app_name"
-            android:allowBackup="true"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-        <activity android:label="@string/app_name" android:name=".FlightIntel">
+            android:name=".FlightIntel"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:label="@string/app_name"
-                  android:launchMode="singleTop"
-                  android:name=".MainActivity" />
+	    <activity
+            android:label="@string/downloads" 
+	        android:name=".DownloadActivity" />
 
-	    <activity android:label="@string/downloads" 
-	              android:name=".DownloadActivity" />
+        <activity
+            android:label="@string/settings"
+            android:name=".PreferencesActivity" />
 
-        <activity android:label="@string/settings"
-                  android:name=".PreferencesActivity" />
-
-        <activity android:label="@string/app_name"
-                  android:name=".afd.AfdMainActivity" />
-
-        <activity android:label="@string/navaid_notams"
-                  android:name=".notams.NavaidNotamActivity" />
-
-        <activity android:label="@string/airport_notams"
-                  android:name=".notams.AirportNotamActivity" />
-
-        <activity android:label="@string/weather"
-                  android:name=".wx.WxDetailActivity" />
-
-        <activity android:label="@string/metar_graphics"
-                  android:name=".wx.MetarMapActivity"
-                  android:theme="@style/Theme.Light.Dialog" />
-
-        <activity android:label="@string/taf_graphics"
-                  android:name=".wx.TafMapActivity"
-                  android:theme="@style/Theme.Light.Dialog" />
-
-        <activity android:label="@string/pirep_graphics"
-                  android:name=".wx.PirepMapActivity"
-                  android:theme="@style/Theme.Light.Dialog" />
-
-        <activity android:label="@string/airsigmet_graphics"
-                  android:name=".wx.AirSigmetMapActivity"
-                  android:theme="@style/Theme.Light.Dialog" />
-
-        <activity android:label="@string/nearby_wx"
-                  android:name=".wx.NearbyWxActivity" />
-
-        <activity android:label=""
-                  android:name=".wx.WxImageViewActivity" />
+        <activity
+            android:label="@string/app_name"
+            android:name=".afd.AfdMainActivity"
+            android:parentActivityName=".FlightIntel">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightIntel" />
+        </activity>
         
-        <activity android:label="@string/instrument_procedures"
-                  android:name=".aeronav.DtppActivity" />
+        <activity
+            android:label="@string/app_name"
+            android:name=".afd.AirportActivity" 
+            android:parentActivityName=".afd.AfdMainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".AfdMainActivity" />
+        </activity>
 
-        <activity android:label="@string/charts_download"
-                  android:name=".aeronav.ChartsDownloadActivity" />
+        <activity
+            android:label="@string/navaid_notams"
+            android:name=".notams.NavaidNotamActivity" />
 
-        <activity android:label=""
-                  android:name=".tfr.TfrActivity" />
+        <activity
+            android:label="@string/airport_notams"
+            android:name=".notams.AirportNotamActivity" />
 
-        <activity android:label=""
-                  android:name=".tfr.TfrImageViewActivity" />
+        <activity
+            android:label="@string/weather"
+            android:name=".wx.WxDetailActivity" />
 
-        <activity android:label="@string/app_name"
-                  android:name=".utils.ExternalStorageActivity" />
+        <activity
+            android:label="@string/metar_graphics"
+            android:name=".wx.MetarMapActivity"
+            android:theme="@style/Theme.Light.Dialog" />
 
-        <activity android:label="@string/clocks"
-                  android:name=".clocks.ClocksActivity" />
+        <activity
+            android:label="@string/taf_graphics"
+            android:name=".wx.TafMapActivity"
+            android:theme="@style/Theme.Light.Dialog" />
 
-        <activity android:label="@string/e6b"
-                  android:name=".e6b.E6bActivity" />
+        <activity
+            android:label="@string/pirep_graphics"
+            android:name=".wx.PirepMapActivity"
+            android:theme="@style/Theme.Light.Dialog" />
+
+        <activity
+            android:label="@string/airsigmet_graphics"
+            android:name=".wx.AirSigmetMapActivity"
+            android:theme="@style/Theme.Light.Dialog" />
+
+        <activity
+            android:label="@string/nearby_wx"
+            android:name=".wx.NearbyWxActivity" />
+
+        <activity
+            android:label=""
+            android:name=".wx.WxImageViewActivity" />
         
-        <activity android:label="@string/about"
-                  android:name=".AboutActivity" />
+        <activity
+            android:label="@string/instrument_procedures"
+            android:name=".aeronav.DtppActivity" />
 
-        <activity android:label="@string/donate"
-                  android:name=".donate.DonateActivity" />
+        <activity
+            android:label="@string/charts_download"
+            android:name=".aeronav.ChartsDownloadActivity" />
 
-        <activity android:theme="@android:style/Theme.Light.NoTitleBar"
-                  android:name=".DisclaimerActivity" />
+        <activity
+            android:label=""
+            android:name=".tfr.TfrActivity" />
 
-        <activity android:label=""
-                  android:name=".ImageViewActivity" />
+        <activity
+            android:label=""
+            android:name=".tfr.TfrImageViewActivity" />
 
-        <activity android:label="@string/library"
-                  android:name=".library.LibraryActivity" />
+        <activity
+            android:label="@string/app_name"
+            android:name=".utils.ExternalStorageActivity" />
 
-        <activity android:label="@string/scratch_pad"
-                  android:name=".scratchpad.ScratchPadActivity" />
+        <activity
+            android:label="@string/clocks"
+            android:name=".clocks.ClocksActivity" />
 
-        <activity android:label=""
-                  android:name=".utils.TextFileViewActivity" />
+        <activity
+            android:label="@string/e6b"
+            android:name=".e6b.E6bActivity" />
+        
+        <activity
+            android:label="@string/about"
+            android:name=".AboutActivity" />
 
-    	<activity android:label="@string/search"
-                  android:launchMode="singleTop"
-                  android:name=".afd.SearchActivity">
+        <activity
+            android:label="@string/donate"
+            android:name=".donate.DonateActivity" />
+
+        <activity
+            android:theme="@android:style/Theme.Light.NoTitleBar"
+            android:name=".DisclaimerActivity" />
+
+        <activity
+            android:label=""
+            android:name=".ImageViewActivity" />
+
+        <activity
+            android:label="@string/library"
+            android:name=".library.LibraryActivity" />
+
+        <activity
+            android:label="@string/scratch_pad"
+            android:name=".scratchpad.ScratchPadActivity" />
+
+        <activity
+            android:label=""
+            android:name=".utils.TextFileViewActivity" />
+
+    	<activity
+            android:label="@string/search"
+            android:launchMode="singleTop"
+            android:name=".afd.SearchActivity">
         	<intent-filter>
             	<action android:name="android.intent.action.SEARCH" />
 	        </intent-filter>
-	        <meta-data android:name="android.app.searchable"
-                    android:resource="@xml/searchable" />
+	        <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
     	</activity>
 
         <!-- declare the default searchable Activity for the whole app -->
-	    <meta-data android:name="android.app.default_searchable"
-    	        android:value=".afd.SearchActivity" />
+	    <meta-data
+            android:name="android.app.default_searchable"
+    	    android:value=".afd.SearchActivity" />
 
-		<provider android:name=".providers.AirportsProvider"
-                  android:exported="true"
-		          android:authorities="com.nadmm.airports.providers.AirportsProvider"
-		          android:syncable="false" />
+		<provider
+            android:name=".providers.AirportsProvider"
+            android:exported="true"
+            android:authorities="com.nadmm.airports.providers.AirportsProvider"
+	        android:syncable="false" />
 
 		<service android:name=".wx.MetarService" />
         <service android:name=".wx.TafService" />

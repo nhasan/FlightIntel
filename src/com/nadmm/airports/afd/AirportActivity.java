@@ -19,31 +19,20 @@
 
 package com.nadmm.airports.afd;
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
 
 import com.nadmm.airports.MainActivity;
 
-public final class AfdMainActivity extends MainActivity {
+public class AirportActivity extends MainActivity {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        Bundle args = getIntent().getExtras();
-        addFragment( getHomeFragmentClass(), args );
-    }
+        setDrawerIndicatorEnabled( false );
 
-    protected Class<?> getHomeFragmentClass() {
-        ArrayList<String> fav = getDbManager().getAptFavorites();
-        Class<?> clss = null;
-        if ( fav.size() > 0 ) {
-            clss = FavoritesFragment.class;
-        } else {
-            clss = NearbyFragment.class;
-        }
-        return clss;
+        Bundle args = getIntent().getExtras();
+        addFragment( AirportDetailsFragment.class, args );
     }
 
 }
