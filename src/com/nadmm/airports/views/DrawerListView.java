@@ -35,12 +35,14 @@ public final class DrawerListView extends ListView {
 
     private void init( Context context ) {
         setAdapter( new DrawerAdapter( context, new DrawerCursor() ) );
+        setDivider( getResources().getDrawable( R.drawable.drawer_list_divider ) );
+        setBackgroundResource( R.color.darkgray );
     }
 
     protected class DrawerAdapter extends ResourceCursorAdapter {
 
         public DrawerAdapter( Context context, Cursor c ) {
-            super( context, R.layout.sliding_menu_item, c, 0 );
+            super( context, R.layout.drawer_menu_item, c, 0 );
         }
 
         @Override
