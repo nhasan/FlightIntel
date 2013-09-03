@@ -24,6 +24,18 @@ public abstract class AfdFragmentBase extends FragmentBase implements OnNavigati
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getSupportActionBar().setSelectedNavigationItem( getActivityId() );
+    }
+
+
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
         // Setup list navigation mode
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
@@ -33,12 +45,6 @@ public abstract class AfdFragmentBase extends FragmentBase implements OnNavigati
         adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
         actionBar.setListNavigationCallbacks( adapter, this );
         actionBar.setDisplayShowTitleEnabled( false );
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        getSupportActionBar().setSelectedNavigationItem( getActivityId() );
     }
 
     @Override

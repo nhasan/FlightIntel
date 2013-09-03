@@ -544,7 +544,10 @@ public class ActivityBase extends ActionBarActivity {
     public boolean onOptionsItemSelected( MenuItem item ) {
         switch ( item.getItemId() ) {
         case android.R.id.home:
-            //startHomeActivity();
+            Intent home = new Intent( this, MainActivity.class );
+            home.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP  );
+            home.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
+            startActivity( home );
             return true;
         case R.id.menu_search:
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -573,7 +576,7 @@ public class ActivityBase extends ActionBarActivity {
     }
 
     public void setActionBarTitle( Cursor c ) {
-        setActionBarTitle( c, getTitle().toString() );
+        setActionBarTitle( c, "Airport Details" );
     }
 
     protected void setActionBarTitle( Cursor c, String subtitle ) {

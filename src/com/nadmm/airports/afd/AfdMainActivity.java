@@ -21,16 +21,18 @@ package com.nadmm.airports.afd;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.R;
+import com.nadmm.airports.MainActivity;
 
-public final class AfdMainActivity extends ActivityBase {
+public final class AfdMainActivity extends MainActivity {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+        setDrawerIndicatorEnabled( false );
+    }
 
-        setContentView( R.layout.activity_main );
+    @Override
+    protected void setFragment() {
         Bundle args = getIntent().getExtras();
         addFragment( AirportDetailsFragment.class, args );
     }

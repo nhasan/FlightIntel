@@ -35,12 +35,13 @@ import com.nadmm.airports.afd.FavoritesFragment;
 import com.nadmm.airports.afd.NearbyFragment;
 import com.nadmm.airports.views.DrawerListView;
 
-public class MainActivity extends ActivityBase {
+public class MainActivity extends ActivityBase implements ListView.OnItemClickListener {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerListView mDrawerList;
     private CharSequence mTitle;
+    private CharSequence mSubtitle;
     private CharSequence mDrawerTitle;
 
     private long mPrevId = -1;
@@ -54,7 +55,7 @@ public class MainActivity extends ActivityBase {
         mTitle = mDrawerTitle = getTitle();
 
         mDrawerList = (DrawerListView) findViewById( R.id.left_drawer );
-        mDrawerList.setOnItemClickListener( new DrawerItemClickListener() );
+        mDrawerList.setOnItemClickListener( this );
 
         mDrawerLayout = (DrawerLayout) findViewById( R.id.drawer_layout );
         mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout,
@@ -63,16 +64,21 @@ public class MainActivity extends ActivityBase {
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed( View view ) {
                 getSupportActionBar().setTitle( mTitle );
+                getSupportActionBar().setSubtitle( mSubtitle );
                 supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened( View drawerView ) {
+                mTitle = getSupportActionBar().getTitle();
+                mSubtitle = getSupportActionBar().getSubtitle();
                 getSupportActionBar().setTitle( mDrawerTitle );
+                getSupportActionBar().setSubtitle( null );
                 supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
         mDrawerLayout.setDrawerListener( mDrawerToggle );
+        setFragment();
     }
 
     @Override
@@ -81,8 +87,6 @@ public class MainActivity extends ActivityBase {
         // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
         mDrawerList.setItemChecked( DrawerListView.ITEM_ID_AFD, true );
-        Class<?> clss = getHomeFragmentClass();
-        addFragment( clss, null );
     }
 
     @Override
@@ -116,6 +120,17 @@ public class MainActivity extends ActivityBase {
         getSupportActionBar().setTitle( mTitle );
     }
 
+    protected void setFragment() {
+        Class<?> clss = getHomeFragmentClass();
+        addFragment( clss, null );
+    }
+
+    public void setDrawerIndicatorEnabled( boolean enable ) {
+        if ( mDrawerToggle != null ) {
+            mDrawerToggle.setDrawerIndicatorEnabled( enable );
+        }
+    }
+
     protected void updateContent( int position ) {
         // Create a new fragment and specify the planet to show based on position
         long id = mDrawerList.getAdapter().getItemId( position );
@@ -133,12 +148,11 @@ public class MainActivity extends ActivityBase {
 
             if ( clss != null ) {
                 replaceFragment( clss, null );
-                mPrevId = id;
             }
+            mPrevId = id;
+            mDrawerList.setItemChecked( position, true );
         }
 
-        // Highlight the selected item, update the title, and close the drawer
-        mDrawerList.setItemChecked( position, true );
         mDrawerLayout.closeDrawer( mDrawerList );
     }
 
@@ -153,14 +167,9 @@ public class MainActivity extends ActivityBase {
         return clss;
     }
 
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-
-        @SuppressWarnings("rawtypes")
-        @Override
-        public void onItemClick( AdapterView parent, View view, int position, long id ) {
-            updateContent( position );
-        }
-
+    @Override
+    public void onItemClick( AdapterView<?> arg0, View arg1, int position, long id ) {
+        updateContent( position );
     }
 
 }

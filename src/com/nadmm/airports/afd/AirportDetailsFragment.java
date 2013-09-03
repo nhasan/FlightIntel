@@ -38,7 +38,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -116,9 +115,6 @@ public final class AirportDetailsFragment extends FragmentBase {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        Log.d( getClass().getSimpleName(), "onCreate()" );
-
-        setRetainInstance( true );
         mMetarFilter = new IntentFilter();
         mMetarFilter.addAction( NoaaService.ACTION_GET_METAR );
         mMetarReceiver = new BroadcastReceiver() {
@@ -286,6 +282,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
 
         addClickableRow( layout, "More", CommunicationsFragment.class, getArguments() );
+        setRowBackgroundResource( layout );
     }
 
     protected void addFrequencyToMap( HashMap<String, ArrayList<Float>> freqMap,
