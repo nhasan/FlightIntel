@@ -83,7 +83,7 @@ public class TfrListFragment extends FragmentBase {
             }
         } );
 
-        return view;
+        return createContentView( view );
     }
 
     @Override
@@ -107,22 +107,20 @@ public class TfrListFragment extends FragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         setActionBarTitle( "TFR List" );
-        getActivity().setProgressBarIndeterminateVisibility( false );
 
         requestTfrList( false );
     }
 
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
-        ActivityBase activity = (ActivityBase) getActivity();
-        activity.setRefreshItemVisible( true );
+        setRefreshItemVisible( true );
     }
 
     private void onListItemClick( ListView l, View v, int position ) {
         ListAdapter adapter = mListView.getAdapter();
         Tfr tfr = (Tfr) adapter.getItem( position );
-        Intent activity = new Intent( getActivity(), TfrActivity.class );
-        activity.putExtra( TfrActivity.EXTRA_TFR, tfr );
+        Intent activity = new Intent( getActivity(), TfrDetailActivity.class );
+        activity.putExtra( TfrListActivity.EXTRA_TFR, tfr );
         startActivity( activity );
     }
 
@@ -149,7 +147,7 @@ public class TfrListFragment extends FragmentBase {
                 tv.setText( "Unable to fetch TFR list. Please try again later" );
             }
             stopRefreshAnimation();
-            setContentShown( true );
+            setFragmentContentShown( true );
         }
     }
 

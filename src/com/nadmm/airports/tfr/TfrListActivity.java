@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2013 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +21,10 @@ package com.nadmm.airports.tfr;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.R;
+import com.nadmm.airports.MainActivity;
+import com.nadmm.airports.views.DrawerListView;
 
-public class TfrActivity extends ActivityBase {
+public class TfrListActivity extends MainActivity {
 
     public static final String EXTRA_TFR = "TFR";
 
@@ -32,21 +32,10 @@ public class TfrActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( createContentView( R.layout.fragment_activity_layout ) );
+        setDrawerItemChecked( DrawerListView.ITEM_ID_TFR );
 
         Bundle args = getIntent().getExtras();
-
-        if ( args == null || args.getSerializable( EXTRA_TFR ) == null ) {
-            addFragment( TfrListFragment.class, args );
-        } else {
-            addFragment( TfrDetailFragment.class, args );
-        }
-    }
-
-    @Override
-    protected void onResume() {
-
-        super.onResume();
+        addFragment( TfrListFragment.class, args );
     }
 
 }

@@ -19,13 +19,10 @@
 
 package com.nadmm.airports.tfr;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -34,7 +31,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.ImageViewActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.tfr.TfrList.Tfr;
 import com.nadmm.airports.utils.TimeUtils;
@@ -42,33 +38,6 @@ import com.nadmm.airports.utils.TimeUtils;
 public class TfrDetailFragment extends FragmentBase {
 
     private Tfr mTfr;
-    private BroadcastReceiver mReceiver;
-    private IntentFilter mFilter;
-
-    @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        mReceiver = new TfrReceiver();
-        mFilter = new IntentFilter();
-        mFilter.addAction( TfrImageService.ACTION_GET_TFR_IMAGE );
-
-        super.onCreate( savedInstanceState );
-    }
-
-    @Override
-    public void onResume() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mReceiver, mFilter );
-
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mReceiver );
-
-        super.onPause();
-    }
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -76,18 +45,21 @@ public class TfrDetailFragment extends FragmentBase {
         Context context = getActivity();
         View view = inflater.inflate( R.layout.tfr_detail_view, container, false );
 
+        setHasOptionsMenu( true );
+
         Button btnGraphic = (Button) view.findViewById( R.id.btnViewGraphic );
         btnGraphic.setOnClickListener( new OnClickListener() {
 
             @Override
             public void onClick( View v ) {
-                v.setEnabled( false );
-                requestTfrGraphic();
+                Bundle args = new Bundle();
+                args.putSerializable( TfrImageService.TFR_ENTRY, mTfr );
+                getActivityBase().replaceFragment( TfrImageFragment.class, args );
             }
         } );
 
         Bundle args = getArguments();
-        mTfr = (Tfr) args.getSerializable( TfrActivity.EXTRA_TFR );
+        mTfr = (Tfr) args.getSerializable( TfrListActivity.EXTRA_TFR );
 
         LinearLayout layout = (LinearLayout) view.findViewById( R.id.tfr_header_layout );
         addRow( layout, "Name", mTfr.name );
@@ -127,33 +99,9 @@ public class TfrDetailFragment extends FragmentBase {
         super.onActivityCreated( savedInstanceState );
     }
 
-    private void requestTfrGraphic() {
-        setRefreshItemVisible( true );
-        startRefreshAnimation();
-        Intent service = new Intent( getActivity(), TfrImageService.class );
-        service.setAction( TfrImageService.ACTION_GET_TFR_IMAGE );
-        service.putExtra( TfrImageService.TFR_ENTRY, mTfr );
-        getActivity().startService( service );
-    }
-
-    private final class TfrReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive( Context context, Intent intent ) {
-            String path = (String) intent.getSerializableExtra( TfrImageService.TFR_IMAGE_PATH );
-            if ( path != null ) {
-                Intent activity = new Intent( getActivity(), TfrImageViewActivity.class );
-                activity.putExtra( ImageViewActivity.IMAGE_PATH, path );
-                activity.putExtra( ImageViewActivity.IMAGE_TITLE, "TFR Graphic" );
-                activity.putExtra( ImageViewActivity.IMAGE_SUBTITLE, mTfr.name );
-                startActivity( activity );
-            }
-
-            stopRefreshAnimation();
-            setRefreshItemVisible( false );
-            Button btnGraphic = (Button) findViewById( R.id.btnViewGraphic );
-            btnGraphic.setEnabled( true );
-        }
+    @Override
+    public void onPrepareOptionsMenu( Menu menu ) {
+        setRefreshItemVisible( false );
     }
 
 }

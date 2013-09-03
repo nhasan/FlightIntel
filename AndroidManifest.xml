@@ -54,7 +54,7 @@
             android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".AfdMainActivity" />
+                android:value=".afd.AfdMainActivity" />
         </activity>
 
         <activity
@@ -107,11 +107,30 @@
 
         <activity
             android:label=""
-            android:name=".tfr.TfrActivity" />
+            android:name=".tfr.TfrListActivity"
+            android:parentActivityName=".afd.AfdMainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".afd.AfdMainActivity" />
+        </activity>
 
         <activity
             android:label=""
-            android:name=".tfr.TfrImageViewActivity" />
+            android:name=".tfr.TfrDetailActivity"
+            android:parentActivityName=".tfr.TfrListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".tfr.TfrListActivity" />
+        </activity>
+
+        <activity
+            android:label=""
+            android:name=".tfr.TfrImageViewActivity"
+            android:parentActivityName=".tfr.TfrListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".tfr.TfrListActivity" />
+        </activity>
 
         <activity
             android:label="@string/app_name"
