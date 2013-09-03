@@ -500,6 +500,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         Bundle args = new Bundle();
         args.putParcelable( LocationColumns.LOCATION, mLocation );
         args.putInt( LocationColumns.RADIUS, mRadius );
+        args.putString( Airports.ICAO_CODE, mIcaoCode );
         addClickableRow( layout, "Airports", NearbyAirportsFragment.class, args );
         addClickableRow( layout, "FSS outlets", FssCommFragment.class, getArguments() );
         addClickableRow( layout, "Navaids", NearbyNavaidsFragment.class, getArguments() );

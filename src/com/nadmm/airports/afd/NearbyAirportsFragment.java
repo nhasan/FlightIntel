@@ -26,7 +26,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.nadmm.airports.DatabaseManager;
+import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
+import com.nadmm.airports.R;
 
 public class NearbyAirportsFragment extends AirportListFragmentBase {
 
@@ -45,8 +47,8 @@ public class NearbyAirportsFragment extends AirportListFragmentBase {
         }
         getListView().setCacheColorHint( 0xffffffff );
 
-        int radius = args.getInt( LocationColumns.RADIUS );
-        setActionBarSubtitle( String.format( "Airports Within %d NM Radius", radius ) );
+        String icaoCode = args.getString( Airports.ICAO_CODE );
+        setActionBarTitle( String.format( "Nearby %s", icaoCode ) );
 
         super.onActivityCreated( savedInstanceState );
     }
@@ -76,6 +78,9 @@ public class NearbyAirportsFragment extends AirportListFragmentBase {
         @Override
         protected void onPostExecute( Cursor c ) {
             setCursor( c );
+            int count = c.getCount();
+            setActionBarSubtitle( getResources().getQuantityString(
+                    R.plurals.airports_found, count, count ) );
         }
 
     }
