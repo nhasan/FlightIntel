@@ -84,7 +84,7 @@ public class FavoriteAirportsFragment extends AirportListFragmentBase {
                 public void run() {
                     setCursor( c );
                 }
-            }, 200 );
+            }, 250 );
         }
 
     }

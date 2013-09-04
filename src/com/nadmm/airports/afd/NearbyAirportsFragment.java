@@ -24,6 +24,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -76,8 +77,15 @@ public class NearbyAirportsFragment extends AirportListFragmentBase {
         }
 
         @Override
-        protected void onPostExecute( Cursor c ) {
-            setCursor( c );
+        protected void onPostExecute( final Cursor c ) {
+            // Add delay via the handler to avoid stutter in the closing animation of the drawer
+            new Handler().postDelayed( new Runnable() {
+
+                @Override
+                public void run() {
+                    setCursor( c );
+                }
+            }, 250 );
             int count = c.getCount();
             setActionBarSubtitle( getResources().getQuantityString(
                     R.plurals.airports_found, count, count ) );
