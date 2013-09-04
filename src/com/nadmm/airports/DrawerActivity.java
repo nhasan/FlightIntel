@@ -37,7 +37,7 @@ import com.nadmm.airports.scratchpad.ScratchPadActivity;
 import com.nadmm.airports.tfr.TfrListActivity;
 import com.nadmm.airports.views.DrawerListView;
 
-public class MainActivity extends ActivityBase implements ListView.OnItemClickListener {
+public class DrawerActivity extends ActivityBase implements ListView.OnItemClickListener {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;

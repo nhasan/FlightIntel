@@ -6,7 +6,7 @@ import android.support.v7.app.ActionBar.OnNavigationListener;
 import android.widget.ArrayAdapter;
 
 import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.MainActivity;
+import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.R;
 
 public abstract class AfdFragmentBase extends FragmentBase implements OnNavigationListener {
@@ -50,7 +50,7 @@ public abstract class AfdFragmentBase extends FragmentBase implements OnNavigati
     @Override
     public boolean onNavigationItemSelected( int itemPosition, long itemId ) {
         if ( itemId != getActivityId() ) {
-            MainActivity activity = (MainActivity) getActivity();
+            DrawerActivity activity = (DrawerActivity) getActivity();
             if ( itemId == ID_FAVORITES ) {
                 activity.replaceFragment( FavoritesFragment.class, null );
             } else if ( itemId == ID_NEARBY ) {

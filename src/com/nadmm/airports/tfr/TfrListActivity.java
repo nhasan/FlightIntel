@@ -21,10 +21,10 @@ package com.nadmm.airports.tfr;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.MainActivity;
+import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.views.DrawerListView;
 
-public class TfrListActivity extends MainActivity {
+public class TfrListActivity extends DrawerActivity {
 
     public static final String EXTRA_TFR = "TFR";
 

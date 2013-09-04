@@ -22,10 +22,10 @@ package com.nadmm.airports.aeronav;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.MainActivity;
+import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.views.DrawerListView;
 
-public class ChartsDownloadActivity extends MainActivity {
+public class ChartsDownloadActivity extends DrawerActivity {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {

@@ -21,10 +21,10 @@ package com.nadmm.airports.tfr;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.MainActivity;
+import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.views.DrawerListView;
 
-public class TfrDetailActivity extends MainActivity {
+public class TfrDetailActivity extends DrawerActivity {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {

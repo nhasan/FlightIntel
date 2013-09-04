@@ -28,11 +28,11 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.nadmm.airports.MainActivity;
+import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.views.DrawerListView;
 
-public class LibraryActivity extends MainActivity {
+public class LibraryActivity extends DrawerActivity {
 
     private boolean mPending = false;
     private final Object mLock = new Object();

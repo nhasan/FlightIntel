@@ -21,10 +21,10 @@ package com.nadmm.airports.afd;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.MainActivity;
+import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.views.DrawerListView;
 
-public class AirportActivity extends MainActivity {
+public class AirportActivity extends DrawerActivity {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
