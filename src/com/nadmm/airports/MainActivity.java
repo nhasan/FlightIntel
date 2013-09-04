@@ -30,6 +30,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.afd.AfdMainActivity;
 import com.nadmm.airports.library.LibraryActivity;
 import com.nadmm.airports.scratchpad.ScratchPadActivity;
@@ -153,6 +154,10 @@ public class MainActivity extends ActivityBase implements ListView.OnItemClickLi
             scratchPad.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
             startActivity( scratchPad );
         } else if ( id == DrawerListView.ITEM_ID_CHARTS ) {
+            Intent charts = new Intent( this, ChartsDownloadActivity.class );
+            charts.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+            charts.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
+            startActivity( charts );
         } else if ( id == DrawerListView.ITEM_ID_CLOCKS ) {
         } else if ( id == DrawerListView.ITEM_ID_E6B ) {
         }
