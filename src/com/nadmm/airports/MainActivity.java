@@ -32,6 +32,7 @@ import android.widget.ListView;
 
 import com.nadmm.airports.afd.AfdMainActivity;
 import com.nadmm.airports.library.LibraryActivity;
+import com.nadmm.airports.scratchpad.ScratchPadActivity;
 import com.nadmm.airports.tfr.TfrListActivity;
 import com.nadmm.airports.views.DrawerListView;
 
@@ -133,14 +134,24 @@ public class MainActivity extends ActivityBase implements ListView.OnItemClickLi
 
         if ( id == DrawerListView.ITEM_ID_AFD ) {
             Intent afd = new Intent( this, AfdMainActivity.class );
+            afd.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+            afd.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
             startActivity( afd );
         } else if ( id == DrawerListView.ITEM_ID_TFR ) {
             Intent tfr = new Intent( this, TfrListActivity.class );
+            tfr.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+            tfr.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
             startActivity( tfr );
         } else if ( id == DrawerListView.ITEM_ID_LIBRARY ) {
             Intent library = new Intent( this, LibraryActivity.class );
+            library.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+            library.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
             startActivity( library );
         } else if ( id == DrawerListView.ITEM_ID_SCRATCHPAD ) {
+            Intent scratchPad = new Intent( this, ScratchPadActivity.class );
+            scratchPad.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+            scratchPad.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
+            startActivity( scratchPad );
         } else if ( id == DrawerListView.ITEM_ID_CHARTS ) {
         } else if ( id == DrawerListView.ITEM_ID_CLOCKS ) {
         } else if ( id == DrawerListView.ITEM_ID_E6B ) {
