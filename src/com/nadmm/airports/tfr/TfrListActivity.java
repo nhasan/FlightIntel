@@ -32,10 +32,15 @@ public class TfrListActivity extends MainActivity {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setDrawerItemChecked( DrawerListView.ITEM_ID_TFR );
-
         Bundle args = getIntent().getExtras();
         addFragment( TfrListFragment.class, args );
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        setDrawerItemChecked( DrawerListView.ITEM_ID_TFR );
     }
 
 }

@@ -32,10 +32,15 @@ public final class AfdMainActivity extends MainActivity {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setDrawerItemChecked( DrawerListView.ITEM_ID_AFD );
-
         Bundle args = getIntent().getExtras();
         addFragment( getHomeFragmentClass(), args );
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        setDrawerItemChecked( DrawerListView.ITEM_ID_AFD );
     }
 
     protected Class<?> getHomeFragmentClass() {

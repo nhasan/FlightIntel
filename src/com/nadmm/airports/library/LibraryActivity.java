@@ -44,8 +44,6 @@ public class LibraryActivity extends MainActivity {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setDrawerItemChecked( DrawerListView.ITEM_ID_LIBRARY );
-
         mReceivers = new HashMap<String, BroadcastReceiver>();
         mReceiver = new BroadcastReceiver() {
 
@@ -83,6 +81,7 @@ public class LibraryActivity extends MainActivity {
     protected void onResume() {
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
         bm.registerReceiver( mReceiver, mFilter );
+        setDrawerItemChecked( DrawerListView.ITEM_ID_LIBRARY );
 
         super.onResume();
     }
