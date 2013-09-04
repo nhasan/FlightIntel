@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2013 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,24 +25,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.PagerTabStrip;
-import android.support.v4.view.ViewPager;
 
-import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.BookCategories;
-import com.nadmm.airports.R;
+import com.nadmm.airports.MainActivity;
 import com.nadmm.airports.utils.SystemUtils;
-import com.nadmm.airports.utils.TabsAdapter;
+import com.nadmm.airports.views.DrawerListView;
 
-public class LibraryActivity extends ActivityBase {
+public class LibraryActivity extends MainActivity {
 
-    private TabsAdapter mTabsAdapter;
     private boolean mPending = false;
     private final Object mLock = new Object();
     private HashMap<String, BroadcastReceiver> mReceivers;
@@ -53,7 +44,7 @@ public class LibraryActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( createContentView( R.layout.fragment_pager_layout ) );
+        setDrawerItemChecked( DrawerListView.ITEM_ID_LIBRARY );
 
         mReceivers = new HashMap<String, BroadcastReceiver>();
         mReceiver = new BroadcastReceiver() {
@@ -84,36 +75,8 @@ public class LibraryActivity extends ActivityBase {
         mFilter.addAction( LibraryService.ACTION_GET_BOOK );
         mFilter.addAction( LibraryService.ACTION_DOWNLOAD_PROGRESS );
 
-        ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
-        mTabsAdapter = new TabsAdapter( this, getSupportFragmentManager(), pager );
-
-        PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
-        tabs.setTabIndicatorColor( getResources().getColor( R.color.tab_indicator ) );
-
-        if ( savedInstanceState != null ) {
-            pager.setCurrentItem( savedInstanceState.getInt( "wxtab" ) );
-        }
-
-        SQLiteDatabase db = getDatabase( DatabaseManager.DB_LIBRARY );
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( BookCategories.TABLE_NAME );
-        Cursor c = builder.query( db, new String[] { "*" }, null, null, null, null,
-                BookCategories._ID );
-        if ( c.moveToFirst() ) {
-            do {
-                String code = c.getString( c.getColumnIndex( BookCategories.CATEGORY_CODE ) );
-                String name = c.getString( c.getColumnIndex( BookCategories.CATEGORY_NAME ) );
-                Bundle args = new Bundle();
-                args.putString( BookCategories.CATEGORY_CODE, code );
-                mTabsAdapter.addTab( name, LibraryFragment.class, args );
-            } while ( c.moveToNext() );
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        setContentShown( true );
-        super.onStart();
+        Bundle args = getIntent().getExtras();
+        addFragment( LibraryMainFragment.class, args );
     }
 
     @Override
@@ -130,13 +93,6 @@ public class LibraryActivity extends ActivityBase {
         bm.unregisterReceiver( mReceiver );
 
         super.onPause();
-    }
-
-    @Override
-    protected void onSaveInstanceState( Bundle outState ) {
-        super.onSaveInstanceState( outState );
-        ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
-        outState.putInt( "wxtab", pager.getCurrentItem() );
     }
 
     public void setPending( boolean pending ) {

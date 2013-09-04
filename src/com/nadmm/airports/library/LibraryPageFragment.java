@@ -57,7 +57,7 @@ import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 
-public class LibraryFragment extends FragmentBase {
+public class LibraryPageFragment extends FragmentBase {
 
     private boolean mIsOk;
     private BroadcastReceiver mReceiver;

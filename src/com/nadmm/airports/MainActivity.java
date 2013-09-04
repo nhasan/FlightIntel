@@ -31,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.nadmm.airports.afd.AfdMainActivity;
+import com.nadmm.airports.library.LibraryActivity;
 import com.nadmm.airports.tfr.TfrListActivity;
 import com.nadmm.airports.views.DrawerListView;
 
@@ -137,6 +138,8 @@ public class MainActivity extends ActivityBase implements ListView.OnItemClickLi
             Intent tfr = new Intent( this, TfrListActivity.class );
             startActivity( tfr );
         } else if ( id == DrawerListView.ITEM_ID_LIBRARY ) {
+            Intent library = new Intent( this, LibraryActivity.class );
+            startActivity( library );
         } else if ( id == DrawerListView.ITEM_ID_SCRATCHPAD ) {
         } else if ( id == DrawerListView.ITEM_ID_CHARTS ) {
         } else if ( id == DrawerListView.ITEM_ID_CLOCKS ) {
