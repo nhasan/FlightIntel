@@ -21,11 +21,12 @@ package com.nadmm.airports.e6b;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.FragmentActivityBase;
+import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
+import com.nadmm.airports.views.DrawerListView;
 
-public class E6bActivity extends FragmentActivityBase {
+public class E6bActivity extends DrawerActivity {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -40,6 +41,8 @@ public class E6bActivity extends FragmentActivityBase {
     @Override
     protected void onResume() {
         super.onResume();
+
+        setDrawerItemChecked( DrawerListView.ITEM_ID_E6B );
     }
 
 }
