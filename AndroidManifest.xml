@@ -103,15 +103,19 @@
 
         <activity
             android:label="@string/charts_download"
-            android:name=".aeronav.ChartsDownloadActivity" />
-
+            android:name=".aeronav.ChartsDownloadActivity"
+            android:parentActivityName=".FlightIntel">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightIntel" />
+        </activity>
         <activity
             android:label=""
             android:name=".tfr.TfrListActivity"
-            android:parentActivityName=".afd.AfdMainActivity">
+            android:parentActivityName=".FlightIntel">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".afd.AfdMainActivity" />
+                android:value=".FlightIntel" />
         </activity>
 
         <activity
@@ -138,12 +142,20 @@
 
         <activity
             android:label="@string/clocks"
-            android:name=".clocks.ClocksActivity" />
-
+            android:name=".clocks.ClocksActivity"
+            android:parentActivityName=".FlightIntel">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightIntel" />
+        </activity>
         <activity
             android:label="@string/e6b"
-            android:name=".e6b.E6bActivity" />
-        
+            android:name=".e6b.E6bActivity"
+            android:parentActivityName=".FlightIntel">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightIntel" />
+        </activity>
         <activity
             android:label="@string/about"
             android:name=".AboutActivity" />
@@ -162,12 +174,20 @@
 
         <activity
             android:label="@string/library"
-            android:name=".library.LibraryActivity" />
-
+            android:name=".library.LibraryActivity"
+            android:parentActivityName=".FlightIntel">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightIntel" />
+        </activity>
         <activity
             android:label="@string/scratch_pad"
-            android:name=".scratchpad.ScratchPadActivity" />
-
+            android:name=".scratchpad.ScratchPadActivity"
+            android:parentActivityName=".FlightIntel">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightIntel" />
+        </activity>
         <activity
             android:label=""
             android:name=".utils.TextFileViewActivity" />
