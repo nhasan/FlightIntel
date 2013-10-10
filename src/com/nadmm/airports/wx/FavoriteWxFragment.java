@@ -25,7 +25,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
@@ -77,14 +76,7 @@ public class FavoriteWxFragment extends WxListFragmentBase {
 
         @Override
         protected void onPostExecute( final Cursor c ) {
-            // Add delay via the handler to avoid stutter in the closing animation of the drawer
-            new Handler().postDelayed( new Runnable() {
-                
-                @Override
-                public void run() {
-                    setCursor( c );
-                }
-            }, 200 );
+            setCursor( c );
         }
 
     }
