@@ -21,7 +21,7 @@ package com.nadmm.airports;
 
 public class Application extends android.app.Application {
 
-    public static Boolean sDonationDone = false;
+    public static Boolean sDonationDone = null;
 
     @Override
     public void onCreate() {
