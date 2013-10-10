@@ -132,22 +132,22 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
-insert_book( "periodicals", "cb_403.pdf", "Callback", "Issue 403 (Aug 2013)", "NASA", 587239, "N" );
+insert_book( "periodicals", "cb_404.pdf", "Callback", "Issue 404 (Sep 2013)", "NASA", 597480, "N" );
+insert_book( "periodicals", "cb_403.pdf", "Callback", "Issue 403 (Aug 2013)", "NASA", 587239, "" );
 insert_book( "periodicals", "cb_402.pdf", "Callback", "Issue 402 (Jul 2013)", "NASA", 300935, "" );
 insert_book( "periodicals", "cb_401.pdf", "Callback", "Issue 401 (Jun 2013)", "NASA", 205505, "" );
-insert_book( "periodicals", "cb_400.pdf", "Callback", "Issue 400 (May 2013)", "NASA", 367935, "" );
-insert_book( "periodicals", "13jun-front.pdf", "The Front", "Jun 2013", "NOAA", 2677124, "N" );
+insert_book( "periodicals", "13jun-front.pdf", "The Front", "Jun 2013", "NOAA", 2677124, "" );
 insert_book( "periodicals", "13apr-front.pdf", "The Front", "Apr 2013", "NOAA", 2475943, "" );
 insert_book( "periodicals", "12dec-front.pdf", "The Front", "Dec 2012", "NOAA", 2150530, "" );
 insert_book( "periodicals", "12jul-front.pdf", "The Front", "Jul 2012", "NOAA", 2071900, "" );
+insert_book( "periodicals", "SepOct2013.pdf", "FAA Safety Briefing",
+        "Sep/Oct 2013", "FAA", 4083620, "N" );
 insert_book( "periodicals", "JulAug2013.pdf", "FAA Safety Briefing",
-        "Jul/Aug 2013", "FAA", 5423441, "N" );
+        "Jul/Aug 2013", "FAA", 5423441, "" );
 insert_book( "periodicals", "MayJun2013.pdf", "FAA Safety Briefing",
         "May/Jun 2013", "FAA", 5208186, "" );
 insert_book( "periodicals", "MarApr2013.pdf", "FAA Safety Briefing",
         "Mar/Apr 2013", "FAA", 2751314, "" );
-insert_book( "periodicals", "JanFeb2013.pdf", "FAA Safety Briefing",
-        "Jan/Feb 2013", "FAA", 2815002, "" );
 insert_book( "periodicals", "ATB-2013-1.pdf", "Air Traffic Bulletin",
         "2013-Q1", "FAA", 46744, "" );
 insert_book( "periodicals", "ATB-2012-4.pdf", "Air Traffic Bulletin",
@@ -178,8 +178,8 @@ insert_book( "safety", "faa-p-8740-69-2008.pdf", "Aeronautical Decision Making",
 insert_book( "safety", "takeoff_safety.pdf", "Pilot Guide to Takeoff Safety",
         "2008", "FAA", 2678525, "" );
 
-insert_book( "regs", "aim_2012_r2.pdf", "Aeronautical Information Manual (AIM)",
-        "Mar 2013 (Change 2)", "FAA", 9017835, "" );
+insert_book( "regs", "aim_2012_r3.pdf", "Aeronautical Information Manual (AIM)",
+        "Aug 2013 (Change 3)", "FAA", 9017835, "N" );
 insert_book( "regs", "cfr-2013-title14-vol1.pdf", "Federal Aviation Regulations (FAR) 2013",
         "Parts 1-59", "US GPO", 9869469, "" );
 insert_book( "regs", "cfr-2013-title14-vol2.pdf", "Federal Aviation Regulations (FAR) 2013",
