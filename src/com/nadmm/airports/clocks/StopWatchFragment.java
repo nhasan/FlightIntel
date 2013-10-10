@@ -38,6 +38,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.clocks.StopWatchService.OnTickHandler;
@@ -70,7 +71,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        Activity activity = getActivity();
+        DrawerActivity activity = (DrawerActivity) getActivity();
         Intent service = new Intent( activity, StopWatchService.class );
         activity.startService( service );
         setRetainInstance( true );
@@ -88,7 +89,9 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     public void onResume() {
         super.onResume();
 
-        Activity activity = getActivity();
+        DrawerActivity activity = (DrawerActivity) getActivity();
+        activity.setDrawerIndicatorEnabled( false );
+
         Intent service = new Intent( activity, StopWatchService.class );
         activity.bindService( service, mConnection, 0 );
     }

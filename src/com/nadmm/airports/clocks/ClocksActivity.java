@@ -21,11 +21,12 @@ package com.nadmm.airports.clocks;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.FragmentActivityBase;
+import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
+import com.nadmm.airports.views.DrawerListView;
 
-public class ClocksActivity extends FragmentActivityBase {
+public class ClocksActivity extends DrawerActivity {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -40,6 +41,8 @@ public class ClocksActivity extends FragmentActivityBase {
     @Override
     protected void onResume() {
         super.onResume();
+
+        setDrawerItemChecked( DrawerListView.ITEM_ID_CLOCKS );
     }
 
 }

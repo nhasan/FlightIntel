@@ -39,6 +39,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
@@ -72,6 +73,7 @@ public class ClockFragment extends FragmentBase {
     @Override
     public void onPause() {
         super.onPause();
+
         if ( mRunnable != null ) {
             // Stop updates
             mHandler.removeCallbacks( mRunnable );
@@ -81,6 +83,10 @@ public class ClockFragment extends FragmentBase {
     @Override
     public void onResume() {
         super.onResume();
+
+        DrawerActivity activity = (DrawerActivity) getActivity();
+        activity.setDrawerIndicatorEnabled( false );
+
         if ( mRunnable != null ) {
             // Restart updates
             updateTime();

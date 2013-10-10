@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 import android.database.Cursor;
 
+import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
@@ -34,6 +35,14 @@ public class ClocksMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.TIME_CLOCKS, ClockFragment.class );
         mDispatchMap.put( (long)R.id.TIME_STOPWATCH, StopWatchFragment.class );
         mDispatchMap.put( (long)R.id.TIME_COUNTDOWN, CountDownFragment.class );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        DrawerActivity activity = (DrawerActivity) getActivity();
+        activity.setDrawerIndicatorEnabled( true );
     }
 
     @Override
