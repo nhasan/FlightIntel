@@ -32,6 +32,8 @@ import android.widget.ListView;
 
 import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.afd.AfdMainActivity;
+import com.nadmm.airports.clocks.ClocksActivity;
+import com.nadmm.airports.e6b.E6bActivity;
 import com.nadmm.airports.library.LibraryActivity;
 import com.nadmm.airports.scratchpad.ScratchPadActivity;
 import com.nadmm.airports.tfr.TfrListActivity;
@@ -44,6 +46,7 @@ public class DrawerActivity extends ActivityBase implements ListView.OnItemClick
     private DrawerListView mDrawerList;
     private CharSequence mTitle;
     private CharSequence mSubtitle;
+    private Intent mIntent = null;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -63,6 +66,13 @@ public class DrawerActivity extends ActivityBase implements ListView.OnItemClick
                 getSupportActionBar().setTitle( mTitle );
                 getSupportActionBar().setSubtitle( mSubtitle );
                 supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+
+                if ( mIntent != null ) {
+                    mIntent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+                    mIntent.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
+                    startActivity( mIntent );
+                    mIntent = null;
+                }
             }
 
             /** Called when a drawer has settled in a completely open state. */
@@ -123,7 +133,7 @@ public class DrawerActivity extends ActivityBase implements ListView.OnItemClick
         mDrawerList.setItemChecked( position, true );
     }
 
-    protected void setDrawerIndicatorEnabled( boolean enable ) {
+    public void setDrawerIndicatorEnabled( boolean enable ) {
         if ( mDrawerToggle != null ) {
             mDrawerToggle.setDrawerIndicatorEnabled( enable );
         }
@@ -133,35 +143,27 @@ public class DrawerActivity extends ActivityBase implements ListView.OnItemClick
         // Create a new fragment and specify the planet to show based on position
         long id = mDrawerList.getAdapter().getItemId( position );
 
+        Intent intent = null;
+
         if ( id == DrawerListView.ITEM_ID_AFD ) {
-            Intent afd = new Intent( this, AfdMainActivity.class );
-            afd.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
-            afd.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
-            startActivity( afd );
+            intent = new Intent( DrawerActivity.this, AfdMainActivity.class );
         } else if ( id == DrawerListView.ITEM_ID_TFR ) {
-            Intent tfr = new Intent( this, TfrListActivity.class );
-            tfr.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
-            tfr.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
-            startActivity( tfr );
+            intent = new Intent( this, TfrListActivity.class );
         } else if ( id == DrawerListView.ITEM_ID_LIBRARY ) {
-            Intent library = new Intent( this, LibraryActivity.class );
-            library.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
-            library.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
-            startActivity( library );
+            intent = new Intent( this, LibraryActivity.class );
         } else if ( id == DrawerListView.ITEM_ID_SCRATCHPAD ) {
-            Intent scratchPad = new Intent( this, ScratchPadActivity.class );
-            scratchPad.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
-            scratchPad.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
-            startActivity( scratchPad );
+            intent = new Intent( this, ScratchPadActivity.class );
         } else if ( id == DrawerListView.ITEM_ID_CHARTS ) {
-            Intent charts = new Intent( this, ChartsDownloadActivity.class );
-            charts.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
-            charts.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
-            startActivity( charts );
+            intent = new Intent( this, ChartsDownloadActivity.class );
         } else if ( id == DrawerListView.ITEM_ID_CLOCKS ) {
+            intent = new Intent( this, ClocksActivity.class );
         } else if ( id == DrawerListView.ITEM_ID_E6B ) {
+            intent = new Intent( this, E6bActivity.class );
         }
 
+        if ( intent != null ) {
+            mIntent = intent;
+        }
         mDrawerLayout.closeDrawer( mDrawerList );
     }
 
