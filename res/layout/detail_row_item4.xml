@@ -29,6 +29,8 @@
             android:orientation="horizontal"
             android:paddingRight="4dp"
             android:paddingLeft="4dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
         <TextView android:id="@+id/item_label"
@@ -52,6 +54,8 @@
             android:orientation="horizontal"
             android:paddingRight="4dp"
             android:paddingLeft="4dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
         <TextView android:id="@+id/item_extra_label"
@@ -59,7 +63,6 @@
                 android:gravity="left"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:paddingTop="2dp"
                 android:paddingRight="4dp"
                 android:layout_weight="1"
                 android:layout_width="0dp"
@@ -67,7 +70,6 @@
         <TextView android:id="@+id/item_extra_value"
                 style="@style/TextSmall"
                 android:gravity="right"
-                android:paddingTop="2dp"
                 android:paddingLeft="4dp"
                 android:layout_weight="0"
                 android:layout_width="wrap_content"
