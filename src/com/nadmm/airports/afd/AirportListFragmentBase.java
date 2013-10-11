@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.CursorAdapter;
+import android.view.Menu;
 import android.view.View;
 import android.widget.ListView;
 
@@ -41,6 +42,11 @@ public class AirportListFragmentBase extends ListFragmentBase {
     @Override
     protected CursorAdapter newListAdapter( Context context, Cursor c ) {
         return new AirportsCursorAdapter( context, c );
+    }
+
+    @Override
+    public void onPrepareOptionsMenu( Menu menu ) {
+        setRefreshItemVisible( false );
     }
 
     @Override
