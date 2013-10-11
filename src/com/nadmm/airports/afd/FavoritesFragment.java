@@ -66,7 +66,9 @@ public final class FavoritesFragment extends AfdFragmentBase {
     public void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
-        outState.putInt( "favtab", pager.getCurrentItem() );
+        if ( pager != null ) {
+            outState.putInt( "favtab", pager.getCurrentItem() );
+        }
     }
 
     @Override
