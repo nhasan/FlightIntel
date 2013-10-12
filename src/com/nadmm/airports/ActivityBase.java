@@ -46,6 +46,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -254,6 +255,10 @@ public class ActivityBase extends ActionBarActivity {
 
     public Fragment replaceFragment( Class<?> clss, Bundle args, int id, boolean addTostack  ) {
         String tag = clss.getSimpleName();
+        if ( args.containsKey( ListMenuFragment.MENU_ID ) ) {
+            long menuId = args.getLong( ListMenuFragment.MENU_ID );
+            tag = tag.concat( String.valueOf( menuId ) );
+        }
         FragmentManager fm = getSupportFragmentManager();
         Fragment f = fm.findFragmentByTag( tag );
         if ( f == null ) {
