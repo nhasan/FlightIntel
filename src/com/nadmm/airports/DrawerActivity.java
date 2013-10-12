@@ -63,15 +63,15 @@ public class DrawerActivity extends ActivityBase implements ListView.OnItemClick
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed( View view ) {
-                getSupportActionBar().setTitle( mTitle );
-                getSupportActionBar().setSubtitle( mSubtitle );
-                supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-
                 if ( mIntent != null ) {
                     mIntent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
                     mIntent.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
                     startActivity( mIntent );
                     mIntent = null;
+                } else {
+                    getSupportActionBar().setTitle( mTitle );
+                    getSupportActionBar().setSubtitle( mSubtitle );
+                    supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
                 }
             }
 
