@@ -22,7 +22,10 @@ package com.nadmm.airports.e6b;
 import java.util.HashMap;
 
 import android.database.Cursor;
+import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.ListView;
 
@@ -36,7 +39,6 @@ public class E6bMenuFragment extends ListMenuFragment {
     private static final HashMap<Long, Class<?>> mDispatchMap;
     static {
         mDispatchMap = new HashMap<Long, Class<?>>();
-        mDispatchMap.put( (long)R.id.E6B_UNIT_CONVERSIONS, UnitConvertFrament.class );
         mDispatchMap.put( (long)R.id.E6B_WIND_CALCS, E6bMenuFragment.class );
         mDispatchMap.put( (long)R.id.E6B_CROSS_WIND, CrossWindFragment.class );
         mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_WIND, WindTriangleFragment.class );
@@ -63,6 +65,18 @@ public class E6bMenuFragment extends ListMenuFragment {
         mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_REQCLIMB, ClimbRateFragment.class );
         mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_REQDSCNT, DescentRateFragment.class );
         mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_TOPDSCNT, TopOfDescentFragment.class );
+        mDispatchMap.put( (long)R.id.E6B_UNIT_CONVERSIONS, UnitConvertFrament.class );
+    }
+
+    @Override
+    public void onCreate( Bundle savedInstanceState ) {
+        setHasOptionsMenu( true );
+        super.onCreate( savedInstanceState );
+    }
+
+    @Override
+    public void onPrepareOptionsMenu( Menu menu ) {
+        setRefreshItemVisible( false );
     }
 
     @Override
