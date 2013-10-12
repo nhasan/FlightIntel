@@ -27,6 +27,7 @@ import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.widget.Button;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.donate.DonateActivity;
 
 public class AboutActivity extends ActivityBase {
@@ -68,6 +69,18 @@ public class AboutActivity extends ActivityBase {
                 startActivity( urlIntent );
             }
         } );
+    }
+
+    @Override
+    public void onStart() {
+      super.onStart();
+      EasyTracker.getInstance( this ).activityStart( this );
+    }
+
+    @Override
+    public void onStop() {
+      super.onStop();
+      EasyTracker.getInstance( this ).activityStop( this );
     }
 
 }

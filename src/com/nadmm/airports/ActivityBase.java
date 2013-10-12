@@ -46,7 +46,6 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -65,6 +64,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
@@ -156,10 +156,6 @@ public class ActivityBase extends ActionBarActivity {
 
     public DatabaseManager getDbManager() {
         return mDbManager;
-    }
-
-    protected void setSlidingMenuActivatedItem( int position ) {
-        //mSlidingMenuFragment.setActivatedItem( position );
     }
 
     protected View createContentView( int id ) {

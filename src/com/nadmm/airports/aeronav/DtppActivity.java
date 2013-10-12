@@ -47,6 +47,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -71,6 +72,18 @@ public class DtppActivity extends ActivityBase {
 
         Bundle args = getIntent().getExtras();
         addFragment( DtppFragment.class, args );
+    }
+
+    @Override
+    public void onStart() {
+      super.onStart();
+      EasyTracker.getInstance( this ).activityStart( this );
+    }
+
+    @Override
+    public void onStop() {
+      super.onStop();
+      EasyTracker.getInstance( this ).activityStop( this );
     }
 
     public static class DtppFragment extends FragmentBase {

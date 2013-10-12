@@ -21,6 +21,7 @@ package com.nadmm.airports.wx;
 
 import android.os.Bundle;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
 import com.nadmm.airports.FragmentActivityBase;
 
@@ -40,9 +41,15 @@ public class NearbyWxActivity extends FragmentActivityBase {
     }
 
     @Override
-    protected void onResume() {
+    public void onStart() {
+      super.onStart();
+      EasyTracker.getInstance( this ).activityStart( this );
+    }
 
-        super.onResume();
+    @Override
+    public void onStop() {
+      super.onStop();
+      EasyTracker.getInstance( this ).activityStop( this );
     }
 
 }

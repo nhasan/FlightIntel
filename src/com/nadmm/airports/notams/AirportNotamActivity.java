@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
@@ -44,6 +45,18 @@ public class AirportNotamActivity extends AfdActivityBase {
 
         Bundle args = getIntent().getExtras();
         addFragment( AirportNotamFragment.class, args );
+    }
+
+    @Override
+    public void onStart() {
+      super.onStart();
+      EasyTracker.getInstance( this ).activityStart( this );
+    }
+
+    @Override
+    public void onStop() {
+      super.onStop();
+      EasyTracker.getInstance( this ).activityStop( this );
     }
 
     public static class AirportNotamFragment extends NotamFragmentBase {

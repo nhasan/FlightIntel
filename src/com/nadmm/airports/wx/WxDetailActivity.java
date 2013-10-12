@@ -26,6 +26,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.OnNavigationListener;
 import android.widget.ArrayAdapter;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TabsAdapter;
@@ -95,9 +96,15 @@ public class WxDetailActivity extends ActivityBase
     }
 
     @Override
-    protected void onResume() {
+    public void onStart() {
+      super.onStart();
+      EasyTracker.getInstance( this ).activityStart( this );
+    }
 
-        super.onResume();
+    @Override
+    public void onStop() {
+      super.onStop();
+      EasyTracker.getInstance( this ).activityStop( this );
     }
 
     @Override

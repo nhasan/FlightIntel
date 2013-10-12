@@ -21,6 +21,7 @@ package com.nadmm.airports.tfr;
 
 import android.os.Bundle;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.views.DrawerListView;
 
@@ -35,6 +36,18 @@ public class TfrDetailActivity extends DrawerActivity {
 
         Bundle args = getIntent().getExtras();
         addFragment( TfrDetailFragment.class, args );
+    }
+
+    @Override
+    public void onStart() {
+      super.onStart();
+      EasyTracker.getInstance( this ).activityStart( this );
+    }
+
+    @Override
+    public void onStop() {
+      super.onStop();
+      EasyTracker.getInstance( this ).activityStop( this );
     }
 
 }
