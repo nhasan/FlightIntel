@@ -43,8 +43,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.text.format.Time;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -60,11 +62,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
@@ -531,14 +531,11 @@ public class ActivityBase extends ActionBarActivity {
         mRefreshItem = menu.findItem( R.id.menu_refresh );
         mRefreshDrawable = mRefreshItem.getIcon();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            SearchManager searchManager =
-                    (SearchManager) getSystemService( Context.SEARCH_SERVICE );
-            SearchView searchView = new SearchView( getSupportActionBar().getThemedContext() );
-            searchView.setSearchableInfo( searchManager.getSearchableInfo( getComponentName() ) );
-            searchView.setIconifiedByDefault( false );
-            menu.findItem( R.id.menu_search ).setActionView( searchView );
-        }
+        MenuItem searchItem = menu.findItem( R.id.menu_search );
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView( searchItem );
+        SearchManager searchManager = (SearchManager) getSystemService( Context.SEARCH_SERVICE );
+        searchView.setSearchableInfo( searchManager.getSearchableInfo( getComponentName() ) );
+        searchView.setIconifiedByDefault( false );
 
         return super.onCreateOptionsMenu( menu );
     }
@@ -563,9 +560,6 @@ public class ActivityBase extends ActionBarActivity {
             }
             return true;
         case R.id.menu_search:
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                onSearchRequested();
-            }
             return true;
         case R.id.menu_download:
             Intent download = new Intent( this, DownloadActivity.class );
