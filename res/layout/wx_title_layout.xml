@@ -22,7 +22,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/wx_title_layout"
         android:background="@drawable/ab_stacked_transparent_light_holo"
-        android:padding="6dp"
+        android:padding="8dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -58,13 +58,13 @@
         </LinearLayout>
         <LinearLayout android:id="@+id/header_inner2_layout"
                 android:orientation="vertical"
-                android:paddingLeft="6dp"
+                android:paddingLeft="8dp"
                 android:layout_gravity="bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
             <CheckBox android:id="@+id/airport_star"
                     style="?android:attr/starStyle"
-                    android:paddingBottom="6dp"
+                    android:paddingBottom="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
