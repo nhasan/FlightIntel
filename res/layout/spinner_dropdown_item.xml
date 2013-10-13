@@ -22,7 +22,7 @@
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android" 
     android:id="@android:id/text1"
-    style="@style/TextSmall"
+    style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
     android:paddingLeft="@dimen/item_padding"
     android:paddingRight="@dimen/item_padding"
     android:gravity="center_vertical"
