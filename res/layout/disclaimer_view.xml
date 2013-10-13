@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,35 +21,46 @@
  -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <LinearLayout
             android:id="@+id/button_bar"
             android:orientation="horizontal"
-            android:gravity="center_horizontal"
-            android:padding="4dp"
-            android:background="@android:color/darker_gray"
+            android:background="#ffcccccc"
             android:layout_alignParentBottom="true"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
         <Button
                 android:id="@+id/btn_agree"
+                style="@style/Widget.AppCompat.ActionButton"
                 android:text="@string/agree"
                 android:layout_gravity="center"
-                android:layout_width="100dp"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+        <View
+                android:layout_width="1dip"
+                android:layout_height="fill_parent"
+                android:background="#ffaaaaaa" />
         <Button
                 android:id="@+id/btn_disagree"
+                style="@style/Widget.AppCompat.ActionButton"
                 android:text="@string/disagree"
                 android:layout_gravity="center"
-                android:layout_width="100dp"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
     </LinearLayout>
+    <View
+            android:id="@+id/separator"
+            android:layout_above="@id/button_bar"
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:background="#ffaaaaaa" />
     <WebView
             android:id="@+id/disclaimer_content"
             android:layout_alignParentTop="true"
-            android:layout_above="@id/button_bar"
+            android:layout_above="@id/separator"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
 </RelativeLayout>
