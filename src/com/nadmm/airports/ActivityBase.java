@@ -251,7 +251,7 @@ public class ActivityBase extends ActionBarActivity {
 
     public Fragment replaceFragment( Class<?> clss, Bundle args, int id, boolean addTostack  ) {
         String tag = clss.getSimpleName();
-        if ( args.containsKey( ListMenuFragment.MENU_ID ) ) {
+        if ( args != null && args.containsKey( ListMenuFragment.MENU_ID ) ) {
             long menuId = args.getLong( ListMenuFragment.MENU_ID );
             tag = tag.concat( String.valueOf( menuId ) );
         }
