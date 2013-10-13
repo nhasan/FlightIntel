@@ -5,8 +5,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.OnNavigationListener;
 import android.widget.ArrayAdapter;
 
-import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.DrawerActivity;
+import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 
 public abstract class AfdFragmentBase extends FragmentBase implements OnNavigationListener {
@@ -32,7 +32,6 @@ public abstract class AfdFragmentBase extends FragmentBase implements OnNavigati
         getSupportActionBar().setSelectedNavigationItem( getActivityId() );
     }
 
-
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
@@ -40,9 +39,8 @@ public abstract class AfdFragmentBase extends FragmentBase implements OnNavigati
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                actionBar.getThemedContext(), R.layout.support_simple_spinner_dropdown_item,
-                mOptions );
-        adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
+                actionBar.getThemedContext(), R.layout.spinner_item, mOptions );
+        adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
         actionBar.setListNavigationCallbacks( adapter, this );
         actionBar.setDisplayShowTitleEnabled( false );
     }
