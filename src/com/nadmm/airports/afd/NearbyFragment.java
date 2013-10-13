@@ -147,7 +147,9 @@ public class NearbyFragment extends AfdFragmentBase {
     public void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
-        outState.putInt( "nearbytab", pager.getCurrentItem() );
+        if ( pager != null ) {
+            outState.putInt( "nearbytab", pager.getCurrentItem() );
+        }
     }
 
     @Override

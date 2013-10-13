@@ -65,12 +65,14 @@ public final class BrowseFragment extends AfdFragmentBase {
     public void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
-        outState.putInt( "browsetab", pager.getCurrentItem() );
+        if ( pager != null ) {
+            outState.putInt( "browsetab", pager.getCurrentItem() );
+        }
     }
 
     @Override
     protected int getActivityId() {
-        return ID_FAVORITES;
+        return ID_BROWSE;
     }
 
 }
