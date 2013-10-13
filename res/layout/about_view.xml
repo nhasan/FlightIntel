@@ -27,38 +27,53 @@
     <LinearLayout
             android:id="@+id/button_bar"
             android:orientation="horizontal"
-            android:padding="6dp"
             android:background="#ffcccccc"
             android:layout_alignParentBottom="true"
-            android:gravity="center_horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
         <Button
                 android:id="@+id/btn_donate"
+                style="@style/Widget.AppCompat.ActionButton"
                 android:text="@string/donate"
-                android:textSize="14sp"
                 android:layout_gravity="center"
-                android:layout_width="100dp"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+        <View
+                android:layout_width="2dip"
+                android:layout_height="fill_parent"
+                android:background="?attr/dividerVertical" />
         <Button
                 android:id="@+id/btn_rate"
+                style="@style/Widget.AppCompat.ActionButton"
                 android:text="@string/rate_it"
-                android:textSize="14sp"
                 android:layout_gravity="center"
-                android:layout_width="100dp"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+        <View
+                android:layout_width="2dip"
+                android:layout_height="fill_parent"
+                android:background="?attr/dividerVertical" />
         <Button
                 android:id="@+id/btn_close"
+                style="@style/Widget.AppCompat.ActionButton"
                 android:text="@string/close"
-                android:textSize="14sp"
                 android:layout_gravity="center"
-                android:layout_width="100dp"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
     </LinearLayout>
+    <View
+            android:id="@+id/separator"
+            android:layout_above="@id/button_bar"
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:background="?attr/dividerHorizontal" />
     <WebView
             android:id="@+id/about_content"
             android:layout_alignParentTop="true"
-            android:layout_above="@id/button_bar"
+            android:layout_above="@id/separator"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
 </RelativeLayout>
