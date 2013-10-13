@@ -66,7 +66,9 @@ public class SearchActivity extends AfdActivityBase {
             String siteNumber = extra.getString( SearchManager.EXTRA_DATA_KEY );
             Bundle args = new Bundle();
             args.putString( Airports.SITE_NUMBER, siteNumber );
-            replaceFragment( AirportDetailsFragment.class, args );
+            Intent apt = new Intent( this, AirportActivity.class );
+            apt.putExtras( args );
+            startActivity( apt );
             finish();
         }
     }
