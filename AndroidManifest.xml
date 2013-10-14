@@ -34,10 +34,10 @@
 	    <activity
             android:label="@string/downloads" 
 	        android:name=".DownloadActivity"
-            android:parentActivityName=".FlightIntel">
+            android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FlightIntel" />
+                android:value=".afd.AfdMainActivity" />
         </activity>
         <activity
             android:label="@string/settings"

@@ -58,6 +58,7 @@ import android.util.Log;
 import android.util.TimeFormatException;
 import android.util.Xml;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -68,6 +69,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nadmm.airports.DatabaseManager.Catalog;
+import com.nadmm.airports.afd.AfdMainActivity;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
@@ -177,6 +179,18 @@ public final class DownloadActivity extends ActivityBase {
         }
 
         checkData( false );
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        switch ( item.getItemId() ) {
+        case android.R.id.home:
+            Intent afd = new Intent( this, AfdMainActivity.class );
+            startActivity( afd );
+            return true;
+        default:
+            return super.onOptionsItemSelected( item );
+        }
     }
 
     private void checkData( boolean startDownload ) {
