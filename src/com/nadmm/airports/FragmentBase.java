@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -242,19 +243,25 @@ public class FragmentBase extends Fragment {
         } );
     }
 
+    protected void makeClickToCall( View row, int resid ) {
+        TextView tv = (TextView) row.findViewById( resid );
+        makeClickToCall( tv );
+        if ( tv.isClickable() ) {
+            row.setBackgroundResource( R.drawable.row_selector_middle );
+        }
+    }
+
     protected void makeClickToCall( TextView tv ) {
         PackageManager pm = mActivity.getPackageManager();
         boolean hasTelephony = pm.hasSystemFeature( PackageManager.FEATURE_TELEPHONY );
-        if ( hasTelephony ) {
-            if ( tv.getText().length() > 0 ) {
-                tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.phone, 0, 0, 0 );
-                tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( mActivity, 3 ) );
-                tv.setTag( Intent.ACTION_DIAL );
-                tv.setOnClickListener( mOnPhoneClickListener );
-            } else {
-                tv.setCompoundDrawablesWithIntrinsicBounds( 0, 0, 0, 0 );
-                tv.setOnClickListener( null );
-            }
+        if ( hasTelephony && tv.getText().length() > 0 ) {
+            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.phone, 0, 0, 0 );
+            tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( mActivity, 3 ) );
+            tv.setTag( Intent.ACTION_DIAL );
+            tv.setOnClickListener( mOnPhoneClickListener );
+        } else {
+            tv.setCompoundDrawablesWithIntrinsicBounds( 0, 0, 0, 0 );
+            tv.setOnClickListener( null );
         }
     }
 
@@ -266,13 +273,13 @@ public class FragmentBase extends Fragment {
                 getActivityBase().replaceFragment( clss, args );
             }
         };
-        row.setTag( r );
-        row.setOnClickListener( mOnRowClickListener );
+        makeRowClickable( row, r );
     }
 
     protected void makeRowClickable( View row, Object tag ) {
         row.setTag( tag );
         row.setOnClickListener( mOnRowClickListener );
+        row.setBackgroundResource( R.drawable.row_selector_middle );
     }
 
     protected void setRowBackgroundResource( LinearLayout layout ) {
@@ -289,7 +296,7 @@ public class FragmentBase extends Fragment {
 
     protected View addClickableRow( LinearLayout layout, String label, String value,
             Class<?> clss, Bundle args ) {
-        View row = addRow( layout, label+"...", value );
+        View row = addRow( layout, label, value );
         makeRowClickable( row, clss, args );
         return row;
     }
@@ -316,7 +323,7 @@ public class FragmentBase extends Fragment {
     }
 
     protected View addClickableRow( LinearLayout layout, String label, String value, Object tag ) {
-        View row = addRow( layout, label+"...", value );
+        View row = addRow( layout, label, value );
         makeRowClickable( row, tag );
         return row;
     }
@@ -337,26 +344,20 @@ public class FragmentBase extends Fragment {
 
     protected View addPhoneRow( LinearLayout layout, String label, String phone ) {
         View row = addRow( layout, label, phone );
-        TextView tv = (TextView) row.findViewById( R.id.item_value );
-        makeClickToCall( tv );
+        makeClickToCall( row, R.id.item_value );
         return row;
     }
 
     protected View addPhoneRow( LinearLayout layout, String label, String phone,
             String label2, String value2 ) {
         View row = addRow( layout, label, phone, label2, value2 );
-        TextView tv = (TextView) row.findViewById( R.id.item_value );
-        makeClickToCall( tv );
+        makeClickToCall( row, R.id.item_value );
         return row;
     }
 
     protected View addPhoneRow( LinearLayout layout, String phone ) {
         View row = addRow( layout, phone );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
-        makeClickToCall( tv );
-        if ( row.isClickable() ) {
-            row.setBackgroundResource( R.drawable.row_selector_middle );
-        }
+        makeClickToCall( row, R.id.item_label );
         return row;
     }
 
