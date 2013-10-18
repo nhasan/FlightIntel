@@ -30,12 +30,14 @@ my $TPP_METADATA_FILE = "$BASE_DIR/d-TPP_Metafile.xml";
 my $dtpp_url = "http://aeronav.faa.gov/d-tpp/$cycle/xml_data/d-TPP_Metafile.xml";
 my $count = 0;
 
+print "Downloading the d-TPP metafile: ".$dtpp_url."...";
 my $ret = 200;
 my $ret = getstore( $dtpp_url, $TPP_METADATA_FILE );
 if ( $ret != 200 )
 {
     die "Unable to download d-TPP metadata.";
 }
+print "done\n";
 
 my $dbfile = "$BASE_DIR/dtpp.db";
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
