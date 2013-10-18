@@ -570,11 +570,11 @@ public final class DataUtils {
 
     public static String decodeNavProtectedAltitude( String alt ) {
         if ( alt.equals( "T" ) ) {
-            return "Terminal";
+            return "Terminal (25NM)";
         } else if ( alt.equals( "L" ) ) {
-            return "Low altitude";
+            return "Low altitude (40NM)";
         } else if ( alt.equals( "H" ) ) {
-            return "High altitude";
+            return "High altitude (130NM)";
         } else {
             return alt;
         }
