@@ -219,6 +219,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         showHomeDistance( result );
         showNearbyFacilities( result );
         showNotamAndTfr();
+        showCharts( result );
         showOperationsDetails( result );
         showAeroNavDetails( result );
         showServicesDetails( result );
@@ -281,8 +282,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             }
         }
 
-        addClickableRow( layout, "More", CommunicationsFragment.class, getArguments() );
-        setRowBackgroundResource( layout );
+        addClickableRow( layout, "More...", CommunicationsFragment.class, getArguments() );
     }
 
     protected void addFrequencyToMap( HashMap<String, ArrayList<Float>> freqMap,
@@ -338,16 +338,12 @@ public final class AirportDetailsFragment extends FragmentBase {
             tv = (TextView) findViewById( R.id.detail_rwy_label );
             tv.setVisibility( View.GONE );
             rwyLayout.setVisibility( View.GONE );
-        } else {
-            setRowBackgroundResource( rwyLayout );
         }
         if ( heliNum == 0 ) {
             // No helipads so remove the section
             tv = (TextView) findViewById( R.id.detail_heli_label );
             tv.setVisibility( View.GONE );
             heliLayout.setVisibility( View.GONE );
-        } else {
-            setRowBackgroundResource( heliLayout );
         }
     }
 
@@ -436,10 +432,8 @@ public final class AirportDetailsFragment extends FragmentBase {
                 Intent intent = new Intent( getActivity(), NearbyWxActivity.class );
                 intent.putExtra( LocationColumns.LOCATION, mLocation );
                 intent.putExtra( LocationColumns.RADIUS, mRadius );
-                addClickableRow( layout, String.format( "View all %d nearby Wx stations",
-                        awos1.getCount() ), intent );
+                addClickableRow( layout, "More...", intent );
             }
-            setRowBackgroundResource( layout );
         } else {
             label.setVisibility( View.GONE );
             layout.setVisibility( View.GONE );
@@ -504,17 +498,44 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, "Airports", NearbyAirportsFragment.class, args );
         addClickableRow( layout, "FSS outlets", FssCommFragment.class, getArguments() );
         addClickableRow( layout, "Navaids", NearbyNavaidsFragment.class, getArguments() );
-        setRowBackgroundResource( layout );
     }
 
     private void showNotamAndTfr() {
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_notam_faa_layout );
         Intent intent = new Intent( getActivity(), AirportNotamActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, mSiteNumber );
-        addClickableRow( layout, "NOTAMs", intent );
+        addClickableRow( layout, "View NOTAMs", intent );
         intent = new Intent( getActivity(), TfrListActivity.class );
-        addClickableRow( layout, "TFRs", intent );
-        setRowBackgroundResource( layout );
+        addClickableRow( layout, "View TFRs", intent );
+    }
+
+    private void showCharts( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_charts_layout );
+        String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
+        if ( sectional == null || sectional.length() == 0 ) {
+            sectional = "N/A";
+        }
+        String lat = apt.getString( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+        String lon = apt.getString( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+        if ( lat.length() > 0 && lon.length() > 0 ) {
+            // Link to the sectional at VFRMAP if location is available
+            Uri uri = Uri.parse( String.format(
+                    "http://vfrmap.com/?type=vfrc&lat=%s&lon=%s&zoom=12", lat, lon ) );
+            Intent intent = new Intent( Intent.ACTION_VIEW, uri );
+            addClickableRow( layout, "Sectional VFR", sectional, intent );
+            uri = Uri.parse( String.format(
+                    "http://vfrmap.com/?type=ifrlc&lat=%s&lon=%s&zoom=10", lat, lon ) );
+            intent = new Intent( Intent.ACTION_VIEW, uri );
+            addClickableRow( layout, "Low-altitude IFR", intent );
+            uri = Uri.parse( String.format(
+                    "http://vfrmap.com/?type=ehc&lat=%s&lon=%s&zoom=10", lat, lon ) );
+            intent = new Intent( Intent.ACTION_VIEW, uri );
+            addClickableRow( layout, "High-altitude IFR", intent );
+            addRow( layout, "\u2022 Charts require an active network connection" );
+        } else {
+            addRow( layout, "Sectional chart", sectional );
+        }
     }
 
     protected void showOperationsDetails( Cursor[] result ) {
@@ -625,24 +646,9 @@ public final class AirportDetailsFragment extends FragmentBase {
         if ( medical != null && medical.equals( "Y" ) ) {
             addRow( layout, "Medical use", "Yes" );
         }
-        String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
-        if ( sectional.length() > 0 ) {
-            String lat = apt.getString( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
-            String lon = apt.getString( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-            if ( lat.length() > 0 && lon.length() > 0 ) {
-                // Link to the sectional at SkyVector if location is available
-                Uri uri = Uri.parse( String.format(
-                        "http://skyvector.com/?ll=%s,%s&zoom=1", lat, lon ) );
-                Intent intent = new Intent( Intent.ACTION_VIEW, uri );
-                addClickableRow( layout, "Sectional chart", sectional, intent );
-            } else {
-                addRow( layout, "Sectional chart", sectional );
-            }
-        }
         Bundle args = new Bundle();
         args.putString( Airports.SITE_NUMBER, mSiteNumber );
         addClickableRow( layout, "Sunrise and sunset", AlmanacFragment.class, args );
-        setRowBackgroundResource( layout );
     }
 
     protected void showAeroNavDetails( Cursor[] result ) {
@@ -690,7 +696,6 @@ public final class AirportDetailsFragment extends FragmentBase {
             Intent intent = new Intent( getActivity(), DonateActivity.class );
             addClickableRow( layout, "Please donate to enable this section", intent );
         }
-        setRowBackgroundResource( layout );
     }
 
     protected void getAfdPage( String afdCycle, String pdfName ) {
@@ -735,7 +740,6 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
         addRow( layout, "Powerplant repair", repair );
         addClickableRow( layout, "Other services", ServicesFragment.class, getArguments() );
-        setRowBackgroundResource( layout );
     }
 
     protected void showOtherDetails( Cursor[] result ) {
@@ -745,7 +749,6 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, "Aircraft operations", AircraftOpsFragment.class, args );
         addClickableRow( layout, "Additional remarks", RemarksFragment.class, args );
         addClickableRow( layout, "Attendance", AttendanceFragment.class, args );
-        setRowBackgroundResource( layout );
     }
 
     protected void addAwosRow( LinearLayout layout, String id, String name, String type, 
