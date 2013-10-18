@@ -27,8 +27,8 @@
         android:layout_height="wrap_content">
     <LinearLayout
             android:orientation="horizontal"
-            android:paddingRight="4dp"
-            android:paddingLeft="4dp"
+            android:paddingLeft="@dimen/label_padding"
+            android:paddingRight="@dimen/label_padding"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
             android:layout_width="fill_parent"
@@ -38,22 +38,22 @@
                 android:gravity="left"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:paddingRight="4dp"
+                android:paddingRight="@dimen/label_padding"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
         <TextView android:id="@+id/item_value"
                 style="@style/TextSmall"
                 android:gravity="right"
-                android:paddingLeft="4dp"
+                android:paddingLeft="@dimen/label_padding"
                 android:layout_weight="0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
     </LinearLayout>
     <LinearLayout
             android:orientation="horizontal"
-            android:paddingRight="4dp"
-            android:paddingLeft="4dp"
+            android:paddingLeft="@dimen/label_padding"
+            android:paddingRight="@dimen/label_padding"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
             android:layout_width="fill_parent"
@@ -63,14 +63,14 @@
                 android:gravity="left"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:paddingRight="4dp"
+                android:paddingRight="@dimen/label_padding"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
         <TextView android:id="@+id/item_extra_value"
                 style="@style/TextSmall"
                 android:gravity="right"
-                android:paddingLeft="4dp"
+                android:paddingLeft="@dimen/label_padding"
                 android:layout_weight="0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
