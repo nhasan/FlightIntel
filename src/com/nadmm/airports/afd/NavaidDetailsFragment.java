@@ -71,6 +71,7 @@ public final class NavaidDetailsFragment extends FragmentBase {
 
         String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
         setActionBarTitle( id );
+        setActionBarSubtitle( "Navaid Details" );
         showNavaidTitle( nav1 );
         showNavaidDetails( result );
         showNavaidNotams( result );
