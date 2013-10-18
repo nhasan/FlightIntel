@@ -19,6 +19,8 @@
 
 package com.nadmm.airports.afd;
 
+import java.util.Locale;
+
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
@@ -26,15 +28,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
-import com.nadmm.airports.R;
 
 public class NearbyAirportsFragment extends AirportListFragmentBase {
+
+    private int mRadius;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         setEmptyText( "No airports found nearby." );
+        Bundle args = getArguments();
+        mRadius = args.getInt( LocationColumns.RADIUS );
         super.onCreate( savedInstanceState );
     }
 
@@ -47,8 +51,8 @@ public class NearbyAirportsFragment extends AirportListFragmentBase {
         }
         getListView().setCacheColorHint( 0xffffffff );
 
-        String icaoCode = args.getString( Airports.ICAO_CODE );
-        setActionBarTitle( String.format( "Nearby %s", icaoCode ) );
+        setActionBarTitle( String.format( "Nearby Airports" ) );
+        setActionBarSubtitle( String.format( Locale.US, "Within %dNM radius", mRadius ) );
 
         super.onActivityCreated( savedInstanceState );
     }
@@ -68,19 +72,14 @@ public class NearbyAirportsFragment extends AirportListFragmentBase {
             }
 
             Location location = params[ 0 ];
-            Bundle args = getArguments();
-            int radius = args.getInt( LocationColumns.RADIUS );
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
-            return new NearbyAirportsCursor( db, location, radius );
+            return new NearbyAirportsCursor( db, location, mRadius );
         }
 
         @Override
         protected void onPostExecute( final Cursor c ) {
             setCursor( c );
-            int count = c.getCount();
-            setActionBarSubtitle( getResources().getQuantityString(
-                    R.plurals.airports_found, count, count ) );
         }
 
     }
