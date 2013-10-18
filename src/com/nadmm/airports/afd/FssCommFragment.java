@@ -20,13 +20,16 @@
 package com.nadmm.airports.afd;
 
 import java.util.Arrays;
+import java.util.Locale;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +43,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Com;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.GeoUtils;
@@ -50,7 +54,7 @@ public final class FssCommFragment extends FragmentBase {
     private static final String DISTANCE = "DISTANCE";
     private static final String BEARING = "BEARING";
 
-    private static final int RADIUS = 25;
+    private int mRadius;
 
     private final class ComData implements Comparable<ComData> {
 
@@ -102,6 +106,11 @@ public final class FssCommFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences( getActivity() );
+        mRadius = Integer.valueOf( prefs.getString(
+                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new FssCommTask() ).execute( siteNumber );
@@ -113,6 +122,8 @@ public final class FssCommFragment extends FragmentBase {
         Cursor apt = result[ 0 ];
 
         showAirportTitle( apt );
+        setActionBarTitle( "Nearby FSS Outlets" );
+        setActionBarSubtitle( String.format( Locale.US, "Within %dNM radius", mRadius ) );
         showFssDetails( result );
 
         setContentShown( true );
@@ -170,7 +181,7 @@ public final class FssCommFragment extends FragmentBase {
             } while ( com.moveToNext() );
         } else {
             setContentMsg( String.format(
-                    "No FSS outlets found within %d NM radius.", RADIUS ) );
+                    "No FSS outlets found within %dNM radius.", mRadius ) );
         }
     }
 
@@ -193,7 +204,7 @@ public final class FssCommFragment extends FragmentBase {
             location.setLongitude( lon );
 
             // Get the bounding box first to do a quick query as a first cut
-            double[] box = GeoUtils.getBoundingBoxRadians( location, RADIUS );
+            double[] box = GeoUtils.getBoundingBoxRadians( location, mRadius );
 
             double radLatMin = box[ 0 ];
             double radLatMax = box[ 1 ];
@@ -250,7 +261,7 @@ public final class FssCommFragment extends FragmentBase {
                 for ( ComData com : comDataList ) {
                     float distance = Float.valueOf(
                             com.mColumnValues[ matrix.getColumnIndex( DISTANCE ) ] );
-                    if ( distance <= RADIUS ) {
+                    if ( distance <= mRadius ) {
                         matrix.addRow( com.mColumnValues );
                     }
                 }
