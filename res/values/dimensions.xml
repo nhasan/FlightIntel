@@ -28,7 +28,7 @@
     <dimen name="section_margin">10dip</dimen>
     <dimen name="item_padding">12dip</dimen>
     <dimen name="label_padding">4dip</dimen>
-    
+
     <dimen name="slidingmenu_width">240dip</dimen>
     <dimen name="slidingmenu_shadow_width">24dip</dimen>
     <dimen name="slidingmenu_item_height">52dip</dimen>
