@@ -58,6 +58,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
             LocationColumns.RADIAL,
             LocationColumns.DISTANCE
     };
+    int mRadius;
 
     private final class NavaidData implements Comparable<NavaidData> {
         public String NAVAID_ID;
@@ -67,7 +68,6 @@ public final class NearbyNavaidsFragment extends FragmentBase {
         public String TACAN_CHANNEL;
         public int RADIAL;
         public float DISTANCE;
-        public int RANGE;
 
         public void setFromCursor( Cursor c, Location location ) {
             // Calculate the distance and bearing to this navaid from this airport
@@ -92,8 +92,6 @@ public final class NearbyNavaidsFragment extends FragmentBase {
                     results );
             DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
             RADIAL = calculateRadial( results[ 1 ], var );
-            String alt = c.getString( c.getColumnIndex( Nav1.PROTECTED_FREQUENCY_ALTITUDE ) );
-            RANGE = ( alt != null && alt.equals( "T" ) )? 25 : 40;
         }
 
         @Override
@@ -122,6 +120,11 @@ public final class NearbyNavaidsFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences( getActivity() );
+        mRadius = Integer.valueOf( prefs.getString(
+                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new NavaidDetailsTask() ).execute( siteNumber );
@@ -136,13 +139,12 @@ public final class NearbyNavaidsFragment extends FragmentBase {
         Cursor ndb = result[ 2 ];
         if ( vor != null || ndb != null ) {
             showAirportTitle( apt );
+            setActionBarTitle( "Nearby Navaids" );
+            setActionBarSubtitle( String.format( Locale.US, "Within %dNM radius", mRadius ) );
             showNavaidDetails( result );
         } else {
-            SharedPreferences prefs =
-                    PreferenceManager.getDefaultSharedPreferences( getActivity() );
-            int radius = Integer.valueOf( prefs.getString(
-                    PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
-            setContentMsg( String.format( "No navaids found within %dNM radius", radius ) );
+            setContentMsg( String.format( Locale.US, "No navaids found within %dNM radius",
+                    mRadius ) );
         }
 
         setContentShown( true );
@@ -237,13 +239,8 @@ public final class NearbyNavaidsFragment extends FragmentBase {
             location.setLatitude( lat );
             location.setLongitude( lon );
 
-            SharedPreferences prefs =
-                    PreferenceManager.getDefaultSharedPreferences( getActivity() );
-            int radius = Integer.valueOf( prefs.getString(
-                    PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
-
             // Get the bounding box first to do a quick query as a first cut
-            double[] box = GeoUtils.getBoundingBoxRadians( location, radius );
+            double[] box = GeoUtils.getBoundingBoxRadians( location, mRadius );
 
             double radLatMin = box[ 0 ];
             double radLatMax = box[ 1 ];
@@ -283,7 +280,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
                 @SuppressWarnings("resource")
                 MatrixCursor ndb = new MatrixCursor( mNavColumns );
                 for ( NavaidData navaid : navaids ) {
-                    if ( navaid.DISTANCE <= navaid.RANGE ) {
+                    if ( navaid.DISTANCE <= mRadius ) {
                         if ( DataUtils.isDirectionalNavaid( navaid.NAVAID_TYPE ) ) {
                             MatrixCursor.RowBuilder row = vor.newRow();
                             row.add( navaid.NAVAID_ID )
