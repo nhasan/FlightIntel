@@ -65,10 +65,14 @@ public class NetworkUtils {
     public static final String CONTENT_NAME = "CONTENT_NAME";
 
     public static boolean isNetworkAvailable( Context context ) {
+        return isNetworkAvailable( context, true );
+    }
+
+    public static boolean isNetworkAvailable( Context context, boolean showMsg ) {
         ConnectivityManager connMan = (ConnectivityManager) context.getSystemService( 
                 Context.CONNECTIVITY_SERVICE );
         NetworkInfo network = connMan.getActiveNetworkInfo();
-        if ( network == null || !network.isConnected() ) {
+        if ( showMsg && ( network == null || !network.isConnected() ) ) {
             UiUtils.showToast( context, "Please check your internet connection" );
             return false;
         }
