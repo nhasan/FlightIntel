@@ -1540,9 +1540,9 @@ while ( my $line = <APT_FILE> )
         #SITE_NUMBER
         $sth_rmk->bind_param( 1, substrim( $line,  3,   11 ) );
         #REMARK_NAME
-        $sth_rmk->bind_param( 2, substrim( $line, 16,   11 ) );
+        $sth_rmk->bind_param( 2, substrim( $line, 16,   13 ) );
         #REMARK_TEXT
-        $sth_rmk->bind_param( 3, substrim( $line, 27, 1500 ) );
+        $sth_rmk->bind_param( 3, substrim( $line, 29, 1500 ) );
  
         $sth_rmk->execute();
     }
