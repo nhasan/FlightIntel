@@ -34,19 +34,8 @@ import com.nadmm.airports.ListFragmentBase;
 public class AirportListFragmentBase extends ListFragmentBase {
 
     @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        setHasOptionsMenu( true );
-        super.onCreate( savedInstanceState );
-    }
-
-    @Override
     protected CursorAdapter newListAdapter( Context context, Cursor c ) {
         return new AirportsCursorAdapter( context, c );
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( false );
     }
 
     @Override

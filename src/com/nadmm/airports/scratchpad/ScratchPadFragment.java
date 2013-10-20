@@ -59,8 +59,6 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
 
         mFadeIn = AnimationUtils.loadAnimation( getActivity(), R.anim.fade_in );
         mFadeOut = AnimationUtils.loadAnimation( getActivity(), R.anim.fade_out );
-
-        setHasOptionsMenu( true );
     }
 
     @Override
@@ -143,11 +141,6 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
 
         Bitmap bitmap = mDrawView.getBitmap();
         bitmap.recycle();
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( false );
     }
 
     @Override

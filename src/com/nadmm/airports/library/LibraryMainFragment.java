@@ -41,13 +41,6 @@ public class LibraryMainFragment extends FragmentBase {
     private TabsAdapter mTabsAdapter;
 
     @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        setHasOptionsMenu( true );
-    }
-
-    @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflate( R.layout.fragment_pager_layout, container );
@@ -89,11 +82,6 @@ public class LibraryMainFragment extends FragmentBase {
         super.onSaveInstanceState( outState );
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
         outState.putInt( "libtab", pager.getCurrentItem() );
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( false );
     }
 
 }

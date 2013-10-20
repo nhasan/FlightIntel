@@ -121,8 +121,6 @@ public class ChartsDownloadFragment extends FragmentBase {
                 }
             }
         };
-
-        setHasOptionsMenu( true );
     }
 
     @Override
@@ -154,11 +152,6 @@ public class ChartsDownloadFragment extends FragmentBase {
         setBackgroundTask( new ChartsDownloadTask() ).execute();
 
         super.onActivityCreated( savedInstanceState );
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( false );
     }
 
     private void confirmStartDownload( final View v ) {

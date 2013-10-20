@@ -69,17 +69,6 @@ public class E6bMenuFragment extends ListMenuFragment {
     }
 
     @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        setHasOptionsMenu( true );
-        super.onCreate( savedInstanceState );
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( false );
-    }
-
-    @Override
     protected Class<?> getItemFragmentClass( long id ) {
         return mDispatchMap.get( id );
     }

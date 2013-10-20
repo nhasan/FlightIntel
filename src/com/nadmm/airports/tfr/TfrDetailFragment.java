@@ -40,13 +40,6 @@ public class TfrDetailFragment extends FragmentBase {
     private Tfr mTfr;
 
     @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        setHasOptionsMenu( true );
-    }
-
-    @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         Context context = getActivity();
@@ -100,11 +93,6 @@ public class TfrDetailFragment extends FragmentBase {
         setActionBarSubtitle( "TFR Details" );
 
         super.onActivityCreated( savedInstanceState );
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( false );
     }
 
 }

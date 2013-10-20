@@ -53,8 +53,6 @@ public class TfrImageFragment extends FragmentBase {
         mFilter = new IntentFilter();
         mFilter.addAction( TfrImageService.ACTION_GET_TFR_IMAGE );
 
-        setHasOptionsMenu( true );
-
         Bundle args = getArguments();
         mTfr = (Tfr) args.getSerializable( TfrImageService.TFR_ENTRY );
 
@@ -96,11 +94,6 @@ public class TfrImageFragment extends FragmentBase {
         setActionBarSubtitle( "TFR Graphic" );
 
         super.onActivityCreated( savedInstanceState );
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( false );
     }
 
     private final class TfrReceiver extends BroadcastReceiver {

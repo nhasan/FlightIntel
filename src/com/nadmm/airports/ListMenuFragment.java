@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.ResourceCursorAdapter;
+import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -35,11 +36,6 @@ public abstract class ListMenuFragment extends ListFragmentBase {
 
     public static final String MENU_ID = "MENU_ID";
     public static final String SUBTITLE_TEXT = "SUBTITLE_TEXT";
-
-    @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-    }
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
