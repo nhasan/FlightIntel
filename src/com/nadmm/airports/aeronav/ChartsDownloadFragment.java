@@ -347,7 +347,6 @@ public class ChartsDownloadFragment extends FragmentBase {
                 int total = c.getInt( c.getColumnIndex( "total" ) );
                 addTppVolumeRow( layout, tppVolume, total );
             } while ( c.moveToNext() );
-            setRowBackgroundResource( layout );
         }
 
         // Close all cursors here
