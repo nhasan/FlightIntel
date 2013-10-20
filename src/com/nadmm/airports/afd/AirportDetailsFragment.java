@@ -532,7 +532,9 @@ public final class AirportDetailsFragment extends FragmentBase {
                     "http://vfrmap.com/?type=ehc&lat=%s&lon=%s&zoom=10", lat, lon ) );
             intent = new Intent( Intent.ACTION_VIEW, uri );
             addClickableRow( layout, "High-altitude IFR", intent );
-            addRow( layout, "\u2022 Charts require an active network connection" );
+            View row = addRow( layout, "Charts require an active network connection" );
+            TextView tv = (TextView) row.findViewById( R.id.item_label );
+            tv.setTextAppearance( getActivity(), R.style.TextSmall_Light );
         } else {
             addRow( layout, "Sectional chart", sectional );
         }
