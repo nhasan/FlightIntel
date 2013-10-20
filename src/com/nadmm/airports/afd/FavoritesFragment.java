@@ -38,13 +38,6 @@ public final class FavoritesFragment extends AfdFragmentBase {
     }
 
     @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.fragment_pager_layout, container, false );
-        return view;
-    }
-
-    @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 

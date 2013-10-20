@@ -64,16 +64,11 @@ public class NearbyFragment extends AfdFragmentBase {
     }
 
     @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.fragment_pager_layout, container, false );
-        view.setKeepScreenOn( true );
-        return view;
-    }
-
-    @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
+
+        View view = getView();
+        view.setKeepScreenOn( true );
 
         Location location = getLastKnownGoodLocation();
 
