@@ -37,21 +37,13 @@ public final class BrowseFragment extends AfdFragmentBase {
     }
 
     @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.fragment_pager_layout, container, false );
-        return view;
-    }
-
-    @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
 
         TabsAdapter adapter = new TabsAdapter( getActivity(), getChildFragmentManager(), pager );
-        adapter.addTab( "AIRPORTS", BrowseAirportsFragment.class, null );
-        //adapter.addTab( "WEATHER", FavoriteWxFragment.class, null );
+        adapter.addTab( "AIRPORTS", BrowseStateFragment.class, null );
 
         PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
         tabs.setTabIndicatorColor( getResources().getColor( R.color.tab_indicator ) );
