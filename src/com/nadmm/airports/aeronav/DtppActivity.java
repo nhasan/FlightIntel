@@ -314,7 +314,6 @@ public class DtppActivity extends ActivityBase {
                     String faanfd18 = c.getString( c.getColumnIndex( Dtpp.FAANFD18_CODE ) );
                     addChartRow( group, chartCode, chartName, pdfName, userAction, faanfd18 );
                 } while ( c.moveToNext() );
-                setRowBackgroundResource( group );
                 layout.addView( item, new LinearLayout.LayoutParams( LayoutParams.MATCH_PARENT,
                         LayoutParams.WRAP_CONTENT ) );
             }
@@ -327,7 +326,6 @@ public class DtppActivity extends ActivityBase {
             tv.setText( "Other" );
             addChartRow( group, "", "Airport Diagram Legend", "legendAD.pdf", "", "" );
             addChartRow( group, "", "Legends & General Information", "frntmatter.pdf", "", "" );
-            setRowBackgroundResource( group );
             layout.addView( item, new LinearLayout.LayoutParams( LayoutParams.MATCH_PARENT,
                     LayoutParams.WRAP_CONTENT ) );
         }
