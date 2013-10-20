@@ -155,7 +155,6 @@ public final class NavaidDetailsFragment extends FragmentBase {
         intent.putExtra( Nav1.NAVAID_ID, navaidId );
         intent.putExtra( Nav1.NAVAID_TYPE, navaidType );
         addClickableRow( layout, "View NOTAMs", intent );
-        setRowBackgroundResource( layout );
     }
 
     protected void showNavaidRemarks( Cursor[] result ) {

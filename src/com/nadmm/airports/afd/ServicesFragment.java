@@ -116,7 +116,6 @@ public final class ServicesFragment extends FragmentBase {
         addClickableRow( layout, "NOTAM facility", notamFacility, intent );
         String notamD = apt.getString( apt.getColumnIndex( Airports.NOTAM_D_AVAILABLE ) );
         addRow( layout, "NOTAM D available", notamD.equals( "Y" )? "Yes" : "No" );
-        setRowBackgroundResource( layout );
     }
 
     protected void showFssServices( Cursor[] result ) {

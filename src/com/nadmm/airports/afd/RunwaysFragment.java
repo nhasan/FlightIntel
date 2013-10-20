@@ -267,7 +267,6 @@ public final class RunwaysFragment extends FragmentBase {
                 }
             }
         }
-        setRowBackgroundResource( layout );
 
         // Show remarks
         showBaseEndRemarks( result );
@@ -417,7 +416,6 @@ public final class RunwaysFragment extends FragmentBase {
                 }
             }
         }
-        setRowBackgroundResource( layout );
 
         // Show remarks
         showReciprocalEndRemarks( result );
