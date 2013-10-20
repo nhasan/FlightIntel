@@ -282,18 +282,6 @@ public class FragmentBase extends Fragment {
         row.setBackgroundResource( R.drawable.row_selector_middle );
     }
 
-    protected void setRowBackgroundResource( LinearLayout layout ) {
-        int count = layout.getChildCount();
-        int index = 0;
-        while ( index < count ) {
-            View row = layout.getChildAt( index );
-            if ( row.isClickable() ) {
-                row.setBackgroundResource( R.drawable.row_selector_middle );
-            }
-            index += 2;
-        }
-    }
-
     protected View addClickableRow( LinearLayout layout, String label, String value,
             Class<?> clss, Bundle args ) {
         View row = addRow( layout, label, value );
