@@ -167,7 +167,6 @@ public final class NearbyNavaidsFragment extends FragmentBase {
                 addDirectionalNavaidRow( layout, navaidId, name, type, freq, radial,
                         distance );
             } while ( vor.moveToNext() );
-            setRowBackgroundResource( layout );
         } else {
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_vor_layout );
             layout.setVisibility( View.GONE );
@@ -188,7 +187,6 @@ public final class NearbyNavaidsFragment extends FragmentBase {
                 addNonDirectionalNavaidRow( layout, navaidId, name, type, freq, heading,
                         distance );
             } while ( ndb.moveToNext() );
-            setRowBackgroundResource( layout );
         } else {
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_ndb_layout );
             layout.setVisibility( View.GONE );
