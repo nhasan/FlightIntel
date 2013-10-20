@@ -243,7 +243,6 @@ public class LibraryPageFragment extends FragmentBase {
                     String flag = c.getString( c.getColumnIndex( Library.FLAG ) );
                     addLibraryRow( layout, name, desc, edition, author, flag, size );
                 } while ( c.moveToNext() );
-                setRowBackgroundResource( layout );
             }
         }
 
@@ -270,6 +269,7 @@ public class LibraryPageFragment extends FragmentBase {
         tv.setText( Formatter.formatShortFileSize( getActivity(), size ) );
         row.setTag( R.id.LIBRARY_PDF_NAME, name );
         row.setOnClickListener( mOnClickListener );
+        row.setBackgroundResource( R.drawable.row_selector_middle );
         showStatus( row, false );
         mBookRowMap.put( name, row );
         layout.addView( row, new LinearLayout.LayoutParams(
