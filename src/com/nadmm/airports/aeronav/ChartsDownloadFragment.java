@@ -528,6 +528,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         View row = mVolumeRowMap.get( tppVolume );
         if ( row != null ) {
             row.setOnClickListener( mOnClickListener );
+            row.setBackgroundResource( R.drawable.row_selector_middle );
             row.setTag( R.id.DTPP_CHART_AVAIL, avail );
             int total = (Integer) row.getTag( R.id.DTPP_CHART_TOTAL );
             showStatus( row, avail, total );
