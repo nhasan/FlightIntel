@@ -67,6 +67,7 @@ public class FragmentBase extends Fragment {
             }
         }
     };
+
     private final OnClickListener mOnPhoneClickListener = new OnClickListener() {
         @Override
         public void onClick( View v ) {
