@@ -23,6 +23,21 @@ android {
         targetSdkVersion 18
     }
 
+    signingConfigs {
+        release {
+            storeFile file("/home/nhasan/android.keystore")
+            storePassword "xxx"
+            keyAlias "relkey"
+            keyPassword "xxx"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
