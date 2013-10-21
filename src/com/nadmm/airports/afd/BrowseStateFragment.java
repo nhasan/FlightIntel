@@ -18,8 +18,8 @@ import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class BrowseStateFragment extends ListFragmentBase {
 
@@ -32,6 +32,7 @@ public class BrowseStateFragment extends ListFragmentBase {
         sStateMap.put(DatabaseManager.States.STATE_NAME,
                 "IFNULL(" + DatabaseManager.States.STATE_NAME + ", " + DatabaseManager.Airports.ASSOC_COUNTY + ")"
                         + " AS " + DatabaseManager.States.STATE_NAME);
+        sStateMap.put(BaseColumns._COUNT, "count(*) AS " + BaseColumns._COUNT);
     }
 
     private SectionedCursorAdapter mAdapter;
@@ -81,8 +82,9 @@ public class BrowseStateFragment extends ListFragmentBase {
         public void bindView( View view, Context context, Cursor c ) {
             // Browsing all states
             String state_name = c.getString( c.getColumnIndex( DatabaseManager.States.STATE_NAME ) );
+            int count = c.getInt( c.getColumnIndex( BaseColumns._COUNT ) );
             TextView tv = (TextView) view.findViewById( R.id.browse_state_name );
-            tv.setText( state_name );
+            tv.setText( String.format( Locale.US, "%s (%d)", state_name, count ) );
         }
 
         @Override
@@ -115,9 +117,10 @@ public class BrowseStateFragment extends ListFragmentBase {
             builder.setProjectionMap( sStateMap );
             c = builder.query( db,
                     // String[] projectionIn
-                    new String[] { DatabaseManager.Airports._ID,
+                    new String[] { BaseColumns._ID,
                             DatabaseManager.Airports.ASSOC_STATE,
-                            DatabaseManager.States.STATE_NAME },
+                            DatabaseManager.States.STATE_NAME,
+                            BaseColumns._COUNT },
                     // String selection
                     null,
                     // String[] selectionArgs
