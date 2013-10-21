@@ -503,16 +503,15 @@ public class ActivityBase extends ActionBarActivity {
 
     public void startRefreshAnimation() {
         if ( mRefreshItem != null ) {
-            Resources res = getResources();
-            AnimationDrawable d = (AnimationDrawable) res.getDrawable( R.drawable.ic_popup_sync );
-            mRefreshItem.setIcon( d );
+            AnimationDrawable d = (AnimationDrawable) mRefreshItem.getIcon();
             d.start();
         }
     }
 
     public void stopRefreshAnimation() {
         if ( mRefreshItem != null ) {
-            mRefreshItem.setIcon( mRefreshDrawable );
+            AnimationDrawable d = (AnimationDrawable) mRefreshItem.getIcon();
+            d.stop();
         }
     }
 
