@@ -306,7 +306,7 @@ public final class DownloadActivity extends ActivityBase {
     private final class DownloadListAdapter extends SectionedCursorAdapter {
 
         public DownloadListAdapter( Context context, Cursor c ) {
-            super( context, R.layout.download_list_item, c, R.id.download_section );
+            super( context, R.layout.download_list_item, c, R.layout.list_item_header );
         }
 
         @Override

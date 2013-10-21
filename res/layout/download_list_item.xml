@@ -27,11 +27,6 @@
         android:paddingBottom="@dimen/padding_bottom"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
-    <TextView android:id="@+id/download_section"
-            style="?android:attr/listSeparatorTextViewStyle"
-            android:gravity="left|center_vertical"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"/>
     <TextView android:id="@+id/download_desc"
             style="@style/TextLabel"
             android:layout_width="fill_parent"
