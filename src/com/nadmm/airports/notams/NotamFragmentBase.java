@@ -19,16 +19,6 @@
 
 package com.nadmm.airports.notams;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -38,11 +28,16 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
-
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.TimeUtils;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
 public class NotamFragmentBase extends FragmentBase {
 
@@ -138,8 +133,7 @@ public class NotamFragmentBase extends FragmentBase {
         title1.setText( getResources().getQuantityString( R.plurals.notams_found, count, count ) );
         TextView title2 = (TextView) findViewById( R.id.notam_title2 );
         Date lastModified = new Date( notamFile.lastModified() );
-        title2.setText( "Last updated at "+ TimeUtils.formatDateTime(
-                getActivity(), lastModified.getTime() ) );
+        title2.setText( "Updated "+ TimeUtils.formatElapsedTime( lastModified.getTime() ) );
     }
 
     private HashMap<String, ArrayList<String>> parseNotams( File notamFile ) {
