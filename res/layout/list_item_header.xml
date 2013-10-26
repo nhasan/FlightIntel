@@ -15,8 +15,8 @@
   -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_item_header_textview"
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp"
+    android:paddingLeft="@dimen/padding_left"
+    android:paddingRight="@dimen/padding_right"
     android:gravity="center_vertical"
     android:textColor="@color/accent_1"
     android:textAllCaps="true"

@@ -23,12 +23,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:padding="@dimen/item_padding"
+        android:minHeight="48dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <LinearLayout
             android:orientation="horizontal"
-            android:paddingLeft="@dimen/label_padding"
-            android:paddingRight="@dimen/label_padding"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
         <TextView android:id="@+id/item_label"
@@ -51,9 +50,7 @@
     <TextView android:id="@+id/item_extra_value"
             style="@style/TextSmall"
             android:gravity="right"
-            android:paddingTop="2dp"
-            android:paddingLeft="@dimen/label_padding"
-            android:paddingRight="@dimen/label_padding"
+            android:paddingTop="4dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
 </LinearLayout>

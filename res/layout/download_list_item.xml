@@ -38,8 +38,6 @@
     <ProgressBar android:id="@+id/download_progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:visibility="gone"
-            android:paddingRight="4dp"
-            android:paddingLeft="4dp"
             android:layout_width="fill_parent"
             android:layout_height="10dp" />
     <LinearLayout

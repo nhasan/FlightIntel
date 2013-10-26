@@ -22,7 +22,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/wx_title_layout"
         android:background="@drawable/ab_stacked_transparent_light_holo"
-        android:padding="8dp"
+        android:paddingTop="@dimen/padding_top"
+        android:paddingLeft="@dimen/padding_left"
+        android:paddingRight="@dimen/padding_right"
+        android:paddingBottom="@dimen/padding_bottom"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

@@ -28,8 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <TextView android:id="@+id/airsigmet_title_msg"
-                style="@style/TextSmall"
-                android:padding="@dimen/label_padding"
+                style="@style/TextSmall.Light"
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -43,7 +42,6 @@
                 android:layout_height="wrap_content" />
         <LinearLayout android:id="@+id/airsigmet_entries_layout"
                 android:orientation="vertical"
-                android:layout_marginTop="@dimen/section_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         <TextView android:id="@+id/wx_fetch_time"

@@ -30,15 +30,13 @@
         <include layout="@layout/airport_title_layout" />
         <LinearLayout
                 android:orientation="vertical"
-                android:paddingTop="@dimen/padding_top"
                 android:paddingLeft="@dimen/padding_left"
                 android:paddingRight="@dimen/padding_right"
-                android:paddingBottom="@dimen/padding_bottom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <TextView android:id="@+id/detail_comm_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/communications"
                     android:layout_width="match_parent"
@@ -50,7 +48,7 @@
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/detail_rwy_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/runways"
                     android:layout_width="match_parent"
@@ -62,7 +60,7 @@
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/detail_heli_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/helipads"
                     android:layout_width="match_parent"
@@ -74,7 +72,7 @@
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/detail_remarks_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/airport_remarks"
                     android:layout_width="match_parent"
@@ -88,7 +86,7 @@
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/detail_awos_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/weather_stations"
                     android:layout_width="match_parent"
@@ -100,7 +98,7 @@
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/detail_home_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/home_airport"
                     android:layout_width="match_parent"
@@ -112,7 +110,7 @@
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/detail_nearby_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/nearby_facilities"
                     android:layout_width="match_parent"
@@ -124,7 +122,7 @@
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/detail_notam_faa_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/notam_tfr"
                     android:layout_width="match_parent"
@@ -136,7 +134,7 @@
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/detail_aeronav_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/aeronav_products"
                     android:layout_width="match_parent"
@@ -148,7 +146,7 @@
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/detail_charts_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/charts"
                     android:layout_width="match_parent"
@@ -160,7 +158,7 @@
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/detail_operations_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/airport_operations"
                     android:layout_width="match_parent"
@@ -172,7 +170,7 @@
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/detail_services_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/airport_services"
                     android:layout_width="match_parent"
@@ -184,7 +182,7 @@
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/detail_other_label"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:text="@string/other_details"
                     android:layout_width="match_parent"

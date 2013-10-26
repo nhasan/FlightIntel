@@ -39,7 +39,7 @@
             <TextView android:id="@+id/airport_services_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:text="@string/airport_services"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -52,7 +52,7 @@
             <TextView android:id="@+id/faa_services_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:text="@string/faa_services"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -64,7 +64,7 @@
             <TextView android:id="@+id/fss_services_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:text="@string/fss_services"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

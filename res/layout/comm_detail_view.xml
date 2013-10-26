@@ -40,7 +40,7 @@
                     style="@style/TextLabel"
                     android:text="@string/airport_communications"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -54,7 +54,7 @@
                     style="@style/TextLabel"
                     android:text="@string/atc_communications"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -68,7 +68,7 @@
                     style="@style/TextLabel"
                     android:text="@string/atc_phones"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             <LinearLayout android:id="@+id/atc_phones_details"
@@ -79,7 +79,7 @@
             <TextView android:id="@+id/airport_comm_remarks"
                     style="@style/TextLabel"
                     android:text="@string/remarks"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

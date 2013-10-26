@@ -46,7 +46,7 @@
             <TextView android:id="@+id/detail_owner_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:text="@string/airport_owner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -59,7 +59,7 @@
             <TextView android:id="@+id/detail_owner_phone_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:text="@string/phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -71,7 +71,7 @@
             <TextView android:id="@+id/detail_manager_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:text="@string/airport_manager"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -84,7 +84,7 @@
             <TextView android:id="@+id/detail_manager_phone_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:text="@string/phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

@@ -22,13 +22,11 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/notam_content_layout"
-        android:paddingTop="5dp"
-        android:paddingBottom="12dp"
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/notam_title1"
-            style="@style/TextMedium"
+            style="@style/TextSmall"
             android:gravity="center_horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />

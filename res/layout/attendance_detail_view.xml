@@ -40,7 +40,7 @@
                     style="@style/TextLabel"
                     android:text="@string/airport_attendance"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             <LinearLayout android:id="@+id/attendance_content_layout"

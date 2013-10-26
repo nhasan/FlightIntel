@@ -21,8 +21,6 @@
  -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:paddingTop="6dp"
-        android:paddingBottom="0dp"
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
@@ -30,7 +28,7 @@
             style="@style/TextLabel"
             android:ellipsize="end"
             android:layout_marginTop="@dimen/section_margin"
-            android:padding="@dimen/label_padding"
+            android:paddingBottom="@dimen/label_padding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <LinearLayout android:id="@+id/notam_details"

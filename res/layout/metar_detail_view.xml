@@ -59,8 +59,7 @@
             <TextView android:id="@+id/wx_raw_metar_label"
                     android:text="@string/raw_text"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
-                    android:layout_marginTop="@dimen/section_margin"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             <TextView android:id="@+id/wx_raw_metar"
@@ -73,7 +72,7 @@
                     android:text="@string/winds"
                     style="@style/TextLabel"
                     android:visibility="gone"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -87,7 +86,7 @@
                     android:text="@string/visibility"
                     style="@style/TextLabel"
                     android:visibility="gone"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -100,7 +99,7 @@
             <TextView android:id="@+id/wx_weather_label"
                     android:text="@string/weather"
                     style="@style/TextLabel"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -113,7 +112,7 @@
                     android:text="@string/sky_condition"
                     style="@style/TextLabel"
                     android:visibility="gone"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -127,7 +126,7 @@
                     android:text="@string/temperature"
                     style="@style/TextLabel"
                     android:visibility="gone"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -141,7 +140,7 @@
                     android:text="@string/pressure"
                     style="@style/TextLabel"
                     android:visibility="gone"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -155,7 +154,7 @@
                     android:text="@string/precipitation"
                     style="@style/TextLabel"
                     android:visibility="gone"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -169,7 +168,7 @@
                     android:text="@string/remarks"
                     style="@style/TextLabel"
                     android:visibility="gone"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />

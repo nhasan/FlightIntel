@@ -39,7 +39,7 @@
             <TextView android:id="@+id/rwy_ils_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             <LinearLayout android:id="@+id/rwy_ils_details"
@@ -50,7 +50,7 @@
             <TextView android:id="@+id/rwy_loc_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:text="@string/localizer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -62,7 +62,7 @@
             <TextView android:id="@+id/rwy_gs_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:text="@string/glideslope"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -74,7 +74,7 @@
             <TextView android:id="@+id/rwy_im_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:text="@string/innermarker"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -86,7 +86,7 @@
             <TextView android:id="@+id/rwy_mm_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:text="@string/middlemarker"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -98,7 +98,7 @@
             <TextView android:id="@+id/rwy_om_label"
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:padding="@dimen/label_padding"
+                    android:paddingBottom="@dimen/label_padding"
                     android:text="@string/outermarker"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
