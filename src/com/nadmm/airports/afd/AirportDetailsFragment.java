@@ -19,16 +19,7 @@
 
 package com.nadmm.airports.afd;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.TimeZone;
-
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
+import android.content.*;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -38,58 +29,26 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
-import com.nadmm.airports.Application;
-import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.Aff3;
-import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Attendance;
-import com.nadmm.airports.DatabaseManager.Awos1;
-import com.nadmm.airports.DatabaseManager.Dafd;
-import com.nadmm.airports.DatabaseManager.DafdCycle;
-import com.nadmm.airports.DatabaseManager.Dtpp;
-import com.nadmm.airports.DatabaseManager.LocationColumns;
-import com.nadmm.airports.DatabaseManager.Remarks;
-import com.nadmm.airports.DatabaseManager.Runways;
-import com.nadmm.airports.DatabaseManager.Tower1;
-import com.nadmm.airports.DatabaseManager.Tower3;
-import com.nadmm.airports.DatabaseManager.Tower6;
-import com.nadmm.airports.DatabaseManager.Tower7;
-import com.nadmm.airports.DatabaseManager.Tower8;
-import com.nadmm.airports.DatabaseManager.Wxs;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.PreferencesActivity;
-import com.nadmm.airports.R;
+import com.nadmm.airports.*;
+import com.nadmm.airports.DatabaseManager.*;
 import com.nadmm.airports.aeronav.DafdService;
 import com.nadmm.airports.aeronav.DtppActivity;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.notams.AirportNotamActivity;
 import com.nadmm.airports.tfr.TfrListActivity;
-import com.nadmm.airports.utils.CursorAsyncTask;
-import com.nadmm.airports.utils.DataUtils;
-import com.nadmm.airports.utils.FormatUtils;
-import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.utils.NetworkUtils;
-import com.nadmm.airports.utils.SystemUtils;
-import com.nadmm.airports.utils.TimeUtils;
-import com.nadmm.airports.utils.UiUtils;
-import com.nadmm.airports.wx.Metar;
-import com.nadmm.airports.wx.MetarService;
-import com.nadmm.airports.wx.NearbyWxActivity;
-import com.nadmm.airports.wx.NearbyWxCursor;
-import com.nadmm.airports.wx.NoaaService;
-import com.nadmm.airports.wx.WxDetailActivity;
-import com.nadmm.airports.wx.WxUtils;
+import com.nadmm.airports.utils.*;
+import com.nadmm.airports.wx.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.TimeZone;
 
 public final class AirportDetailsFragment extends FragmentBase {
 
@@ -648,9 +607,6 @@ public final class AirportDetailsFragment extends FragmentBase {
         if ( medical != null && medical.equals( "Y" ) ) {
             addRow( layout, "Medical use", "Yes" );
         }
-        Bundle args = new Bundle();
-        args.putString( Airports.SITE_NUMBER, mSiteNumber );
-        addClickableRow( layout, "Sunrise and sunset", AlmanacFragment.class, args );
     }
 
     protected void showAeroNavDetails( Cursor[] result ) {
@@ -751,6 +707,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, "Aircraft operations", AircraftOpsFragment.class, args );
         addClickableRow( layout, "Additional remarks", RemarksFragment.class, args );
         addClickableRow( layout, "Attendance", AttendanceFragment.class, args );
+        addClickableRow( layout, "Sunrise and sunset", AlmanacFragment.class, args );
     }
 
     protected void addAwosRow( LinearLayout layout, String id, String name, String type, 
