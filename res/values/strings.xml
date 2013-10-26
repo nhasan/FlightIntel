@@ -123,6 +123,7 @@
     <string name="tfr_list">TFR List</string>
     <string name="notam_tfr">NOTAM &amp; TFR</string>
     <string name="tfr_text">TFR Text</string>
+    <string name="tfr_details">TFR Details</string>
     <string name="tfr_time">TFR Time</string>
     <string name="tfrs">TFRs</string>
     <string name="select_charts_volume">Select Charts Volume</string>
