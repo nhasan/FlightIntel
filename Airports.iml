@@ -10,6 +10,7 @@
         <option name="SOURCE_GEN_TASK_NAME" value="generateDebugSources" />
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
         <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/res" />
+        <option name="APK_PATH" value="/build/apk/Airports-debug-unaligned.apk" />
       </configuration>
     </facet>
     <facet type="android-gradle" name="Android-Gradle">
