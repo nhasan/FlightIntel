@@ -19,30 +19,24 @@
 
 package com.nadmm.airports.tfr;
 
-import java.util.Locale;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.tfr.TfrList.Tfr;
 import com.nadmm.airports.utils.TimeUtils;
+
+import java.util.Locale;
 
 public class TfrListFragment extends FragmentBase {
 
@@ -142,7 +136,7 @@ public class TfrListFragment extends FragmentBase {
                     tfrList.entries.size() ) );
             TextView tv = (TextView) findViewById( R.id.tfr_fetch_time );
             if ( tfrList.fetchTime > 0 ) {
-                tv.setText( "Fetched on "+TimeUtils.formatDateTime( context, tfrList.fetchTime )  );
+                tv.setText( "Fetched "+TimeUtils.formatElapsedTime( tfrList.fetchTime )  );
             } else {
                 tv.setText( "Unable to fetch TFR list. Please try again later" );
             }
