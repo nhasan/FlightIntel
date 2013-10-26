@@ -37,11 +37,6 @@ public class AfdActivityBase extends ActivityBase {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     protected View getContentView() {
         return createContentView( R.layout.airport_activity_layout );
     }
