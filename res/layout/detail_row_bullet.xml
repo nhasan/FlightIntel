@@ -22,6 +22,8 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/item_label"
