@@ -21,12 +21,12 @@
  -->
 
 <resources>
-    <dimen name="padding_left">12dip</dimen>
-    <dimen name="padding_top">8dip</dimen>
-    <dimen name="padding_right">12dip</dimen>
-    <dimen name="padding_bottom">8dip</dimen>
-    <dimen name="section_margin">10dip</dimen>
-    <dimen name="item_padding">12dip</dimen>
+    <dimen name="padding_left">16dip</dimen>
+    <dimen name="padding_top">12dip</dimen>
+    <dimen name="padding_right">16dip</dimen>
+    <dimen name="padding_bottom">12dip</dimen>
+    <dimen name="section_margin">16dip</dimen>
+    <dimen name="item_padding">16dip</dimen>
     <dimen name="label_padding">4dip</dimen>
 
     <dimen name="slidingmenu_width">240dip</dimen>
