@@ -29,7 +29,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
 import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.afd.AfdMainActivity;
 import com.nadmm.airports.clocks.ClocksActivity;
@@ -146,7 +145,7 @@ public class DrawerActivity extends ActivityBase implements ListView.OnItemClick
         Intent intent = null;
 
         if ( id == DrawerListView.ITEM_ID_AFD ) {
-            intent = new Intent( DrawerActivity.this, AfdMainActivity.class );
+            intent = new Intent( this, AfdMainActivity.class );
         } else if ( id == DrawerListView.ITEM_ID_TFR ) {
             intent = new Intent( this, TfrListActivity.class );
         } else if ( id == DrawerListView.ITEM_ID_LIBRARY ) {
