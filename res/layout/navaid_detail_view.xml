@@ -31,7 +31,6 @@
         <LinearLayout
                 android:id="@+id/navaid_detail_layout"
                 android:orientation="vertical"
-                android:paddingTop="@dimen/padding_top"
                 android:paddingLeft="@dimen/padding_left"
                 android:paddingRight="@dimen/padding_right"
                 android:paddingBottom="@dimen/padding_bottom"
@@ -63,11 +62,5 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
         </LinearLayout>
-        <TextView android:id="@+id/effective_date"
-                style="@style/TextSmall.Light"
-                android:padding="@dimen/item_padding"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
     </LinearLayout>
 </ScrollView>
