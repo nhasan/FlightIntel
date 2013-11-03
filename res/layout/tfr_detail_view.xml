@@ -25,9 +25,7 @@
     <LinearLayout
             android:orientation="vertical"
             android:paddingLeft="@dimen/padding_left"
-            android:paddingTop="@dimen/padding_top"
             android:paddingRight="@dimen/padding_right"
-            android:paddingBottom="@dimen/padding_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <Button android:id="@+id/btnViewGraphic"
