@@ -16,12 +16,13 @@ import com.nadmm.airports.R;
 public final class DrawerListView extends ListView {
 
     public static final int ITEM_ID_AFD = 0;
-    public static final int ITEM_ID_TFR = 1;
-    public static final int ITEM_ID_LIBRARY = 2;
-    public static final int ITEM_ID_SCRATCHPAD = 3;
-    public static final int ITEM_ID_CLOCKS = 4;
-    public static final int ITEM_ID_E6B = 5;
-    public static final int ITEM_ID_CHARTS = 6;
+    public static final int ITEM_ID_WX = 1;
+    public static final int ITEM_ID_TFR = 2;
+    public static final int ITEM_ID_LIBRARY = 3;
+    public static final int ITEM_ID_SCRATCHPAD = 4;
+    public static final int ITEM_ID_CLOCKS = 5;
+    public static final int ITEM_ID_E6B = 6;
+    public static final int ITEM_ID_CHARTS = 7;
 
     public DrawerListView( Context context, AttributeSet attrs ) {
         super( context, attrs );
@@ -68,6 +69,7 @@ public final class DrawerListView extends ListView {
         public DrawerCursor() {
             super( sColumnNames );
             newRow().add( ITEM_ID_AFD ).add( "A/FD" ).add( R.drawable.airport );
+            newRow().add( ITEM_ID_WX ).add( "Wx" ).add( R.drawable.bkn );
             newRow().add( ITEM_ID_TFR ).add( "TFRs" ).add( R.drawable.stop );
             newRow().add( ITEM_ID_LIBRARY ).add( "Library" ).add( R.drawable.book );
             newRow().add( ITEM_ID_SCRATCHPAD ).add( "Scratch Pad" ).add( R.drawable.notepad );
