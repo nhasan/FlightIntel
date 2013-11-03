@@ -19,22 +19,47 @@
 
 package com.nadmm.airports.afd;
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
-
+import android.support.v7.app.ActionBar;
+import android.widget.ArrayAdapter;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DrawerActivity;
+import com.nadmm.airports.R;
 import com.nadmm.airports.views.DrawerListView;
 
-public final class AfdMainActivity extends DrawerActivity {
+import java.util.ArrayList;
+
+public final class AfdMainActivity extends DrawerActivity
+        implements ActionBar.OnNavigationListener {
+
+    private final String[] mOptions = new String[] {
+            "Favorites",
+            "Nearby",
+            "Browse"
+    };
+
+    protected final int ID_FAVORITES = 0;
+    protected final int ID_NEARBY = 1;
+    protected final int ID_BROWSE = 2;
+
+    private int mFragmentId;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        // Setup list navigation mode
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                actionBar.getThemedContext(), R.layout.spinner_item, mOptions );
+        adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
+        actionBar.setListNavigationCallbacks( adapter, this );
+        actionBar.setDisplayShowTitleEnabled( false );
+
         Bundle args = getIntent().getExtras();
-        addFragment( getHomeFragmentClass(), args );
+        mFragmentId = getInitialFragmentId();
+        addFragment( getFragmentClass( mFragmentId ), args );
     }
 
     @Override
@@ -42,6 +67,7 @@ public final class AfdMainActivity extends DrawerActivity {
         super.onResume();
 
         setDrawerItemChecked( DrawerListView.ITEM_ID_AFD );
+        getSupportActionBar().setSelectedNavigationItem( mFragmentId );
     }
 
     @Override
@@ -56,13 +82,33 @@ public final class AfdMainActivity extends DrawerActivity {
       EasyTracker.getInstance( this ).activityStop( this );
     }
 
-    protected Class<?> getHomeFragmentClass() {
+    @Override
+    public boolean onNavigationItemSelected( int itemPosition, long itemId ) {
+        if ( itemId != mFragmentId ) {
+            mFragmentId = (int) itemId;
+            Class<?> clss = getFragmentClass( mFragmentId );
+            replaceFragment( clss, null );
+        }
+        return true;
+    }
+
+    protected int getInitialFragmentId() {
         ArrayList<String> fav = getDbManager().getAptFavorites();
-        Class<?> clss = null;
         if ( fav.size() > 0 ) {
-            clss = FavoritesFragment.class;
+            return ID_FAVORITES;
         } else {
-            clss = NearbyFragment.class;
+            return ID_NEARBY;
+        }
+    }
+
+    protected Class<?> getFragmentClass( int id ) {
+        Class<?> clss = null;
+        if ( id == ID_FAVORITES ) {
+            clss = FavoriteAirportsFragment.class;
+        } else if ( id == ID_NEARBY ) {
+            clss = NearbyAirportsFragment.class;
+        } else {
+            clss = BrowseAirportsFragment.class;
         }
         return clss;
     }

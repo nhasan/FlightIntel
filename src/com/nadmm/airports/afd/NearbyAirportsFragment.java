@@ -19,47 +19,62 @@
 
 package com.nadmm.airports.afd;
 
-import java.util.Locale;
-
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
+import android.support.v4.widget.CursorAdapter;
+import android.view.View;
+import android.widget.ListView;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
+import com.nadmm.airports.NearbyFragmentBase;
 
-public class NearbyAirportsFragment extends AirportListFragmentBase {
-
-    private int mRadius;
+public class NearbyAirportsFragment extends NearbyFragmentBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        setEmptyText( "No airports found nearby." );
-        Bundle args = getArguments();
-        mRadius = args.getInt( LocationColumns.RADIUS );
         super.onCreate( savedInstanceState );
+
+        setEmptyText( "No airports found nearby." );
     }
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
-        Bundle args = getArguments();
-        Location location = (Location) args.get( LocationColumns.LOCATION );
-        if ( location != null ) {
-            onLocationChanged( location );
-        }
-        getListView().setCacheColorHint( 0xffffffff );
-
-        setActionBarTitle( String.format( "Nearby Airports" ) );
-        setActionBarSubtitle( String.format( Locale.US, "Within %dNM radius", mRadius ) );
-
         super.onActivityCreated( savedInstanceState );
+
+        Bundle args = getArguments();
+        if ( args != null ) {
+            Location location = (Location) args.get( LocationColumns.LOCATION );
+            if ( location != null ) {
+                onLocationChanged( location );
+            }
+        }
+
+        getListView().setCacheColorHint( 0xffffffff );
+        setActionBarTitle( String.format( "Nearby Airports" ) );
     }
 
     @Override
     public void onLocationChanged( Location location ) {
         new NearbyAirportsTask().execute( location );
+    }
+
+    @Override
+    protected CursorAdapter newListAdapter( Context context, Cursor c ) {
+        return new AirportsCursorAdapter( context, c );
+    }
+
+    @Override
+    protected void onListItemClick( ListView l, View v, int position ) {
+        Cursor c = (Cursor) l.getItemAtPosition( position );
+        String siteNumber = c.getString( c.getColumnIndex( DatabaseManager.Airports.SITE_NUMBER ) );
+        Intent intent = new Intent( getActivity(), AirportActivity.class );
+        intent.putExtra( DatabaseManager.Airports.SITE_NUMBER, siteNumber );
+        startActivity( intent );
     }
 
     private final class NearbyAirportsTask extends AsyncTask<Location, Void, Cursor> {
@@ -74,7 +89,7 @@ public class NearbyAirportsFragment extends AirportListFragmentBase {
             Location location = params[ 0 ];
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
-            return new NearbyAirportsCursor( db, location, mRadius );
+            return new NearbyAirportsCursor( db, location, getRadius() );
         }
 
         @Override
