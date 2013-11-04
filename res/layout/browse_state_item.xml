@@ -20,18 +20,20 @@
  */
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
+        android:paddingLeft="@dimen/padding_left"
+        android:paddingRight="@dimen/padding_right"
+        android:paddingTop="@dimen/padding_top"
+        android:paddingBottom="@dimen/padding_bottom"
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="48dp">
     <TextView android:id="@+id/browse_airport_code"
-            android:textSize="16sp"
+            style="@style/TextSmall"
             android:gravity="left|center_vertical"
             android:layout_width="72dp"
             android:layout_height="match_parent" />
     <TextView android:id="@+id/browse_airport_name"
-            android:textSize="16sp"
+            style="@style/TextSmall"
             android:singleLine="true"
             android:ellipsize="end"
             android:gravity="left|center_vertical"
