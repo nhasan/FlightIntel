@@ -108,7 +108,7 @@ public final class AfdMainActivity extends DrawerActivity
         } else if ( id == ID_NEARBY ) {
             clss = NearbyAirportsFragment.class;
         } else {
-            clss = BrowseAirportsFragment.class;
+            clss = BrowseStateFragment.class;
         }
         return clss;
     }
