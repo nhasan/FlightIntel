@@ -23,15 +23,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
-import android.provider.BaseColumns;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.ResourceCursorAdapter;
 import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.TextView;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
@@ -39,27 +35,11 @@ import com.nadmm.airports.DownloadActivity;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
-import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
 
 public final class BrowseAirportsFragment extends ListFragmentBase {
-
-    // Projection map for queries
-    static private final HashMap<String, String> sCityMap;
-    static {
-        sCityMap = new HashMap<String, String>();
-        sCityMap.put(BaseColumns._ID, BaseColumns._ID);
-        sCityMap.put(Airports.SITE_NUMBER, Airports.SITE_NUMBER);
-        sCityMap.put( Airports.ASSOC_CITY, Airports.ASSOC_CITY );
-        sCityMap.put( Airports.FACILITY_NAME, Airports.FACILITY_NAME );
-        sCityMap.put( Airports.ICAO_CODE,
-                "IFNULL("+Airports.ICAO_CODE+", "+Airports.FAA_CODE+")"
-                +" AS "+Airports.ICAO_CODE );
-    }
 
     private SectionedCursorAdapter mAdapter;
 
@@ -83,7 +63,7 @@ public final class BrowseAirportsFragment extends ListFragmentBase {
 
     @Override
     protected CursorAdapter newListAdapter( Context context, Cursor c ) {
-        mAdapter = new CityCursorAdapter( getActivity(), R.layout.browse_state_item, c );
+        mAdapter = new CityCursorAdapter( getActivity(), c );
         setActionBarSubtitle( String.format( Locale.US, "%s  (%d)",
                 getSupportActionBar().getSubtitle(), c.getCount() ) );
 
@@ -105,22 +85,15 @@ public final class BrowseAirportsFragment extends ListFragmentBase {
 
     private final class CityCursorAdapter extends SectionedCursorAdapter {
 
-        public CityCursorAdapter( Context context, int layout, Cursor c ) {
-            super( context, layout, c, R.layout.list_item_header );
+        AirportsCursorAdapter mAdapter;
+        public CityCursorAdapter( Context context, Cursor c ) {
+            super( context, R.layout.airport_list_item, c, R.layout.list_item_header );
+            mAdapter = new AirportsCursorAdapter( context, c );
         }
 
         @Override
         public void bindView( View view, Context context, Cursor c ) {
-            // Browsing all airports in a state
-            TextView tv;
-            String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-            String type = DataUtils.decodeLandingFaclityType( siteNumber );
-            String icao = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
-            tv = (TextView) view.findViewById( R.id.browse_airport_code );
-            tv.setText( icao );
-            String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
-            tv = (TextView) view.findViewById( R.id.browse_airport_name );
-            tv.setText( name+" "+type );
+            mAdapter.bindView( view, context, c );
         }
 
         @Override
@@ -144,35 +117,15 @@ public final class BrowseAirportsFragment extends ListFragmentBase {
                 return null;
             }
 
-            Cursor c = null;
             String stateCode = params[ 0 ];
             String stateName = params[ 1 ];
 
-            // Show all the airports in the selected state grouped by city
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Airports.TABLE_NAME );
-            builder.setProjectionMap( sCityMap );
             String selection = "("+Airports.ASSOC_STATE+" <> '' AND "+Airports.ASSOC_STATE
                     +"=?) OR ("+Airports.ASSOC_STATE+" = '' AND "+Airports.ASSOC_COUNTY+"=?)";
             String[] selectionArgs = new String[] { stateCode, stateName };
 
-            c = builder.query( db,
-                    // String[] projectionIn
-                    new String[] { Airports._ID,
-                            Airports.SITE_NUMBER,
-                            Airports.ASSOC_CITY,
-                            Airports.FACILITY_NAME,
-                            Airports.ICAO_CODE },
-                    // String selection
-                    selection,
-                    // String[] selectionArgs
-                    selectionArgs,
-                    // String groupBy
-                    null,
-                    // String having
-                    null,
-                    // String sortOrder
-                    Airports.ASSOC_CITY+", "+Airports.FACILITY_NAME );
+            Cursor c = AirportsCursorHelper.query( db, selection, selectionArgs, null, null,
+                    Airports.ASSOC_CITY+", "+Airports.FACILITY_NAME, null );
 
             return new Cursor[] { c };
         }
