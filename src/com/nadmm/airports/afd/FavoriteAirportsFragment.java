@@ -19,18 +19,23 @@
 
 package com.nadmm.airports.afd;
 
-import java.util.ArrayList;
-
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
+import android.support.v4.widget.CursorAdapter;
+import android.view.View;
+import android.widget.ListView;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.ListFragmentBase;
 
-public class FavoriteAirportsFragment extends AirportListFragmentBase {
+import java.util.ArrayList;
+
+public class FavoriteAirportsFragment extends ListFragmentBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -43,6 +48,20 @@ public class FavoriteAirportsFragment extends AirportListFragmentBase {
         super.onResume();
 
         new FavoriteAirportsTask().execute( (Void[]) null );
+    }
+
+    @Override
+    protected CursorAdapter newListAdapter( Context context, Cursor c ) {
+        return new AirportsCursorAdapter( context, c );
+    }
+
+    @Override
+    protected void onListItemClick( ListView l, View v, int position ) {
+        Cursor c = (Cursor) l.getItemAtPosition( position );
+        String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+        Intent intent = new Intent( getActivity(), AirportActivity.class );
+        intent.putExtra( Airports.SITE_NUMBER, siteNumber );
+        startActivity( intent );
     }
 
     public class FavoriteAirportsTask extends AsyncTask<Void, Void, Cursor> {
