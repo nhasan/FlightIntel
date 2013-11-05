@@ -25,7 +25,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.widget.ListView;
 import com.nadmm.airports.DatabaseManager;
@@ -48,13 +47,6 @@ public final class BrowseAirportsFragment extends ListFragmentBase {
         Bundle args = getArguments();
         String stateCode = args.getString( States.STATE_CODE );
         String stateName = args.getString( States.STATE_NAME );
-        setActionBarTitle( "Browse" );
-        setActionBarSubtitle( stateName );
-        getListView().setCacheColorHint( 0xffffffff );
-
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_STANDARD );
-        actionBar.setDisplayShowTitleEnabled( true );
 
         setBackgroundTask(new BrowseTask()).execute( stateCode, stateName );
 
