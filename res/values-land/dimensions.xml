@@ -21,19 +21,6 @@
  -->
 
 <resources>
-    <dimen name="padding_left">16dip</dimen>
-    <dimen name="padding_top">8dip</dimen>
-    <dimen name="padding_right">16dip</dimen>
-    <dimen name="padding_bottom">12dip</dimen>
-    <dimen name="section_margin">16dip</dimen>
-    <dimen name="item_padding">16dip</dimen>
-    <dimen name="label_padding">4dip</dimen>
-
-    <dimen name="slidingmenu_width">240dip</dimen>
-    <dimen name="slidingmenu_shadow_width">24dip</dimen>
-    <dimen name="slidingmenu_item_height">52dip</dimen>
-    <dimen name="slidingmenu_padding">8dip</dimen>
-
-    <dimen name="list_nav_text1_size">18sp</dimen>
-    <dimen name="list_nav_text2_size">12sp</dimen>
+    <dimen name="list_nav_text1_size">16sp</dimen>
+    <dimen name="list_nav_text2_size">10sp</dimen>
 </resources>

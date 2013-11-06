@@ -19,9 +19,14 @@
 
 package com.nadmm.airports.afd;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DrawerActivity;
 import com.nadmm.airports.R;
@@ -50,12 +55,10 @@ public final class AfdMainActivity extends DrawerActivity
 
         // Setup list navigation mode
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                actionBar.getThemedContext(), R.layout.spinner_item, mOptions );
-        adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
-        actionBar.setListNavigationCallbacks( adapter, this );
         actionBar.setDisplayShowTitleEnabled( false );
+        actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
+        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(), mOptions );
+        actionBar.setListNavigationCallbacks( adapter, this );
 
         Bundle args = getIntent().getExtras();
         mFragmentId = getInitialFragmentId();
@@ -107,10 +110,33 @@ public final class AfdMainActivity extends DrawerActivity
             clss = FavoriteAirportsFragment.class;
         } else if ( id == ID_NEARBY ) {
             clss = NearbyAirportsFragment.class;
-        } else {
+        } else if ( id == ID_BROWSE ) {
             clss = BrowseStateFragment.class;
         }
         return clss;
+    }
+
+    private class NavAdapter extends ArrayAdapter<String> {
+
+        private LayoutInflater mInflater;
+
+        public NavAdapter( Context context, String[] values ) {
+            super( context, 0, values );
+            mInflater = (LayoutInflater) context.getSystemService( LAYOUT_INFLATER_SERVICE );
+            setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
+        }
+
+        @Override
+        public View getView( int position, View convertView, ViewGroup parent ) {
+            if ( convertView == null ) {
+                convertView = mInflater.inflate( R.layout.actionbar_spinner_item_2, null );
+                TextView tv = (TextView) convertView.findViewById( android.R.id.text1 );
+                tv.setText( "Airports" );
+            }
+            TextView tv = (TextView) convertView.findViewById( android.R.id.text2 );
+            tv.setText( getItem( position ) );
+            return convertView;
+        }
     }
 
 }
