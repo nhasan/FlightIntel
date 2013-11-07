@@ -135,6 +135,15 @@
         </activity>
 
         <activity
+            android:label="@string/weather"
+            android:name=".wx.WxMainActivity"
+            android:parentActivityName=".FlightIntel">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightIntel" />
+        </activity>
+
+        <activity
             android:label=""
             android:name=".tfr.TfrListActivity"
             android:parentActivityName=".FlightIntel">

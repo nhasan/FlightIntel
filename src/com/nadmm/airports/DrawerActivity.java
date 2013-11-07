@@ -37,6 +37,7 @@ import com.nadmm.airports.library.LibraryActivity;
 import com.nadmm.airports.scratchpad.ScratchPadActivity;
 import com.nadmm.airports.tfr.TfrListActivity;
 import com.nadmm.airports.views.DrawerListView;
+import com.nadmm.airports.wx.WxMainActivity;
 
 public class DrawerActivity extends ActivityBase implements ListView.OnItemClickListener {
 
@@ -138,14 +139,14 @@ public class DrawerActivity extends ActivityBase implements ListView.OnItemClick
         }
     }
 
-    protected void updateContent( int position ) {
-        // Create a new fragment and specify the planet to show based on position
-        long id = mDrawerList.getAdapter().getItemId( position );
-
+    @Override
+    public void onItemClick( AdapterView<?> arg0, View arg1, int position, long id ) {
         Intent intent = null;
 
         if ( id == DrawerListView.ITEM_ID_AFD ) {
             intent = new Intent( this, AfdMainActivity.class );
+        } else if ( id == DrawerListView.ITEM_ID_WX ) {
+            intent = new Intent( this, WxMainActivity.class );
         } else if ( id == DrawerListView.ITEM_ID_TFR ) {
             intent = new Intent( this, TfrListActivity.class );
         } else if ( id == DrawerListView.ITEM_ID_LIBRARY ) {
@@ -164,11 +165,6 @@ public class DrawerActivity extends ActivityBase implements ListView.OnItemClick
             mIntent = intent;
         }
         mDrawerLayout.closeDrawer( mDrawerList );
-    }
-
-    @Override
-    public void onItemClick( AdapterView<?> arg0, View arg1, int position, long id ) {
-        updateContent( position );
     }
 
 }

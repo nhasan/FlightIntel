@@ -69,7 +69,7 @@ public final class DrawerListView extends ListView {
         public DrawerCursor() {
             super( sColumnNames );
             newRow().add( ITEM_ID_AFD ).add( "A/FD" ).add( R.drawable.airport );
-            newRow().add( ITEM_ID_WX ).add( "Wx" ).add( R.drawable.bkn );
+            newRow().add( ITEM_ID_WX ).add( "Weather" ).add( R.drawable.bkn );
             newRow().add( ITEM_ID_TFR ).add( "TFRs" ).add( R.drawable.stop );
             newRow().add( ITEM_ID_LIBRARY ).add( "Library" ).add( R.drawable.book );
             newRow().add( ITEM_ID_SCRATCHPAD ).add( "Scratch Pad" ).add( R.drawable.notepad );

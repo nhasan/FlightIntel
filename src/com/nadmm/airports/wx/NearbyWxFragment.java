@@ -62,10 +62,13 @@ public class NearbyWxFragment extends WxListFragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        Location location;
         Bundle args = getArguments();
-        Location location = (Location) args.getParcelable( LocationColumns.LOCATION );
-        if ( location != null ) {
-            onLocationChanged( location );
+        if ( args != null ) {
+            location = (Location) args.getParcelable( LocationColumns.LOCATION );
+            if ( location != null ) {
+                onLocationChanged( location );
+            }
         }
         getListView().setCacheColorHint( 0xffffffff );
 
