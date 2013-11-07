@@ -19,13 +19,18 @@
 
 package com.nadmm.airports.wx;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.OnNavigationListener;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import android.widget.TextView;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
@@ -34,9 +39,8 @@ import com.nadmm.airports.utils.TabsAdapter;
 public class WxDetailActivity extends ActivityBase
                 implements OnNavigationListener, ViewPager.OnPageChangeListener {
 
-    private TabsAdapter mTabsAdapter;
     private ViewPager mViewPager;
-    private ActionBar mActionBar;
+    private TabsAdapter mTabsAdapter;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -73,13 +77,11 @@ public class WxDetailActivity extends ActivityBase
         }
 
         // Setup list navigation mode
-        mActionBar = getSupportActionBar();
-        mActionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>( mActionBar.getThemedContext(),
-                R.layout.spinner_dropdown_item, titles );
-        adapter.setDropDownViewResource( R.layout.spinner_item );
-        mActionBar.setListNavigationCallbacks( adapter, this );
-        mActionBar.setDisplayShowTitleEnabled( false );
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
+        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(), titles );
+        actionBar.setListNavigationCallbacks( adapter, this );
+        actionBar.setDisplayShowTitleEnabled( false );
 
         if ( savedInstanceState != null ) {
             // Workaround for race conditions in ViewPager
@@ -130,7 +132,8 @@ public class WxDetailActivity extends ActivityBase
 
     @Override
     public void onPageSelected( int position ) {
-        mActionBar.setSelectedNavigationItem( position );
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setSelectedNavigationItem( position );
     }
 
     private void setCurrentPage( int pos ) {
@@ -138,6 +141,29 @@ public class WxDetailActivity extends ActivityBase
         // See: http://code.google.com/p/android/issues/detail?id=29472
         if ( mViewPager.getCurrentItem() != pos ) {
             mViewPager.setCurrentItem( pos );
+        }
+    }
+
+    private class NavAdapter extends ArrayAdapter<String> {
+
+        private LayoutInflater mInflater;
+
+        public NavAdapter( Context context, String[] values ) {
+            super( context, 0, values );
+            mInflater = (LayoutInflater) context.getSystemService( LAYOUT_INFLATER_SERVICE );
+            setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
+        }
+
+        @Override
+        public View getView( int position, View convertView, ViewGroup parent ) {
+            if ( convertView == null ) {
+                convertView = mInflater.inflate( R.layout.actionbar_spinner_item_2, null );
+                TextView tv = (TextView) convertView.findViewById( android.R.id.text1 );
+                tv.setText( "Weather" );
+            }
+            TextView tv = (TextView) convertView.findViewById( android.R.id.text2 );
+            tv.setText( getItem( position ) );
+            return convertView;
         }
     }
 
