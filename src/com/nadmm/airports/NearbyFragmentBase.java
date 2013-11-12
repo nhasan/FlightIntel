@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports;
@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import android.view.View;
-import com.nadmm.airports.DatabaseManager.LocationColumns;
 import com.nadmm.airports.utils.GeoUtils;
 
 import java.util.Date;
@@ -60,16 +59,15 @@ public abstract class NearbyFragmentBase extends ListFragmentBase {
         View view = getView();
         view.setKeepScreenOn( true );
 
-        Location location = getLastKnownGoodLocation();
-
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences( getActivity() );
         mRadius = Integer.valueOf( prefs.getString(
                 PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
 
-        Bundle args = new Bundle();
-        args.putParcelable( LocationColumns.LOCATION, location );
-        args.putInt( LocationColumns.RADIUS, mRadius );
+        Location location = getLastKnownGoodLocation();
+        if ( location != null ) {
+            onLocationChanged( location );
+        }
 
         setActionBarSubtitle( String.format( Locale.US, "Within %d NM Radius", mRadius ) );
     }
@@ -151,7 +149,7 @@ public abstract class NearbyFragmentBase extends ListFragmentBase {
         @Override
         public void onStatusChanged( String provider, int status, Bundle extras ) {
         }
-        
+
     }
 
 }
