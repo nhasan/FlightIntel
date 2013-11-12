@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -31,15 +31,35 @@ import android.view.View;
 import android.widget.ListView;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
-import com.nadmm.airports.NearbyFragmentBase;
+import com.nadmm.airports.ListFragmentBase;
+import com.nadmm.airports.utils.NearbyHelper;
 
-public class NearbyAirportsFragment extends NearbyFragmentBase {
+public class NearbyAirportsFragment extends ListFragmentBase {
+
+    private NearbyHelper mNearbyHelper;
+    private int mRadius;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        mNearbyHelper = new NearbyHelper( getActivity(), this );
+        mRadius = mNearbyHelper.getRadius();
         setEmptyText( "No airports found nearby." );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mNearbyHelper.startLocationUpdates();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        mNearbyHelper.stopLocationUpdates();
     }
 
     @Override
@@ -60,7 +80,11 @@ public class NearbyAirportsFragment extends NearbyFragmentBase {
 
     @Override
     public void onLocationChanged( Location location ) {
-        new NearbyAirportsTask().execute( location );
+        if ( getActivity() != null ) {
+            new NearbyAirportsTask().execute( location );
+        } else {
+            mNearbyHelper.stopLocationUpdates();
+        }
     }
 
     @Override
@@ -81,15 +105,10 @@ public class NearbyAirportsFragment extends NearbyFragmentBase {
 
         @Override
         protected Cursor doInBackground( Location... params ) {
-            if ( getActivity() == null ) {
-                cancel( false );
-                return null;
-            }
-
             Location location = params[ 0 ];
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
-            return new NearbyAirportsCursor( db, location, getRadius() );
+            return new NearbyAirportsCursor( db, location, mRadius );
         }
 
         @Override

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -24,44 +24,45 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
+import android.view.View;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
+import com.nadmm.airports.utils.NearbyHelper;
+
+import java.util.Locale;
 
 public class NearbyWxFragment extends WxListFragmentBase {
 
-    private final class NearbyWxTask extends AsyncTask<Location, Void, Cursor> {
-
-        @Override
-        protected Cursor doInBackground( Location... params ) {
-            if ( getActivity() == null ) {
-                cancel( false );
-                return null;
-            }
-
-            Location location = params[ 0 ];
-            Bundle args = getArguments();
-            int radius = args.getInt( LocationColumns.RADIUS );
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-
-            return new NearbyWxCursor( db, location, radius );
-        }
-
-        @Override
-        protected void onPostExecute( Cursor c ) {
-            setCursor( c );
-        }
-
-    }
+    private NearbyHelper mNearbyHelper;
+    private int mRadius;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        setEmptyText( "No wx stations found nearby." );
         super.onCreate( savedInstanceState );
+
+        mNearbyHelper = new NearbyHelper( getActivity(), this );
+        mRadius = mNearbyHelper.getRadius();
+        setEmptyText( "No wx stations found nearby." );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mNearbyHelper.startLocationUpdates();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        mNearbyHelper.stopLocationUpdates();
     }
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
         Location location;
         Bundle args = getArguments();
         if ( args != null ) {
@@ -70,14 +71,37 @@ public class NearbyWxFragment extends WxListFragmentBase {
                 onLocationChanged( location );
             }
         }
-        getListView().setCacheColorHint( 0xffffffff );
 
-        super.onActivityCreated( savedInstanceState );
+
+        View view = getView();
+        view.setKeepScreenOn( true );
+
+        getListView().setCacheColorHint( 0xffffffff );
+        setActionBarSubtitle( String.format( Locale.US, "Within %d NM Radius", mRadius ) );
     }
 
     @Override
     public void onLocationChanged( Location location ) {
-        new NearbyWxTask().execute( location );
+        if ( getActivity() != null ) {
+            new NearbyWxTask().execute( location );
+        } else {
+            mNearbyHelper.stopLocationUpdates();
+        }
+    }
+
+    private final class NearbyWxTask extends AsyncTask<Location, Void, Cursor> {
+
+        @Override
+        protected Cursor doInBackground( Location... params ) {
+            Location location = params[ 0 ];
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+            return new NearbyWxCursor( db, location, mRadius );
+        }
+
+        @Override
+        protected void onPostExecute( Cursor c ) {
+            setCursor( c );
+        }
     }
 
 }
