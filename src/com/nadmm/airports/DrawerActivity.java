@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports;
@@ -24,6 +24,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,9 +45,11 @@ public class DrawerActivity extends ActivityBase implements ListView.OnItemClick
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerListView mDrawerList;
+    private Intent mIntent = null;
+
     private CharSequence mTitle;
     private CharSequence mSubtitle;
-    private Intent mIntent = null;
+    private int mNavMode;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -61,7 +64,6 @@ public class DrawerActivity extends ActivityBase implements ListView.OnItemClick
         mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout,
                 R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close ) {
 
-            /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed( View view ) {
                 if ( mIntent != null ) {
                     mIntent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
@@ -69,18 +71,27 @@ public class DrawerActivity extends ActivityBase implements ListView.OnItemClick
                     startActivity( mIntent );
                     mIntent = null;
                 } else {
-                    getSupportActionBar().setTitle( mTitle );
-                    getSupportActionBar().setSubtitle( mSubtitle );
-                    supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                    ActionBar actionBar = getSupportActionBar();
+                    actionBar.setNavigationMode( mNavMode );
+                    actionBar.setTitle( mTitle );
+                    actionBar.setSubtitle( mSubtitle );
+                    if ( actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST ) {
+                        actionBar.setDisplayShowTitleEnabled( false );
+                    }
+                    supportInvalidateOptionsMenu();
                 }
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened( View drawerView ) {
-                mTitle = getSupportActionBar().getTitle();
-                mSubtitle = getSupportActionBar().getSubtitle();
-                getSupportActionBar().setTitle( R.string.app_name );
-                getSupportActionBar().setSubtitle( null );
+                ActionBar actionBar = getSupportActionBar();
+                mTitle = actionBar.getTitle();
+                mSubtitle = actionBar.getSubtitle();
+                mNavMode = actionBar.getNavigationMode();
+                actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_STANDARD );
+                actionBar.setDisplayShowTitleEnabled( true );
+                actionBar.setTitle( R.string.app_name );
+                actionBar.setSubtitle( null );
                 supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
