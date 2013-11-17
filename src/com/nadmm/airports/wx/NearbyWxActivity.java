@@ -14,17 +14,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
 
 import android.os.Bundle;
-
 import com.google.analytics.tracking.android.EasyTracker;
-import com.nadmm.airports.DatabaseManager.LocationColumns;
 import com.nadmm.airports.FragmentActivityBase;
-
 
 public class NearbyWxActivity extends FragmentActivityBase {
 
@@ -33,10 +30,6 @@ public class NearbyWxActivity extends FragmentActivityBase {
         super.onCreate( savedInstanceState );
 
         Bundle args = getIntent().getExtras();
-        int radius = args.getInt( LocationColumns.RADIUS );
-
-        setActionBarSubtitle( String.format( "Within %d NM Radius", radius ) );
-
         addFragment( NearbyWxFragment.class, args );
     }
 
