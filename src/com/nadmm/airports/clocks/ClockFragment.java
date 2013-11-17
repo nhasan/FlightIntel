@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.clocks;
@@ -39,7 +39,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DrawerActivity;
+import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
@@ -84,7 +84,7 @@ public class ClockFragment extends FragmentBase {
     public void onResume() {
         super.onResume();
 
-        DrawerActivity activity = (DrawerActivity) getActivity();
+        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
         activity.setDrawerIndicatorEnabled( false );
 
         if ( mRunnable != null ) {
@@ -160,7 +160,7 @@ public class ClockFragment extends FragmentBase {
                         },
                         Airports.FAA_CODE+"=? OR "+Airports.ICAO_CODE+"=?",
                         new String[] { mHome, mHome }, null, null, null, null );
-    
+
                 cursors[ 0 ] = c;
             }
 

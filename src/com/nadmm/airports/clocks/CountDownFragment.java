@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.clocks;
@@ -36,7 +36,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.nadmm.airports.DrawerActivity;
+import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.clocks.CountDownService.CountDownBinder;
@@ -96,7 +96,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
     public void onResume() {
         super.onResume();
 
-        DrawerActivity activity = (DrawerActivity) getActivity();
+        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
         activity.setDrawerIndicatorEnabled( false );
 
         Intent service = new Intent( activity, CountDownService.class );
@@ -365,7 +365,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
         public void onServiceDisconnected( ComponentName name ) {
             mService.setOnTickHandler( null );
             mService = null;
-        }        
+        }
     }
 
 }

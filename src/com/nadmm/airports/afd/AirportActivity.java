@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -22,10 +22,10 @@ package com.nadmm.airports.afd;
 import android.os.Bundle;
 
 import com.google.analytics.tracking.android.EasyTracker;
-import com.nadmm.airports.DrawerActivity;
+import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.views.DrawerListView;
 
-public class AirportActivity extends DrawerActivity {
+public class AirportActivity extends DrawerActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {

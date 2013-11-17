@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.clocks;
@@ -38,7 +38,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nadmm.airports.DrawerActivity;
+import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.clocks.StopWatchService.OnTickHandler;
@@ -71,7 +71,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        DrawerActivity activity = (DrawerActivity) getActivity();
+        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
         Intent service = new Intent( activity, StopWatchService.class );
         activity.startService( service );
         setRetainInstance( true );
@@ -89,7 +89,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     public void onResume() {
         super.onResume();
 
-        DrawerActivity activity = (DrawerActivity) getActivity();
+        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
         activity.setDrawerIndicatorEnabled( false );
 
         Intent service = new Intent( activity, StopWatchService.class );
@@ -282,7 +282,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
             mService.setOnTickHandler( null );
             mService = null;
         }
-        
+
     }
 
 }

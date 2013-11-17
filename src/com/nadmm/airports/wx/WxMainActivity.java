@@ -9,13 +9,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import com.google.analytics.tracking.android.EasyTracker;
-import com.nadmm.airports.DrawerActivity;
+import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.views.DrawerListView;
 
 import java.util.ArrayList;
 
-public final class WxMainActivity extends DrawerActivity
+public final class WxMainActivity extends DrawerActivityBase
         implements ActionBar.OnNavigationListener {
 
     private final String[] mOptions = new String[] {
