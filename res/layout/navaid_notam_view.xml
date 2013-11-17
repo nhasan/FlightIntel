@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
 
@@ -24,8 +24,8 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
     <LinearLayout android:id="@+id/notam_content_layout"
-            android:paddingTop="5dp"
-            android:paddingBottom="12dp"
+            android:paddingTop="@dimen/padding_top"
+            android:layout_marginBottom="@dimen/section_margin"
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
