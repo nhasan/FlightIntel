@@ -65,20 +65,20 @@ public class DrawerActivity extends ActivityBase implements ListView.OnItemClick
                 R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close ) {
 
             public void onDrawerClosed( View view ) {
+                ActionBar actionBar = getSupportActionBar();
+                actionBar.setNavigationMode( mNavMode );
+                actionBar.setTitle( mTitle );
+                actionBar.setSubtitle( mSubtitle );
+                if ( actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST ) {
+                    actionBar.setDisplayShowTitleEnabled( false );
+                }
+                supportInvalidateOptionsMenu();
+
                 if ( mIntent != null ) {
                     mIntent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
                     mIntent.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
                     startActivity( mIntent );
                     mIntent = null;
-                } else {
-                    ActionBar actionBar = getSupportActionBar();
-                    actionBar.setNavigationMode( mNavMode );
-                    actionBar.setTitle( mTitle );
-                    actionBar.setSubtitle( mSubtitle );
-                    if ( actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST ) {
-                        actionBar.setDisplayShowTitleEnabled( false );
-                    }
-                    supportInvalidateOptionsMenu();
                 }
             }
 
