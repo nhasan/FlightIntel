@@ -16,13 +16,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/navaid_title_layout"
         android:background="@drawable/ab_stacked_transparent_light_holo"
-        android:padding="8dp"
+        android:paddingTop="@dimen/padding_top"
+        android:paddingLeft="@dimen/padding_left"
+        android:paddingRight="@dimen/padding_right"
+        android:paddingBottom="@dimen/padding_bottom"
         android:baselineAligned="false"
         android:orientation="horizontal"
         android:layout_width="match_parent"
