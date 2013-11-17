@@ -25,6 +25,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 import com.nadmm.airports.PreferencesActivity;
@@ -37,7 +39,6 @@ public class NearbyHelper implements LocationListener {
     private LocationManager mLocationManager;
     private LocationListener mLocationListner;
     private Location mLastLocation;
-    private int mRadius;
 
     private final long TOO_OLD = 5*DateUtils.MINUTE_IN_MILLIS;
 
@@ -46,36 +47,31 @@ public class NearbyHelper implements LocationListener {
         mLocationListner = locationListener;
         mLocationManager = (LocationManager) mContext.getSystemService(
                 Context.LOCATION_SERVICE );
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( mContext );
-        mRadius = Integer.valueOf( prefs.getString(
-                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
     }
 
     public void startLocationUpdates() {
-        Location location = getLastKnownGoodLocation();
+        final Location location = getLastKnownGoodLocation();
         if ( location != null ) {
-            onLocationChanged( location );
+            new Handler( Looper.getMainLooper() ).postDelayed( new Runnable() {
+                @Override
+                public void run() {
+                    onLocationChanged( location );
+                }
+            }, 0 );
         }
 
-        if ( mLocationManager != null ) {
-            mLocationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
+        mLocationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
+                30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
+                this );
+
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences( mContext );
+        boolean useGps = prefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
+        if ( useGps ) {
+            mLocationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
                     30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
                     this );
-
-            SharedPreferences prefs =
-                    PreferenceManager.getDefaultSharedPreferences( mContext );
-            boolean useGps = prefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
-            if ( useGps ) {
-                mLocationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
-                        30*DateUtils.SECOND_IN_MILLIS, 0.5f*GeoUtils.METERS_PER_STATUTE_MILE,
-                        this );
-            }
         }
-    }
-
-    public int getRadius() {
-        return mRadius;
     }
 
     public void stopLocationUpdates() {

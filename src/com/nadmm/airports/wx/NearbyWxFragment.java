@@ -19,14 +19,17 @@
 
 package com.nadmm.airports.wx;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
+import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.utils.NearbyHelper;
 
 import java.util.Locale;
@@ -40,8 +43,10 @@ public class NearbyWxFragment extends WxListFragmentBase {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mNearbyHelper = new NearbyHelper( getActivity(), this );
-        mRadius = mNearbyHelper.getRadius();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( getActivity() );
+        mRadius = Integer.valueOf( prefs.getString(
+                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
+
         setEmptyText( "No wx stations found nearby." );
     }
 
@@ -49,35 +54,38 @@ public class NearbyWxFragment extends WxListFragmentBase {
     public void onResume() {
         super.onResume();
 
-        mNearbyHelper.startLocationUpdates();
+        startLocationUpdates();
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        mNearbyHelper.stopLocationUpdates();
+        stopLocationUpdates();
     }
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        Location location;
+        Location location = null;
         Bundle args = getArguments();
         if ( args != null ) {
             location = (Location) args.getParcelable( LocationColumns.LOCATION );
-            if ( location != null ) {
-                onLocationChanged( location );
-            }
         }
-
+        if ( location != null ) {
+            // If we are passed a location use that
+            onLocationChanged( location );
+        } else {
+            // Otherwise get the current location updates
+            mNearbyHelper = new NearbyHelper( getActivity(), this );
+        }
 
         View view = getView();
         view.setKeepScreenOn( true );
 
         getListView().setCacheColorHint( 0xffffffff );
-        setActionBarSubtitle( String.format( Locale.US, "Within %d NM Radius", mRadius ) );
+        setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
     }
 
     @Override
@@ -85,6 +93,18 @@ public class NearbyWxFragment extends WxListFragmentBase {
         if ( getActivity() != null ) {
             new NearbyWxTask().execute( location );
         } else {
+            stopLocationUpdates();
+        }
+    }
+
+    private void startLocationUpdates() {
+        if ( mNearbyHelper != null ) {
+            mNearbyHelper.startLocationUpdates();
+        }
+    }
+
+    private void stopLocationUpdates() {
+        if ( mNearbyHelper != null ) {
             mNearbyHelper.stopLocationUpdates();
         }
     }
