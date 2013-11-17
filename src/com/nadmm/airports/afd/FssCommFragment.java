@@ -14,13 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
-
-import java.util.Arrays;
-import java.util.Locale;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -37,7 +34,6 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Com;
@@ -47,6 +43,9 @@ import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.GeoUtils;
+
+import java.util.Arrays;
+import java.util.Locale;
 
 public final class FssCommFragment extends FragmentBase {
 
@@ -70,7 +69,7 @@ public final class FssCommFragment extends FragmentBase {
 
             // Now calculate the distance to this wx station
             float[] results = new float[ 2 ];
-            Location.distanceBetween( location.getLatitude(), location.getLongitude(), 
+            Location.distanceBetween( location.getLatitude(), location.getLongitude(),
                     c.getDouble( c.getColumnIndex( Com.COMM_OUTLET_LATITUDE_DEGREES ) ),
                     c.getDouble( c.getColumnIndex( Com.COMM_OUTLET_LONGITUDE_DEGREES ) ),
                     results );
@@ -94,7 +93,7 @@ public final class FssCommFragment extends FragmentBase {
             }
             return 0;
         }
-        
+
     }
 
     @Override
@@ -123,7 +122,7 @@ public final class FssCommFragment extends FragmentBase {
 
         showAirportTitle( apt );
         setActionBarTitle( "Nearby FSS Outlets" );
-        setActionBarSubtitle( String.format( Locale.US, "Within %dNM radius", mRadius ) );
+        setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
         showFssDetails( result );
 
         setContentShown( true );
@@ -218,7 +217,7 @@ public final class FssCommFragment extends FragmentBase {
                 +") AND ("+Com.COMM_OUTLET_LONGITUDE_DEGREES+">=? "
                 +(isCrossingMeridian180? "OR " : "AND ")+Com.COMM_OUTLET_LONGITUDE_DEGREES+"<=?)";
             String[] selectionArgs = {
-                    String.valueOf( Math.toDegrees( radLatMin ) ), 
+                    String.valueOf( Math.toDegrees( radLatMin ) ),
                     String.valueOf( Math.toDegrees( radLatMax ) ),
                     String.valueOf( Math.toDegrees( radLonMin ) ),
                     String.valueOf( Math.toDegrees( radLonMax ) )
@@ -228,7 +227,7 @@ public final class FssCommFragment extends FragmentBase {
             builder.setTables( Com.TABLE_NAME+" c LEFT OUTER JOIN "+Nav1.TABLE_NAME+" n"
                     +" ON c."+Com.ASSOC_NAVAID_ID+" = n."+Nav1.NAVAID_ID
                     +" AND n."+Nav1.NAVAID_TYPE+" <> 'VOT'");
-            Cursor c = builder.query( db, 
+            Cursor c = builder.query( db,
                     new String[] { "c.*", "n."+Nav1.NAVAID_NAME,
                     "n."+Nav1.NAVAID_TYPE, "n."+Nav1.NAVAID_FREQUENCY },
                     selection, selectionArgs, null, null, null, null );
