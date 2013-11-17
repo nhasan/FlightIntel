@@ -14,12 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
-
-import java.util.Locale;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -27,16 +25,13 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
-
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
+
+import java.util.Locale;
 
 public class FuelWeightFragment extends FragmentBase {
 
@@ -65,14 +60,14 @@ public class FuelWeightFragment extends FragmentBase {
     }
 
     private FuelWeight[] mFuels = new FuelWeight[] {
-            
+
         new FuelWeight() {
-    
+
             @Override
             public double lbsPerGallon() {
                 return 6.08;
             }
-    
+
             @Override
             public String toString() {
                 return "100LL";
@@ -145,7 +140,7 @@ public class FuelWeightFragment extends FragmentBase {
         }
 
     };
- 
+
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
@@ -168,8 +163,8 @@ public class FuelWeightFragment extends FragmentBase {
 
         mFuelTypes = (Spinner) findViewById( R.id.e6b_fuel_types );
         ArrayAdapter<FuelWeight> adapter = new ArrayAdapter<FuelWeight>( getActivity(),
-                R.layout.spinner_item, mFuels );
-        adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
+                android.R.layout.simple_spinner_item, mFuels );
+        adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
         mFuelTypes.setAdapter( adapter );
 
         mFuelTypes.setOnItemSelectedListener( new OnItemSelectedListener() {

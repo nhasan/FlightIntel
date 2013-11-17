@@ -14,14 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
-
-import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Set;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -31,17 +27,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
-
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
+
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Set;
 
 public class UnitConvertFrament extends FragmentBase implements OnItemSelectedListener {
 
@@ -214,15 +208,15 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
 
     protected ArrayAdapter<Unit> getArrayAdapter( Unit[] units ) {
         ArrayAdapter<Unit> adapter = new ArrayAdapter<Unit>( getActivity(),
-                R.layout.spinner_item, units );
-        adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
+                android.R.layout.simple_spinner_item, units );
+        adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
         return adapter;
     }
 
     protected ArrayAdapter<String> getArrayAdapter( Set<String> list ) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>( getActivity(),
-                R.layout.spinner_item, list.toArray( new String[ list.size() ] ) );
-        adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
+                android.R.layout.simple_spinner_item, list.toArray( new String[ list.size() ] ) );
+        adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
         return adapter;
     }
 
@@ -463,7 +457,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         public String toString() {
             return "knot";
-        }        
+        }
     }
 
     private static class MilePerHour extends Unit {
@@ -476,7 +470,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         public String toString() {
             return "mi/h";
-        }        
+        }
     }
 
     private static class KilometerPerHour extends Unit {
@@ -489,7 +483,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         public String toString() {
             return "km/h";
-        }        
+        }
     }
 
     private static class FootPerSecond extends Unit {
@@ -502,7 +496,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         public String toString() {
             return "ft/s";
-        }        
+        }
     }
 
     private static class MeterPerSecond extends Unit {
@@ -515,7 +509,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         @Override
         public String toString() {
             return "m/s";
-        }        
+        }
     }
 
     // Volume conversion via Litres
