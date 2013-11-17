@@ -14,13 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
-
-import java.util.HashMap;
-import java.util.Locale;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -28,17 +25,15 @@ import android.location.Location;
 import android.support.v4.widget.ResourceCursorAdapter;
 import android.view.View;
 import android.widget.TextView;
-
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.R;
-import com.nadmm.airports.utils.DataUtils;
-import com.nadmm.airports.utils.FormatUtils;
-import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.utils.TimeUtils;
-import com.nadmm.airports.utils.UiUtils;
+import com.nadmm.airports.utils.*;
+
+import java.util.HashMap;
+import java.util.Locale;
 
 public final class WxCursorAdapter extends ResourceCursorAdapter {
 
@@ -122,7 +117,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         }
 
         tv = (TextView) view.findViewById( R.id.wx_station_distance );
-        if ( c.getColumnIndex( LocationColumns.DISTANCE ) >= 0 
+        if ( c.getColumnIndex( LocationColumns.DISTANCE ) >= 0
                 && c.getColumnIndex( LocationColumns.BEARING ) >= 0 ) {
             float distance = c.getFloat( c.getColumnIndex( LocationColumns.DISTANCE ) );
             float bearing = c.getFloat( c.getColumnIndex( LocationColumns.BEARING ) );
@@ -143,116 +138,105 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
     }
 
     protected void showMetarInfo( View view, Cursor c, Metar metar ) {
-        if ( metar != null ) {
-            if ( metar.isValid ) {
-                // We have METAR for this station
-                double lat = c.getDouble(
-                        c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-                double lon = c.getDouble(
-                        c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-                Location location = new Location( "" );
-                location.setLatitude( lat );
-                location.setLongitude( lon );
-                float declination = GeoUtils.getMagneticDeclination( location );
+        if ( metar != null && metar.isValid ) {
+            // We have METAR for this station
+            double lat = c.getDouble(
+                    c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+            double lon = c.getDouble(
+                    c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+            Location location = new Location( "" );
+            location.setLatitude( lat );
+            location.setLongitude( lon );
+            float declination = GeoUtils.getMagneticDeclination( location );
 
-                TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
-                WxUtils.setColorizedWxDrawable( tv, metar, declination );
-
-                StringBuilder info = new StringBuilder();
-                info.append( metar.flightCategory );
-
-                if ( metar.visibilitySM < Float.MAX_VALUE ) {
-                    info.append( ", " );
-                    info.append( FormatUtils.formatStatuteMiles( metar.visibilitySM ) );
-                }
-
-                if ( metar.windSpeedKnots < Integer.MAX_VALUE ) {
-                    info.append( ", " );
-                    if ( metar.windSpeedKnots == 0 ) {
-                        info.append( "calm" );
-                    } else if ( metar.windGustKnots < Integer.MAX_VALUE ) {
-                        info.append( String.format( "%dG%dKT", 
-                                metar.windSpeedKnots, metar.windGustKnots ) );
-                    } else {
-                        info.append( String.format( "%dKT", metar.windSpeedKnots ) );
-                    }
-                    if ( metar.windSpeedKnots > 0 ) {
-                        if ( metar.windDirDegrees >= 0
-                                && metar.windDirDegrees < Integer.MAX_VALUE ) {
-                            info.append( " from "+FormatUtils.formatDegrees( metar.windDirDegrees ) );
-                        }
-                    }
-                }
-
-                if ( metar.wxList.size() > 0 ) {
-                    for ( WxSymbol wx : metar.wxList ) {
-                        if ( !wx.getSymbol().equals( "NSW" ) ) {
-                            info.append( ", " );
-                            info.append( wx.toString().toLowerCase( Locale.US ) );
-                        }
-                    }
-                }
-
-                tv = (TextView) view.findViewById( R.id.wx_station_wx );
-                tv.setVisibility( View.VISIBLE );
-                tv.setText( info.toString() );
-
-                info.setLength( 0 );
-                SkyCondition sky = WxUtils.getCeiling( metar.skyConditions );
-                int ceiling = sky.getCloudBaseAGL();
-                String skyCover = sky.getSkyCover();
-                if ( !skyCover.equals( "NSC" ) ) {
-                    info.append( "Ceiling "+skyCover+" "+FormatUtils.formatFeet( ceiling ) );
-                } else {
-                    if ( !metar.skyConditions.isEmpty() ) {
-                        sky = metar.skyConditions.get( 0 );
-                        skyCover = sky.getSkyCover();
-                        if ( skyCover.equals( "CLR" ) || skyCover.equals( "SKC" ) ) {
-                            info.append( "Sky clear" );
-                        } else if ( !skyCover.equals( "SKM" ) ) {
-                            info.append(
-                                    skyCover+" "+FormatUtils.formatFeet( sky.getCloudBaseAGL() ) );
-                        }
-                    }
-                }
-                if ( info.length() > 0 ) {
-                    info.append( ", " );
-                }
-
-                // Do some basic sanity checks on values
-                if ( metar.tempCelsius < Float.MAX_VALUE
-                        && metar.dewpointCelsius < Float.MAX_VALUE ) {
-                    info.append( FormatUtils.formatTemperatureF( metar.tempCelsius ) );
-                    info.append( "/" );
-                    info.append( FormatUtils.formatTemperatureF( metar.dewpointCelsius ) );
-                    info.append( ", " );
-                }
-                if ( metar.altimeterHg < Float.MAX_VALUE ) {
-                    info.append( FormatUtils.formatAltimeterHg( metar.altimeterHg ) );
-                }
-
-                tv = (TextView) view.findViewById( R.id.wx_station_wx2 );
-                tv.setVisibility( View.VISIBLE );
-                tv.setText( info.toString() );
-
-                tv = (TextView) view.findViewById( R.id.wx_report_age );
-                tv.setVisibility( View.VISIBLE );
-                tv.setText( TimeUtils.formatElapsedTime( metar.observationTime ) );
-            } else {
-                TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
-                WxUtils.setColorizedWxDrawable( tv, metar, 0 );
-                tv = (TextView) view.findViewById( R.id.wx_station_wx );
-                tv.setVisibility( View.GONE );
-                tv = (TextView) view.findViewById( R.id.wx_station_wx2 );
-                tv.setVisibility( View.GONE );
-                tv = (TextView) view.findViewById( R.id.wx_report_age );
-                tv.setVisibility( View.GONE );
-            }
-        } else {
             TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
-            UiUtils.setTextViewDrawable( tv, null );
+            WxUtils.setColorizedWxDrawable( tv, metar, declination );
+
+            StringBuilder info = new StringBuilder();
+            info.append( metar.flightCategory );
+
+            if ( metar.visibilitySM < Float.MAX_VALUE ) {
+                info.append( ", " );
+                info.append( FormatUtils.formatStatuteMiles( metar.visibilitySM ) );
+            }
+
+            if ( metar.windSpeedKnots < Integer.MAX_VALUE ) {
+                info.append( ", " );
+                if ( metar.windSpeedKnots == 0 ) {
+                    info.append( "calm" );
+                } else if ( metar.windGustKnots < Integer.MAX_VALUE ) {
+                    info.append( String.format( "%dG%dKT",
+                            metar.windSpeedKnots, metar.windGustKnots ) );
+                } else {
+                    info.append( String.format( "%dKT", metar.windSpeedKnots ) );
+                }
+                if ( metar.windSpeedKnots > 0 ) {
+                    if ( metar.windDirDegrees >= 0
+                            && metar.windDirDegrees < Integer.MAX_VALUE ) {
+                        info.append( " from "+FormatUtils.formatDegrees( metar.windDirDegrees ) );
+                    }
+                }
+            }
+
+            if ( metar.wxList.size() > 0 ) {
+                for ( WxSymbol wx : metar.wxList ) {
+                    if ( !wx.getSymbol().equals( "NSW" ) ) {
+                        info.append( ", " );
+                        info.append( wx.toString().toLowerCase( Locale.US ) );
+                    }
+                }
+            }
+
             tv = (TextView) view.findViewById( R.id.wx_station_wx );
-            tv.setVisibility( View.GONE );
+            tv.setVisibility( View.VISIBLE );
+            tv.setText( info.toString() );
+
+            info.setLength( 0 );
+            SkyCondition sky = WxUtils.getCeiling( metar.skyConditions );
+            int ceiling = sky.getCloudBaseAGL();
+            String skyCover = sky.getSkyCover();
+            if ( !skyCover.equals( "NSC" ) ) {
+                info.append( "Ceiling "+skyCover+" "+FormatUtils.formatFeet( ceiling ) );
+            } else {
+                if ( !metar.skyConditions.isEmpty() ) {
+                    sky = metar.skyConditions.get( 0 );
+                    skyCover = sky.getSkyCover();
+                    if ( skyCover.equals( "CLR" ) || skyCover.equals( "SKC" ) ) {
+                        info.append( "Sky clear" );
+                    } else if ( !skyCover.equals( "SKM" ) ) {
+                        info.append(
+                                skyCover+" "+FormatUtils.formatFeet( sky.getCloudBaseAGL() ) );
+                    }
+                }
+            }
+            if ( info.length() > 0 ) {
+                info.append( ", " );
+            }
+
+            // Do some basic sanity checks on values
+            if ( metar.tempCelsius < Float.MAX_VALUE
+                    && metar.dewpointCelsius < Float.MAX_VALUE ) {
+                info.append( FormatUtils.formatTemperatureF( metar.tempCelsius ) );
+                info.append( "/" );
+                info.append( FormatUtils.formatTemperatureF( metar.dewpointCelsius ) );
+                info.append( ", " );
+            }
+            if ( metar.altimeterHg < Float.MAX_VALUE ) {
+                info.append( FormatUtils.formatAltimeterHg( metar.altimeterHg ) );
+            }
+
+            tv = (TextView) view.findViewById( R.id.wx_station_wx2 );
+            tv.setVisibility( View.VISIBLE );
+            tv.setText( info.toString() );
+
+            tv = (TextView) view.findViewById( R.id.wx_report_age );
+            tv.setVisibility( View.VISIBLE );
+            tv.setText( TimeUtils.formatElapsedTime( metar.observationTime ) );
+       } else {
+            TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
+            WxUtils.setColorizedWxDrawable( tv, metar, 0 );
+            tv = (TextView) view.findViewById( R.id.wx_station_wx );
+            tv.setText( "Unable to get weather details" );
             tv = (TextView) view.findViewById( R.id.wx_station_wx2 );
             tv.setVisibility( View.GONE );
             tv = (TextView) view.findViewById( R.id.wx_report_age );
