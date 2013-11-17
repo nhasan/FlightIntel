@@ -40,7 +40,7 @@ import com.nadmm.airports.tfr.TfrListActivity;
 import com.nadmm.airports.views.DrawerListView;
 import com.nadmm.airports.wx.WxMainActivity;
 
-public class DrawerActivity extends ActivityBase implements ListView.OnItemClickListener {
+public class DrawerActivityBase extends ActivityBase implements ListView.OnItemClickListener {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
