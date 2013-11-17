@@ -14,22 +14,21 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
-
-import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.widget.TextView;
-
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.UiUtils;
+
+import java.util.ArrayList;
 
 public class WxUtils {
 
@@ -119,20 +118,22 @@ public class WxUtils {
     }
 
     static public void setColorizedWxDrawable( TextView tv, Metar metar, float declination ) {
-        if ( metar.isValid ) {
-            Context context = tv.getContext();
-            Resources res = context.getResources();
-            SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
-            int color = getFlightCategoryColor( metar.flightCategory );
-            Drawable d1 = UiUtils.getColorizedDrawable( res, sky.getDrawable(), color );
-            Drawable d2 = null;
-            if ( isWindAvailable( metar ) ) {
-                d2 = getWindBarbDrawable( tv.getContext(), metar, declination );
+        if ( metar != null ) {
+            if ( metar.isValid ) {
+                Context context = tv.getContext();
+                Resources res = context.getResources();
+                SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
+                int color = getFlightCategoryColor( metar.flightCategory );
+                Drawable d1 = UiUtils.getColorizedDrawable( res, sky.getDrawable(), color );
+                Drawable d2 = null;
+                if ( isWindAvailable( metar ) ) {
+                    d2 = getWindBarbDrawable( tv.getContext(), metar, declination );
+                }
+                Drawable result = UiUtils.combineDrawables( context, d1, d2, 2 );
+                UiUtils.setTextViewDrawable( tv, result );
+            } else {
+                UiUtils.setTextViewDrawable( tv, R.drawable.error );
             }
-            Drawable result = UiUtils.combineDrawables( context, d1, d2, 2 );
-            UiUtils.setTextViewDrawable( tv, result );
-        } else {
-            UiUtils.setTextViewDrawable( tv, R.drawable.error );
         }
     }
 
