@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -123,7 +123,7 @@ public final class AfdMainActivity extends DrawerActivity
         public NavAdapter( Context context, String[] values ) {
             super( context, 0, values );
             mInflater = (LayoutInflater) context.getSystemService( LAYOUT_INFLATER_SERVICE );
-            setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
+            setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
         }
 
         @Override

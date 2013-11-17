@@ -87,7 +87,7 @@ public final class WxMainActivity extends DrawerActivity
         public NavAdapter( Context context, String[] values ) {
             super( context, 0, values );
             mInflater = (LayoutInflater) context.getSystemService( LAYOUT_INFLATER_SERVICE );
-            setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
+            setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
         }
 
         @Override

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -125,7 +125,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
         }
 
         OnClickListener listener = new OnClickListener() {
-            
+
             @Override
             public void onClick( View v ) {
                 if ( mPendingRow == null ) {
@@ -151,8 +151,8 @@ public abstract class WxMapFragmentBase extends FragmentBase {
             layout.setVisibility( View.VISIBLE );
             mSpinner = (Spinner) v.findViewById( R.id.map_type );
             ArrayAdapter<String> adapter = new ArrayAdapter<String>( getActivity(),
-                    R.layout.spinner_item, mWxTypeNames );
-            adapter.setDropDownViewResource( R.layout.spinner_dropdown_item );
+                    android.R.layout.simple_spinner_item, mWxTypeNames );
+            adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
             mSpinner.setAdapter( adapter );
         }
 
