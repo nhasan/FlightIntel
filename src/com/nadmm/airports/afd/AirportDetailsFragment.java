@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -188,7 +188,7 @@ public final class AirportDetailsFragment extends FragmentBase {
 
         if ( mScrollPos > -1 ) {
             new Handler().post( new Runnable() {
-                
+
                 @Override
                 public void run() {
                     ScrollView view = (ScrollView) findViewById( R.id.scroll_view );
@@ -443,7 +443,7 @@ public final class AirportDetailsFragment extends FragmentBase {
                 }
             }
         } else {
-            addRow( layout, "Home airport '"+mHome+"' not found" );                
+            addRow( layout, "Home airport '"+mHome+"' not found" );
         }
     }
 
@@ -572,16 +572,16 @@ public final class AirportDetailsFragment extends FragmentBase {
             int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
             String year = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_YEAR ) );
             if ( year.length() > 0 ) {
-                addRow( layout, "Magnetic variation", 
+                addRow( layout, "Magnetic variation",
                         String.format( "%d\u00B0 %s (%s)", variation, dir, year ) );
             } else {
-                addRow( layout, "Magnetic variation", 
+                addRow( layout, "Magnetic variation",
                         String.format( "%d\u00B0 %s", variation, dir ) );
             }
         } else {
             int variation = Math.round( GeoUtils.getMagneticDeclination( mLocation ) );
             dir = ( variation >= 0 )? "W" : "E";
-            addRow( layout, "Magnetic variation", 
+            addRow( layout, "Magnetic variation",
                     String.format( "%d\u00B0 %s (actual)", Math.abs( variation ), dir ) );
         }
         String intlEntry = apt.getString( apt.getColumnIndex( Airports.INTL_ENTRY_AIRPORT ) );
@@ -681,7 +681,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     protected void showServicesDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_services_layout );
-        String fuelTypes = DataUtils.decodeFuelTypes( 
+        String fuelTypes = DataUtils.decodeFuelTypes(
                 apt.getString( apt.getColumnIndex( Airports.FUEL_TYPES ) ) );
         if ( fuelTypes.length() == 0 ) {
             fuelTypes = "No";
@@ -710,7 +710,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, "Sunrise and sunset", AlmanacFragment.class, args );
     }
 
-    protected void addAwosRow( LinearLayout layout, String id, String name, String type, 
+    protected void addAwosRow( LinearLayout layout, String id, String name, String type,
             String freq, String phone, float distance, float bearing,
             final Runnable runnable ) {
         StringBuilder sb = new StringBuilder();
