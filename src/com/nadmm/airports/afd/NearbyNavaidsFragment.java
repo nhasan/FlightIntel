@@ -14,13 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
-
-import java.util.Arrays;
-import java.util.Locale;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -35,7 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
@@ -46,6 +42,9 @@ import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.GeoUtils;
+
+import java.util.Arrays;
+import java.util.Locale;
 
 public final class NearbyNavaidsFragment extends FragmentBase {
 
@@ -86,7 +85,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
             float[] results = new float[ 2 ];
             Location.distanceBetween(
                     location.getLatitude(),
-                    location.getLongitude(), 
+                    location.getLongitude(),
                     c.getDouble( c.getColumnIndex( Nav1.REF_LATTITUDE_DEGREES ) ),
                     c.getDouble( c.getColumnIndex( Nav1.REF_LONGITUDE_DEGREES ) ),
                     results );
@@ -140,10 +139,10 @@ public final class NearbyNavaidsFragment extends FragmentBase {
         if ( vor != null || ndb != null ) {
             showAirportTitle( apt );
             setActionBarTitle( "Nearby Navaids" );
-            setActionBarSubtitle( String.format( Locale.US, "Within %dNM radius", mRadius ) );
+            setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
             showNavaidDetails( result );
         } else {
-            setContentMsg( String.format( Locale.US, "No navaids found within %dNM radius",
+            setContentMsg( String.format( Locale.US, "No navaids found within %d NM radius",
                     mRadius ) );
         }
 
@@ -253,14 +252,14 @@ public final class NearbyNavaidsFragment extends FragmentBase {
                 +") AND ("+Nav1.REF_LONGITUDE_DEGREES+">=? "
                 +(isCrossingMeridian180? "OR " : "AND ")+Nav1.REF_LONGITUDE_DEGREES+"<=?)";
             String[] selectionArgs = {
-                    String.valueOf( Math.toDegrees( radLatMin ) ), 
+                    String.valueOf( Math.toDegrees( radLatMin ) ),
                     String.valueOf( Math.toDegrees( radLatMax ) ),
                     String.valueOf( Math.toDegrees( radLonMin ) ),
                     String.valueOf( Math.toDegrees( radLonMax ) )
                     };
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Nav1.TABLE_NAME );
-            Cursor c = builder.query( db, new String[] { "*" }, selection, selectionArgs, 
+            Cursor c = builder.query( db, new String[] { "*" }, selection, selectionArgs,
                     null, null, null, null );
             if ( c.moveToFirst() ) {
                 NavaidData[] navaids = new NavaidData[ c.getCount() ];
