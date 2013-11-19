@@ -19,21 +19,15 @@
 
 package com.nadmm.airports.wx;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.OnNavigationListener;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-
-import android.widget.TextView;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.utils.NavAdapter;
 import com.nadmm.airports.utils.TabsAdapter;
 
 public class WxDetailActivity extends ActivityBase
@@ -79,7 +73,7 @@ public class WxDetailActivity extends ActivityBase
         // Setup list navigation mode
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
-        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(), titles );
+        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(), "Weather", titles );
         actionBar.setListNavigationCallbacks( adapter, this );
         actionBar.setDisplayShowTitleEnabled( false );
 
@@ -141,29 +135,6 @@ public class WxDetailActivity extends ActivityBase
         // See: http://code.google.com/p/android/issues/detail?id=29472
         if ( mViewPager.getCurrentItem() != pos ) {
             mViewPager.setCurrentItem( pos );
-        }
-    }
-
-    private class NavAdapter extends ArrayAdapter<String> {
-
-        private LayoutInflater mInflater;
-
-        public NavAdapter( Context context, String[] values ) {
-            super( context, 0, values );
-            mInflater = (LayoutInflater) context.getSystemService( LAYOUT_INFLATER_SERVICE );
-            setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
-        }
-
-        @Override
-        public View getView( int position, View convertView, ViewGroup parent ) {
-            if ( convertView == null ) {
-                convertView = mInflater.inflate( R.layout.actionbar_spinner_item_2, null );
-                TextView tv = (TextView) convertView.findViewById( android.R.id.text1 );
-                tv.setText( "Weather" );
-            }
-            TextView tv = (TextView) convertView.findViewById( android.R.id.text2 );
-            tv.setText( getItem( position ) );
-            return convertView;
         }
     }
 
