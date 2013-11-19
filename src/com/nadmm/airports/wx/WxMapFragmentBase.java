@@ -152,7 +152,7 @@ public abstract class WxMapFragmentBase extends FragmentBase {
             mSpinner = (Spinner) v.findViewById( R.id.map_type );
             ArrayAdapter<String> adapter = new ArrayAdapter<String>( getActivity(),
                     android.R.layout.simple_spinner_item, mWxTypeNames );
-            adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
+            adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
             mSpinner.setAdapter( adapter );
         }
 
