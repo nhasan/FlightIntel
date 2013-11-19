@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -39,6 +39,7 @@
         <TextView android:id="@+id/facility_id"
                 style="@style/TextLabel"
                 android:gravity="right"
+                android:layout_marginLeft="@dimen/item_spacing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
     </LinearLayout>
