@@ -170,11 +170,10 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 } else {
                     info.append( String.format( "%dKT", metar.windSpeedKnots ) );
                 }
-                if ( metar.windSpeedKnots > 0 ) {
-                    if ( metar.windDirDegrees >= 0
-                            && metar.windDirDegrees < Integer.MAX_VALUE ) {
-                        info.append( " from "+FormatUtils.formatDegrees( metar.windDirDegrees ) );
-                    }
+                if ( metar.windSpeedKnots > 0
+                        && metar.windDirDegrees >= 0
+                        && metar.windDirDegrees < Integer.MAX_VALUE ) {
+                    info.append( "/"+FormatUtils.formatDegrees( metar.windDirDegrees ) );
                 }
             }
 
