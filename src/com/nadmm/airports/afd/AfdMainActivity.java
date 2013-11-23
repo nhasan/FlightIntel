@@ -64,7 +64,10 @@ public final class AfdMainActivity extends DrawerActivityBase
         super.onResume();
 
         setDrawerItemChecked( DrawerListView.ITEM_ID_AFD );
-        getSupportActionBar().setSelectedNavigationItem( mFragmentId );
+        ActionBar actionBar = getSupportActionBar();
+        if ( actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST ) {
+            actionBar.setSelectedNavigationItem( mFragmentId );
+        }
     }
 
     @Override
