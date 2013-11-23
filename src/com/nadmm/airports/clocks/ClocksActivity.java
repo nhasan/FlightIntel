@@ -22,6 +22,7 @@ package com.nadmm.airports.clocks;
 import android.os.Bundle;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
@@ -34,7 +35,7 @@ public class ClocksActivity extends DrawerActivityBase {
         super.onCreate( savedInstanceState );
 
         Bundle args = new Bundle();
-        args.putLong( ListMenuFragment.MENU_ID, R.id.CATEGORY_MAIN );
+        args.putString( ActivityBase.FRAGMENT_TAG_EXTRA, String.valueOf( R.id.CATEGORY_MAIN ) );
         args.putString( ListMenuFragment.SUBTITLE_TEXT, "Clocks for Instrument Flying" );
         addFragment( ClocksMenuFragment.class, args );
     }

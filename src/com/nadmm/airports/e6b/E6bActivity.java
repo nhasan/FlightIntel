@@ -22,6 +22,7 @@ package com.nadmm.airports.e6b;
 import android.os.Bundle;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
@@ -34,7 +35,7 @@ public class E6bActivity extends DrawerActivityBase {
         super.onCreate( savedInstanceState );
 
         Bundle args = new Bundle();
-        args.putLong( ListMenuFragment.MENU_ID, R.id.CATEGORY_MAIN );
+        args.putString( ActivityBase.FRAGMENT_TAG_EXTRA, String.valueOf( R.id.CATEGORY_MAIN ) );
         args.putString( ListMenuFragment.SUBTITLE_TEXT, "No More Slide Rule" );
         addFragment( E6bMenuFragment.class, args );
     }

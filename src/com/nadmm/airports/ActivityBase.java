@@ -14,12 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports;
-
-import java.util.HashSet;
 
 import android.annotation.TargetApi;
 import android.app.SearchManager;
@@ -27,7 +25,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -37,44 +34,25 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.app.*;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.format.Time;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.CheckBox;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
-import com.nadmm.airports.utils.CursorAsyncTask;
-import com.nadmm.airports.utils.DataUtils;
-import com.nadmm.airports.utils.ExternalStorageActivity;
-import com.nadmm.airports.utils.FormatUtils;
-import com.nadmm.airports.utils.SystemUtils;
+import com.nadmm.airports.utils.*;
+
+import java.util.HashSet;
 
 public class ActivityBase extends ActionBarActivity {
 
@@ -88,6 +66,8 @@ public class ActivityBase extends ActionBarActivity {
     IntentFilter mFilter;
     BroadcastReceiver mExternalStorageReceiver;
     boolean mExternalStorageAvailable = false;
+
+    public static String FRAGMENT_TAG_EXTRA = "FRAGMENT_TAG_EXTRA";
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -250,9 +230,9 @@ public class ActivityBase extends ActionBarActivity {
 
     public Fragment replaceFragment( Class<?> clss, Bundle args, int id, boolean addTostack  ) {
         String tag = clss.getSimpleName();
-        if ( args != null && args.containsKey( ListMenuFragment.MENU_ID ) ) {
-            long menuId = args.getLong( ListMenuFragment.MENU_ID );
-            tag = tag.concat( String.valueOf( menuId ) );
+        if ( args != null && args.containsKey( FRAGMENT_TAG_EXTRA ) ) {
+            String extra = args.getString( FRAGMENT_TAG_EXTRA );
+            tag = tag.concat( extra );
         }
         FragmentManager fm = getSupportFragmentManager();
         Fragment f = fm.findFragmentByTag( tag );
@@ -454,7 +434,7 @@ public class ActivityBase extends ActionBarActivity {
         if ( lat.length() > 0 && lon.length() > 0 ) {
             iv.setTag( "geo:"+lat+","+lon+"?z=16" );
             iv.setOnClickListener( new OnClickListener() {
-                
+
                 @Override
                 public void onClick( View v ) {
                     String tag = (String) v.getTag();
@@ -476,7 +456,7 @@ public class ActivityBase extends ActionBarActivity {
         TextView tv = (TextView) root.findViewById( R.id.navaid_name );
         tv.setText( String.format( "%s - %s %s", id, name, type ) );
         String city = c.getString( c.getColumnIndex( Nav1.ASSOC_CITY ) );
-        String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );        
+        String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );
         tv = (TextView) root.findViewById( R.id.navaid_info );
         tv.setText( String.format( "%s, %s", city, state ) );
         String use = c.getString( c.getColumnIndex( Nav1.PUBLIC_USE ) );
