@@ -32,7 +32,7 @@
         </activity>
 
 	    <activity
-            android:label="@string/downloads" 
+            android:label="@string/downloads"
 	        android:name=".DownloadActivity"
             android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
@@ -51,10 +51,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".FlightIntel" />
         </activity>
-        
+
         <activity
             android:label="@string/app_name"
-            android:name=".afd.AirportActivity" 
+            android:name=".afd.AirportActivity"
             android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -70,7 +70,7 @@
             android:name=".notams.AirportNotamActivity" />
 
         <activity
-            android:label="@string/weather"
+            android:label=""
             android:name=".wx.WxDetailActivity"
             android:parentActivityName=".FlightIntel">
             <meta-data
@@ -224,7 +224,7 @@
             android:name=".ImageViewActivity" />
 
         <activity
-            android:label="@string/library"
+            android:label=""
             android:name=".library.LibraryActivity"
             android:parentActivityName=".FlightIntel">
             <meta-data
