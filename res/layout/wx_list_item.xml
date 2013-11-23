@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_freq"
-            style="@style/TextSmall.Light"
+            style="@style/TextSmaller.Light"
             android:gravity="right"
             android:layout_below="@id/wx_station_id"
             android:layout_alignParentRight="true"
@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_info"
-            style="@style/TextSmall.Light"
+            style="@style/TextSmaller.Light"
             android:layout_below="@id/wx_station_name"
             android:layout_toLeftOf="@id/wx_station_freq"
             android:layout_alignParentLeft="true"
@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_phone"
-            style="@style/TextSmall.Light"
+            style="@style/TextSmaller.Light"
             android:gravity="right"
             android:layout_below="@id/wx_station_freq"
             android:layout_alignParentRight="true"
@@ -68,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_info2"
-            style="@style/TextSmall.Light"
+            style="@style/TextSmaller.Light"
             android:layout_below="@id/wx_station_info"
             android:layout_toLeftOf="@id/wx_station_phone"
             android:layout_alignParentLeft="true"
@@ -79,7 +79,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_distance"
-            style="@style/TextSmall.Light"
+            style="@style/TextSmaller.Light"
             android:gravity="right"
             android:visibility="gone"
             android:layout_below="@id/wx_station_phone"
@@ -88,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_wx"
-            style="@style/TextSmall.Light"
+            style="@style/TextSmaller.Light"
             android:layout_below="@id/wx_station_info2"
             android:layout_toLeftOf="@id/wx_station_distance"
             android:layout_alignParentLeft="true"
@@ -99,7 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_report_age"
-            style="@style/TextSmall.Light"
+            style="@style/TextSmaller.Light"
             android:gravity="right"
             android:layout_below="@id/wx_station_wx"
             android:layout_alignParentRight="true"
@@ -107,7 +107,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_wx2"
-            style="@style/TextSmall.Light"
+            style="@style/TextSmaller.Light"
             android:layout_below="@id/wx_station_wx"
             android:layout_toLeftOf="@id/wx_report_age"
             android:layout_alignParentLeft="true"
