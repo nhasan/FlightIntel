@@ -36,8 +36,6 @@ public final class DrawerListView extends ListView {
 
     private void init( Context context ) {
         setAdapter( new DrawerAdapter( context, new DrawerCursor() ) );
-        setDivider( getResources().getDrawable( R.drawable.drawer_list_divider ) );
-        setBackgroundResource( R.color.darkgray );
     }
 
     protected class DrawerAdapter extends ResourceCursorAdapter {
