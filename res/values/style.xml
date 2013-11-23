@@ -16,13 +16,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="FlatButton">
         <item name="android:background">@drawable/flat_button</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@color/button_color</item>
         <item name="android:paddingTop">4dp</item>
@@ -34,8 +34,11 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
     <style name="TextSmall" parent="@android:style/TextAppearance.Small">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
         <item name="android:textColor">@color/gray</item>
+    </style>
+    <style name="TextSmaller" parent="@style/TextSmall">
+        <item name="android:textSize">@dimen/smaller_text_size</item>
     </style>
     <style name="TextSmall.Bold">
         <item name="android:textStyle">bold</item>
@@ -49,11 +52,14 @@
     <style name="TextSmall.Light">
         <item name="android:textColor">@color/lightgray</item>
     </style>
+    <style name="TextSmaller.Light">
+        <item name="android:textColor">@color/lightgray</item>
+    </style>
     <style name="TextSmall.Monospace">
         <item name="android:typeface">monospace</item>
     </style>
     <style name="TextMedium" parent="@style/TextSmall">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">@dimen/medium_text_size</item>
     </style>
     <style name="TextMedium.Bold">
         <item name="android:textStyle">bold</item>
@@ -62,10 +68,13 @@
         <item name="android:textColor">#ffffff</item>
     </style>
     <style name="TextLabel" parent="@style/TextSmall">
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">@dimen/label_text_size</item>
     </style>
     <style name="TextLabel.Bold">
         <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextTitle" parent="@style/TextSmall">
+        <item name="android:textSize">@dimen/label_text_size</item>
     </style>
     <style name="TextNormal">
         <item name="android:textColor">@color/gray</item>
@@ -76,7 +85,7 @@
     </style>
     <style name="TextClock">
         <item name="android:textColor">@color/gray</item>
-        <item name="android:textSize">64sp</item>
+        <item name="android:textSize">@dimen/clock_text_size</item>
         <item name="android:textStyle">bold</item>
     </style>
     <style name="TextClock.Light" parent="@style/TextClock">
@@ -84,7 +93,9 @@
     </style>
     <style name="TextClock.Light.Tenths" parent="@style/TextClock.Light">
         <item name="android:textColor">@color/lightgray</item>
-        <item name="android:textSize">36sp</item>
+        <item name="android:textSize">@dimen/clock_tenths_text_size</item>
+    </style>
+    <style name="DrawerMenuText" parent="@style/TextMedium.White">
     </style>
     <style name="ListItemActivated">
     </style>
