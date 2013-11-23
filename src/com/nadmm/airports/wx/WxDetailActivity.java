@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBar.OnNavigationListener;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
@@ -31,7 +30,7 @@ import com.nadmm.airports.utils.NavAdapter;
 import com.nadmm.airports.utils.TabsAdapter;
 
 public class WxDetailActivity extends ActivityBase
-                implements OnNavigationListener, ViewPager.OnPageChangeListener {
+                implements ActionBar.OnNavigationListener, ViewPager.OnPageChangeListener {
 
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
@@ -106,13 +105,12 @@ public class WxDetailActivity extends ActivityBase
     @Override
     protected void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
-        ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
-        outState.putInt( "wxtab", pager.getCurrentItem() );
+        outState.putInt( "wxtab", mViewPager.getCurrentItem() );
     }
 
     @Override
     public boolean onNavigationItemSelected( int itemPosition, long itemId ) {
-        mViewPager.setCurrentItem( itemPosition );
+        setCurrentPage( itemPosition );
         return true;
     }
 
