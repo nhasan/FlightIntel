@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -187,7 +187,7 @@ public class MetarFragment extends FragmentBase {
                 float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
                 mLocation.setLatitude( lat );
                 mLocation.setLongitude( lon );
-    
+
                 Cursor rmk = result[ 2 ];
                 if ( rmk != null && rmk.moveToFirst() ) {
                     mRemarks.clear();
@@ -197,7 +197,7 @@ public class MetarFragment extends FragmentBase {
                         mRemarks.add( remark );
                     } while ( rmk.moveToNext() );
                 }
-    
+
                 showWxTitle( result );
                 requestMetar( false );
             } else {
@@ -467,8 +467,9 @@ public class MetarFragment extends FragmentBase {
             if ( metar.windGustKnots < Integer.MAX_VALUE ) {
                 s.append( String.format( " gusting to %d knots", metar.windGustKnots ) );
             }
-            if ( metar.windPeakKnots < Integer.MAX_VALUE ) {
-                s.append( String.format( ", peaking at %d knots", metar.windPeakKnots ) );
+            if ( metar.windPeakKnots < Integer.MAX_VALUE
+                    && metar.windPeakKnots != metar.windGustKnots ) {
+                s.append( String.format( ", peak at %d knots", metar.windPeakKnots ) );
             }
         }
         return s.toString();
