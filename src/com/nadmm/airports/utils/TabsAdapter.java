@@ -14,12 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.utils;
-
-import java.util.ArrayList;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -27,6 +25,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+
+import java.util.ArrayList;
 
 public class TabsAdapter extends FragmentPagerAdapter  {
 
@@ -86,6 +86,17 @@ public class TabsAdapter extends FragmentPagerAdapter  {
         }
 
         return mTabs.get( position ).label;
+    }
+
+    public String[] getPageTitles() {
+        // Build the data model for the spinner adapter
+        String[] titles = new String[ getCount() ];
+        int pos = 0;
+        while ( pos < getCount() ) {
+            titles[ pos ] = getPageTitle( pos ).toString();
+            ++pos;
+        }
+        return titles;
     }
 
 }

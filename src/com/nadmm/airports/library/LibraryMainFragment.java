@@ -73,17 +73,10 @@ public class LibraryMainFragment extends FragmentBase
             } while ( c.moveToNext() );
         }
 
-        // Build the data model for the spinner adapter
-        String[] titles = new String[ mTabsAdapter.getCount() ];
-        int pos = 0;
-        while ( pos < mTabsAdapter.getCount() ) {
-            titles[ pos ] = mTabsAdapter.getPageTitle( pos ).toString();
-            ++pos;
-        }
-
         // Setup list navigation mode
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
+        String[] titles = mTabsAdapter.getPageTitles();
         NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(), "Library", titles );
         actionBar.setListNavigationCallbacks( adapter, this );
         actionBar.setDisplayShowTitleEnabled( false );
@@ -115,8 +108,7 @@ public class LibraryMainFragment extends FragmentBase
     @Override
     public void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
-        ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
-        outState.putInt( "libtab", pager.getCurrentItem() );
+        outState.putInt( "libtab", mViewPager.getCurrentItem() );
     }
 
     @Override

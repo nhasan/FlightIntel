@@ -61,17 +61,10 @@ public class WxDetailActivity extends ActivityBase
         mTabsAdapter.addTab( "ICING", IcingFragment.class, args );
         mTabsAdapter.addTab( "AREA FORECAST", AreaForecastFragment.class, args );
 
-        // Build the data model for the spinner adapter
-        String[] titles = new String[ mTabsAdapter.getCount() ];
-        int pos = 0;
-        while ( pos < mTabsAdapter.getCount() ) {
-            titles[ pos ] = mTabsAdapter.getPageTitle( pos ).toString();
-            ++pos;
-        }
-
         // Setup list navigation mode
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
+        String[] titles = mTabsAdapter.getPageTitles();
         NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(), "Weather", titles );
         actionBar.setListNavigationCallbacks( adapter, this );
         actionBar.setDisplayShowTitleEnabled( false );
