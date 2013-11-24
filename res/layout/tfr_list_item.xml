@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
 
@@ -29,47 +29,47 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/tfr_agency"
-            style="@style/TextLabel"            
+            style="@style/TextLabel"
             android:gravity="right"
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/tfr_name"
-            style="@style/TextLabel"            
+            style="@style/TextTitle"
             android:layout_toLeftOf="@id/tfr_agency"
             android:gravity="left"
-            android:layout_marginRight="4dp"
+            android:layout_marginRight="8dp"
             android:layout_alignParentLeft="true"
             android:singleLine="true"
             android:ellipsize="end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/tfr_active"
-            style="@style/TextSmall.Light"
+            style="@style/TextSmaller.Light"
             android:layout_below="@id/tfr_agency"
             android:gravity="right"
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/tfr_time"
-            style="@style/TextSmall.Light"
+            style="@style/TextSmaller.Light"
             android:layout_below="@id/tfr_name"
             android:gravity="left"
-            android:layout_marginRight="4dp"
+            android:layout_marginRight="8dp"
             android:layout_alignParentRight="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/tfr_type"
-            style="@style/TextSmall.Light"
+            style="@style/TextSmaller.Light"
             android:layout_below="@id/tfr_time"
             android:layout_alignParentRight="true"
             android:gravity="right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/tfr_altitudes"
-            style="@style/TextSmall.Light"
+            style="@style/TextSmaller.Light"
             android:gravity="left"
-            android:layout_marginRight="4dp"
+            android:layout_marginRight="8dp"
             android:layout_below="@id/tfr_time"
             android:layout_toLeftOf="@id/tfr_type"
             android:layout_alignParentLeft="true"
