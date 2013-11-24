@@ -31,7 +31,6 @@ import java.util.ArrayList;
 public class TabsAdapter extends FragmentPagerAdapter  {
 
     private final Context mContext;
-    private final ViewPager mViewPager;
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
     public final class TabInfo {
@@ -51,8 +50,7 @@ public class TabsAdapter extends FragmentPagerAdapter  {
     public TabsAdapter( Context context, FragmentManager fm, ViewPager pager ) {
         super( fm );
         mContext = context;
-        mViewPager = pager;
-        mViewPager.setAdapter( this );
+        pager.setAdapter( this );
     }
 
     public void addTab( String label, Class<?> clss, Bundle args ) {
