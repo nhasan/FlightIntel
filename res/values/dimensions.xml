@@ -30,10 +30,9 @@
     <dimen name="label_padding">4dip</dimen>
     <dimen name="item_spacing">8dip</dimen>
 
-    <dimen name="slidingmenu_width">240dip</dimen>
-    <dimen name="slidingmenu_shadow_width">24dip</dimen>
-    <dimen name="slidingmenu_item_height">56dip</dimen>
-    <dimen name="slidingmenu_padding">12dip</dimen>
+    <dimen name="navigation_drawer_width">240dip</dimen>
+    <dimen name="navigation_drawer_height">56dip</dimen>
+    <dimen name="navigation_drawer_padding">12dip</dimen>
 
     <dimen name="list_nav_text1_size">18sp</dimen>
     <dimen name="list_nav_text2_size">12sp</dimen>

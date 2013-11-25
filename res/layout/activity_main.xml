@@ -32,7 +32,7 @@
         android:layout_height="match_parent" />
     <!-- The navigation drawer -->
     <com.nadmm.airports.views.DrawerListView android:id="@+id/left_drawer"
-        android:layout_width="240dp"
+        android:layout_width="@dimen/navigation_drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:choiceMode="singleChoice"

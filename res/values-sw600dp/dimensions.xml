@@ -21,6 +21,8 @@
  -->
 
 <resources>
+    <dimen name="navigation_drawer_width">280dip</dimen>
+
     <dimen name="small_text_size">16sp</dimen>
     <dimen name="smaller_text_size">16sp</dimen>
     <dimen name="medium_text_size">18sp</dimen>
