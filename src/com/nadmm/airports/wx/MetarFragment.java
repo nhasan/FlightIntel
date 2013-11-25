@@ -236,6 +236,9 @@ public class MetarFragment extends FragmentBase {
         }
 
         Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
+        if ( metar == null ) {
+            return;
+        }
 
         View detail = findViewById( R.id.wx_detail_layout );
         LinearLayout layout = (LinearLayout) findViewById( R.id.wx_status_layout );
