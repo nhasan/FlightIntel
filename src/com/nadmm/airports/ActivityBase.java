@@ -144,6 +144,9 @@ public class ActivityBase extends ActionBarActivity {
 
     public View createContentView( View view ) {
         FrameLayout root = new FrameLayout( this );
+        int white = getResources().getColor( android.R.color.white );
+        root.setBackgroundColor( white );
+        root.setDrawingCacheBackgroundColor( white );
         root.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT ) );
 
