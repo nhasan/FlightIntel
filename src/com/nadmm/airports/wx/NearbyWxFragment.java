@@ -84,7 +84,6 @@ public class NearbyWxFragment extends WxListFragmentBase {
         View view = getView();
         view.setKeepScreenOn( true );
 
-        getListView().setCacheColorHint( 0xffffffff );
         setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
     }
 

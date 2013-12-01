@@ -39,11 +39,7 @@ public class BrowseStateFragment extends ListFragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
-        Bundle args = getArguments();
-
         setActionBarSubtitle( "All Locations" );
-        getListView().setCacheColorHint( 0xffffffff );
-
         setBackgroundTask( new BrowseTask() ).execute();
 
         super.onActivityCreated( savedInstanceState );
