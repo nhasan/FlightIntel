@@ -1,3 +1,9 @@
+v5.5.0 (12/1/2013)
+==================
+* Move Wx into its own toplevel section for better navigation
+* Lots of tweaks and improvements to design and style
+* Follows the Android Design Guidelines much more closely now
+
 v5.4.1 (10/21/2013)
 ===================
 * Fixed download crash to work with new sectioned adapter
@@ -101,7 +107,7 @@ v4.4.0 (9/1/2012)
 =================
 * Added "Area Forecast" (FA text product) to wx
 * Added "Winds Aloft" (FB text product) to wx
-* Pre-cache other wx stations when fetching wx for a station on mobile network 
+* Pre-cache other wx stations when fetching wx for a station on mobile network
 * Performance improvements when fetching wx and charts
 
 v4.3.1 (8/21/2012)
@@ -155,7 +161,7 @@ v3.5.0 (6/3/2012)
 
 v3.4.0 (5/9/2012)
 =================
-* Added textual AIRMET/SIGMET to weather details 
+* Added textual AIRMET/SIGMET to weather details
 * Fix "Nearby" screen when showing airports around an airport
 
 v3.3.1 (5/3/2012)
@@ -184,7 +190,7 @@ v3.2.2 (4/13/2012)
 v3.2.1 (4/13/2012)
 ==================
 * Show additional wx station remarks where available
-* Detect if external storage is not mounted and show a storage monitor screen instead of crashing 
+* Detect if external storage is not mounted and show a storage monitor screen instead of crashing
 * Sort the search suggestion list by airport id
 * Fix crashes in TAF display
 
@@ -280,7 +286,7 @@ v2.2.0 (1/7/2012)
 =================
 * Workaround a FADDS data issue to show all available weather stations
 * Show usable direction with applicable crosswind for each runway when wx is available on site
-* Use magnetic wind direction for showing wind barb and crosswind calculations 
+* Use magnetic wind direction for showing wind barb and crosswind calculations
 * Handle the case when there is no dew point available
 * Show the alternate wx frequency where available
 * Added option to enable wx auto-fetch on 3G/4G (requested by a user)
@@ -316,7 +322,7 @@ v1.8.1 (11/21/2011)
 
 v1.8.0 (11/20/2011)
 ===================
-* NOTAMs NOTAMs NOTAMs 
+* NOTAMs NOTAMs NOTAMs
 
 v1.7.0 (11/12/2011)
 ===================
