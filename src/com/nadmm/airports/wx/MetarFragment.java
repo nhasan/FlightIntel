@@ -293,7 +293,7 @@ public class MetarFragment extends FragmentBase {
         visibility = View.GONE;
         if ( metar.visibilitySM < Float.MAX_VALUE ) {
             if ( metar.flags.contains( Flags.AutoReport ) && metar.visibilitySM == 10 ) {
-                addRow( layout, "10 statute miles or more horizontal visibility" );
+                addRow( layout, "10+ statute miles horizontal" );
             } else {
                 NumberFormat decimal2 = NumberFormat.getNumberInstance();
                 decimal2.setMaximumFractionDigits( 2 );
