@@ -223,6 +223,10 @@ public class ActivityBase extends ActionBarActivity {
         setContentView( createContentView( tv ) );
     }
 
+    public Fragment replaceFragment( Class<?> clss, Bundle args, boolean addToStack ) {
+        return replaceFragment( clss, args, R.id.fragment_container, addToStack );
+    }
+
     public Fragment replaceFragment( Class<?> clss, Bundle args ) {
         return replaceFragment( clss, args, R.id.fragment_container );
     }
@@ -231,7 +235,7 @@ public class ActivityBase extends ActionBarActivity {
         return replaceFragment( clss, args, id, true );
     }
 
-    public Fragment replaceFragment( Class<?> clss, Bundle args, int id, boolean addTostack  ) {
+    public Fragment replaceFragment( Class<?> clss, Bundle args, int id, boolean addToStack  ) {
         String tag = clss.getSimpleName();
         if ( args != null && args.containsKey( FRAGMENT_TAG_EXTRA ) ) {
             String extra = args.getString( FRAGMENT_TAG_EXTRA );
@@ -244,7 +248,7 @@ public class ActivityBase extends ActionBarActivity {
         }
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace( id, f, tag );
-        if ( addTostack ) {
+        if ( addToStack ) {
             ft.addToBackStack( tag );
         }
         ft.commit();

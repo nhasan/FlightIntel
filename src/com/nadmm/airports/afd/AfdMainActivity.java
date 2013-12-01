@@ -87,7 +87,7 @@ public final class AfdMainActivity extends DrawerActivityBase
         if ( itemId != mFragmentId ) {
             mFragmentId = (int) itemId;
             Class<?> clss = getFragmentClass( mFragmentId );
-            replaceFragment( clss, null );
+            replaceFragment( clss, null, false );
         }
         return true;
     }
