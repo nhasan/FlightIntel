@@ -62,6 +62,7 @@ public abstract class ListMenuFragment extends ListFragmentBase {
             Bundle args = new Bundle();
             args.putString( ActivityBase.FRAGMENT_TAG_EXTRA, String.valueOf( id ) );
             args.putString( SUBTITLE_TEXT, title );
+            args.putLong( MENU_ID, id );
             getActivityBase().replaceFragment( clss, args );
         }
     }
