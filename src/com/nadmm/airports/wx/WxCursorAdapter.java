@@ -30,7 +30,10 @@ import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.R;
-import com.nadmm.airports.utils.*;
+import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.FormatUtils;
+import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.utils.TimeUtils;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -39,6 +42,18 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
 
     private HashMap<String, Metar> mStationWx;
 
+    private class ViewHolder {
+        TextView stationName;
+        TextView stationId;
+        TextView stationInfo;
+        TextView stationInfo2;
+        TextView stationFreq;
+        TextView stationPhone;
+        TextView stationDistance;
+        TextView stationWx;
+        TextView stationWx2;
+        TextView reportAge;
+    }
     public WxCursorAdapter( Context context, Cursor c ) {
         super( context, R.layout.wx_list_item, c, 0 );
     }
@@ -47,19 +62,43 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         mStationWx = wx;
     }
 
+    private void setViewHolder( View view ) {
+        ViewHolder holder = new ViewHolder();
+        holder.stationName = (TextView) view.findViewById( R.id.wx_station_name );
+        holder.stationId = (TextView) view.findViewById( R.id.wx_station_id );
+        holder.stationInfo = (TextView) view.findViewById( R.id.wx_station_info );
+        holder.stationInfo2 = (TextView) view.findViewById( R.id.wx_station_info2 );
+        holder.stationFreq = (TextView) view.findViewById( R.id.wx_station_freq );
+        holder.stationPhone = (TextView) view.findViewById( R.id.wx_station_phone );
+        holder.stationDistance = (TextView) view.findViewById( R.id.wx_station_distance );
+        holder.stationWx = (TextView) view.findViewById( R.id.wx_station_wx );
+        holder.stationWx2 = (TextView) view.findViewById( R.id.wx_station_wx2 );
+        holder.reportAge = (TextView) view.findViewById( R.id.wx_report_age );
+        view.setTag( R.id.TAG_VIEW_HOLDER, holder );
+    }
+
+    private ViewHolder getViewHolder( View view ) {
+        ViewHolder holder = (ViewHolder) view.getTag( R.id.TAG_VIEW_HOLDER );
+        if ( holder == null ) {
+            setViewHolder( view );
+            holder = (ViewHolder) view.getTag( R.id.TAG_VIEW_HOLDER );
+        }
+        return holder;
+    }
+
     @Override
     public void bindView( View view, Context context, Cursor c ) {
+        ViewHolder holder = getViewHolder( view );
+
         String name = c.getString( c.getColumnIndex( Wxs.STATION_NAME ) );
-        TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
         if ( name != null && name.length() > 0 ) {
-            tv.setText( name );
+            holder.stationName.setText( name );
         }
 
         String stationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
-        tv = (TextView) view.findViewById( R.id.wx_station_id );
-        tv.setText( stationId );
+        holder.stationId.setText( stationId );
 
-        view.setTag( stationId );
+        view.setTag( R.id.TAG_STATION_ID, stationId );
 
         StringBuilder info = new StringBuilder();
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
@@ -73,27 +112,24 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             }
             info.append( state );
         }
-        tv = (TextView) view.findViewById( R.id.wx_station_info );
-        if ( info.length() > 0 ) {
-            tv.setText( info.toString() );
-        } else {
-            tv.setText( "Location not available" );
+        if ( info.length() == 0 ) {
+            info.append( "Location not available" );
         }
+        holder.stationInfo.setText( info.toString() );
 
+        info.setLength( 0 );
         String freq = c.getString( c.getColumnIndex( Awos1.STATION_FREQUENCY ) );
         if ( freq == null || freq.length() == 0 ) {
             freq = c.getString( c.getColumnIndex( Awos1.SECOND_STATION_FREQUENCY ) );
         }
-        tv = (TextView) view.findViewById( R.id.wx_station_freq );
         if ( freq != null && freq.length() > 0 ) {
             try {
-                tv.setText( FormatUtils.formatFreq( Float.valueOf( freq ) ) );
+                info.append( FormatUtils.formatFreq( Float.valueOf( freq ) ) );
             } catch ( NumberFormatException e ) {
-                tv.setText( freq );
+                info.append( freq );
             }
-        } else {
-            tv.setText( "" );
         }
+        holder.stationFreq.setText( info.toString() );
 
         info.setLength( 0 );
         String type = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
@@ -105,30 +141,27 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         int elevation = c.getInt( c.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
         info.append( FormatUtils.formatFeetMsl( DataUtils.metersToFeet( elevation ) ) );
         info.append( " elev." );
-        tv = (TextView) view.findViewById( R.id.wx_station_info2 );
-        tv.setText( info.toString() );
+        holder.stationInfo2.setText( info.toString() );
 
-        tv = (TextView) view.findViewById( R.id.wx_station_phone );
+        info.setLength( 0 );
         String phone = c.getString( c.getColumnIndex( Awos1.STATION_PHONE_NUMBER ) );
         if ( phone != null && phone.length() > 0 ) {
-            tv.setText( phone );
-        } else {
-            tv.setText( "" );
+            info.append( phone );
         }
+        holder.stationPhone.setText( info.toString() );
 
-        tv = (TextView) view.findViewById( R.id.wx_station_distance );
+        info.setLength( 0 );
         if ( c.getColumnIndex( LocationColumns.DISTANCE ) >= 0
                 && c.getColumnIndex( LocationColumns.BEARING ) >= 0 ) {
             float distance = c.getFloat( c.getColumnIndex( LocationColumns.DISTANCE ) );
             float bearing = c.getFloat( c.getColumnIndex( LocationColumns.BEARING ) );
-            info.setLength( 0 );
             info.append( FormatUtils.formatNauticalMiles( distance ) );
             info.append( " " );
             info.append( GeoUtils.getCardinalDirection( bearing ) );
-            tv.setText( info.toString() );
-            tv.setVisibility( View.VISIBLE );
+            holder.stationDistance.setText( info.toString() );
+            holder.stationDistance.setVisibility( View.VISIBLE );
         } else {
-            tv.setVisibility( View.GONE );
+            holder.stationDistance.setVisibility( View.GONE );
         }
 
         if ( mStationWx != null ) {
@@ -138,6 +171,8 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
     }
 
     protected void showMetarInfo( View view, Cursor c, Metar metar ) {
+        ViewHolder holder = getViewHolder( view );
+
         if ( metar != null && metar.isValid ) {
             // We have METAR for this station
             double lat = c.getDouble(
@@ -149,8 +184,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             location.setLongitude( lon );
             float declination = GeoUtils.getMagneticDeclination( location );
 
-            TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
-            WxUtils.setColorizedWxDrawable( tv, metar, declination );
+            WxUtils.setColorizedWxDrawable( holder.stationName, metar, declination );
 
             StringBuilder info = new StringBuilder();
             info.append( metar.flightCategory );
@@ -186,9 +220,8 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 }
             }
 
-            tv = (TextView) view.findViewById( R.id.wx_station_wx );
-            tv.setVisibility( View.VISIBLE );
-            tv.setText( info.toString() );
+            holder.stationWx.setVisibility( View.VISIBLE );
+            holder.stationWx.setText( info.toString() );
 
             info.setLength( 0 );
             SkyCondition sky = WxUtils.getCeiling( metar.skyConditions );
@@ -224,22 +257,16 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 info.append( FormatUtils.formatAltimeterHg( metar.altimeterHg ) );
             }
 
-            tv = (TextView) view.findViewById( R.id.wx_station_wx2 );
-            tv.setVisibility( View.VISIBLE );
-            tv.setText( info.toString() );
+            holder.stationWx2.setVisibility( View.VISIBLE );
+            holder.stationWx2.setText( info.toString() );
 
-            tv = (TextView) view.findViewById( R.id.wx_report_age );
-            tv.setVisibility( View.VISIBLE );
-            tv.setText( TimeUtils.formatElapsedTime( metar.observationTime ) );
+            holder.reportAge.setVisibility( View.VISIBLE );
+            holder.reportAge.setText( TimeUtils.formatElapsedTime( metar.observationTime ) );
        } else {
-            TextView tv = (TextView) view.findViewById( R.id.wx_station_name );
-            WxUtils.setColorizedWxDrawable( tv, metar, 0 );
-            tv = (TextView) view.findViewById( R.id.wx_station_wx );
-            tv.setText( "Unable to get weather details" );
-            tv = (TextView) view.findViewById( R.id.wx_station_wx2 );
-            tv.setVisibility( View.GONE );
-            tv = (TextView) view.findViewById( R.id.wx_report_age );
-            tv.setVisibility( View.GONE );
+            WxUtils.setColorizedWxDrawable( holder.stationName, metar, 0 );
+            holder.stationWx.setText( "Unable to get weather details" );
+            holder.stationWx2.setVisibility( View.GONE );
+            holder.reportAge.setVisibility( View.GONE );
         }
     }
 

@@ -59,4 +59,6 @@
     <item type="id" name="E6B_CLIMB_DESCENT_REQCLIMB" />
     <item type="id" name="E6B_CLIMB_DESCENT_REQDSCNT" />
     <item type="id" name="E6B_CLIMB_DESCENT_TOPDSCNT" />
+    <item type="id" name="TAG_VIEW_HOLDER" />
+    <item type="id" name="TAG_STATION_ID" />
 </resources>

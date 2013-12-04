@@ -14,13 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,12 +31,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NetworkUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class WxListFragmentBase extends ListFragmentBase {
 
@@ -174,7 +173,7 @@ public class WxListFragmentBase extends ListFragmentBase {
             while ( pos <= l.getChildCount() ) {
                 View view = l.getChildAt( pos );
                 if ( view != null ) {
-                    String icaoCode = (String) view.getTag();
+                    String icaoCode = (String) view.getTag( R.id.TAG_STATION_ID );
                     if ( icaoCode.equals( metar.stationId ) ) {
                         WxCursorAdapter adapter = (WxCursorAdapter) getListAdapter();
                         Cursor c = (Cursor) adapter.getItem( pos+first );
