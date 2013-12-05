@@ -14,30 +14,31 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
+import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.util.LruCache;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.nadmm.airports.R;
 
+import java.util.Locale;
+
 public class UiUtils {
+
+    private static final LruCache<String, Drawable> sDrawableCache
+            = new LruCache<String, Drawable>( 100 );
 
     private final static Handler sHandler;
     private final static Paint sPaint = new Paint( Paint.FILTER_BITMAP_FLAG );
@@ -45,6 +46,17 @@ public class UiUtils {
     static {
         // Make sure to associate with the Looper in the main (Gui) thread
         sHandler = new Handler( Looper.getMainLooper() );
+    }
+
+    public static Drawable getDrawableFromCache( String key ){
+        Drawable d = sDrawableCache.get( key );
+        return d;
+    }
+
+    public static void putDrawableIntoCache( String key, Drawable d ) {
+        if ( sDrawableCache.get( key ) == null ) {
+            sDrawableCache.put( key, d );
+        }
     }
 
     public static int convertDpToPx( Context context, int dp ) {
@@ -91,21 +103,32 @@ public class UiUtils {
     }
 
     public static Drawable getRotatedDrawable( Context context, int resid, float rotation ) {
-        Resources res = context.getResources();
-        Bitmap bmp = BitmapFactory.decodeResource( res, resid );
-        Bitmap rotated = Bitmap.createBitmap( bmp.getWidth(), bmp.getHeight(),
-                Bitmap.Config.ARGB_8888 );
-        Canvas canvas = new Canvas( rotated );
-        canvas.setDensity( Bitmap.DENSITY_NONE );
-        canvas.rotate( rotation, bmp.getWidth()/2, bmp.getHeight()/2 );
-        canvas.drawBitmap( bmp, 0, 0, sPaint );
-        return new BitmapDrawable( res, rotated );
+        String key = String.format( Locale.US, "%d:%d", resid, (int) rotation );
+        Drawable d = getDrawableFromCache( key );
+        if ( d == null ) {
+            Resources res = context.getResources();
+            Bitmap bmp = BitmapFactory.decodeResource( res, resid );
+            Bitmap rotated = Bitmap.createBitmap( bmp.getWidth(), bmp.getHeight(),
+                    Bitmap.Config.ARGB_8888 );
+            Canvas canvas = new Canvas( rotated );
+            canvas.setDensity( Bitmap.DENSITY_NONE );
+            canvas.rotate( rotation, bmp.getWidth()/2, bmp.getHeight()/2 );
+            canvas.drawBitmap( bmp, 0, 0, sPaint );
+            d = new BitmapDrawable( res, rotated );
+            putDrawableIntoCache( key, d );
+        }
+        return d;
     }
 
     static public void setTextViewDrawable( TextView tv, int resid ) {
-        Resources res = tv.getResources();
-        Drawable d = res.getDrawable( resid ).mutate();
-        setTextViewDrawable( tv, d );
+        String key = String.format( Locale.US, "%d", resid );
+        Drawable d = getDrawableFromCache( key );
+        if ( d == null ) {
+            Resources res = tv.getResources();
+            d = res.getDrawable( resid );
+            putDrawableIntoCache( key, d );
+        }
+        setTextViewDrawable( tv, d.mutate() );
     }
 
     static public void setTextViewDrawable( TextView tv, Drawable d ) {
@@ -115,8 +138,14 @@ public class UiUtils {
     }
 
     static public Drawable getColorizedDrawable( Resources res, int resid, int color ) {
-        Drawable d = res.getDrawable( resid ).mutate();
-        d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
+        // Get a mutable copy of the drawable so each can be set to a different color
+        String key = String.format( Locale.US, "%d:%d", resid, color );
+        Drawable d = getDrawableFromCache( key );
+        if ( d == null ) {
+            d = res.getDrawable( resid ).mutate();
+            d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
+            putDrawableIntoCache( key, d );
+        }
         return d;
     }
 

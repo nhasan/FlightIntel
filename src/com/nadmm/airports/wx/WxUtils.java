@@ -29,57 +29,62 @@ import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
 
 public class WxUtils {
 
-    static HashMap<String, Drawable> sWxDrawableCache = new HashMap<String, Drawable>();
-    static HashMap<String, Drawable> sWindDrawableCache = new HashMap<String, Drawable>();
+    private static final String CATEGORY_VFR = "VFR";
+    private static final String CATEGORY_MVFR = "MVFR";
+    private static final String CATEGORY_IFR = "IFR";
+    private static final String CATEGORY_LIFR = "LIFR";
 
     static public int getFlightCategoryColor( String flightCategory ) {
         int color = 0;
-        if ( flightCategory.equals( "VFR" ) ) {
+        if ( flightCategory.equals( CATEGORY_VFR ) ) {
             color = Color.argb( 255, 0, 144, 224 );
-        } else if ( flightCategory.equals( "MVFR" ) ) {
+        } else if ( flightCategory.equals( CATEGORY_MVFR ) ) {
             color = Color.argb( 255, 0, 160, 32 );
-        } else if ( flightCategory.equals( "IFR" ) ) {
+        } else if ( flightCategory.equals( CATEGORY_IFR ) ) {
             color = Color.argb( 255, 192, 32, 00 );
-        } else if ( flightCategory.equals( "LIFR" ) ) {
+        } else if ( flightCategory.equals( CATEGORY_LIFR ) ) {
             color = Color.argb( 255, 200, 0, 160 );
         }
         return color;
     }
 
     static public String getFlightCategoryName( String flightCategory ) {
-        String name = flightCategory;
-        if ( flightCategory.equals( "MVFR" ) ) {
+        String name;
+        if ( flightCategory.equals( CATEGORY_MVFR ) ) {
             name = "Marginal VFR";
-        } else if ( flightCategory.equals( "LIFR" ) ) {
+        } else if ( flightCategory.equals( CATEGORY_LIFR ) ) {
             name = "Low IFR";
+        } else {
+            name = flightCategory;
         }
         return name;
     }
 
     static public void showColorizedDrawable( TextView tv, String flightCategory, int resid ) {
-        // Get a mutable copy of the drawable so each can be set to a different color
         int color = getFlightCategoryColor( flightCategory );
         UiUtils.setColorizedTextViewDrawable( tv, resid, color );
     }
 
     static public void setFlightCategoryDrawable( TextView tv, String flightCategory ) {
-        int resid = 0;
-        if ( flightCategory.equals( "VFR" ) ) {
-            resid = R.drawable.vfr;
-        } else if ( flightCategory.equals( "MVFR" ) ) {
-            resid = R.drawable.mvfr;
-        } else if ( flightCategory.equals( "IFR" ) ) {
-            resid = R.drawable.ifr;
-        } else if ( flightCategory.equals( "LIFR" ) ) {
-            resid = R.drawable.lifr;
+        Drawable d = UiUtils.getDrawableFromCache( flightCategory );
+        if ( d == null ) {
+            Resources res = tv.getResources();
+            if ( flightCategory.equals( CATEGORY_VFR ) ) {
+                d = res.getDrawable( R.drawable.vfr );
+            } else if ( flightCategory.equals( CATEGORY_MVFR ) ) {
+                d = res.getDrawable( R.drawable.mvfr );
+            } else if ( flightCategory.equals( CATEGORY_IFR ) ) {
+                d = res.getDrawable( R.drawable.ifr );
+            } else if ( flightCategory.equals( CATEGORY_LIFR ) ) {
+                d = res.getDrawable( R.drawable.lifr );
+            }
         }
-        if ( resid != 0 ) {
-            UiUtils.setTextViewDrawable( tv, resid );
+        if ( d != null ) {
+            UiUtils.putDrawableIntoCache( flightCategory, d );
+            UiUtils.setTextViewDrawable( tv, d );
         }
     }
 
@@ -88,69 +93,70 @@ public class WxUtils {
         showColorizedDrawable( tv, metar.flightCategory, sky.getDrawable() );
     }
 
+    static public Drawable getSkycoverDrawable( Context context, Metar metar ) {
+        Resources res = context.getResources();
+        SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
+        int color = getFlightCategoryColor( metar.flightCategory );
+        Drawable d = UiUtils.getColorizedDrawable( res, sky.getDrawable(), color );
+        return d;
+    }
+
     static public Drawable getWindBarbDrawable( Context context, Metar metar, float declination ) {
         Drawable d = null;
-        if ( metar.windDirDegrees > 0 && metar.windSpeedKnots > 0 ) {
-            String cacheKey = String.format( Locale.US, "%d:%d", metar.windSpeedKnots,
-                    GeoUtils.applyDeclination( metar.windDirDegrees, declination ) );
-            if ( sWindDrawableCache.containsKey( cacheKey ) ) {
-                d = sWindDrawableCache.get( cacheKey );
+        if ( isWindAvailable( metar ) ) {
+            int resid = 0;
+            if ( metar.windSpeedKnots >= 48 ) {
+                resid = R.drawable.windbarb50;
+            } else if ( metar.windSpeedKnots >= 43 ) {
+                resid = R.drawable.windbarb45;
+            } else if ( metar.windSpeedKnots >= 38 ) {
+                resid = R.drawable.windbarb40;
+            } else if ( metar.windSpeedKnots >= 33 ) {
+                resid = R.drawable.windbarb35;
+            } else if ( metar.windSpeedKnots >= 28 ) {
+                resid = R.drawable.windbarb30;
+            } else if ( metar.windSpeedKnots >= 23 ) {
+                resid = R.drawable.windbarb25;
+            } else if ( metar.windSpeedKnots >= 18 ) {
+                resid = R.drawable.windbarb20;
+            } else if ( metar.windSpeedKnots >= 13 ) {
+                resid = R.drawable.windbarb15;
+            } else if ( metar.windSpeedKnots >= 8 ) {
+                resid = R.drawable.windbarb10;
+            } else if ( metar.windSpeedKnots >= 3 ) {
+                resid = R.drawable.windbarb5;
             } else {
-                int resid = 0;
-                if ( metar.windSpeedKnots >= 48 ) {
-                    resid = R.drawable.windbarb50;
-                } else if ( metar.windSpeedKnots >= 43 ) {
-                    resid = R.drawable.windbarb45;
-                } else if ( metar.windSpeedKnots >= 38 ) {
-                    resid = R.drawable.windbarb40;
-                } else if ( metar.windSpeedKnots >= 33 ) {
-                    resid = R.drawable.windbarb35;
-                } else if ( metar.windSpeedKnots >= 28 ) {
-                    resid = R.drawable.windbarb30;
-                } else if ( metar.windSpeedKnots >= 23 ) {
-                    resid = R.drawable.windbarb25;
-                } else if ( metar.windSpeedKnots >= 18 ) {
-                    resid = R.drawable.windbarb20;
-                } else if ( metar.windSpeedKnots >= 13 ) {
-                    resid = R.drawable.windbarb15;
-                } else if ( metar.windSpeedKnots >= 8 ) {
-                    resid = R.drawable.windbarb10;
-                } else if ( metar.windSpeedKnots >= 3 ) {
-                    resid = R.drawable.windbarb5;
-                } else {
-                    resid = R.drawable.windbarb0;
-                }
-                d = UiUtils.getRotatedDrawable( context, resid,
-                        GeoUtils.applyDeclination( metar.windDirDegrees, declination ) );
-                sWindDrawableCache.put( cacheKey, d );
+                resid = R.drawable.windbarb0;
             }
+            d = UiUtils.getRotatedDrawable( context, resid,
+                    GeoUtils.applyDeclination( metar.windDirDegrees, declination ) );
+        }
+        return d;
+    }
+
+    static public Drawable getErrorDrawable( Context context ) {
+        int resid = R.drawable.error;
+        String key = String.valueOf( resid );
+        Drawable d = UiUtils.getDrawableFromCache( key );
+        if ( d == null ) {
+            Resources res = context.getResources();
+            d = res.getDrawable( resid );
+            UiUtils.putDrawableIntoCache( key, d );
         }
         return d;
     }
 
     static public void setColorizedWxDrawable( TextView tv, Metar metar, float declination ) {
         if ( metar != null ) {
+            Context context = tv.getContext();
             if ( metar.isValid ) {
-                Drawable d1;
-                Context context = tv.getContext();
-                Resources res = context.getResources();
-                SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
-                String cacheKey = sky.getSkyCover()+":"+metar.flightCategory;
-                if ( sWxDrawableCache.containsKey( cacheKey ) ) {
-                    d1 = sWxDrawableCache.get( cacheKey );
-                } else {
-                    int color = getFlightCategoryColor( metar.flightCategory );
-                    d1 = UiUtils.getColorizedDrawable( res, sky.getDrawable(), color );
-                    sWxDrawableCache.put( cacheKey, d1 );
-                }
-                Drawable d2 = null;
-                if ( isWindAvailable( metar ) ) {
-                    d2 = getWindBarbDrawable( tv.getContext(), metar, declination );
-                }
+                Drawable d1 = getSkycoverDrawable( context, metar );
+                Drawable d2 = getWindBarbDrawable( tv.getContext(), metar, declination );
                 Drawable result = UiUtils.combineDrawables( context, d1, d2, 2 );
                 UiUtils.setTextViewDrawable( tv, result );
             } else {
-                UiUtils.setTextViewDrawable( tv, R.drawable.error );
+                Drawable d = getErrorDrawable( context );
+                UiUtils.setTextViewDrawable( tv, d );
             }
         }
     }
