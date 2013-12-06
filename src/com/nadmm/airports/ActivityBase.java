@@ -30,7 +30,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -58,7 +57,7 @@ public class ActivityBase extends ActionBarActivity {
 
     private DatabaseManager mDbManager;
     private MenuItem mRefreshItem;
-    private Drawable mRefreshDrawable;
+    private AnimationDrawable mRefreshDrawable;
     private LayoutInflater mInflater;
     private CursorAsyncTask mTask;
 
@@ -489,16 +488,14 @@ public class ActivityBase extends ActionBarActivity {
     }
 
     public void startRefreshAnimation() {
-        if ( mRefreshItem != null ) {
-            AnimationDrawable d = (AnimationDrawable) mRefreshItem.getIcon();
-            d.start();
+        if ( mRefreshDrawable != null ) {
+            mRefreshDrawable.start();
         }
     }
 
     public void stopRefreshAnimation() {
-        if ( mRefreshItem != null ) {
-            AnimationDrawable d = (AnimationDrawable) mRefreshItem.getIcon();
-            d.stop();
+        if ( mRefreshDrawable != null ) {
+            mRefreshDrawable.stop();
         }
     }
 
@@ -514,7 +511,7 @@ public class ActivityBase extends ActionBarActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate( R.menu.mainmenu, menu );
         mRefreshItem = menu.findItem( R.id.menu_refresh );
-        mRefreshDrawable = mRefreshItem.getIcon();
+        mRefreshDrawable = (AnimationDrawable) mRefreshItem.getIcon();
 
         MenuItem searchItem = menu.findItem( R.id.menu_search );
         SearchView searchView = (SearchView) MenuItemCompat.getActionView( searchItem );
