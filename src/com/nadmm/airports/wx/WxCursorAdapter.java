@@ -227,8 +227,13 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             SkyCondition sky = WxUtils.getCeiling( metar.skyConditions );
             int ceiling = sky.getCloudBaseAGL();
             String skyCover = sky.getSkyCover();
-            if ( !skyCover.equals( "NSC" ) ) {
-                info.append( "Ceiling "+skyCover+" "+FormatUtils.formatFeet( ceiling ) );
+            if ( skyCover.equals( "OVX" ) ) {
+                info.append( "Ceiling indefinite" );
+            } else if ( !skyCover.equals( "NSC" ) ) {
+                info.append( "Ceiling " );
+                info.append( skyCover );
+                info.append( " " );
+                info.append( FormatUtils.formatFeet( ceiling ) );
             } else {
                 if ( !metar.skyConditions.isEmpty() ) {
                     sky = metar.skyConditions.get( 0 );
@@ -236,8 +241,9 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                     if ( skyCover.equals( "CLR" ) || skyCover.equals( "SKC" ) ) {
                         info.append( "Sky clear" );
                     } else if ( !skyCover.equals( "SKM" ) ) {
-                        info.append(
-                                skyCover+" "+FormatUtils.formatFeet( sky.getCloudBaseAGL() ) );
+                        info.append( skyCover );
+                        info.append( " " );
+                        info.append( FormatUtils.formatFeet( sky.getCloudBaseAGL() ) );
                     }
                 }
             }
