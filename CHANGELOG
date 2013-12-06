@@ -1,3 +1,9 @@
+v5.5.1 (12/5/2013)
+==================
+* Unbreak E6B from last release
+* Added caching for bitmaps for smoother scrolling and improved battery life
+* Small visual fixes and improvements
+
 v5.5.0 (12/1/2013)
 ==================
 * Move Wx into its own toplevel section for better navigation
