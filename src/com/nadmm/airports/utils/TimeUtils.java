@@ -14,23 +14,22 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.utils;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
-
 import com.nadmm.airports.PreferencesActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class TimeUtils {
 
@@ -40,7 +39,7 @@ public class TimeUtils {
 
     public static String formatDateTime( Context context, long millis ) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( context );
-        boolean local = prefs.getBoolean( PreferencesActivity.SHOW_LOCAL_TIME, false );
+        boolean local = prefs.getBoolean( PreferencesActivity.KEY_SHOW_LOCAL_TIME, false );
         if ( local ) {
             return formatDateTimeLocal( context, millis );
         } else {
@@ -50,7 +49,7 @@ public class TimeUtils {
 
     public static String formatDateTimeYear( Context context, long millis ) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( context );
-        boolean local = prefs.getBoolean( PreferencesActivity.SHOW_LOCAL_TIME, false );
+        boolean local = prefs.getBoolean( PreferencesActivity.KEY_SHOW_LOCAL_TIME, false );
         if ( local ) {
             return formatDateTimeYearLocal( context, millis );
         } else {
@@ -60,7 +59,7 @@ public class TimeUtils {
 
     public static String formatDateRange( Context context, long startMillis, long endMillis ) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( context );
-        boolean local = prefs.getBoolean( PreferencesActivity.SHOW_LOCAL_TIME, false );
+        boolean local = prefs.getBoolean( PreferencesActivity.KEY_SHOW_LOCAL_TIME, false );
         if ( local ) {
             return formatDateRangeLocal( context, startMillis, endMillis );
         } else {
