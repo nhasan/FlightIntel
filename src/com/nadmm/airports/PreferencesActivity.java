@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports;
@@ -25,7 +25,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
-public class PreferencesActivity extends PreferenceActivity 
+public class PreferencesActivity extends PreferenceActivity
             implements OnSharedPreferenceChangeListener {
 
     public static final String KEY_HOME_AIRPORT = "home_airport";
@@ -36,8 +36,9 @@ public class PreferencesActivity extends PreferenceActivity
     public static final String KEY_SHOW_GPS_NOTAMS = "show_gps_notams";
     public static final String KEY_AUTO_DOWNLOAD_ON_3G = "auto_download_on_3G";
     public static final String KEY_DISCLAIMER_AGREED = "disclaimer_agreed";
-    public static final String KEY_WX_FAV_MIGRATED = "wx_fav_migrated";
-    public static final String SHOW_LOCAL_TIME = "show_local_time";
+    public static final String KEY_SHOW_LOCAL_TIME = "show_local_time";
+    public static final String KEY_HOME_SCREEN = "home_screen";
+    public static final String KEY_ALWAYS_SHOW_NEARBY = "always_show_nearby";
 
     private SharedPreferences mSharedPrefs;
 
@@ -49,23 +50,23 @@ public class PreferencesActivity extends PreferenceActivity
         mSharedPrefs = getPreferenceScreen().getSharedPreferences();
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
         // Initialize the preference screen
+        onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_SCREEN );
         onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
         onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_AIRPORT );
 
         // Set up a listener whenever a key changes
-        mSharedPrefs.registerOnSharedPreferenceChangeListener(this);
+        mSharedPrefs.registerOnSharedPreferenceChangeListener( this );
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         // Unregister the listener whenever a key changes
-        mSharedPrefs.unregisterOnSharedPreferenceChangeListener(this);
+        mSharedPrefs.unregisterOnSharedPreferenceChangeListener( this );
     }
 
     @SuppressWarnings("deprecation")
@@ -73,8 +74,11 @@ public class PreferencesActivity extends PreferenceActivity
     public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
         Preference pref = findPreference( key );
         if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
-            String radius = mSharedPrefs.getString( key, "20" );
-            pref.setSummary( "Using "+radius+" NM radius" );
+            String radius = mSharedPrefs.getString( key, "30" );
+            pref.setSummary( "Show locations within "+radius+" NM radius" );
+        } else if ( key.equals( KEY_HOME_SCREEN ) ) {
+            String home = mSharedPrefs.getString( key, "A/FD" );
+            pref.setSummary( "Show "+home+" at startup" );
         } else if ( key.equals( KEY_HOME_AIRPORT ) ) {
             String code = mSharedPrefs.getString( KEY_HOME_AIRPORT, "" );
             if ( code.length() > 0 ) {
