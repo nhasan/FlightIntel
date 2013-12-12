@@ -8,12 +8,4 @@ FlightIntel is location-aware and can list airports around a user's location. It
 
 The app requires "Call Phone" permission to allow it to call the phone numbers when you tap on them. You can directly call the phone numbers displayed by simply tapping on them. The application does not make any calls by itself.
 
-Planned features:
-===
-* Detailed ILS information with frequencies
-* Detailed navaid information
-* Detailed ARTCC information with frequencies
-* Weather reports (METAR/TAF)
-* Weather radar images
-
 
