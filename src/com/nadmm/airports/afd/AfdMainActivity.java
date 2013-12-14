@@ -23,10 +23,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.appcompat.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.PreferencesActivity;
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NavAdapter;
 import com.nadmm.airports.views.DrawerListView;
 

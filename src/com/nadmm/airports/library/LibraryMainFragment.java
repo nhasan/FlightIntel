@@ -77,7 +77,8 @@ public class LibraryMainFragment extends FragmentBase
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
         String[] titles = mTabsAdapter.getPageTitles();
-        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(), "Library", titles );
+        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(),
+                R.string.library, titles );
         actionBar.setListNavigationCallbacks( adapter, this );
         actionBar.setDisplayShowTitleEnabled( false );
 

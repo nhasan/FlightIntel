@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.PreferencesActivity;
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NavAdapter;
 import com.nadmm.airports.views.DrawerListView;
 
@@ -38,7 +39,8 @@ public final class WxMainActivity extends DrawerActivityBase
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled( false );
         actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
-        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(), "Weather", mOptions );
+        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(),
+                R.string.weather, mOptions );
         actionBar.setListNavigationCallbacks( adapter, this );
 
         Bundle args = getIntent().getExtras();
