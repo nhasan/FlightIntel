@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.appcompat.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.PreferencesActivity;
@@ -60,7 +61,8 @@ public final class AfdMainActivity extends DrawerActivityBase
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled( false );
         actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
-        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(), "Airports", mOptions );
+        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(),
+                R.string.airports, mOptions );
         actionBar.setListNavigationCallbacks( adapter, this );
 
         Bundle args = getIntent().getExtras();

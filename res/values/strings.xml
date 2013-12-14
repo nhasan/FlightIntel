@@ -217,6 +217,7 @@
     <string name="drawer_open">Open Drawer</string>
     <string name="drawer_close">Close Drawer</string>
     <string name="afd">A/FD</string>
+    <string name="airports">Airports</string>
     <plurals name="airports_found">
         <item quantity="zero">No airports found</item>
         <item quantity="one">1 airport found</item>

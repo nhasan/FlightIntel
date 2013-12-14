@@ -20,6 +20,7 @@
 package com.nadmm.airports.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,9 +33,10 @@ public class NavAdapter extends ArrayAdapter<String> {
     private LayoutInflater mInflater;
     private String mTitle;
 
-    public NavAdapter( Context context, String title, String[] values ) {
+    public NavAdapter( Context context, int title, String[] values ) {
         super( context, 0, values );
-        mTitle = title;
+        Resources res = context.getResources();
+        mTitle = res.getString( title );
         mInflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
     }

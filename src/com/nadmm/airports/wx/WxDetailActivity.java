@@ -65,7 +65,8 @@ public class WxDetailActivity extends ActivityBase
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
         String[] titles = mTabsAdapter.getPageTitles();
-        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(), "Weather", titles );
+        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(),
+                R.string.weather, titles );
         actionBar.setListNavigationCallbacks( adapter, this );
         actionBar.setDisplayShowTitleEnabled( false );
 
