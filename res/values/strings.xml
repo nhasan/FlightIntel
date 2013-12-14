@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
 <resources>
@@ -216,6 +216,7 @@
     <string name="range">Range</string>
     <string name="drawer_open">Open Drawer</string>
     <string name="drawer_close">Close Drawer</string>
+    <string name="afd">A/FD</string>
     <plurals name="airports_found">
         <item quantity="zero">No airports found</item>
         <item quantity="one">1 airport found</item>
