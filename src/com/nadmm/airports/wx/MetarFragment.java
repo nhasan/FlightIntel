@@ -82,6 +82,10 @@ public class MetarFragment extends FragmentBase {
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive( Context context, Intent intent ) {
+                if ( mLocation == null ) {
+                    // This was probably intended for wx list view
+                    return;
+                }
                 String action = intent.getAction();
                 if ( action.equals( mAction ) ) {
                     String type = intent.getStringExtra( NoaaService.TYPE );
