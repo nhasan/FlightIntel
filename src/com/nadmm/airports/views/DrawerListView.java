@@ -1,6 +1,7 @@
 package com.nadmm.airports.views;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.provider.BaseColumns;
@@ -35,7 +36,7 @@ public final class DrawerListView extends ListView {
     }
 
     private void init( Context context ) {
-        setAdapter( new DrawerAdapter( context, new DrawerCursor() ) );
+        setAdapter( new DrawerAdapter( context, new DrawerCursor( context ) ) );
     }
 
     protected class DrawerAdapter extends ResourceCursorAdapter {
@@ -64,16 +65,33 @@ public final class DrawerListView extends ListView {
         private final static String[] sColumnNames = new String[]
                 { BaseColumns._ID, ITEM_TEXT, ITEM_ICON };
 
-        public DrawerCursor() {
+        public DrawerCursor( Context context ) {
             super( sColumnNames );
-            newRow().add( ITEM_ID_AFD ).add( "A/FD" ).add( R.drawable.airport );
-            newRow().add( ITEM_ID_WX ).add( "Weather" ).add( R.drawable.wx );
-            newRow().add( ITEM_ID_TFR ).add( "TFRs" ).add( R.drawable.stop );
-            newRow().add( ITEM_ID_LIBRARY ).add( "Library" ).add( R.drawable.book );
-            newRow().add( ITEM_ID_SCRATCHPAD ).add( "Scratch Pad" ).add( R.drawable.notepad );
-            newRow().add( ITEM_ID_CLOCKS ).add( "Clocks" ).add( R.drawable.clock );
-            newRow().add( ITEM_ID_E6B ).add( "E6B" ).add( R.drawable.e6b );
-            newRow().add( ITEM_ID_CHARTS ).add( "Manage Charts" ).add( R.drawable.folder );
+            Resources res = context.getResources();
+            newRow().add( ITEM_ID_AFD )
+                    .add( res.getString( R.string.afd ) )
+                    .add( R.drawable.airport );
+            newRow().add( ITEM_ID_WX )
+                    .add( res.getString( R.string.weather ) )
+                    .add( R.drawable.wx );
+            newRow().add( ITEM_ID_TFR )
+                    .add( res.getString( R.string.tfrs ) )
+                    .add( R.drawable.stop );
+            newRow().add( ITEM_ID_LIBRARY )
+                    .add( res.getString( R.string.library ) )
+                    .add( R.drawable.book );
+            newRow().add( ITEM_ID_SCRATCHPAD )
+                    .add( res.getString( R.string.scratch_pad ) )
+                    .add( R.drawable.notepad );
+            newRow().add( ITEM_ID_CLOCKS )
+                    .add( res.getString( R.string.clocks ) )
+                    .add( R.drawable.clock );
+            newRow().add( ITEM_ID_E6B )
+                    .add( res.getString( R.string.e6b ) )
+                    .add( R.drawable.e6b );
+            newRow().add( ITEM_ID_CHARTS )
+                    .add( res.getString( R.string.charts ) )
+                    .add( R.drawable.folder );
         }
 
     }
