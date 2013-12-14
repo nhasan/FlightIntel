@@ -27,7 +27,7 @@
             android:title="Home screen"
             android:entries="@array/home_screen"
             android:entryValues="@array/home_screen"
-            android:defaultValue="A/FD" />
+            android:defaultValue="@string/afd" />
         <CheckBoxPreference
             android:key="always_show_nearby"
             android:title="Always show nearby"

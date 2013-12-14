@@ -19,10 +19,13 @@
 
 package com.nadmm.airports.afd;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DrawerActivityBase;
+import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.utils.NavAdapter;
 import com.nadmm.airports.views.DrawerListView;
 
@@ -37,9 +40,15 @@ public final class AfdMainActivity extends DrawerActivityBase
             "Browse"
     };
 
-    protected final int ID_FAVORITES = 0;
-    protected final int ID_NEARBY = 1;
-    protected final int ID_BROWSE = 2;
+    private final Class<?>[] mClasses = new Class<?>[] {
+            FavoriteAirportsFragment.class,
+            NearbyAirportsFragment.class,
+            BrowseAirportsFragment.class
+    };
+
+    private final int ID_FAVORITES = 0;
+    private final int ID_NEARBY = 1;
+    private final int ID_BROWSE = 2;
 
     private int mFragmentId;
 
@@ -56,7 +65,7 @@ public final class AfdMainActivity extends DrawerActivityBase
 
         Bundle args = getIntent().getExtras();
         mFragmentId = getInitialFragmentId();
-        addFragment( getFragmentClass( mFragmentId ), args );
+        addFragment( mClasses[ mFragmentId ], args );
     }
 
     @Override
@@ -86,31 +95,20 @@ public final class AfdMainActivity extends DrawerActivityBase
     public boolean onNavigationItemSelected( int itemPosition, long itemId ) {
         if ( itemId != mFragmentId ) {
             mFragmentId = (int) itemId;
-            Class<?> clss = getFragmentClass( mFragmentId );
-            replaceFragment( clss, null, false );
+            replaceFragment( mClasses[ mFragmentId ], null, false );
         }
         return true;
     }
 
     protected int getInitialFragmentId() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
+        boolean showNearby = prefs.getBoolean( PreferencesActivity.KEY_ALWAYS_SHOW_NEARBY, false );
         ArrayList<String> fav = getDbManager().getAptFavorites();
-        if ( fav.size() > 0 ) {
+        if ( !showNearby && fav.size() > 0 ) {
             return ID_FAVORITES;
         } else {
             return ID_NEARBY;
         }
-    }
-
-    protected Class<?> getFragmentClass( int id ) {
-        Class<?> clss = null;
-        if ( id == ID_FAVORITES ) {
-            clss = FavoriteAirportsFragment.class;
-        } else if ( id == ID_NEARBY ) {
-            clss = NearbyAirportsFragment.class;
-        } else if ( id == ID_BROWSE ) {
-            clss = BrowseStateFragment.class;
-        }
-        return clss;
     }
 
 }

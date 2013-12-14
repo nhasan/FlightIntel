@@ -14,18 +14,19 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports;
 
 
-import com.nadmm.airports.afd.AfdMainActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import com.nadmm.airports.afd.AfdMainActivity;
+import com.nadmm.airports.wx.WxMainActivity;
 
 public class FlightIntel extends ActivityBase {
 
@@ -52,8 +53,15 @@ public class FlightIntel extends ActivityBase {
             return;
         }
 
-        Intent main = new Intent( this, AfdMainActivity.class );
-        startActivity( main );
+        Resources res = getResources();
+        String afd = res.getString( R.string.afd );
+        String home = prefs.getString( PreferencesActivity.KEY_HOME_SCREEN, afd );
+        if ( home.equals( afd ) ) {
+            intent = new Intent( this, AfdMainActivity.class );
+        } else {
+            intent = new Intent( this, WxMainActivity.class );
+        }
+        startActivity( intent );
         finish();
     }
 

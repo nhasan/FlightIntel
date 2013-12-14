@@ -1,9 +1,12 @@
 package com.nadmm.airports.wx;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DrawerActivityBase;
+import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.utils.NavAdapter;
 import com.nadmm.airports.views.DrawerListView;
 
@@ -21,6 +24,9 @@ public final class WxMainActivity extends DrawerActivityBase
             FavoriteWxFragment.class,
             NearbyWxFragment.class
     };
+
+    private final int ID_FAVORITES = 0;
+    private final int ID_NEARBY = 1;
 
     private int mFragmentId;
 
@@ -70,8 +76,14 @@ public final class WxMainActivity extends DrawerActivityBase
     }
 
     protected int getInitialFragmentId() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
+        boolean showNearby = prefs.getBoolean( PreferencesActivity.KEY_ALWAYS_SHOW_NEARBY, false );
         ArrayList<String> fav = getDbManager().getWxFavorites();
-        return ( fav.size() > 0 )? 0 : 1;
+        if ( !showNearby && fav.size() > 0 ) {
+            return ID_FAVORITES;
+        } else {
+            return ID_NEARBY;
+        }
     }
 
 }

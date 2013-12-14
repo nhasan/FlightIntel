@@ -31,7 +31,7 @@
         <item>50</item>
     </string-array>
     <string-array name="home_screen">
-        <item>A/FD</item>
-        <item>Weather</item>
+        <item>@string/afd</item>
+        <item>@string/weather</item>
     </string-array>
 </resources>
