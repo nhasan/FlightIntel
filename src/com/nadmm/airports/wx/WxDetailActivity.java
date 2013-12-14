@@ -24,12 +24,12 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import com.google.analytics.tracking.android.EasyTracker;
-import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NavAdapter;
 import com.nadmm.airports.utils.TabsAdapter;
 
-public class WxDetailActivity extends ActivityBase
+public class WxDetailActivity extends DrawerActivityBase
                 implements ActionBar.OnNavigationListener, ViewPager.OnPageChangeListener {
 
     private ViewPager mViewPager;
@@ -38,8 +38,6 @@ public class WxDetailActivity extends ActivityBase
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView( R.layout.fragment_pager_no_tab_layout );
 
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
@@ -69,6 +67,8 @@ public class WxDetailActivity extends ActivityBase
                 R.string.weather, titles );
         actionBar.setListNavigationCallbacks( adapter, this );
         actionBar.setDisplayShowTitleEnabled( false );
+
+        setDrawerIndicatorEnabled( false );
 
         if ( savedInstanceState != null ) {
             // Workaround for race conditions in ViewPager
@@ -100,6 +100,11 @@ public class WxDetailActivity extends ActivityBase
     protected void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
         outState.putInt( "wxtab", mViewPager.getCurrentItem() );
+    }
+
+    @Override
+    protected void setContentView() {
+        setContentView( R.layout.fragment_pager_no_tab_layout );
     }
 
     @Override
