@@ -112,14 +112,6 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
     }
 
     @Override
-    public boolean onPrepareOptionsMenu( Menu menu ) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen( mDrawerList );
-        menu.findItem( R.id.menu_refresh ).setVisible( !drawerOpen );
-        return super.onPrepareOptionsMenu( menu );
-    }
-
-    @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
         // Pass the event to ActionBarDrawerToggle, if it returns
         // true, then it has handled the app icon touch event
@@ -134,6 +126,10 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
     public void setTitle( CharSequence title ) {
         mTitle = title;
         getSupportActionBar().setTitle( mTitle );
+    }
+
+    public boolean isDrawerOpen() {
+        return mDrawerLayout.isDrawerOpen( mDrawerList );
     }
 
     protected void setContentView() {
