@@ -14,14 +14,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.aeronav;
 
-import java.io.File;
-
 import android.content.Intent;
+
+import java.io.File;
 
 public class DafdService extends AeroNavService {
 
@@ -46,7 +46,7 @@ public class DafdService extends AeroNavService {
         File cycleDir = getCycleDir( afdCycle );
         File pdfFile = new File( cycleDir, pdfName );
         if ( !pdfFile.exists() ) {
-            String path = String.format( "/pdfs/%s", pdfFile.getName() );
+            String path = String.format( "/afd/%s/%s", afdCycle, pdfName );
             fetch( path, pdfFile );
         }
 
