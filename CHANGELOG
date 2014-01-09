@@ -1,3 +1,8 @@
+v5.5.2 (1/8/2014)
+=================
+* Fixed breakage of A/FD pdf fetching due to change at AeroNav website structure
+* Other fixes
+
 v5.5.1 (12/5/2013)
 ==================
 * Unbreak E6B from last release
