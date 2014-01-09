@@ -76,8 +76,7 @@ public class WxListFragmentBase extends ListFragmentBase {
 
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
-        ActivityBase activity = (ActivityBase) getActivity();
-        activity.setRefreshItemVisible( true );
+        // Empty stub to prevent parent version being called
     }
 
     @Override
