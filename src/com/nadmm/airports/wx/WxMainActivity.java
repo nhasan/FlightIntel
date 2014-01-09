@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.view.Menu;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.PreferencesActivity;
@@ -66,6 +67,13 @@ public final class WxMainActivity extends DrawerActivityBase
     public void onStop() {
         super.onStop();
         EasyTracker.getInstance( this ).activityStop( this );
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu( Menu menu ) {
+        setRefreshItemVisible( true );
+
+        return super.onPrepareOptionsMenu( menu );
     }
 
     @Override
