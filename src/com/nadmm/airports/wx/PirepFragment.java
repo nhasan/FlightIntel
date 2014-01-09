@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -45,6 +45,7 @@ import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
@@ -126,6 +127,25 @@ public class PirepFragment extends FragmentBase {
         return createContentView( view );
     }
 
+    @Override
+    public void onPrepareOptionsMenu( Menu menu ) {
+        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
+        setRefreshItemVisible( !activity.isDrawerOpen() );
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+            case R.id.menu_refresh:
+                startRefreshAnimation();
+                requestPirep( true );
+                return true;
+            default:
+                return super.onOptionsItemSelected( item );
+        }
+    }
+
     private final class PirepDetailTask extends CursorAsyncTask {
 
         @Override
@@ -177,7 +197,7 @@ public class PirepFragment extends FragmentBase {
                 float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
                 mLocation.setLatitude( lat );
                 mLocation.setLongitude( lon );
-    
+
                 // Now request the weather
                 mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
                 requestPirep( false );
@@ -367,24 +387,6 @@ public class PirepFragment extends FragmentBase {
         stopRefreshAnimation();
         setContentShown( true );
         return;
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( true );
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_refresh:
-            startRefreshAnimation();
-            requestPirep( true );
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
-        }
     }
 
 }

@@ -48,6 +48,7 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Awos2;
 import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
@@ -523,7 +524,8 @@ public class MetarFragment extends FragmentBase {
 
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( true );
+        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
+        setRefreshItemVisible( !activity.isDrawerOpen() );
     }
 
     @Override

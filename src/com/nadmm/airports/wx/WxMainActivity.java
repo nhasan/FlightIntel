@@ -71,7 +71,7 @@ public final class WxMainActivity extends DrawerActivityBase
 
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( true );
+        setRefreshItemVisible( !isDrawerOpen() );
 
         return super.onPrepareOptionsMenu( menu );
     }

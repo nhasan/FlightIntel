@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -47,6 +47,7 @@ import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
@@ -127,6 +128,25 @@ public class TafFragment extends FragmentBase {
         return createContentView( view );
     }
 
+    @Override
+    public void onPrepareOptionsMenu( Menu menu ) {
+        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
+        setRefreshItemVisible( !activity.isDrawerOpen() );
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+            case R.id.menu_refresh:
+                startRefreshAnimation();
+                requestTaf( mStationId, true );
+                return true;
+            default:
+                return super.onOptionsItemSelected( item );
+        }
+    }
+
     private final class TafTask extends CursorAsyncTask {
 
         @Override
@@ -166,7 +186,7 @@ public class TafFragment extends FragmentBase {
                     +") AND ("+Wxs.STATION_LONGITUDE_DEGREES+">=? "
                     +(isCrossingMeridian180? "OR " : "AND ")+Wxs.STATION_LONGITUDE_DEGREES+"<=?)";
                 String[] selectionArgs = {
-                        String.valueOf( Math.toDegrees( radLatMin ) ), 
+                        String.valueOf( Math.toDegrees( radLatMin ) ),
                         String.valueOf( Math.toDegrees( radLatMax ) ),
                         String.valueOf( Math.toDegrees( radLonMin ) ),
                         String.valueOf( Math.toDegrees( radLonMax ) )
@@ -185,7 +205,7 @@ public class TafFragment extends FragmentBase {
                         float[] results = new float[ 2 ];
                         Location.distanceBetween(
                                 location.getLatitude(),
-                                location.getLongitude(), 
+                                location.getLongitude(),
                                 c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) ),
                                 c.getDouble( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) ),
                                 results );
@@ -257,10 +277,10 @@ public class TafFragment extends FragmentBase {
                 float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
                 mLocation.setLatitude( lat );
                 mLocation.setLongitude( lon );
-    
+
                 // Show the weather station info
                 showWxTitle( result );
-    
+
                 // Now request the weather
                 mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
                 requestTaf( mStationId, false );
@@ -461,24 +481,6 @@ public class TafFragment extends FragmentBase {
 
         stopRefreshAnimation();
         setFragmentContentShown( true );
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( true );
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_refresh:
-            startRefreshAnimation();
-            requestTaf( mStationId, true );
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
-        }
     }
 
 }

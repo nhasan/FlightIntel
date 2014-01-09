@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -43,6 +43,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
@@ -122,6 +123,25 @@ public class AirSigmetFragment extends FragmentBase {
         return createContentView( view );
     }
 
+    @Override
+    public void onPrepareOptionsMenu( Menu menu ) {
+        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
+        setRefreshItemVisible( !activity.isDrawerOpen() );
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+            case R.id.menu_refresh:
+                startRefreshAnimation();
+                requestAirSigmetText( true );
+                return true;
+            default:
+                return super.onOptionsItemSelected( item );
+        }
+    }
+
     private final class AirSigmetTask extends CursorAsyncTask {
 
         @Override
@@ -150,7 +170,7 @@ public class AirSigmetFragment extends FragmentBase {
                 float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
                 float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
                 mLocation.setLatitude( lat );
-                mLocation.setLongitude( lon );    
+                mLocation.setLongitude( lon );
                 // Now request the airmet/sigmet
                 requestAirSigmetText( false );
             }
@@ -244,24 +264,6 @@ public class AirSigmetFragment extends FragmentBase {
         }
 
         layout.addView( item, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( true );
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_refresh:
-            startRefreshAnimation();
-            requestAirSigmetText( true );
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
-        }
     }
 
 }
