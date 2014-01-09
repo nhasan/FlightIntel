@@ -28,6 +28,7 @@ import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NavAdapter;
 import com.nadmm.airports.utils.TabsAdapter;
+import com.nadmm.airports.views.DrawerListView;
 
 public class WxDetailActivity extends DrawerActivityBase
                 implements ActionBar.OnNavigationListener, ViewPager.OnPageChangeListener {
@@ -82,6 +83,13 @@ public class WxDetailActivity extends DrawerActivityBase
                 }
             } );
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        setDrawerItemChecked( DrawerListView.ITEM_ID_WX );
     }
 
     @Override
