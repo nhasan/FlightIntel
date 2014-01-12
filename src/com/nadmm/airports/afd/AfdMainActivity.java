@@ -44,7 +44,7 @@ public final class AfdMainActivity extends DrawerActivityBase
     private final Class<?>[] mClasses = new Class<?>[] {
             FavoriteAirportsFragment.class,
             NearbyAirportsFragment.class,
-            BrowseAirportsFragment.class
+            BrowseStateFragment.class
     };
 
     private final int ID_FAVORITES = 0;
