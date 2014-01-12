@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2012-2014 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -132,24 +132,22 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
-insert_book( "periodicals", "cb_406.pdf", "Callback", "Issue 406 (Nov 2013)", "NASA", 580880, "N" );
+insert_book( "periodicals", "cb_407.pdf", "Callback", "Issue 407 (Dec 2013)", "NASA", 588665, "N" );
+insert_book( "periodicals", "cb_406.pdf", "Callback", "Issue 406 (Nov 2013)", "NASA", 580880, "" );
 insert_book( "periodicals", "cb_405.pdf", "Callback", "Issue 405 (Oct 2013)", "NASA", 585763, "" );
 insert_book( "periodicals", "cb_404.pdf", "Callback", "Issue 404 (Sep 2013)", "NASA", 597480, "" );
-insert_book( "periodicals", "cb_403.pdf", "Callback", "Issue 403 (Aug 2013)", "NASA", 587239, "" );
 insert_book( "periodicals", "13jun-front.pdf", "The Front", "Jun 2013", "NOAA", 2677124, "" );
 insert_book( "periodicals", "13apr-front.pdf", "The Front", "Apr 2013", "NOAA", 2475943, "" );
 insert_book( "periodicals", "12dec-front.pdf", "The Front", "Dec 2012", "NOAA", 2150530, "" );
 insert_book( "periodicals", "12jul-front.pdf", "The Front", "Jul 2012", "NOAA", 2071900, "" );
+insert_book( "periodicals", "JanFeb2014.pdf", "FAA Safety Briefing",
+        "Jan/Feb 2014", "FAA", 4833375, "N" );
 insert_book( "periodicals", "NovDec2013.pdf", "FAA Safety Briefing",
-        "Nov/Dec 2013", "FAA", 7469294, "N" );
+        "Nov/Dec 2013", "FAA", 7469294, "" );
 insert_book( "periodicals", "SepOct2013.pdf", "FAA Safety Briefing",
         "Sep/Oct 2013", "FAA", 4083620, "" );
 insert_book( "periodicals", "JulAug2013.pdf", "FAA Safety Briefing",
         "Jul/Aug 2013", "FAA", 5423441, "" );
-insert_book( "periodicals", "MayJun2013.pdf", "FAA Safety Briefing",
-        "May/Jun 2013", "FAA", 5208186, "" );
-insert_book( "periodicals", "MarApr2013.pdf", "FAA Safety Briefing",
-        "Mar/Apr 2013", "FAA", 2751314, "" );
 insert_book( "periodicals", "ATB-2013-1.pdf", "Air Traffic Bulletin",
         "2013-Q1", "FAA", 46744, "" );
 insert_book( "periodicals", "ATB-2012-4.pdf", "Air Traffic Bulletin",
@@ -232,6 +230,7 @@ insert_book( "misc", "pcg_082213.pdf", "Pilot/Controller Glossary",
         "Aug 2013", "FAA", 557346, "" );
 insert_book( "misc", "RNProadmap.pdf", "Roadmap for Performance-Based Navigation",
         "2006", "FAA", 1513616, "" );
+insert_book( "misc", "ATC.pdf", "ATC Order 7110.65U", "Feb 2012", "FAA", 3640674, "N" );
 
 insert_book( "canada", "AWS_Guide_EN.pdf", "Aviation Weather Service Guide",
         "Aug 2011", "Nav Canada", 1092048, "" );
