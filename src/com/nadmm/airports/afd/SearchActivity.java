@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -28,7 +28,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.R;
 import com.nadmm.airports.providers.AirportsProvider;
@@ -64,10 +64,8 @@ public class SearchActivity extends AfdActivityBase {
             // User clicked on a suggestion
             Bundle extra = intent.getExtras();
             String siteNumber = extra.getString( SearchManager.EXTRA_DATA_KEY );
-            Bundle args = new Bundle();
-            args.putString( Airports.SITE_NUMBER, siteNumber );
             Intent apt = new Intent( this, AirportActivity.class );
-            apt.putExtras( args );
+            apt.putExtra( Airports.SITE_NUMBER, siteNumber );
             startActivity( apt );
             finish();
         }
@@ -75,7 +73,7 @@ public class SearchActivity extends AfdActivityBase {
 
     @SuppressWarnings("deprecation")
     private void showResults( String query ) {
-        Cursor c = managedQuery( AirportsProvider.CONTENT_URI, null, null, 
+        Cursor c = managedQuery( AirportsProvider.CONTENT_URI, null, null,
                 new String[] { query }, null );
         int count = c.getCount();
         startManagingCursor( c );
@@ -89,9 +87,9 @@ public class SearchActivity extends AfdActivityBase {
                     int position, long id ) {
                 Cursor c = mListAdapter.getCursor();
                 String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-                Bundle args = new Bundle();
-                args.putString( Airports.SITE_NUMBER, siteNumber );
-                replaceFragment( AirportDetailsFragment.class, args );
+                Intent apt = new Intent( SearchActivity.this, AirportActivity.class );
+                apt.putExtra( Airports.SITE_NUMBER, siteNumber );
+                startActivity( apt );
             }
 
         } );
@@ -99,7 +97,7 @@ public class SearchActivity extends AfdActivityBase {
         mListAdapter = new AirportsCursorAdapter( this, c );
         listView.setAdapter( mListAdapter );
         getSupportActionBar().setSubtitle(
-                getResources().getQuantityString( R.plurals.search_entry_found, 
+                getResources().getQuantityString( R.plurals.search_entry_found,
                 count, count, query ) );
     }
 
