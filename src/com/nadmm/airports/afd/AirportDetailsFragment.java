@@ -151,7 +151,7 @@ public final class AirportDetailsFragment extends FragmentBase {
 
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
-        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
+        DrawerActivityBase activity = (DrawerActivityBase) getActivityBase();
         setRefreshItemVisible( !activity.isDrawerOpen() );
     }
 
@@ -843,7 +843,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             String stationId = (String) tv.getTag();
             stationIds.add( stationId );
         }
-        Intent service = new Intent( getActivityBase(), MetarService.class );
+        Intent service = new Intent( getActivity(), MetarService.class );
         service.setAction( action );
         service.putExtra( NoaaService.STATION_IDS, stationIds );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
@@ -852,7 +852,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         } else if ( cacheOnly ) {
             service.putExtra( NoaaService.CACHE_ONLY, true );
         }
-        getActivityBase().startService( service );
+        getActivity().startService( service );
     }
 
     protected void showWxInfo( Metar metar ) {
