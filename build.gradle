@@ -1,4 +1,7 @@
-buildscript {
+import org.gradle.api.tasks.wrapper.Wrapper
+
+buildscript
+{
     repositories {
         mavenCentral()
     }
@@ -21,6 +24,8 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
+        versionName "5.5.4"
+        versionCode 5540
     }
 
     signingConfigs {
@@ -36,6 +41,9 @@ android {
         release {
             signingConfig signingConfigs.release
         }
+    }
+
+    task wrapper(type: Wrapper) {
     }
 
     sourceSets {
