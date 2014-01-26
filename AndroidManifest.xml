@@ -59,11 +59,19 @@
 
         <activity
             android:label="@string/navaid_notams"
-            android:name=".notams.NavaidNotamActivity" />
+            android:name=".notams.NavaidNotamActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightIntel" />
+        </activity>
 
         <activity
             android:label="@string/airport_notams"
-            android:name=".notams.AirportNotamActivity" />
+            android:name=".notams.AirportNotamActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightIntel" />
+        </activity>
 
         <activity
             android:label=""
