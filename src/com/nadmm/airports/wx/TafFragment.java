@@ -302,11 +302,13 @@ public class TafFragment extends FragmentBase {
 
     protected void showTaf( Intent intent ) {
         if ( getActivity() == null ) {
-            // Not ready to do this yet
             return;
         }
 
         Taf taf = (Taf) intent.getSerializableExtra( NoaaService.RESULT );
+        if ( taf == null ) {
+            return;
+        }
 
         View detail = findViewById( R.id.wx_detail_layout );
         LinearLayout layout = (LinearLayout) findViewById( R.id.wx_status_layout );

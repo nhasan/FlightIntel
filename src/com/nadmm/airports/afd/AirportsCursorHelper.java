@@ -14,20 +14,20 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
 
-import java.util.HashMap;
-
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.provider.BaseColumns;
-
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
+
+import java.util.HashMap;
 
 public class AirportsCursorHelper {
 
@@ -63,13 +63,17 @@ public class AirportsCursorHelper {
         return map;
     }
 
-    public static Cursor query( SQLiteDatabase db, String selection, String[] selectionArgs, 
+    public static Cursor query( SQLiteDatabase db, String selection, String[] selectionArgs,
             String groupBy, String having, String sortOrder, String limit ) {
+        if ( db == null ) {
+            return new MatrixCursor( mQueryColumns );
+        }
+
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
                 +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
         builder.setProjectionMap( buildProjectionMap() );
-        Cursor c = builder.query( db, mQueryColumns, selection, selectionArgs, 
+        Cursor c = builder.query( db, mQueryColumns, selection, selectionArgs,
                 groupBy, having, sortOrder, limit );
         return c;
     }
