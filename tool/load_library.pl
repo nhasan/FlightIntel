@@ -121,8 +121,8 @@ insert_book( "handbooks", "fcm-h1-2005.pdf", "Federal Meteorological Handbook No
 insert_book( "handbooks", "fcm-h2-1988.pdf", "Federal Meteorological Handbook No. 2",
         "1988", "NOAA", 16091462, "" );
 
-insert_book( "manuals", "Chart_Users_Guide_11thEd.pdf", "Aeronautical Chart User's Guide",
-        "11th Edition", "FAA", 17533800, "" );
+insert_book( "manuals", "Chart_Users_Guide_12thEd.pdf", "Aeronautical Chart User's Guide",
+        "12th Edition", "FAA", 17216722, "N" );
 insert_book( "manuals", "faa-h-8083-19a-2008.pdf", "Plane Sense - General Aviation Information",
         "2008", "FAA-H-8083-19A", 13246143, "" );
 insert_book( "manuals", "ac-00-6a-1975.pdf", "Aviation Weather",
@@ -132,22 +132,22 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
-insert_book( "periodicals", "cb_407.pdf", "Callback", "Issue 407 (Dec 2013)", "NASA", 588665, "N" );
+insert_book( "periodicals", "cb_409.pdf", "Callback", "Issue 409 (Feb 2014)", "NASA", 656796, "N" );
+insert_book( "periodicals", "cb_408.pdf", "Callback", "Issue 408 (Jan 2014)", "NASA", 676208, "" );
+insert_book( "periodicals", "cb_407.pdf", "Callback", "Issue 407 (Dec 2013)", "NASA", 588665, "" );
 insert_book( "periodicals", "cb_406.pdf", "Callback", "Issue 406 (Nov 2013)", "NASA", 580880, "" );
-insert_book( "periodicals", "cb_405.pdf", "Callback", "Issue 405 (Oct 2013)", "NASA", 585763, "" );
-insert_book( "periodicals", "cb_404.pdf", "Callback", "Issue 404 (Sep 2013)", "NASA", 597480, "" );
 insert_book( "periodicals", "13jun-front.pdf", "The Front", "Jun 2013", "NOAA", 2677124, "" );
 insert_book( "periodicals", "13apr-front.pdf", "The Front", "Apr 2013", "NOAA", 2475943, "" );
 insert_book( "periodicals", "12dec-front.pdf", "The Front", "Dec 2012", "NOAA", 2150530, "" );
 insert_book( "periodicals", "12jul-front.pdf", "The Front", "Jul 2012", "NOAA", 2071900, "" );
+insert_book( "periodicals", "MarApr2014.pdf", "FAA Safety Briefing",
+        "Mar/Apr 2014", "FAA", 4601944, "N" );
 insert_book( "periodicals", "JanFeb2014.pdf", "FAA Safety Briefing",
-        "Jan/Feb 2014", "FAA", 4833375, "N" );
+        "Jan/Feb 2014", "FAA", 4833375, "" );
 insert_book( "periodicals", "NovDec2013.pdf", "FAA Safety Briefing",
         "Nov/Dec 2013", "FAA", 7469294, "" );
 insert_book( "periodicals", "SepOct2013.pdf", "FAA Safety Briefing",
         "Sep/Oct 2013", "FAA", 4083620, "" );
-insert_book( "periodicals", "JulAug2013.pdf", "FAA Safety Briefing",
-        "Jul/Aug 2013", "FAA", 5423441, "" );
 insert_book( "periodicals", "ATB-2013-1.pdf", "Air Traffic Bulletin",
         "2013-Q1", "FAA", 46744, "" );
 insert_book( "periodicals", "ATB-2012-4.pdf", "Air Traffic Bulletin",
