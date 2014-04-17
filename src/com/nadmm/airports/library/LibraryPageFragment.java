@@ -14,13 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.library;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
@@ -32,21 +29,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.text.format.Formatter;
-import android.view.ContextMenu;
+import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.*;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.nadmm.airports.Application;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Library;
@@ -56,6 +43,9 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LibraryPageFragment extends FragmentBase {
 
@@ -175,7 +165,7 @@ public class LibraryPageFragment extends FragmentBase {
                         Library.CATEGORY_CODE+"=?", new String[] { category },
                         null, null, Library._ID );
                 c.moveToFirst();
-                int i =0;
+                int i = 0;
                 String prevDesc = "";
                 MatrixCursor matrix = null;
                 do {
