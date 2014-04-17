@@ -132,14 +132,14 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
-insert_book( "periodicals", "cb_409.pdf", "Callback", "Issue 409 (Feb 2014)", "NASA", 656796, "N" );
+insert_book( "periodicals", "cb_410.pdf", "Callback", "Issue 410 (Mar 2014)", "NASA", 637177, "N" );
+insert_book( "periodicals", "cb_409.pdf", "Callback", "Issue 409 (Feb 2014)", "NASA", 656796, "" );
 insert_book( "periodicals", "cb_408.pdf", "Callback", "Issue 408 (Jan 2014)", "NASA", 676208, "" );
 insert_book( "periodicals", "cb_407.pdf", "Callback", "Issue 407 (Dec 2013)", "NASA", 588665, "" );
-insert_book( "periodicals", "cb_406.pdf", "Callback", "Issue 406 (Nov 2013)", "NASA", 580880, "" );
+insert_book( "periodicals", "14feb-front.pdf", "The Front", "Feb 2014", "NOAA", 811510, "N" );
 insert_book( "periodicals", "13jun-front.pdf", "The Front", "Jun 2013", "NOAA", 2677124, "" );
 insert_book( "periodicals", "13apr-front.pdf", "The Front", "Apr 2013", "NOAA", 2475943, "" );
 insert_book( "periodicals", "12dec-front.pdf", "The Front", "Dec 2012", "NOAA", 2150530, "" );
-insert_book( "periodicals", "12jul-front.pdf", "The Front", "Jul 2012", "NOAA", 2071900, "" );
 insert_book( "periodicals", "MarApr2014.pdf", "FAA Safety Briefing",
         "Mar/Apr 2014", "FAA", 4601944, "N" );
 insert_book( "periodicals", "JanFeb2014.pdf", "FAA Safety Briefing",
@@ -178,18 +178,18 @@ insert_book( "safety", "faa-p-8740-69-2008.pdf", "Aeronautical Decision Making",
 insert_book( "safety", "takeoff_safety.pdf", "Pilot Guide to Takeoff Safety",
         "2008", "FAA", 2678525, "" );
 
-insert_book( "regs", "aim_2012_r3.pdf", "Aeronautical Information Manual (AIM)",
-        "Aug 2013 (Change 3)", "FAA", 9017835, "" );
-insert_book( "regs", "cfr-2013-title14-vol1.pdf", "Federal Aviation Regulations (FAR) 2013",
-        "Parts 1-59", "US GPO", 9869469, "" );
-insert_book( "regs", "cfr-2013-title14-vol2.pdf", "Federal Aviation Regulations (FAR) 2013",
-        "Parts 60-109", "US GPO", 15653683, "" );
-insert_book( "regs", "cfr-2013-title14-vol3.pdf", "Federal Aviation Regulations (FAR) 2013",
-        "Parts 110-199", "US GPO", 5352778, "" );
-insert_book( "regs", "cfr-2013-title14-vol4.pdf", "Federal Aviation Regulations (FAR) 2013",
+insert_book( "regs", "AIM_Basic_4-03-14.pdf", "Aeronautical Information Manual (AIM)",
+        "Apr 2014", "FAA", 8809597, "N" );
+insert_book( "regs", "cfr-2014-title14-vol1.pdf", "Federal Aviation Regulations (FAR)",
+        "Parts 1-59", "US GPO", 10956838, "N" );
+insert_book( "regs", "cfr-2014-title14-vol2.pdf", "Federal Aviation Regulations (FAR)",
+        "Parts 60-109", "US GPO", 15663565, "N" );
+insert_book( "regs", "cfr-2014-title14-vol3.pdf", "Federal Aviation Regulations (FAR)",
+        "Parts 110-199", "US GPO", 5648965, "N" );
+insert_book( "regs", "cfr-2013-title14-vol4.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 200-1199", "US GPO", 16915045, "" );
-insert_book( "regs", "cfr-2013-title14-vol5.pdf", "Federal Aviation Regulations (FAR) 2013",
-        "Parts 1200-1310", "US GPO", 2400725, "" );
+insert_book( "regs", "cfr-2014-title14-vol5.pdf", "Federal Aviation Regulations (FAR)",
+        "Parts 1200-1310", "US GPO", 2421910, "N" );
 
 insert_book( "risk", "ga_weather_decision_making.pdf", "General Aviation Pilot’s Guide",
         "2009", "FAA", 659230, "" );
@@ -287,12 +287,12 @@ sub insert_book( $$$$$$$ )
     #BOOK_DESC
     my $desc = shift;
     $sth_library->bind_param( 3, $desc );
-    #AUTHOR
-    my $author = shift;
-    $sth_library->bind_param( 4, $author );
     #EDITION
     my $edition = shift;
-    $sth_library->bind_param( 5, $edition );
+    $sth_library->bind_param( 4, $edition );
+    #AUTHOR
+    my $author = shift;
+    $sth_library->bind_param( 5, $author );
     #DOWNLOAD_SIZE
     my $size = shift;
     $sth_library->bind_param( 6, $size );
