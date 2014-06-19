@@ -27,7 +27,7 @@
         style="@style/ListItemActivated"
         android:gravity="center_vertical"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/navigation_drawer_height">
+        android:layout_height="@dimen/navigation_drawer_item_height">
     <ImageView android:id="@+id/item_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
