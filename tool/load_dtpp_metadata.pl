@@ -27,7 +27,8 @@ use XML::Twig;
 my $BASE_DIR = shift @ARGV;
 my $cycle = shift @ARGV;
 my $TPP_METADATA_FILE = "$BASE_DIR/d-TPP_Metafile.xml";
-my $dtpp_url = "http://aeronav.faa.gov/d-tpp/$cycle/xml_data/d-TPP_Metafile.xml";
+#my $dtpp_url = "http://aeronav.faa.gov/d-tpp/$cycle/xml_data/d-TPP_Metafile.xml";
+my $dtpp_url = "https://nfdc.faa.gov/webContent/dtpp/current.xml";
 my $count = 0;
 
 print "Downloading the d-TPP metafile: ".$dtpp_url."...";
@@ -35,7 +36,7 @@ my $ret = 200;
 my $ret = getstore( $dtpp_url, $TPP_METADATA_FILE );
 if ( $ret != 200 )
 {
-    die "Unable to download d-TPP metadata.";
+    die "\nUnable to download d-TPP metadata.\n";
 }
 print "done\n";
 
