@@ -23,7 +23,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
-import com.google.analytics.tracking.android.EasyTracker;
+
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
@@ -79,18 +79,6 @@ public final class AfdMainActivity extends DrawerActivityBase
         if ( actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST ) {
             actionBar.setSelectedNavigationItem( mFragmentId );
         }
-    }
-
-    @Override
-    public void onStart() {
-      super.onStart();
-      EasyTracker.getInstance( this ).activityStart( this );
-    }
-
-    @Override
-    public void onStop() {
-      super.onStop();
-      EasyTracker.getInstance( this ).activityStop( this );
     }
 
     @Override

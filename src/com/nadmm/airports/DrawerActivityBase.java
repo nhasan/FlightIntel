@@ -25,11 +25,13 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
 import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.afd.AfdMainActivity;
 import com.nadmm.airports.clocks.ClocksActivity;
@@ -56,6 +58,9 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
         super.onCreate( savedInstanceState );
 
         setContentView();
+
+        Toolbar toolbar = (Toolbar) findViewById( R.id.main_toolbar );
+        setSupportActionBar( toolbar );
 
         mDrawerList = (DrawerListView) findViewById( R.id.left_drawer );
         mDrawerList.setOnItemClickListener( this );
@@ -96,6 +101,8 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
             }
         };
         mDrawerLayout.setDrawerListener( mDrawerToggle );
+        mDrawerLayout.setStatusBarBackgroundColor(
+                getResources().getColor( R.color.color_primary ) );
     }
 
     @Override

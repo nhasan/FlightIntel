@@ -10,4 +10,8 @@
 
   <!--Enable automatic exception tracking-->
   <bool name="ga_reportUncaughtExceptions">true</bool>
+
+  <screenName name="com.nadmm.airports.afd.AirportActivity" >
+      AFD Activity
+  </screenName>
 </resources>

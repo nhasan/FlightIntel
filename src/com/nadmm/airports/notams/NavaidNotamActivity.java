@@ -27,7 +27,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
@@ -43,18 +42,6 @@ public class NavaidNotamActivity extends AfdActivityBase {
 
         Bundle args = getIntent().getExtras();
         addFragment( NavaidNotamFragment.class, args );
-    }
-
-    @Override
-    public void onStart() {
-      super.onStart();
-      EasyTracker.getInstance( this ).activityStart( this );
-    }
-
-    @Override
-    public void onStop() {
-      super.onStop();
-      EasyTracker.getInstance( this ).activityStop( this );
     }
 
     @Override

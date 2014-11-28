@@ -23,7 +23,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import com.google.analytics.tracking.android.EasyTracker;
+
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NavAdapter;
@@ -90,18 +90,6 @@ public class WxDetailActivity extends DrawerActivityBase
         super.onResume();
 
         setDrawerItemChecked( DrawerListView.ITEM_ID_WX );
-    }
-
-    @Override
-    public void onStart() {
-      super.onStart();
-      EasyTracker.getInstance( this ).activityStart( this );
-    }
-
-    @Override
-    public void onStop() {
-      super.onStop();
-      EasyTracker.getInstance( this ).activityStop( this );
     }
 
     @Override

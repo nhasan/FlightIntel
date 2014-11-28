@@ -22,7 +22,6 @@ package com.nadmm.airports.aeronav;
 
 import android.os.Bundle;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.views.DrawerListView;
 
@@ -41,18 +40,6 @@ public class ChartsDownloadActivity extends DrawerActivityBase {
         super.onResume();
 
         setDrawerItemChecked( DrawerListView.ITEM_ID_CHARTS );
-    }
-
-    @Override
-    public void onStart() {
-      super.onStart();
-      EasyTracker.getInstance( this ).activityStart( this );
-    }
-
-    @Override
-    public void onStop() {
-      super.onStop();
-      EasyTracker.getInstance( this ).activityStop( this );
     }
 
 }

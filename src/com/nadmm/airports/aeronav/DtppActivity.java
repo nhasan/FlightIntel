@@ -19,13 +19,6 @@
 
 package com.nadmm.airports.aeronav;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -47,7 +40,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
@@ -62,6 +54,13 @@ import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+
 public class DtppActivity extends ActivityBase {
 
     @Override
@@ -72,18 +71,6 @@ public class DtppActivity extends ActivityBase {
 
         Bundle args = getIntent().getExtras();
         addFragment( DtppFragment.class, args );
-    }
-
-    @Override
-    public void onStart() {
-      super.onStart();
-      EasyTracker.getInstance( this ).activityStart( this );
-    }
-
-    @Override
-    public void onStop() {
-      super.onStop();
-      EasyTracker.getInstance( this ).activityStop( this );
     }
 
     public static class DtppFragment extends FragmentBase {

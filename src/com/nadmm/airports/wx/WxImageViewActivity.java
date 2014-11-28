@@ -19,21 +19,8 @@
 
 package com.nadmm.airports.wx;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.ImageViewActivity;
 
 public class WxImageViewActivity extends ImageViewActivity {
-
-    @Override
-    public void onStart() {
-      super.onStart();
-      EasyTracker.getInstance( this ).activityStart( this );
-    }
-
-    @Override
-    public void onStop() {
-      super.onStop();
-      EasyTracker.getInstance( this ).activityStop( this );
-    }
 
 }

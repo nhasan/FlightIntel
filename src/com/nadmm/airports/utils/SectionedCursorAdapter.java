@@ -39,7 +39,6 @@ import java.util.HashMap;
 
 public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
 
-    private boolean mValid = true;
     private int mSectionResourceId;
     private LayoutInflater mLayoutInflater;
     private SparseArray<Section> mSections = new SparseArray<Section>();
@@ -72,25 +71,26 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
         super( context, layout, c, 0 );
         mSectionResourceId = sectionResourceId;
         mLayoutInflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        setSections(c);
-        mValid = !isEmpty();
+        setSections();
     }
 
-    private void setSections( Cursor c ) {
-        ArrayList<Section> sections = new ArrayList<Section>();
-        String last = "";
-        int offset = 0; // offset positions for the headers we're adding
-        c.moveToFirst();
-        do {
-            String cur = getSectionName();
-            if ( !cur.contentEquals( last ) ) {
-                Section section = new Section( c.getPosition(), cur );
-                section.sectionedPosition = section.firstPosition + offset;
-                mSections.append( section.sectionedPosition, section );
-                ++offset;
-                last = cur;
-            }
-        } while ( c.moveToNext() );
+    private void setSections() {
+        Cursor c = getCursor();
+        if ( c.moveToFirst() ) {
+            ArrayList<Section> sections = new ArrayList<Section>();
+            String last = "";
+            int offset = 0; // offset positions for the headers we're adding
+            do {
+                String cur = getSectionName();
+                if ( !cur.contentEquals( last ) ) {
+                    Section section = new Section( c.getPosition(), cur );
+                    section.sectionedPosition = section.firstPosition + offset;
+                    mSections.append( section.sectionedPosition, section );
+                    ++offset;
+                    last = cur;
+                }
+            } while ( c.moveToNext() );
+        }
     }
 
     public abstract String getSectionName();
@@ -127,7 +127,7 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
 
     @Override
     public int getCount() {
-        return ( mValid? getCursor().getCount() + mSections.size() : 0 );
+        return ( !isEmpty()? getCursor().getCount() + mSections.size() : 0 );
     }
 
     @Override
@@ -171,7 +171,7 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
                 convertView = (TextView) mLayoutInflater.inflate( mSectionResourceId, parent, false );
             }
             TextView tv = (TextView) convertView;
-            tv.setText(mSections.get(position).title);
+            tv.setText( mSections.get( position ).title );
         } else {
             convertView = super.getView( sectionedPositionToPosition( position ), convertView, parent );
         }
@@ -182,16 +182,14 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
     @Override
     public void changeCursor( Cursor c ) {
         super.changeCursor(c);
-        setSections( c );
-        mValid = !isEmpty();
+        setSections();
     }
 
     @Override
     protected void onContentChanged() {
         super.onContentChanged();
         Cursor c = getCursor();
-        setSections( c );
-        mValid = !isEmpty();
+        setSections();
     }
 
 }

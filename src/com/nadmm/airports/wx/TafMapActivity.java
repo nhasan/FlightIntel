@@ -22,7 +22,6 @@ package com.nadmm.airports.wx;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.FragmentActivityBase;
 
 public class TafMapActivity extends FragmentActivityBase {
@@ -33,18 +32,6 @@ public class TafMapActivity extends FragmentActivityBase {
 
         Bundle args = getIntent().getExtras();
         addFragment( TafMapFragment.class, args );
-    }
-
-    @Override
-    public void onStart() {
-      super.onStart();
-      EasyTracker.getInstance( this ).activityStart( this );
-    }
-
-    @Override
-    public void onStop() {
-      super.onStop();
-      EasyTracker.getInstance( this ).activityStop( this );
     }
 
     public static class TafMapFragment extends WxMapFragmentBase {

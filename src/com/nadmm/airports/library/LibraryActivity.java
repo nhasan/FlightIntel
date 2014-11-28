@@ -19,8 +19,6 @@
 
 package com.nadmm.airports.library;
 
-import java.util.HashMap;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -28,10 +26,11 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.views.DrawerListView;
+
+import java.util.HashMap;
 
 public class LibraryActivity extends DrawerActivityBase {
 
@@ -93,18 +92,6 @@ public class LibraryActivity extends DrawerActivityBase {
         bm.unregisterReceiver( mReceiver );
 
         super.onPause();
-    }
-
-    @Override
-    public void onStart() {
-      super.onStart();
-      EasyTracker.getInstance( this ).activityStart( this );
-    }
-
-    @Override
-    public void onStop() {
-      super.onStop();
-      EasyTracker.getInstance( this ).activityStop( this );
     }
 
     public void setPending( boolean pending ) {

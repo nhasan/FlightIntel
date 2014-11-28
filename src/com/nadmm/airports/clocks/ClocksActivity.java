@@ -21,7 +21,6 @@ package com.nadmm.airports.clocks;
 
 import android.os.Bundle;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.ListMenuFragment;
@@ -45,18 +44,6 @@ public class ClocksActivity extends DrawerActivityBase {
         super.onResume();
 
         setDrawerItemChecked( DrawerListView.ITEM_ID_CLOCKS );
-    }
-
-    @Override
-    public void onStart() {
-      super.onStart();
-      EasyTracker.getInstance( this ).activityStart( this );
-    }
-
-    @Override
-    public void onStop() {
-      super.onStop();
-      EasyTracker.getInstance( this ).activityStop( this );
     }
 
 }

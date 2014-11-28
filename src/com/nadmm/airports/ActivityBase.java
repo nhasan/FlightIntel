@@ -95,6 +95,9 @@ public class ActivityBase extends ActionBarActivity {
             db.close();
         }
 
+        // Enable Google Analytics
+        ( (Application) getApplication() ).getAnalyticsTracker();
+
         super.onCreate( savedInstanceState );
     }
 

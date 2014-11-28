@@ -19,13 +19,24 @@
 
 package com.nadmm.airports;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
+
 public class Application extends android.app.Application {
 
     public static Boolean sDonationDone = null;
+    public static Tracker sTracker = null;
 
     @Override
     public void onCreate() {
         super.onCreate();
     }
 
+    synchronized public Tracker getAnalyticsTracker() {
+        if ( sTracker == null ) {
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance( this );
+            sTracker = analytics.newTracker( R.xml.analytics );
+        }
+        return sTracker;
+    }
 }
