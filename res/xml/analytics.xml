@@ -2,16 +2,85 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools"
         tools:ignore="TypographyDashes">
-  <!--Replace placeholder ID with your tracking ID-->
-  <string name="ga_trackingId">UA-44737316-1</string>
+    <!--Replace placeholder ID with your tracking ID-->
+    <string name="ga_trackingId">UA-44737316-1</string>
 
-  <!--Enable automatic activity tracking-->
-  <bool name="ga_autoActivityTracking">true</bool>
+    <!--Enable automatic activity tracking-->
+    <bool name="ga_autoActivityTracking">true</bool>
 
-  <!--Enable automatic exception tracking-->
-  <bool name="ga_reportUncaughtExceptions">true</bool>
+    <!--Enable automatic exception tracking-->
+    <bool name="ga_reportUncaughtExceptions">true</bool>
 
-  <screenName name="com.nadmm.airports.afd.AirportActivity" >
-      AFD Activity
-  </screenName>
+    <screenName name="com.nadmm.airports.DownloadActivity" >
+        Data Download
+    </screenName>
+    <screenName name="com.nadmm.airports.PreferencesActivity" >
+        Preferences
+    </screenName>
+    <screenName name="com.nadmm.airports.afd.AirportActivity" >
+        Airport Details
+    </screenName>
+    <screenName name="com.nadmm.airports.afd.AfdMainActivity" >
+        A/FD Main
+    </screenName>
+    <screenName name="com.nadmm.airports.notams.NavaidNotamActivity" >
+        Navaid NOTAMs
+    </screenName>
+    <screenName name="com.nadmm.airports.notams.AirportNotamActivity" >
+        Airport NOTAMs
+    </screenName>
+    <screenName name="com.nadmm.airports.wx.WxDetailActivity" >
+        Wx Details
+    </screenName>
+    <screenName name="com.nadmm.airports.wx.MetarMapActivity" >
+        METAR Graphics
+    </screenName>
+    <screenName name="com.nadmm.airports.wx.TafMapActivity" >
+        TAF Graphics
+    </screenName>
+    <screenName name="com.nadmm.airports.wx.PirepMapActivity" >
+        PIREP Graphics
+    </screenName>
+    <screenName name="com.nadmm.airports.wx.AirSigmetMapActivity" >
+        AirSigmet Graphics
+    </screenName>
+    <screenName name="com.nadmm.airports.wx.NearbyWxActivity" >
+        Nearby Weather
+    </screenName>
+    <screenName name="com.nadmm.airports.wx.WxImageViewActivity" >
+        Wx Graphics
+    </screenName>
+    <screenName name="com.nadmm.airports.aeronav.DtppActivity" >
+        d-TPP
+    </screenName>
+    <screenName name="com.nadmm.airports.aeronav.ChartsDownloadActivity" >
+        Charts Download
+    </screenName>
+    <screenName name="com.nadmm.airports.wx.WxMainActivity" >
+        Wx Main
+    </screenName>
+    <screenName name="com.nadmm.airports.tfr.TfrListActivity" >
+        TFR List
+    </screenName>
+    <screenName name="com.nadmm.airports.tfr.TfrDetailActivity" >
+        TFR Details
+    </screenName>
+    <screenName name="com.nadmm.airports.tfr.TfrImageViewActivity" >
+        TFR Graphics
+    </screenName>
+    <screenName name="com.nadmm.airports.clocks.ClocksActivity" >
+        Clocks
+    </screenName>
+    <screenName name="com.nadmm.airports.e6b.E6bActivity" >
+        E6B Computer
+    </screenName>
+    <screenName name="com.nadmm.airports.AboutActivity" >
+        About
+    </screenName>
+    <screenName name="com.nadmm.airports.library.LibraryActivity" >
+        Library
+    </screenName>
+    <screenName name="com.nadmm.airports.scratchpad.ScratchPadActivity" >
+        Scratch Pad
+    </screenName>
 </resources>
