@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 /*
- * FlightIntel for Pilots
+ * FlightIntel
  *
- * Copyright 2011-2014 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2014 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
-<android.support.v7.widget.Toolbar
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/toolbar_actionbar"
-    android:minHeight="?attr/actionBarSize"
-    android:background="?attr/colorPrimary"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+          android:orientation="vertical"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent">
+    <Spinner style=""
+             android:id="@+id/actionbar_spinner"
+             android:layout_width="wrap_content"
+             android:layout_height="match_parent" />
+</LinearLayout>
