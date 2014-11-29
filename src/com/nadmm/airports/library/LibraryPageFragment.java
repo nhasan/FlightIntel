@@ -273,11 +273,10 @@ public class LibraryPageFragment extends FragmentBase {
         if ( row != null ) {
             String path = intent.getStringExtra( LibraryService.PDF_PATH );
             showStatus( row, path != null );
+            row.setTag( R.id.LIBRARY_PDF_PATH, path );
             if ( path != null ) {
-                row.setTag( R.id.LIBRARY_PDF_PATH, path );
                 registerForContextMenu( row );
             } else {
-                row.setTag( R.id.LIBRARY_PDF_PATH, null );
                 unregisterForContextMenu( row );
             }
             // Hide the progressbar
