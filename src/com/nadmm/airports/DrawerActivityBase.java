@@ -22,7 +22,7 @@ package com.nadmm.airports;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -59,15 +59,14 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
 
         setContentView();
 
-        Toolbar toolbar = (Toolbar) findViewById( R.id.main_toolbar );
-        setSupportActionBar( toolbar );
+        Toolbar toolbar = getActionBarToolbar();
 
         mDrawerList = (DrawerListView) findViewById( R.id.left_drawer );
         mDrawerList.setOnItemClickListener( this );
 
         mDrawerLayout = (DrawerLayout) findViewById( R.id.drawer_layout );
         mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout,
-                R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close ) {
+                toolbar, R.string.drawer_open, R.string.drawer_close ) {
 
             public void onDrawerClosed( View view ) {
                 ActionBar actionBar = getSupportActionBar();
@@ -141,6 +140,7 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
 
     protected void setContentView() {
         setContentView( R.layout.activity_main );
+        getActionBarToolbar();
     }
 
     protected void setDrawerItemChecked( int position ) {

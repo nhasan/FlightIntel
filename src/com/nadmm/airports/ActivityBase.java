@@ -33,23 +33,46 @@ import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.*;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.text.format.Time;
-import android.view.*;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.*;
+import android.widget.CheckBox;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
-import com.nadmm.airports.utils.*;
+import com.nadmm.airports.utils.CursorAsyncTask;
+import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.ExternalStorageActivity;
+import com.nadmm.airports.utils.FormatUtils;
+import com.nadmm.airports.utils.SystemUtils;
 
 import java.util.HashSet;
 
@@ -62,9 +85,10 @@ public class ActivityBase extends ActionBarActivity {
     private CursorAsyncTask mTask;
 
     private Handler mHandler = new Handler();
-    IntentFilter mFilter;
-    BroadcastReceiver mExternalStorageReceiver;
-    boolean mExternalStorageAvailable = false;
+    private IntentFilter mFilter;
+    private BroadcastReceiver mExternalStorageReceiver;
+
+    private Toolbar mActionBarToolbar;
 
     public static String FRAGMENT_TAG_EXTRA = "FRAGMENT_TAG_EXTRA";
 
@@ -121,6 +145,25 @@ public class ActivityBase extends ActionBarActivity {
             actionBar.setHomeButtonEnabled( true );
             actionBar.setDisplayHomeAsUpEnabled( true );
         }
+    }
+
+    protected Toolbar getActionBarToolbar() {
+        if ( mActionBarToolbar == null ) {
+            mActionBarToolbar = (Toolbar) findViewById( R.id.toolbar_actionbar );
+            if ( mActionBarToolbar != null ) {
+                setSupportActionBar( mActionBarToolbar );
+            }
+        }
+        return mActionBarToolbar;
+    }
+
+    protected Spinner setupActionbarSpinner() {
+        View spinnerContainer = inflate( R.layout.actionbar_spinner, mActionBarToolbar );
+        ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
+        mActionBarToolbar.addView( spinnerContainer, lp );
+        Spinner spinner = (Spinner) spinnerContainer.findViewById( R.id.actionbar_spinner );
+        return spinner;
     }
 
     protected CursorAsyncTask setBackgroundTask( CursorAsyncTask task ) {

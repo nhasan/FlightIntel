@@ -23,6 +23,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.PreferencesActivity;
@@ -32,8 +36,7 @@ import com.nadmm.airports.views.DrawerListView;
 
 import java.util.ArrayList;
 
-public final class AfdMainActivity extends DrawerActivityBase
-        implements ActionBar.OnNavigationListener {
+public final class AfdMainActivity extends DrawerActivityBase {
 
     private final String[] mOptions = new String[] {
             "Favorites",
@@ -60,10 +63,24 @@ public final class AfdMainActivity extends DrawerActivityBase
         // Setup list navigation mode
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled( false );
-        actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
         NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(),
                 R.string.airports, mOptions );
-        actionBar.setListNavigationCallbacks( adapter, this );
+
+        Spinner spinner = setupActionbarSpinner();
+        spinner.setAdapter( adapter );
+        spinner.setOnItemSelectedListener( new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected( AdapterView<?> parent, View view, int position, long id ) {
+                if ( id != mFragmentId ) {
+                    mFragmentId = (int) id;
+                    replaceFragment( mClasses[ mFragmentId ], null, false );
+                }
+            }
+
+            @Override
+            public void onNothingSelected( AdapterView<?> parent ) {
+            }
+        } );
 
         Bundle args = getIntent().getExtras();
         mFragmentId = getInitialFragmentId();
@@ -75,19 +92,6 @@ public final class AfdMainActivity extends DrawerActivityBase
         super.onResume();
 
         setDrawerItemChecked( DrawerListView.ITEM_ID_AFD );
-        ActionBar actionBar = getSupportActionBar();
-        if ( actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST ) {
-            actionBar.setSelectedNavigationItem( mFragmentId );
-        }
-    }
-
-    @Override
-    public boolean onNavigationItemSelected( int itemPosition, long itemId ) {
-        if ( itemId != mFragmentId ) {
-            mFragmentId = (int) itemId;
-            replaceFragment( mClasses[ mFragmentId ], null, false );
-        }
-        return true;
     }
 
     protected int getInitialFragmentId() {
