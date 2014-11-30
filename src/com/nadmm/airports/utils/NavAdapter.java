@@ -35,8 +35,7 @@ public class NavAdapter extends ArrayAdapter<String> {
 
     public NavAdapter( Context context, int title, String[] values ) {
         super( context, 0, values );
-        Resources res = context.getResources();
-        mTitle = res.getString( title );
+        mTitle = context.getResources().getString( title );
         mInflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
     }
