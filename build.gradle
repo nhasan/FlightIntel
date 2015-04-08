@@ -3,14 +3,14 @@ import org.gradle.api.tasks.wrapper.Wrapper
 buildscript
 {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.1.3'
     }
 }
 
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
@@ -32,10 +32,6 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("/home/nhasan/android.keystore")
-            storePassword "rab12odi"
-            keyAlias "relkey"
-            keyPassword "rab12odi"
         }
     }
 
