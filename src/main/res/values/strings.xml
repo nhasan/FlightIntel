@@ -218,6 +218,14 @@
     <string name="drawer_close">Close Drawer</string>
     <string name="afd">A/FD</string>
     <string name="airports">Airports</string>
+    <string name="navdrawer_item_afd">A/FD</string>
+    <string name="navdrawer_item_wx">Weather</string>
+    <string name="navdrawer_item_tfr">TFR</string>
+    <string name="navdrawer_item_library">Library</string>
+    <string name="navdrawer_item_scratchpad">Scratch Pad</string>
+    <string name="navdrawer_item_clocks">Clocks</string>
+    <string name="navdrawer_item_e6b">E6B</string>
+    <string name="navdrawer_item_charts">Charts</string>
     <plurals name="airports_found">
         <item quantity="zero">No airports found</item>
         <item quantity="one">1 airport found</item>
