@@ -62,6 +62,10 @@ public class Inventory {
         if (mPurchaseMap.containsKey(sku)) mPurchaseMap.remove(sku);
     }
 
+    public List<String> getAllSkus() {
+        return new ArrayList<String>(mSkuMap.keySet());
+    }
+
     /** Returns a list of all owned product IDs. */
     List<String> getAllOwnedSkus() {
         return new ArrayList<String>(mPurchaseMap.keySet());
