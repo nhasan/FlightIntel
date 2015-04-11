@@ -33,70 +33,92 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
-    <style name="TextSmall" parent="@android:style/TextAppearance.Small">
-        <item name="android:textSize">@dimen/small_text_size</item>
-        <item name="android:textColor">@color/gray</item>
+
+    <style name="TextSmall" parent="@style/TextAppearance.AppCompat.Body1">
     </style>
-    <style name="TextSmaller" parent="@style/TextSmall">
+
+    <style name="TextSmaller" parent="@style/TextAppearance.AppCompat.Body1">
         <item name="android:textSize">@dimen/smaller_text_size</item>
     </style>
-    <style name="TextSmall.Bold">
-        <item name="android:textStyle">bold</item>
+
+    <style name="TextSmall.Bold" parent="@style/TextAppearance.AppCompat.Body2">
     </style>
+
     <style name="TextSmall.Red">
         <item name="android:textColor">@color/red</item>
     </style>
+
     <style name="TextSmall.White">
         <item name="android:textColor">#ffffff</item>
     </style>
+
     <style name="TextSmall.Light">
-        <item name="android:textColor">@color/lightgray</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
+
     <style name="TextSmaller.Light">
-        <item name="android:textColor">@color/lightgray</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
+
     <style name="TextSmall.Monospace">
         <item name="android:typeface">monospace</item>
     </style>
+
     <style name="TextMedium" parent="@style/TextSmall">
         <item name="android:textSize">@dimen/medium_text_size</item>
     </style>
+
     <style name="TextMedium.Bold">
         <item name="android:textStyle">bold</item>
     </style>
+
     <style name="TextMedium.White">
         <item name="android:textColor">#ffffff</item>
     </style>
+
     <style name="TextLabel" parent="@style/TextSmall">
         <item name="android:textSize">@dimen/label_text_size</item>
     </style>
-    <style name="TextLabel.Bold">
-        <item name="android:textStyle">bold</item>
+
+    <style name="TextLabel.Bold" parent="@style/TextAppearance.AppCompat.Title">
     </style>
-    <style name="TextTitle" parent="@style/TextSmall">
-        <item name="android:textSize">@dimen/label_text_size</item>
+
+    <style name="TextTitle" parent="@style/TextAppearance.AppCompat.Title">
+        <item name="android:textSize">@dimen/medium_text_size</item>
     </style>
-    <style name="TextNormal">
-        <item name="android:textColor">@color/gray</item>
-        <item name="android:textAppearance">?android:attr/textAppearance</item>
+
+    <style name="TextNormal" parent="@style/TextAppearance.AppCompat.Body1">
     </style>
-    <style name="TextNormal.Bold" >
-        <item name="android:textStyle">bold</item>
+
+    <style name="TextNormal.Bold" parent="@style/TextAppearance.AppCompat.Body2">
     </style>
+
     <style name="TextClock">
         <item name="android:textColor">@color/gray</item>
         <item name="android:textSize">@dimen/clock_text_size</item>
         <item name="android:textStyle">bold</item>
     </style>
+
     <style name="TextClock.Light" parent="@style/TextClock">
         <item name="android:textStyle">normal</item>
     </style>
+
     <style name="TextClock.Light.Tenths" parent="@style/TextClock.Light">
         <item name="android:textColor">@color/lightgray</item>
         <item name="android:textSize">@dimen/clock_tenths_text_size</item>
     </style>
+
     <style name="DrawerMenuText" parent="@style/TextMedium.White">
     </style>
-    <style name="ListItemActivated">
+
+    <style name="Widget.Flightintel.Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+    </style>
+
+    <style name="ActionDropDownStyle" parent="Base.Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:background">@drawable/abc_list_selector_background_transition_holo_light</item>
     </style>
 </resources>
