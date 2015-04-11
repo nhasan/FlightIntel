@@ -53,29 +53,27 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
     private CharSequence mSubtitle;
     private int mNavMode;
 
+    protected static final int NAVDRAWER_ITEM_AFD = 0;
+    protected static final int NAVDRAWER_ITEM_WX = 1;
+    protected static final int NAVDRAWER_ITEM_TFR = 2;
+    protected static final int NAVDRAWER_ITEM_LIBRARY = 3;
+    public static final int NAVDRAWER_ITEM_SCRATCHPAD = 4;
+    public static final int NAVDRAWER_ITEM_CLOCKS = 5;
+    public static final int NAVDRAWER_ITEM_E6B = 6;
+    public static final int NAVDRAWER_ITEM_CHARTS = 7;
+
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setContentView();
-
-        Toolbar toolbar = getActionBarToolbar();
 
         mDrawerList = (DrawerListView) findViewById( R.id.left_drawer );
         mDrawerList.setOnItemClickListener( this );
 
         mDrawerLayout = (DrawerLayout) findViewById( R.id.drawer_layout );
         mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout,
-                toolbar, R.string.drawer_open, R.string.drawer_close ) {
+                getActionBarToolbar(), R.string.drawer_open, R.string.drawer_close ) {
 
             public void onDrawerClosed( View view ) {
-                ActionBar actionBar = getSupportActionBar();
-                actionBar.setNavigationMode( mNavMode );
-                actionBar.setTitle( mTitle );
-                actionBar.setSubtitle( mSubtitle );
-                if ( actionBar.getNavigationMode() == ActionBar.NAVIGATION_MODE_LIST ) {
-                    actionBar.setDisplayShowTitleEnabled( false );
-                }
                 supportInvalidateOptionsMenu();
 
                 if ( mIntent != null ) {
@@ -91,17 +89,12 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
                 ActionBar actionBar = getSupportActionBar();
                 mTitle = actionBar.getTitle();
                 mSubtitle = actionBar.getSubtitle();
-                mNavMode = actionBar.getNavigationMode();
-                actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_STANDARD );
-                actionBar.setDisplayShowTitleEnabled( true );
-                actionBar.setTitle( R.string.app_name );
-                actionBar.setSubtitle( null );
                 supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
         mDrawerLayout.setDrawerListener( mDrawerToggle );
         mDrawerLayout.setStatusBarBackgroundColor(
-                getResources().getColor( R.color.color_primary ) );
+                getResources().getColor( R.color.color_primary_dark ) );
     }
 
     @Override
@@ -136,11 +129,6 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
 
     public boolean isDrawerOpen() {
         return mDrawerLayout.isDrawerOpen( mDrawerList );
-    }
-
-    protected void setContentView() {
-        setContentView( R.layout.activity_main );
-        getActionBarToolbar();
     }
 
     protected void setDrawerItemChecked( int position ) {
@@ -179,6 +167,16 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
             mIntent = intent;
         }
         mDrawerLayout.closeDrawer( mDrawerList );
+    }
+
+    protected int getSelfNavDrawerItem() {
+        return 0;
+    }
+
+    private void populateNavDrawer() {
+    }
+
+    private void createNavDrawerItems() {
     }
 
 }
