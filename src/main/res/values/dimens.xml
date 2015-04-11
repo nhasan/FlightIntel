@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,10 +30,10 @@
     <dimen name="label_padding">4dip</dimen>
     <dimen name="item_spacing">8dip</dimen>
 
-    <dimen name="navigation_drawer_width">240dip</dimen>
-    <dimen name="navigation_drawer_item_height">56dip</dimen>
-    <dimen name="navigation_drawer_item2_height">32dip</dimen>
-    <dimen name="navigation_drawer_padding">12dip</dimen>
+    <dimen name="navdrawer_width">260dip</dimen>
+    <dimen name="navdrawer_item_height">56dip</dimen>
+    <dimen name="navdrawer_item2_height">32dip</dimen>
+    <dimen name="navdrawer_padding">12dip</dimen>
 
     <dimen name="list_nav_text1_size">18sp</dimen>
     <dimen name="list_nav_text2_size">12sp</dimen>
