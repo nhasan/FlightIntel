@@ -33,7 +33,6 @@ public class AirportActivity extends DrawerActivityBase {
         super.onCreate( savedInstanceState );
 
         setDrawerItemChecked( DrawerListView.ITEM_ID_AFD );
-        setDrawerIndicatorEnabled( false );
 
         Bundle args = getIntent().getExtras();
         addFragment( AirportDetailsFragment.class, args );
