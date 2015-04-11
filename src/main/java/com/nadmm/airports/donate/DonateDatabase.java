@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.donate;
@@ -26,8 +26,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.text.format.Time;
-
-import com.nadmm.airports.billing.Consts.PurchaseState;
 
 public class DonateDatabase {
 
@@ -57,8 +55,8 @@ public class DonateDatabase {
         public static final String PURCHASE_TIME = "PURCHASE_TIME";
     }
 
-    public void updateDonation( String orderId, String productId, PurchaseState state, long time ) {
-        if ( state == PurchaseState.PURCHASED ) {
+    public void updateDonation( String orderId, String productId, String state, long time ) {
+        if ( state == "P" ) {
             ContentValues values = new ContentValues();
             values.put( Donations._ID, orderId );
             values.put( Donations.PRODUCT_ID, productId );
@@ -66,14 +64,14 @@ public class DonateDatabase {
             purchasetime.set( time );
             values.put( Donations.PURCHASE_TIME, purchasetime.format3339( false ) );
             mDb.replace( Donations.TABLE_NAME, null, values );
-        } else if ( state == PurchaseState.REFUNDED ) {
+        } else if ( state == "R" ) {
             mDb.delete( Donations.TABLE_NAME, Donations._ID+"=?", new String[] { orderId } );
-        } else if ( state == PurchaseState.CANCELED ) {
+        } else if ( state == "C" ) {
             mDb.delete( Donations.TABLE_NAME, Donations._ID+"=?", new String[] { orderId } );
         }
     }
 
-    public Cursor queryAlldonations() {
+    public Cursor queryAllDonations() {
         return mDb.query( Donations.TABLE_NAME, sDonationsColumns, null, null, null, null, null );
     }
 

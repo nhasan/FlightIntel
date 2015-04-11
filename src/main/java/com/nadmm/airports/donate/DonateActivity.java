@@ -1,7 +1,7 @@
 /*
- * FlightIntel for Pilots
+ * FlightIntel
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,20 +14,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.donate;
 
-import java.util.HashMap;
-
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,29 +36,33 @@ import com.nadmm.airports.Application;
 import com.nadmm.airports.FlightIntel;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
-import com.nadmm.airports.billing.BillingService;
-import com.nadmm.airports.billing.BillingService.RequestPurchase;
-import com.nadmm.airports.billing.BillingService.RestoreTransactions;
-import com.nadmm.airports.billing.Consts.PurchaseState;
-import com.nadmm.airports.billing.Consts.ResponseCode;
-import com.nadmm.airports.billing.PurchaseObserver;
-import com.nadmm.airports.billing.ResponseHandler;
+import com.nadmm.airports.billing.utils.IabHelper;
+import com.nadmm.airports.billing.utils.IabResult;
+import com.nadmm.airports.billing.utils.Inventory;
+import com.nadmm.airports.billing.utils.Purchase;
+import com.nadmm.airports.billing.utils.SkuDetails;
 import com.nadmm.airports.donate.DonateDatabase.Donations;
 import com.nadmm.airports.utils.CursorAsyncTask;
-import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.TimeUtils;
-import com.nadmm.airports.utils.UiUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class DonateActivity extends ActivityBase {
 
+    static final String TAG = "DonateActivity";
+
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        setContentView( createContentView( R.layout.fragment_activity_layout ) );
+        super.onCreate(savedInstanceState);
 
         Bundle args = getIntent().getExtras();
         addFragment( DonateFragment.class, args );
+    }
+
+    protected void setContentView() {
+        setContentView(createContentView( R.layout.fragment_activity_layout ) );
     }
 
     @Override
@@ -77,81 +77,105 @@ public class DonateActivity extends ActivityBase {
 
         private static final String DONATIONS_INITIALIZED = "donations_initialized";
 
-        private static final int BILLING_CANNOT_CONNECT = 1;
-        private static final int BILLING_NOT_SUPPORTED = 2;
-        private static final int BILLING_ERROR_RESTORE = 3;
-        private static final int BILLING_AVAILABLE = 4;
-
-        private BillingService mBillingService;
+        private final int RC_REQUEST = 10001;
+        private IabHelper mHelper;
         private DonateDatabase mDonateDb;
-        private DonationsObserver mDonationsObserver;
         private Cursor mCursor;
-        private boolean mBillingSupported;
 
-        private class DonationLevel {
-            public String productId;
-            public String description;
-            public double amount;
+        // Listener that's called when we finish querying the items and subscriptions we own
+        private IabHelper.QueryInventoryFinishedListener mGotInventoryListener =
+                new IabHelper.QueryInventoryFinishedListener() {
+                    public void onQueryInventoryFinished( IabResult result, Inventory inventory ) {
+                        Log.d( TAG, "Query inventory finished." );
 
-            public DonationLevel( String productId, String description, double amount ) {
-                this.productId = productId;
-                this.description = description;
-                this.amount = amount;
-            }
-        }
+                        // Have we been disposed of in the meantime? If so, quit.
+                        if ( mHelper == null ) return;
 
-        private final DonationLevel[] mDonationLevels = {
-            new DonationLevel( "donate_199", "Intrepid Flyer", 1.99 ),
-            new DonationLevel( "donate_399", "Maverick Flyer", 3.99 ),
-            new DonationLevel( "donate_599", "Ace Flyer", 5.99 )
-        };
+                        if ( result.isFailure() ) {
+                            showDonationView( null );
+                            return;
+                        }
+                        Log.d( TAG, "Query inventory was successful." );
 
-        private final class DonateTask extends CursorAsyncTask {
+                        showDonationView( inventory );
+                    }
+                };
 
-            @Override
-            protected Cursor[] doInBackground( String... params ) {
-                Cursor[] cursors = new Cursor[ 1 ];
-                cursors[ 0 ] = mDonateDb.queryAlldonations();
+        // Callback for when a purchase is finished
+        IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
+            public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
+                Log.d( TAG, "Purchase finished: " + result + ", purchase: " + purchase );
 
-                return cursors;
-            }
+                // if we were disposed of in the meantime, quit.
+                if ( mHelper == null ) return;
 
-            @Override
-            protected boolean onResult( Cursor[] result ) {
-                mCursor = result[ 0 ];
-                mBillingSupported = mBillingService.checkBillingSupported();
-                if ( !mBillingSupported ) {
-                    showDonationView( BILLING_CANNOT_CONNECT );
+                if ( result.isFailure() ) {
+                    showDonationView( null );
+                    return;
                 }
-                return false;
-            }
 
-        }
+                Log.d( TAG, "Purchase successful." );
+                // Re-query the inventor which will trigger refresh of the display
+                mHelper.queryInventoryAsync( mGotInventoryListener );
+            }
+        };
 
         @Override
         public View onCreateView( LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState ) {
-            View view = inflater.inflate( R.layout.donate_detail_view, container, false );
-            return view;
+            return inflater.inflate(R.layout.donate_detail_view, container, false);
         }
 
         @Override
         public void onActivityCreated( Bundle savedInstanceState ) {
+            super.onActivityCreated( savedInstanceState );
+
             mDonateDb = new DonateDatabase( getActivity() );
 
-            Handler handler = new Handler();
-            mDonationsObserver = new DonationsObserver( handler );
+            String base64EncodedPublicKey =
+                    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA16lkZLVQvBijNLmctANqxAzi95ce"+
+                            "T7npeFlToXvPRs0ILZRXAz/K3upoGoOB7QNPBdpI7EIboz5CrLdTRe1h3XT9j5Gu5i/shDdb"+
+                            "00ydybIF9gImFdwd+63THXN3hKcATNa7+lbLWsgSdz5SKqJQ9J27a5ipEMm+AwBykdUIQkt4"+
+                            "+POpmxnBiT5KZO3IMyApgDGUPfHtC5Vr0bEkybDwR1JNmu53uulH45q+DdyX4btQR2q6vjqD"+
+                            "BGhUlIdqeqAc+f98ZNONVupwHjLjAuNh3uWO0Aorrcm+q3K1PzQG6+kk0sxuTcSH15ktTqzq"+
+                            "ACOY0m8hxy7jc8pAj6sxpWPeWQIDAQAB";
 
-            mBillingService = new BillingService();
-            mBillingService.setContext( getActivity() );
+            // Create the helper, passing it our context and the public key to verify signatures with
+            Log.d( TAG, "Creating IAB helper." );
+            mHelper = new IabHelper( getActivity(), base64EncodedPublicKey );
 
-            super.onActivityCreated( savedInstanceState );
+            // Enable debug logging
+            mHelper.enableDebugLogging( true );
+
+            // Start setup. This is asynchronous and the specified listener
+            // will be called once setup completes.
+            Log.d( TAG, "Starting setup." );
+            mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+                public void onIabSetupFinished(IabResult result) {
+                    if ( !result.isSuccess() ) {
+                        Log.d( TAG, "Setup failed." );
+                        showDonationView( null );
+                        return;
+                    }
+
+                    // Have we been disposed of in the meantime? If so, quit.
+                    if ( mHelper == null ) return;
+
+                    ArrayList<String> skuList = new ArrayList<String>();
+                    skuList.add( "donate_199" );
+                    skuList.add( "donate_399" );
+                    skuList.add( "donate_599" );
+
+                    // IAB is fully set up. Now, let's get an inventory of stuff we own.
+                    Log.d( TAG, "Setup successful. Querying inventory." );
+                    mHelper.queryInventoryAsync( true, skuList, mGotInventoryListener );
+                }
+            });
         }
 
         @Override
         public void onStart() {
             setBackgroundTask( new DonateTask() ).execute();
-            ResponseHandler.register( mDonationsObserver );
             super.onStart();
         }
 
@@ -160,7 +184,6 @@ public class DonateActivity extends ActivityBase {
             if ( mCursor != null ) {
                 mCursor.close();
             }
-            ResponseHandler.unregister( mDonationsObserver );
             super.onStop();
         }
 
@@ -168,15 +191,9 @@ public class DonateActivity extends ActivityBase {
         public void onDestroy() {
             super.onDestroy();
             mDonateDb.close();
-            mBillingService.unbind();
         }
 
-        protected void refreshDonationsView() {
-            setContentShown( false );
-            setBackgroundTask( new DonateTask() ).execute();
-        }
-
-        protected void showDonationView( int status ) {
+        protected void showDonationView( Inventory inventory ) {
             HashMap<String, Time> donations = new HashMap<String, Time>();
             if ( mCursor.moveToFirst() ) {
                 do {
@@ -192,37 +209,28 @@ public class DonateActivity extends ActivityBase {
 
             TextView tv = (TextView) findViewById( R.id.donate_text );
 
-            if ( status == BILLING_CANNOT_CONNECT ) {
-                tv.setText( "ERROR:\nCannot connect to Google Play application. Your version of app"
-                        + " may be out of date. You can continue to use this app but certain"
-                        + " features may not be available." );                
-            } else if ( status == BILLING_NOT_SUPPORTED ) {
-                tv.setText( "ERROR:\nGoogle Play in-app billing is not available this time. You can"
-                        + " continue to use this app but certain features may not be available." );
-            } else if ( status == BILLING_ERROR_RESTORE ) {
-                tv.setText( "ERROR:\nThere was an error trying to restore your past donations. This"
-                        + " could be a temporary failure. Please try again later." );
-            } else {
-                tv.setText( "Please consider donating to help me recover my costs to develop"
-                        + " the app and provide you with data updates. You may also choose not to"
-                        + " donate at all and that is fine too."
+            if ( inventory != null ) {
+                tv.setText( "Please consider making a donation to help me recover the costs to"
+                        + " develop FlightIntel and provide you with timely data updates. You may"
+                        + " also choose not to donate at all and that is fine too."
                         + "\n\n"
-                        + "You will be redirected to Google Play checkout to allow you to securely"
-                        + " complete your payment transaction."
-                        + "\n\n"
-                        + "Please donate generously to show your appreciation." );
+                        + "Thank you for your support." );
 
                 tv = (TextView) findViewById( R.id.donate_level_label );
                 LinearLayout layout = (LinearLayout) findViewById( R.id.donate_level_layout );
                 layout.removeAllViews();
 
-                for ( int i = 0; i < mDonationLevels.length; ++i ) {
-                    DonationLevel level = mDonationLevels[ i ];
-                    if ( !level.productId.equals( "donate_199" )
-                            && !donations.containsKey( level.productId ) ) {
-                        View row = addRow( layout, level.description,
-                                FormatUtils.formatCurrency( level.amount ) );
-                        row.setTag( level.productId );
+                List<String> skus = inventory.getAllSkus();
+                List<String> purchases = new ArrayList<String>();
+                for ( String sku : skus ) {
+                    if ( inventory.hasPurchase( sku ) ) {
+                        Purchase purchase = inventory.getPurchase(sku);
+                        Log.d( "PURCHASE", purchase.getSku()+" "+purchase.getItemType()+" "+purchase.getPurchaseState() );
+                        purchases.add( sku );
+                    } else {
+                        SkuDetails skuDetails = inventory.getSkuDetails( sku );
+                        View row = addRow( layout, skuDetails.getSku(), skuDetails.getPrice() );
+                        row.setTag( sku );
                         row.setOnClickListener( this );
                         row.setBackgroundResource( R.drawable.row_selector_middle );
                     }
@@ -235,115 +243,58 @@ public class DonateActivity extends ActivityBase {
                     tv.setVisibility( View.GONE );
                     layout.setVisibility( View.GONE );
                 }
-            }
 
-            tv = (TextView) findViewById( R.id.donate_text2 );
-            LinearLayout layout = (LinearLayout) findViewById( R.id.past_donations_layout );
-            layout.removeAllViews();
-            if ( donations.isEmpty() ) {
-                Application.sDonationDone = false;
-                addRow( layout, "No donations made yet" );
-                tv.setVisibility( View.GONE );
-            } else {
-                Application.sDonationDone = true;
-                for ( String productId : donations.keySet() ) {
-                    Time time = donations.get( productId );
-                    DonationLevel level = getDonationLevel( productId );
-                    if ( level != null ) {
-                        addRow( layout, TimeUtils.formatDateTimeLocal( 
-                                getActivity(), time.toMillis( true ) ),
-                                FormatUtils.formatCurrency( level.amount ) );
+                tv = (TextView) findViewById( R.id.donate_text2 );
+                layout = (LinearLayout) findViewById( R.id.past_donations_layout );
+                layout.removeAllViews();
+                if ( donations.isEmpty() ) {
+                    Application.sDonationDone = false;
+                    addRow(layout, "No donations made yet");
+                    tv.setVisibility( View.GONE );
+                } else {
+                    Application.sDonationDone = true;
+                    for ( String sku : donations.keySet() ) {
+                        Time time = donations.get( sku );
+                        SkuDetails skuDetails = inventory.getSkuDetails( sku );
+                        addRow( layout, TimeUtils.formatDateTimeLocal( getActivity(),
+                                time.toMillis( true ) ), skuDetails.getPrice() );
                     }
-                }
 
-                tv.setText( "You can restore the above donations on your other devices by"
-                        + " simply visiting this screen on those devices." );
-                tv.setVisibility( View.VISIBLE );
+                    tv.setText( "You can restore the above donations on your other devices by"
+                            + " simply visiting this screen on those devices." );
+                    tv.setVisibility( View.VISIBLE );
+                }
+            } else {
+                tv.setText( "ERROR:\nGoogle Play in-app billing is not available or supported." );
             }
 
             setContentShown( true );
         }
 
-        protected DonationLevel getDonationLevel( String productId ) {
-            for ( DonationLevel level : mDonationLevels ) {
-                if ( level.productId.equals( productId ) ) {
-                    return level;
-                }
-            }
-            return null;
-        }
-
-        private class DonationsObserver extends PurchaseObserver {
-
-            public DonationsObserver( Handler handler ) {
-                super( getActivity(), handler );
-            }
-
-            @Override
-            public void onBillingSupported( boolean supported ) {
-                if ( supported ) {
-                    if ( restoreDatabase() ) {
-                        showDonationView( BILLING_AVAILABLE );
-                    }
-                } else {
-                    showDonationView( BILLING_NOT_SUPPORTED );
-                }
-            }
-
-            @Override
-            public void onPurchaseStateChange( PurchaseState purchaseState,
-                    String itemId, int quantity, long purchaseTime,
-                    String developerPayload ) {
-                refreshDonationsView();
-            }
-
-            @Override
-            public void onRequestPurchaseResponse( RequestPurchase request,
-                    ResponseCode responseCode ) {
-                if ( responseCode == ResponseCode.RESULT_OK ) {
-                    UiUtils.showToast( getActivity(), "Donation request sent successfully" );
-                } else if ( responseCode == ResponseCode.RESULT_USER_CANCELED ) {
-                    UiUtils.showToast( getActivity(), "Donation request cancelled" );
-                } else {
-                    UiUtils.showToast( getActivity(), "Donation request failed" );
-                }
-            }
-
-            @Override
-            public void onRestoreTransactionsResponse( RestoreTransactions request,
-                    ResponseCode responseCode ) {
-                if ( responseCode == ResponseCode.RESULT_OK ) {
-                    // Update the shared preferences so that we don't perform
-                    // a RestoreTransactions again.
-                    SharedPreferences prefs = getActivity().getPreferences( Context.MODE_PRIVATE );
-                    SharedPreferences.Editor edit = prefs.edit();
-                    edit.putBoolean( DONATIONS_INITIALIZED, true );
-                    edit.commit();
-                    UiUtils.showToast( getActivity(), "Past donations restored successfully" );
-                } else {
-                    UiUtils.showToast( getActivity(), "Unable to restore donation transactions" );
-                }
-                showDonationView( BILLING_AVAILABLE );
-            }
-
-        }
-
-        private boolean restoreDatabase() {
-            SharedPreferences prefs = getActivity().getPreferences( MODE_PRIVATE );
-            boolean initialized = prefs.getBoolean( DONATIONS_INITIALIZED, false );
-            if ( !initialized ) {
-                mBillingService.restoreTransactions();
-                UiUtils.showToast( getActivity(), "Restoring past donation transactions" );
-            }
-            return initialized;
-        }
-
         @Override
         public void onClick( View v ) {
-            String productId = (String) v.getTag();
-            if ( !mBillingService.requestPurchase( productId, null ) ) {
-                UiUtils.showToast( getActivity(), "Google Play billing service is not supported" );
+            String sku = (String) v.getTag();
+            String payload = "";
+            mHelper.launchPurchaseFlow( getActivity(), sku, RC_REQUEST,
+                    mPurchaseFinishedListener, payload );
+        }
+
+        private final class DonateTask extends CursorAsyncTask {
+
+            @Override
+            protected Cursor[] doInBackground( String... params ) {
+                Cursor[] cursors = new Cursor[ 1 ];
+                cursors[ 0 ] = mDonateDb.queryAllDonations();
+
+                return cursors;
             }
+
+            @Override
+            protected boolean onResult( Cursor[] result ) {
+                mCursor = result[ 0 ];
+                return false;
+            }
+
         }
 
     }
