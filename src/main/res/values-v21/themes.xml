@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2014 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2014-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  */
  -->
 <resources>
-    <style name="Mytheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="Platform.Theme.FlightIntel" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
