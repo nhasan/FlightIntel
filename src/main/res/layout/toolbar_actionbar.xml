@@ -19,10 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
-<android.support.v7.widget.Toolbar
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/toolbar_actionbar"
-    android:minHeight="?attr/actionBarSize"
-    android:background="?attr/colorPrimary"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_actionbar"
+        android:elevation="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        style="@style/Widget.Flightintel.Toolbar" />
+</merge>
