@@ -37,7 +37,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
         <TextView android:id="@+id/facility_id"
-                style="@style/TextLabel"
+                style="@style/TextMedium"
                 android:gravity="right"
                 android:layout_marginLeft="@dimen/item_spacing"
                 android:layout_width="wrap_content"
