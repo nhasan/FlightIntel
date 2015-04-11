@@ -132,28 +132,32 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
-insert_book( "periodicals", "cb_412.pdf", "Callback", "Issue 412 (May 2014)", "NASA", 668462, "N" );
-insert_book( "periodicals", "cb_411.pdf", "Callback", "Issue 411 (Apr 2014)", "NASA", 640818, "" );
-insert_book( "periodicals", "cb_410.pdf", "Callback", "Issue 410 (Mar 2014)", "NASA", 637177, "" );
-insert_book( "periodicals", "cb_409.pdf", "Callback", "Issue 409 (Feb 2014)", "NASA", 656796, "" );
-insert_book( "periodicals", "14feb-front.pdf", "The Front", "Feb 2014", "NOAA", 811510, "" );
-insert_book( "periodicals", "13jun-front.pdf", "The Front", "Jun 2013", "NOAA", 2677124, "" );
-insert_book( "periodicals", "13apr-front.pdf", "The Front", "Apr 2013", "NOAA", 2475943, "" );
-insert_book( "periodicals", "12dec-front.pdf", "The Front", "Dec 2012", "NOAA", 2150530, "" );
-insert_book( "periodicals", "MayJun2014.pdf", "FAA Safety Briefing",
-        "May/Jun 2014", "FAA", 7286286, "N" );
-insert_book( "periodicals", "MarApr2014.pdf", "FAA Safety Briefing",
-        "Mar/Apr 2014", "FAA", 4601944, "" );
-insert_book( "periodicals", "JanFeb2014.pdf", "FAA Safety Briefing",
-        "Jan/Feb 2014", "FAA", 4833375, "" );
-insert_book( "periodicals", "NovDec2013.pdf", "FAA Safety Briefing",
-        "Nov/Dec 2013", "FAA", 7469294, "" );
-insert_book( "periodicals", "ATB-2013-1.pdf", "Air Traffic Bulletin",
-        "2013-Q1", "FAA", 46744, "" );
-insert_book( "periodicals", "ATB-2012-4.pdf", "Air Traffic Bulletin",
-        "2012-Q4", "FAA", 243345, "" );
-insert_book( "periodicals", "ATB-2012-3.pdf", "Air Traffic Bulletin",
-        "2012-Q3", "FAA", 167092, "" );
+insert_book( "periodicals", "cb_422.pdf", "Callback",
+        "Issue 422 (Mar 2015)", "NASA", 606293, "N" );
+insert_book( "periodicals", "cb_421.pdf", "Callback",
+        "Issue 421 (Feb 2015)", "NASA", 615421, "" );
+insert_book( "periodicals", "cb_420.pdf", "Callback",
+        "Issue 420 (Jan 2015)", "NASA", 619547, "" );
+insert_book( "periodicals", "cb_419.pdf", "Callback",
+        "Issue 419 (Dec 2014)", "NASA", 879845, "" );
+insert_book( "periodicals", "cb_418.pdf", "Callback",
+        "Issue 418 (Nov 2014)", "NASA", 571134, "" );
+insert_book( "periodicals", "14feb-front.pdf", "The Front",
+        "Feb 2014", "NOAA", 811510, "" );
+insert_book( "periodicals", "13jun-front.pdf", "The Front",
+        "Jun 2013", "NOAA", 2677124, "" );
+insert_book( "periodicals", "13apr-front.pdf", "The Front",
+        "Apr 2013", "NOAA", 2475943, "" );
+insert_book( "periodicals", "12dec-front.pdf", "The Front",
+        "Dec 2012", "NOAA", 2150530, "" );
+insert_book( "periodicals", "MarApr2015.pdf", "FAA Safety Briefing",
+        "Mar/Apr 2015", "FAA", 5836207, "N" );
+insert_book( "periodicals", "JanFeb2015.pdf", "FAA Safety Briefing",
+        "Jan/Feb 2015", "FAA", 6540077, "" );
+insert_book( "periodicals", "NovDec2014.pdf", "FAA Safety Briefing",
+        "Nov/Dec 2014", "FAA", 16200490, "" );
+insert_book( "periodicals", "SepOct2014.pdf", "FAA Safety Briefing",
+        "Sep/Oct 2014", "FAA", 3521357, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -178,18 +182,18 @@ insert_book( "safety", "faa-p-8740-69-2008.pdf", "Aeronautical Decision Making",
 insert_book( "safety", "takeoff_safety.pdf", "Pilot Guide to Takeoff Safety",
         "2008", "FAA", 2678525, "" );
 
-insert_book( "regs", "AIM_Basic_4-03-14.pdf", "Aeronautical Information Manual (AIM)",
-        "Apr 2014", "FAA", 8809597, "" );
+insert_book( "regs", "AIM_Basic_1-8-15.pdf", "Aeronautical Information Manual (AIM)",
+        "Jan 2015", "FAA", 13024765, "N" );
 insert_book( "regs", "CFR-2014-title14-vol1.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 1-59", "US GPO", 10956838, "" );
 insert_book( "regs", "CFR-2014-title14-vol2.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 60-109", "US GPO", 15663565, "" );
-insert_book( "regs", "CFR-2014-title14-vol3.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 110-199", "US GPO", 5648965, "" );
+insert_book( "regs", "CFR-2015-title14-vol3.pdf", "Federal Aviation Regulations (FAR)",
+        "Parts 110-199", "US GPO", 5368153, "N" );
 insert_book( "regs", "CFR-2014-title14-vol4.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 200-1199", "US GPO", 16922247, "" );
-insert_book( "regs", "CFR-2014-title14-vol5.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 1200-1310", "US GPO", 2421910, "" );
+insert_book( "regs", "CFR-2015-title14-vol5.pdf", "Federal Aviation Regulations (FAR)",
+        "Parts 1200-1310", "US GPO", 2060784, "N" );
 
 insert_book( "risk", "ga_weather_decision_making.pdf", "General Aviation Pilot’s Guide",
         "2009", "FAA", 659230, "" );
@@ -228,16 +232,16 @@ insert_book( "testguide", "ira.pdf", "Airmen Knowledge Test Question Bank",
 insert_book( "testguide", "com.pdf", "Airmen Knowledge Test Question Bank",
         "Jan 2014", "Commercial", 36750, "" );
 insert_book( "testguide", "atp.pdf", "Airmen Knowledge Test Question Bank",
-        "Feb 2014", "ATP", 394250, "N" );
+        "Feb 2014", "ATP", 394250, "" );
 insert_book( "testguide", "lsp.pdf", "Airmen Knowledge Test Question Bank",
         "Jan 2014", "Light Sport", 29261, "" );
 
-insert_book( "misc", "AIP_Basic_Amds_1-2_4-3-14.pdf", "Aeronautical Information Publication",
-        "22nd Edition - AMDT 2", "FAA", 30208419, "" );
+insert_book( "misc", "AIP_Basic_23rd_Edition_1-8-15.pdf", "Aeronautical Information Publication",
+        "23rd Edition", "FAA", 43426504, "N" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
-insert_book( "misc", "PCG_4-03-14.pdf", "Pilot/Controller Glossary",
-        "Apr 2014", "FAA", 489323, "" );
+insert_book( "misc", "PCG_1-8-15.pdf.gz", "Pilot/Controller Glossary",
+        "Jan 2015", "FAA", 511818, "N" );
 insert_book( "misc", "RNProadmap.pdf", "Roadmap for Performance-Based Navigation",
         "2006", "FAA", 1513616, "" );
 insert_book( "misc", "JO_7110.65V.pdf", "ATC Order 7110.65V", "Apr 2014", "FAA", 7655882, "" );
