@@ -28,7 +28,8 @@ my $BASE_DIR = shift @ARGV;
 # Format: 05APR2012
 our $cycle = shift @ARGV;
 my $AFD_METADATA_FILE = "$BASE_DIR/d-AFD_Metadata.xml";
-my $dafd_url = "http://aeronav.faa.gov/afd/afd_$cycle.xml";
+#my $dafd_url = "http://aeronav.faa.gov/afd/afd_$cycle.xml";
+my $dafd_url = "file:///home/nhasan/Downloads/DAFD/afd_$cycle.xml";
 my $count = 0;
 
 print "Downloading the d-AFD metafile: ".$dafd_url."...";
@@ -36,7 +37,7 @@ print "Downloading the d-AFD metafile: ".$dafd_url."...";
 my $ret = getstore( $dafd_url, $AFD_METADATA_FILE );
 if ( $ret != 200 )
 {
-    die "Unable to download d-AFD metadata.";
+    die "\nERROR: Unable to download d-AFD metadata. $ret\n\n";
 }
 print "done\n";
 
