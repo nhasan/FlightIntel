@@ -127,7 +127,7 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
 
     @Override
     public int getCount() {
-        return ( !isEmpty()? getCursor().getCount() + mSections.size() : 0 );
+        return ( getCursor().getCount() > 0? getCursor().getCount() + mSections.size() : 0 );
     }
 
     @Override
