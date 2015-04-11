@@ -44,6 +44,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -94,6 +95,8 @@ public class ActivityBase extends ActionBarActivity {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate(savedInstanceState);
+
         mDbManager = DatabaseManager.instance( this );
         mInflater = getLayoutInflater();
         overridePendingTransition( R.anim.fade_in, R.anim.fade_out );
@@ -114,7 +117,7 @@ public class ActivityBase extends ActionBarActivity {
 
         if ( Application.sDonationDone == null ) {
             DonateDatabase db = new DonateDatabase( this );
-            Cursor c = db.queryAlldonations();
+            Cursor c = db.queryAllDonations();
             Application.sDonationDone = c.moveToFirst();
             db.close();
         }
@@ -122,7 +125,10 @@ public class ActivityBase extends ActionBarActivity {
         // Enable Google Analytics
         ( (Application) getApplication() ).getAnalyticsTracker();
 
-        super.onCreate( savedInstanceState );
+        setContentView();
+
+        // Setup actionbar
+        getActionBarToolbar();
     }
 
     @Override
@@ -139,12 +145,10 @@ public class ActivityBase extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         registerReceiver( mExternalStorageReceiver, mFilter );
+    }
 
-        ActionBar actionBar = getSupportActionBar();
-        if ( actionBar != null ) {
-            actionBar.setHomeButtonEnabled( true );
-            actionBar.setDisplayHomeAsUpEnabled( true );
-        }
+    protected void setContentView() {
+        setContentView(R.layout.activity_main);
     }
 
     protected Toolbar getActionBarToolbar() {
@@ -152,16 +156,17 @@ public class ActivityBase extends ActionBarActivity {
             mActionBarToolbar = (Toolbar) findViewById( R.id.toolbar_actionbar );
             if ( mActionBarToolbar != null ) {
                 setSupportActionBar( mActionBarToolbar );
+                ActionBar actionBar = getSupportActionBar();
+                actionBar.setHomeButtonEnabled( true );
+                actionBar.setDisplayHomeAsUpEnabled( true );
             }
         }
         return mActionBarToolbar;
     }
 
     protected Spinner setupActionbarSpinner() {
-        View spinnerContainer = inflate( R.layout.actionbar_spinner, mActionBarToolbar );
-        ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
-        mActionBarToolbar.addView( spinnerContainer, lp );
+        LayoutInflater inflater = LayoutInflater.from( getSupportActionBar().getThemedContext() );
+        View spinnerContainer = inflater.inflate( R.layout.actionbar_spinner, mActionBarToolbar );
         Spinner spinner = (Spinner) spinnerContainer.findViewById( R.id.actionbar_spinner );
         return spinner;
     }
@@ -192,7 +197,7 @@ public class ActivityBase extends ActionBarActivity {
         int white = getResources().getColor( android.R.color.white );
         root.setBackgroundColor( white );
         root.setDrawingCacheBackgroundColor( white );
-        root.setLayoutParams(new FrameLayout.LayoutParams(
+        root.setLayoutParams( new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT ) );
 
         LinearLayout pframe = new LinearLayout( this );
