@@ -27,11 +27,11 @@
               style="@style/ListItemActivated"
               android:gravity="center_vertical"
               android:layout_width="match_parent"
-              android:layout_height="@dimen/navigation_drawer_item2_height">
+              android:layout_height="@dimen/navdrawer_item2_height">
     <TextView android:id="@+id/item_text"
               style="@style/DrawerMenuText"
               android:gravity="left|center_vertical"
-              android:paddingLeft="@dimen/navigation_drawer_padding"
+              android:paddingLeft="@dimen/navdrawer_padding"
               android:layout_weight="1"
               android:layout_width="0dp"
               android:layout_height="wrap_content" />
