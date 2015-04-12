@@ -58,11 +58,11 @@ public class DonateActivity extends ActivityBase {
         super.onCreate(savedInstanceState);
 
         Bundle args = getIntent().getExtras();
-        addFragment( DonateFragment.class, args );
+        addFragment(DonateFragment.class, args);
     }
 
     protected void setContentView() {
-        setContentView(createContentView( R.layout.fragment_activity_layout ) );
+        setContentView(createContentView(R.layout.fragment_activity_layout));
     }
 
     @Override
@@ -73,14 +73,20 @@ public class DonateActivity extends ActivityBase {
         finish();
     }
 
-    public static class DonateFragment extends FragmentBase implements OnClickListener {
+    @Override
+    public void onActivityResult( int requestCode, int resultCode, Intent data ) {
+        DonateFragment f = (DonateFragment) getFragment( DonateFragment.class );
+        if ( f != null )
+        {
+            f.onActivityResult( requestCode, resultCode, data );
+        }
+    }
 
-        private static final String DONATIONS_INITIALIZED = "donations_initialized";
+    public static class DonateFragment extends FragmentBase implements OnClickListener {
 
         private final int RC_REQUEST = 10001;
         private IabHelper mHelper;
         private DonateDatabase mDonateDb;
-        private Cursor mCursor;
 
         // Listener that's called when we finish querying the items and subscriptions we own
         private IabHelper.QueryInventoryFinishedListener mGotInventoryListener =
@@ -174,39 +180,37 @@ public class DonateActivity extends ActivityBase {
         }
 
         @Override
-        public void onStart() {
-            setBackgroundTask( new DonateTask() ).execute();
-            super.onStart();
-        }
-
-        @Override
-        public void onStop() {
-            if ( mCursor != null ) {
-                mCursor.close();
-            }
-            super.onStop();
-        }
-
-        @Override
         public void onDestroy() {
             super.onDestroy();
             mDonateDb.close();
         }
 
-        protected void showDonationView( Inventory inventory ) {
-            HashMap<String, Time> donations = new HashMap<String, Time>();
-            if ( mCursor.moveToFirst() ) {
-                do {
-                    String productId = mCursor.getString(
-                            mCursor.getColumnIndex( Donations.PRODUCT_ID ) );
-                    Time time = new Time();
-                    String purchaseTime = mCursor.getString( mCursor.getColumnIndex(
-                            Donations.PURCHASE_TIME ) );
-                    time.parse3339( purchaseTime );
-                    donations.put( productId, time );
-                } while ( mCursor.moveToNext() );
-            }
+        @Override
+        public void onClick( View v ) {
+            String sku = (String) v.getTag();
+            String payload = "";
+            mHelper.launchPurchaseFlow(getActivity(), sku, RC_REQUEST,
+                    mPurchaseFinishedListener, payload);
+        }
 
+        @Override
+        public void onActivityResult( int requestCode, int resultCode, Intent data ) {
+            Log.d( TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data );
+            if ( mHelper == null ) return;
+
+            // Pass on the activity result to the helper for handling
+            if ( !mHelper.handleActivityResult( requestCode, resultCode, data ) ) {
+                // not handled, so handle it ourselves (here's where you'd
+                // perform any handling of activity results not related to in-app
+                // billing...
+                super.onActivityResult( requestCode, resultCode, data );
+            }
+            else {
+                Log.d( TAG, "onActivityResult handled by IABUtil." );
+            }
+        }
+
+        protected void showDonationView( Inventory inventory ) {
             TextView tv = (TextView) findViewById( R.id.donate_text );
 
             if ( inventory != null ) {
@@ -223,13 +227,12 @@ public class DonateActivity extends ActivityBase {
                 List<String> skus = inventory.getAllSkus();
                 List<String> purchases = new ArrayList<String>();
                 for ( String sku : skus ) {
-                    if ( inventory.hasPurchase( sku ) ) {
-                        Purchase purchase = inventory.getPurchase(sku);
-                        Log.d( "PURCHASE", purchase.getSku()+" "+purchase.getItemType()+" "+purchase.getPurchaseState() );
+                    if ( inventory.hasPurchase( sku )
+                            && inventory.getPurchase( sku ).getPurchaseState() == 0 ) {
                         purchases.add( sku );
                     } else {
                         SkuDetails skuDetails = inventory.getSkuDetails( sku );
-                        View row = addRow( layout, skuDetails.getSku(), skuDetails.getPrice() );
+                        View row = addRow( layout, skuDetails.getTitle(), skuDetails.getPrice() );
                         row.setTag( sku );
                         row.setOnClickListener( this );
                         row.setBackgroundResource( R.drawable.row_selector_middle );
@@ -247,54 +250,36 @@ public class DonateActivity extends ActivityBase {
                 tv = (TextView) findViewById( R.id.donate_text2 );
                 layout = (LinearLayout) findViewById( R.id.past_donations_layout );
                 layout.removeAllViews();
-                if ( donations.isEmpty() ) {
+                mDonateDb.deleteAllDonations();
+                if ( purchases.isEmpty() ) {
                     Application.sDonationDone = false;
                     addRow(layout, "No donations made yet");
                     tv.setVisibility( View.GONE );
                 } else {
                     Application.sDonationDone = true;
-                    for ( String sku : donations.keySet() ) {
-                        Time time = donations.get( sku );
+                    for ( String sku : purchases ) {
+                        Purchase purchase = inventory.getPurchase( sku );
+                        Log.d( TAG, "STATE: "+purchase.getPurchaseState() );
                         SkuDetails skuDetails = inventory.getSkuDetails( sku );
-                        addRow( layout, TimeUtils.formatDateTimeLocal( getActivity(),
-                                time.toMillis( true ) ), skuDetails.getPrice() );
+                        String orderId = purchase.getOrderId();
+                        addRow( layout, skuDetails.getTitle(),
+                                skuDetails.getPrice(),
+                                TimeUtils.formatDateTimeLocal(getActivity(),
+                                        purchase.getPurchaseTime() ),
+                                orderId.substring( orderId.indexOf( '.' )+1 ) );
+                        mDonateDb.updateDonation( purchase.getOrderId(), sku,
+                                purchase.getPurchaseState(), purchase.getPurchaseTime() );
                     }
 
                     tv.setText( "You can restore the above donations on your other devices by"
-                            + " simply visiting this screen on those devices." );
+                            + " simply visiting donations screen on those devices." );
                     tv.setVisibility( View.VISIBLE );
                 }
             } else {
                 tv.setText( "ERROR:\nGoogle Play in-app billing is not available or supported." );
             }
 
-            setContentShown( true );
-        }
-
-        @Override
-        public void onClick( View v ) {
-            String sku = (String) v.getTag();
-            String payload = "";
-            mHelper.launchPurchaseFlow( getActivity(), sku, RC_REQUEST,
-                    mPurchaseFinishedListener, payload );
-        }
-
-        private final class DonateTask extends CursorAsyncTask {
-
-            @Override
-            protected Cursor[] doInBackground( String... params ) {
-                Cursor[] cursors = new Cursor[ 1 ];
-                cursors[ 0 ] = mDonateDb.queryAllDonations();
-
-                return cursors;
-            }
-
-            @Override
-            protected boolean onResult( Cursor[] result ) {
-                mCursor = result[ 0 ];
-                return false;
-            }
-
+            setContentShown(true);
         }
 
     }

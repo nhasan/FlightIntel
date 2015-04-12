@@ -25,7 +25,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
-import android.text.format.Time;
+
+import java.text.DateFormat;
+import java.util.Date;
 
 public class DonateDatabase {
 
@@ -55,19 +57,20 @@ public class DonateDatabase {
         public static final String PURCHASE_TIME = "PURCHASE_TIME";
     }
 
-    public void updateDonation( String orderId, String productId, String state, long time ) {
-        if ( state == "P" ) {
+    public  void deleteAllDonations() {
+        mDb.delete( Donations.TABLE_NAME, "", null );
+    }
+
+    public void updateDonation( String orderId, String productId, int state, long time ) {
+        mDb.delete( Donations.TABLE_NAME, Donations.PRODUCT_ID+"=?", new String[] { productId } );
+        if ( state == 0 ) {
+            // Donation was purchased
             ContentValues values = new ContentValues();
             values.put( Donations._ID, orderId );
             values.put( Donations.PRODUCT_ID, productId );
-            Time purchasetime = new Time();
-            purchasetime.set( time );
-            values.put( Donations.PURCHASE_TIME, purchasetime.format3339( false ) );
+            DateFormat df = DateFormat.getDateTimeInstance();
+            values.put( Donations.PURCHASE_TIME, df.format( new Date( time ) ) );
             mDb.replace( Donations.TABLE_NAME, null, values );
-        } else if ( state == "R" ) {
-            mDb.delete( Donations.TABLE_NAME, Donations._ID+"=?", new String[] { orderId } );
-        } else if ( state == "C" ) {
-            mDb.delete( Donations.TABLE_NAME, Donations._ID+"=?", new String[] { orderId } );
         }
     }
 
