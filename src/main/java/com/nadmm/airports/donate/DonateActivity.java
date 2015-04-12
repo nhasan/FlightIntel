@@ -55,14 +55,14 @@ public class DonateActivity extends ActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate(savedInstanceState);
+        super.onCreate( savedInstanceState );
 
         Bundle args = getIntent().getExtras();
-        addFragment(DonateFragment.class, args);
+        addFragment( DonateFragment.class, args );
     }
 
     protected void setContentView() {
-        setContentView(createContentView(R.layout.fragment_activity_layout));
+        setContentView( createContentView( R.layout.fragment_activity_layout ) );
     }
 
     @Override
@@ -94,7 +94,7 @@ public class DonateActivity extends ActivityBase {
                     public void onQueryInventoryFinished( IabResult result, Inventory inventory ) {
                         Log.d( TAG, "Query inventory finished." );
 
-                        // Have we been disposed of in the meantime? If so, quit.
+                        // Have we been disposed off in the meantime? If so, quit.
                         if ( mHelper == null ) return;
 
                         if ( result.isFailure() ) {
@@ -108,7 +108,8 @@ public class DonateActivity extends ActivityBase {
                 };
 
         // Callback for when a purchase is finished
-        IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
+        IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
+                = new IabHelper.OnIabPurchaseFinishedListener() {
             public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
                 Log.d( TAG, "Purchase finished: " + result + ", purchase: " + purchase );
 
@@ -129,7 +130,7 @@ public class DonateActivity extends ActivityBase {
         @Override
         public View onCreateView( LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState ) {
-            return inflater.inflate(R.layout.donate_detail_view, container, false);
+            return inflater.inflate( R.layout.donate_detail_view, container, false );
         }
 
         @Override
@@ -157,7 +158,7 @@ public class DonateActivity extends ActivityBase {
             // will be called once setup completes.
             Log.d( TAG, "Starting setup." );
             mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-                public void onIabSetupFinished(IabResult result) {
+                public void onIabSetupFinished( IabResult result ) {
                     if ( !result.isSuccess() ) {
                         Log.d( TAG, "Setup failed." );
                         showDonationView( null );
@@ -183,14 +184,21 @@ public class DonateActivity extends ActivityBase {
         public void onDestroy() {
             super.onDestroy();
             mDonateDb.close();
+
+            // very important:
+            Log.d( TAG, "Destroying helper." );
+            if ( mHelper != null ) {
+                mHelper.dispose();
+                mHelper = null;
+            }
         }
 
         @Override
         public void onClick( View v ) {
             String sku = (String) v.getTag();
             String payload = "";
-            mHelper.launchPurchaseFlow(getActivity(), sku, RC_REQUEST,
-                    mPurchaseFinishedListener, payload);
+            mHelper.launchPurchaseFlow( getActivity(), sku, RC_REQUEST,
+                    mPurchaseFinishedListener, payload );
         }
 
         @Override
@@ -253,7 +261,7 @@ public class DonateActivity extends ActivityBase {
                 mDonateDb.deleteAllDonations();
                 if ( purchases.isEmpty() ) {
                     Application.sDonationDone = false;
-                    addRow(layout, "No donations made yet");
+                    addRow( layout, "No donations made yet" );
                     tv.setVisibility( View.GONE );
                 } else {
                     Application.sDonationDone = true;
@@ -264,7 +272,7 @@ public class DonateActivity extends ActivityBase {
                         String orderId = purchase.getOrderId();
                         addRow( layout, skuDetails.getTitle(),
                                 skuDetails.getPrice(),
-                                TimeUtils.formatDateTimeLocal(getActivity(),
+                                TimeUtils.formatDateTimeLocal( getActivity(),
                                         purchase.getPurchaseTime() ),
                                 orderId.substring( orderId.indexOf( '.' )+1 ) );
                         mDonateDb.updateDonation( purchase.getOrderId(), sku,
@@ -279,7 +287,7 @@ public class DonateActivity extends ActivityBase {
                 tv.setText( "ERROR:\nGoogle Play in-app billing is not available or supported." );
             }
 
-            setContentShown(true);
+            setContentShown( true );
         }
 
     }
