@@ -44,8 +44,7 @@
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
             android:choiceMode="singleChoice"
-            android:divider="#404040"
-            android:dividerHeight="1px"
+            android:dividerHeight="0px"
             android:scrollingCache="false"
-            android:background="#202020"/>
+            android:background="@color/navdrawer_background"/>
 </android.support.v4.widget.DrawerLayout>
