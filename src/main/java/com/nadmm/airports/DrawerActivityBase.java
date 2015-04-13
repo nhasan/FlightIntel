@@ -25,10 +25,9 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -46,7 +45,7 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerListView mDrawerList;
+    private DrawerListView mNavDrawer;
     private Intent mIntent = null;
 
     private CharSequence mTitle;
@@ -66,10 +65,22 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mDrawerList = (DrawerListView) findViewById( R.id.left_drawer );
-        mDrawerList.setOnItemClickListener( this );
-
         mDrawerLayout = (DrawerLayout) findViewById( R.id.drawer_layout );
+        if ( mDrawerLayout == null ) {
+            return;
+        }
+        mDrawerLayout.setStatusBarBackgroundColor(
+                getResources().getColor( R.color.color_primary_dark ) );
+
+        mNavDrawer = (DrawerListView) findViewById( R.id.left_drawer );
+        mNavDrawer.setOnItemClickListener( this );
+
+        if ( !showNavDrawer() ) {
+            (( ViewGroup) mNavDrawer.getParent()).removeView( mNavDrawer );
+            mDrawerLayout = null;
+            return;
+        }
+
         mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout,
                 getActionBarToolbar(), R.string.drawer_open, R.string.drawer_close ) {
 
@@ -93,28 +104,30 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
             }
         };
         mDrawerLayout.setDrawerListener( mDrawerToggle );
-        mDrawerLayout.setStatusBarBackgroundColor(
-                getResources().getColor( R.color.color_primary_dark ) );
     }
 
     @Override
     protected void onPostCreate( Bundle savedInstanceState ) {
         super.onPostCreate( savedInstanceState );
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        if ( mDrawerToggle != null ) {
+            mDrawerToggle.syncState();
+        }
     }
 
     @Override
     public void onConfigurationChanged( Configuration newConfig ) {
         super.onConfigurationChanged( newConfig );
-        mDrawerToggle.onConfigurationChanged( newConfig );
+        if ( mDrawerToggle != null ) {
+            mDrawerToggle.onConfigurationChanged( newConfig );
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
         // Pass the event to ActionBarDrawerToggle, if it returns
         // true, then it has handled the app icon touch event
-        if ( mDrawerToggle.onOptionsItemSelected( item ) ) {
+        if ( mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected( item ) ) {
           return true;
         }
 
@@ -127,12 +140,18 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
         getSupportActionBar().setTitle( mTitle );
     }
 
+    protected boolean showNavDrawer() {
+        return true;
+    }
+
     public boolean isDrawerOpen() {
-        return mDrawerLayout.isDrawerOpen( mDrawerList );
+        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen( mNavDrawer );
     }
 
     protected void setDrawerItemChecked( int position ) {
-        mDrawerList.setItemChecked( position, true );
+        if ( mDrawerLayout != null ) {
+            mNavDrawer.setItemChecked( position, true );
+        }
     }
 
     public void setDrawerIndicatorEnabled( boolean enable ) {
@@ -166,17 +185,9 @@ public class DrawerActivityBase extends ActivityBase implements ListView.OnItemC
         if ( intent != null ) {
             mIntent = intent;
         }
-        mDrawerLayout.closeDrawer( mDrawerList );
-    }
-
-    protected int getSelfNavDrawerItem() {
-        return 0;
-    }
-
-    private void populateNavDrawer() {
-    }
-
-    private void createNavDrawerItems() {
+        if ( mDrawerLayout != null ) {
+            mDrawerLayout.closeDrawer( mNavDrawer );
+        }
     }
 
 }
