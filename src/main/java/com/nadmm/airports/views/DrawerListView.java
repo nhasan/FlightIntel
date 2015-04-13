@@ -1,3 +1,22 @@
+/*
+ * FlightIntel for Pilots
+ *
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.nadmm.airports.views;
 
 import android.content.Context;
@@ -70,28 +89,28 @@ public final class DrawerListView extends ListView {
             Resources res = context.getResources();
             newRow().add( ITEM_ID_AFD )
                     .add( res.getString( R.string.afd ) )
-                    .add( R.drawable.airport );
+                    .add( R.drawable.ic_navdrawer_afd );
             newRow().add( ITEM_ID_WX )
                     .add( res.getString( R.string.weather ) )
-                    .add( R.drawable.wx );
+                    .add( R.drawable.ic_navdrawer_wx );
             newRow().add( ITEM_ID_TFR )
                     .add( res.getString( R.string.tfrs ) )
-                    .add( R.drawable.stop );
+                    .add( R.drawable.ic_navdrawer_tfr );
             newRow().add( ITEM_ID_LIBRARY )
                     .add( res.getString( R.string.library ) )
-                    .add( R.drawable.book );
+                    .add( R.drawable.ic_navdrawer_library );
             newRow().add( ITEM_ID_SCRATCHPAD )
                     .add( res.getString( R.string.scratch_pad ) )
-                    .add( R.drawable.notepad );
+                    .add( R.drawable.ic_navdrawer_scratchpad );
             newRow().add( ITEM_ID_CLOCKS )
                     .add( res.getString( R.string.clocks ) )
-                    .add( R.drawable.clock );
+                    .add( R.drawable.ic_navdrawer_clocks );
             newRow().add( ITEM_ID_E6B )
                     .add( res.getString( R.string.e6b ) )
-                    .add( R.drawable.e6b );
+                    .add( R.drawable.ic_navdrawer_e6b );
             newRow().add( ITEM_ID_CHARTS )
                     .add( res.getString( R.string.charts ) )
-                    .add( R.drawable.folder );
+                    .add( R.drawable.ic_navdrawer_charts );
         }
 
     }
