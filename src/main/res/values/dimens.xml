@@ -31,7 +31,7 @@
     <dimen name="item_spacing">8dip</dimen>
 
     <dimen name="navdrawer_width">260dip</dimen>
-    <dimen name="navdrawer_item_height">56dip</dimen>
+    <dimen name="navdrawer_item_height">48dip</dimen>
     <dimen name="navdrawer_item2_height">32dip</dimen>
     <dimen name="navdrawer_padding">12dip</dimen>
 
