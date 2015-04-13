@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.Application;
+import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.FlightIntel;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
@@ -49,7 +50,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DonateActivity extends ActivityBase {
+public class DonateActivity extends DrawerActivityBase {
 
     static final String TAG = "DonateActivity";
 
@@ -61,8 +62,9 @@ public class DonateActivity extends ActivityBase {
         addFragment( DonateFragment.class, args );
     }
 
-    protected void setContentView() {
-        setContentView( createContentView( R.layout.fragment_activity_layout ) );
+    @Override
+    protected boolean showNavDrawer() {
+        return false;
     }
 
     @Override
@@ -87,6 +89,7 @@ public class DonateActivity extends ActivityBase {
         private final int RC_REQUEST = 10001;
         private IabHelper mHelper;
         private DonateDatabase mDonateDb;
+        ArrayList<String> mSkuList = new ArrayList<String>();
 
         // Listener that's called when we finish querying the items and subscriptions we own
         private IabHelper.QueryInventoryFinishedListener mGotInventoryListener =
@@ -123,7 +126,7 @@ public class DonateActivity extends ActivityBase {
 
                 Log.d( TAG, "Purchase successful." );
                 // Re-query the inventor which will trigger refresh of the display
-                mHelper.queryInventoryAsync( mGotInventoryListener );
+                mHelper.queryInventoryAsync( true, mSkuList, mGotInventoryListener );
             }
         };
 
@@ -136,6 +139,11 @@ public class DonateActivity extends ActivityBase {
         @Override
         public void onActivityCreated( Bundle savedInstanceState ) {
             super.onActivityCreated( savedInstanceState );
+
+            // Populate our SKUs to query
+            mSkuList.add( "donate_199" );
+            mSkuList.add( "donate_399" );
+            mSkuList.add( "donate_599" );
 
             mDonateDb = new DonateDatabase( getActivity() );
 
@@ -168,14 +176,9 @@ public class DonateActivity extends ActivityBase {
                     // Have we been disposed of in the meantime? If so, quit.
                     if ( mHelper == null ) return;
 
-                    ArrayList<String> skuList = new ArrayList<String>();
-                    skuList.add( "donate_199" );
-                    skuList.add( "donate_399" );
-                    skuList.add( "donate_599" );
-
                     // IAB is fully set up. Now, let's get an inventory of stuff we own.
                     Log.d( TAG, "Setup successful. Querying inventory." );
-                    mHelper.queryInventoryAsync( true, skuList, mGotInventoryListener );
+                    mHelper.queryInventoryAsync( true, mSkuList, mGotInventoryListener );
                 }
             });
         }
