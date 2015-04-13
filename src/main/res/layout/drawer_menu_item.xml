@@ -33,7 +33,7 @@
             android:layout_width="24dp"
             android:layout_marginRight="32dp" />
     <TextView android:id="@+id/item_text"
-            style="@style/Base.TextAppearance.AppCompat.Body2"
+            style="@style/DrawerMenuText"
             android:gravity="left|center_vertical"
             android:layout_weight="1"
             android:layout_width="0dp"

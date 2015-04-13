@@ -24,10 +24,11 @@
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textStyle">normal</item>
     </style>
-    <style name="DrawerMenuText" parent="TextMedium.White">
+    <style name="DrawerMenuText" parent="TextSmall">
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">#d0d0d0</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">#ff000000</item>
     </style>
     <style name="TextLabel" parent="@style/TextSmall">
         <item name="android:fontFamily">sans-serif-light</item>
