@@ -33,5 +33,6 @@
     <color name="accent_1">#ff0099cc</color>
     <color name="color_primary">#ff539fca</color>
     <color name="color_primary_dark">#ff2c7eb7</color>
+    <color name="color_primary_light">#7f539fca</color>
     <color name="navdrawer_background">#ffffffff</color>
 </resources>
