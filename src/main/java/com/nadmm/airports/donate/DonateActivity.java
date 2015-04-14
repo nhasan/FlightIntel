@@ -133,7 +133,8 @@ public class DonateActivity extends DrawerActivityBase {
         @Override
         public View onCreateView( LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState ) {
-            return inflater.inflate( R.layout.donate_detail_view, container, false );
+            View view = inflater.inflate( R.layout.donate_detail_view, container, false );
+            return createContentView( view );
         }
 
         @Override
