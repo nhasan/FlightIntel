@@ -111,7 +111,6 @@
     <style name="DrawerMenuText" parent="@style/TextSmall">
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">#ff000000</item>
     </style>
 
     <style name="Widget.Flightintel.Toolbar" parent="Widget.AppCompat.Toolbar">
@@ -121,7 +120,7 @@
     </style>
 
     <style name="ActionDropDownStyle" parent="Base.Widget.AppCompat.DropDownItem.Spinner">
-        <item name="android:textColor">@android:color/black</item>
-        <item name="android:background">@drawable/abc_list_selector_background_transition_holo_light</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@color/color_primary</item>
     </style>
 </resources>
