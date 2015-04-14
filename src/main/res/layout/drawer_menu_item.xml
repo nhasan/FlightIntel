@@ -29,11 +29,13 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/navdrawer_item_height">
     <ImageView android:id="@+id/item_icon"
+            android:tint="@color/drawer_item_icon_color"
             android:layout_height="24dp"
             android:layout_width="24dp"
             android:layout_marginRight="32dp" />
     <TextView android:id="@+id/item_text"
             style="@style/DrawerMenuText"
+            android:textColor="@color/drawer_item_text_color"
             android:gravity="left|center_vertical"
             android:layout_weight="1"
             android:layout_width="0dp"
