@@ -30,13 +30,12 @@
     <dimen name="label_padding">4dip</dimen>
     <dimen name="item_spacing">8dip</dimen>
 
+    <dimen name="list_nav_text1_size">16sp</dimen>
+    <dimen name="list_nav_text2_size">10sp</dimen>
+
     <dimen name="navdrawer_width">260dip</dimen>
     <dimen name="navdrawer_item_height">48dip</dimen>
-    <dimen name="navdrawer_item2_height">32dip</dimen>
-    <dimen name="navdrawer_padding">12dip</dimen>
-
-    <dimen name="list_nav_text1_size">18sp</dimen>
-    <dimen name="list_nav_text2_size">12sp</dimen>
+    <dimen name="navdrawer_text_size">14sp</dimen>
 
     <dimen name="small_text_size">16sp</dimen>
     <dimen name="smaller_text_size">15sp</dimen>
