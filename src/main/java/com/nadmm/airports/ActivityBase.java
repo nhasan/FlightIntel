@@ -147,7 +147,7 @@ public class ActivityBase extends ActionBarActivity {
     }
 
     protected void setContentView() {
-        setContentView(R.layout.activity_main);
+        setContentView( R.layout.activity_main );
     }
 
     protected Toolbar getActionBarToolbar() {
