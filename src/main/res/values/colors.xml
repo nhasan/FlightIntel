@@ -34,5 +34,7 @@
     <color name="color_primary">#ff539fca</color>
     <color name="color_primary_dark">#ff2c7eb7</color>
     <color name="color_primary_light">#7f539fca</color>
+    <color name="color_accent">#20000000</color>
+    <color name="navdrawer_text_color">#de000000</color>
     <color name="navdrawer_background">#ffffffff</color>
 </resources>

@@ -26,7 +26,7 @@
     <style name="Theme.FlightIntel" parent="@style/Platform.Theme.FlightIntel">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
-        <item name="colorAccent">#20000000</item>
+        <item name="colorAccent">@color/color_accent</item>
     </style>
 
     <style name="Theme.Light.Dialog" parent="@style/Theme.AppCompat.Light">
