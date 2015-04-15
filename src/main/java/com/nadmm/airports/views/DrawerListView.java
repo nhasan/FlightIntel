@@ -61,7 +61,7 @@ public final class DrawerListView extends ListView {
     protected class DrawerAdapter extends ResourceCursorAdapter {
 
         public DrawerAdapter( Context context, Cursor c ) {
-            super( context, R.layout.drawer_menu_item, c, 0 );
+            super( context, R.layout.navdrawer_menu_item, c, 0 );
         }
 
         @Override
