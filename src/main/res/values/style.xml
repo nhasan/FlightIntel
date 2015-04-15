@@ -108,9 +108,8 @@
         <item name="android:textSize">@dimen/clock_tenths_text_size</item>
     </style>
 
-    <style name="DrawerMenuText" parent="@style/TextSmall">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textStyle">bold</item>
+    <style name="DrawerMenuText" parent="@style/TextSmall.Bold">
+        <item name="android:textSize">@dimen/navdrawer_text_size</item>
     </style>
 
     <style name="Widget.Flightintel.Toolbar" parent="Widget.AppCompat.Toolbar">
