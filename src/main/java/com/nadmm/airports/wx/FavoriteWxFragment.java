@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -64,7 +64,7 @@ public class FavoriteWxFragment extends WxListFragmentBase {
                     selectionList += ", ";
                 }
                 selectionList += "'"+stationId+"'";
-            };
+            }
 
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             String selection = Wxs.STATION_ID+" in ("+selectionList+")";

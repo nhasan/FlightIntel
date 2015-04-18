@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.scratchpad;
@@ -35,8 +35,8 @@ import android.view.View;
 public class FreeHandDrawView extends View {
 
     public interface EventListener {
-        public void actionDown();
-        public void actionUp();
+        void actionDown();
+        void actionUp();
     }
 
     private static final int STROKE_WIDTH = 3;

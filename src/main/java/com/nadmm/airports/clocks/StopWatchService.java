@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.clocks;
@@ -56,7 +56,7 @@ public class StopWatchService extends Service {
     };
 
     public interface OnTickHandler {
-        public void onTick( long millis );
+        void onTick( long millis );
     }
 
     public class StopWatchBinder extends Binder {

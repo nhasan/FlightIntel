@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -83,11 +83,11 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
                     selection += ", ";
                 }
                 selection += "'"+siteNumber+"'";
-            };
+            }
 
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             selection = "a."+Airports.SITE_NUMBER+" in ("+selection+")";
-            Cursor c = AirportsCursorHelper.query( db, selection, 
+            Cursor c = AirportsCursorHelper.query( db, selection,
                     null, null, null, Airports.FACILITY_NAME, null );
 
             return c;

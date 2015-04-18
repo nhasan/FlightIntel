@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -75,7 +75,7 @@ public final class Metar implements Serializable {
             public String toString() {
                 return "Freezing rain sensor is not operating";
             }
-        };
+        }
     }
 
     public boolean isValid;
