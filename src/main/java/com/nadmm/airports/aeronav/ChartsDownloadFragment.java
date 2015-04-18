@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.aeronav;
@@ -73,7 +73,7 @@ public class ChartsDownloadFragment extends FragmentBase {
     private boolean mExpired;
     private boolean mIsOk;
     private boolean mStop;
-    private HashMap<String, View> mVolumeRowMap = new HashMap<String, View>();
+    private HashMap<String, View> mVolumeRowMap = new HashMap<>();
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -85,7 +85,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         mFilter.addAction( AeroNavService.ACTION_COUNT_CHARTS );
 
         mReceiver = new BroadcastReceiver() {
-            
+
             @Override
             public void onReceive( Context context, Intent intent ) {
                 String action = intent.getAction();
@@ -100,7 +100,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         };
 
         mOnClickListener = new OnClickListener() {
-            
+
             @Override
             public void onClick( View v ) {
                 if ( mSelectedRow == null ) {
@@ -241,7 +241,7 @@ public class ChartsDownloadFragment extends FragmentBase {
 
             builder = new SQLiteQueryBuilder();
             builder.setTables( Dtpp.TABLE_NAME );
-            c = builder.query( db, new String[] { Dtpp.TPP_VOLUME, 
+            c = builder.query( db, new String[] { Dtpp.TPP_VOLUME,
                     "count(DISTINCT "+Dtpp.PDF_NAME+") AS total" },
                     Dtpp.USER_ACTION+"!='D'",
                     null, Dtpp.TPP_VOLUME, null, null, null );
@@ -254,7 +254,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         protected boolean onResult( final Cursor[] result ) {
             // Add delay to allow navigation drawer to close without stutter
             new Handler().postDelayed( new Runnable() {
-                
+
                 @Override
                 public void run() {
                     showChartInfo( result );
@@ -399,7 +399,7 @@ public class ChartsDownloadFragment extends FragmentBase {
 
     protected void getNextChart() {
         String pdfName = mCursor.getString( mCursor.getColumnIndex( Dtpp.PDF_NAME ) );
-        ArrayList<String> pdfNames = new ArrayList<String>();
+        ArrayList<String> pdfNames = new ArrayList<>();
         pdfNames.add( pdfName );
         Intent service = new Intent( getActivity(), DtppService.class );
         service.setAction( AeroNavService.ACTION_GET_CHARTS );
@@ -458,7 +458,7 @@ public class ChartsDownloadFragment extends FragmentBase {
 
     protected void deleteNextChart() {
         String pdfName = mCursor.getString( mCursor.getColumnIndex( Dtpp.PDF_NAME ) );
-        ArrayList<String> pdfNames = new ArrayList<String>();
+        ArrayList<String> pdfNames = new ArrayList<>();
         pdfNames.add( pdfName );
         Intent service = new Intent( getActivity(), DtppService.class );
         service.setAction( AeroNavService.ACTION_DELETE_CHARTS );

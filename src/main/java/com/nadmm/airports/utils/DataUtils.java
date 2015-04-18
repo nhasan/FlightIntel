@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.utils;
@@ -28,7 +28,7 @@ public final class DataUtils {
 
     private final static String DOT = "\u2022";
     private final static String DASH = "\u2013";
-    private static HashMap<String, String> sMorseCodes = new HashMap<String, String>();
+    private static HashMap<String, String> sMorseCodes = new HashMap<>();
     static {
         sMorseCodes.put( "A", DOT+DASH );
         sMorseCodes.put( "B", DASH+DOT+DOT+DOT );
@@ -175,7 +175,7 @@ public final class DataUtils {
         while ( start < fuelTypes.length() ) {
             int end = Math.min( start+5, fuelTypes.length() );
             String type = fuelTypes.substring( start, end ).trim();
-            
+
             if ( decodedFuel.length() > 0 ) {
                 decodedFuel += ", ";
             }
@@ -222,7 +222,7 @@ public final class DataUtils {
     }
 
     public static ArrayList<String> decodeStorage( String s ) {
-        ArrayList<String> storages = new ArrayList<String>();
+        ArrayList<String> storages = new ArrayList<>();
 
         int start = 0;
         while ( start < s.length() ) {
@@ -249,7 +249,7 @@ public final class DataUtils {
     }
 
     public static ArrayList<String> decodeServices( String s ) {
-        ArrayList<String> services = new ArrayList<String>();
+        ArrayList<String> services = new ArrayList<>();
 
         int start = 0;
         while ( start < s.length() ) {
@@ -518,7 +518,7 @@ public final class DataUtils {
 
     public static int decodeControllingObjectOffset( String offset ) {
         int end = 0;
-        while ( end < offset.length() 
+        while ( end < offset.length()
                 && offset.charAt( end ) >= '0' && offset.charAt( end ) <= '9' ) {
             ++end;
         }
@@ -531,7 +531,7 @@ public final class DataUtils {
 
     public static String decodeControllingObjectOffsetDirection( String offset ) {
         int end = 0;
-        while ( end < offset.length() 
+        while ( end < offset.length()
                 && offset.charAt( end ) >= '0' && offset.charAt( end ) <= '9' ) {
             ++end;
         }
@@ -836,7 +836,7 @@ public final class DataUtils {
         }
     }
 
-    private static final Map<String, String> sTracons = new HashMap<String, String>();
+    private static final Map<String, String> sTracons = new HashMap<>();
     static {
         sTracons.put( "A80", "Atlanta" );
         sTracons.put( "C90", "Chicago" );

@@ -84,13 +84,13 @@ public class ActivityBase extends ActionBarActivity {
     private LayoutInflater mInflater;
     private CursorAsyncTask mTask;
 
-    private Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler();
     private IntentFilter mFilter;
     private BroadcastReceiver mExternalStorageReceiver;
 
     private Toolbar mActionBarToolbar;
 
-    public static String FRAGMENT_TAG_EXTRA = "FRAGMENT_TAG_EXTRA";
+    public static final String FRAGMENT_TAG_EXTRA = "FRAGMENT_TAG_EXTRA";
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -370,7 +370,7 @@ public class ActivityBase extends ActionBarActivity {
         Cursor c = mDbManager.getCurrentFromCatalog();
 
         String msg = null;
-        HashSet<String> installed = new HashSet<String>();
+        HashSet<String> installed = new HashSet<>();
 
         // Check if we have any expired data. If yes, then redirect to download activity
         if ( c.moveToFirst() ) {

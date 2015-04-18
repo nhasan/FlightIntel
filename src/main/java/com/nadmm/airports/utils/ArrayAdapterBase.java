@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.utils;
@@ -60,7 +60,7 @@ public class ArrayAdapterBase extends BaseAdapter {
     @Override
     public View getView( int position, View convertView, ViewGroup parent ) {
         if ( convertView == null ) {
-            convertView = mInflater.inflate( R.layout.list_item_text1, null );
+            convertView = mInflater.inflate( R.layout.list_item_text1, parent );
         }
         TextView tv = (TextView) convertView.findViewById( R.id.text );
         tv.setText( mNames[ position ] );

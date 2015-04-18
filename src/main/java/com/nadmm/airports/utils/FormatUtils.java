@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.utils;
@@ -27,14 +27,14 @@ import com.nadmm.airports.wx.WxUtils;
 
 public class FormatUtils {
 
-    private static DecimalFormat sFeetFormat;
-    private static DecimalFormat sFeetFormatMsl;
-    private static DecimalFormat sFeetFormatAgl;
-    private static DecimalFormat sNumberFormat;
-    private static DecimalFormat sFreqFormat;
-    private static DecimalFormat sSMFormat;
-    private static DecimalFormat sNMFormat;
-    private static NumberFormat sDollarFormat;
+    private final static DecimalFormat sFeetFormat;
+    private final static DecimalFormat sFeetFormatMsl;
+    private final static DecimalFormat sFeetFormatAgl;
+    private final static DecimalFormat sNumberFormat;
+    private final static DecimalFormat sFreqFormat;
+    private final static DecimalFormat sSMFormat;
+    private final static DecimalFormat sNMFormat;
+    private final static NumberFormat sDollarFormat;
 
     static {
         sFeetFormat = new DecimalFormat();

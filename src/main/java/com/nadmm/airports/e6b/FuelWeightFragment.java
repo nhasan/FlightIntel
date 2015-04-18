@@ -162,7 +162,7 @@ public class FuelWeightFragment extends FragmentBase {
         		" and the ambient temperature. Use this calculator for only an estimate." );
 
         mFuelTypes = (Spinner) findViewById( R.id.e6b_fuel_types );
-        ArrayAdapter<FuelWeight> adapter = new ArrayAdapter<FuelWeight>( getActivity(),
+        ArrayAdapter<FuelWeight> adapter = new ArrayAdapter<>( getActivity(),
                 android.R.layout.simple_spinner_item, mFuels );
         adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
         mFuelTypes.setAdapter( adapter );

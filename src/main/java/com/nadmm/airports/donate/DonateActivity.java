@@ -83,7 +83,7 @@ public class DonateActivity extends DrawerActivityBase {
         private final int RC_REQUEST = 10001;
         private IabHelper mHelper;
         private DonateDatabase mDonateDb;
-        ArrayList<String> mSkuList = new ArrayList<String>();
+        ArrayList<String> mSkuList = new ArrayList<>();
 
         // Listener that's called when we finish querying the items and subscriptions we own
         private IabHelper.QueryInventoryFinishedListener mGotInventoryListener =
@@ -231,7 +231,7 @@ public class DonateActivity extends DrawerActivityBase {
                 layout.removeAllViews();
 
                 List<String> skus = inventory.getAllSkus();
-                List<String> purchases = new ArrayList<String>();
+                List<String> purchases = new ArrayList<>();
                 for ( String sku : skus ) {
                     if ( inventory.hasPurchase( sku )
                             && inventory.getPurchase( sku ).getPurchaseState() == 0 ) {

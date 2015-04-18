@@ -31,7 +31,7 @@ public class ClocksMenuFragment extends ListMenuFragment {
 
     private static final HashMap<Long, Class<?>> mDispatchMap;
     static {
-        mDispatchMap = new HashMap<Long, Class<?>>();
+        mDispatchMap = new HashMap<>();
         mDispatchMap.put( (long)R.id.TIME_CLOCKS, ClockFragment.class );
         mDispatchMap.put( (long)R.id.TIME_STOPWATCH, StopWatchFragment.class );
         mDispatchMap.put( (long)R.id.TIME_COUNTDOWN, CountDownFragment.class );

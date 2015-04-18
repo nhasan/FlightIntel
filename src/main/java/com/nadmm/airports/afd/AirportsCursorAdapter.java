@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -35,7 +35,7 @@ import com.nadmm.airports.utils.GeoUtils;
 
 public class AirportsCursorAdapter extends ResourceCursorAdapter {
 
-    private StringBuilder mStringBuilder = new StringBuilder();
+    private final StringBuilder mStringBuilder = new StringBuilder();
 
     static class ViewHolder {
         TextView name;
@@ -77,7 +77,7 @@ public class AirportsCursorAdapter extends ResourceCursorAdapter {
         holder.location.setText( String.format( "%s, %s, %s", city, state,
                 DataUtils.decodeFacilityUse( use ) ) );
 
-        if ( c.getColumnIndex( LocationColumns.DISTANCE ) >= 0 
+        if ( c.getColumnIndex( LocationColumns.DISTANCE ) >= 0
                 && c.getColumnIndex( LocationColumns.BEARING ) >= 0 ) {
             // Check if we have distance information
             float distance = c.getFloat( c.getColumnIndex( LocationColumns.DISTANCE ) );

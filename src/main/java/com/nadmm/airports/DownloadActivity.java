@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports;
@@ -87,7 +87,7 @@ public final class DownloadActivity extends ActivityBase {
     private static final String PATH = "/flightintel/database";
     private static final String MANIFEST = "manifest.xml";
 
-    private final Map<String, ProgressTracker> mTrackers = new HashMap<String, ProgressTracker>();
+    private final Map<String, ProgressTracker> mTrackers = new HashMap<>();
 
     final class DataInfo implements Comparable<DataInfo> {
 
@@ -122,14 +122,14 @@ public final class DownloadActivity extends ActivityBase {
         public int compareTo( DataInfo info ) {
             if ( !type.equals( info.type ) ) {
                 return type.compareTo( info.type );
-            }            
+            }
             return Time.compare( start, info.start );
         }
 
     }
 
-    private final ArrayList<DataInfo> mInstalledData = new ArrayList<DataInfo>();
-    private final ArrayList<DataInfo> mAvailableData = new ArrayList<DataInfo>();
+    private final ArrayList<DataInfo> mInstalledData = new ArrayList<>();
+    private final ArrayList<DataInfo> mAvailableData = new ArrayList<>();
 
     private DatabaseManager mDbManager;
     private DownloadTask mDownloadTask;
@@ -163,7 +163,7 @@ public final class DownloadActivity extends ActivityBase {
         );
 
         Button btnDelete = (Button) findViewById( R.id.btnDelete );
-        btnDelete.setOnClickListener( 
+        btnDelete.setOnClickListener(
                 new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -292,10 +292,10 @@ public final class DownloadActivity extends ActivityBase {
                 .add( section )
                 .add( info.type )
                 .add( info.desc )
-                .add( "Effective "+DateUtils.formatDateRange( DownloadActivity.this, 
-                    info.start.toMillis( false ), info.end.toMillis( false )+1000, 
+                .add( "Effective "+DateUtils.formatDateRange( DownloadActivity.this,
+                    info.start.toMillis( false ), info.end.toMillis( false )+1000,
                     DateUtils.FORMAT_SHOW_YEAR|DateUtils.FORMAT_ABBREV_ALL ) )
-                .add( String.format( "%s (%s @ %dkbps)", 
+                .add( String.format( "%s (%s @ %dkbps)",
                         Formatter.formatShortFileSize( DownloadActivity.this, info.size ),
                         DateUtils.formatElapsedTime( info.size/(mSpeed*1024/8) ), mSpeed ) )
                 .add( ( mNow > info.end.toMillis( false ) )? "Y" : "N" );
@@ -509,7 +509,7 @@ public final class DownloadActivity extends ActivityBase {
                         mAvailableData.add( new DataInfo( info ) );
                     }
                 } );
-                datafile.getChild( "type" ).setEndTextElementListener( 
+                datafile.getChild( "type" ).setEndTextElementListener(
                         new EndTextElementListener() {
                             @Override
                             public void end( String body ) {
@@ -541,7 +541,7 @@ public final class DownloadActivity extends ActivityBase {
                             }
                         }
                 );
-                datafile.getChild( "size" ).setEndTextElementListener( 
+                datafile.getChild( "size" ).setEndTextElementListener(
                         new EndTextElementListener() {
                             @Override
                             public void end( String body ) {
@@ -802,7 +802,7 @@ public final class DownloadActivity extends ActivityBase {
 
         @Override
         protected void onPreExecute() {
-            mProgressDialog = ProgressDialog.show( DownloadActivity.this, 
+            mProgressDialog = ProgressDialog.show( DownloadActivity.this,
                     "", "Deleting installed data. Please wait...", true );
         }
 
@@ -815,7 +815,7 @@ public final class DownloadActivity extends ActivityBase {
 
             // Get all the catalog entries
             SQLiteDatabase catalogDb = mDbManager.getCatalogDb();
-            Cursor cursor = catalogDb.query( Catalog.TABLE_NAME, null, null, null, 
+            Cursor cursor = catalogDb.query( Catalog.TABLE_NAME, null, null, null,
                     null, null, null );
             if ( cursor.moveToFirst() ) {
                 do {
@@ -846,9 +846,9 @@ public final class DownloadActivity extends ActivityBase {
             mProgressDialog.dismiss();
             if ( result != 0 ) {
                 // Some or all data files were not deleted
-                Toast.makeText( getApplicationContext(), 
-                        "There was an error while deleting installed data", 
-                        Toast.LENGTH_LONG ).show();                
+                Toast.makeText( getApplicationContext(),
+                        "There was an error while deleting installed data",
+                        Toast.LENGTH_LONG ).show();
             }
 
             // Refresh the download list view
@@ -875,7 +875,7 @@ public final class DownloadActivity extends ActivityBase {
                     File file = new File( DatabaseManager.DATABASE_DIR, dbName );
                     if ( catalogDb.isOpen() && file.delete() ) {
                         // Now delete the catalog entry for the file
-                        catalogDb.delete( Catalog.TABLE_NAME, Catalog._ID+"=?", 
+                        catalogDb.delete( Catalog.TABLE_NAME, Catalog._ID+"=?",
                                 new String[] { Integer.toString( _id ) } );
                     }
                 }

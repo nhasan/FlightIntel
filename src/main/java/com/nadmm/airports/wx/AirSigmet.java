@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -68,7 +68,7 @@ public class AirSigmet implements Serializable {
     public AirSigmet() {
         isValid = false;
         fetchTime = Long.MAX_VALUE;
-        entries = new ArrayList<AirSigmetEntry>();
+        entries = new ArrayList<>();
     }
 
     public boolean isValid;

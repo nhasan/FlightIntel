@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.aeronav;
@@ -75,8 +75,8 @@ public class DtppActivity extends ActivityBase {
 
     public static class DtppFragment extends FragmentBase {
 
-        protected HashMap<String, View> mDtppRowMap = new HashMap<String, View>();
-        protected ArrayList<String> mPendingCharts = new ArrayList<String>();
+        protected HashMap<String, View> mDtppRowMap = new HashMap<>();
+        protected ArrayList<String> mPendingCharts = new ArrayList<>();
         protected String mTppCycle;
         protected String mFaaCode;
         protected String mTppVolume;
@@ -280,7 +280,7 @@ public class DtppActivity extends ActivityBase {
             showOtherCharts( topLayout );
 
             // Check the chart availability
-            ArrayList<String> pdfNames = new ArrayList<String>();
+            ArrayList<String> pdfNames = new ArrayList<>();
             for ( String pdfName : mDtppRowMap.keySet() ) {
                 pdfNames.add( pdfName );
             }
@@ -381,7 +381,7 @@ public class DtppActivity extends ActivityBase {
         }
 
         protected void getMissingCharts() {
-            ArrayList<String> pdfNames = new ArrayList<String>();
+            ArrayList<String> pdfNames = new ArrayList<>();
             for ( String pdfName : mDtppRowMap.keySet() ) {
                 View v = mDtppRowMap.get( pdfName );
                 String userAction = (String) v.getTag( R.id.DTPP_USER_ACTION );
@@ -392,7 +392,7 @@ public class DtppActivity extends ActivityBase {
                     pdfNames.add( pdfName );
                 }
             }
-            UiUtils.showToast( getActivity(), 
+            UiUtils.showToast( getActivity(),
                     String.format( "Downloading %d charts in the background", pdfNames.size() ) );
             checkTppCharts( pdfNames, true );
         }

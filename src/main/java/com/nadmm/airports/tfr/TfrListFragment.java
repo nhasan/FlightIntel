@@ -60,7 +60,7 @@ public class TfrListFragment extends FragmentBase {
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.tfr_list_view, container, false );
         mListView = (ListView) view.findViewById( android.R.id.list );
-        View footer = inflater.inflate( R.layout.tfr_list_footer_view, null, false );
+        View footer = inflater.inflate( R.layout.tfr_list_footer_view, mListView, false );
         footer.setLayoutParams( new ListView.LayoutParams(
                 ListView.LayoutParams.MATCH_PARENT, ListView.LayoutParams.WRAP_CONTENT ) );
         TextView tv = (TextView) footer.findViewById( R.id.tfr_warning_text );

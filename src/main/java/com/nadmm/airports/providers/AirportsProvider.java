@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.providers;
@@ -84,7 +84,7 @@ public class AirportsProvider extends ContentProvider {
     }
 
     private static HashMap<String, String> buildSuggestionMap() {
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         map.put( BaseColumns._ID, BaseColumns._ID );
         map.put( SearchManager.SUGGEST_COLUMN_TEXT_1,
                 "IFNULL("+Airports.ICAO_CODE+", "+Airports.FAA_CODE+")"
@@ -93,7 +93,7 @@ public class AirportsProvider extends ContentProvider {
                 Airports.FACILITY_NAME+"||', '||"+Airports.ASSOC_CITY
                 +"||' '||"+Airports.ASSOC_STATE
                 +" AS "+SearchManager.SUGGEST_COLUMN_TEXT_2 );
-        map.put( SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA, 
+        map.put( SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA,
                 Airports.SITE_NUMBER+" AS "+SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA);
 
         return map;
@@ -114,7 +114,7 @@ public class AirportsProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query( Uri uri, String[] projection, String selection, 
+    public Cursor query( Uri uri, String[] projection, String selection,
             String[] selectionArgs, String sortOrder ) {
         if ( selectionArgs == null ) {
             throw new IllegalArgumentException(
@@ -149,7 +149,7 @@ public class AirportsProvider extends ContentProvider {
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );
         builder.setProjectionMap( mSuggestionColumnMap );
-        Cursor c = builder.query( db, mSuggestionColumns, selection, selectionArgs, 
+        Cursor c = builder.query( db, mSuggestionColumns, selection, selectionArgs,
                 null, null, SearchManager.SUGGEST_COLUMN_TEXT_1+" ASC", limit );
         return c;
     }
@@ -164,7 +164,7 @@ public class AirportsProvider extends ContentProvider {
 
         DatabaseManager dbManager = DatabaseManager.instance( getContext() );
         SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-        Cursor c = AirportsCursorHelper.query( db, selection, selectionArgs, 
+        Cursor c = AirportsCursorHelper.query( db, selection, selectionArgs,
                 null, null, Airports.FACILITY_NAME+" ASC", limit );
         return c;
     }

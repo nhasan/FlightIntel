@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports;
@@ -45,7 +45,7 @@ public class DatabaseManager {
     private final HashMap<String, SQLiteDatabase> mDatabases;
 
     private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
-            = new File( Environment.getExternalStorageDirectory(), 
+            = new File( Environment.getExternalStorageDirectory(),
                     "Android/data/"+DownloadActivity.class.getPackage().getName() );
     public static File DATABASE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/databases" );
 
@@ -555,7 +555,7 @@ public class DatabaseManager {
         mContext = context;
         mCatalogDbHelper = new CatalogDbOpenHelper( mContext );
         mUserDataDbHelper = new UserDataDbOpenHelper( mContext );
-        mDatabases = new HashMap<String, SQLiteDatabase>();
+        mDatabases = new HashMap<>();
     }
 
     public SQLiteDatabase getCatalogDb() {
@@ -627,12 +627,12 @@ public class DatabaseManager {
     }
 
     private ArrayList<String> getFavorites( String type ) {
-        ArrayList<String> favorites = new ArrayList<String>();
+        ArrayList<String> favorites = new ArrayList<>();
         SQLiteDatabase db = getUserDataDb();
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Favorites.TABLE_NAME );
         builder.setDistinct( true );
-        Cursor c = builder.query( db, new String[] { Favorites.LOCATION_ID }, 
+        Cursor c = builder.query( db, new String[] { Favorites.LOCATION_ID },
                 Favorites.TYPE+"=?", new String[] { type }, null, null, null );
         if ( c.moveToFirst() ) {
             // Build the list of favorites
@@ -650,7 +650,7 @@ public class DatabaseManager {
         builder.setTables( Favorites.TABLE_NAME );
         builder.setDistinct( true );
         SQLiteDatabase userDb = getUserDataDb();
-        Cursor c = builder.query( userDb, new String[] { Favorites.LOCATION_ID }, 
+        Cursor c = builder.query( userDb, new String[] { Favorites.LOCATION_ID },
                 Favorites.LOCATION_ID+"=? AND "+Favorites.TYPE+"=?",
                 new String[] { siteNumber, "APT" }, null, null, null, null );
         Boolean isFavorite = c.moveToFirst();
@@ -668,7 +668,7 @@ public class DatabaseManager {
 
     public int removeFromFavoriteAirports( String siteNumber ) {
         SQLiteDatabase userDataDb = getUserDataDb();
-        return userDataDb.delete( Favorites.TABLE_NAME, 
+        return userDataDb.delete( Favorites.TABLE_NAME,
                 Favorites.LOCATION_ID+"=? AND "+Favorites.TYPE+"=?",
                 new String[] { siteNumber, "APT" } );
     }
@@ -678,7 +678,7 @@ public class DatabaseManager {
         builder.setTables( Favorites.TABLE_NAME );
         builder.setDistinct( true );
         SQLiteDatabase userDb = getUserDataDb();
-        Cursor c = builder.query( userDb, new String[] { Favorites.LOCATION_ID }, 
+        Cursor c = builder.query( userDb, new String[] { Favorites.LOCATION_ID },
                 Favorites.LOCATION_ID+"=? AND "+Favorites.TYPE+"=?",
                 new String[] { facilityId, "WX" }, null, null, null, null );
         Boolean isFavorite = c.moveToFirst();
@@ -696,7 +696,7 @@ public class DatabaseManager {
 
     public int removeFromFavoriteWx( String siteNumber ) {
         SQLiteDatabase userDataDb = getUserDataDb();
-        return userDataDb.delete( Favorites.TABLE_NAME, 
+        return userDataDb.delete( Favorites.TABLE_NAME,
                 Favorites.LOCATION_ID+"=? AND "+Favorites.TYPE+"=?",
                 new String[] { siteNumber, "WX" } );
     }
