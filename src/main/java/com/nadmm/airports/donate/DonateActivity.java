@@ -20,9 +20,7 @@
 package com.nadmm.airports.donate;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +29,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.Application;
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.FlightIntel;
@@ -42,12 +39,9 @@ import com.nadmm.airports.billing.utils.IabResult;
 import com.nadmm.airports.billing.utils.Inventory;
 import com.nadmm.airports.billing.utils.Purchase;
 import com.nadmm.airports.billing.utils.SkuDetails;
-import com.nadmm.airports.donate.DonateDatabase.Donations;
-import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.TimeUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class DonateActivity extends DrawerActivityBase {

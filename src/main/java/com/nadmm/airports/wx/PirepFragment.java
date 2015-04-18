@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -257,7 +257,7 @@ public class PirepFragment extends FragmentBase {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
             tv.setText( String.format( "%.0f NM %s", entry.distanceNM, dir ) );
         } else {
-            tv.setText( String.format( "On Site" ) );
+            tv.setText( "On Site" );
         }
 
         tv = (TextView) item.findViewById( R.id.pirep_title_extra );
@@ -324,9 +324,7 @@ public class PirepFragment extends FragmentBase {
     }
 
     protected void addSkyConditionRow( LinearLayout details, SkyCondition sky ) {
-        StringBuilder sb = new StringBuilder();
-        sb.append( FormatUtils.formatFeetRangeMsl( sky.baseFeetMSL, sky.topFeetMSL ) );
-        String extra = sb.toString();
+        String extra = FormatUtils.formatFeetRangeMsl( sky.baseFeetMSL, sky.topFeetMSL );
         addRow( details, "Sky cover", sky.skyCover, extra );
     }
 

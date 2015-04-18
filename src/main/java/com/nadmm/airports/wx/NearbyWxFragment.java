@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-205 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ public class NearbyWxFragment extends WxListFragmentBase {
         Location location = null;
         Bundle args = getArguments();
         if ( args != null ) {
-            location = (Location) args.getParcelable( LocationColumns.LOCATION );
+            location = args.getParcelable( LocationColumns.LOCATION );
         }
         if ( location != null ) {
             // If we are passed a location use that

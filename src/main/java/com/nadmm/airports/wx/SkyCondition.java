@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -58,7 +58,7 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    return String.format( "Sky clear below 12,000 ft AGL" );
+                    return "Sky clear below 12,000 ft AGL";
                 }
 
                 public int getDrawable() {
@@ -140,7 +140,7 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    return String.format( "Indefinite ceiling" );
+                    return "Indefinite ceiling";
                 }
 
                 public int getDrawable() {
@@ -153,7 +153,7 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    return String.format( "Sky condition is missing" );
+                    return "Sky condition is missing";
                 }
 
                 public int getDrawable() {
@@ -166,7 +166,7 @@ public abstract class SkyCondition implements Serializable {
 
                 @Override
                 public String toString() {
-                    return String.format( "No significant clouds" );
+                    return "No significant clouds";
                 }
 
                 public int getDrawable() {

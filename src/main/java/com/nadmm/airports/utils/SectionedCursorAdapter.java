@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2014 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  * Copyright 2012 Google Inc
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,11 +29,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.nadmm.airports.DatabaseManager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 
 
@@ -168,7 +165,7 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
     public View getView( int position, View convertView, ViewGroup parent ) {
         if ( isSectionHeaderPosition( position ) ) {
             if ( convertView == null ) {
-                convertView = (TextView) mLayoutInflater.inflate( mSectionResourceId, parent, false );
+                convertView = mLayoutInflater.inflate( mSectionResourceId, parent, false );
             }
             TextView tv = (TextView) convertView;
             tv.setText( mSections.get( position ).title );
