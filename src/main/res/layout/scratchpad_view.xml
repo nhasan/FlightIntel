@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
 
@@ -36,18 +36,18 @@
             android:layout_width="match_parent"
             android:layout_height="48dp">
         <ImageButton android:id="@+id/action_draw"
-                android:src="@drawable/content_draw"
+                android:src="@drawable/ic_draw"
                 style="@style/Widget.AppCompat.ActionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         <ImageButton android:id="@+id/action_erase"
-                android:src="@drawable/content_erase"
+                android:src="@drawable/ic_erase"
                 style="@style/Widget.AppCompat.ActionButton"
                 android:layout_toRightOf="@id/action_draw"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         <ImageButton android:id="@+id/action_discard"
-                android:src="@drawable/content_discard"
+                android:src="@drawable/ic_delete"
                 style="@style/Widget.AppCompat.ActionButton"
                 android:layout_alignParentRight="true"
                 android:layout_width="wrap_content"
