@@ -1,13 +1,13 @@
 /*
  * Copyright 2010 Sony Ericsson Mobile Communications AB
  * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
- * 
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -72,13 +72,13 @@ public class ImageZoomView extends View implements Observer {
         mZoomControl.setAspectQuotient(getAspectQuotient());
 
         resetZoomState();
-        
+
         setOnTouchListener(mPinchZoomListener);
     }
 
     /**
      * Set image bitmap
-     * 
+     *
      * @param bitmap The bitmap to view and zoom into
      */
     public void setImage(Bitmap bitmap) {
@@ -93,7 +93,7 @@ public class ImageZoomView extends View implements Observer {
 
     /**
      * Set object holding the zoom state that should be used
-     * 
+     *
      * @param state The zoom state
      */
     public void setZoomState(ZoomState state) {
@@ -116,7 +116,7 @@ public class ImageZoomView extends View implements Observer {
 
     /**
      * Gets reference to object holding aspect quotient
-     * 
+     *
      * @return Object holding aspect quotient
      */
     public AspectQuotient getAspectQuotient() {
@@ -197,7 +197,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Gets aspect quotient
-         * 
+         *
          * @return The aspect quotient
          */
         public float get() {
@@ -207,7 +207,7 @@ public class ImageZoomView extends View implements Observer {
         /**
          * Updates and recalculates aspect quotient based on supplied view and
          * content dimensions.
-         * 
+         *
          * @param viewWidth Width of view
          * @param viewHeight Height of view
          * @param contentWidth Width of content
@@ -246,7 +246,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Get current x-pan
-         * 
+         *
          * @return current x-pan
          */
         public float getPanX() {
@@ -255,7 +255,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Get current y-pan
-         * 
+         *
          * @return Current y-pan
          */
         public float getPanY() {
@@ -264,7 +264,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Get current zoom value
-         * 
+         *
          * @return Current zoom value
          */
         public float getZoom() {
@@ -273,7 +273,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Help function for calculating current zoom value in x-dimension
-         * 
+         *
          * @param aspectQuotient (Aspect ratio content) / (Aspect ratio view)
          * @return Current zoom value in x-dimension
          */
@@ -283,7 +283,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Help function for calculating current zoom value in y-dimension
-         * 
+         *
          * @param aspectQuotient (Aspect ratio content) / (Aspect ratio view)
          * @return Current zoom value in y-dimension
          */
@@ -293,7 +293,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Set pan-x
-         * 
+         *
          * @param panX Pan-x value to set
          */
         public void setPanX(float panX) {
@@ -305,7 +305,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Set pan-y
-         * 
+         *
          * @param panY Pan-y value to set
          */
         public void setPanY(float panY) {
@@ -317,7 +317,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Set zoom
-         * 
+         *
          * @param zoom Zoom value to set
          */
         public void setZoom(float zoom) {
@@ -352,7 +352,7 @@ public class ImageZoomView extends View implements Observer {
         /**
          * Sets the state of the dynamics object. Should be called before starting
          * to call update.
-         * 
+         *
          * @param position The current position.
          * @param velocity The current velocity in pixels per second.
          * @param now The current time
@@ -366,7 +366,7 @@ public class ImageZoomView extends View implements Observer {
         /**
          * Returns the current position. Normally used after a call to update() in
          * order to get the updated position.
-         * 
+         *
          * @return The current position
          */
         public float getPosition() {
@@ -375,7 +375,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Gets the velocity. Unit is in pixels per second.
-         * 
+         *
          * @return The velocity in pixels per second
          */
         public float getVelocity() {
@@ -386,12 +386,12 @@ public class ImageZoomView extends View implements Observer {
          * Used to find out if the list is at rest, that is, has no velocity and is
          * inside the the limits. Normally used to know if more calls to update are
          * needed.
-         * 
+         *
          * @param velocityTolerance Velocity is regarded as 0 if less than
          *            velocityTolerance
          * @param positionTolerance Position is regarded as inside the limits even
          *            if positionTolerance above or below
-         * 
+         *
          * @return true if list is at rest, false otherwise
          */
         public boolean isAtRest(final float velocityTolerance, final float positionTolerance) {
@@ -403,7 +403,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Sets the maximum position.
-         * 
+         *
          * @param maxPosition The maximum value of the position
          */
         public void setMaxPosition(final float maxPosition) {
@@ -412,7 +412,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Sets the minimum position.
-         * 
+         *
          * @param minPosition The minimum value of the position
          */
         public void setMinPosition(final float minPosition) {
@@ -421,7 +421,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Updates the position and velocity.
-         * 
+         *
          * @param now The current time
          */
         public void update(final long now) {
@@ -437,7 +437,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Gets the distance to the closest limit (max and min position).
-         * 
+         *
          * @return If position is more than max position: distance to max position. If
          *         position is less than min position: distance to min position. If
          *         within limits: 0
@@ -456,7 +456,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Updates the position and velocity.
-         * 
+         *
          * @param dt The delta time since last time
          */
         abstract protected void onUpdate(int dt);
@@ -480,7 +480,7 @@ public class ImageZoomView extends View implements Observer {
         /**
          * Set friction parameter, friction physics are applied when inside of snap
          * bounds.
-         * 
+         *
          * @param friction Friction factor
          */
         public void setFriction(float friction) {
@@ -490,18 +490,18 @@ public class ImageZoomView extends View implements Observer {
         /**
          * Set spring parameters, spring physics are applied when outside of snap
          * bounds.
-         * 
+         *
          * @param stiffness Spring stiffness
          * @param dampingRatio Damping ratio, < 1 underdamped, > 1 overdamped
          */
         public void setSpring(float stiffness, float dampingRatio) {
             mStiffness = stiffness;
-            mDamping = dampingRatio * 2 * (float)FloatMath.sqrt(stiffness);
+            mDamping = dampingRatio * 2 * (float)Math.sqrt(stiffness);
         }
 
         /**
          * Calculate acceleration at the current state
-         * 
+         *
          * @return Current acceleration
          */
         private float calculateAcceleration() {
@@ -588,7 +588,7 @@ public class ImageZoomView extends View implements Observer {
 
         /** Distance between fingers */
         private float oldDist = 1f;
-        
+
         private long panAfterPinchTimeout = 0;
 
         public PinchZoomListener(Context context) {
@@ -599,7 +599,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Sets the zoom control to manipulate
-         * 
+         *
          * @param control Zoom control
          */
         public void setZoomControl(DynamicZoomControl control) {
@@ -624,7 +624,7 @@ public class ImageZoomView extends View implements Observer {
                     mX = x;
                     mY = y;
                     break;
-                    
+
                 case MotionEvent.ACTION_POINTER_DOWN:
                     if (event.getPointerCount() > 1) {
                         oldDist = spacing(event);
@@ -634,7 +634,7 @@ public class ImageZoomView extends View implements Observer {
                         }
                     }
                     break;
-                    
+
                 case MotionEvent.ACTION_UP:
                     if (mMode == Mode.PAN) {
                         final long now = System.currentTimeMillis();
@@ -652,13 +652,13 @@ public class ImageZoomView extends View implements Observer {
                     if(event.getPointerCount() > 1 &&  mMode == Mode.PINCHZOOM){
                         panAfterPinchTimeout = System.currentTimeMillis() + 100;
                     }
-                    mMode = Mode.UNDEFINED;                
+                    mMode = Mode.UNDEFINED;
                     break;
-                    
+
                 case MotionEvent.ACTION_MOVE:
                     final float dx = (x - mX) / v.getWidth();
                     final float dy = (y - mY) / v.getHeight();
-                   
+
                     if (mMode == Mode.PAN) {
                         mZoomControl.pan(-dx, -dy);
                     } else if (mMode == Mode.PINCHZOOM) {
@@ -674,13 +674,13 @@ public class ImageZoomView extends View implements Observer {
                         final float scrollX = mDownX - x;
                         final float scrollY = mDownY - y;
 
-                        final float dist = (float)FloatMath.sqrt(scrollX * scrollX + scrollY * scrollY);
+                        final float dist = (float)Math.sqrt(scrollX * scrollX + scrollY * scrollY);
 
                         if (dist >= mScaledTouchSlop ){
                             mMode = Mode.PAN;
                         }
                     }
-                    
+
                     mX = x;
                     mY = y;
                     break;
@@ -712,7 +712,7 @@ public class ImageZoomView extends View implements Observer {
      * The DynamicZoomControl is responsible for controlling a ZoomState. It makes
      * sure that pan movement follows the finger, that limits are satisfied and that
      * we can zoom into specific positions.
-     * 
+     *
      * In order to implement these control mechanisms access to certain content and
      * view state data is required which is made possible through the
      * ZoomContentViewState.
@@ -780,7 +780,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Set reference object holding aspect quotient
-         * 
+         *
          * @param aspectQuotient Object holding aspect quotient
          */
         public void setAspectQuotient(AspectQuotient aspectQuotient) {
@@ -794,7 +794,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Get zoom state being controlled
-         * 
+         *
          * @return The zoom state
          */
         public ZoomState getZoomState() {
@@ -803,7 +803,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Zoom
-         * 
+         *
          * @param f Factor of zoom to apply
          * @param x X-coordinate of invariant position
          * @param y Y-coordinate of invariant position
@@ -831,7 +831,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Pan
-         * 
+         *
          * @param dx Amount to pan in x-dimension
          * @param dy Amount to pan in y-dimension
          */
@@ -882,7 +882,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Release control and start pan fling animation
-         * 
+         *
          * @param vx Velocity in x-dimension
          * @param vy Velocity in y-dimension
          */
@@ -910,7 +910,7 @@ public class ImageZoomView extends View implements Observer {
 
         /**
          * Help function to figure out max delta of pan from center position.
-         * 
+         *
          * @param zoom Zoom value
          * @return Max delta of pan
          */

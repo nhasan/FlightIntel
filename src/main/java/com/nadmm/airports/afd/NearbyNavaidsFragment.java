@@ -104,7 +104,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
         }
 
         private int calculateRadial( float dir, int var ) {
-            int heading = (int) Math.round( dir+360 )%360;
+            int heading = Math.round( dir+360 )%360;
             heading = DataUtils.calculateMagneticHeading( heading, var );
             return DataUtils.calculateReciprocalHeading( heading );
         }

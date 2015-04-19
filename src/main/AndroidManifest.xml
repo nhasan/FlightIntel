@@ -287,19 +287,10 @@
         <service android:name=".aeronav.DtppService" />
         <service android:name=".aeronav.DafdService" />
         <service android:name=".notams.NotamService" />
-        <service android:name=".billing.BillingService" />
         <service android:name=".tfr.TfrService" />
         <service android:name=".tfr.TfrImageService" />
         <service android:name=".clocks.StopWatchService" />
         <service android:name=".clocks.CountDownService" />
-
-        <receiver android:name=".billing.BillingReceiver">
-            <intent-filter>
-                <action android:name="com.android.vending.billing.IN_APP_NOTIFY" />
-                <action android:name="com.android.vending.billing.RESPONSE_CODE" />
-                <action android:name="com.android.vending.billing.PURCHASE_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
 
     </application>
 </manifest>

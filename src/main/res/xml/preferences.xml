@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,13 +63,13 @@
                 android:title="Show extra runway data"
                 android:summaryOn="Showing extended runway information"
                 android:summaryOff="Showing basic runway information"
-                defaultValue="false" />
+                android:defaultValue="false" />
         <CheckBoxPreference
                 android:key="show_gps_notams"
                 android:title="Show GPS NOTAMs"
                 android:summaryOn="GPS NOTAMs will also be shown"
                 android:summaryOff="GPS NOTAMs will not be shown"
-                defaultValue="false" />
+                android:defaultValue="false" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Miscellaneous">
         <CheckBoxPreference
@@ -77,12 +77,12 @@
                 android:title="Use mobile data freely"
                 android:summaryOn="Do not ask before using mobile data"
                 android:summaryOff="Ask before using mobile data"
-                defaultValue="false" />
+                android:defaultValue="false" />
         <CheckBoxPreference
                 android:key="show_local_time"
                 android:title="Show local time"
                 android:summaryOn="Time displayed using local timezone"
                 android:summaryOff="Time displayed using UTC timezone"
-                defaultValue="false" />
+                android:defaultValue="false" />
     </PreferenceCategory>
 </PreferenceScreen>

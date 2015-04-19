@@ -101,8 +101,7 @@ public final class RunwaysFragment extends FragmentBase {
         int length = rwy.getInt( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_HEADING ) );
         if ( heading > 0 ) {
-            heading = (int) DataUtils.calculateMagneticHeading( heading,
-                    Math.round( mDeclination ) );
+            heading = DataUtils.calculateMagneticHeading( heading, Math.round( mDeclination ) );
         } else {
             // Actual heading is not available, try to deduce it from runway id
             heading = DataUtils.getRunwayHeading( runwayId );
@@ -136,8 +135,7 @@ public final class RunwaysFragment extends FragmentBase {
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ID ) );
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_HEADING ) );
         if ( heading > 0 ) {
-            heading = (int) DataUtils.calculateMagneticHeading( heading,
-                    Math.round( mDeclination ) );
+            heading = DataUtils.calculateMagneticHeading( heading, Math.round( mDeclination ) );
         } else {
             // Actual heading is not available, try to deduce it from runway id
             heading = DataUtils.getRunwayHeading( runwayId );
@@ -285,8 +283,7 @@ public final class RunwaysFragment extends FragmentBase {
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_HEADING ) );
         if ( heading > 0 ) {
-            heading = (int) DataUtils.calculateMagneticHeading( heading,
-                    Math.round( mDeclination ) );
+            heading = DataUtils.calculateMagneticHeading( heading, Math.round( mDeclination ) );
         } else {
             // Actual heading is not available, try to deduce it from runway id
             heading = DataUtils.getRunwayHeading( runwayId );
