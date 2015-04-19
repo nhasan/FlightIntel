@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports;
@@ -266,7 +266,7 @@ public class FragmentBase extends Fragment {
         PackageManager pm = mActivity.getPackageManager();
         boolean hasTelephony = pm.hasSystemFeature( PackageManager.FEATURE_TELEPHONY );
         if ( hasTelephony && tv.getText().length() > 0 ) {
-            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.phone, 0, 0, 0 );
+            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_phone, 0, 0, 0 );
             tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( mActivity, 3 ) );
             tv.setTag( Intent.ACTION_DIAL );
             tv.setOnClickListener( mOnPhoneClickListener );
@@ -278,7 +278,7 @@ public class FragmentBase extends Fragment {
 
     protected void makeRowClickable( View row, final Class<?> clss, final Bundle args ) {
         Runnable r = new Runnable() {
-            
+
             @Override
             public void run() {
                 getActivityBase().replaceFragment( clss, args );

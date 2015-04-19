@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -37,7 +37,7 @@
     <TextView android:id="@+id/wx_station_freq"
             style="@style/TextSmall"
             android:singleLine="true"
-            android:drawableLeft="@drawable/freq"
+            android:drawableLeft="@drawable/ic_antenna"
             android:drawablePadding="2dp"
             android:paddingRight="@dimen/padding_right"
             android:paddingTop="@dimen/label_padding"
@@ -48,7 +48,7 @@
     <TextView android:id="@+id/wx_station_freq2"
             style="@style/TextSmall"
             android:singleLine="true"
-            android:drawableLeft="@drawable/freq"
+            android:drawableLeft="@drawable/ic_antenna"
             android:drawablePadding="2dp"
             android:paddingRight="@dimen/padding_right"
             android:paddingTop="@dimen/label_padding"
