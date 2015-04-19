@@ -433,10 +433,10 @@ public class DtppActivity extends ActivityBase {
             TextView tv = (TextView) view.findViewById( R.id.item_label );
             if ( available ) {
                 tv.setCompoundDrawablesWithIntrinsicBounds(
-                        R.drawable.btn_check_on_holo_light, 0, 0, 0 );
+                        R.drawable.ic_check_box, 0, 0, 0 );
             } else {
                 tv.setCompoundDrawablesWithIntrinsicBounds(
-                        R.drawable.btn_check_off_holo_light, 0, 0, 0 );
+                        R.drawable.ic_check_box_outline_blank, 0, 0, 0 );
             }
         }
 

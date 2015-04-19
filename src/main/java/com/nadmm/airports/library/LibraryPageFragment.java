@@ -215,7 +215,7 @@ public class LibraryPageFragment extends FragmentBase {
         TextView tv = (TextView) findViewById( R.id.msg_txt );
         tv.setText( msg );
         tv.setCompoundDrawablesWithIntrinsicBounds(
-                mIsOk? R.drawable.check : R.drawable.delete, 0, 0, 0 );
+                mIsOk? R.drawable.ic_check : R.drawable.ic_error, 0, 0, 0 );
         tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 4 ) );
 
         LinearLayout topLayout = (LinearLayout) findViewById( R.id.parent_layout );
@@ -307,10 +307,10 @@ public class LibraryPageFragment extends FragmentBase {
         TextView tv = (TextView) row.findViewById( R.id.book_desc );
         if ( isAvailable ) {
             tv.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.btn_check_on_holo_light, 0, 0, 0 );
+                    R.drawable.ic_check_box, 0, 0, 0 );
         } else {
             tv.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.btn_check_off_holo_light, 0, 0, 0 );
+                    R.drawable.ic_check_box_outline_blank, 0, 0, 0 );
         }
     }
 

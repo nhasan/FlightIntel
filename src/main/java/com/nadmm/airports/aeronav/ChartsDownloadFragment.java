@@ -332,7 +332,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         tv = (TextView) findViewById( R.id.charts_download_warning );
         tv.setText( msg );
         tv.setCompoundDrawablesWithIntrinsicBounds(
-                mIsOk? R.drawable.check : R.drawable.delete, 0, 0, 0 );
+                mIsOk? R.drawable.ic_check : R.drawable.delete, 0, 0, 0 );
         tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 4 ) );
 
         LinearLayout layout = (LinearLayout) findViewById( R.id.vol_chart_details );
@@ -535,10 +535,10 @@ public class ChartsDownloadFragment extends FragmentBase {
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         if ( avail == total ) {
             tv.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.btn_check_on_holo_light, 0, 0, 0 );
+                    R.drawable.ic_check_box, 0, 0, 0 );
         } else {
             tv.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.btn_check_off_holo_light, 0, 0, 0 );
+                    R.drawable.ic_check_box_outline_blank, 0, 0, 0 );
         }
     }
 
