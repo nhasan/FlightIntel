@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.notams;
@@ -161,13 +161,13 @@ public class NotamFragmentBase extends FragmentBase {
                     notamIDs.add( notamID );
                 }
             }
-        } catch ( IOException e ) {
+        } catch ( IOException ignored ) {
         } finally {
             try {
                 if ( in != null ) {
                     in.close();
                 }
-            } catch ( IOException e ) {
+            } catch ( IOException ignored ) {
             }
         }
 

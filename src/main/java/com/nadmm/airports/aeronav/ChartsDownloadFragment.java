@@ -284,7 +284,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         Date endDate = null;
         try {
             endDate = df.parse( expiry );
-        } catch ( ParseException e ) {
+        } catch ( ParseException ignored ) {
         }
 
         // Determine if chart cycle has expired

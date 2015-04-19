@@ -241,7 +241,7 @@ public class DtppActivity extends ActivityBase {
             try {
                 fromDate = df.parse( from );
                 toDate = df.parse( to );
-            } catch ( ParseException e1 ) {
+            } catch ( ParseException ignored ) {
             }
 
             // Determine if chart cycle has expired

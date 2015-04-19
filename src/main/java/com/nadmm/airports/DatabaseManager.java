@@ -586,7 +586,7 @@ public class DatabaseManager {
                     +" AND strftime('%s', c2."+Catalog.START_DATE
                     +") <= strftime('%s', 'now') )";
             return db.rawQuery( query, null );
-        } catch ( Exception e ) {
+        } catch ( Exception ignored ) {
         }
         return null;
     }
@@ -605,7 +605,7 @@ public class DatabaseManager {
                     +" AND strftime('%s', c2."+Catalog.START_DATE
                     +") <= strftime('%s', 'now') )";
             return db.rawQuery( query, null );
-        } catch ( Exception e ) {
+        } catch ( Exception ignored ) {
         }
         return null;
     }
