@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -24,6 +24,7 @@ import java.util.HashMap;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.support.v4.util.LongSparseArray;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -36,9 +37,9 @@ import com.nadmm.airports.utils.UiUtils;
 
 public class E6bMenuFragment extends ListMenuFragment {
 
-    private static final HashMap<Long, Class<?>> mDispatchMap;
+    private static final LongSparseArray<Class<?>> mDispatchMap;
     static {
-        mDispatchMap = new HashMap<Long, Class<?>>();
+        mDispatchMap = new LongSparseArray<>( 32 );
         mDispatchMap.put( (long)R.id.E6B_WIND_CALCS, E6bMenuFragment.class );
         mDispatchMap.put( (long)R.id.E6B_CROSS_WIND, CrossWindFragment.class );
         mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_WIND, WindTriangleFragment.class );
