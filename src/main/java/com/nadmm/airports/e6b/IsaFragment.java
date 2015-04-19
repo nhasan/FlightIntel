@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -93,7 +93,7 @@ public class IsaFragment extends FragmentBase {
                 mAltitudeEdit.setError( "Enter a value between 0 and 65,620" );
                 altitude = Double.MAX_VALUE;
             }
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
 
         if ( altitude != Double.MAX_VALUE ) {

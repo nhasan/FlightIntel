@@ -75,7 +75,7 @@ public abstract class WxSymbol implements Serializable, Cloneable {
                 symbol = (WxSymbol) sWxSymbolsMap.get( name ).clone();
                 symbol.mIntensity = intensity;
             }
-        } catch ( CloneNotSupportedException e ) {
+        } catch ( CloneNotSupportedException ignored ) {
         }
         return symbol;
     }

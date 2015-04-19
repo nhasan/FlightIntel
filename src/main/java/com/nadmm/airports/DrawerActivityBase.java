@@ -41,6 +41,7 @@ import com.nadmm.airports.tfr.TfrListActivity;
 import com.nadmm.airports.views.DrawerListView;
 import com.nadmm.airports.wx.WxMainActivity;
 
+@SuppressWarnings( "BooleanMethodIsAlwaysInverted" )
 public class DrawerActivityBase extends ActivityBase implements ListView.OnItemClickListener {
 
     private DrawerLayout mDrawerLayout;

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -61,7 +61,7 @@ public class PirepParser {
             XMLReader xmlReader = parser.getXMLReader();
             xmlReader.setContentHandler( handler );
             xmlReader.parse( input );
-        } catch ( Exception e ) {
+        } catch ( Exception ignored ) {
         }
     }
 
@@ -148,14 +148,14 @@ public class PirepParser {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     entry.receiptTime = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "observation_time" ) ) {
                 try {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     entry.observationTime = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "wx_string" ) ) {
                 WxSymbol.parseWxSymbols( entry.wxList, text.toString() );
@@ -197,11 +197,11 @@ public class PirepParser {
                     Location reportLocation = new Location( "" );
                     reportLocation.setLatitude( entry.latitude );
                     reportLocation.setLongitude( entry.longitude );
-    
+
                     float[] results = new float[ 2 ];
                     Location.distanceBetween( mLocation.getLatitude(), mLocation.getLongitude(),
                             reportLocation.getLatitude(), reportLocation.getLongitude(), results );
-    
+
                     entry.distanceNM = (long) (results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE);
                     if ( entry.distanceNM <= mRadiusNM ) {
                         entry.bearing = ( results[ 1 ]+mDeclination+360 )%360;

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -96,7 +96,7 @@ public class OutsideAirTemperatureFragment extends FragmentBase {
             iat = Double.parseDouble( mIatEdit.getText().toString() );
             k = Double.parseDouble( mRecoveryFactorEdit.getText().toString() );
             tas = Double.parseDouble( mTasEdit.getText().toString() );
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
 
         if ( iat != Double.MAX_VALUE && k != Double.MAX_VALUE && tas != Double.MAX_VALUE ) {

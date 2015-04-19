@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -112,7 +112,7 @@ public class WindTriangleFragment extends FragmentBase {
                     mCrsEdit    .setError( "Enter a value between 1-360" );
                     crs = -1;
                 }
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException ignored ) {
             }
 
             if ( tas != -1 && gs != -1 && hdg != -1 && crs != -1 ) {
@@ -149,7 +149,7 @@ public class WindTriangleFragment extends FragmentBase {
                     mCrsEdit.setError( "Enter a value between 1-360" );
                     crs = -1;
                 }
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException ignored ) {
             }
 
             if ( tas != -1 && crs != -1 && ws != -1 && wdir != -1 ) {
@@ -196,7 +196,7 @@ public class WindTriangleFragment extends FragmentBase {
                     mHdgEdit.setError( "Enter a value between 1-360" );
                     hdg = -1;
                 }
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException ignored ) {
             }
 
             if ( tas != -1 && hdg != -1 && ws != -1 && wdir != -1 ) {

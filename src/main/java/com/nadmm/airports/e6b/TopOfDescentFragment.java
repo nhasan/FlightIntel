@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -101,7 +101,7 @@ public class TopOfDescentFragment extends FragmentBase {
             desiredAlt = Double.parseDouble( mDesiredAltEdit.getText().toString() );
             gs = Double.parseDouble( mGsEdit.getText().toString() );
             dscntRate = Double.parseDouble( mDscntRateEdit.getText().toString() );
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
 
         if ( initAlt != Double.MAX_VALUE && desiredAlt != Double.MAX_VALUE

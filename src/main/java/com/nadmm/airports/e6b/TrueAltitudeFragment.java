@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -101,7 +101,7 @@ public class TrueAltitudeFragment extends FragmentBase {
                 mIaEdit.setError( "Enter a value between 0 and 65,620" );
                 ia = Double.MAX_VALUE;
             }
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
 
         if ( ia != Double.MAX_EXPONENT && oat != Double.MAX_EXPONENT

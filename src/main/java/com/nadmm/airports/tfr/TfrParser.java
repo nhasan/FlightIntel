@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.tfr;
@@ -50,7 +50,7 @@ public class TfrParser {
             XMLReader xmlReader = parser.getXMLReader();
             xmlReader.setContentHandler( handler );
             xmlReader.parse( input );
-        } catch ( Exception e ) {
+        } catch ( Exception ignored ) {
         }
     }
 
@@ -81,8 +81,8 @@ public class TfrParser {
             if ( qName.toUpperCase( Locale.US ).matches( "TFR\\d+" ) ) {
                 tfr = new Tfr();
             } else if ( qName.equalsIgnoreCase( "CREATED" )
-                    || qName.equalsIgnoreCase( "MODIFIED" ) 
-                    || qName.equalsIgnoreCase( "ACTIVE" ) 
+                    || qName.equalsIgnoreCase( "MODIFIED" )
+                    || qName.equalsIgnoreCase( "ACTIVE" )
                     || qName.equalsIgnoreCase( "EXPIRES" ) ) {
                 dateName = qName.toUpperCase( Locale.US );
             }
@@ -115,7 +115,7 @@ public class TfrParser {
                         } else if ( dateName.equals( "EXPIRES" ) ) {
                             tfr.expireTime = sdf.parse( text.toString() ).getTime();
                         }
-                    } catch ( ParseException e ) {
+                    } catch ( ParseException ignored ) {
                     }
                 }
             } else if ( qName.toUpperCase( Locale.US ).matches( "TFR\\d+" ) ) {

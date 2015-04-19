@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -92,7 +92,7 @@ public class SpecificRangeFragment extends FragmentBase {
             fuelTotal = Double.parseDouble( mFuelTotalEdit.getText().toString() );
             fuelRate = Double.parseDouble( mFuelRateEdit.getText().toString() );
             gs = Double.parseDouble( mGsEdit.getText().toString() );
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
 
         if ( fuelTotal != Double.MAX_VALUE && fuelRate != Double.MAX_VALUE

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -571,18 +571,18 @@ public final class RunwaysFragment extends FragmentBase {
         String object = rwy.getString( rwy.getColumnIndex(
                 Runways.BASE_END_CONTROLLING_OBJECT ) );
         if ( object.length() > 0 ) {
-            int height = rwy.getInt( rwy.getColumnIndex( 
+            int height = rwy.getInt( rwy.getColumnIndex(
                     Runways.BASE_END_CONTROLLING_OBJECT_HEIGHT ) );
             if ( height > 0 ) {
-                int distance = rwy.getInt( rwy.getColumnIndex( 
+                int distance = rwy.getInt( rwy.getColumnIndex(
                         Runways.BASE_END_CONTROLLING_OBJECT_DISTANCE ) );
-                String lighted = rwy.getString( rwy.getColumnIndex( 
+                String lighted = rwy.getString( rwy.getColumnIndex(
                         Runways.BASE_END_CONTROLLING_OBJECT_LIGHTED ) );
-                String offset = rwy.getString( rwy.getColumnIndex( 
+                String offset = rwy.getString( rwy.getColumnIndex(
                         Runways.BASE_END_CONTROLLING_OBJECT_OFFSET ) );
                 int slope = rwy.getInt( rwy.getColumnIndex(
                         Runways.BASE_END_CONTROLLING_OBJECT_SLOPE ) );
-    
+
                 text = String.format( "%s %s, ",
                         FormatUtils.formatFeet( height ), object.toLowerCase( Locale.US ) );
                 if ( lighted.length() > 0 ) {
@@ -601,7 +601,7 @@ public final class RunwaysFragment extends FragmentBase {
             } else {
                 text = object;
             }
-    
+
             addBulletedRow( layout, text );
             ++count;
         }
@@ -616,18 +616,18 @@ public final class RunwaysFragment extends FragmentBase {
         String object = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_CONTROLLING_OBJECT ) );
         if ( object.length() > 0 ) {
-            int height = rwy.getInt( rwy.getColumnIndex( 
+            int height = rwy.getInt( rwy.getColumnIndex(
                     Runways.BASE_END_CONTROLLING_OBJECT_HEIGHT ) );
             if ( height > 0 ) {
-                int distance = rwy.getInt( rwy.getColumnIndex( 
+                int distance = rwy.getInt( rwy.getColumnIndex(
                         Runways.RECIPROCAL_END_CONTROLLING_OBJECT_DISTANCE ) );
-                String lighted = rwy.getString( rwy.getColumnIndex( 
+                String lighted = rwy.getString( rwy.getColumnIndex(
                         Runways.RECIPROCAL_END_CONTROLLING_OBJECT_LIGHTED ) );
-                String offset = rwy.getString( rwy.getColumnIndex( 
+                String offset = rwy.getString( rwy.getColumnIndex(
                         Runways.RECIPROCAL_END_CONTROLLING_OBJECT_OFFSET ) );
                 int slope = rwy.getInt( rwy.getColumnIndex(
                         Runways.RECIPROCAL_END_CONTROLLING_OBJECT_SLOPE ) );
-    
+
                 text = String.format( "%s %s, ",
                         FormatUtils.formatFeet( height ), object.toLowerCase( Locale.US ) );
                 if ( lighted.length() > 0 ) {
@@ -691,7 +691,7 @@ public final class RunwaysFragment extends FragmentBase {
                         Ars.SITE_NUMBER+"=? AND "+Ars.RUNWAY_ID+"=? AND "+Ars.RUNWAY_END_ID+"=?",
                         new String[] { siteNumber, runwayId, endId }, null, null, null, null );
                 cursors[ 2 ] = c;
-    
+
                 endId = c.getString( c.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Ars.TABLE_NAME );
@@ -699,7 +699,7 @@ public final class RunwaysFragment extends FragmentBase {
                         Ars.SITE_NUMBER+"=? AND "+Ars.RUNWAY_ID+"=? AND "+Ars.RUNWAY_END_ID+"=?",
                         new String[] { siteNumber, runwayId, endId }, null, null, null, null );
                 cursors[ 3 ] = c;
-            } catch ( Exception e ) {
+            } catch ( Exception ignored ) {
             }
 
             builder = new SQLiteQueryBuilder();

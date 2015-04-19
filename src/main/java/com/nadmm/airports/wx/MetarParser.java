@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -114,7 +114,7 @@ public final class MetarParser {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     metar.observationTime = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "station_id" ) ) {
                 metar.stationId = text.toString();

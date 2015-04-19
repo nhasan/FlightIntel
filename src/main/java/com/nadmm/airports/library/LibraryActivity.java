@@ -32,6 +32,7 @@ import com.nadmm.airports.views.DrawerListView;
 
 import java.util.HashMap;
 
+@SuppressWarnings( "BooleanMethodIsAlwaysInverted" )
 public class LibraryActivity extends DrawerActivityBase {
 
     private boolean mPending = false;

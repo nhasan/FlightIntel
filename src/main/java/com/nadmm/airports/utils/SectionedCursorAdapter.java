@@ -148,7 +148,7 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
 
     @Override
     public boolean isEnabled( int position ) {
-        return isSectionHeaderPosition( position )? false : true;
+        return !isSectionHeaderPosition( position );
     }
 
     @Override

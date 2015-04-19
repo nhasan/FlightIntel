@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.utils;
@@ -56,6 +56,7 @@ import android.support.v4.net.ConnectivityManagerCompat;
 
 import com.nadmm.airports.PreferencesActivity;
 
+@SuppressWarnings( "BooleanMethodIsAlwaysInverted" )
 public class NetworkUtils {
 
     private static final byte[] sBuffer = new byte[ 32*1024 ];
@@ -69,7 +70,7 @@ public class NetworkUtils {
     }
 
     public static boolean isNetworkAvailable( Context context, boolean showMsg ) {
-        ConnectivityManager connMan = (ConnectivityManager) context.getSystemService( 
+        ConnectivityManager connMan = (ConnectivityManager) context.getSystemService(
                 Context.CONNECTIVITY_SERVICE );
         NetworkInfo network = connMan.getActiveNetworkInfo();
         if ( showMsg && ( network == null || !network.isConnected() ) ) {
@@ -81,7 +82,7 @@ public class NetworkUtils {
     }
 
     public static boolean isConnectedToMeteredNetwork( Context context ) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService( 
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(
                 Context.CONNECTIVITY_SERVICE );
         return ConnectivityManagerCompat.isActiveNetworkMetered( cm );
     }
@@ -119,7 +120,7 @@ public class NetworkUtils {
                 PreferenceManager.getDefaultSharedPreferences( context );
         boolean alwaysAutoFetch = prefs.getBoolean(
                 PreferencesActivity.KEY_AUTO_DOWNLOAD_ON_3G, false );
-        return ( alwaysAutoFetch 
+        return ( alwaysAutoFetch
                 || !NetworkUtils.isConnectedToMeteredNetwork( context ) );
     }
 
@@ -146,7 +147,7 @@ public class NetworkUtils {
 
     /*
      *  An input stream that works as a pass-through filter but counts the bytes read from
-     *  the underlying stream. It is needed for compressed streams that are wrapped by a 
+     *  the underlying stream. It is needed for compressed streams that are wrapped by a
      *  GzipInputStream filter that only reports the decompressed byte count. Wrapping raw
      *  stream with this filter stream allows us to keep track of the download progress
      *  when all we know is the compressed size not the decompressed size.
@@ -253,7 +254,7 @@ public class NetworkUtils {
                 if ( out != null ) {
                     out.close();
                 }
-            } catch ( IOException e ) {
+            } catch ( IOException ignored ) {
             }
         }
         return true;

@@ -23,6 +23,7 @@ package com.nadmm.airports.billing.utils;
  * can also inquire whether a result is a success or a failure by
  * calling {@link #isSuccess()} and {@link #isFailure()}.
  */
+@SuppressWarnings( "BooleanMethodIsAlwaysInverted" )
 public class IabResult {
     int mResponse;
     String mMessage;

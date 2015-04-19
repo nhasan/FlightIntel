@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -51,7 +51,7 @@ public class AirSigmetParser {
             XMLReader xmlReader = parser.getXMLReader();
             xmlReader.setContentHandler( handler );
             xmlReader.parse( input );
-        } catch ( Exception e ) {
+        } catch ( Exception ignored ) {
         }
     }
 
@@ -112,14 +112,14 @@ public class AirSigmetParser {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     entry.fromTime = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "valid_time_to" ) ) {
                 try {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     entry.toTime = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "airsigmet_type" ) ) {
                 entry.type = text.toString();

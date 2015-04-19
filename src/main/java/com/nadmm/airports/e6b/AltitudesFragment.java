@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -94,7 +94,7 @@ public class AltitudesFragment extends FragmentBase {
             elevation = Double.parseDouble( mElevationEdit.getText().toString() );
             altimeter = Double.parseDouble( mAltimeterEdit.getText().toString() );
             temperatureC = Double.parseDouble( mTemperatureEdit.getText().toString() );
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
 
         if ( elevation != Double.MAX_VALUE

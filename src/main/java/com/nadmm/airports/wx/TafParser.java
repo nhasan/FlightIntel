@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -130,28 +130,28 @@ public class TafParser {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     taf.issueTime = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "bulletin_time" ) ) {
                 try {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     taf.bulletinTime = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "valid_time_from" ) ) {
                 try {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     taf.validTimeFrom = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "valid_time_to" ) ) {
                 try {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     taf.validTimeTo = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "elevation_m" ) ) {
                 taf.stationElevationMeters = Float.valueOf( text.toString() );
@@ -171,21 +171,21 @@ public class TafParser {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     forecast.timeFrom = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "fcst_time_to" ) ) {
                 try {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     forecast.timeTo = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "time_becoming" ) ) {
                 try {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     forecast.timeBecoming = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "change_indicator" ) ) {
                 forecast.changeIndicator = text.toString();
@@ -214,7 +214,7 @@ public class TafParser {
                     Time time = new Time();
                     time.parse3339( text.toString() );
                     temperature.validTime = time.toMillis( true );
-                } catch ( TimeFormatException e ) {
+                } catch ( TimeFormatException ignored ) {
                 }
             } else if ( qName.equalsIgnoreCase( "sfc_temp_c" ) ) {
                 temperature.surfaceTempCentigrade = Float.valueOf( text.toString() );

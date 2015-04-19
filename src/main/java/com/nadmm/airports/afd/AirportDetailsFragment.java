@@ -564,7 +564,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             if ( lighting.length() > 0 ) {
                 addRow( layout, "Beacon lighting", lighting );
             }
-        } catch ( Exception e ) {
+        } catch ( Exception ignored ) {
         }
         String landingFee = apt.getString( apt.getColumnIndex( Airports.LANDING_FEE ) );
         addRow( layout, "Landing fee", landingFee.equals( "Y" )? "Yes" : "No" );
@@ -726,7 +726,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         if ( freq != null && freq.length() > 0 ) {
             try {
                 sb.append( FormatUtils.formatFreq( Float.valueOf( freq ) ) );
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException ignored ) {
             }
         }
         String value1 = sb.toString();
@@ -740,9 +740,8 @@ public final class AirportDetailsFragment extends FragmentBase {
                     GeoUtils.getCardinalDirection( bearing ) ) );
         }
         String label2 = sb.toString();
-        String value2 = phone;
 
-        View row = addClickableRow( layout, label1, value1, label2, value2, runnable );
+        View row = addClickableRow( layout, label1, value1, label2, phone, runnable );
 
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setTag( id );

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -97,7 +97,7 @@ public class FuelCalcsFragment extends FragmentBase {
             try {
                 fuelTotal = Double.parseDouble( mFuelTotalEdit.getText().toString() );
                 fuelRate = Double.parseDouble( mFuelRateEdit.getText().toString() );
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException ignored ) {
             }
 
             if ( fuelTotal != Double.MAX_VALUE && fuelRate != Double.MAX_VALUE ) {
@@ -109,11 +109,11 @@ public class FuelCalcsFragment extends FragmentBase {
         } else if ( mMenuId == R.id.E6B_FUEL_BURN_RATE ) {
             try {
                 fuelTotal = Double.parseDouble( mFuelTotalEdit.getText().toString() );
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException ignored ) {
             }
             try {
                 endurance = Double.parseDouble( mTimeEdit.getText().toString() );
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException ignored ) {
             }
 
 
@@ -126,11 +126,11 @@ public class FuelCalcsFragment extends FragmentBase {
         } else if ( mMenuId == R.id.E6B_FUEL_TOTAL_BURNED ) {
             try {
                 fuelRate = Double.parseDouble( mFuelRateEdit.getText().toString() );
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException ignored ) {
             }
             try {
                 endurance = Double.parseDouble( mTimeEdit.getText().toString() );
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException ignored ) {
             }
 
 

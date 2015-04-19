@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -93,7 +93,7 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
             try {
                 speed = Double.parseDouble( mGsEdit.getText().toString() );
                 distance = Double.parseDouble( mDistanceEdit.getText().toString() );
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException ignored ) {
             }
 
             if ( speed != Double.MAX_VALUE && distance != Double.MAX_VALUE ) {
@@ -106,7 +106,7 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
             try {
                 time = Double.parseDouble( mTimeEdit.getText().toString() );
                 distance = Double.parseDouble( mDistanceEdit.getText().toString() );
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException ignored ) {
             }
 
             if ( time != Double.MAX_VALUE && distance != Double.MAX_VALUE ) {
@@ -119,7 +119,7 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
             try {
                 time = Double.parseDouble( mTimeEdit.getText().toString() );
                 speed = Double.parseDouble( mGsEdit.getText().toString() );
-            } catch ( NumberFormatException e ) {
+            } catch ( NumberFormatException ignored ) {
             }
 
             if ( time != Double.MAX_VALUE && speed != Double.MAX_VALUE ) {

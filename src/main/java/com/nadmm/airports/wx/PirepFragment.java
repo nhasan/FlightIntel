@@ -384,7 +384,6 @@ public class PirepFragment extends FragmentBase {
         title.setVisibility( View.GONE );
         stopRefreshAnimation();
         setContentShown( true );
-        return;
     }
 
 }

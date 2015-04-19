@@ -882,7 +882,7 @@ public final class DataUtils {
         int heading = 0;
         try {
             heading = Integer.valueOf( runwayId.substring( 0, index ) )*10;
-        } catch ( Exception e ) {
+        } catch ( Exception ignored ) {
         }
 
         return heading;

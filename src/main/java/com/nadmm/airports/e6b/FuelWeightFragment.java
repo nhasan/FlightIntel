@@ -190,7 +190,7 @@ public class FuelWeightFragment extends FragmentBase {
 
         try {
             fuelTotal = Double.parseDouble( mFuelTotal.getText().toString() );
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
 
         if ( fuelTotal != Double.MAX_VALUE ) {

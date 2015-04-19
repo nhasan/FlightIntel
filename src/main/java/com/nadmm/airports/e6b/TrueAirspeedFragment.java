@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -97,7 +97,7 @@ public class TrueAirspeedFragment extends FragmentBase {
             ia = Double.parseDouble( mIndicatedAltitudeEdit.getText().toString() );
             altimeter = Double.parseDouble( mAltimeterEdit.getText().toString() );
             temperatureC = Double.parseDouble( mTemperatureEdit.getText().toString() );
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
 
         if ( ias != -1 && ia != -1 && altimeter != -1 && temperatureC != -1 ) {

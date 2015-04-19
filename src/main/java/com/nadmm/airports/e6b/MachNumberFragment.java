@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -89,7 +89,7 @@ public class MachNumberFragment extends FragmentBase {
         try {
             tas = Double.parseDouble( mTasEdit.getText().toString() );
             oat = Double.parseDouble( mOatEdit.getText().toString() );
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
 
         if ( tas != Double.MAX_VALUE && oat != Double.MAX_VALUE ) {

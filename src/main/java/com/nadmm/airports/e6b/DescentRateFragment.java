@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -102,13 +102,13 @@ public class DescentRateFragment extends FragmentBase {
             crossAlt = Double.parseDouble( mCrossAltEdit.getText().toString() );
             gs = Double.parseDouble( mGsEdit.getText().toString() );
             fixDist = Double.parseDouble( mFixDistEdit.getText().toString() );
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
 
         if ( initAlt != Double.MAX_VALUE && crossAlt != Double.MAX_VALUE
                 && gs != Double.MAX_VALUE && fixDist != Double.MAX_VALUE ) {
             dscntRate = ( initAlt-crossAlt )/( ( fixDist/gs )*60 );
-            mDscntRateEdit.setText( String.format( Locale.US, "%d", Math.round( dscntRate ) ) );            
+            mDscntRateEdit.setText( String.format( Locale.US, "%d", Math.round( dscntRate ) ) );
         } else {
             mDscntRateEdit.setText( "" );
         }

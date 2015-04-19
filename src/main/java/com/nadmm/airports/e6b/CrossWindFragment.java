@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.e6b;
@@ -98,7 +98,7 @@ public class CrossWindFragment extends FragmentBase {
         try {
             windSpeed = Double.parseDouble( mWsEdit.getText().toString() );
             magVar = Double.parseDouble( mMagVar.getText().toString() );
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
         try {
             windDir = Double.parseDouble( mWdirEdit.getText().toString() );
@@ -106,7 +106,7 @@ public class CrossWindFragment extends FragmentBase {
                 mWdirEdit.setError( "Enter a value between 1 and 360" );
                 windDir = Double.MAX_VALUE;
             }
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
         try {
             runwayId = Double.parseDouble( mRwyEdit.getText().toString() );
@@ -114,7 +114,7 @@ public class CrossWindFragment extends FragmentBase {
                 mRwyEdit.setError( "Enter a value between 1 and 36" );
                 runwayId = -1;
             }
-        } catch ( NumberFormatException e ) {
+        } catch ( NumberFormatException ignored ) {
         }
 
         if ( windSpeed != Double.MAX_VALUE && windDir != Double.MAX_VALUE
