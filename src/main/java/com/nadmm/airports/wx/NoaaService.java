@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -103,17 +103,17 @@ public abstract class NoaaService extends IntentService {
         }
     }
 
-    protected boolean fetchFromNoaa( String query, File file, boolean compressed ) 
+    protected boolean fetchFromNoaa( String query, File file, boolean compressed )
             throws Exception {
         return fetchFromNoaa( NOAA_DATASERVER_PATH, query, file, compressed );
     }
 
-    protected boolean fetchFromNoaa( String path, String query, File file, boolean compressed ) 
+    protected boolean fetchFromNoaa( String path, String query, File file, boolean compressed )
             throws Exception {
         return fetch( NOAA_HOST, path, query, file, compressed );
     }
 
-    protected boolean fetch( String host, String path, String query, File file, boolean compressed ) 
+    protected boolean fetch( String host, String path, String query, File file, boolean compressed )
             throws Exception {
         URI uri = URIUtils.createURI( "http", host, 80, path, query, null );
         return fetch( uri, file, compressed );
@@ -171,8 +171,6 @@ public abstract class NoaaService extends IntentService {
             ObjectOutputStream out = new ObjectOutputStream( new FileOutputStream( objFile ) );
             out.writeObject( object );
             out.close();
-        } catch ( FileNotFoundException e ) {
-            e.printStackTrace();
         } catch ( IOException e ) {
             e.printStackTrace();
         }
@@ -185,8 +183,6 @@ public abstract class NoaaService extends IntentService {
             object = in.readObject();
             in.close();
             return object;
-        } catch ( FileNotFoundException e ) {
-            e.printStackTrace();
         } catch ( IOException e ) {
             e.printStackTrace();
         } catch ( ClassNotFoundException e ) {

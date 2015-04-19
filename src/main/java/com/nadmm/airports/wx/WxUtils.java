@@ -71,7 +71,7 @@ public class WxUtils {
     static public void setFlightCategoryDrawable( TextView tv, String flightCategory ) {
         Drawable d = UiUtils.getDrawableFromCache( flightCategory );
         if ( d == null ) {
-            Resources res = tv.getResources();
+            Resources    res = tv.getResources();
             if ( flightCategory.equals( CATEGORY_VFR ) ) {
                 d = res.getDrawable( R.drawable.vfr );
             } else if ( flightCategory.equals( CATEGORY_MVFR ) ) {

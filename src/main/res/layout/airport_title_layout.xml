@@ -20,7 +20,8 @@
  */
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/airport_title_layout"
+			  xmlns:tools="http://schemas.android.com/tools"
+			  android:id="@+id/airport_title_layout"
         android:background="@drawable/ab_stacked_transparent_light_holo"
         android:paddingTop="@dimen/padding_top"
         android:paddingLeft="@dimen/padding_left"
@@ -93,7 +94,8 @@
 	                android:paddingTop="5dp"
 	                android:tint="#ff909090"
 	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content" />
+	                android:layout_height="wrap_content"
+					   tools:ignore="ContentDescription"/>
 	    </LinearLayout>
 	</LinearLayout>
 </LinearLayout>

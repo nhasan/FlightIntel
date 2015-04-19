@@ -568,6 +568,10 @@ public class DatabaseManager {
 
     @Override
     protected void finalize() {
+        try {
+            super.finalize();
+        } catch ( Throwable ignored ) {
+        }
         mCatalogDbHelper.close();
         mUserDataDbHelper.close();
         closeDatabases();

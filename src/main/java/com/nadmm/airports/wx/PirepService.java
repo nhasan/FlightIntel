@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -37,7 +37,7 @@ public class PirepService extends NoaaService {
             + "&hoursBeforeNow=%d&radialDistance=%.0f;%.2f,%.2f";
     private final String PIREP_IMAGE_ZOOM_PATH = "/data/pireps/zoom/";
 
-    private static final long PIREP_CACHE_MAX_AGE = 1*DateUtils.HOUR_IN_MILLIS;
+    private static final long PIREP_CACHE_MAX_AGE = DateUtils.HOUR_IN_MILLIS;
 
     private PirepParser mParser;
 

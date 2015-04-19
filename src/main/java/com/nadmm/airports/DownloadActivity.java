@@ -794,6 +794,7 @@ public final class DownloadActivity extends ActivityBase {
                } );
         AlertDialog alert = builder.create();
         alert.show();
+        return;
     }
 
     private final class DeleteDataTask extends AsyncTask<Void, Void, Integer> {

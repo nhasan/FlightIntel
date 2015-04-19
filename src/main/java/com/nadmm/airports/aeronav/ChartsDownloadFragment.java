@@ -39,7 +39,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -89,12 +88,16 @@ public class ChartsDownloadFragment extends FragmentBase {
             @Override
             public void onReceive( Context context, Intent intent ) {
                 String action = intent.getAction();
-                if ( action.equals( AeroNavService.ACTION_GET_CHARTS ) ) {
-                    onChartDownload( context, intent );
-                } else if ( action.equals( AeroNavService.ACTION_CHECK_CHARTS ) ) {
-                    onChartDelete( context, intent );
-                } else if ( action.equals( AeroNavService.ACTION_COUNT_CHARTS ) ) {
-                    onChartCount( context, intent );
+                switch ( action ) {
+                    case AeroNavService.ACTION_GET_CHARTS:
+                        onChartDownload( context, intent );
+                        break;
+                    case AeroNavService.ACTION_CHECK_CHARTS:
+                        onChartDelete( context, intent );
+                        break;
+                    case AeroNavService.ACTION_COUNT_CHARTS:
+                        onChartCount( context, intent );
+                        break;
                 }
             }
         };

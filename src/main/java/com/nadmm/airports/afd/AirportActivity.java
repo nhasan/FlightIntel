@@ -21,8 +21,6 @@ package com.nadmm.airports.afd;
 
 import android.os.Bundle;
 
-import com.google.android.gms.analytics.Tracker;
-import com.nadmm.airports.Application;
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.views.DrawerListView;
 

@@ -13,7 +13,7 @@ public class WindsAloftService extends NoaaService {
 
     private final String FB_TEXT_PATH = "/data/products/nws/winds";
 
-    private static final long FB_CACHE_MAX_AGE = 1*DateUtils.HOUR_IN_MILLIS;
+    private static final long FB_CACHE_MAX_AGE = DateUtils.HOUR_IN_MILLIS;
 
 
     public WindsAloftService() {

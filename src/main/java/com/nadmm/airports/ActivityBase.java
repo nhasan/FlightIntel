@@ -448,9 +448,9 @@ public class ActivityBase extends ActionBarActivity {
 
         String s = c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) );
         Time endDate = new Time();
-        endDate.set( Integer.valueOf( s.substring( 3, 5 ) ).intValue(),
+        endDate.set( Integer.valueOf( s.substring( 3, 5 ) ),
                 Integer.valueOf( s.substring( 0, 2 ) )-1,
-                Integer.valueOf( s.substring( 6 ) ).intValue() );
+                Integer.valueOf( s.substring( 6 ) ) );
         // Calculate end date of the 56-day cycle
         endDate.monthDay += 56;
         endDate.normalize( false );

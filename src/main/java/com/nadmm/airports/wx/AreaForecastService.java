@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -30,7 +30,7 @@ public class AreaForecastService extends NoaaService {
 
     private final String FA_TEXT_PATH = "/data/products/fa/";
 
-    private static final long FA_CACHE_MAX_AGE = 1*DateUtils.HOUR_IN_MILLIS;
+    private static final long FA_CACHE_MAX_AGE = DateUtils.HOUR_IN_MILLIS;
 
     public AreaForecastService() {
         super( "fa", FA_CACHE_MAX_AGE );
