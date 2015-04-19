@@ -17,5 +17,5 @@
 */
 -->
 
-<AccelerateInterpolator xmlns:android="http://schemas.android.com/apk/res/android"
+<accelerateInterpolator xmlns:android="http://schemas.android.com/apk/res/android"
         android:factor="1.5" />
