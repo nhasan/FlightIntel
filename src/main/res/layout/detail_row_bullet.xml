@@ -29,7 +29,7 @@
     <TextView android:id="@+id/item_label"
             style="@style/TextSmall"
             android:gravity="left"
-            android:text="\u2022"
+            android:text="@string/bullet"
             android:layout_width="12dp"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/item_value"
