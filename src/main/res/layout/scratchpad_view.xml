@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                      tools:ignore="ContentDescription"/>
         <ImageButton android:id="@+id/action_share"
-                android:src="@drawable/social_share"
+                android:src="@drawable/ic_share"
                 style="@style/Widget.AppCompat.ActionButton"
                 android:layout_toLeftOf="@id/action_discard"
                 android:layout_width="wrap_content"
