@@ -114,7 +114,6 @@
     <string name="notam_tfr">NOTAM &amp; TFR</string>
     <string name="tfr_text">TFR Text</string>
     <string name="tfr_details">TFR Details</string>
-    <string name="tfr_time">TFR Time</string>
     <string name="tfrs">TFRs</string>
     <string name="select_charts_volume">Select Charts Volume</string>
     <string name="select_type">Select Type</string>
@@ -215,6 +214,7 @@
     <string name="navdrawer_item_clocks">Clocks</string>
     <string name="navdrawer_item_e6b">E6B</string>
     <string name="navdrawer_item_charts">Charts</string>
+    <string name="bullet">\u2022</string>
     <plurals name="airports_found">
         <item quantity="zero">No airports found</item>
         <item quantity="one">1 airport found</item>
