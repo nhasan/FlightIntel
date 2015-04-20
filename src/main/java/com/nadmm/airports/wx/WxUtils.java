@@ -135,7 +135,7 @@ public class WxUtils {
     }
 
     static public Drawable getErrorDrawable( Context context ) {
-        int resid = R.drawable.error;
+        int resid = R.drawable.ic_error;
         String key = String.valueOf( resid );
         Drawable d = UiUtils.getDrawableFromCache( key );
         if ( d == null ) {
