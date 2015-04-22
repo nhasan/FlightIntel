@@ -31,9 +31,12 @@
     <color name="darkgray">#383838</color>
     <color name="accent_1">#ff0099cc</color>
     <color name="color_primary">#ff4c92b7</color>
-    <color name="color_primary_dark">#ff2c7eb7</color>
+    <color name="color_primary_dark">#ff2e7cb8</color>
     <color name="color_primary_light">#7f539fca</color>
     <color name="color_accent">#20000000</color>
     <color name="navdrawer_text_color">#de000000</color>
+    <color name="navdrawer_text_color_selected">@color/color_primary</color>
+    <color name="navdrawer_icon_tint">#888</color>
+    <color name="navdrawer_icon_tint_selected">@color/color_primary</color>
     <color name="navdrawer_background">#ffffffff</color>
 </resources>
