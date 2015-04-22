@@ -38,14 +38,5 @@
             android:layout_height="match_parent" />
     </LinearLayout>
     <!-- The navigation drawer -->
-    <com.nadmm.airports.views.DrawerListView android:id="@+id/left_drawer"
-            android:layout_width="@dimen/navdrawer_width"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:fitsSystemWindows="true"
-            android:choiceMode="singleChoice"
-            android:divider="@null"
-            android:dividerHeight="0px"
-            android:scrollingCache="false"
-            android:background="@color/navdrawer_background"/>
+    <include layout="@layout/navdrawer" />
 </android.support.v4.widget.DrawerLayout>
