@@ -31,7 +31,6 @@ import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NavAdapter;
-import com.nadmm.airports.views.DrawerListView;
 
 import java.util.ArrayList;
 
@@ -87,10 +86,8 @@ public final class AfdMainActivity extends DrawerActivityBase {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        setDrawerItemChecked( DrawerListView.ITEM_ID_AFD );
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_AFD;
     }
 
     protected int getInitialFragmentId() {

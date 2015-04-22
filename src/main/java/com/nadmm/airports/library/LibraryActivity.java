@@ -82,7 +82,6 @@ public class LibraryActivity extends DrawerActivityBase {
     protected void onResume() {
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
         bm.registerReceiver( mReceiver, mFilter );
-        setDrawerItemChecked( DrawerListView.ITEM_ID_LIBRARY );
 
         super.onResume();
     }
@@ -93,6 +92,11 @@ public class LibraryActivity extends DrawerActivityBase {
         bm.unregisterReceiver( mReceiver );
 
         super.onPause();
+    }
+
+    @Override
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_LIBRARY;
     }
 
     public void setPending( boolean pending ) {

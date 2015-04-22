@@ -36,10 +36,8 @@ public class ScratchPadActivity extends DrawerActivityBase {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        setDrawerItemChecked( DrawerListView.ITEM_ID_SCRATCHPAD );
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_SCRATCHPAD;
     }
 
 }

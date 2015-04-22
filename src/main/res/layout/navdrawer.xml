@@ -20,20 +20,32 @@
  */
  -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-    <FrameLayout android:layout_width="match_parent"
-                 android:layout_height="wrap_content">
+<com.nadmm.airports.views.ScrimInsetsScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="@dimen/navdrawer_width"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:id="@+id/navdrawer"
+        android:background="@color/navdrawer_background"
+        android:fitsSystemWindows="true"
+        app:insetForeground="#4000">
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+        <ImageView
+                android:src="@drawable/navdrawer_header"
+                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/navdrawer_image_height" />
         <!-- Drawer items -->
         <LinearLayout
-            android:id="@+id/navdrawer_items_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:orientation="vertical" />
-    </FrameLayout>
-
-</ScrollView>
+                android:id="@+id/navdrawer_items_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/item_spacing"
+                android:layout_marginBottom="@dimen/item_spacing"
+                android:orientation="vertical" />
+    </LinearLayout>
+</com.nadmm.airports.views.ScrimInsetsScrollView>

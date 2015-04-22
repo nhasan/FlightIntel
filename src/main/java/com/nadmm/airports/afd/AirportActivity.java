@@ -30,8 +30,6 @@ public class AirportActivity extends DrawerActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setDrawerItemChecked( DrawerListView.ITEM_ID_AFD );
-
         Bundle args = getIntent().getExtras();
         addFragment( AirportDetailsFragment.class, args );
     }

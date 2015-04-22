@@ -41,10 +41,8 @@ public class E6bActivity extends DrawerActivityBase {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        setDrawerItemChecked( DrawerListView.ITEM_ID_E6B );
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_E6B;
     }
 
 }

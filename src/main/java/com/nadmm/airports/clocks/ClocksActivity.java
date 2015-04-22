@@ -40,10 +40,8 @@ public class ClocksActivity extends DrawerActivityBase {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        setDrawerItemChecked( DrawerListView.ITEM_ID_CLOCKS );
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_CLOCKS;
     }
 
 }

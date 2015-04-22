@@ -30,9 +30,6 @@ public class TfrDetailActivity extends DrawerActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setDrawerItemChecked( DrawerListView.ITEM_ID_TFR );
-        setDrawerIndicatorEnabled( false );
-
         Bundle args = getIntent().getExtras();
         addFragment( TfrDetailFragment.class, args );
     }

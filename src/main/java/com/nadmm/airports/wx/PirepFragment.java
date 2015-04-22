@@ -130,7 +130,7 @@ public class PirepFragment extends FragmentBase {
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
         DrawerActivityBase activity = (DrawerActivityBase) getActivity();
-        setRefreshItemVisible( !activity.isDrawerOpen() );
+        setRefreshItemVisible( !activity.isNavDrawerOpen() );
     }
 
     @Override

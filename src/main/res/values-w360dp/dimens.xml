@@ -22,4 +22,5 @@
 
 <resources>
     <dimen name="navdrawer_width">304dip</dimen>
+    <dimen name="navdrawer_image_height">164dip</dimen>
 </resources>

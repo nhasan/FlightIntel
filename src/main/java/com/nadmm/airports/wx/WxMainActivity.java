@@ -10,7 +10,6 @@ import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NavAdapter;
-import com.nadmm.airports.views.DrawerListView;
 
 import java.util.ArrayList;
 
@@ -53,13 +52,12 @@ public final class WxMainActivity extends DrawerActivityBase
     protected void onResume() {
         super.onResume();
 
-        setDrawerItemChecked( DrawerListView.ITEM_ID_WX );
         getSupportActionBar().setSelectedNavigationItem( mFragmentId );
     }
 
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( !isDrawerOpen() );
+        setRefreshItemVisible( !isNavDrawerOpen() );
 
         return super.onPrepareOptionsMenu( menu );
     }
@@ -71,6 +69,11 @@ public final class WxMainActivity extends DrawerActivityBase
             replaceFragment( mClasses[ mFragmentId ], null );
         }
         return true;
+    }
+
+    @Override
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_WX;
     }
 
     protected int getInitialFragmentId() {

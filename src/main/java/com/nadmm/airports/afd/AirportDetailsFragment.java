@@ -152,7 +152,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
         DrawerActivityBase activity = (DrawerActivityBase) getActivityBase();
-        setRefreshItemVisible( !activity.isDrawerOpen() );
+        setRefreshItemVisible( !activity.isNavDrawerOpen() );
     }
 
     @Override

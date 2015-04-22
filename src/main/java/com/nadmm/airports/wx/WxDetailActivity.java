@@ -86,13 +86,6 @@ public class WxDetailActivity extends DrawerActivityBase
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        setDrawerItemChecked( DrawerListView.ITEM_ID_WX );
-    }
-
-    @Override
     protected void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
         outState.putInt( "wxtab", mViewPager.getCurrentItem() );
@@ -121,6 +114,11 @@ public class WxDetailActivity extends DrawerActivityBase
     public void onPageSelected( int position ) {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setSelectedNavigationItem( position );
+    }
+
+    @Override
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_WX;
     }
 
     private void setCurrentPage( int pos ) {

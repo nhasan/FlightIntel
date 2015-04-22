@@ -57,11 +57,6 @@ public class DonateActivity extends DrawerActivityBase {
     }
 
     @Override
-    protected boolean showNavDrawer() {
-        return false;
-    }
-
-    @Override
     public void onBackPressed() {
         Intent intent = new Intent( this, FlightIntel.class );
         intent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );

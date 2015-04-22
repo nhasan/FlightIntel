@@ -36,11 +36,4 @@ public class TfrListActivity extends DrawerActivityBase {
         addFragment( TfrListFragment.class, args );
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        setDrawerItemChecked( DrawerListView.ITEM_ID_TFR );
-    }
-
 }

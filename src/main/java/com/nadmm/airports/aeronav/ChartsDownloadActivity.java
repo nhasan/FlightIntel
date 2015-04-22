@@ -36,10 +36,8 @@ public class ChartsDownloadActivity extends DrawerActivityBase {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        setDrawerItemChecked( DrawerListView.ITEM_ID_CHARTS );
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_CHARTS;
     }
 
 }
