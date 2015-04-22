@@ -244,6 +244,7 @@ public class DrawerActivityBase extends ActivityBase {
         mNavDrawerItems.add( NAVDRAWER_ITEM_AFD );
         mNavDrawerItems.add( NAVDRAWER_ITEM_WX );
         mNavDrawerItems.add( NAVDRAWER_ITEM_TFR );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_SEPARATOR );
         mNavDrawerItems.add( NAVDRAWER_ITEM_LIBRARY );
         mNavDrawerItems.add( NAVDRAWER_ITEM_SCRATCHPAD );
         mNavDrawerItems.add( NAVDRAWER_ITEM_CLOCKS );
@@ -341,6 +342,10 @@ public class DrawerActivityBase extends ActivityBase {
 
         ImageView iconView = (ImageView) view.findViewById( R.id.item_icon );
         TextView titleView = (TextView) view.findViewById( R.id.item_title );
+
+        if (selected) {
+            view.setBackgroundResource( R.drawable.selected_navdrawer_item_background );
+        }
 
         // configure its appearance according to whether or not it's selected
         titleView.setTextColor( selected ?
