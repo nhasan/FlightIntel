@@ -35,7 +35,7 @@
             android:layout_width="24dp"
             android:layout_marginRight="32dp"
                tools:ignore="ContentDescription"/>
-    <TextView android:id="@+id/item_text"
+    <TextView android:id="@+id/item_title"
             style="@style/DrawerMenuText"
             android:textColor="@color/drawer_item_text_color"
             android:gravity="left|center_vertical"

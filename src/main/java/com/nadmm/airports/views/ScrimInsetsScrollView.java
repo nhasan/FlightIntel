@@ -23,33 +23,32 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
+import android.widget.ScrollView;
 
 import com.nadmm.airports.R;
-
 
 /**
  * A layout that draws something in the insets passed to {@link #fitSystemWindows(Rect)}, i.e. the area above UI chrome
  * (status and navigation bars, overlay action bars).
  */
-public class ScrimInsetsFrameLayout extends FrameLayout {
+public class ScrimInsetsScrollView extends ScrollView {
     private Drawable mInsetForeground;
 
     private Rect mInsets;
     private Rect mTempRect = new Rect();
     private OnInsetsCallback mOnInsetsCallback;
 
-    public ScrimInsetsFrameLayout(Context context) {
+    public ScrimInsetsScrollView(Context context) {
         super(context);
         init(context, null, 0);
     }
 
-    public ScrimInsetsFrameLayout(Context context, AttributeSet attrs) {
+    public ScrimInsetsScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs, 0);
     }
 
-    public ScrimInsetsFrameLayout(Context context, AttributeSet attrs, int defStyle) {
+    public ScrimInsetsScrollView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context, attrs, defStyle);
     }
