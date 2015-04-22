@@ -34,6 +34,7 @@
     <dimen name="list_nav_text2_size">10sp</dimen>
 
     <dimen name="navdrawer_width">260dip</dimen>
+    <dimen name="navdrawer_image_height">140dip</dimen>
     <dimen name="navdrawer_item_height">48dip</dimen>
     <dimen name="navdrawer_text_size">14sp</dimen>
 
