@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,25 +21,21 @@
  -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:orientation="horizontal"
+        android:orientation="horizontal"
+        android:background="?selectableItemBackground"
         android:paddingLeft="@dimen/padding_left"
         android:paddingRight="@dimen/padding_right"
         android:gravity="start|center_vertical"
-        style="@style/ListItemActivated"
         android:layout_width="match_parent"
         android:layout_height="@dimen/navdrawer_item_height">
     <ImageView android:id="@+id/item_icon"
-            android:tint="@color/drawer_item_icon_color"
             android:layout_height="24dp"
             android:layout_width="24dp"
-            android:layout_marginRight="32dp"
-               tools:ignore="ContentDescription"/>
+            android:layout_marginRight="32dp" />
     <TextView android:id="@+id/item_title"
             style="@style/DrawerMenuText"
-            android:textColor="@color/drawer_item_text_color"
             android:gravity="left|center_vertical"
-            android:layout_weight="1"
-            android:layout_width="0dp"
+            android:layout_gravity="left|center_vertical"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 </LinearLayout>

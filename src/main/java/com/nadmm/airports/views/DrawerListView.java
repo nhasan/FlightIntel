@@ -61,14 +61,14 @@ public final class DrawerListView extends ListView {
     protected class DrawerAdapter extends ResourceCursorAdapter {
 
         public DrawerAdapter( Context context, Cursor c ) {
-            super( context, R.layout.navdrawer_menu_item, c, 0 );
+            super( context, R.layout.navdrawer_item, c, 0 );
         }
 
         @Override
         public void bindView( View view, Context context, Cursor c ) {
             String text = c.getString( c.getColumnIndex( DrawerCursor.ITEM_TEXT ) );
             int icon = c.getInt( c.getColumnIndex( DrawerCursor.ITEM_ICON ) );
-            TextView tv = (TextView) view.findViewById( R.id.item_text );
+            TextView tv = (TextView) view.findViewById( R.id.item_title );
             tv.setText( text );
             ImageView iv = (ImageView) view.findViewById( R.id.item_icon );
             iv.setImageResource( icon );

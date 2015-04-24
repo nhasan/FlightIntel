@@ -30,9 +30,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nadmm.airports.aeronav.ChartsDownloadActivity;
@@ -42,7 +40,6 @@ import com.nadmm.airports.e6b.E6bActivity;
 import com.nadmm.airports.library.LibraryActivity;
 import com.nadmm.airports.scratchpad.ScratchPadActivity;
 import com.nadmm.airports.tfr.TfrListActivity;
-import com.nadmm.airports.views.DrawerListView;
 import com.nadmm.airports.views.ScrimInsetsScrollView;
 import com.nadmm.airports.wx.WxMainActivity;
 
@@ -202,7 +199,7 @@ public class DrawerActivityBase extends ActivityBase {
         };
         mDrawerLayout.setDrawerListener( mDrawerToggle );
 
-        populateNavDrawer();
+        createNavDrawerItems();
     }
 
     private void onNavDrawerItemClicked( final int itemId ) {
@@ -232,6 +229,50 @@ public class DrawerActivityBase extends ActivityBase {
     private void goToNavDrawerItem( int item ) {
         Intent intent;
         switch ( item ) {
+            case NAVDRAWER_ITEM_AFD:
+                intent = new Intent( this, AfdMainActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_WX:
+                intent = new Intent( this, WxMainActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_TFR:
+                intent = new Intent( this, TfrListActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_LIBRARY:
+                intent = new Intent( this, LibraryActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_SCRATCHPAD:
+                intent = new Intent( this, ScratchPadActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_CLOCKS:
+                intent = new Intent( this, ClocksActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_E6B:
+                intent = new Intent( this, E6bActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_CHARTS:
+                intent = new Intent( this, ChartsDownloadActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_SETTINGS:
+                intent = new Intent( this, PreferencesActivity.class );
+                startActivity( intent );
+                break;
         }
     }
 
@@ -239,7 +280,7 @@ public class DrawerActivityBase extends ActivityBase {
         return NAVDRAWER_ITEM_INVALID;
     }
 
-    private void populateNavDrawer() {
+    private void createNavDrawerItems() {
         mNavDrawerItems.clear();
         mNavDrawerItems.add( NAVDRAWER_ITEM_AFD );
         mNavDrawerItems.add( NAVDRAWER_ITEM_WX );
@@ -253,10 +294,6 @@ public class DrawerActivityBase extends ActivityBase {
         mNavDrawerItems.add( NAVDRAWER_ITEM_SEPARATOR );
         mNavDrawerItems.add( NAVDRAWER_ITEM_SETTINGS );
 
-        createNavDrawerItems();
-    }
-
-    private void createNavDrawerItems() {
         mDrawerItemsListContainer = (ViewGroup) findViewById( R.id.navdrawer_items_list );
         if ( mDrawerItemsListContainer == null ) {
             return;
@@ -343,7 +380,7 @@ public class DrawerActivityBase extends ActivityBase {
         ImageView iconView = (ImageView) view.findViewById( R.id.item_icon );
         TextView titleView = (TextView) view.findViewById( R.id.item_title );
 
-        if (selected) {
+        if ( selected ) {
             view.setBackgroundResource( R.drawable.selected_navdrawer_item_background );
         }
 
