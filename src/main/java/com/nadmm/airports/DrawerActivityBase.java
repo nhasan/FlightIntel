@@ -69,10 +69,10 @@ public class DrawerActivityBase extends ActivityBase {
     protected static final int NAVDRAWER_ITEM_WX = 1;
     protected static final int NAVDRAWER_ITEM_TFR = 2;
     protected static final int NAVDRAWER_ITEM_LIBRARY = 3;
-    protected static final int NAVDRAWER_ITEM_SCRATCHPAD = 4;
-    protected static final int NAVDRAWER_ITEM_CLOCKS = 5;
-    protected static final int NAVDRAWER_ITEM_E6B = 6;
-    protected static final int NAVDRAWER_ITEM_CHARTS = 7;
+    protected static final int NAVDRAWER_ITEM_CHARTS = 4;
+    protected static final int NAVDRAWER_ITEM_SCRATCHPAD = 5;
+    protected static final int NAVDRAWER_ITEM_CLOCKS = 6;
+    protected static final int NAVDRAWER_ITEM_E6B = 7;
     protected static final int NAVDRAWER_ITEM_SETTINGS = 8;
     protected static final int NAVDRAWER_ITEM_INVALID = -1;
     protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
@@ -84,10 +84,10 @@ public class DrawerActivityBase extends ActivityBase {
             R.string.navdrawer_item_wx,
             R.string.navdrawer_item_tfr,
             R.string.navdrawer_item_library,
+            R.string.navdrawer_item_charts,
             R.string.navdrawer_item_scratchpad,
             R.string.navdrawer_item_clocks,
             R.string.navdrawer_item_e6b,
-            R.string.navdrawer_item_charts,
             R.string.navdrawer_item_settings
     };
 
@@ -97,10 +97,10 @@ public class DrawerActivityBase extends ActivityBase {
             R.drawable.ic_navdrawer_wx,
             R.drawable.ic_navdrawer_tfr,
             R.drawable.ic_navdrawer_library,
+            R.drawable.ic_navdrawer_charts,
             R.drawable.ic_navdrawer_scratchpad,
             R.drawable.ic_navdrawer_clocks,
             R.drawable.ic_navdrawer_e6b,
-            R.drawable.ic_navdrawer_charts,
             R.drawable.ic_navdrawer_settings
     };
 
@@ -123,7 +123,7 @@ public class DrawerActivityBase extends ActivityBase {
     }
 
     @Override
-    public void setContentView(int layoutResID) {
+    public void setContentView( int layoutResID ) {
         super.setContentView( layoutResID );
         getActionBarToolbar();
     }
@@ -287,10 +287,11 @@ public class DrawerActivityBase extends ActivityBase {
         mNavDrawerItems.add( NAVDRAWER_ITEM_TFR );
         mNavDrawerItems.add( NAVDRAWER_ITEM_SEPARATOR );
         mNavDrawerItems.add( NAVDRAWER_ITEM_LIBRARY );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_CHARTS );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_SEPARATOR );
         mNavDrawerItems.add( NAVDRAWER_ITEM_SCRATCHPAD );
         mNavDrawerItems.add( NAVDRAWER_ITEM_CLOCKS );
         mNavDrawerItems.add( NAVDRAWER_ITEM_E6B );
-        mNavDrawerItems.add( NAVDRAWER_ITEM_CHARTS );
         mNavDrawerItems.add( NAVDRAWER_ITEM_SEPARATOR );
         mNavDrawerItems.add( NAVDRAWER_ITEM_SETTINGS );
 

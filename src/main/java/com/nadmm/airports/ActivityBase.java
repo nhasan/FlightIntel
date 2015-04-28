@@ -19,12 +19,17 @@
 
 package com.nadmm.airports;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
+import android.animation.TypeEvaluator;
+import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -39,7 +44,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -53,12 +62,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,17 +75,30 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Catalog;
 import com.nadmm.airports.DatabaseManager.Nav1;
 import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.aeronav.ChartsDownloadActivity;
+import com.nadmm.airports.afd.AfdMainActivity;
+import com.nadmm.airports.clocks.ClocksActivity;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
+import com.nadmm.airports.e6b.E6bActivity;
+import com.nadmm.airports.library.LibraryActivity;
+import com.nadmm.airports.scratchpad.ScratchPadActivity;
+import com.nadmm.airports.tfr.TfrListActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.FormatUtils;
+import com.nadmm.airports.utils.LUtils;
 import com.nadmm.airports.utils.SystemUtils;
+import com.nadmm.airports.views.MultiSwipeRefreshLayout;
+import com.nadmm.airports.views.ScrimInsetsScrollView;
+import com.nadmm.airports.wx.WxMainActivity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
-public class ActivityBase extends AppCompatActivity {
+public class ActivityBase extends AppCompatActivity implements
+        MultiSwipeRefreshLayout.CanChildScrollUpCallback  {
 
     private DatabaseManager mDbManager;
     private MenuItem mRefreshItem;
@@ -84,11 +106,85 @@ public class ActivityBase extends AppCompatActivity {
     private LayoutInflater mInflater;
     private CursorAsyncTask mTask;
 
-    private final Handler mHandler = new Handler();
     private IntentFilter mFilter;
     private BroadcastReceiver mExternalStorageReceiver;
 
     private Toolbar mActionBarToolbar;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private ObjectAnimator mStatusBarColorAnimator;
+
+    // variables that control the Action Bar auto hide behavior (aka "quick recall")
+    private boolean mActionBarAutoHideEnabled = false;
+    private int mActionBarAutoHideSensivity = 0;
+    private int mActionBarAutoHideMinY = 0;
+    private int mActionBarAutoHideSignal = 0;
+    private boolean mActionBarShown = true;
+
+    // Helper methods for L APIs
+    private LUtils mLUtils;
+
+    private Intent mIntent = null;
+    private Handler mHandler;
+
+    private int mThemedStatusBarColor;
+    private int mNormalStatusBarColor;
+    private int mProgressBarTopWhenActionBarShown;
+    private static final TypeEvaluator ARGB_EVALUATOR = new ArgbEvaluator();
+
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private ViewGroup mDrawerItemsListContainer;
+    // list of navdrawer items that were actually added to the navdrawer, in order
+    private ArrayList<Integer> mNavDrawerItems = new ArrayList<>();
+    // views that correspond to each navdrawer item, null if not yet created
+    private View[] mNavDrawerItemViews = null;
+
+    // When set, these components will be shown/hidden in sync with the action bar
+    // to implement the "quick recall" effect (the Action Bar and the header views disappear
+    // when you scroll down a list, and reappear quickly when you scroll up).
+    private ArrayList<View> mHideableHeaderViews = new ArrayList<View>();
+
+    private static final int HEADER_HIDE_ANIM_DURATION = 300;
+    private static final int NAVDRAWER_LAUNCH_DELAY = 250;
+
+    protected static final int NAVDRAWER_ITEM_AFD = 0;
+    protected static final int NAVDRAWER_ITEM_WX = 1;
+    protected static final int NAVDRAWER_ITEM_TFR = 2;
+    protected static final int NAVDRAWER_ITEM_LIBRARY = 3;
+    protected static final int NAVDRAWER_ITEM_CHARTS = 4;
+    protected static final int NAVDRAWER_ITEM_SCRATCHPAD = 5;
+    protected static final int NAVDRAWER_ITEM_CLOCKS = 6;
+    protected static final int NAVDRAWER_ITEM_E6B = 7;
+    protected static final int NAVDRAWER_ITEM_SETTINGS = 8;
+    protected static final int NAVDRAWER_ITEM_INVALID = -1;
+    protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
+    protected static final int NAVDRAWER_ITEM_SEPARATOR_SPECIAL = -3;
+
+    // titles for navdrawer items (indices must correspond to the above)
+    private static final int[] NAVDRAWER_TITLE_RES_ID = new int[]{
+            R.string.navdrawer_item_afd,
+            R.string.navdrawer_item_wx,
+            R.string.navdrawer_item_tfr,
+            R.string.navdrawer_item_library,
+            R.string.navdrawer_item_charts,
+            R.string.navdrawer_item_scratchpad,
+            R.string.navdrawer_item_clocks,
+            R.string.navdrawer_item_e6b,
+            R.string.navdrawer_item_settings
+    };
+
+    // icons for navdrawer items (indices must correspond to above array)
+    private static final int[] NAVDRAWER_ICON_RES_ID = new int[]{
+            R.drawable.ic_navdrawer_afd,
+            R.drawable.ic_navdrawer_wx,
+            R.drawable.ic_navdrawer_tfr,
+            R.drawable.ic_navdrawer_library,
+            R.drawable.ic_navdrawer_charts,
+            R.drawable.ic_navdrawer_scratchpad,
+            R.drawable.ic_navdrawer_clocks,
+            R.drawable.ic_navdrawer_e6b,
+            R.drawable.ic_navdrawer_settings
+    };
 
     public static final String FRAGMENT_TAG_EXTRA = "FRAGMENT_TAG_EXTRA";
 
@@ -99,6 +195,8 @@ public class ActivityBase extends AppCompatActivity {
         mDbManager = DatabaseManager.instance( this );
         mInflater = getLayoutInflater();
         overridePendingTransition( R.anim.fade_in, R.anim.fade_out );
+
+        mHandler = new Handler();
 
         mFilter = new IntentFilter();
         mFilter.addAction( Intent.ACTION_MEDIA_MOUNTED );
@@ -121,10 +219,12 @@ public class ActivityBase extends AppCompatActivity {
             db.close();
         }
 
+        mLUtils = LUtils.getInstance( this );
+        mThemedStatusBarColor = getResources().getColor( R.color.color_primary_dark );
+        mNormalStatusBarColor = mThemedStatusBarColor;
+
         // Enable Google Analytics
         ( (Application) getApplication() ).getAnalyticsTracker();
-
-        setContentView();
 
         // Setup actionbar
         getActionBarToolbar();
@@ -146,8 +246,280 @@ public class ActivityBase extends AppCompatActivity {
         registerReceiver( mExternalStorageReceiver, mFilter );
     }
 
+    @Override
+    protected void onPostCreate( Bundle savedInstanceState ) {
+        super.onPostCreate( savedInstanceState );
+
+        setupNavDrawer();
+        trySetupSwipeRefresh();
+        updateSwipeRefreshProgressBarTop();
+
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        if ( mDrawerToggle != null ) {
+            mDrawerToggle.syncState();
+        }
+    }
+
+    @Override
+    public void setContentView( int layoutResID ) {
+        super.setContentView( layoutResID );
+        getActionBarToolbar();
+    }
+
+    @Override
+    public void onConfigurationChanged( Configuration newConfig ) {
+        super.onConfigurationChanged( newConfig );
+        if ( mDrawerToggle != null ) {
+            mDrawerToggle.onConfigurationChanged( newConfig );
+        }
+    }
     protected void setContentView() {
-        setContentView( R.layout.activity_main );
+    }
+
+    private void setupNavDrawer() {
+        // What nav drawer item should be selected?
+        int selfItem = getSelfNavDrawerItem();
+
+        mDrawerLayout = (DrawerLayout) findViewById( R.id.drawer_layout );
+        if ( mDrawerLayout == null ) {
+            return;
+        }
+        mDrawerLayout.setStatusBarBackgroundColor(
+                getResources().getColor( R.color.color_primary_dark ) );
+
+        ScrimInsetsScrollView navDrawer = (ScrimInsetsScrollView)
+                mDrawerLayout.findViewById( R.id.navdrawer );
+        if ( selfItem == NAVDRAWER_ITEM_INVALID ) {
+            // do not show a nav drawer
+            if ( navDrawer != null ) {
+                ((ViewGroup) navDrawer.getParent()).removeView( navDrawer );
+            }
+            mDrawerLayout = null;
+            return;
+        }
+
+        mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout,
+                getActionBarToolbar(), R.string.drawer_open, R.string.drawer_close ) {
+
+            public void onDrawerClosed( View view ) {
+                supportInvalidateOptionsMenu();
+
+                if ( mIntent != null ) {
+                    mIntent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
+                    mIntent.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
+                    startActivity( mIntent );
+                    mIntent = null;
+                }
+                onNavDrawerStateChanged( false, false );
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened( View drawerView ) {
+                onNavDrawerStateChanged( true, false );
+                supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+        mDrawerLayout.setDrawerListener( mDrawerToggle );
+
+        createNavDrawerItems();
+    }
+
+    private void createNavDrawerItems() {
+        mNavDrawerItems.clear();
+        mNavDrawerItems.add( NAVDRAWER_ITEM_AFD );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_WX );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_TFR );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_SEPARATOR );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_LIBRARY );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_CHARTS );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_SEPARATOR );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_SCRATCHPAD );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_CLOCKS );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_E6B );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_SEPARATOR );
+        mNavDrawerItems.add( NAVDRAWER_ITEM_SETTINGS );
+
+        mDrawerItemsListContainer = (ViewGroup) findViewById( R.id.navdrawer_items_list );
+        if ( mDrawerItemsListContainer == null ) {
+            return;
+        }
+
+        mNavDrawerItemViews = new View[ mNavDrawerItems.size() ];
+        mDrawerItemsListContainer.removeAllViews();
+        int i = 0;
+        for ( int itemId : mNavDrawerItems ) {
+            mNavDrawerItemViews[ i ] = makeNavDrawerItem( itemId, mDrawerItemsListContainer );
+            mDrawerItemsListContainer.addView( mNavDrawerItemViews[ i ] );
+            ++i;
+        }
+    }
+
+    private void onNavDrawerItemClicked( final int itemId ) {
+        if ( itemId == getSelfNavDrawerItem() ) {
+            mDrawerLayout.closeDrawer( Gravity.START );
+            return;
+        }
+
+        if ( isSpecialItem( itemId ) ) {
+            goToNavDrawerItem( itemId );
+        } else {
+            // launch the target Activity after a short delay, to allow the close animation to play
+            mHandler.postDelayed( new Runnable() {
+                @Override
+                public void run() {
+                    goToNavDrawerItem( itemId );
+                }
+            }, NAVDRAWER_LAUNCH_DELAY );
+
+            // change the active item on the list so the user can see the item changed
+            setSelectedNavDrawerItem( itemId );
+        }
+
+        mDrawerLayout.closeDrawer( Gravity.START );
+    }
+
+    private void setSelectedNavDrawerItem( int itemId ) {
+        if ( mNavDrawerItemViews != null ) {
+            for ( int i = 0; i < mNavDrawerItemViews.length; i++ ) {
+                if ( i < mNavDrawerItems.size() ) {
+                    int thisItemId = mNavDrawerItems.get( i );
+                    formatNavDrawerItem( mNavDrawerItemViews[ i ],
+                            thisItemId, itemId == thisItemId );
+                }
+            }
+        }
+    }
+
+    private void goToNavDrawerItem( int item ) {
+        Intent intent;
+        switch ( item ) {
+            case NAVDRAWER_ITEM_AFD:
+                intent = new Intent( this, AfdMainActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_WX:
+                intent = new Intent( this, WxMainActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_TFR:
+                intent = new Intent( this, TfrListActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_LIBRARY:
+                intent = new Intent( this, LibraryActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_SCRATCHPAD:
+                intent = new Intent( this, ScratchPadActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_CLOCKS:
+                intent = new Intent( this, ClocksActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_E6B:
+                intent = new Intent( this, E6bActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_CHARTS:
+                intent = new Intent( this, ChartsDownloadActivity.class );
+                startActivity( intent );
+                finish();
+                break;
+            case NAVDRAWER_ITEM_SETTINGS:
+                intent = new Intent( this, PreferencesActivity.class );
+                startActivity( intent );
+                break;
+        }
+    }
+
+    private View makeNavDrawerItem( final int itemId, ViewGroup container ) {
+        boolean selected = getSelfNavDrawerItem() == itemId;
+        int layoutToInflate = 0;
+        if ( itemId == NAVDRAWER_ITEM_SEPARATOR ) {
+            layoutToInflate = R.layout.navdrawer_separator;
+        } else if ( itemId == NAVDRAWER_ITEM_SEPARATOR_SPECIAL ) {
+            layoutToInflate = R.layout.navdrawer_separator;
+        } else {
+            layoutToInflate = R.layout.navdrawer_item;
+        }
+        View view = getLayoutInflater().inflate( layoutToInflate, container, false );
+
+        if ( isSeparator( itemId ) ) {
+            return view;
+        }
+
+        ImageView iconView = (ImageView) view.findViewById( R.id.item_icon );
+        TextView titleView = (TextView) view.findViewById( R.id.item_title );
+        int iconId = itemId >= 0 && itemId < NAVDRAWER_ICON_RES_ID.length ?
+                NAVDRAWER_ICON_RES_ID[ itemId ] : 0;
+        int titleId = itemId >= 0 && itemId < NAVDRAWER_TITLE_RES_ID.length ?
+                NAVDRAWER_TITLE_RES_ID[ itemId ] : 0;
+
+        // set icon and text
+        iconView.setVisibility( iconId > 0 ? View.VISIBLE : View.GONE );
+        if ( iconId > 0 ) {
+            iconView.setImageResource( iconId );
+        }
+        titleView.setText( getString( titleId ) );
+
+        formatNavDrawerItem( view, itemId, selected );
+
+        view.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick( View v ) {
+                onNavDrawerItemClicked( itemId );
+            }
+        } );
+
+        return view;
+    }
+
+    private boolean isSpecialItem( int itemId ) {
+        return itemId == NAVDRAWER_ITEM_SETTINGS;
+    }
+
+    private boolean isSeparator( int itemId ) {
+        return itemId == NAVDRAWER_ITEM_SEPARATOR || itemId == NAVDRAWER_ITEM_SEPARATOR_SPECIAL;
+    }
+
+    private void formatNavDrawerItem( View view, int itemId, boolean selected ) {
+        if ( isSeparator( itemId ) ) {
+            // not applicable
+            return;
+        }
+
+        ImageView iconView = (ImageView) view.findViewById( R.id.item_icon );
+        TextView titleView = (TextView) view.findViewById( R.id.item_title );
+
+        if ( selected ) {
+            view.setBackgroundResource( R.drawable.selected_navdrawer_item_background );
+        }
+
+        // configure its appearance according to whether or not it's selected
+        titleView.setTextColor( selected ?
+                getResources().getColor( R.color.navdrawer_text_color_selected ) :
+                getResources().getColor( R.color.navdrawer_text_color ) );
+        iconView.setColorFilter( selected ?
+                getResources().getColor( R.color.navdrawer_icon_tint_selected ) :
+                getResources().getColor( R.color.navdrawer_icon_tint ) );
+    }
+
+    public boolean isNavDrawerOpen() {
+        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen( Gravity.START );
+    }
+
+    public void setDrawerIndicatorEnabled( boolean enable ) {
+        if ( mDrawerToggle != null ) {
+            mDrawerToggle.setDrawerIndicatorEnabled( enable );
+        }
     }
 
     protected Toolbar getActionBarToolbar() {
@@ -163,11 +535,124 @@ public class ActivityBase extends AppCompatActivity {
         return mActionBarToolbar;
     }
 
-    protected Spinner setupActionbarSpinner() {
-        LayoutInflater inflater = LayoutInflater.from( getSupportActionBar().getThemedContext() );
-        View spinnerContainer = inflater.inflate( R.layout.actionbar_spinner, mActionBarToolbar );
-        Spinner spinner = (Spinner) spinnerContainer.findViewById( R.id.actionbar_spinner );
-        return spinner;
+    protected void autoShowOrHideActionBar( boolean show ) {
+        if ( show == mActionBarShown ) {
+            return;
+        }
+
+        mActionBarShown = show;
+        onActionBarAutoShowOrHide( show );
+    }
+
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_INVALID;
+    }
+
+    private void trySetupSwipeRefresh() {
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById( R.id.swipe_refresh_layout );
+        if ( mSwipeRefreshLayout != null ) {
+            mSwipeRefreshLayout.setColorSchemeResources(
+                    R.color.refresh_progress_1,
+                    R.color.refresh_progress_2,
+                    R.color.refresh_progress_3 );
+            mSwipeRefreshLayout.setOnRefreshListener( new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    requestDataRefresh();
+                }
+            } );
+
+            if ( mSwipeRefreshLayout instanceof MultiSwipeRefreshLayout ) {
+                MultiSwipeRefreshLayout mswrl = (MultiSwipeRefreshLayout) mSwipeRefreshLayout;
+                mswrl.setCanChildScrollUpCallback( this );
+            }
+        }
+    }
+
+    protected void requestDataRefresh() {
+    }
+
+    protected void onActionBarAutoShowOrHide( boolean shown ) {
+        if ( mStatusBarColorAnimator != null ) {
+            mStatusBarColorAnimator.cancel();
+        }
+        mStatusBarColorAnimator = ObjectAnimator.ofInt(
+                ( mDrawerLayout != null ) ? mDrawerLayout : mLUtils,
+                ( mDrawerLayout != null ) ? "statusBarBackgroundColor" : "statusBarColor",
+                shown ? Color.BLACK : mNormalStatusBarColor,
+                shown ? mNormalStatusBarColor : Color.BLACK )
+                .setDuration( 250 );
+        if ( mDrawerLayout != null ) {
+            mStatusBarColorAnimator.addUpdateListener( new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate( ValueAnimator valueAnimator ) {
+                    ViewCompat.postInvalidateOnAnimation( mDrawerLayout );
+                }
+            } );
+        }
+        mStatusBarColorAnimator.setEvaluator( ARGB_EVALUATOR );
+        mStatusBarColorAnimator.start();
+
+        updateSwipeRefreshProgressBarTop();
+
+        for ( View view : mHideableHeaderViews ) {
+            if ( shown ) {
+                view.animate()
+                        .translationY( 0 )
+                        .alpha( 1 )
+                        .setDuration( HEADER_HIDE_ANIM_DURATION )
+                        .setInterpolator( new DecelerateInterpolator() );
+            } else {
+                view.animate()
+                        .translationY( -view.getBottom() )
+                        .alpha( 0 )
+                        .setDuration( HEADER_HIDE_ANIM_DURATION )
+                        .setInterpolator( new DecelerateInterpolator() );
+            }
+        }
+    }
+
+    protected void setProgressBarTopWhenActionBarShown( int progressBarTopWhenActionBarShown ) {
+        mProgressBarTopWhenActionBarShown = progressBarTopWhenActionBarShown;
+        updateSwipeRefreshProgressBarTop();
+    }
+
+    private void updateSwipeRefreshProgressBarTop() {
+        if ( mSwipeRefreshLayout == null ) {
+            return;
+        }
+
+        int progressBarStartMargin = getResources().getDimensionPixelSize(
+                R.dimen.swipe_refresh_progress_bar_start_margin );
+        int progressBarEndMargin = getResources().getDimensionPixelSize(
+                R.dimen.swipe_refresh_progress_bar_end_margin );
+        int top = mActionBarShown ? mProgressBarTopWhenActionBarShown : 0;
+        mSwipeRefreshLayout.setProgressViewOffset( false,
+                top + progressBarStartMargin, top + progressBarEndMargin );
+    }
+
+    protected void onRefreshingStateChanged( boolean refreshing ) {
+        if ( mSwipeRefreshLayout != null ) {
+            mSwipeRefreshLayout.setRefreshing( refreshing );
+        }
+    }
+
+    protected void enableDisableSwipeRefresh( boolean enable ) {
+        if ( mSwipeRefreshLayout != null ) {
+            mSwipeRefreshLayout.setEnabled( enable );
+        }
+    }
+
+    // Subclasses can override this for custom behavior
+    protected void onNavDrawerStateChanged( boolean isOpen, boolean isAnimating ) {
+        if ( mActionBarAutoHideEnabled && isOpen ) {
+            autoShowOrHideActionBar( true );
+        }
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return false;
     }
 
     protected CursorAsyncTask setBackgroundTask( CursorAsyncTask task ) {
@@ -574,6 +1059,10 @@ public class ActivityBase extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
+        if ( mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected( item ) ) {
+            return true;
+        }
+
         switch ( item.getItemId() ) {
         case android.R.id.home:
             Intent upIntent = NavUtils.getParentActivityIntent( this );

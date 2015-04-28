@@ -27,6 +27,7 @@
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>
+        <item name="actionBarIconColor">#fff</item>
     </style>
 
     <style name="Theme.Light.Dialog" parent="@style/Theme.AppCompat.Light">

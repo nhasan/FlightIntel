@@ -32,10 +32,11 @@ import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.ListFragmentBase;
+import com.nadmm.airports.utils.CursorAsyncTask;
 
 import java.util.ArrayList;
 
-public class FavoriteAirportsFragment extends ListFragmentBase {
+public class FavoriteAirportsFragment extends AirportListFragment {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -47,7 +48,7 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
     public void onResume() {
         super.onResume();
 
-        new FavoriteAirportsTask().execute( (Void[]) null );
+        setBackgroundTask( new FavoriteAirportsTask() ).execute( (String[]) null );
     }
 
     @Override
@@ -64,10 +65,10 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
         startActivity( intent );
     }
 
-    public class FavoriteAirportsTask extends AsyncTask<Void, Void, Cursor> {
+    public class FavoriteAirportsTask extends CursorAsyncTask {
 
         @Override
-        protected Cursor doInBackground( Void... params ) {
+        protected Cursor[] doInBackground( String... params ) {
             ActivityBase activity = (ActivityBase) getActivity();
             if ( activity == null ) {
                 cancel( false );
@@ -90,14 +91,14 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
             Cursor c = AirportsCursorHelper.query( db, selection,
                     null, null, null, Airports.FACILITY_NAME, null );
 
-            return c;
+            return new Cursor[] { c };
         }
 
         @Override
-        protected void onPostExecute( final Cursor c ) {
-            setCursor( c );
+        protected boolean onResult( Cursor[] result ) {
+            setCursor( result[ 0 ] );
+            return false;
         }
-
     }
 
 }

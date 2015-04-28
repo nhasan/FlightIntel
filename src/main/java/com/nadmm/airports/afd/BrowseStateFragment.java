@@ -39,7 +39,6 @@ public class BrowseStateFragment extends ListFragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
-        setActionBarSubtitle( "All Locations" );
         setBackgroundTask( new BrowseTask() ).execute();
 
         super.onActivityCreated( savedInstanceState );

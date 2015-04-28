@@ -56,8 +56,6 @@ public final class BrowseAirportsFragment extends ListFragmentBase {
     @Override
     protected CursorAdapter newListAdapter( Context context, Cursor c ) {
         mAdapter = new CityCursorAdapter( getActivity(), c );
-        setActionBarSubtitle( String.format( Locale.US, "%s  (%d)",
-                getSupportActionBar().getSubtitle(), c.getCount() ) );
 
         return mAdapter;
     }

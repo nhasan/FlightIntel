@@ -20,21 +20,29 @@
 package com.nadmm.airports.afd;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Spinner;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.ListFragment;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPager;
+import android.util.TypedValue;
 
-import com.nadmm.airports.DrawerActivityBase;
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
-import com.nadmm.airports.utils.NavAdapter;
+import com.nadmm.airports.views.SlidingTabLayout;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-public final class AfdMainActivity extends DrawerActivityBase {
+public final class AfdMainActivity extends ActivityBase
+        implements AirportListFragment.Listener {
 
     private final String[] mOptions = new String[] {
             "Favorites",
@@ -52,42 +60,113 @@ public final class AfdMainActivity extends DrawerActivityBase {
     private final int ID_NEARBY = 1;
     private final int ID_BROWSE = 2;
 
-    private int mFragmentId;
+    private Set<AirportListFragment> mAirportFragments = new HashSet<>();
+
+    ViewPager mViewPager = null;
+    AfdViewPagerAdapter mViewPagerAdapter = null;
+    SlidingTabLayout mSlidingTabLayout = null;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        // Setup list navigation mode
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled( false );
-        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(),
-                R.string.airports, mOptions );
+        Resources res = getResources();
 
-        Spinner spinner = setupActionbarSpinner();
-        spinner.setAdapter( adapter );
-        spinner.setOnItemSelectedListener( new AdapterView.OnItemSelectedListener() {
+        setContentView( R.layout.activity_tab_pager );
+
+        mViewPager = (ViewPager) findViewById( R.id.view_pager );
+        mViewPagerAdapter = new AfdViewPagerAdapter( getSupportFragmentManager() );
+        mViewPager.setAdapter( mViewPagerAdapter );
+
+        mSlidingTabLayout = (SlidingTabLayout) findViewById( R.id.sliding_tabs );
+        mSlidingTabLayout.setCustomTabView( R.layout.tab_indicator, android.R.id.text1 );
+        mSlidingTabLayout.setSelectedIndicatorColors( res.getColor( R.color.tab_selected_strip ) );
+        mSlidingTabLayout.setDistributeEvenly( true );
+        mSlidingTabLayout.setViewPager( mViewPager );
+
+        mSlidingTabLayout.setOnPageChangeListener( new ViewPager.OnPageChangeListener() {
             @Override
-            public void onItemSelected( AdapterView<?> parent, View view, int position, long id ) {
-                if ( id != mFragmentId ) {
-                    mFragmentId = (int) id;
-                    replaceFragment( mClasses[ mFragmentId ], null, false );
-                }
+            public void onPageScrolled( int position, float v, int i1 ) {
+                enableDisableSwipeRefresh( position == ID_NEARBY );
             }
 
             @Override
-            public void onNothingSelected( AdapterView<?> parent ) {
+            public void onPageSelected( int position ) {
+                enableDisableSwipeRefresh( position == ID_NEARBY );
+            }
+
+            @Override
+            public void onPageScrollStateChanged( int state ) {
+                enableDisableSwipeRefresh( state == ViewPager.SCROLL_STATE_IDLE );
             }
         } );
+    }
 
-        Bundle args = getIntent().getExtras();
-        mFragmentId = getInitialFragmentId();
-        addFragment( mClasses[ mFragmentId ], args );
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate( savedInstanceState );
+        mViewPager.setCurrentItem( getInitialFragmentId() );
+        setProgressBarTopWhenActionBarShown( (int)
+                TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 2,
+                        getResources().getDisplayMetrics() ) );
+    }
+
+    @Override
+    public void onFragmentViewCreated( AirportListFragment fragment) {
+    }
+
+    @Override
+    public void onFragmentAttached( AirportListFragment fragment ) {
+        mAirportFragments.add( fragment );
+    }
+
+    @Override
+    public void onFragmentDetached( AirportListFragment fragment) {
+        mAirportFragments.remove( fragment );
+    }
+
+    private class AfdViewPagerAdapter extends FragmentPagerAdapter {
+
+        public AfdViewPagerAdapter( FragmentManager fm ) {
+            super( fm );
+        }
+
+        @Override
+        public Fragment getItem( int position ) {
+            Fragment f = Fragment.instantiate( AfdMainActivity.this,
+                    mClasses[ position ].getName(), null );
+            return f;
+        }
+
+        @Override
+        public int getCount() {
+            return mOptions.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle( int position ) {
+            return mOptions[ position ];
+        }
     }
 
     @Override
     protected int getSelfNavDrawerItem() {
         return NAVDRAWER_ITEM_AFD;
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        for ( AirportListFragment fragment : mAirportFragments ) {
+            if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1 ) {
+                if ( !fragment.getUserVisibleHint() ) {
+                    continue;
+                }
+            }
+
+            return ViewCompat.canScrollVertically( fragment.getListView(), -1 );
+        }
+
+        return false;
     }
 
     protected int getInitialFragmentId() {

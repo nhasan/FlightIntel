@@ -1,5 +1,5 @@
 <!--
-  Copyright 2012 Google Inc.
+  Copyright 2014 Google Inc. All rights reserved.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -14,17 +14,14 @@
   limitations under the License.
   -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/list_item_header_textview"
-    android:paddingLeft="@dimen/padding_left"
-    android:paddingRight="@dimen/padding_right"
-    android:gravity="center_vertical"
-    android:textColor="@color/color_accent"
-    android:textAllCaps="true"
-    android:textStyle="bold"
-    android:textSize="17sp"
-    android:clickable="true"
-    android:focusable="false"
-    android:background="@drawable/accent_bottom_border"
-    android:layout_width="match_parent"
-    android:layout_height="48dp" />
-<!-- clickable set to true to prevent orange background on click in app widget -->
+    style="@style/TabIndicator"
+    android:id="@android:id/text1"
+    android:background="?selectableItemBackground"
+    android:layout_width="wrap_content"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:layout_height="48dp"
+    android:gravity="center"
+    android:textColor="@color/tab_text_color"
+    android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
+    android:textAllCaps="true" />

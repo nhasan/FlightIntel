@@ -88,8 +88,6 @@ public class NearbyAirportsFragment extends ListFragmentBase {
 
         View view = getView();
         view.setKeepScreenOn( true );
-
-        setActionBarSubtitle( String.format( Locale.US, "Airports within %d NM radius", mRadius ) );
     }
 
     @Override

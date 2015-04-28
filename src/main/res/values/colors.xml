@@ -29,14 +29,21 @@
     <color name="gray">#606060</color>
     <color name="lightgray">#989898</color>
     <color name="darkgray">#383838</color>
-    <color name="accent_1">#ff0099cc</color>
-    <color name="color_primary">#ff4c92b7</color>
-    <color name="color_primary_dark">#ff2e7cb8</color>
-    <color name="color_primary_light">#7f539fca</color>
-    <color name="color_accent">#20000000</color>
+    <color name="color_primary">#ff1e88e5</color>
+    <color name="color_primary_dark">#ff1976d2</color>
+    <color name="color_primary_light">#ff64b5f6</color>
+    <color name="color_accent">#ff9100</color>
+
     <color name="navdrawer_text_color">#de000000</color>
     <color name="navdrawer_text_color_selected">@color/color_primary</color>
     <color name="navdrawer_icon_tint">#888</color>
     <color name="navdrawer_icon_tint_selected">@color/color_primary</color>
     <color name="navdrawer_background">#ffffffff</color>
+
+    <color name="refresh_progress_1">@color/color_primary</color>
+    <color name="refresh_progress_2">@color/color_accent</color>
+    <color name="refresh_progress_3">@color/color_primary_dark</color>
+
+    <color name="tab_background">@color/color_primary</color>
+    <color name="tab_selected_strip">@color/color_accent</color>
 </resources>

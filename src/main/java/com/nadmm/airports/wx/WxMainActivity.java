@@ -4,7 +4,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 
 import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.PreferencesActivity;
@@ -13,8 +19,7 @@ import com.nadmm.airports.utils.NavAdapter;
 
 import java.util.ArrayList;
 
-public final class WxMainActivity extends DrawerActivityBase
-        implements ActionBar.OnNavigationListener {
+public final class WxMainActivity extends DrawerActivityBase {
 
     private final String[] mOptions = new String[] {
             "Favorites",
@@ -36,23 +41,41 @@ public final class WxMainActivity extends DrawerActivityBase
         super.onCreate( savedInstanceState );
 
         // Setup list navigation mode
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled( false );
-        actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
-        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(),
-                R.string.weather, mOptions );
-        actionBar.setListNavigationCallbacks( adapter, this );
+        setupActionbarSpinner();
 
         Bundle args = getIntent().getExtras();
         mFragmentId = getInitialFragmentId();
         addFragment( mClasses[ mFragmentId ], args );
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    protected void setupActionbarSpinner() {
+        Toolbar toolbar = getActionBarToolbar();
+        toolbar.setTitle( "" );
 
-        getSupportActionBar().setSelectedNavigationItem( mFragmentId );
+        View spinnerContainer = LayoutInflater.from( this )
+                .inflate( R.layout.actionbar_spinner, toolbar, false );
+        Spinner spinner = (Spinner) spinnerContainer.findViewById( R.id.actionbar_spinner );
+        ActionBar.LayoutParams lp = new ActionBar.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT );
+        toolbar.addView( spinnerContainer, lp );
+
+        NavAdapter adapter = new NavAdapter( getBaseContext(),
+                R.string.weather, mOptions );
+
+        spinner.setAdapter( adapter );
+        spinner.setOnItemSelectedListener( new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected( AdapterView<?> parent, View view, int position, long id ) {
+                if ( id != mFragmentId ) {
+                    mFragmentId = (int) id;
+                    replaceFragment( mClasses[ mFragmentId ], null, false );
+                }
+            }
+
+            @Override
+            public void onNothingSelected( AdapterView<?> parent ) {
+            }
+        } );
     }
 
     @Override
@@ -60,15 +83,6 @@ public final class WxMainActivity extends DrawerActivityBase
         setRefreshItemVisible( !isNavDrawerOpen() );
 
         return super.onPrepareOptionsMenu( menu );
-    }
-
-    @Override
-    public boolean onNavigationItemSelected( int itemPosition, long itemId ) {
-        if ( itemId != mFragmentId ) {
-            mFragmentId = (int) itemId;
-            replaceFragment( mClasses[ mFragmentId ], null );
-        }
-        return true;
     }
 
     @Override

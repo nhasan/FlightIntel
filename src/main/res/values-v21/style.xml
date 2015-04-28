@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
-<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:flightintel="http://schemas.android.com/apk/res-auto"
-        flightintel:theme="@style/ActionBarThemeOverlay"
-        flightintel:popupTheme="@style/ActionBarPopupThemeOverlay"
-        android:id="@+id/toolbar_actionbar"
-        android:background="@null"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        style="@style/Widget.Flightintel.Toolbar" />
+<resources>
+    <style name="Widget.FlightIntel.Spinner" parent="Widget.FlightIntel.Spinner.Base">
+        <item name="android:theme">@style/ActionBarThemeOverlay</item>
+    </style>
+
+    <style name="TabIndicator">
+        <item name="android:theme">@style/ActionBarThemeOverlay</item>
+    </style>
+</resources>
