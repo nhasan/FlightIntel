@@ -26,22 +26,18 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 
 import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.views.SlidingTabLayout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public final class AfdMainActivity extends ActivityBase
-        implements AirportListFragment.Listener {
+public final class AfdMainActivity extends ActivityBase {
 
     private final String[] mOptions = new String[] {
             "Favorites",
@@ -59,8 +55,8 @@ public final class AfdMainActivity extends ActivityBase
     private final int ID_NEARBY = 1;
     private final int ID_BROWSE = 2;
 
-    private HashMap<String, ListFragmentBase> mAirportFragments = new HashMap<>();
-    private int mSelectedFragment;
+    private ArrayList<RefreshableListFragment> mAirportFragments = new ArrayList<>();
+    private int mSelectedFragmentIndex;
 
     ViewPager mViewPager = null;
     AfdViewPagerAdapter mViewPagerAdapter = null;
@@ -91,14 +87,14 @@ public final class AfdMainActivity extends ActivityBase
 
             @Override
             public void onPageSelected( int position ) {
-                mSelectedFragment = position;
-                enableDisableSwipeRefresh( position == ID_NEARBY );
+                mSelectedFragmentIndex = position;
+                enableDisableSwipeRefresh( getSelectedFragment().isRefreshable() );
             }
 
             @Override
             public void onPageScrollStateChanged( int state ) {
                 enableDisableSwipeRefresh( state == ViewPager.SCROLL_STATE_IDLE
-                    && mSelectedFragment == ID_NEARBY );
+                        && getSelectedFragment().isRefreshable() );
             }
         } );
     }
@@ -114,16 +110,8 @@ public final class AfdMainActivity extends ActivityBase
                         getResources().getDisplayMetrics() ) );
     }
 
-    @Override
-    public void onFragmentViewCreated( AirportListFragment fragment ) {
-    }
-
-    @Override
-    public void onFragmentAttached( AirportListFragment fragment ) {
-    }
-
-    @Override
-    public void onFragmentDetached( AirportListFragment fragment) {
+    private RefreshableListFragment getSelectedFragment() {
+        return mAirportFragments.get( mSelectedFragmentIndex );
     }
 
     private class AfdViewPagerAdapter extends FragmentPagerAdapter {
@@ -140,9 +128,9 @@ public final class AfdMainActivity extends ActivityBase
 
         @Override
         public Object instantiateItem( ViewGroup container, int position ) {
-            ListFragmentBase fragment = (ListFragmentBase) super.instantiateItem(
+            RefreshableListFragment fragment = (RefreshableListFragment) super.instantiateItem(
                     container, position );
-            mAirportFragments.put( fragment.getClass().getName(), fragment );
+            mAirportFragments.add( position, fragment );
             return fragment;
         }
 
@@ -164,9 +152,7 @@ public final class AfdMainActivity extends ActivityBase
 
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
-        String name = mClasses[ mSelectedFragment ].getName();
-        ListFragmentBase fragment = mAirportFragments.get( name );
-        return ViewCompat.canScrollVertically( fragment.getListView(), -1 );
+        return getSelectedFragment().canSwipeRefreshChildScrollUp();
     }
 
     protected int getInitialFragmentId() {

@@ -28,18 +28,17 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
+
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
-import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.utils.NearbyHelper;
 
-import java.util.Locale;
-
-public class NearbyAirportsFragment extends AirportListFragment {
+public class NearbyAirportsFragment extends RefreshableListFragment {
 
     private NearbyHelper mNearbyHelper;
     private int mRadius;
@@ -87,7 +86,19 @@ public class NearbyAirportsFragment extends AirportListFragment {
         }
 
         View view = getView();
-        view.setKeepScreenOn( true );
+        if ( view != null ) {
+            view.setKeepScreenOn( true );
+        }
+    }
+
+    @Override
+    protected boolean isRefreshable() {
+        return true;
+    }
+
+    @Override
+    protected boolean canSwipeRefreshChildScrollUp() {
+        return ViewCompat.canScrollVertically( getListView(), -1 );
     }
 
     @Override

@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
@@ -31,12 +30,11 @@ import android.widget.ListView;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 import java.util.ArrayList;
 
-public class FavoriteAirportsFragment extends AirportListFragment {
+public class FavoriteAirportsFragment extends RefreshableListFragment {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {

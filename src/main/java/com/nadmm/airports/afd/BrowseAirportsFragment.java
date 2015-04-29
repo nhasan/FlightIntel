@@ -31,14 +31,11 @@ import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.DownloadActivity;
-import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 
-import java.util.Locale;
-
-public final class BrowseAirportsFragment extends AirportListFragment {
+public final class BrowseAirportsFragment extends RefreshableListFragment {
 
     private SectionedCursorAdapter mAdapter;
 

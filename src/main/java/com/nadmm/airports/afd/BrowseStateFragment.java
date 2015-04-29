@@ -13,7 +13,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DownloadActivity;
-import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
@@ -21,7 +20,7 @@ import com.nadmm.airports.utils.SectionedCursorAdapter;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class BrowseStateFragment extends AirportListFragment {
+public class BrowseStateFragment extends RefreshableListFragment {
 
     // Projection map for queries
     static private final HashMap<String, String> sStateMap;
@@ -105,9 +104,9 @@ public class BrowseStateFragment extends AirportListFragment {
 
             // Show all the states grouped by first letter
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( DatabaseManager.Airports.TABLE_NAME+" a LEFT OUTER JOIN "
-                    + DatabaseManager.States.TABLE_NAME+" s"+" ON a."+ DatabaseManager.Airports.ASSOC_STATE
-                    +"=s."+ DatabaseManager.States.STATE_CODE );
+            builder.setTables( DatabaseManager.Airports.TABLE_NAME + " a LEFT OUTER JOIN "
+                    + DatabaseManager.States.TABLE_NAME + " s" + " ON a." + DatabaseManager.Airports.ASSOC_STATE
+                    + "=s." + DatabaseManager.States.STATE_CODE );
             builder.setProjectionMap( sStateMap );
             Cursor c = builder.query( db,
                     // String[] projectionIn
