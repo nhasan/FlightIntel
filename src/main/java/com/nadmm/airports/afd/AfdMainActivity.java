@@ -21,25 +21,24 @@ package com.nadmm.airports.afd;
 
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
+import android.view.ViewGroup;
 
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.views.SlidingTabLayout;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
 
 public final class AfdMainActivity extends ActivityBase
         implements AirportListFragment.Listener {
@@ -60,7 +59,8 @@ public final class AfdMainActivity extends ActivityBase
     private final int ID_NEARBY = 1;
     private final int ID_BROWSE = 2;
 
-    private Set<AirportListFragment> mAirportFragments = new HashSet<>();
+    private HashMap<String, ListFragmentBase> mAirportFragments = new HashMap<>();
+    private int mSelectedFragment;
 
     ViewPager mViewPager = null;
     AfdViewPagerAdapter mViewPagerAdapter = null;
@@ -87,17 +87,18 @@ public final class AfdMainActivity extends ActivityBase
         mSlidingTabLayout.setOnPageChangeListener( new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled( int position, float v, int i1 ) {
-                enableDisableSwipeRefresh( position == ID_NEARBY );
             }
 
             @Override
             public void onPageSelected( int position ) {
+                mSelectedFragment = position;
                 enableDisableSwipeRefresh( position == ID_NEARBY );
             }
 
             @Override
             public void onPageScrollStateChanged( int state ) {
-                enableDisableSwipeRefresh( state == ViewPager.SCROLL_STATE_IDLE );
+                enableDisableSwipeRefresh( state == ViewPager.SCROLL_STATE_IDLE
+                    && mSelectedFragment == ID_NEARBY );
             }
         } );
     }
@@ -105,24 +106,24 @@ public final class AfdMainActivity extends ActivityBase
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate( savedInstanceState );
-        mViewPager.setCurrentItem( getInitialFragmentId() );
+        int mSelectedFragment = getInitialFragmentId();
+        mViewPager.setCurrentItem( mSelectedFragment );
+        enableDisableSwipeRefresh( mSelectedFragment == ID_NEARBY );
         setProgressBarTopWhenActionBarShown( (int)
                 TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 2,
                         getResources().getDisplayMetrics() ) );
     }
 
     @Override
-    public void onFragmentViewCreated( AirportListFragment fragment) {
+    public void onFragmentViewCreated( AirportListFragment fragment ) {
     }
 
     @Override
     public void onFragmentAttached( AirportListFragment fragment ) {
-        mAirportFragments.add( fragment );
     }
 
     @Override
     public void onFragmentDetached( AirportListFragment fragment) {
-        mAirportFragments.remove( fragment );
     }
 
     private class AfdViewPagerAdapter extends FragmentPagerAdapter {
@@ -133,9 +134,16 @@ public final class AfdMainActivity extends ActivityBase
 
         @Override
         public Fragment getItem( int position ) {
-            Fragment f = Fragment.instantiate( AfdMainActivity.this,
+            return Fragment.instantiate( AfdMainActivity.this,
                     mClasses[ position ].getName(), null );
-            return f;
+        }
+
+        @Override
+        public Object instantiateItem( ViewGroup container, int position ) {
+            ListFragmentBase fragment = (ListFragmentBase) super.instantiateItem(
+                    container, position );
+            mAirportFragments.put( fragment.getClass().getName(), fragment );
+            return fragment;
         }
 
         @Override
@@ -156,17 +164,9 @@ public final class AfdMainActivity extends ActivityBase
 
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
-        for ( AirportListFragment fragment : mAirportFragments ) {
-            if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1 ) {
-                if ( !fragment.getUserVisibleHint() ) {
-                    continue;
-                }
-            }
-
-            return ViewCompat.canScrollVertically( fragment.getListView(), -1 );
-        }
-
-        return false;
+        String name = mClasses[ mSelectedFragment ].getName();
+        ListFragmentBase fragment = mAirportFragments.get( name );
+        return ViewCompat.canScrollVertically( fragment.getListView(), -1 );
     }
 
     protected int getInitialFragmentId() {

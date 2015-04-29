@@ -38,7 +38,7 @@ import com.nadmm.airports.utils.SectionedCursorAdapter;
 
 import java.util.Locale;
 
-public final class BrowseAirportsFragment extends ListFragmentBase {
+public final class BrowseAirportsFragment extends AirportListFragment {
 
     private SectionedCursorAdapter mAdapter;
 

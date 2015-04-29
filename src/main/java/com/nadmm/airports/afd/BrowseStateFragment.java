@@ -21,12 +21,12 @@ import com.nadmm.airports.utils.SectionedCursorAdapter;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class BrowseStateFragment extends ListFragmentBase {
+public class BrowseStateFragment extends AirportListFragment {
 
     // Projection map for queries
     static private final HashMap<String, String> sStateMap;
     static {
-        sStateMap = new HashMap<String, String>();
+        sStateMap = new HashMap<>();
         sStateMap.put(BaseColumns._ID, "max(" + BaseColumns._ID + ") AS " + BaseColumns._ID);
         sStateMap.put(DatabaseManager.Airports.ASSOC_STATE, DatabaseManager.Airports.ASSOC_STATE);
         sStateMap.put(DatabaseManager.States.STATE_NAME,
@@ -103,14 +103,13 @@ public class BrowseStateFragment extends ListFragmentBase {
                 return null;
             }
 
-            Cursor c = null;
             // Show all the states grouped by first letter
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( DatabaseManager.Airports.TABLE_NAME+" a LEFT OUTER JOIN "
                     + DatabaseManager.States.TABLE_NAME+" s"+" ON a."+ DatabaseManager.Airports.ASSOC_STATE
                     +"=s."+ DatabaseManager.States.STATE_CODE );
             builder.setProjectionMap( sStateMap );
-            c = builder.query( db,
+            Cursor c = builder.query( db,
                     // String[] projectionIn
                     new String[] { BaseColumns._ID,
                             DatabaseManager.Airports.ASSOC_STATE,

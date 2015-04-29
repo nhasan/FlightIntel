@@ -39,7 +39,7 @@ import com.nadmm.airports.utils.NearbyHelper;
 
 import java.util.Locale;
 
-public class NearbyAirportsFragment extends ListFragmentBase {
+public class NearbyAirportsFragment extends AirportListFragment {
 
     private NearbyHelper mNearbyHelper;
     private int mRadius;
