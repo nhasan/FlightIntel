@@ -142,7 +142,7 @@ public class ActivityBase extends AppCompatActivity implements
     // When set, these components will be shown/hidden in sync with the action bar
     // to implement the "quick recall" effect (the Action Bar and the header views disappear
     // when you scroll down a list, and reappear quickly when you scroll up).
-    private ArrayList<View> mHideableHeaderViews = new ArrayList<View>();
+    private ArrayList<View> mHideableHeaderViews = new ArrayList<>();
 
     private static final int HEADER_HIDE_ANIM_DURATION = 300;
     private static final int NAVDRAWER_LAUNCH_DELAY = 250;
@@ -273,6 +273,8 @@ public class ActivityBase extends AppCompatActivity implements
             mDrawerToggle.onConfigurationChanged( newConfig );
         }
     }
+
+    //TODO: Remove this
     protected void setContentView() {
     }
 
@@ -442,7 +444,7 @@ public class ActivityBase extends AppCompatActivity implements
 
     private View makeNavDrawerItem( final int itemId, ViewGroup container ) {
         boolean selected = getSelfNavDrawerItem() == itemId;
-        int layoutToInflate = 0;
+        int layoutToInflate;
         if ( itemId == NAVDRAWER_ITEM_SEPARATOR ) {
             layoutToInflate = R.layout.navdrawer_separator;
         } else if ( itemId == NAVDRAWER_ITEM_SEPARATOR_SPECIAL ) {
@@ -528,8 +530,10 @@ public class ActivityBase extends AppCompatActivity implements
             if ( mActionBarToolbar != null ) {
                 setSupportActionBar( mActionBarToolbar );
                 ActionBar actionBar = getSupportActionBar();
-                actionBar.setHomeButtonEnabled( true );
-                actionBar.setDisplayHomeAsUpEnabled( true );
+                if ( actionBar != null ) {
+                    actionBar.setHomeButtonEnabled( true );
+                    actionBar.setDisplayHomeAsUpEnabled( true );
+                }
             }
         }
         return mActionBarToolbar;
@@ -631,7 +635,7 @@ public class ActivityBase extends AppCompatActivity implements
                 top + progressBarStartMargin, top + progressBarEndMargin );
     }
 
-    protected void onRefreshingStateChanged( boolean refreshing ) {
+    public void onRefreshingStateChanged( boolean refreshing ) {
         if ( mSwipeRefreshLayout != null ) {
             mSwipeRefreshLayout.setRefreshing( refreshing );
         }
@@ -825,8 +829,8 @@ public class ActivityBase extends AppCompatActivity implements
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
                 +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
-        Cursor c = builder.query( db, new String[] { "*" }, Airports.SITE_NUMBER+"=?",
-                new String[] { siteNumber }, null, null, null, null );
+        Cursor c = builder.query( db, new String[]{ "*" }, Airports.SITE_NUMBER + "=?",
+                new String[]{ siteNumber }, null, null, null, null );
         if ( !c.moveToFirst() ) {
             return null;
         }
@@ -848,8 +852,7 @@ public class ActivityBase extends AppCompatActivity implements
 
     protected Intent checkData() {
         if ( !SystemUtils.isExternalStorageAvailable() ) {
-            Intent intent = new Intent( this, ExternalStorageActivity.class );
-            return intent;
+            return new Intent( this, ExternalStorageActivity.class );
         }
 
         Cursor c = mDbManager.getCurrentFromCatalog();
@@ -1129,12 +1132,18 @@ public class ActivityBase extends AppCompatActivity implements
     }
 
     protected void setActionBarTitle( String title, String subtitle ) {
-        getSupportActionBar().setTitle( title );
-        getSupportActionBar().setSubtitle( subtitle );
+        ActionBar actionBar = getSupportActionBar();
+        if ( actionBar != null ) {
+            actionBar.setTitle( title );
+            actionBar.setSubtitle( subtitle );
+        }
     }
 
     protected void setActionBarSubtitle( String subtitle ) {
-        getSupportActionBar().setSubtitle( subtitle );
+        ActionBar actionBar = getSupportActionBar();
+        if ( actionBar != null ) {
+            actionBar.setSubtitle( subtitle );
+        }
     }
 
     protected void showFaddsEffectiveDate( Cursor c ) {

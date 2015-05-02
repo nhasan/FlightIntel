@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
@@ -31,11 +32,13 @@ import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.States;
 import com.nadmm.airports.DownloadActivity;
+import com.nadmm.airports.IRefreshable;
+import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 
-public final class BrowseAirportsFragment extends RefreshableListFragment {
+public final class BrowseAirportsFragment extends ListFragmentBase implements  IRefreshable {
 
     private SectionedCursorAdapter mAdapter;
 
@@ -68,6 +71,21 @@ public final class BrowseAirportsFragment extends RefreshableListFragment {
         Intent intent = new Intent( getActivity(), AirportActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         startActivity( intent );
+    }
+
+    @Override
+    public boolean isRefreshable() {
+        return false;
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return false;
+    }
+
+    @Override
+    public void requestDataRefresh() {
+        getActivityBase().onRefreshingStateChanged( false );
     }
 
     private final class CityCursorAdapter extends SectionedCursorAdapter {

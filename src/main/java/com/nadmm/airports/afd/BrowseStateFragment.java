@@ -11,8 +11,12 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DownloadActivity;
+import com.nadmm.airports.IRefreshable;
+import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
@@ -20,7 +24,7 @@ import com.nadmm.airports.utils.SectionedCursorAdapter;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class BrowseStateFragment extends RefreshableListFragment {
+public class BrowseStateFragment extends ListFragmentBase implements IRefreshable {
 
     // Projection map for queries
     static private final HashMap<String, String> sStateMap;
@@ -41,6 +45,21 @@ public class BrowseStateFragment extends RefreshableListFragment {
         setBackgroundTask( new BrowseTask() ).execute();
 
         super.onActivityCreated( savedInstanceState );
+    }
+
+    @Override
+    public boolean isRefreshable() {
+        return false;
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return false;
+    }
+
+    @Override
+    public void requestDataRefresh() {
+        getActivityBase().onRefreshingStateChanged( false );
     }
 
     @Override

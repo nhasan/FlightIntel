@@ -30,11 +30,13 @@ import android.widget.ListView;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.IRefreshable;
+import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 import java.util.ArrayList;
 
-public class FavoriteAirportsFragment extends RefreshableListFragment {
+public class FavoriteAirportsFragment extends ListFragmentBase implements IRefreshable {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -47,6 +49,21 @@ public class FavoriteAirportsFragment extends RefreshableListFragment {
         super.onResume();
 
         setBackgroundTask( new FavoriteAirportsTask() ).execute( (String[]) null );
+    }
+
+    @Override
+    public boolean isRefreshable() {
+        return false;
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return false;
+    }
+
+    @Override
+    public void requestDataRefresh() {
+        getActivityBase().onRefreshingStateChanged( false );
     }
 
     @Override

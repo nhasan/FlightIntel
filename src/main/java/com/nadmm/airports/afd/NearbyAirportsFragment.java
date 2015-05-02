@@ -35,10 +35,12 @@ import android.widget.ListView;
 
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
+import com.nadmm.airports.IRefreshable;
+import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.utils.NearbyHelper;
 
-public class NearbyAirportsFragment extends RefreshableListFragment {
+public class NearbyAirportsFragment extends ListFragmentBase implements IRefreshable {
 
     private NearbyHelper mNearbyHelper;
     private int mRadius;
@@ -92,13 +94,17 @@ public class NearbyAirportsFragment extends RefreshableListFragment {
     }
 
     @Override
-    protected boolean isRefreshable() {
+    public boolean isRefreshable() {
         return true;
     }
 
     @Override
-    protected boolean canSwipeRefreshChildScrollUp() {
+    public boolean canSwipeRefreshChildScrollUp() {
         return ViewCompat.canScrollVertically( getListView(), -1 );
+    }
+
+    @Override
+    public void requestDataRefresh() {
     }
 
     @Override
