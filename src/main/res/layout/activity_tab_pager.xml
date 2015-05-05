@@ -22,31 +22,19 @@
 
 <android.support.v4.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <!-- Main layout -->
-    <LinearLayout
+    <com.nadmm.airports.views.DrawShadowFrameLayout
         android:id="@+id/main_content"
+        android:clipChildren="false"
+        app:shadowDrawable="@drawable/header_shadow"
         android:layout_width="match_parent"
-        android:orientation="vertical"
         android:layout_height="match_parent">
-
-        <LinearLayout style="@style/HeaderBar"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="vertical">
-
-            <include layout="@layout/toolbar_actionbar" />
-
-            <com.nadmm.airports.views.SlidingTabLayout
-                android:background="@color/tab_background"
-                android:id="@+id/sliding_tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
 
         <com.nadmm.airports.views.MultiSwipeRefreshLayout
             android:id="@+id/swipe_refresh_layout"
@@ -62,7 +50,22 @@
 
         </com.nadmm.airports.views.MultiSwipeRefreshLayout>
 
-    </LinearLayout>
+        <LinearLayout style="@style/HeaderBar"
+                      android:id="@+id/headerbar"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical">
+
+            <include layout="@layout/toolbar_actionbar" />
+
+            <com.nadmm.airports.views.SlidingTabLayout
+                android:id="@+id/sliding_tabs"
+                android:background="@color/tab_background"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </com.nadmm.airports.views.DrawShadowFrameLayout>
 
     <!-- The navigation drawer -->
     <include layout="@layout/navdrawer" />

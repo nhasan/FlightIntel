@@ -52,18 +52,10 @@ public class FavoriteAirportsFragment extends ListFragmentBase implements IRefre
     }
 
     @Override
-    public boolean isRefreshable() {
-        return false;
-    }
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
 
-    @Override
-    public boolean canSwipeRefreshChildScrollUp() {
-        return false;
-    }
-
-    @Override
-    public void requestDataRefresh() {
-        getActivityBase().onRefreshingStateChanged( false );
+        getActivityBase().registerActionBarAutoHideListView( getListView() );
     }
 
     @Override

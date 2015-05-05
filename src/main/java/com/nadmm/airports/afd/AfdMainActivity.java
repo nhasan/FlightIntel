@@ -22,7 +22,7 @@ package com.nadmm.airports.afd;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.PersistableBundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -30,11 +30,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.TypedValue;
+import android.widget.ListView;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.IRefreshable;
+import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
+import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.SlidingTabLayout;
 
 import java.util.ArrayList;
@@ -58,7 +61,7 @@ public final class AfdMainActivity extends ActivityBase {
     private final int ID_BROWSE = 2;
 
     private ArrayList<Fragment> mAirportFragments = new ArrayList<>();
-    private int mCurrentFragmentIndex;
+    private int mCurrentFragmentIndex = -1;
 
     ViewPager mViewPager = null;
     AfdViewPagerAdapter mViewPagerAdapter = null;
@@ -87,7 +90,10 @@ public final class AfdMainActivity extends ActivityBase {
         if ( mAirportFragments.size() == 0 ) {
             // Create the fragments
             for ( Class<?> clss : mClasses ) {
-                mAirportFragments.add( Fragment.instantiate( this, clss.getName() ) );
+                Bundle args = new Bundle();
+                args.putInt( ListFragmentBase.FRAGMENT_ID, mAirportFragments.size() );
+                Fragment fragment = Fragment.instantiate( this, clss.getName(), args );
+                mAirportFragments.add( fragment );
             }
         }
 
@@ -122,11 +128,17 @@ public final class AfdMainActivity extends ActivityBase {
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
+    protected void onPostCreate( Bundle savedInstanceState) {
         super.onPostCreate( savedInstanceState );
-        int mSelectedFragment = getInitialFragmentId();
-        mViewPager.setCurrentItem( mSelectedFragment );
-        enableDisableSwipeRefresh( mSelectedFragment == ID_NEARBY );
+
+        enableActionBarAutoHide();
+        registerHideableHeaderView( findViewById( R.id.headerbar ),
+                UiUtils.calculateActionBarSize( this ) );
+
+        enableDisableSwipeRefresh( false );
+
+        mViewPager.setCurrentItem( getInitialFragmentId() );
+
         setProgressBarTopWhenActionBarShown( (int)
                 TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 2,
                         getResources().getDisplayMetrics() ) );
@@ -142,8 +154,12 @@ public final class AfdMainActivity extends ActivityBase {
         }
     }
 
-    private IRefreshable getCurrentFragment() {
-        return (IRefreshable) mAirportFragments.get( mCurrentFragmentIndex );
+    private ListFragmentBase getCurrentFragment() {
+        return getFragmentAtPositoin( mCurrentFragmentIndex );
+    }
+
+    private ListFragmentBase getFragmentAtPositoin( int position ) {
+        return (ListFragmentBase) mAirportFragments.get( position );
     }
 
     private class AfdViewPagerAdapter extends FragmentPagerAdapter {

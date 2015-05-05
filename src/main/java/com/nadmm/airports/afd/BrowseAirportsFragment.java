@@ -44,13 +44,15 @@ public final class BrowseAirportsFragment extends ListFragmentBase implements  I
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
         Bundle args = getArguments();
         String stateCode = args.getString( States.STATE_CODE );
         String stateName = args.getString( States.STATE_NAME );
 
         setBackgroundTask(new BrowseTask()).execute( stateCode, stateName );
 
-        super.onActivityCreated( savedInstanceState );
+        getActivityBase().registerActionBarAutoHideListView( getListView() );
     }
 
     @Override
@@ -71,21 +73,6 @@ public final class BrowseAirportsFragment extends ListFragmentBase implements  I
         Intent intent = new Intent( getActivity(), AirportActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, siteNumber );
         startActivity( intent );
-    }
-
-    @Override
-    public boolean isRefreshable() {
-        return false;
-    }
-
-    @Override
-    public boolean canSwipeRefreshChildScrollUp() {
-        return false;
-    }
-
-    @Override
-    public void requestDataRefresh() {
-        getActivityBase().onRefreshingStateChanged( false );
     }
 
     private final class CityCursorAdapter extends SectionedCursorAdapter {

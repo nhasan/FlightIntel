@@ -21,6 +21,7 @@ package com.nadmm.airports.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -37,8 +38,7 @@ import java.util.Locale;
 
 public class UiUtils {
 
-    private static final LruCache<String, Drawable> sDrawableCache
-            = new LruCache<String, Drawable>( 100 );
+    private static final LruCache<String, Drawable> sDrawableCache = new LruCache<>( 100 );
 
     private final static Handler sHandler;
     private final static Paint sPaint = new Paint( Paint.FILTER_BITMAP_FLAG );
@@ -49,8 +49,7 @@ public class UiUtils {
     }
 
     public static Drawable getDrawableFromCache( String key ){
-        Drawable d = sDrawableCache.get( key );
-        return d;
+        return sDrawableCache.get( key );
     }
 
     public static void putDrawableIntoCache( String key, Drawable d ) {
@@ -72,7 +71,7 @@ public class UiUtils {
         if ( msg == null ) {
             return;
         }
-        sHandler.post( new Runnable () {
+        sHandler.post( new Runnable() {
             @Override
             public void run() {
                 Toast.makeText( context.getApplicationContext(), msg, duration ).show();
@@ -134,7 +133,7 @@ public class UiUtils {
     static public void setTextViewDrawable( TextView tv, Drawable d ) {
         DisplayMetrics dm = tv.getResources().getDisplayMetrics();
         tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
-        tv.setCompoundDrawablePadding( (int) ( dm.density*6+0.5 ) );
+        tv.setCompoundDrawablePadding( (int) ( dm.density * 6 + 0.5 ) );
     }
 
     static public Drawable getColorizedDrawable( Resources res, int resid, int color ) {
@@ -157,7 +156,7 @@ public class UiUtils {
 
     public static void setRunwayDrawable( Context context, TextView tv, String runwayId,
             int length, int heading ) {
-        int resid = 0;
+        int resid;
         if ( runwayId.startsWith( "H" ) ) {
             resid = R.drawable.helipad;
         } else {
@@ -187,6 +186,29 @@ public class UiUtils {
         Drawable d = UiUtils.getRotatedDrawable( context, resid, heading );
         tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
         tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( context, 5 ) );
+    }
+
+    private static final int[] RES_IDS_ACTION_BAR_SIZE = { R.attr.actionBarSize };
+
+    /** Calculates the Action Bar height in pixels. */
+    public static int calculateActionBarSize( Context context ) {
+        if ( context == null ) {
+            return 0;
+        }
+
+        Resources.Theme curTheme = context.getTheme();
+        if ( curTheme == null ) {
+            return 0;
+        }
+
+        TypedArray att = curTheme.obtainStyledAttributes( RES_IDS_ACTION_BAR_SIZE );
+        if ( att == null ) {
+            return 0;
+        }
+
+        float size = att.getDimension( 0, 0 );
+        att.recycle();
+        return (int) size;
     }
 
 }

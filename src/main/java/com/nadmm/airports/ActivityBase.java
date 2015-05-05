@@ -63,10 +63,12 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.AbsListView;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -160,6 +162,8 @@ public class ActivityBase extends AppCompatActivity implements
     protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
     protected static final int NAVDRAWER_ITEM_SEPARATOR_SPECIAL = -3;
 
+    private ListView.OnScrollListener mListViewScrollListener;
+
     // titles for navdrawer items (indices must correspond to the above)
     private static final int[] NAVDRAWER_TITLE_RES_ID = new int[]{
             R.string.navdrawer_item_afd,
@@ -187,6 +191,7 @@ public class ActivityBase extends AppCompatActivity implements
     };
 
     public static final String FRAGMENT_TAG_EXTRA = "FRAGMENT_TAG_EXTRA";
+    private static final String HIDEABLE_OFFSET = "HIDEABLE_OFFSET";
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -218,6 +223,24 @@ public class ActivityBase extends AppCompatActivity implements
             Application.sDonationDone = c.moveToFirst();
             db.close();
         }
+
+        mListViewScrollListener = new AbsListView.OnScrollListener() {
+            final static int ITEMS_THRESHOLD = 3;
+            int lastFvi = 0;
+
+            @Override
+            public void onScrollStateChanged( AbsListView view, int scrollState ) {
+            }
+
+            @Override
+            public void onScroll( AbsListView view, int firstVisibleItem, int visibleItemCount,
+                                  int totalItemCount ) {
+                onMainContentScrolled( firstVisibleItem <= ITEMS_THRESHOLD ? 0 : Integer.MAX_VALUE,
+                        lastFvi - firstVisibleItem > 0 ? Integer.MIN_VALUE :
+                                lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE );
+                lastFvi = firstVisibleItem;
+            }
+        };
 
         mLUtils = LUtils.getInstance( this );
         mThemedStatusBarColor = getResources().getColor( R.color.color_primary_dark );
@@ -576,6 +599,60 @@ public class ActivityBase extends AppCompatActivity implements
     protected void requestDataRefresh() {
     }
 
+    public void registerActionBarAutoHideListView( final ListView listView ) {
+        listView.setOnScrollListener( mListViewScrollListener );
+    }
+
+    protected void registerHideableHeaderView( View hideableHeaderView ) {
+        registerHideableHeaderView( hideableHeaderView, hideableHeaderView.getBottom() );
+    }
+
+    protected void registerHideableHeaderView( View hideableHeaderView, int offset ) {
+        if ( !mHideableHeaderViews.contains( hideableHeaderView ) ) {
+            hideableHeaderView.setTag( R.id.AUTOHIDE_OFFSET, offset );
+            mHideableHeaderViews.add( hideableHeaderView );
+        }
+    }
+
+    /**
+     * Initializes the Action Bar auto-hide (aka Quick Recall) effect.
+     */
+    protected void enableActionBarAutoHide() {
+        mActionBarAutoHideEnabled = true;
+        mActionBarAutoHideMinY = getResources().getDimensionPixelSize(
+                R.dimen.action_bar_auto_hide_min_y );
+        mActionBarAutoHideSensivity = getResources().getDimensionPixelSize(
+                R.dimen.action_bar_auto_hide_sensivity );
+    }
+
+    /**
+     * Indicates that the main content has scrolled (for the purposes of showing/hiding
+     * the action bar for the "action bar auto hide" effect). currentY and deltaY may be exact
+     * (if the underlying view supports it) or may be approximate indications:
+     * deltaY may be INT_MAX to mean "scrolled forward indeterminately" and INT_MIN to mean
+     * "scrolled backward indeterminately".  currentY may be 0 to mean "somewhere close to the
+     * start of the list" and INT_MAX to mean "we don't know, but not at the start of the list"
+     */
+    private void onMainContentScrolled(int currentY, int deltaY) {
+        if (deltaY > mActionBarAutoHideSensivity) {
+            deltaY = mActionBarAutoHideSensivity;
+        } else if (deltaY < -mActionBarAutoHideSensivity) {
+            deltaY = -mActionBarAutoHideSensivity;
+        }
+
+        if (Math.signum(deltaY) * Math.signum(mActionBarAutoHideSignal) < 0) {
+            // deltaY is a motion opposite to the accumulated signal, so reset signal
+            mActionBarAutoHideSignal = deltaY;
+        } else {
+            // add to accumulated signal
+            mActionBarAutoHideSignal += deltaY;
+        }
+
+        boolean shouldShow = currentY < mActionBarAutoHideMinY ||
+                (mActionBarAutoHideSignal <= -mActionBarAutoHideSensivity);
+        autoShowOrHideActionBar( shouldShow );
+    }
+
     protected void onActionBarAutoShowOrHide( boolean shown ) {
         if ( mStatusBarColorAnimator != null ) {
             mStatusBarColorAnimator.cancel();
@@ -603,13 +680,12 @@ public class ActivityBase extends AppCompatActivity implements
             if ( shown ) {
                 view.animate()
                         .translationY( 0 )
-                        .alpha( 1 )
                         .setDuration( HEADER_HIDE_ANIM_DURATION )
                         .setInterpolator( new DecelerateInterpolator() );
             } else {
+                int offset = (int)view.getTag( R.id.AUTOHIDE_OFFSET );
                 view.animate()
-                        .translationY( -view.getBottom() )
-                        .alpha( 0 )
+                        .translationY( -offset )
                         .setDuration( HEADER_HIDE_ANIM_DURATION )
                         .setInterpolator( new DecelerateInterpolator() );
             }

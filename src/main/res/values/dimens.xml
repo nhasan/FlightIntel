@@ -33,6 +33,9 @@
     <dimen name="list_nav_text1_size">16sp</dimen>
     <dimen name="list_nav_text2_size">10sp</dimen>
 
+    <dimen name="action_bar_auto_hide_min_y">64dp</dimen>
+    <dimen name="action_bar_auto_hide_sensivity">16dp</dimen>
+
     <dimen name="navdrawer_width">260dip</dimen>
     <dimen name="navdrawer_image_height">140dip</dimen>
     <dimen name="navdrawer_item_height">48dip</dimen>

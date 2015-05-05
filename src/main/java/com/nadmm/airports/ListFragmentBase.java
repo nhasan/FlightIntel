@@ -24,7 +24,9 @@ import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.CursorAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,10 +36,29 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public abstract class ListFragmentBase extends FragmentBase implements LocationListener {
+import com.nadmm.airports.afd.AfdMainActivity;
+
+public abstract class ListFragmentBase extends FragmentBase
+        implements LocationListener, IRefreshable {
+
+    public static final String FRAGMENT_ID = "FRAGMENT_ID";
 
     private ListView mListView;
     private String mEmptyText;
+    private int mFragmentId;
+    private int mContentTopClearance;
+
+    @Override
+    public void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+
+        Bundle args = getArguments();
+        if ( args.containsKey( FRAGMENT_ID ) ) {
+            mFragmentId = args.getInt( FRAGMENT_ID );
+        } else {
+            mFragmentId = getId();
+        }
+    }
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -73,6 +94,30 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
         setFragmentContentShownNoAnimation( false );
+    }
+
+    @Override
+    public boolean isRefreshable() {
+        return false;
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return ViewCompat.canScrollVertically( mListView, -1 );
+    }
+
+    @Override
+    public void requestDataRefresh() {
+    }
+
+    public void setContentTopClearance( int clearance ) {
+        if ( mContentTopClearance != clearance ) {
+            mContentTopClearance = clearance;
+            mListView.setPadding( mListView.getPaddingLeft(), mContentTopClearance,
+                    mListView.getPaddingRight(), mListView.getPaddingBottom() );
+            CursorAdapter adapter = (CursorAdapter) mListView.getAdapter();
+            adapter.notifyDataSetChanged();
+        }
     }
 
     protected void setCursor( Cursor c ) {

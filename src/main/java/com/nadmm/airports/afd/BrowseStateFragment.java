@@ -42,24 +42,11 @@ public class BrowseStateFragment extends ListFragmentBase implements IRefreshabl
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
         setBackgroundTask( new BrowseTask() ).execute();
 
-        super.onActivityCreated( savedInstanceState );
-    }
-
-    @Override
-    public boolean isRefreshable() {
-        return false;
-    }
-
-    @Override
-    public boolean canSwipeRefreshChildScrollUp() {
-        return false;
-    }
-
-    @Override
-    public void requestDataRefresh() {
-        getActivityBase().onRefreshingStateChanged( false );
+        getActivityBase().registerActionBarAutoHideListView( getListView() );
     }
 
     @Override
