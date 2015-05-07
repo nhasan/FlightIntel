@@ -19,7 +19,6 @@
 
 package com.nadmm.airports.afd;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -91,7 +90,7 @@ public class NearbyAirportsFragment extends ListFragmentBase {
             view.setKeepScreenOn( true );
         }
 
-        getActivityBase().registerActionBarAutoHideListView( getListView() );
+        ((AfdMainActivity) getActivityBase()).onFragmentStarted( this );
     }
 
     @Override

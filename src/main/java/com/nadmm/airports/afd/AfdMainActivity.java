@@ -22,18 +22,15 @@ package com.nadmm.airports.afd;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.util.TypedValue;
 import android.widget.ListView;
 
 import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.IRefreshable;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
@@ -117,6 +114,8 @@ public final class AfdMainActivity extends ActivityBase {
             public void onPageSelected( int position ) {
                 mCurrentFragmentIndex = position;
                 enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
+                // Show the actionbar when a new page is selected
+                autoShowOrHideActionBar( true );
             }
 
             @Override
@@ -125,6 +124,20 @@ public final class AfdMainActivity extends ActivityBase {
                         && getCurrentFragment().isRefreshable() );
             }
         } );
+    }
+
+    public void onFragmentStarted( ListFragmentBase fragment ) {
+        ListView listView = fragment.getListView();
+        listView.setPadding( listView.getPaddingLeft(), 144 + UiUtils.calculateActionBarSize( this ),
+                listView.getPaddingRight(), listView.getPaddingBottom() );
+        registerActionBarAutoHideListView( listView );
+        updateContentTopClearance( fragment );
+    }
+
+    protected void updateContentTopClearance( ListFragmentBase fragment ) {
+        int actionbarClearance = UiUtils.calculateActionBarSize( this );
+        int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
+        fragment.setContentTopClearance( actionbarClearance+tabbarClearance );
     }
 
     @Override

@@ -49,6 +49,8 @@
 
     <dimen name="headerbar_elevation">4dp</dimen>
 
+    <dimen name="tabbar_height">48dp</dimen>
+
     <dimen name="small_text_size">16sp</dimen>
     <dimen name="smaller_text_size">15sp</dimen>
     <dimen name="medium_text_size">18sp</dimen>

@@ -162,8 +162,6 @@ public class ActivityBase extends AppCompatActivity implements
     protected static final int NAVDRAWER_ITEM_SEPARATOR = -2;
     protected static final int NAVDRAWER_ITEM_SEPARATOR_SPECIAL = -3;
 
-    private ListView.OnScrollListener mListViewScrollListener;
-
     // titles for navdrawer items (indices must correspond to the above)
     private static final int[] NAVDRAWER_TITLE_RES_ID = new int[]{
             R.string.navdrawer_item_afd,
@@ -223,24 +221,6 @@ public class ActivityBase extends AppCompatActivity implements
             Application.sDonationDone = c.moveToFirst();
             db.close();
         }
-
-        mListViewScrollListener = new AbsListView.OnScrollListener() {
-            final static int ITEMS_THRESHOLD = 3;
-            int lastFvi = 0;
-
-            @Override
-            public void onScrollStateChanged( AbsListView view, int scrollState ) {
-            }
-
-            @Override
-            public void onScroll( AbsListView view, int firstVisibleItem, int visibleItemCount,
-                                  int totalItemCount ) {
-                onMainContentScrolled( firstVisibleItem <= ITEMS_THRESHOLD ? 0 : Integer.MAX_VALUE,
-                        lastFvi - firstVisibleItem > 0 ? Integer.MIN_VALUE :
-                                lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE );
-                lastFvi = firstVisibleItem;
-            }
-        };
 
         mLUtils = LUtils.getInstance( this );
         mThemedStatusBarColor = getResources().getColor( R.color.color_primary_dark );
@@ -562,15 +542,6 @@ public class ActivityBase extends AppCompatActivity implements
         return mActionBarToolbar;
     }
 
-    protected void autoShowOrHideActionBar( boolean show ) {
-        if ( show == mActionBarShown ) {
-            return;
-        }
-
-        mActionBarShown = show;
-        onActionBarAutoShowOrHide( show );
-    }
-
     protected int getSelfNavDrawerItem() {
         return NAVDRAWER_ITEM_INVALID;
     }
@@ -600,7 +571,23 @@ public class ActivityBase extends AppCompatActivity implements
     }
 
     public void registerActionBarAutoHideListView( final ListView listView ) {
-        listView.setOnScrollListener( mListViewScrollListener );
+        listView.setOnScrollListener( new AbsListView.OnScrollListener() {
+            final static int ITEMS_THRESHOLD = 2;
+            int lastFvi = 0;
+
+            @Override
+            public void onScrollStateChanged( AbsListView view, int scrollState ) {
+            }
+
+            @Override
+            public void onScroll( AbsListView view, int firstVisibleItem, int visibleItemCount,
+                                  int totalItemCount ) {
+                onMainContentScrolled( firstVisibleItem <= ITEMS_THRESHOLD ? 0 : Integer.MAX_VALUE,
+                        lastFvi - firstVisibleItem > 0 ? Integer.MIN_VALUE :
+                                lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE );
+                lastFvi = firstVisibleItem;
+            }
+        } );
     }
 
     protected void registerHideableHeaderView( View hideableHeaderView ) {
@@ -614,15 +601,28 @@ public class ActivityBase extends AppCompatActivity implements
         }
     }
 
+    protected void autoShowOrHideActionBar(boolean show) {
+        if (show == mActionBarShown) {
+            return;
+        }
+
+        mActionBarShown = show;
+        onActionBarAutoShowOrHide(show);
+    }
+
     /**
      * Initializes the Action Bar auto-hide (aka Quick Recall) effect.
      */
-    protected void enableActionBarAutoHide() {
+    private void initActionBarAutoHide() {
         mActionBarAutoHideEnabled = true;
         mActionBarAutoHideMinY = getResources().getDimensionPixelSize(
-                R.dimen.action_bar_auto_hide_min_y );
+                R.dimen.action_bar_auto_hide_min_y);
         mActionBarAutoHideSensivity = getResources().getDimensionPixelSize(
-                R.dimen.action_bar_auto_hide_sensivity );
+                R.dimen.action_bar_auto_hide_sensivity);
+    }
+
+    protected void enableActionBarAutoHide() {
+        initActionBarAutoHide();
     }
 
     /**

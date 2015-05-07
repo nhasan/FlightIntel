@@ -26,7 +26,6 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +34,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.nadmm.airports.afd.AfdMainActivity;
 
 public abstract class ListFragmentBase extends FragmentBase
         implements LocationListener, IRefreshable {
@@ -116,7 +113,9 @@ public abstract class ListFragmentBase extends FragmentBase
             mListView.setPadding( mListView.getPaddingLeft(), mContentTopClearance,
                     mListView.getPaddingRight(), mListView.getPaddingBottom() );
             CursorAdapter adapter = (CursorAdapter) mListView.getAdapter();
-            adapter.notifyDataSetChanged();
+            if ( adapter != null ) {
+                adapter.notifyDataSetChanged();
+            }
         }
     }
 

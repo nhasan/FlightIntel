@@ -32,6 +32,8 @@
             android:layout_height="match_parent" />
     <ListView android:id="@android:id/list"
             android:footerDividersEnabled="false"
+            android:clipToPadding="false"
+            android:scrollbarStyle="outsideOverlay"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="0dp"/>
