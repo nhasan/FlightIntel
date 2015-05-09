@@ -48,7 +48,7 @@
 		        android:layout_width="0dp"
 		        android:layout_height="wrap_content">
 	        <TextView android:id="@+id/airport_info"
-	                style="@style/TextMedium"
+	                style="@style/TextSmall.Bold"
 	                android:singleLine="true"
 	                android:ellipsize="end"
                     android:paddingBottom="2dp"

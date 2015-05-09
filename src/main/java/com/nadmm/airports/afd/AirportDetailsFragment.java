@@ -52,8 +52,8 @@ import java.util.TimeZone;
 
 public final class AirportDetailsFragment extends FragmentBase {
 
-    private final HashSet<TextView> mAwosViews = new HashSet<TextView>();
-    private final HashSet<TextView> mRunwayViews = new HashSet<TextView>();
+    private final HashSet<TextView> mAwosViews = new HashSet<>();
+    private final HashSet<TextView> mRunwayViews = new HashSet<>();
     private final int MAX_WX_STATIONS = 5;
 
     private BroadcastReceiver mMetarReceiver;
@@ -151,8 +151,7 @@ public final class AirportDetailsFragment extends FragmentBase {
 
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
-        DrawerActivityBase activity = (DrawerActivityBase) getActivityBase();
-        setRefreshItemVisible( !activity.isNavDrawerOpen() );
+        setRefreshItemVisible( !getActivityBase().isNavDrawerOpen() );
     }
 
     @Override
@@ -215,8 +214,7 @@ public final class AirportDetailsFragment extends FragmentBase {
 
         Cursor twr3 = result[ 4 ];
         if ( twr3.moveToFirst() ) {
-            HashMap<String, ArrayList<Float>> freqMap
-                = new HashMap<String, ArrayList<Float>>();
+            HashMap<String, ArrayList<Float>> freqMap = new HashMap<>();
             do {
                 String freqUse = twr3.getString(
                         twr3.getColumnIndex( Tower3.MASTER_AIRPORT_FREQ_USE ) );
@@ -249,10 +247,9 @@ public final class AirportDetailsFragment extends FragmentBase {
             String key, String value ) {
         ArrayList<Float> freqs = freqMap.get( key );
         if ( freqs == null ) {
-            freqs = new ArrayList<Float>();
+            freqs = new ArrayList<>();
         }
         int i = 0;
-        Float freq = 0F;
         while ( i < value.length() ) {
             char c = value.charAt( i );
             if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
@@ -262,7 +259,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             value = value.substring( 0, i );
             break;
         }
-        freq = Float.valueOf( value );
+        Float freq = Float.valueOf( value );
         if ( freq <= 136 && !freqs.contains( freq ) ) {
             // Add VHF frequencies only
             freqs.add( freq );
@@ -545,7 +542,7 @@ public final class AirportDetailsFragment extends FragmentBase {
                 towerValue = String.format( "Yes (%s)", hours );
             }
         } else {
-            towerValue = String.format( "No" );
+            towerValue = "No";
         }
         addRow( layout, "Control tower", towerValue );
         String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
@@ -837,7 +834,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             getActivityBase().startRefreshAnimation();
         }
 
-        ArrayList<String> stationIds = new ArrayList<String>();
+        ArrayList<String> stationIds = new ArrayList<>();
         for ( TextView tv : mAwosViews ) {
             String stationId = (String) tv.getTag();
             stationIds.add( stationId );

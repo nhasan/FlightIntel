@@ -189,7 +189,6 @@ public class ActivityBase extends AppCompatActivity implements
     };
 
     public static final String FRAGMENT_TAG_EXTRA = "FRAGMENT_TAG_EXTRA";
-    private static final String HIDEABLE_OFFSET = "HIDEABLE_OFFSET";
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -228,9 +227,6 @@ public class ActivityBase extends AppCompatActivity implements
 
         // Enable Google Analytics
         ( (Application) getApplication() ).getAnalyticsTracker();
-
-        // Setup actionbar
-        getActionBarToolbar();
     }
 
     @Override
@@ -1183,7 +1179,24 @@ public class ActivityBase extends AppCompatActivity implements
     }
 
     public void setActionBarTitle( Cursor c ) {
-        setActionBarTitle( c, "Airport Details" );
+        ActionBar actionBar = getSupportActionBar();
+        if ( actionBar != null ) {
+            String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+            String type = DataUtils.decodeLandingFaclityType( siteNumber );
+            String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
+            String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
+            if ( code == null || code.length() == 0 ) {
+                code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
+            }
+
+            Boolean isScreenWide = getResources().getBoolean( R.bool.IsScreenWide );
+            if ( isScreenWide ) {
+                actionBar.setTitle( String.format( "%s - %s %s", code, name, type ) );
+            } else {
+                actionBar.setTitle( code );
+                actionBar.setSubtitle( String.format( "%s %s", name, type ) );
+            }
+        }
     }
 
     protected void setActionBarTitle( Cursor c, String subtitle ) {
@@ -1192,8 +1205,8 @@ public class ActivityBase extends AppCompatActivity implements
             code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
         }
         String title = code;
-        Boolean showAirportName = getResources().getBoolean( R.bool.ActionbarShowAirportName );
-        if ( showAirportName ) {
+        Boolean isScreenWide = getResources().getBoolean( R.bool.IsScreenWide );
+        if ( isScreenWide ) {
             String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
             String type = DataUtils.decodeLandingFaclityType( siteNumber );
             String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );

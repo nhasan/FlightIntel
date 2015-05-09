@@ -21,22 +21,47 @@
  -->
 
 <android.support.v4.widget.DrawerLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/drawer_layout"
-        android:fitsSystemWindows="true"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:fitsSystemWindows="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Main layout -->
+    <com.nadmm.airports.views.DrawShadowFrameLayout
+        android:id="@+id/main_content"
+        android:clipChildren="false"
+        app:shadowDrawable="@drawable/header_shadow"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <!-- The main content view -->
-    <LinearLayout
+
+        <com.nadmm.airports.views.MultiSwipeRefreshLayout
+            android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-        <include layout="@layout/toolbar_actionbar" />
-        <FrameLayout
-            android:id="@+id/fragment_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+            android:layout_height="match_parent">
+
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:paddingTop="?attr/actionBarSize"
+                android:clipToPadding="false"
+                android:scrollbarStyle="outsideOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.nadmm.airports.views.MultiSwipeRefreshLayout>
+
+        <LinearLayout style="@style/HeaderBar"
+                      android:id="@+id/headerbar"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical">
+
+            <include layout="@layout/toolbar_actionbar" />
+        </LinearLayout>
+
+    </com.nadmm.airports.views.DrawShadowFrameLayout>
+
     <!-- The navigation drawer -->
     <include layout="@layout/navdrawer" />
 </android.support.v4.widget.DrawerLayout>
+

@@ -16,10 +16,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
 
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <bool name="ActionbarShowAirportName">true</bool>
+<resources>
+    <bool name="IsScreenWide">true</bool>
 </resources>
