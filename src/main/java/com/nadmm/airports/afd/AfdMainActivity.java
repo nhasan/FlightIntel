@@ -70,29 +70,7 @@ public final class AfdMainActivity extends ActivityBase {
 
         setContentView( R.layout.activity_tab_pager );
 
-        if ( savedInstanceState != null ) {
-            // Activity was recreated, check if our fragments survived
-            for ( Class<?> clss : mClasses ) {
-                // Restore the fragments from state saved earlier
-                Fragment fragment = getSupportFragmentManager().getFragment(
-                        savedInstanceState, clss.getName() );
-                if ( fragment == null ) {
-                    // Fragments were not saved
-                    break;
-                }
-                mAirportFragments.add( fragment );
-            }
-        }
-
-        if ( mAirportFragments.size() == 0 ) {
-            // Create the fragments
-            for ( Class<?> clss : mClasses ) {
-                Bundle args = new Bundle();
-                args.putInt( ListFragmentBase.FRAGMENT_ID, mAirportFragments.size() );
-                Fragment fragment = Fragment.instantiate( this, clss.getName(), args );
-                mAirportFragments.add( fragment );
-            }
-        }
+        initFragments( savedInstanceState );
 
         mViewPager = (ViewPager) findViewById( R.id.view_pager );
         mViewPagerAdapter = new AfdViewPagerAdapter( getSupportFragmentManager() );
@@ -126,20 +104,6 @@ public final class AfdMainActivity extends ActivityBase {
         } );
     }
 
-    public void onFragmentStarted( ListFragmentBase fragment ) {
-        ListView listView = fragment.getListView();
-        listView.setPadding( listView.getPaddingLeft(), 144 + UiUtils.calculateActionBarSize( this ),
-                listView.getPaddingRight(), listView.getPaddingBottom() );
-        registerActionBarAutoHideListView( listView );
-        updateContentTopClearance( fragment );
-    }
-
-    protected void updateContentTopClearance( ListFragmentBase fragment ) {
-        int actionbarClearance = UiUtils.calculateActionBarSize( this );
-        int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
-        fragment.setContentTopClearance( actionbarClearance+tabbarClearance );
-    }
-
     @Override
     protected void onPostCreate( Bundle savedInstanceState) {
         super.onPostCreate( savedInstanceState );
@@ -164,6 +128,46 @@ public final class AfdMainActivity extends ActivityBase {
             // Save the fragments so we can restore them later
             getSupportFragmentManager().putFragment( outState,
                     fragment.getClass().getName(), fragment );
+        }
+    }
+
+    public void onFragmentStarted( ListFragmentBase fragment ) {
+        ListView listView = fragment.getListView();
+        listView.setPadding( listView.getPaddingLeft(), 144 + UiUtils.calculateActionBarSize( this ),
+                listView.getPaddingRight(), listView.getPaddingBottom() );
+        registerActionBarAutoHideListView( listView );
+        updateContentTopClearance( fragment );
+    }
+
+    private void updateContentTopClearance( ListFragmentBase fragment ) {
+        int actionbarClearance = UiUtils.calculateActionBarSize( this );
+        int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
+        fragment.setContentTopClearance( actionbarClearance + tabbarClearance );
+    }
+
+    private void initFragments( Bundle savedInstanceState ) {
+        if ( savedInstanceState != null ) {
+            // Activity was recreated, check if our fragments survived
+            for ( Class<?> clss : mClasses ) {
+                // Restore the fragments from state saved earlier
+                Fragment fragment = getSupportFragmentManager().getFragment(
+                        savedInstanceState, clss.getName() );
+                if ( fragment == null ) {
+                    // Fragments were not saved
+                    break;
+                }
+                mAirportFragments.add( fragment );
+            }
+        }
+
+        if ( mAirportFragments.size() == 0 ) {
+            // Create the fragments
+            for ( Class<?> clss : mClasses ) {
+                Bundle args = new Bundle();
+                args.putInt( ListFragmentBase.FRAGMENT_ID, mAirportFragments.size() );
+                Fragment fragment = Fragment.instantiate( this, clss.getName(), args );
+                mAirportFragments.add( fragment );
+            }
         }
     }
 
