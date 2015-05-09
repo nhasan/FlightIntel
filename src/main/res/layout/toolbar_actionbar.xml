@@ -20,11 +20,7 @@
  */
  -->
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:flightintel="http://schemas.android.com/apk/res-auto"
-        flightintel:theme="@style/ActionBarThemeOverlay"
-        flightintel:popupTheme="@style/ActionBarPopupThemeOverlay"
         android:id="@+id/toolbar_actionbar"
-        android:background="@null"
+        style="@style/Widget.Flightintel.Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        style="@style/Widget.Flightintel.Toolbar" />
+        android:layout_height="?actionBarSize" />
