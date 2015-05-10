@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.aeronav;
@@ -42,7 +42,7 @@ public class SubscribeActivity extends ActivityBase {
         adapter.addTab( "d-AFD", SubscribeDafdFragment.class, null );
 
         PagerTabStrip tabs = (PagerTabStrip) findViewById( R.id.pager_tabs );
-        tabs.setTabIndicatorColor( getResources().getColor( R.color.tab_indicator ) );
+        tabs.setTabIndicatorColor( getResources().getColor( R.color.tab_selected_strip ) );
 
         if ( savedInstanceState != null ) {
             pager.setCurrentItem( savedInstanceState.getInt( "aeronavtab" ) );
