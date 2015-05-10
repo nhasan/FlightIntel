@@ -72,7 +72,7 @@ public class AirportsCursorAdapter extends ResourceCursorAdapter {
         }
         holder.id.setText( id );
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
-        String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );
+        String state = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
         String use = c.getString( c.getColumnIndex( Airports.FACILITY_USE ) );
         holder.location.setText( String.format( "%s, %s, %s", city, state,
                 DataUtils.decodeFacilityUse( use ) ) );
