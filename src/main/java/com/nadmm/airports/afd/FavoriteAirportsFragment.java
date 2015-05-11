@@ -27,21 +27,22 @@ import android.os.Bundle;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
+
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.IRefreshable;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 import java.util.ArrayList;
 
-public class FavoriteAirportsFragment extends ListFragmentBase implements IRefreshable {
+public class FavoriteAirportsFragment extends ListFragmentBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        setEmptyText( "No favorite airports selected." );
         super.onCreate( savedInstanceState );
+
+        setEmptyText( "No favorite airports selected." );
     }
 
     @Override

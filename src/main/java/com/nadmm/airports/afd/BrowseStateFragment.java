@@ -12,10 +12,8 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DownloadActivity;
-import com.nadmm.airports.IRefreshable;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
@@ -24,7 +22,7 @@ import com.nadmm.airports.utils.SectionedCursorAdapter;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class BrowseStateFragment extends ListFragmentBase implements IRefreshable {
+public class BrowseStateFragment extends ListFragmentBase {
 
     // Projection map for queries
     static private final HashMap<String, String> sStateMap;
