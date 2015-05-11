@@ -35,13 +35,11 @@
     </style>
 
     <style name="TextSmall" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">@dimen/small_text_size</item>
     </style>
 
-    <style name="TextSmaller" parent="@style/TextAppearance.AppCompat.Body1">
-        <item name="android:textSize">@dimen/smaller_text_size</item>
-    </style>
-
-    <style name="TextSmall.Bold" parent="@style/TextAppearance.AppCompat.Body2">
+    <style name="TextSmall.Bold">
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="TextSmall.Red">
@@ -54,6 +52,10 @@
 
     <style name="TextSmall.Light">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="TextSmaller" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">@dimen/smaller_text_size</item>
     </style>
 
     <style name="TextSmaller.Light">
@@ -83,8 +85,7 @@
     <style name="TextLabel.Bold" parent="@style/TextAppearance.AppCompat.Title">
     </style>
 
-    <style name="TextTitle" parent="@style/TextAppearance.AppCompat.Title">
-        <item name="android:textSize">@dimen/medium_text_size</item>
+    <style name="TextTitle" parent="TextMedium.Bold">
     </style>
 
     <style name="TextNormal" parent="@style/TextAppearance.AppCompat.Body1">

@@ -52,8 +52,8 @@
     <dimen name="tabbar_height">48dp</dimen>
 
     <dimen name="small_text_size">16sp</dimen>
-    <dimen name="smaller_text_size">15sp</dimen>
-    <dimen name="medium_text_size">18sp</dimen>
+    <dimen name="smaller_text_size">14sp</dimen>
+    <dimen name="medium_text_size">17sp</dimen>
     <dimen name="label_text_size">20sp</dimen>
     <dimen name="clock_text_size">64sp</dimen>
     <dimen name="clock_tenths_text_size">36sp</dimen>
