@@ -52,7 +52,7 @@ public final class BrowseAirportsFragment extends ListFragmentBase implements  I
 
         setBackgroundTask(new BrowseTask()).execute( stateCode, stateName );
 
-        getActivityBase().registerActionBarAutoHideListView( getListView() );
+        ((AfdMainActivity) getActivityBase()).onFragmentStarted( this );
     }
 
     @Override

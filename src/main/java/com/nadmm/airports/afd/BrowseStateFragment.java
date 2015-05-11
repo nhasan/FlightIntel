@@ -46,7 +46,7 @@ public class BrowseStateFragment extends ListFragmentBase implements IRefreshabl
 
         setBackgroundTask( new BrowseTask() ).execute();
 
-        getActivityBase().registerActionBarAutoHideListView( getListView() );
+        ((AfdMainActivity) getActivityBase()).onFragmentStarted( this );
     }
 
     @Override

@@ -72,6 +72,8 @@ public final class AfdMainActivity extends ActivityBase {
 
         initFragments( savedInstanceState );
 
+        setActionBarTitle( "Airports", null );
+
         mViewPager = (ViewPager) findViewById( R.id.view_pager );
         mViewPagerAdapter = new AfdViewPagerAdapter( getSupportFragmentManager() );
         mViewPager.setAdapter( mViewPagerAdapter );
@@ -132,10 +134,7 @@ public final class AfdMainActivity extends ActivityBase {
     }
 
     public void onFragmentStarted( ListFragmentBase fragment ) {
-        ListView listView = fragment.getListView();
-        listView.setPadding( listView.getPaddingLeft(), 144 + UiUtils.calculateActionBarSize( this ),
-                listView.getPaddingRight(), listView.getPaddingBottom() );
-        registerActionBarAutoHideListView( listView );
+        registerActionBarAutoHideListView( fragment.getListView() );
         updateContentTopClearance( fragment );
     }
 

@@ -55,7 +55,7 @@ public class FavoriteAirportsFragment extends ListFragmentBase implements IRefre
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        getActivityBase().registerActionBarAutoHideListView( getListView() );
+        ((AfdMainActivity) getActivityBase()).onFragmentStarted( this );
     }
 
     @Override

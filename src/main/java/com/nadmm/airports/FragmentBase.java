@@ -281,7 +281,7 @@ public class FragmentBase extends Fragment {
 
             @Override
             public void run() {
-                getActivityBase().replaceFragment( clss, args );
+                getActivityBase().replaceFragment( clss, args, true );
             }
         };
         makeRowClickable( row, r );

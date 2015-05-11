@@ -20,9 +20,7 @@
 package com.nadmm.airports;
 
 import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.animation.TypeEvaluator;
-import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
@@ -41,10 +39,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -113,7 +108,6 @@ public class ActivityBase extends AppCompatActivity implements
 
     private Toolbar mActionBarToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private ObjectAnimator mStatusBarColorAnimator;
 
     // variables that control the Action Bar auto hide behavior (aka "quick recall")
     private boolean mActionBarAutoHideEnabled = false;
@@ -188,6 +182,14 @@ public class ActivityBase extends AppCompatActivity implements
             R.drawable.ic_navdrawer_settings
     };
 
+    private FragmentManager.OnBackStackChangedListener mBackStackChangedListener =
+            new FragmentManager.OnBackStackChangedListener() {
+                @Override
+                public void onBackStackChanged() {
+                    updateDrawerToggle();
+                }
+            };
+
     public static final String FRAGMENT_TAG_EXTRA = "FRAGMENT_TAG_EXTRA";
 
     @Override
@@ -236,6 +238,7 @@ public class ActivityBase extends AppCompatActivity implements
         }
         overridePendingTransition( R.anim.fade_in, R.anim.fade_out );
         unregisterReceiver( mExternalStorageReceiver );
+        getSupportFragmentManager().removeOnBackStackChangedListener( mBackStackChangedListener );
         super.onPause();
     }
 
@@ -243,6 +246,11 @@ public class ActivityBase extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         registerReceiver( mExternalStorageReceiver, mFilter );
+
+        // Whenever the fragment back stack changes, we may need to update the
+        // action bar toggle: only top level screens show the hamburger-like icon, inner
+        // screens - either Activities or fragments - show the "Up" icon instead.
+        getSupportFragmentManager().addOnBackStackChangedListener( mBackStackChangedListener );
     }
 
     @Override
@@ -270,6 +278,23 @@ public class ActivityBase extends AppCompatActivity implements
         super.onConfigurationChanged( newConfig );
         if ( mDrawerToggle != null ) {
             mDrawerToggle.onConfigurationChanged( newConfig );
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // If the drawer is open, back will close it
+        if ( mDrawerLayout != null && mDrawerLayout.isDrawerOpen( Gravity.START ) ) {
+            mDrawerLayout.closeDrawers();
+            return;
+        }
+        // Otherwise, it may return to the previous fragment stack
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if ( fragmentManager.getBackStackEntryCount() > 0 ) {
+            fragmentManager.popBackStack();
+        } else {
+            // Lastly, it will rely on the system behavior for back
+            super.onBackPressed();
         }
     }
 
@@ -320,9 +345,37 @@ public class ActivityBase extends AppCompatActivity implements
                 supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
+        mDrawerToggle.setToolbarNavigationClickListener( new View.OnClickListener() {
+
+            @Override
+            public void onClick( View v ) {
+                onBackPressed();
+            }
+        } );
         mDrawerLayout.setDrawerListener( mDrawerToggle );
 
         createNavDrawerItems();
+
+        updateDrawerToggle();
+    }
+
+    protected void updateDrawerToggle() {
+        if ( mDrawerToggle == null ) {
+            return;
+        }
+        boolean isRoot = getSupportFragmentManager().getBackStackEntryCount() == 0;
+        mDrawerToggle.setDrawerIndicatorEnabled( isRoot );
+        mDrawerLayout.setDrawerLockMode(
+                isRoot? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED );
+        ActionBar actionBar = getSupportActionBar();
+        if ( actionBar != null ) {
+            actionBar.setDisplayShowHomeEnabled( !isRoot );
+            actionBar.setDisplayHomeAsUpEnabled( !isRoot );
+            actionBar.setHomeButtonEnabled( !isRoot );
+        }
+        if ( isRoot ) {
+            mDrawerToggle.syncState();
+        }
     }
 
     private void createNavDrawerItems() {
@@ -650,26 +703,6 @@ public class ActivityBase extends AppCompatActivity implements
     }
 
     protected void onActionBarAutoShowOrHide( boolean shown ) {
-        if ( mStatusBarColorAnimator != null ) {
-            mStatusBarColorAnimator.cancel();
-        }
-        mStatusBarColorAnimator = ObjectAnimator.ofInt(
-                ( mDrawerLayout != null ) ? mDrawerLayout : mLUtils,
-                ( mDrawerLayout != null ) ? "statusBarBackgroundColor" : "statusBarColor",
-                shown ? Color.BLACK : mNormalStatusBarColor,
-                shown ? mNormalStatusBarColor : Color.BLACK )
-                .setDuration( 250 );
-        if ( mDrawerLayout != null ) {
-            mStatusBarColorAnimator.addUpdateListener( new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate( ValueAnimator valueAnimator ) {
-                    ViewCompat.postInvalidateOnAnimation( mDrawerLayout );
-                }
-            } );
-        }
-        mStatusBarColorAnimator.setEvaluator( ARGB_EVALUATOR );
-        mStatusBarColorAnimator.start();
-
         updateSwipeRefreshProgressBarTop();
 
         for ( View view : mHideableHeaderViews ) {
@@ -1140,20 +1173,7 @@ public class ActivityBase extends AppCompatActivity implements
 
         switch ( item.getItemId() ) {
         case android.R.id.home:
-            Intent upIntent = NavUtils.getParentActivityIntent( this );
-            if ( NavUtils.shouldUpRecreateTask( this, upIntent ) ) {
-                // This activity is NOT part of this app's task, so create a new task
-                // when navigating up, with a synthesized back stack.
-                TaskStackBuilder.create( this )
-                        // Add all of this activity's parents to the back stack
-                        .addNextIntentWithParentStack( upIntent )
-                        // Navigate up to the closest parent
-                        .startActivities();
-            } else {
-                // This activity is part of this app's task, so simply
-                // navigate up to the logical parent activity.
-                NavUtils.navigateUpTo( this, upIntent );
-            }
+            onBackPressed();
             return true;
         case R.id.menu_search:
             return true;
@@ -1193,8 +1213,8 @@ public class ActivityBase extends AppCompatActivity implements
             if ( isScreenWide ) {
                 actionBar.setTitle( String.format( "%s - %s %s", code, name, type ) );
             } else {
-                actionBar.setTitle( code );
-                actionBar.setSubtitle( String.format( "%s %s", name, type ) );
+                actionBar.setTitle( String.format( "%s %s", name, type ) );
+                actionBar.setSubtitle( code );
             }
         }
     }
