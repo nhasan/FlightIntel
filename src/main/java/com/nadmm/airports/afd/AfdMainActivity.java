@@ -60,9 +60,11 @@ public final class AfdMainActivity extends ActivityBase {
     private ArrayList<Fragment> mAirportFragments = new ArrayList<>();
     private int mCurrentFragmentIndex = -1;
 
-    ViewPager mViewPager = null;
-    AfdViewPagerAdapter mViewPagerAdapter = null;
-    SlidingTabLayout mSlidingTabLayout = null;
+    private ViewPager mViewPager = null;
+    private AfdViewPagerAdapter mViewPagerAdapter = null;
+    private SlidingTabLayout mSlidingTabLayout = null;
+
+    private static final String AFD_SAVED_TAB = "afdtab";
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -107,7 +109,7 @@ public final class AfdMainActivity extends ActivityBase {
     }
 
     @Override
-    protected void onPostCreate( Bundle savedInstanceState) {
+    protected void onPostCreate( Bundle savedInstanceState ) {
         super.onPostCreate( savedInstanceState );
 
         enableActionBarAutoHide();
@@ -116,7 +118,12 @@ public final class AfdMainActivity extends ActivityBase {
 
         enableDisableSwipeRefresh( false );
 
-        mViewPager.setCurrentItem( getInitialFragmentId() );
+        if ( savedInstanceState != null ) {
+            mCurrentFragmentIndex = savedInstanceState.getInt( AFD_SAVED_TAB );
+        } else {
+            mCurrentFragmentIndex = getInitialFragmentId();
+        }
+        mViewPager.setCurrentItem( mCurrentFragmentIndex );
 
         setProgressBarTopWhenActionBarShown( (int)
                 TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 2,
@@ -126,11 +133,14 @@ public final class AfdMainActivity extends ActivityBase {
     @Override
     public void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
+
         for ( Fragment fragment : mAirportFragments ) {
             // Save the fragments so we can restore them later
             getSupportFragmentManager().putFragment( outState,
                     fragment.getClass().getName(), fragment );
         }
+
+        outState.putInt( AFD_SAVED_TAB, mViewPager.getCurrentItem() );
     }
 
     public void onFragmentStarted( ListFragmentBase fragment ) {
