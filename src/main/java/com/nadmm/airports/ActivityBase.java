@@ -702,6 +702,10 @@ public class ActivityBase extends AppCompatActivity implements
         autoShowOrHideActionBar( shouldShow );
     }
 
+    protected void resetActionBarAutoHide() {
+        mActionBarAutoHideSignal = 0;
+    }
+
     protected void onActionBarAutoShowOrHide( boolean shown ) {
         updateSwipeRefreshProgressBarTop();
 

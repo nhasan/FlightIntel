@@ -25,7 +25,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.widget.CursorAdapter;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.nadmm.airports.ActivityBase;
@@ -53,10 +55,15 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
     }
 
     @Override
+    public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
+        View view = super.onCreateView( inflater, container, savedInstanceState );
+        ((AfdMainActivity) getActivityBase()).onFragmentStarted( this );
+        return view;
+    }
+
+    @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
-
-        ((AfdMainActivity) getActivityBase()).onFragmentStarted( this );
     }
 
     @Override

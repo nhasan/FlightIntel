@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
@@ -39,15 +40,21 @@ public abstract class ListFragmentBase extends FragmentBase
         implements LocationListener, IRefreshable {
 
     public static final String FRAGMENT_ID = "FRAGMENT_ID";
+    private static final String LISTVIEW_STATE = "LISTVIEW_STATE";
 
     private ListView mListView;
     private String mEmptyText;
     private int mFragmentId;
     private int mContentTopClearance;
+    private Parcelable mListViewState;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        if ( savedInstanceState != null && savedInstanceState.containsKey( LISTVIEW_STATE ) ) {
+            mListViewState = savedInstanceState.getParcelable( LISTVIEW_STATE );
+        }
 
         Bundle args = getArguments();
         if ( args.containsKey( FRAGMENT_ID ) ) {
@@ -107,6 +114,13 @@ public abstract class ListFragmentBase extends FragmentBase
     public void requestDataRefresh() {
     }
 
+    @Override
+    public void onSaveInstanceState( Bundle outState ) {
+        super.onSaveInstanceState( outState );
+        mListViewState = mListView.onSaveInstanceState();
+        outState.putParcelable( LISTVIEW_STATE, mListViewState );
+    }
+
     public void setContentTopClearance( int clearance ) {
         if ( mContentTopClearance != clearance ) {
             mContentTopClearance = clearance;
@@ -134,6 +148,11 @@ public abstract class ListFragmentBase extends FragmentBase
             mListView.setAdapter( adapter );
         } else {
             adapter.changeCursor( c );
+        }
+
+        if ( mListViewState != null ) {
+            mListView.onRestoreInstanceState( mListViewState );
+            mListViewState = null;
         }
 
         setFragmentContentShown( true );

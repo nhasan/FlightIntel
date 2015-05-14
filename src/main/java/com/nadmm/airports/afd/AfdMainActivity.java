@@ -28,7 +28,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
-import android.widget.ListView;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.ListFragmentBase;
@@ -50,7 +49,7 @@ public final class AfdMainActivity extends ActivityBase {
     private final Class<?>[] mClasses = new Class<?>[] {
             FavoriteAirportsFragment.class,
             NearbyAirportsFragment.class,
-            BrowseStateFragment.class
+            BrowseAirportsFragment.class
     };
 
     private final int ID_FAVORITES = 0;
@@ -77,6 +76,7 @@ public final class AfdMainActivity extends ActivityBase {
         setActionBarTitle( "Airports", null );
 
         mViewPager = (ViewPager) findViewById( R.id.view_pager );
+        mViewPager.setOffscreenPageLimit( 2 );
         mViewPagerAdapter = new AfdViewPagerAdapter( getSupportFragmentManager() );
         mViewPager.setAdapter( mViewPagerAdapter );
 
@@ -84,7 +84,7 @@ public final class AfdMainActivity extends ActivityBase {
         mSlidingTabLayout = (SlidingTabLayout) findViewById( R.id.sliding_tabs );
         mSlidingTabLayout.setCustomTabView( R.layout.tab_indicator, android.R.id.text1 );
         mSlidingTabLayout.setSelectedIndicatorColors( res.getColor( R.color.tab_selected_strip ) );
-        mSlidingTabLayout.setDistributeEvenly( true );
+        mSlidingTabLayout.setDistributeEvenly( false );
         mSlidingTabLayout.setViewPager( mViewPager );
 
         mSlidingTabLayout.setOnPageChangeListener( new ViewPager.OnPageChangeListener() {
@@ -97,6 +97,7 @@ public final class AfdMainActivity extends ActivityBase {
                 mCurrentFragmentIndex = position;
                 enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
                 // Show the actionbar when a new page is selected
+                resetActionBarAutoHide();
                 autoShowOrHideActionBar( true );
             }
 
