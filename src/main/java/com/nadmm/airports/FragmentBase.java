@@ -22,6 +22,7 @@ package com.nadmm.airports;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -290,7 +291,11 @@ public class FragmentBase extends Fragment {
     protected void makeRowClickable( View row, Object tag ) {
         row.setTag( tag );
         row.setOnClickListener( mOnRowClickListener );
-        row.setBackgroundResource( R.drawable.row_selector_middle );
+        int[] attrs = new int[]{ R.attr.selectableItemBackground };
+        TypedArray typedArray = getActivity().obtainStyledAttributes( attrs );
+        int backgroundResource = typedArray.getResourceId(0, 0);
+        row.setBackgroundResource( backgroundResource );
+        typedArray.recycle();
     }
 
     protected View addClickableRow( LinearLayout layout, String label, String value,
