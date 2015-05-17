@@ -34,9 +34,7 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="TextSmall" parent="@style/TextAppearance.AppCompat.Body1">
-        <item name="android:textSize">@dimen/small_text_size</item>
-    </style>
+    <style name="TextSmall" parent="TextAppearance.AppCompat.Body1" />
 
     <style name="TextSmall.Bold">
         <item name="android:textStyle">bold</item>
@@ -54,7 +52,7 @@
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
-    <style name="TextSmaller" parent="@style/TextAppearance.AppCompat.Body1">
+    <style name="TextSmaller" parent="TextSmall">
         <item name="android:textSize">@dimen/smaller_text_size</item>
     </style>
 
@@ -66,7 +64,7 @@
         <item name="android:typeface">monospace</item>
     </style>
 
-    <style name="TextMedium" parent="@style/TextSmall">
+    <style name="TextMedium" parent="TextSmall">
         <item name="android:textSize">@dimen/medium_text_size</item>
     </style>
 
@@ -78,20 +76,26 @@
         <item name="android:textColor">#ffffff</item>
     </style>
 
-    <style name="TextLabel" parent="@style/TextSmall">
+    <style name="TextLabel" parent="TextSmall">
         <item name="android:textSize">@dimen/label_text_size</item>
     </style>
 
-    <style name="TextLabel.Bold" parent="@style/TextAppearance.AppCompat.Title">
+    <style name="TextLabel.Bold" parent="TextAppearance.AppCompat.Title">
     </style>
 
     <style name="TextTitle" parent="TextMedium.Bold">
     </style>
 
-    <style name="TextNormal" parent="@style/TextAppearance.AppCompat.Body1">
+    <style name="TextNormal" parent="@style/TextAppearance.AppCompat.Body1" />
+
+    <style name="TextNormal.Bold">
+        <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextNormal.Bold" parent="@style/TextAppearance.AppCompat.Body2">
+    <style name="TextHead" parent="TextAppearance.AppCompat.Subhead" />
+
+    <style name="TextHead.Bold">
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="TextClock">

@@ -32,6 +32,7 @@
     <color name="color_primary_dark">@color/blue_800</color>
     <color name="color_primary_light">@color/blue_300</color>
     <color name="color_accent">@color/orange_a400</color>
+    <color name="color_grey_tint">#888</color>
 
     <color name="blue_300">#64b5f6</color>
     <color name="blue_600">#1e88e5</color>
@@ -46,7 +47,7 @@
 
     <color name="navdrawer_text_color">#de000000</color>
     <color name="navdrawer_text_color_selected">@color/color_primary</color>
-    <color name="navdrawer_icon_tint">#888</color>
+    <color name="navdrawer_icon_tint">@color/color_grey_tint</color>
     <color name="navdrawer_icon_tint_selected">@color/color_primary</color>
     <color name="navdrawer_background">#ffffffff</color>
 
