@@ -132,16 +132,14 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_423.pdf", "Callback",
+        "Issue 423 (Apr 2015)", "NASA", 637565, "N" );
 insert_book( "periodicals", "cb_422.pdf", "Callback",
-        "Issue 422 (Mar 2015)", "NASA", 606293, "N" );
+        "Issue 422 (Mar 2015)", "NASA", 606293, "" );
 insert_book( "periodicals", "cb_421.pdf", "Callback",
         "Issue 421 (Feb 2015)", "NASA", 615421, "" );
 insert_book( "periodicals", "cb_420.pdf", "Callback",
         "Issue 420 (Jan 2015)", "NASA", 619547, "" );
-insert_book( "periodicals", "cb_419.pdf", "Callback",
-        "Issue 419 (Dec 2014)", "NASA", 879845, "" );
-insert_book( "periodicals", "cb_418.pdf", "Callback",
-        "Issue 418 (Nov 2014)", "NASA", 571134, "" );
 insert_book( "periodicals", "14feb-front.pdf", "The Front",
         "Feb 2014", "NOAA", 811510, "" );
 insert_book( "periodicals", "13jun-front.pdf", "The Front",
@@ -151,7 +149,7 @@ insert_book( "periodicals", "13apr-front.pdf", "The Front",
 insert_book( "periodicals", "12dec-front.pdf", "The Front",
         "Dec 2012", "NOAA", 2150530, "" );
 insert_book( "periodicals", "MarApr2015.pdf", "FAA Safety Briefing",
-        "Mar/Apr 2015", "FAA", 5836207, "N" );
+        "Mar/Apr 2015", "FAA", 5836207, "" );
 insert_book( "periodicals", "JanFeb2015.pdf", "FAA Safety Briefing",
         "Jan/Feb 2015", "FAA", 6540077, "" );
 insert_book( "periodicals", "NovDec2014.pdf", "FAA Safety Briefing",
@@ -183,7 +181,7 @@ insert_book( "safety", "takeoff_safety.pdf", "Pilot Guide to Takeoff Safety",
         "2008", "FAA", 2678525, "" );
 
 insert_book( "regs", "AIM_Basic_1-8-15.pdf", "Aeronautical Information Manual (AIM)",
-        "Jan 2015", "FAA", 13024765, "N" );
+        "Jan 2015", "FAA", 13024765, "" );
 insert_book( "regs", "CFR-2014-title14-vol1.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 1-59", "US GPO", 10956838, "" );
 insert_book( "regs", "CFR-2014-title14-vol2.pdf", "Federal Aviation Regulations (FAR)",
@@ -237,7 +235,7 @@ insert_book( "testguide", "lsp.pdf", "Airmen Knowledge Test Question Bank",
         "Jan 2014", "Light Sport", 29261, "" );
 
 insert_book( "misc", "AIP_Basic_23rd_Edition_1-8-15.pdf", "Aeronautical Information Publication",
-        "23rd Edition", "FAA", 43426504, "N" );
+        "23rd Edition", "FAA", 43426504, "" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
 insert_book( "misc", "PCG_1-8-15.pdf.gz", "Pilot/Controller Glossary",
