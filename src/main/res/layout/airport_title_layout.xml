@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
  */
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			  xmlns:tools="http://schemas.android.com/tools"
-			  android:id="@+id/airport_title_layout"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:id="@+id/airport_title_layout"
         android:background="@drawable/ab_stacked_transparent_light_holo"
         android:paddingTop="@dimen/padding_top"
         android:paddingLeft="@dimen/padding_left"
@@ -48,7 +48,7 @@
 		        android:layout_width="0dp"
 		        android:layout_height="wrap_content">
 	        <TextView android:id="@+id/airport_info"
-	                style="@style/TextSmall.Bold"
+	                style="@style/TextSmall"
 	                android:singleLine="true"
 	                android:ellipsize="end"
                     android:paddingBottom="2dp"
@@ -80,22 +80,25 @@
 	    </LinearLayout>
 	    <LinearLayout android:id="@+id/header_inner2_layout"
 	            android:orientation="vertical"
-	            android:paddingLeft="6dp"
+	            android:paddingLeft="8dp"
 	            android:layout_gravity="center_vertical"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content">
 	        <CheckBox android:id="@+id/airport_star"
 	                style="?android:attr/starStyle"
-	                android:paddingBottom="5dp"
+	                android:paddingBottom="4dp"
+					android:layout_gravity="center"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content" />
 	        <ImageView android:id="@+id/airport_map"
-	                android:src="@android:drawable/ic_dialog_map"
-	                android:paddingTop="5dp"
-	                android:tint="#ff909090"
+	                android:src="@drawable/ic_map_black_36dp"
+					android:tintMode="src_atop"
+					android:tint="@color/color_grey_tint"
+					android:layout_gravity="center"
+					android:paddingTop="4dp"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
-					   tools:ignore="ContentDescription"/>
+					tools:ignore="ContentDescription"/>
 	    </LinearLayout>
 	</LinearLayout>
 </LinearLayout>
