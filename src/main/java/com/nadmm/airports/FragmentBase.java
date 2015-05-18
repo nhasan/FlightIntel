@@ -39,6 +39,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
@@ -47,7 +48,7 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.UiUtils;
 
-public class FragmentBase extends Fragment {
+public class FragmentBase extends Fragment implements IRefreshable {
 
     private ActivityBase mActivity;
     private CursorAsyncTask mTask;
@@ -102,6 +103,24 @@ public class FragmentBase extends Fragment {
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
         setRefreshItemVisible( false );
+    }
+
+    @Override
+    public boolean isRefreshable() {
+        return false;
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return false;
+    }
+
+    @Override
+    public void requestDataRefresh() {
+    }
+
+    protected void setRefreshing( boolean refreshing ) {
+        getActivityBase().onRefreshingStateChanged( refreshing );
     }
 
     public DatabaseManager getDbManager() {

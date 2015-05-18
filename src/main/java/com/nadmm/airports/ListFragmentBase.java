@@ -36,8 +36,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public abstract class ListFragmentBase extends FragmentBase
-        implements LocationListener, IRefreshable {
+public abstract class ListFragmentBase extends FragmentBase implements LocationListener {
 
     public static final String FRAGMENT_ID = "FRAGMENT_ID";
     private static final String LISTVIEW_STATE = "LISTVIEW_STATE";
@@ -101,24 +100,15 @@ public abstract class ListFragmentBase extends FragmentBase
     }
 
     @Override
-    public boolean isRefreshable() {
-        return false;
+    public void onSaveInstanceState( Bundle outState ) {
+        super.onSaveInstanceState( outState );
+        mListViewState = mListView.onSaveInstanceState();
+        outState.putParcelable( LISTVIEW_STATE, mListViewState );
     }
 
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
         return ViewCompat.canScrollVertically( mListView, -1 );
-    }
-
-    @Override
-    public void requestDataRefresh() {
-    }
-
-    @Override
-    public void onSaveInstanceState( Bundle outState ) {
-        super.onSaveInstanceState( outState );
-        mListViewState = mListView.onSaveInstanceState();
-        outState.putParcelable( LISTVIEW_STATE, mListViewState );
     }
 
     public void setContentTopClearance( int clearance ) {
