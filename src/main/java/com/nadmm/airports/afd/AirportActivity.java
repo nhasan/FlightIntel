@@ -21,6 +21,7 @@ package com.nadmm.airports.afd;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
@@ -41,6 +42,16 @@ public class AirportActivity extends ActivityBase {
     @Override
     protected void onPostCreate( Bundle savedInstanceState ) {
         super.onPostCreate( savedInstanceState );
+
+        FragmentManager fm = getSupportFragmentManager();
+        fm.addOnBackStackChangedListener( new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                FragmentManager fm = getSupportFragmentManager();
+                mCurFragment = (FragmentBase) fm.findFragmentById( R.id.fragment_container );
+                enableDisableSwipeRefresh( mCurFragment.isRefreshable() );
+            }
+        } );
 
         Bundle args = getIntent().getExtras();
         addFragment( AirportDetailsFragment.class, args );
