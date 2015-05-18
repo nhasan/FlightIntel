@@ -261,6 +261,8 @@ public class ActivityBase extends AppCompatActivity implements
         trySetupSwipeRefresh();
         updateSwipeRefreshProgressBarTop();
 
+        enableDisableSwipeRefresh( false );
+
         // Sync the toggle state after onRestoreInstanceState has occurred.
         if ( mDrawerToggle != null ) {
             mDrawerToggle.syncState();
@@ -366,7 +368,7 @@ public class ActivityBase extends AppCompatActivity implements
         boolean isRoot = getSupportFragmentManager().getBackStackEntryCount() == 0;
         mDrawerToggle.setDrawerIndicatorEnabled( isRoot );
         mDrawerLayout.setDrawerLockMode(
-                isRoot? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED );
+                isRoot ? DrawerLayout.LOCK_MODE_UNLOCKED : DrawerLayout.LOCK_MODE_LOCKED_CLOSED );
         ActionBar actionBar = getSupportActionBar();
         if ( actionBar != null ) {
             actionBar.setDisplayShowHomeEnabled( !isRoot );
@@ -698,7 +700,7 @@ public class ActivityBase extends AppCompatActivity implements
         }
 
         boolean shouldShow = currentY < mActionBarAutoHideMinY ||
-                (mActionBarAutoHideSignal <= -mActionBarAutoHideSensivity);
+                (mActionBarAutoHideSignal <= -mActionBarAutoHideSensivity );
         autoShowOrHideActionBar( shouldShow );
     }
 
@@ -750,7 +752,7 @@ public class ActivityBase extends AppCompatActivity implements
         }
     }
 
-    protected void enableDisableSwipeRefresh( boolean enable ) {
+    public void enableDisableSwipeRefresh( boolean enable ) {
         if ( mSwipeRefreshLayout != null ) {
             mSwipeRefreshLayout.setEnabled( enable );
         }
@@ -1212,14 +1214,7 @@ public class ActivityBase extends AppCompatActivity implements
             if ( code == null || code.length() == 0 ) {
                 code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
             }
-
-            Boolean isScreenWide = getResources().getBoolean( R.bool.IsScreenWide );
-            if ( isScreenWide ) {
-                actionBar.setTitle( String.format( "%s - %s %s", code, name, type ) );
-            } else {
-                actionBar.setTitle( String.format( "%s %s", name, type ) );
-                actionBar.setSubtitle( code );
-            }
+            actionBar.setTitle( String.format( "%s - %s %s", code, name, type ) );
         }
     }
 

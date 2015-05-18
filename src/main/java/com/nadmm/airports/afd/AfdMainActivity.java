@@ -117,18 +117,12 @@ public final class AfdMainActivity extends ActivityBase {
         registerHideableHeaderView( findViewById( R.id.headerbar ),
                 UiUtils.calculateActionBarSize( this ) );
 
-        enableDisableSwipeRefresh( false );
-
         if ( savedInstanceState != null ) {
             mCurrentFragmentIndex = savedInstanceState.getInt( AFD_SAVED_TAB );
         } else {
             mCurrentFragmentIndex = getInitialFragmentId();
         }
         mViewPager.setCurrentItem( mCurrentFragmentIndex );
-
-        setProgressBarTopWhenActionBarShown( (int)
-                TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 2,
-                        getResources().getDisplayMetrics() ) );
     }
 
     @Override
