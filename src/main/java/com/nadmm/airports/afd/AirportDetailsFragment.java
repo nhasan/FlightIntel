@@ -19,7 +19,11 @@
 
 package com.nadmm.airports.afd;
 
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -29,21 +33,58 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.*;
+import android.support.v4.view.ViewCompat;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import com.nadmm.airports.*;
-import com.nadmm.airports.DatabaseManager.*;
+
+import com.nadmm.airports.Application;
+import com.nadmm.airports.DatabaseManager;
+import com.nadmm.airports.DatabaseManager.Aff3;
+import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.DatabaseManager.Attendance;
+import com.nadmm.airports.DatabaseManager.Awos1;
+import com.nadmm.airports.DatabaseManager.Dafd;
+import com.nadmm.airports.DatabaseManager.DafdCycle;
+import com.nadmm.airports.DatabaseManager.Dtpp;
+import com.nadmm.airports.DatabaseManager.LocationColumns;
+import com.nadmm.airports.DatabaseManager.Remarks;
+import com.nadmm.airports.DatabaseManager.Runways;
+import com.nadmm.airports.DatabaseManager.Tower1;
+import com.nadmm.airports.DatabaseManager.Tower3;
+import com.nadmm.airports.DatabaseManager.Tower6;
+import com.nadmm.airports.DatabaseManager.Tower7;
+import com.nadmm.airports.DatabaseManager.Tower8;
+import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.PreferencesActivity;
+import com.nadmm.airports.R;
 import com.nadmm.airports.aeronav.DafdService;
 import com.nadmm.airports.aeronav.DtppActivity;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.notams.AirportNotamActivity;
 import com.nadmm.airports.tfr.TfrListActivity;
-import com.nadmm.airports.utils.*;
-import com.nadmm.airports.wx.*;
+import com.nadmm.airports.utils.CursorAsyncTask;
+import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.FormatUtils;
+import com.nadmm.airports.utils.GeoUtils;
+import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.SystemUtils;
+import com.nadmm.airports.utils.TimeUtils;
+import com.nadmm.airports.utils.UiUtils;
+import com.nadmm.airports.wx.Metar;
+import com.nadmm.airports.wx.MetarService;
+import com.nadmm.airports.wx.NearbyWxActivity;
+import com.nadmm.airports.wx.NearbyWxCursor;
+import com.nadmm.airports.wx.NoaaService;
+import com.nadmm.airports.wx.WxDetailActivity;
+import com.nadmm.airports.wx.WxUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,6 +108,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     private int mWxUpdates = 0;
     private String mHome;
     private String mSiteNumber;
+    private ScrollView mScrollView;
 
     int mScrollPos = -1;
 
@@ -88,7 +130,7 @@ public final class AirportDetailsFragment extends FragmentBase {
                     if ( mWxUpdates == mAwosViews.size() ) {
                         // We have all the wx updates, stop the refresh animation
                         mWxUpdates = 0;
-                        stopRefreshAnimation();
+                        setRefreshing( false );
                     }
                 }
             }
@@ -115,43 +157,38 @@ public final class AirportDetailsFragment extends FragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.airport_detail_view, container, false );
+        mScrollView = (ScrollView) view.findViewById( R.id.scroll_view );
         return createContentView( view );
     }
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new AirportDetailsTask() ).execute( siteNumber );
-
-        super.onActivityCreated( savedInstanceState );
     }
 
     @Override
     public void onResume() {
+        super.onResume();
+
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
         bm.registerReceiver( mMetarReceiver, mMetarFilter );
         bm.registerReceiver( mDafdReceiver, mDafdFilter );
         requestMetars( false );
-
-        super.onResume();
     }
 
     @Override
     public void onPause() {
+        super.onPause();
+
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
         bm.unregisterReceiver( mMetarReceiver );
         bm.unregisterReceiver( mDafdReceiver );
 
-        ScrollView view = (ScrollView) findViewById( R.id.scroll_view );
-        mScrollPos = view.getScrollY();
-
-        super.onPause();
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( !getActivityBase().isNavDrawerOpen() );
+        mScrollPos = mScrollView.getScrollY();
     }
 
     @Override
@@ -164,6 +201,21 @@ public final class AirportDetailsFragment extends FragmentBase {
         default:
             return super.onOptionsItemSelected( item );
         }
+    }
+
+    @Override
+    public boolean isRefreshable() {
+        return true;
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return ViewCompat.canScrollVertically( mScrollView, -1 );
+    }
+
+    @Override
+    public void requestDataRefresh() {
+        requestMetars( true );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -655,8 +707,6 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     protected void getAfdPage( String afdCycle, String pdfName ) {
-        setRefreshItemVisible( true );
-        startRefreshAnimation();
         Intent service = new Intent( getActivity(), DafdService.class );
         service.setAction( DafdService.ACTION_GET_AFD );
         service.putExtra( DafdService.CYCLE_NAME, afdCycle );
@@ -665,8 +715,6 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     protected void handleDafdBroadcast( Intent intent ) {
-        stopRefreshAnimation();
-        setRefreshItemVisible( false );
         String action = intent.getAction();
         if ( action.equals( DafdService.ACTION_GET_AFD ) ) {
             String path = intent.getStringExtra( DafdService.PDF_PATH );
@@ -827,11 +875,6 @@ public final class AirportDetailsFragment extends FragmentBase {
     protected void requestMetars( String action, boolean force, boolean cacheOnly ) {
         if ( mAwosViews.size() == 0 ) {
             return;
-        }
-
-        // Now get the METAR if already in the cache
-        if ( force || !cacheOnly ) {
-            getActivityBase().startRefreshAnimation();
         }
 
         ArrayList<String> stationIds = new ArrayList<>();

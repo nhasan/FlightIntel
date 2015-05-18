@@ -29,5 +29,4 @@ public interface IRefreshable {
     boolean canSwipeRefreshChildScrollUp();
     // Perform refresh
     void requestDataRefresh();
-
 }

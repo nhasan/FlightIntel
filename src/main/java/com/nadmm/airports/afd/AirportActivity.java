@@ -20,42 +20,63 @@
 package com.nadmm.airports.afd;
 
 import android.os.Bundle;
-import android.util.TypedValue;
+import android.support.v4.app.Fragment;
 
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.UiUtils;
 
 public class AirportActivity extends ActivityBase {
+
+    FragmentBase mCurFragment;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
         setContentView( R.layout.activity_main );
-
-        Bundle args = getIntent().getExtras();
-        addFragment( AirportDetailsFragment.class, args );
     }
 
     @Override
     protected void onPostCreate( Bundle savedInstanceState ) {
         super.onPostCreate( savedInstanceState );
 
-        enableActionBarAutoHide();
+        Bundle args = getIntent().getExtras();
+        addFragment( AirportDetailsFragment.class, args );
+
         registerHideableHeaderView( findViewById( R.id.headerbar ),
                 UiUtils.calculateActionBarSize( this ) );
 
-        enableDisableSwipeRefresh( false );
+        updateContentTopClearance();
+    }
 
-        setProgressBarTopWhenActionBarShown( (int)
-                TypedValue.applyDimension( TypedValue.COMPLEX_UNIT_DIP, 2,
-                        getResources().getDisplayMetrics() ) );
+    @Override
+    public void onAttachFragment( Fragment fragment ) {
+        super.onAttachFragment( fragment );
+
+        mCurFragment = (FragmentBase) fragment;
+        enableDisableSwipeRefresh( mCurFragment.isRefreshable() );
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return mCurFragment.canSwipeRefreshChildScrollUp();
+    }
+
+    @Override
+    protected void requestDataRefresh() {
+        mCurFragment.requestDataRefresh();
     }
 
     @Override
     protected int getSelfNavDrawerItem() {
         return NAVDRAWER_ITEM_AFD;
+    }
+
+    protected void updateContentTopClearance() {
+        int actionbarClearance = UiUtils.calculateActionBarSize( this );
+        setProgressBarTopWhenActionBarShown( actionbarClearance );
     }
 
 }
