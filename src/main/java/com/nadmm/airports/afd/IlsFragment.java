@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -67,9 +67,6 @@ public final class IlsFragment extends FragmentBase {
 
         Cursor ils1 = result[ 1 ];
         if ( ils1.moveToFirst() ) {
-            String rwyId = ils1.getString( ils1.getColumnIndex( Ils1.RUNWAY_ID ) );
-            String ilsType = ils1.getString( ils1.getColumnIndex( Ils1.ILS_TYPE ) );
-            setActionBarTitle( apt, ilsType+" - Runway "+rwyId );
             showIlsDetails( result );
             showLocalizerDetails( result );
             showGlideslopeDetails( result );

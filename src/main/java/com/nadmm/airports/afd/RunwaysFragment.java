@@ -80,11 +80,9 @@ public final class RunwaysFragment extends FragmentBase {
         boolean isHelipad = runwayId.startsWith( "H" );
 
         if ( isHelipad ) {
-            setActionBarTitle( apt, "Helipad "+runwayId );
             showHelipadInformation( result );
             showCommonRemarks( result, runwayId );
         } else {
-            setActionBarTitle( apt, "Runway "+runwayId );
             showCommonInformation( result );
             showCommonRemarks( result, runwayId );
             showBaseEndInformation( result );
@@ -159,7 +157,7 @@ public final class RunwaysFragment extends FragmentBase {
         }
 
         Float elevation = rwy.getFloat( rwy.getColumnIndex( Runways.BASE_END_RUNWAY_ELEVATION ) );
-        if ( elevation != null && elevation > 0 ) {
+        if ( elevation > 0 ) {
             addRow( layout, "Elevation", FormatUtils.formatFeet( elevation ) );
         }
 
@@ -306,7 +304,7 @@ public final class RunwaysFragment extends FragmentBase {
         }
         Float elevation = rwy.getFloat( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_RUNWAY_ELEVATION ) );
-        if ( elevation != null && elevation > 0 ) {
+        if ( elevation > 0 ) {
             addRow( layout, "Elevation", FormatUtils.formatFeet( elevation ) );
         }
         String rhPattern = rwy.getString( rwy.getColumnIndex(
