@@ -71,7 +71,7 @@ public class AirportActivity extends ActivityBase {
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_AFD;
+        return NAVDRAWER_ITEM_INVALID;
     }
 
     protected void updateContentTopClearance() {
