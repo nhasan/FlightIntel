@@ -24,9 +24,6 @@
     <item android:id="@+id/menu_download"
           android:title="@string/downloads"
           android:icon="@android:drawable/ic_menu_save" />
-    <item android:id="@+id/menu_settings"
-          android:title="@string/settings"
-          android:icon="@android:drawable/ic_menu_preferences" />
     <item android:id="@+id/menu_donate"
           android:title="@string/donate" />
     <item android:id="@+id/menu_about"

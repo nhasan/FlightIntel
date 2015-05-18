@@ -1187,10 +1187,6 @@ public class ActivityBase extends AppCompatActivity implements
             Intent download = new Intent( this, DownloadActivity.class );
             startActivity( download );
             return true;
-        case R.id.menu_settings:
-            Intent settings = new Intent( this, PreferencesActivity.class  );
-            startActivity( settings );
-            return true;
         case R.id.menu_donate:
             Intent donate = new Intent( this, DonateActivity.class );
             startActivity( donate );
