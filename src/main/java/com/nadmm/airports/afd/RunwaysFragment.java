@@ -154,7 +154,7 @@ public final class RunwaysFragment extends FragmentBase {
             args.putString( Ils1.SITE_NUMBER, siteNumber );
             args.putString( Ils1.RUNWAY_ID, runwayId );
             args.putString( Ils1.ILS_TYPE, ilsType );
-            addClickableRow( layout, "Instrument approach", ilsType,
+            addClickableRow( layout, "Instrument approach...", ilsType,
                     IlsFragment.class, args );
         }
 
