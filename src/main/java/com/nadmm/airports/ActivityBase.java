@@ -32,7 +32,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -98,8 +97,6 @@ public class ActivityBase extends AppCompatActivity implements
         MultiSwipeRefreshLayout.CanChildScrollUpCallback  {
 
     private DatabaseManager mDbManager;
-    private MenuItem mRefreshItem;
-    private AnimationDrawable mRefreshDrawable;
     private LayoutInflater mInflater;
     private CursorAsyncTask mTask;
 
@@ -1136,31 +1133,14 @@ public class ActivityBase extends AppCompatActivity implements
         return mHandler.postDelayed( r, delayMillis );
     }
 
-    public void startRefreshAnimation() {
-        if ( mRefreshDrawable != null ) {
-            mRefreshDrawable.start();
-        }
-    }
-
-    public void stopRefreshAnimation() {
-        if ( mRefreshDrawable != null ) {
-            mRefreshDrawable.stop();
-        }
-    }
-
-    public void setRefreshItemVisible( Boolean visible ) {
-        if ( mRefreshItem != null ) {
-            mRefreshItem.setVisible( visible );
-        }
-    }
-
     @TargetApi(11)
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate( R.menu.mainmenu, menu );
-        mRefreshItem = menu.findItem( R.id.menu_refresh );
-        mRefreshDrawable = (AnimationDrawable) mRefreshItem.getIcon();
+
+        MenuItem settingsItem = menu.findItem( R.id.menu_settings );
+        settingsItem.setVisible( getSelfNavDrawerItem() == NAVDRAWER_ITEM_INVALID );
 
         MenuItem searchItem = menu.findItem( R.id.menu_search );
         SearchView searchView = (SearchView) MenuItemCompat.getActionView( searchItem );
