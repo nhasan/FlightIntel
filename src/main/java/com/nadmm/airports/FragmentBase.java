@@ -522,15 +522,12 @@ public class FragmentBase extends Fragment implements IRefreshable {
     }
 
     protected void startRefreshAnimation() {
-        mActivity.startRefreshAnimation();
     }
 
     protected void stopRefreshAnimation() {
-        mActivity.stopRefreshAnimation();
     }
 
     protected void setRefreshItemVisible( Boolean visible ) {
-        mActivity.setRefreshItemVisible( visible );
     }
 
 }
