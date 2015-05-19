@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
         }
 
         Bundle args = getArguments();
-        if ( args.containsKey( FRAGMENT_ID ) ) {
+        if ( args != null && args.containsKey( FRAGMENT_ID ) ) {
             mFragmentId = args.getInt( FRAGMENT_ID );
         } else {
             mFragmentId = getId();
