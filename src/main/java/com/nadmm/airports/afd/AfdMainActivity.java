@@ -164,7 +164,7 @@ public final class AfdMainActivity extends ActivityBase {
             }
         }
 
-        if ( mAirportFragments.size() == 0 ) {
+        if ( mAirportFragments.isEmpty() ) {
             // Create the fragments
             for ( Class<?> clss : mClasses ) {
                 Bundle args = new Bundle();
