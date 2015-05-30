@@ -87,11 +87,11 @@ public class AirportsProvider extends ContentProvider {
         HashMap<String, String> map = new HashMap<>();
         map.put( BaseColumns._ID, BaseColumns._ID );
         map.put( SearchManager.SUGGEST_COLUMN_TEXT_1,
-                "IFNULL("+Airports.ICAO_CODE+", "+Airports.FAA_CODE+")"
+                "IFNULL("+Airports.ICAO_CODE+", "+Airports.FAA_CODE
+                +") ||' - '||"+Airports.FACILITY_NAME
                 +" AS "+SearchManager.SUGGEST_COLUMN_TEXT_1 );
         map.put( SearchManager.SUGGEST_COLUMN_TEXT_2,
-                Airports.FACILITY_NAME+"||', '||"+Airports.ASSOC_CITY
-                +"||' '||"+Airports.ASSOC_STATE
+                Airports.ASSOC_CITY+"||' '||"+Airports.ASSOC_STATE
                 +" AS "+SearchManager.SUGGEST_COLUMN_TEXT_2 );
         map.put( SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA,
                 Airports.SITE_NUMBER+" AS "+SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA);
@@ -149,9 +149,8 @@ public class AirportsProvider extends ContentProvider {
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( Airports.TABLE_NAME );
         builder.setProjectionMap( mSuggestionColumnMap );
-        Cursor c = builder.query( db, mSuggestionColumns, selection, selectionArgs,
+        return builder.query( db, mSuggestionColumns, selection, selectionArgs,
                 null, null, SearchManager.SUGGEST_COLUMN_TEXT_1+" ASC", limit );
-        return c;
     }
 
     private Cursor searchAirports( Uri uri, String query ) {
@@ -164,9 +163,8 @@ public class AirportsProvider extends ContentProvider {
 
         DatabaseManager dbManager = DatabaseManager.instance( getContext() );
         SQLiteDatabase db = dbManager.getDatabase( DatabaseManager.DB_FADDS );
-        Cursor c = AirportsCursorHelper.query( db, selection, selectionArgs,
+        return AirportsCursorHelper.query( db, selection, selectionArgs,
                 null, null, Airports.FACILITY_NAME+" ASC", limit );
-        return c;
     }
 
     @Override
