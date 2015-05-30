@@ -38,6 +38,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -283,7 +284,7 @@ public class ActivityBase extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         // If the drawer is open, back will close it
-        if ( mDrawerLayout != null && mDrawerLayout.isDrawerOpen( Gravity.START ) ) {
+        if ( mDrawerLayout != null && mDrawerLayout.isDrawerOpen( GravityCompat.START ) ) {
             mDrawerLayout.closeDrawers();
             return;
         }
@@ -409,7 +410,7 @@ public class ActivityBase extends AppCompatActivity implements
 
     private void onNavDrawerItemClicked( final int itemId ) {
         if ( itemId == getSelfNavDrawerItem() ) {
-            mDrawerLayout.closeDrawer( Gravity.START );
+            mDrawerLayout.closeDrawer( GravityCompat.START );
             return;
         }
 
@@ -428,7 +429,7 @@ public class ActivityBase extends AppCompatActivity implements
             setSelectedNavDrawerItem( itemId );
         }
 
-        mDrawerLayout.closeDrawer( Gravity.START );
+        mDrawerLayout.closeDrawer( GravityCompat.START );
     }
 
     private void setSelectedNavDrawerItem( int itemId ) {
@@ -566,7 +567,7 @@ public class ActivityBase extends AppCompatActivity implements
     }
 
     public boolean isNavDrawerOpen() {
-        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen( Gravity.START );
+        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen( GravityCompat.START );
     }
 
     public void setDrawerIndicatorEnabled( boolean enable ) {
@@ -1178,6 +1179,9 @@ public class ActivityBase extends AppCompatActivity implements
         default:
             return super.onOptionsItemSelected( item );
         }
+    }
+
+    public void onFragmentStarted( ListFragmentBase fragment ) {
     }
 
     public void setActionBarTitle( Cursor c ) {
