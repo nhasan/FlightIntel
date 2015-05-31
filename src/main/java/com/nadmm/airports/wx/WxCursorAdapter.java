@@ -54,6 +54,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         TextView stationWx2;
         TextView reportAge;
     }
+
     public WxCursorAdapter( Context context, Cursor c ) {
         super( context, R.layout.wx_list_item, c, 0 );
     }
@@ -91,22 +92,20 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         ViewHolder holder = getViewHolder( view );
 
         String name = c.getString( c.getColumnIndex( Wxs.STATION_NAME ) );
-        if ( name != null && name.length() > 0 ) {
+        if ( name != null && !name.isEmpty() ) {
             holder.stationName.setText( name );
         }
 
         String stationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
         holder.stationId.setText( stationId );
 
-        view.setTag( R.id.TAG_STATION_ID, stationId );
-
         StringBuilder info = new StringBuilder();
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
-        if ( city != null && city.length() > 0 ) {
+        if ( city != null && !city.isEmpty() ) {
             info.append( city );
         }
         String state = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
-        if ( state != null && state.length() > 0 ) {
+        if ( state != null && !state.isEmpty() ) {
             if ( info.length() > 0 ) {
                 info.append( ", " );
             }
@@ -140,7 +139,6 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         info.append( ", " );
         int elevation = c.getInt( c.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
         info.append( FormatUtils.formatFeetMsl( DataUtils.metersToFeet( elevation ) ) );
-        info.append( " elev." );
         holder.stationInfo2.setText( info.toString() );
 
         info.setLength( 0 );
@@ -207,7 +205,8 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 if ( metar.windSpeedKnots > 0
                         && metar.windDirDegrees >= 0
                         && metar.windDirDegrees < Integer.MAX_VALUE ) {
-                    info.append( "/"+FormatUtils.formatDegrees( metar.windDirDegrees ) );
+                    info.append( "/" );
+                    info.append( FormatUtils.formatDegrees( metar.windDirDegrees ) );
                 }
             }
 
