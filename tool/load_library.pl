@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2012-2014 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -100,8 +100,8 @@ insert_book( "handbooks", "faa-h-8083-25a-2008.pdf", "Pilot's Handbook of Aerona
         "2008", "FAA-H-8083-25A", 56064788, "" );
 insert_book( "handbooks", "faa-h-8083-15b-2012.pdf", "Instrument Flying Handbook",
         "2012", "FAA-H-8083-15B", 53239138, "" );
-insert_book( "handbooks", "faa-h-8261-1a-2007.pdf", "Instrument Procedures Handbook",
-        "2007", "FAA-H-8261-1A", 18019772, "" );
+insert_book( "handbooks", "faa-h-8083-16-2014.pdf", "Instrument Procedures Handbook",
+        "2014", "FAA-H-8083-16", 41475403, "N" );
 insert_book( "handbooks", "faa-h-8083-6-2009.pdf", "Advanced Avionics Handbook",
         "2009", "FAA-H-8083-6", 20664164, "" );
 insert_book( "handbooks", "faa-h-8083-27a-2006.pdf", "Student Pilot Guide",
@@ -132,14 +132,14 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_424.pdf", "Callback",
+        "Issue 424 (May 2015)", "NASA", 607383, "N" );
 insert_book( "periodicals", "cb_423.pdf", "Callback",
-        "Issue 423 (Apr 2015)", "NASA", 637565, "N" );
+        "Issue 423 (Apr 2015)", "NASA", 637565, "" );
 insert_book( "periodicals", "cb_422.pdf", "Callback",
         "Issue 422 (Mar 2015)", "NASA", 606293, "" );
 insert_book( "periodicals", "cb_421.pdf", "Callback",
         "Issue 421 (Feb 2015)", "NASA", 615421, "" );
-insert_book( "periodicals", "cb_420.pdf", "Callback",
-        "Issue 420 (Jan 2015)", "NASA", 619547, "" );
 insert_book( "periodicals", "14feb-front.pdf", "The Front",
         "Feb 2014", "NOAA", 811510, "" );
 insert_book( "periodicals", "13jun-front.pdf", "The Front",
@@ -148,14 +148,14 @@ insert_book( "periodicals", "13apr-front.pdf", "The Front",
         "Apr 2013", "NOAA", 2475943, "" );
 insert_book( "periodicals", "12dec-front.pdf", "The Front",
         "Dec 2012", "NOAA", 2150530, "" );
+insert_book( "periodicals", "MayJune2015.pdf", "FAA Safety Briefing",
+        "May/Jun 2015", "FAA", 5691465, "N" );
 insert_book( "periodicals", "MarApr2015.pdf", "FAA Safety Briefing",
         "Mar/Apr 2015", "FAA", 5836207, "" );
 insert_book( "periodicals", "JanFeb2015.pdf", "FAA Safety Briefing",
         "Jan/Feb 2015", "FAA", 6540077, "" );
 insert_book( "periodicals", "NovDec2014.pdf", "FAA Safety Briefing",
         "Nov/Dec 2014", "FAA", 16200490, "" );
-insert_book( "periodicals", "SepOct2014.pdf", "FAA Safety Briefing",
-        "Sep/Oct 2014", "FAA", 3521357, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -184,14 +184,14 @@ insert_book( "regs", "AIM_Basic_1-8-15.pdf", "Aeronautical Information Manual (A
         "Jan 2015", "FAA", 13024765, "" );
 insert_book( "regs", "CFR-2014-title14-vol1.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 1-59", "US GPO", 10956838, "" );
-insert_book( "regs", "CFR-2014-title14-vol2.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 60-109", "US GPO", 15663565, "" );
+insert_book( "regs", "CFR-2015-title14-vol2.pdf", "Federal Aviation Regulations (FAR)",
+        "Parts 60-109", "US GPO", 15151964, "N" );
 insert_book( "regs", "CFR-2015-title14-vol3.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 110-199", "US GPO", 5368153, "N" );
+        "Parts 110-199", "US GPO", 5368153, "" );
 insert_book( "regs", "CFR-2014-title14-vol4.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 200-1199", "US GPO", 16922247, "" );
 insert_book( "regs", "CFR-2015-title14-vol5.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 1200-1310", "US GPO", 2060784, "N" );
+        "Parts 1200-1310", "US GPO", 2060784, "" );
 
 insert_book( "risk", "ga_weather_decision_making.pdf", "General Aviation Pilot’s Guide",
         "2009", "FAA", 659230, "" );

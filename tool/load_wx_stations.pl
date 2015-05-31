@@ -119,7 +119,7 @@ sub warnings
 
 sub station
 {
-    my( $twig, $station )= @_;
+    my( $twig, $station ) = @_;
 
     my $site_type = $station->child( 0, "site_type" );
     my $site_types = "";
@@ -128,11 +128,14 @@ sub station
         my @types = $site_type->children;
         foreach my $type ( @types )
         {
-            if ( length( $site_types ) > 0 )
+	    if ( $type eq "METAR" || $type eq "TAF" )
             {
-                $site_types .= " ";
+		if ( length( $site_types ) > 0 )
+                {
+                    $site_types .= " ";
+                }
+                $site_types .= $type->name;
             }
-            $site_types .= $type->name;
         }
     }
 

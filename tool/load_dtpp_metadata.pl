@@ -45,7 +45,7 @@ if ( $ret != 200 )
 }
 print "done\n";
 
-my $dbfile = "$BASE_DIR/dtpp.db";
+my $dbfile = "$BASE_DIR/dtpp_".$cycle.".db";
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );
