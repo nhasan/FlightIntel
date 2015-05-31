@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2014 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,41 +20,43 @@
 package com.nadmm.airports.afd;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.providers.AirportsProvider;
 
-public class SearchActivity extends AfdActivityBase {
+public class SearchActivity extends ActivityBase {
 
     private CursorAdapter mListAdapter = null;
+    SearchFragment mFragment;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        handleIntent( getIntent() );
-    }
+        setContentView( R.layout.activity_main );
+        mFragment = (SearchFragment) addFragment( SearchFragment.class, null );
 
-    @Override
-    protected View getContentView() {
-        return null;
+        handleIntent();
     }
 
     @Override
     protected void onNewIntent( Intent intent ) {
         setIntent( intent );
-        handleIntent( intent );
+        handleIntent();
     }
 
-    private void handleIntent( Intent intent ) {
+    private void handleIntent() {
+        Intent intent = getIntent();
         if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
             // Perform the search using user provided query string
             String query = intent.getStringExtra( SearchManager.QUERY );
@@ -78,37 +80,48 @@ public class SearchActivity extends AfdActivityBase {
             // showing search results in a list view
             c.moveToFirst();
             String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
+            c.close();
             startAirportActivity( siteNumber );
             finish();
         }
 
         startManagingCursor( c );
-
-        setContentView( R.layout.list_view_layout );
-        ListView listView = (ListView) findViewById( android.R.id.list );
-        listView.setOnItemClickListener( new OnItemClickListener() {
-
-            @Override
-            public void onItemClick( AdapterView<?> parent, View view,
-                    int position, long id ) {
-                Cursor c = mListAdapter.getCursor();
-                String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
-                startAirportActivity( siteNumber );
-            }
-
-        } );
-
-        mListAdapter = new AirportsCursorAdapter( this, c );
-        listView.setAdapter( mListAdapter );
-        getSupportActionBar().setSubtitle(
-                getResources().getQuantityString( R.plurals.search_entry_found,
-                count, count, query ) );
+        mFragment.setSearchCursor( c );
     }
 
     private void startAirportActivity( String siteNumber ) {
         Intent apt = new Intent( this, AirportActivity.class );
         apt.putExtra( Airports.SITE_NUMBER, siteNumber );
         startActivity( apt );
+    }
+
+    public static class SearchFragment extends ListFragmentBase {
+
+        private Cursor mCursor;
+
+        @Override
+        protected CursorAdapter newListAdapter( Context context, Cursor c ) {
+            return new AirportsCursorAdapter( context, c );
+        }
+
+        @Override
+        protected void onListItemClick( ListView l, View v, int position ) {
+            String siteNumber = mCursor.getString( mCursor.getColumnIndex( Airports.SITE_NUMBER ) );
+            SearchActivity activity = (SearchActivity) getActivityBase();
+            activity.startAirportActivity( siteNumber );
+        }
+
+        @Override
+        public void onActivityCreated( Bundle savedInstanceState ) {
+            super.onActivityCreated( savedInstanceState );
+
+            setCursor( mCursor );
+        }
+
+        public void setSearchCursor( Cursor c ) {
+            mCursor = c;
+        }
+
     }
 
 }
