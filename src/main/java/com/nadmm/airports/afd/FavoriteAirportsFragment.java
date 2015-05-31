@@ -55,9 +55,10 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
     }
 
     @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
+    public View onCreateView( LayoutInflater inflater, ViewGroup container,
+                              Bundle savedInstanceState ) {
         View view = super.onCreateView( inflater, container, savedInstanceState );
-        ((AfdMainActivity) getActivityBase()).onFragmentStarted( this );
+        getActivityBase().onFragmentStarted( this );
         return view;
     }
 

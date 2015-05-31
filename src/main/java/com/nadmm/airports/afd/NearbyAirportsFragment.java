@@ -90,7 +90,7 @@ public class NearbyAirportsFragment extends ListFragmentBase {
             view.setKeepScreenOn( true );
         }
 
-        ((AfdMainActivity) getActivityBase()).onFragmentStarted( this );
+        getActivityBase().onFragmentStarted( this );
     }
 
     @Override

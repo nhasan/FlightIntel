@@ -92,7 +92,7 @@ public class BrowseAirportsFragment extends ListFragmentBase {
             } );
         }
 
-        ( (AfdMainActivity) getActivityBase() ).onFragmentStarted( this );
+        getActivityBase().onFragmentStarted( this );
     }
 
     @Override

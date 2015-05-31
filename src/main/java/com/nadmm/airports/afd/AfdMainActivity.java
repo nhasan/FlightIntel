@@ -138,6 +138,7 @@ public final class AfdMainActivity extends ActivityBase {
         outState.putInt( AFD_SAVED_TAB, mViewPager.getCurrentItem() );
     }
 
+    @Override
     public void onFragmentStarted( ListFragmentBase fragment ) {
         registerActionBarAutoHideListView( fragment.getListView() );
         updateContentTopClearance( fragment );
