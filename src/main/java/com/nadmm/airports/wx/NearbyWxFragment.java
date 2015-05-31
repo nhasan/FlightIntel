@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-205 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,12 +27,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
+
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.utils.NearbyHelper;
-
-import java.util.Locale;
 
 public class NearbyWxFragment extends WxListFragmentBase {
 
@@ -84,7 +83,7 @@ public class NearbyWxFragment extends WxListFragmentBase {
         View view = getView();
         view.setKeepScreenOn( true );
 
-        setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
+        getActivityBase().onFragmentStarted( this );
     }
 
     @Override

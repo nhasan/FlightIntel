@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager.Wxs;
 import com.nadmm.airports.ListFragmentBase;
@@ -48,17 +49,19 @@ public class WxListFragmentBase extends ListFragmentBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+
         setHasOptionsMenu( true );
 
         mReceiver = new WxReceiver();
         mFilter = new IntentFilter();
         mFilter.addAction( NoaaService.ACTION_GET_METAR );
-
-        super.onCreate( savedInstanceState );
     }
 
     @Override
     public void onResume() {
+        super.onResume();
+
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
         bm.registerReceiver( mReceiver, mFilter );
         requestMetars( NoaaService.ACTION_GET_METAR, false );
@@ -68,10 +71,10 @@ public class WxListFragmentBase extends ListFragmentBase {
 
     @Override
     public void onPause() {
+        super.onPause();
+
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
         bm.unregisterReceiver( mReceiver );
-
-        super.onPause();
     }
 
     @Override
@@ -114,10 +117,6 @@ public class WxListFragmentBase extends ListFragmentBase {
 
         ActivityBase activity = (ActivityBase) getActivity();
         boolean cacheOnly = !NetworkUtils.canDownloadData( activity );
-        if ( force || !cacheOnly ) {
-            activity.startRefreshAnimation();
-        }
-
         ArrayList<String> stationIds = new ArrayList<String>( mStationWx.keySet() );
         Intent service = new Intent( activity, MetarService.class );
         service.setAction( action );
@@ -187,8 +186,6 @@ public class WxListFragmentBase extends ListFragmentBase {
             if ( mWxUpdates == mStationWx.size() ) {
                 // We have all the wx updates, stop the refresh animation
                 mWxUpdates = 0;
-                ActivityBase activity = (ActivityBase) getActivity();
-                activity.stopRefreshAnimation();
             }
         }
 

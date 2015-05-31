@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
 
 package com.nadmm.airports.wx;
 
-import java.util.ArrayList;
-
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -29,6 +27,8 @@ import android.os.Bundle;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Wxs;
+
+import java.util.ArrayList;
 
 public class FavoriteWxFragment extends WxListFragmentBase {
 
@@ -43,6 +43,13 @@ public class FavoriteWxFragment extends WxListFragmentBase {
         super.onResume();
 
         new FavoriteWxTask().execute( (Void[]) null );
+    }
+
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
     }
 
     public class FavoriteWxTask extends AsyncTask<Void, Void, Cursor> {
