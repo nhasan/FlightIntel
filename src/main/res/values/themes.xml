@@ -20,17 +20,25 @@
  */
  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
+
     <style name="Platform.Theme.FlightIntel" parent="@style/Theme.AppCompat.Light.NoActionBar">
     </style>
 
-    <style name="Theme.FlightIntel" parent="@style/Platform.Theme.FlightIntel">
+    <style name="Theme.FlightIntel" parent="Platform.Theme.FlightIntel">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>
-        <item name="actionBarIconColor">#fff</item>
+
+        <item name="popupItemBackground">?android:selectableItemBackground</item>
+
+        <item name="android:popupMenuStyle">@style/Widget.FlightIntel.PopupMenu</item>
+        <item name="android:listPopupWindowStyle">@style/Widget.FlightIntel.PopupMenu</item>
+        <item name="android:dropDownListViewStyle">@style/Widget.FlightIntel.ListView.DropDown</item>
+
+        <item name="searchViewStyle">@style/Widget.FlightIntel.SearchView</item>
     </style>
 
-    <style name="Theme.Light.Dialog" parent="@style/Theme.AppCompat.Light">
+    <style name="Theme.Light.Dialog" parent="Theme.AppCompat.Light">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -48,4 +56,19 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowTitleStyle">@style/TextMedium.Bold</item>
     </style>
+
+    <style name="Widget.FlightIntel.PopupMenu" parent="Widget.AppCompat.Light.PopupMenu">
+        <item name="android:dropDownSelector">?popupItemBackground</item>
+    </style>
+
+    <style name="Widget.FlightIntel.ListView.DropDown" parent="Widget.AppCompat.Light.ListView.DropDown">
+        <item name="android:listSelector">?popupItemBackground</item>
+        <item name="android:divider">@null</item>
+        <item name="android:dividerHeight">0dp</item>
+    </style>
+
+    <style name="Widget.FlightIntel.SearchView" parent="Widget.AppCompat.SearchView">
+        <item name="searchIcon">@null</item>
+    </style>
+
 </resources>
