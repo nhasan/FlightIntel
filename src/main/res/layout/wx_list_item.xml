@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,14 +27,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/wx_station_id"
-            style="@style/TextLabel"
+            style="@style/TextSmall.Bold"
             android:gravity="right"
             android:layout_alignParentRight="true"
             android:layout_marginLeft="@dimen/item_spacing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_name"
-            style="@style/TextTitle"
+            style="@style/TextHead.Bold"
             android:layout_toLeftOf="@id/wx_station_id"
             android:layout_alignParentLeft="true"
             android:gravity="left"
