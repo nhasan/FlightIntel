@@ -28,10 +28,10 @@ import android.support.v4.view.ViewPager;
 
 import java.util.ArrayList;
 
-public class TabsAdapter extends FragmentPagerAdapter  {
+public class PagerAdapter extends FragmentPagerAdapter  {
 
     private final Context mContext;
-    private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+    private final ArrayList<TabInfo> mTabs = new ArrayList<>();
 
     public final class TabInfo {
         private final Class<?> clss;
@@ -47,7 +47,7 @@ public class TabsAdapter extends FragmentPagerAdapter  {
         }
     }
 
-    public TabsAdapter( Context context, FragmentManager fm, ViewPager pager ) {
+    public PagerAdapter( Context context, FragmentManager fm, ViewPager pager ) {
         super( fm );
         mContext = context;
         pager.setAdapter( this );

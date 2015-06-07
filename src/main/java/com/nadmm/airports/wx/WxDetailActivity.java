@@ -20,21 +20,22 @@
 package com.nadmm.airports.wx;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 
-import com.nadmm.airports.DrawerActivityBase;
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NavAdapter;
-import com.nadmm.airports.utils.TabsAdapter;
-import com.nadmm.airports.views.DrawerListView;
+import com.nadmm.airports.utils.PagerAdapter;
+import com.nadmm.airports.views.SlidingTabLayout;
 
-public class WxDetailActivity extends DrawerActivityBase
-                implements ActionBar.OnNavigationListener, ViewPager.OnPageChangeListener {
+public class WxDetailActivity extends ActivityBase {
 
     private ViewPager mViewPager;
-    private TabsAdapter mTabsAdapter;
+    private PagerAdapter mPagerAdapter;
+    private SlidingTabLayout mSlidingTabLayout;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -43,33 +44,30 @@ public class WxDetailActivity extends DrawerActivityBase
         Intent intent = getIntent();
         Bundle args = intent.getExtras();
 
-        mViewPager = (ViewPager) findViewById( R.id.content_pager );
-        mViewPager.setOnPageChangeListener( this );
+        setContentView( R.layout.activity_tab_pager );
 
-        mTabsAdapter = new TabsAdapter( this, getSupportFragmentManager(), mViewPager );
-        mTabsAdapter.addTab( "METAR", MetarFragment.class, args );
-        mTabsAdapter.addTab( "TAF", TafFragment.class, args );
-        mTabsAdapter.addTab( "PIREP", PirepFragment.class, args );
-        mTabsAdapter.addTab( "AIRMET/SIGMET", AirSigmetFragment.class, args );
-        mTabsAdapter.addTab( "RADAR", RadarFragment.class, args );
-        mTabsAdapter.addTab( "PROGNOSIS CHARTS", ProgChartFragment.class, args );
-        mTabsAdapter.addTab( "WINDS/TEMPERATURE", WindFragment.class, args );
-        mTabsAdapter.addTab( "WINDS ALOFT", WindsAloftFragment.class, args );
-        mTabsAdapter.addTab( "SIG WX", SigWxFragment.class, args );
-        mTabsAdapter.addTab( "CEILING & VISIBILIY", CvaFragment.class, args );
-        mTabsAdapter.addTab( "ICING", IcingFragment.class, args );
-        mTabsAdapter.addTab( "AREA FORECAST", AreaForecastFragment.class, args );
+        mViewPager = (ViewPager) findViewById( R.id.view_pager );
 
-        // Setup list navigation mode
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
-        String[] titles = mTabsAdapter.getPageTitles();
-        NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(),
-                R.string.weather, titles );
-        actionBar.setListNavigationCallbacks( adapter, this );
-        actionBar.setDisplayShowTitleEnabled( false );
+        mPagerAdapter = new PagerAdapter( this, getSupportFragmentManager(), mViewPager );
+        mPagerAdapter.addTab( "METAR", MetarFragment.class, args );
+        mPagerAdapter.addTab( "TAF", TafFragment.class, args );
+        mPagerAdapter.addTab( "PIREP", PirepFragment.class, args );
+        mPagerAdapter.addTab( "AIRMET/SIGMET", AirSigmetFragment.class, args );
+        mPagerAdapter.addTab( "RADAR", RadarFragment.class, args );
+        mPagerAdapter.addTab( "PROGNOSIS CHARTS", ProgChartFragment.class, args );
+        mPagerAdapter.addTab( "WINDS/TEMPERATURE", WindFragment.class, args );
+        mPagerAdapter.addTab( "WINDS ALOFT", WindsAloftFragment.class, args );
+        mPagerAdapter.addTab( "SIG WX", SigWxFragment.class, args );
+        mPagerAdapter.addTab( "CEILING & VISIBILIY", CvaFragment.class, args );
+        mPagerAdapter.addTab( "ICING", IcingFragment.class, args );
+        mPagerAdapter.addTab( "AREA FORECAST", AreaForecastFragment.class, args );
 
-        setDrawerIndicatorEnabled( false );
+        Resources res = getResources();
+        mSlidingTabLayout = (SlidingTabLayout) findViewById( R.id.sliding_tabs );
+        mSlidingTabLayout.setCustomTabView( R.layout.tab_indicator, android.R.id.text1 );
+        mSlidingTabLayout.setSelectedIndicatorColors( res.getColor( R.color.tab_selected_strip ) );
+        mSlidingTabLayout.setDistributeEvenly( false );
+        mSlidingTabLayout.setViewPager( mViewPager );
 
         if ( savedInstanceState != null ) {
             // Workaround for race conditions in ViewPager
@@ -97,28 +95,8 @@ public class WxDetailActivity extends DrawerActivityBase
     }
 
     @Override
-    public boolean onNavigationItemSelected( int itemPosition, long itemId ) {
-        setCurrentPage( itemPosition );
-        return true;
-    }
-
-    @Override
-    public void onPageScrollStateChanged( int arg0 ) {
-    }
-
-    @Override
-    public void onPageScrolled( int arg0, float arg1, int arg2 ) {
-    }
-
-    @Override
-    public void onPageSelected( int position ) {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setSelectedNavigationItem( position );
-    }
-
-    @Override
     protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_WX;
+        return NAVDRAWER_ITEM_INVALID;
     }
 
     private void setCurrentPage( int pos ) {

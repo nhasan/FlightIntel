@@ -33,12 +33,12 @@ import com.nadmm.airports.DatabaseManager.BookCategories;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.NavAdapter;
-import com.nadmm.airports.utils.TabsAdapter;
+import com.nadmm.airports.utils.PagerAdapter;
 
 public class LibraryMainFragment extends FragmentBase
             implements ActionBar.OnNavigationListener, ViewPager.OnPageChangeListener {
 
-    private TabsAdapter mTabsAdapter;
+    private PagerAdapter mPagerAdapter;
     private int mFragmentId = -1;
     private ViewPager mViewPager;
 
@@ -56,7 +56,7 @@ public class LibraryMainFragment extends FragmentBase
         mViewPager = (ViewPager) findViewById( R.id.content_pager );
         mViewPager.setOnPageChangeListener( this );
 
-        mTabsAdapter = new TabsAdapter( getActivity(), getChildFragmentManager(), mViewPager );
+        mPagerAdapter = new PagerAdapter( getActivity(), getChildFragmentManager(), mViewPager );
 
         SQLiteDatabase db = getDatabase( DatabaseManager.DB_LIBRARY );
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
@@ -69,14 +69,14 @@ public class LibraryMainFragment extends FragmentBase
                 String name = c.getString( c.getColumnIndex( BookCategories.CATEGORY_NAME ) );
                 Bundle args = new Bundle();
                 args.putString( BookCategories.CATEGORY_CODE, code );
-                mTabsAdapter.addTab( name, LibraryPageFragment.class, args );
+                mPagerAdapter.addTab( name, LibraryPageFragment.class, args );
             } while ( c.moveToNext() );
         }
 
         // Setup list navigation mode
         ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode( ActionBar.NAVIGATION_MODE_LIST );
-        String[] titles = mTabsAdapter.getPageTitles();
+        String[] titles = mPagerAdapter.getPageTitles();
         NavAdapter adapter = new NavAdapter( actionBar.getThemedContext(),
                 R.string.library, titles );
         actionBar.setListNavigationCallbacks( adapter, this );

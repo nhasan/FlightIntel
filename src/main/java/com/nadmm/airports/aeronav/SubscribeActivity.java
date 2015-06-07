@@ -25,7 +25,7 @@ import android.support.v4.view.ViewPager;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
-import com.nadmm.airports.utils.TabsAdapter;
+import com.nadmm.airports.utils.PagerAdapter;
 
 public class SubscribeActivity extends ActivityBase {
 
@@ -37,7 +37,7 @@ public class SubscribeActivity extends ActivityBase {
 
         ViewPager pager = (ViewPager) findViewById( R.id.content_pager );
 
-        TabsAdapter adapter = new TabsAdapter( this, getSupportFragmentManager(), pager );
+        PagerAdapter adapter = new PagerAdapter( this, getSupportFragmentManager(), pager );
         adapter.addTab( "d-TPP", SubscribeDtppFragment.class, null );
         adapter.addTab( "d-AFD", SubscribeDafdFragment.class, null );
 
