@@ -27,7 +27,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.TypedValue;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.ListFragmentBase;
@@ -59,9 +58,9 @@ public final class AfdMainActivity extends ActivityBase {
     private ArrayList<Fragment> mAirportFragments = new ArrayList<>();
     private int mCurrentFragmentIndex = -1;
 
-    private ViewPager mViewPager = null;
-    private AfdViewPagerAdapter mViewPagerAdapter = null;
-    private SlidingTabLayout mSlidingTabLayout = null;
+    private ViewPager mViewPager;
+    private AfdViewPagerAdapter mViewPagerAdapter;
+    private SlidingTabLayout mSlidingTabLayout;
 
     private static final String AFD_SAVED_TAB = "afdtab";
 
