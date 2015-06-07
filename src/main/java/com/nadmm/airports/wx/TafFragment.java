@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,18 +19,12 @@
 
 package com.nadmm.airports.wx;
 
-import java.util.Locale;
-
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,8 +41,6 @@ import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
-import com.nadmm.airports.DrawerActivityBase;
-import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
@@ -58,58 +50,30 @@ import com.nadmm.airports.wx.Taf.Forecast;
 import com.nadmm.airports.wx.Taf.IcingCondition;
 import com.nadmm.airports.wx.Taf.TurbulenceCondition;
 
-public class TafFragment extends FragmentBase {
+import java.util.Locale;
 
-    private final String mAction = NoaaService.ACTION_GET_TAF;
+public class TafFragment extends WxFragmentBase {
+    protected final String mAction = NoaaService.ACTION_GET_TAF;
+
     private final int TAF_RADIUS = 25;
     private final int TAF_HOURS_BEFORE = 3;
 
-    private Location mLocation;
-    private IntentFilter mFilter;
-    private BroadcastReceiver mReceiver;
     private String mStationId;
     private Forecast mLastForecast;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        setHasOptionsMenu( true );
 
-        mFilter = new IntentFilter();
-        mFilter.addAction( mAction );
-
-        mReceiver = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                String action = intent.getAction();
-                if ( action.equals( mAction ) ) {
-                    String type = intent.getStringExtra( NoaaService.TYPE );
-                    if ( type.equals( NoaaService.TYPE_TEXT ) ) {
-                        showTaf( intent );
-                    }
-                }
-            }
-        };
+        setupBroadcastFilter( mAction );
     }
 
     @Override
-    public void onResume() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mReceiver, mFilter );
-        Bundle args = getArguments();
-        String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new TafTask() ).execute( stationId );
-
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mReceiver );
-
-        super.onPause();
+    protected void handleBroadcast( Intent intent ) {
+        String type = intent.getStringExtra( NoaaService.TYPE );
+        if ( type.equals( NoaaService.TYPE_TEXT ) ) {
+            showTaf( intent );
+        }
     }
 
     @Override
@@ -129,9 +93,12 @@ public class TafFragment extends FragmentBase {
     }
 
     @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
-        setRefreshItemVisible( !activity.isNavDrawerOpen() );
+    public void onResume() {
+        super.onResume();
+
+        Bundle args = getArguments();
+        String stationId = args.getString( NoaaService.STATION_ID );
+        setBackgroundTask( new TafFragment.TafTask() ).execute( stationId );
     }
 
     @Override
@@ -272,15 +239,8 @@ public class TafFragment extends FragmentBase {
                 stopRefreshAnimation();
                 setContentShown( true );
             } else {
-                mLocation = new Location( "" );
-                float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-                float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-                mLocation.setLatitude( lat );
-                mLocation.setLongitude( lon );
-
                 // Show the weather station info
                 showWxTitle( result );
-
                 // Now request the weather
                 mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
                 requestTaf( mStationId, false );

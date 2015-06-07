@@ -19,18 +19,13 @@
 
 package com.nadmm.airports.wx;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,8 +40,6 @@ import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Wxs;
-import com.nadmm.airports.DrawerActivityBase;
-import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
@@ -58,57 +51,29 @@ import com.nadmm.airports.wx.Pirep.PirepEntry;
 import com.nadmm.airports.wx.Pirep.SkyCondition;
 import com.nadmm.airports.wx.Pirep.TurbulenceCondition;
 
-public class PirepFragment extends FragmentBase {
+public class PirepFragment extends WxFragmentBase {
 
     private final String mAction = NoaaService.ACTION_GET_PIREP;
     private final int PIREP_RADIUS_NM = 50;
     private final int PIREP_HOURS_BEFORE = 3;
 
     private Location mLocation;
-    private IntentFilter mFilter;
-    private BroadcastReceiver mReceiver;
     private String mStationId;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        setHasOptionsMenu( true );
 
-        mFilter = new IntentFilter();
-        mFilter.addAction( mAction );
-
-        mReceiver = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                String action = intent.getAction();
-                if ( action.equals( mAction ) ) {
-                    String type = intent.getStringExtra( NoaaService.TYPE );
-                    if ( type.equals( NoaaService.TYPE_TEXT ) ) {
-                        showPirep( intent );
-                    }
-                }
-            }
-        };
+        setupBroadcastFilter( mAction );
     }
 
     @Override
     public void onResume() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mReceiver, mFilter );
+        super.onResume();
+
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         setBackgroundTask( new PirepDetailTask() ).execute( stationId );
-
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mReceiver );
-
-        super.onPause();
     }
 
     @Override
@@ -128,12 +93,6 @@ public class PirepFragment extends FragmentBase {
     }
 
     @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
-        setRefreshItemVisible( !activity.isNavDrawerOpen() );
-    }
-
-    @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
         // Handle item selection
         switch ( item.getItemId() ) {
@@ -143,6 +102,14 @@ public class PirepFragment extends FragmentBase {
                 return true;
             default:
                 return super.onOptionsItemSelected( item );
+        }
+    }
+
+    @Override
+    protected void handleBroadcast( Intent intent ) {
+        String type = intent.getStringExtra( NoaaService.TYPE );
+        if ( type.equals( NoaaService.TYPE_TEXT ) ) {
+            showPirep( intent );
         }
     }
 
@@ -157,7 +124,6 @@ public class PirepFragment extends FragmentBase {
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Wxs.TABLE_NAME );
-            String selection = Wxs.STATION_ID+"=?";
             Cursor c = builder.query( db, new String[] { "*" }, Wxs.STATION_ID+"=?",
                     new String[] { stationId }, null, null, null, null );
             cursors[ 0 ] = c;
@@ -175,7 +141,7 @@ public class PirepFragment extends FragmentBase {
             builder.setTables( Airports.TABLE_NAME+" a"
                     +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
                     +" ON a."+Airports.FAA_CODE+" = w."+Awos1.WX_SENSOR_IDENT );
-            selection = "a."+Airports.ICAO_CODE+"=?";
+            String selection = "a."+Airports.ICAO_CODE+"=?";
             c = builder.query( db, wxColumns, selection, new String[] { stationId },
                     null, null, null, null );
             cursors[ 1 ] = c;

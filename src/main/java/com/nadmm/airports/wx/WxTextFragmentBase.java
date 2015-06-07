@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -36,7 +36,7 @@ import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TextFileViewActivity;
 
-public abstract class WxTextFragmentBase extends FragmentBase {
+public abstract class WxTextFragmentBase extends WxFragmentBase {
 
     private final String mAction;
     private final String[] mWxAreaCodes;
@@ -55,45 +55,15 @@ public abstract class WxTextFragmentBase extends FragmentBase {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        setHasOptionsMenu( false );
 
-        mReceiver = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                String action = intent.getAction();
-                if ( action.equals( mAction ) && mPendingRow != null ) {
-                    TextView tv = (TextView) mPendingRow.findViewById( R.id.text );
-                    String label = tv.getText().toString();
-                    String path = intent.getStringExtra( NoaaService.RESULT );
-                    Intent viewer = new Intent( getActivity(), TextFileViewActivity.class );
-                    viewer.putExtra( TextFileViewActivity.FILE_PATH, path );
-                    viewer.putExtra( TextFileViewActivity.TITLE_TEXT, getTitle() );
-                    viewer.putExtra( TextFileViewActivity.LABEL_TEXT, label );
-                    getActivity().startActivity( viewer );
-                    setProgressBarVisible( false );
-                    mPendingRow = null;
-                }
-            }
-        };
-
-        mFilter = new IntentFilter();
-        mFilter.addAction( mAction );
+        setupBroadcastFilter( mAction );
     }
 
     @Override
     public void onResume() {
-        mPendingRow = null;
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mReceiver, mFilter );
         super.onResume();
-    }
 
-    @Override
-    public void onPause() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mReceiver );
-        super.onPause();
+        mPendingRow = null;
     }
 
     @Override
@@ -105,7 +75,7 @@ public abstract class WxTextFragmentBase extends FragmentBase {
         tv.setVisibility( View.VISIBLE );
 
         OnClickListener listener = new OnClickListener() {
-            
+
             @Override
             public void onClick( View v ) {
                 if ( mPendingRow == null ) {
@@ -125,6 +95,22 @@ public abstract class WxTextFragmentBase extends FragmentBase {
         }
 
         return v;
+    }
+
+    @Override
+    protected void handleBroadcast( Intent intent ) {
+        if ( mPendingRow != null ) {
+            TextView tv = (TextView) mPendingRow.findViewById( R.id.text );
+            String label = tv.getText().toString();
+            String path = intent.getStringExtra( NoaaService.RESULT );
+            Intent viewer = new Intent( getActivity(), TextFileViewActivity.class );
+            viewer.putExtra( TextFileViewActivity.FILE_PATH, path );
+            viewer.putExtra( TextFileViewActivity.TITLE_TEXT, getTitle() );
+            viewer.putExtra( TextFileViewActivity.LABEL_TEXT, label );
+            getActivity().startActivity( viewer );
+            setProgressBarVisible( false );
+            mPendingRow = null;
+        }
     }
 
     private void requestWxText( String code ) {

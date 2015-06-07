@@ -99,6 +99,8 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         String stationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
         holder.stationId.setText( stationId );
 
+        view.setTag( R.id.TAG_STATION_ID, stationId );
+
         StringBuilder info = new StringBuilder();
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
         if ( city != null && !city.isEmpty() ) {

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,6 @@
  */
 
 package com.nadmm.airports.wx;
-
-import java.text.NumberFormat;
-import java.util.ArrayList;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -48,8 +45,6 @@ import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.Awos2;
 import com.nadmm.airports.DatabaseManager.Wxs;
-import com.nadmm.airports.DrawerActivityBase;
-import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
@@ -58,14 +53,14 @@ import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.wx.Metar.Flags;
 
-public class MetarFragment extends FragmentBase {
+import java.text.NumberFormat;
+import java.util.ArrayList;
+
+public class MetarFragment extends WxFragmentBase {
 
     private final String mAction = NoaaService.ACTION_GET_METAR;
 
-    private long mElevation;
     private Location mLocation;
-    private IntentFilter mFilter;
-    private BroadcastReceiver mReceiver;
     private ArrayList<String> mRemarks;
 
     private final int METAR_HOURS_BEFORE = 3;
@@ -73,48 +68,18 @@ public class MetarFragment extends FragmentBase {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        setHasOptionsMenu( true );
 
-        mRemarks = new ArrayList<String>();
-
-        mFilter = new IntentFilter();
-        mFilter.addAction( mAction );
-
-        mReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                if ( mLocation == null ) {
-                    // This was probably intended for wx list view
-                    return;
-                }
-                String action = intent.getAction();
-                if ( action.equals( mAction ) ) {
-                    String type = intent.getStringExtra( NoaaService.TYPE );
-                    if ( type.equals( NoaaService.TYPE_TEXT ) ) {
-                        showMetar( intent );
-                    }
-                }
-            }
-        };
+        mRemarks = new ArrayList<>();
+        setupBroadcastFilter( mAction );
     }
 
     @Override
     public void onResume() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mReceiver, mFilter );
+        super.onResume();
+
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         setBackgroundTask( new MetarTask() ).execute( stationId );
-
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mReceiver );
-
-        super.onPause();
     }
 
     @Override
@@ -133,6 +98,32 @@ public class MetarFragment extends FragmentBase {
         return createContentView( view );
     }
 
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+            case R.id.menu_refresh:
+                startRefreshAnimation();
+                requestMetar( true );
+                return true;
+            default:
+                return super.onOptionsItemSelected( item );
+        }
+    }
+
+    @Override
+    protected void handleBroadcast( Intent intent ) {
+        if ( mLocation == null ) {
+            // This was probably intended for wx list view
+            return;
+        }
+
+        String type = intent.getStringExtra( NoaaService.TYPE );
+        if ( type.equals( NoaaService.TYPE_TEXT ) ) {
+            showMetar( intent );
+        }
+    }
+
     private final class MetarTask extends CursorAsyncTask {
 
         @Override
@@ -145,7 +136,6 @@ public class MetarFragment extends FragmentBase {
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Wxs.TABLE_NAME );
-            String selection = Wxs.STATION_ID+"=?";
             Cursor c = builder.query( db, new String[] { "*" }, Wxs.STATION_ID+"=?",
                     new String[] { stationId }, null, null, null, null );
             cursors[ 0 ] = c;
@@ -163,7 +153,7 @@ public class MetarFragment extends FragmentBase {
             builder.setTables( Airports.TABLE_NAME+" a"
                     +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
                     +" ON a."+Airports.FAA_CODE+" = w."+Awos1.WX_SENSOR_IDENT );
-            selection = "a."+Airports.ICAO_CODE+"=? AND w."+Awos1.COMMISSIONING_STATUS+"='Y'";
+            String selection = "a."+Airports.ICAO_CODE+"=? AND w."+Awos1.COMMISSIONING_STATUS+"='Y'";
             c = builder.query( db, wxColumns, selection, new String[] { stationId },
                     null, null, null );
             cursors[ 1 ] = c;
@@ -225,7 +215,7 @@ public class MetarFragment extends FragmentBase {
         String stationId = args.getString( NoaaService.STATION_ID );
         Intent service = new Intent( getActivity(), MetarService.class );
         service.setAction( mAction );
-        ArrayList<String> stationIds = new ArrayList<String>();
+        ArrayList<String> stationIds = new ArrayList<>();
         stationIds.add( stationId );
         service.putExtra( NoaaService.STATION_IDS, stationIds );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
@@ -351,9 +341,7 @@ public class MetarFragment extends FragmentBase {
                         WxUtils.getRelativeHumidity( metar ) ) );
 
                 long denAlt = WxUtils.getDensityAltitude( metar );
-                if ( denAlt > mElevation ) {
-                    addRow( layout, "Density altitude", FormatUtils.formatFeet( denAlt ) );
-                }
+                addRow( layout, "Density altitude", FormatUtils.formatFeet( denAlt ) );
             } else {
                 addRow( layout, "Dew point", "n/a" );
             }
@@ -392,9 +380,7 @@ public class MetarFragment extends FragmentBase {
                         FormatUtils.formatNumber( metar.seaLevelPressureMb ) ) );
             }
             long presAlt = WxUtils.getPressureAltitude( metar );
-            if ( presAlt > mElevation ) {
-                addRow( layout, "Pressure altitude", FormatUtils.formatFeet( presAlt ) );
-            }
+            addRow( layout, "Pressure altitude", FormatUtils.formatFeet( presAlt ) );
             if ( metar.pressureTend3HrMb < Float.MAX_VALUE ) {
                 addRow( layout, "3-hour tendency", String.format( "%+.2f mb",
                         metar.pressureTend3HrMb ) );
@@ -519,25 +505,6 @@ public class MetarFragment extends FragmentBase {
         if ( wx.getDrawable() != 0 ) {
             TextView tv = (TextView) row.findViewById( R.id.item_label );
             WxUtils.showColorizedDrawable( tv, flightCategory, wx.getDrawable() );
-        }
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
-        setRefreshItemVisible( !activity.isNavDrawerOpen() );
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_refresh:
-            startRefreshAnimation();
-            requestMetar( true );
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
         }
     }
 

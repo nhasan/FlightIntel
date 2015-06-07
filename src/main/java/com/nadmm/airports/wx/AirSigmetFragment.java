@@ -19,18 +19,13 @@
 
 package com.nadmm.airports.wx;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,8 +38,6 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Wxs;
-import com.nadmm.airports.DrawerActivityBase;
-import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
@@ -52,7 +45,7 @@ import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.wx.AirSigmet.AirSigmetEntry;
 
-public class AirSigmetFragment extends FragmentBase {
+public class AirSigmetFragment extends WxFragmentBase {
 
     private final String mAction = NoaaService.ACTION_GET_AIRSIGMET;
 
@@ -60,50 +53,22 @@ public class AirSigmetFragment extends FragmentBase {
     private final int AIRSIGMET_HOURS_BEFORE = 3;
 
     private Location mLocation;
-    private IntentFilter mFilter;
-    private BroadcastReceiver mReceiver;
     private String mStationId;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        setHasOptionsMenu( true );
 
-        mFilter = new IntentFilter();
-        mFilter.addAction( mAction );
-
-        mReceiver = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                String action = intent.getAction();
-                if ( action.equals( mAction ) ) {
-                    String type = intent.getStringExtra( NoaaService.TYPE );
-                    if ( type.equals( NoaaService.TYPE_TEXT ) ) {
-                        showAirSigmetText( intent );
-                    }
-                }
-            }
-        };
+        setupBroadcastFilter( mAction );
     }
 
     @Override
     public void onResume() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mReceiver, mFilter );
+        super.onResume();
+
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         setBackgroundTask( new AirSigmetTask() ).execute( stationId );
-
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mReceiver );
-
-        super.onPause();
     }
 
     @Override
@@ -124,12 +89,6 @@ public class AirSigmetFragment extends FragmentBase {
     }
 
     @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
-        setRefreshItemVisible( !activity.isNavDrawerOpen() );
-    }
-
-    @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
         // Handle item selection
         switch ( item.getItemId() ) {
@@ -139,6 +98,19 @@ public class AirSigmetFragment extends FragmentBase {
                 return true;
             default:
                 return super.onOptionsItemSelected( item );
+        }
+    }
+
+    @Override
+    protected void handleBroadcast( Intent intent ) {
+        if ( mLocation == null ) {
+            // This was probably intended for wx list view
+            return;
+        }
+
+        String type = intent.getStringExtra( NoaaService.TYPE );
+        if ( type.equals( NoaaService.TYPE_TEXT ) ) {
+            showAirSigmetText( intent );
         }
     }
 
@@ -154,7 +126,7 @@ public class AirSigmetFragment extends FragmentBase {
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
             builder.setTables( Wxs.TABLE_NAME );
             String selection = Wxs.STATION_ID+"=?";
-            Cursor c = builder.query( db, new String[] { "*" }, selection,
+            Cursor c = builder.query( db, new String[]{ "*" }, selection,
                     new String[] { stationId }, null, null, null, null );
             cursors[ 0 ] = c;
 

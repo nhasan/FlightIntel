@@ -38,7 +38,7 @@ import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ImageViewActivity;
 import com.nadmm.airports.R;
 
-public abstract class WxMapFragmentBase extends FragmentBase {
+public abstract class WxMapFragmentBase extends WxFragmentBase {
 
     private String mAction;
     private BroadcastReceiver mReceiver;
@@ -73,39 +73,15 @@ public abstract class WxMapFragmentBase extends FragmentBase {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        setHasOptionsMenu( false );
 
-        mReceiver = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                String action = intent.getAction();
-                if ( action.equals( mAction ) ) {
-                    String type = intent.getStringExtra( NoaaService.TYPE );
-                    if ( type.equals( NoaaService.TYPE_IMAGE ) ) {
-                        showWxMap( intent );
-                    }
-                }
-            }
-        };
-
-        mFilter = new IntentFilter();
-        mFilter.addAction( mAction );
+        setupBroadcastFilter( mAction );
     }
 
     @Override
     public void onResume() {
-        mPendingRow = null;
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mReceiver, mFilter );
         super.onResume();
-    }
 
-    @Override
-    public void onPause() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mReceiver );
-        super.onPause();
+        mPendingRow = null;
     }
 
     @Override
@@ -150,13 +126,21 @@ public abstract class WxMapFragmentBase extends FragmentBase {
             layout = (LinearLayout) v.findViewById( R.id.wx_map_type_layout );
             layout.setVisibility( View.VISIBLE );
             mSpinner = (Spinner) v.findViewById( R.id.map_type );
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>( getActivity(),
+            ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
                     android.R.layout.simple_spinner_item, mWxTypeNames );
             adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
             mSpinner.setAdapter( adapter );
         }
 
         return v;
+    }
+
+    @Override
+    protected void handleBroadcast( Intent intent ) {
+        String type = intent.getStringExtra( NoaaService.TYPE );
+        if ( type.equals( NoaaService.TYPE_IMAGE ) ) {
+            showWxMap( intent );
+        }
     }
 
     private void requestWxMap( String code ) {
