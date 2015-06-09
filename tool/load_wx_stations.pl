@@ -16,7 +16,7 @@
 # * GNU General Public License for more details.
 # *
 # * You should have received a copy of the GNU General Public License
-# * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+# * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # */
 
 use strict;
@@ -42,12 +42,15 @@ sub capitalize($)
     return $string;
 }
 
-my $ret = 200;
+print "Downloading wx station data...";
+$| = 1;
 my $ret = getstore( $wx_url, $STATIONS_FILE );
 if ( $ret != 200 )
 {
     die "Unable to download station list";
 }
+print "done\n";
+$| = 1;
 
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
@@ -90,7 +93,6 @@ my $twig= new XML::Twig( twig_handlers =>
                     { errors => \&errors,
                       warnings => \&warnings,
                       Station => \&station } );
-
 $twig->parsefile( $STATIONS_FILE );
 
 print "\rDone loading $count stations\n";
@@ -128,9 +130,9 @@ sub station
         my @types = $site_type->children;
         foreach my $type ( @types )
         {
-	    if ( $type eq "METAR" || $type eq "TAF" )
+            if ( $type->name eq "METAR" || $type->name eq "TAF" )
             {
-		if ( length( $site_types ) > 0 )
+                if ( length( $site_types ) > 0 )
                 {
                     $site_types .= " ";
                 }
