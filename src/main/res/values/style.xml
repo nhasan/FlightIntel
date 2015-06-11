@@ -127,7 +127,7 @@
 
     <style name="Widget.Flightintel.Toolbar" parent="Widget.AppCompat.Toolbar">
         <item name="android:background">?attr/colorPrimary</item>
-        <item name="theme">@style/ActionBarThemeOverlay</item>
+        <item name="android:theme">@style/ActionBarThemeOverlay</item>
         <item name="popupTheme">@style/ActionBarPopupThemeOverlay</item>
     </style>
 
