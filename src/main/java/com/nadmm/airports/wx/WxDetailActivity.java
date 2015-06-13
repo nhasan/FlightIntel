@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,48 +19,74 @@
 
 package com.nadmm.airports.wx;
 
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
-import com.nadmm.airports.utils.NavAdapter;
-import com.nadmm.airports.utils.PagerAdapter;
+import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.SlidingTabLayout;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class WxDetailActivity extends ActivityBase {
 
+    private final String[] mTabTitles = new String[] {
+            "METAR",
+            "TAF",
+            "PIREP",
+            "AIRMET/SIGMET",
+            "RADAR",
+            "PROGNOSIS CHARTS",
+            "WINDS/TEMPERATURE",
+            "WINDS ALOFT",
+            "SIG WX",
+            "CEILING/VISIBILIY",
+            "ICING",
+            "AREA FORECAST"
+    };
+
+    private final Class<?>[] mClasses = new Class<?>[] {
+            MetarFragment.class,
+            TafFragment.class,
+            PirepFragment.class,
+            AirSigmetFragment.class,
+            RadarFragment.class,
+            ProgChartFragment.class,
+            WindFragment.class,
+            WindsAloftFragment.class,
+            SigWxFragment.class,
+            CvaFragment.class,
+            IcingFragment.class,
+            AreaForecastFragment.class
+    };
+
     private ViewPager mViewPager;
-    private PagerAdapter mPagerAdapter;
+    private WxViewPagerAdapter mViewPagerAdapter;
     private SlidingTabLayout mSlidingTabLayout;
+    private HashMap<String, Fragment> mWxFragments = new HashMap<>();
+
+    private static final String WX_DETAIL_SAVED_TAB = "wxdetailtab";
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        Intent intent = getIntent();
-        Bundle args = intent.getExtras();
-
         setContentView( R.layout.activity_tab_pager );
 
-        mViewPager = (ViewPager) findViewById( R.id.view_pager );
+        initFragments( savedInstanceState );
 
-        mPagerAdapter = new PagerAdapter( this, getSupportFragmentManager(), mViewPager );
-        mPagerAdapter.addTab( "METAR", MetarFragment.class, args );
-        mPagerAdapter.addTab( "TAF", TafFragment.class, args );
-        mPagerAdapter.addTab( "PIREP", PirepFragment.class, args );
-        mPagerAdapter.addTab( "AIRMET/SIGMET", AirSigmetFragment.class, args );
-        mPagerAdapter.addTab( "RADAR", RadarFragment.class, args );
-        mPagerAdapter.addTab( "PROGNOSIS CHARTS", ProgChartFragment.class, args );
-        mPagerAdapter.addTab( "WINDS/TEMPERATURE", WindFragment.class, args );
-        mPagerAdapter.addTab( "WINDS ALOFT", WindsAloftFragment.class, args );
-        mPagerAdapter.addTab( "SIG WX", SigWxFragment.class, args );
-        mPagerAdapter.addTab( "CEILING & VISIBILIY", CvaFragment.class, args );
-        mPagerAdapter.addTab( "ICING", IcingFragment.class, args );
-        mPagerAdapter.addTab( "AREA FORECAST", AreaForecastFragment.class, args );
+        setActionBarTitle( "Weather", null );
+
+        mViewPager = (ViewPager) findViewById( R.id.view_pager );
+        mViewPagerAdapter = new WxViewPagerAdapter( getSupportFragmentManager() );
+        mViewPager.setAdapter( mViewPagerAdapter );
 
         Resources res = getResources();
         mSlidingTabLayout = (SlidingTabLayout) findViewById( R.id.sliding_tabs );
@@ -68,30 +94,64 @@ public class WxDetailActivity extends ActivityBase {
         mSlidingTabLayout.setSelectedIndicatorColors( res.getColor( R.color.tab_selected_strip ) );
         mSlidingTabLayout.setDistributeEvenly( false );
         mSlidingTabLayout.setViewPager( mViewPager );
+    }
 
+    @Override
+    protected void onPostCreate( Bundle savedInstanceState ) {
+        super.onPostCreate( savedInstanceState );
+
+        int index = 0;
         if ( savedInstanceState != null ) {
-            // Workaround for race conditions in ViewPager
-            // See: http://code.google.com/p/android/issues/detail?id=29472
-            final int lastPos = savedInstanceState.getInt( "wxtab" );
-            mViewPager.post( new Runnable() {
-
-                @Override
-                public void run() {
-                    setCurrentPage( lastPos );
-                }
-            } );
+            index = savedInstanceState.getInt( WX_DETAIL_SAVED_TAB );
         }
+        mViewPager.setCurrentItem( index );
     }
 
     @Override
     protected void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
-        outState.putInt( "wxtab", mViewPager.getCurrentItem() );
+
+        FragmentManager fm = getSupportFragmentManager();
+        List<Fragment> fragments = fm.getFragments();
+        for ( Fragment fragment : fragments ) {
+            // Save the fragments so we can restore them later
+            fm.putFragment( outState, fragment.getClass().getName(), fragment );
+        }
+
+        outState.putInt( WX_DETAIL_SAVED_TAB, mViewPager.getCurrentItem() );
+    }
+
+    private void initFragments( Bundle savedInstanceState ) {
+        if ( savedInstanceState != null ) {
+            FragmentManager fm = getSupportFragmentManager();
+            // Activity was recreated, check if our fragments survived
+            for ( Class<?> clss : mClasses ) {
+                // Restore the fragments from state saved earlier
+                Fragment fragment = fm.getFragment( savedInstanceState, clss.getName() );
+                if ( fragment != null ) {
+                    mWxFragments.put( clss.getName(), fragment );
+                }
+            }
+        }
+
+        Bundle args = getIntent().getExtras();
+        for ( Class<?> clss : mClasses ) {
+            if ( !mWxFragments.containsKey( clss.getName() ) ) {
+                Fragment fragment = Fragment.instantiate( this, clss.getName(), args );
+                mWxFragments.put( clss.getName(), fragment );
+            }
+        }
     }
 
     @Override
-    protected void setContentView() {
-        setContentView( R.layout.fragment_pager_no_tab_layout );
+    public void onFragmentStarted( FragmentBase fragment ) {
+        updateContentTopClearance( fragment );
+    }
+
+    private void updateContentTopClearance( FragmentBase fragment ) {
+        int actionbarClearance = UiUtils.calculateActionBarSize( this );
+        int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
+        fragment.setContentTopClearance( actionbarClearance + tabbarClearance );
     }
 
     @Override
@@ -99,12 +159,27 @@ public class WxDetailActivity extends ActivityBase {
         return NAVDRAWER_ITEM_INVALID;
     }
 
-    private void setCurrentPage( int pos ) {
-        // Workaround for race conditions in ViewPager
-        // See: http://code.google.com/p/android/issues/detail?id=29472
-        if ( mViewPager.getCurrentItem() != pos ) {
-            mViewPager.setCurrentItem( pos );
+    private class WxViewPagerAdapter extends FragmentPagerAdapter {
+
+        public WxViewPagerAdapter( FragmentManager fm ) {
+            super( fm );
         }
+
+        @Override
+        public Fragment getItem( int position ) {
+            return mWxFragments.get( mClasses[ position ].getName() );
+        }
+
+        @Override
+        public int getCount() {
+            return mTabTitles.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle( int position ) {
+            return mTabTitles[ position ];
+        }
+
     }
 
 }
