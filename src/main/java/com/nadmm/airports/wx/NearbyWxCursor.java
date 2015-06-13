@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -76,7 +76,7 @@ public class NearbyWxCursor extends MatrixCursor {
                 +(isCrossingMeridian180? "OR " : "AND ")
                 +"x."+Wxs.STATION_LONGITUDE_DEGREES+"<=?)";
         String[] selectionArgs = {
-                String.valueOf( Math.toDegrees( radLatMin ) ), 
+                String.valueOf( Math.toDegrees( radLatMin ) ),
                 String.valueOf( Math.toDegrees( radLatMax ) ),
                 String.valueOf( Math.toDegrees( radLonMin ) ),
                 String.valueOf( Math.toDegrees( radLonMax ) )
@@ -95,7 +95,7 @@ public class NearbyWxCursor extends MatrixCursor {
             Arrays.sort( awosList );
 
             for ( AwosData awos : awosList ) {
-                if ( awos.STATUS != null && awos.STATUS.equals( "N" ) ) {
+                if ( awos.STATUS == null || awos.STATUS.equals( "N" ) ) {
                     continue;
                 }
                 if ( awos.DISTANCE > radius ) {
@@ -161,7 +161,7 @@ public class NearbyWxCursor extends MatrixCursor {
 
             // Now calculate the distance to this wx station
             float[] results = new float[ 2 ];
-            Location.distanceBetween( location.getLatitude(), location.getLongitude(), 
+            Location.distanceBetween( location.getLatitude(), location.getLongitude(),
                     LATITUDE, LONGITUDE, results );
             DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
             BEARING = GeoUtils.applyDeclination( results[ 1 ], declination );
