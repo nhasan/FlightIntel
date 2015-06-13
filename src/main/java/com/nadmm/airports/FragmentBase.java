@@ -52,6 +52,8 @@ public class FragmentBase extends Fragment implements IRefreshable {
 
     private ActivityBase mActivity;
     private CursorAsyncTask mTask;
+    private int mContentTopClearance;
+
     private final OnClickListener mOnRowClickListener = new OnClickListener() {
         @Override
         public void onClick( View v ) {
@@ -119,8 +121,29 @@ public class FragmentBase extends Fragment implements IRefreshable {
     public void requestDataRefresh() {
     }
 
+    @Override
+    public void onViewCreated( View view, Bundle savedInstanceState ) {
+        super.onViewCreated( view, savedInstanceState );
+
+        mContentTopClearance = 0;
+    }
+
     protected void setRefreshing( boolean refreshing ) {
         getActivityBase().onRefreshingStateChanged( refreshing );
+    }
+
+    public void setContentTopClearance( int clearance ) {
+        if ( mContentTopClearance != clearance ) {
+            mContentTopClearance = clearance;
+            applyContentTopClearance( mContentTopClearance );
+        }
+    }
+
+    protected void applyContentTopClearance( int clearance ) {
+        if ( getView() != null ) {
+            getView().setPadding( getView().getPaddingLeft(), clearance, getView().getPaddingRight(),
+                    getView().getPaddingBottom() );
+        }
     }
 
     public DatabaseManager getDbManager() {

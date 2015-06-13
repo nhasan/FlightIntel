@@ -650,13 +650,13 @@ public class ActivityBase extends AppCompatActivity implements
         }
     }
 
-    protected void autoShowOrHideActionBar(boolean show) {
-        if (show == mActionBarShown) {
+    protected void autoShowOrHideActionBar( boolean show ) {
+        if ( show == mActionBarShown ) {
             return;
         }
 
         mActionBarShown = show;
-        onActionBarAutoShowOrHide(show);
+        onActionBarAutoShowOrHide( show );
     }
 
     /**
@@ -1181,7 +1181,7 @@ public class ActivityBase extends AppCompatActivity implements
         }
     }
 
-    public void onFragmentStarted( ListFragmentBase fragment ) {
+    public void onFragmentStarted( FragmentBase fragment ) {
     }
 
     public void setActionBarTitle( Cursor c ) {

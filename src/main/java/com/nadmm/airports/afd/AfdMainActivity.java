@@ -29,6 +29,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
@@ -75,7 +76,6 @@ public final class AfdMainActivity extends ActivityBase {
         setActionBarTitle( "Airports", null );
 
         mViewPager = (ViewPager) findViewById( R.id.view_pager );
-        mViewPager.setOffscreenPageLimit( 2 );
         mViewPagerAdapter = new AfdViewPagerAdapter( getSupportFragmentManager() );
         mViewPager.setAdapter( mViewPagerAdapter );
 
@@ -128,22 +128,22 @@ public final class AfdMainActivity extends ActivityBase {
     public void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
 
+        FragmentManager fm = getSupportFragmentManager();
         for ( Fragment fragment : mAirportFragments ) {
             // Save the fragments so we can restore them later
-            getSupportFragmentManager().putFragment( outState,
-                    fragment.getClass().getName(), fragment );
+            fm.putFragment( outState, fragment.getClass().getName(), fragment );
         }
 
         outState.putInt( AFD_SAVED_TAB, mViewPager.getCurrentItem() );
     }
 
     @Override
-    public void onFragmentStarted( ListFragmentBase fragment ) {
-        registerActionBarAutoHideListView( fragment.getListView() );
+    public void onFragmentStarted( FragmentBase fragment ) {
+        registerActionBarAutoHideListView( ((ListFragmentBase)fragment).getListView() );
         updateContentTopClearance( fragment );
     }
 
-    private void updateContentTopClearance( ListFragmentBase fragment ) {
+    private void updateContentTopClearance( FragmentBase fragment ) {
         int actionbarClearance = UiUtils.calculateActionBarSize( this );
         int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
         fragment.setContentTopClearance( actionbarClearance + tabbarClearance );
@@ -151,11 +151,11 @@ public final class AfdMainActivity extends ActivityBase {
 
     private void initFragments( Bundle savedInstanceState ) {
         if ( savedInstanceState != null ) {
+            FragmentManager fm = getSupportFragmentManager();
             // Activity was recreated, check if our fragments survived
             for ( Class<?> clss : mClasses ) {
                 // Restore the fragments from state saved earlier
-                Fragment fragment = getSupportFragmentManager().getFragment(
-                        savedInstanceState, clss.getName() );
+                Fragment fragment = fm.getFragment( savedInstanceState, clss.getName() );
                 if ( fragment == null ) {
                     // Fragments were not saved
                     break;
@@ -183,28 +183,6 @@ public final class AfdMainActivity extends ActivityBase {
         return (ListFragmentBase) mAirportFragments.get( position );
     }
 
-    private class AfdViewPagerAdapter extends FragmentPagerAdapter {
-
-        public AfdViewPagerAdapter( FragmentManager fm ) {
-            super( fm );
-        }
-
-        @Override
-        public Fragment getItem( int position ) {
-            return mAirportFragments.get( position );
-        }
-
-        @Override
-        public int getCount() {
-            return mTabTitles.length;
-        }
-
-        @Override
-        public CharSequence getPageTitle( int position ) {
-            return mTabTitles[ position ];
-        }
-    }
-
     @Override
     protected int getSelfNavDrawerItem() {
         return NAVDRAWER_ITEM_AFD;
@@ -228,6 +206,28 @@ public final class AfdMainActivity extends ActivityBase {
             return ID_FAVORITES;
         } else {
             return ID_NEARBY;
+        }
+    }
+
+    private class AfdViewPagerAdapter extends FragmentPagerAdapter {
+
+        public AfdViewPagerAdapter( FragmentManager fm ) {
+            super( fm );
+        }
+
+        @Override
+        public Fragment getItem( int position ) {
+            return mAirportFragments.get( position );
+        }
+
+        @Override
+        public int getCount() {
+            return mTabTitles.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle( int position ) {
+            return mTabTitles[ position ];
         }
     }
 
