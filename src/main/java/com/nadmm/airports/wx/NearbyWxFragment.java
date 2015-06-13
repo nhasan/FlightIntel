@@ -80,8 +80,7 @@ public class NearbyWxFragment extends WxListFragmentBase {
             mNearbyHelper = new NearbyHelper( getActivity(), this );
         }
 
-        View view = getView();
-        view.setKeepScreenOn( true );
+        getView().setKeepScreenOn( true );
 
         getActivityBase().onFragmentStarted( this );
     }
