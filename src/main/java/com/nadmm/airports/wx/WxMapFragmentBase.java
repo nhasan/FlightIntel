@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,24 +78,24 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        mPendingRow = null;
+    public View onCreateView( LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState ) {
+        View view = inflater.inflate( R.layout.wx_map_detail_view, container, false );
+        return createContentView( view );
     }
 
     @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View v = inflate( R.layout.wx_map_detail_view );
+    public void onViewCreated( View view, Bundle savedInstanceState ) {
+        super.onViewCreated( view, savedInstanceState );
+
         if ( mLabel != null && mLabel.length() > 0 ) {
-            TextView tv = (TextView) v.findViewById( R.id.wx_map_label );
+            TextView tv = (TextView) view.findViewById( R.id.wx_map_label );
             tv.setText( mLabel );
             tv.setVisibility( View.VISIBLE );
         }
 
         if ( mHelpText != null && mHelpText.length() > 0 ) {
-            TextView tv = (TextView) v.findViewById( R.id.help_text );
+            TextView tv = (TextView) view.findViewById( R.id.help_text );
             tv.setText( mHelpText );
             tv.setVisibility( View.VISIBLE );
         }
@@ -112,7 +112,7 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
             }
         };
 
-        LinearLayout layout = (LinearLayout) v.findViewById( R.id.wx_map_layout );
+        LinearLayout layout = (LinearLayout) view.findViewById( R.id.wx_map_layout );
         for ( int i = 0; i < mWxMapCodes.length; ++i ) {
             View row = addProgressRow( layout, mWxMapNames[ i ] );
             row.setTag( mWxMapCodes[ i ] );
@@ -121,18 +121,32 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
         }
 
         if ( mWxTypeCodes != null ) {
-            TextView tv = (TextView) v.findViewById( R.id.wx_map_type_label );
+            TextView tv = (TextView) view.findViewById( R.id.wx_map_type_label );
             tv.setVisibility( View.VISIBLE );
-            layout = (LinearLayout) v.findViewById( R.id.wx_map_type_layout );
+            layout = (LinearLayout) view.findViewById( R.id.wx_map_type_layout );
             layout.setVisibility( View.VISIBLE );
-            mSpinner = (Spinner) v.findViewById( R.id.map_type );
+            mSpinner = (Spinner) view.findViewById( R.id.map_type );
             ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
                     android.R.layout.simple_spinner_item, mWxTypeNames );
             adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
             mSpinner.setAdapter( adapter );
         }
 
-        return v;
+        setFragmentContentShown( true );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mPendingRow = null;
+    }
+
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
     }
 
     @Override

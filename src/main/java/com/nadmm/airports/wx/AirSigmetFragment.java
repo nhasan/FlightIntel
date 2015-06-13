@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,17 +63,8 @@ public class AirSigmetFragment extends WxFragmentBase {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        Bundle args = getArguments();
-        String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new AirSigmetTask() ).execute( stationId );
-    }
-
-    @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
+                              Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.airsigmet_detail_view, container, false );
         Button btnGraphic = (Button) view.findViewById( R.id.btnViewGraphic );
         btnGraphic.setOnClickListener( new OnClickListener() {
@@ -86,6 +77,22 @@ public class AirSigmetFragment extends WxFragmentBase {
         } );
 
         return createContentView( view );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Bundle args = getArguments();
+        String stationId = args.getString( NoaaService.STATION_ID );
+        setBackgroundTask( new AirSigmetTask() ).execute( stationId );
+    }
+
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
     }
 
     @Override

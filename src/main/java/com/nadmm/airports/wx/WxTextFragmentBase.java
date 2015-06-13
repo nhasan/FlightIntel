@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,17 +60,17 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        mPendingRow = null;
+    public View onCreateView( LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState ) {
+        View view = inflate( R.layout.wx_map_detail_view );
+        return createContentView( view );
     }
 
     @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View v = inflate( R.layout.wx_map_detail_view );
-        TextView tv = (TextView) v.findViewById( R.id.wx_map_label );
+    public void onViewCreated( View view, Bundle savedInstanceState ) {
+        super.onViewCreated( view, savedInstanceState );
+
+        TextView tv = (TextView) view.findViewById( R.id.wx_map_label );
         tv.setText( "Select Area" );
         tv.setVisibility( View.VISIBLE );
 
@@ -86,7 +86,7 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
             }
         };
 
-        LinearLayout layout = (LinearLayout) v.findViewById( R.id.wx_map_layout );
+        LinearLayout layout = (LinearLayout) view.findViewById( R.id.wx_map_layout );
         for ( int i = 0; i < mWxAreaNames.length; ++i ) {
             View row = addProgressRow( layout, mWxAreaNames[ i ] );
             row.setTag( mWxAreaCodes[ i ] );
@@ -94,7 +94,21 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
             row.setBackgroundResource( R.drawable.row_selector_middle );
         }
 
-        return v;
+        setFragmentContentShown( true );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mPendingRow = null;
+    }
+
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
     }
 
     @Override

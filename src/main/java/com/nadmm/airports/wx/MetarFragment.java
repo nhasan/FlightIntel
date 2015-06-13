@@ -19,19 +19,14 @@
 
 package com.nadmm.airports.wx;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -74,15 +69,6 @@ public class MetarFragment extends WxFragmentBase {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        Bundle args = getArguments();
-        String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new MetarTask() ).execute( stationId );
-    }
-
-    @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.metar_detail_view, container, false );
@@ -96,6 +82,22 @@ public class MetarFragment extends WxFragmentBase {
             }
         } );
         return createContentView( view );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Bundle args = getArguments();
+        String stationId = args.getString( NoaaService.STATION_ID );
+        setBackgroundTask( new MetarTask() ).execute( stationId );
+    }
+
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
     }
 
     @Override

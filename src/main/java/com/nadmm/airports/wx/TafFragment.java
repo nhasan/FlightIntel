@@ -102,6 +102,13 @@ public class TafFragment extends WxFragmentBase {
     }
 
     @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
+    }
+
+    @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
         // Handle item selection
         switch ( item.getItemId() ) {

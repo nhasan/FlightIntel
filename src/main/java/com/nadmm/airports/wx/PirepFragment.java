@@ -71,6 +71,8 @@ public class PirepFragment extends WxFragmentBase {
     public void onResume() {
         super.onResume();
 
+        getActivityBase().onFragmentStarted( this );
+
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         setBackgroundTask( new PirepDetailTask() ).execute( stationId );
