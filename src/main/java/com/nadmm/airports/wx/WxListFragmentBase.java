@@ -43,7 +43,7 @@ import java.util.HashMap;
 
 public class WxListFragmentBase extends ListFragmentBase {
 
-    private HashMap<String, Metar> mStationWx = new HashMap<String, Metar>();
+    private HashMap<String, Metar> mStationWx = new HashMap<>();
     private BroadcastReceiver mReceiver;
     private IntentFilter mFilter;
 
@@ -64,9 +64,6 @@ public class WxListFragmentBase extends ListFragmentBase {
 
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
         bm.registerReceiver( mReceiver, mFilter );
-        requestMetars( NoaaService.ACTION_GET_METAR, false );
-
-        super.onResume();
     }
 
     @Override
@@ -117,7 +114,7 @@ public class WxListFragmentBase extends ListFragmentBase {
 
         ActivityBase activity = (ActivityBase) getActivity();
         boolean cacheOnly = !NetworkUtils.canDownloadData( activity );
-        ArrayList<String> stationIds = new ArrayList<String>( mStationWx.keySet() );
+        ArrayList<String> stationIds = new ArrayList<>( mStationWx.keySet() );
         Intent service = new Intent( activity, MetarService.class );
         service.setAction( action );
         service.putExtra( NoaaService.STATION_IDS, stationIds );
