@@ -44,7 +44,6 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
     private ListView mListView;
     private String mEmptyText;
     private int mFragmentId;
-    private int mContentTopClearance;
     private Parcelable mListViewState;
 
     @Override
@@ -111,15 +110,13 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
         return ViewCompat.canScrollVertically( mListView, -1 );
     }
 
-    public void setContentTopClearance( int clearance ) {
-        if ( mContentTopClearance != clearance ) {
-            mContentTopClearance = clearance;
-            mListView.setPadding( mListView.getPaddingLeft(), mContentTopClearance,
-                    mListView.getPaddingRight(), mListView.getPaddingBottom() );
-            CursorAdapter adapter = (CursorAdapter) mListView.getAdapter();
-            if ( adapter != null ) {
-                adapter.notifyDataSetChanged();
-            }
+    @Override
+    protected void applyContentTopClearance( int clearance ) {
+        mListView.setPadding( mListView.getPaddingLeft(), clearance,
+                mListView.getPaddingRight(), mListView.getPaddingBottom() );
+        CursorAdapter adapter = (CursorAdapter) mListView.getAdapter();
+        if ( adapter != null ) {
+            adapter.notifyDataSetChanged();
         }
     }
 
