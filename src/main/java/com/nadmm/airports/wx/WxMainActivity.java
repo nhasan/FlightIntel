@@ -29,6 +29,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
@@ -134,12 +135,13 @@ public final class WxMainActivity extends ActivityBase {
         outState.putInt( WX_SAVED_TAB, mViewPager.getCurrentItem() );
     }
 
-    public void onFragmentStarted( ListFragmentBase fragment ) {
-        registerActionBarAutoHideListView( fragment.getListView() );
+    @Override
+    public void onFragmentStarted( FragmentBase fragment ) {
+        registerActionBarAutoHideListView( ((ListFragmentBase)fragment).getListView() );
         updateContentTopClearance( fragment );
     }
 
-    private void updateContentTopClearance( ListFragmentBase fragment ) {
+    private void updateContentTopClearance( FragmentBase fragment ) {
         int actionbarClearance = UiUtils.calculateActionBarSize( this );
         int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
         fragment.setContentTopClearance( actionbarClearance + tabbarClearance );
