@@ -107,13 +107,6 @@ public class NearbyWxFragment extends WxListFragmentBase {
         }
     }
 
-    @Override
-    public void requestDataRefresh() {
-        super.requestDataRefresh();
-
-        requestMetars( NoaaService.ACTION_GET_METAR, true );
-    }
-
     private final class NearbyWxTask extends AsyncTask<Location, Void, Cursor> {
 
         @Override

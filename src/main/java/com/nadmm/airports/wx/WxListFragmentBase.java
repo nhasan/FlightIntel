@@ -96,6 +96,11 @@ public class WxListFragmentBase extends ListFragmentBase {
         return true;
     }
 
+    @Override
+    public void requestDataRefresh() {
+        requestMetars( NoaaService.ACTION_GET_METAR, true );
+    }
+
     public void setCursor( Cursor c ) {
         mStationWx.clear();
         if ( getActivity() != null ) {
@@ -119,7 +124,8 @@ public class WxListFragmentBase extends ListFragmentBase {
     protected void requestMetars( String action, boolean force, boolean showAnim ) {
         ActivityBase activity = getActivityBase();
 
-        if ( mStationWx.size() == 0 ) {
+        if ( mStationWx.isEmpty() ) {
+            activity.onRefreshingStateChanged( false );
             return;
         }
 
