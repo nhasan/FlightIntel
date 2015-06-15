@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -296,6 +296,11 @@ public class ActivityBase extends AppCompatActivity implements
             // Lastly, it will rely on the system behavior for back
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return false;
     }
 
     //TODO: Remove this
@@ -761,11 +766,6 @@ public class ActivityBase extends AppCompatActivity implements
         if ( mActionBarAutoHideEnabled && isOpen ) {
             autoShowOrHideActionBar( true );
         }
-    }
-
-    @Override
-    public boolean canSwipeRefreshChildScrollUp() {
-        return false;
     }
 
     protected CursorAsyncTask setBackgroundTask( CursorAsyncTask task ) {
