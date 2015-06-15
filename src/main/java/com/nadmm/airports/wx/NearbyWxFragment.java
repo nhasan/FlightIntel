@@ -26,6 +26,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.nadmm.airports.DatabaseManager;
@@ -104,6 +105,13 @@ public class NearbyWxFragment extends WxListFragmentBase {
         if ( mNearbyHelper != null ) {
             mNearbyHelper.stopLocationUpdates();
         }
+    }
+
+    @Override
+    public void requestDataRefresh() {
+        super.requestDataRefresh();
+
+        requestMetars( NoaaService.ACTION_GET_METAR, true );
     }
 
     private final class NearbyWxTask extends AsyncTask<Location, Void, Cursor> {

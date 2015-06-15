@@ -141,10 +141,24 @@ public final class WxMainActivity extends ActivityBase {
         updateContentTopClearance( fragment );
     }
 
+    @Override
+    protected void requestDataRefresh() {
+        FragmentBase fragment = getCurrentFragment();
+        if ( fragment.isRefreshable() ) {
+            fragment.requestDataRefresh();
+        }
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return getCurrentFragment().canSwipeRefreshChildScrollUp();
+    }
+
     private void updateContentTopClearance( FragmentBase fragment ) {
         int actionbarClearance = UiUtils.calculateActionBarSize( this );
         int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
         fragment.setContentTopClearance( actionbarClearance + tabbarClearance );
+        setProgressBarTopWhenActionBarShown( actionbarClearance + tabbarClearance );
     }
 
     private void initFragments( Bundle savedInstanceState ) {

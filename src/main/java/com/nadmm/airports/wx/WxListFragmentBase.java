@@ -91,6 +91,11 @@ public class WxListFragmentBase extends ListFragmentBase {
         }
     }
 
+    @Override
+    public boolean isRefreshable() {
+        return true;
+    }
+
     public void setCursor( Cursor c ) {
         mStationWx.clear();
         if ( getActivity() != null ) {
@@ -108,12 +113,22 @@ public class WxListFragmentBase extends ListFragmentBase {
     }
 
     protected void requestMetars( String action, boolean force ) {
+        requestMetars( action, force, true );
+    }
+
+    protected void requestMetars( String action, boolean force, boolean showAnim ) {
+        ActivityBase activity = getActivityBase();
+
         if ( mStationWx.size() == 0 ) {
             return;
         }
 
-        ActivityBase activity = (ActivityBase) getActivity();
         boolean cacheOnly = !NetworkUtils.canDownloadData( activity );
+
+        if ( ( force || !cacheOnly ) && showAnim ) {
+            activity.onRefreshingStateChanged( true );
+        }
+
         ArrayList<String> stationIds = new ArrayList<>( mStationWx.keySet() );
         Intent service = new Intent( activity, MetarService.class );
         service.setAction( action );
@@ -137,7 +152,7 @@ public class WxListFragmentBase extends ListFragmentBase {
     @Override
     protected void onListItemClick( ListView l, View v, int position ) {
         // When getting wx for one station, get for all others too
-        requestMetars( NoaaService.ACTION_CACHE_METAR, false );
+        requestMetars( NoaaService.ACTION_CACHE_METAR, false, false );
         Cursor c = (Cursor) l.getItemAtPosition( position );
         String icaoCode = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
         Intent intent = new Intent( getActivity(), WxDetailActivity.class );
@@ -183,6 +198,7 @@ public class WxListFragmentBase extends ListFragmentBase {
             if ( mWxUpdates == mStationWx.size() ) {
                 // We have all the wx updates, stop the refresh animation
                 mWxUpdates = 0;
+                getActivityBase().onRefreshingStateChanged( false );
             }
         }
 
