@@ -25,6 +25,7 @@ import android.location.Location;
 import android.support.v4.widget.ResourceCursorAdapter;
 import android.view.View;
 import android.widget.TextView;
+
 import com.nadmm.airports.DatabaseManager.Airports;
 import com.nadmm.airports.DatabaseManager.Awos1;
 import com.nadmm.airports.DatabaseManager.LocationColumns;
@@ -271,7 +272,11 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             holder.reportAge.setText( TimeUtils.formatElapsedTime( metar.observationTime ) );
        } else {
             WxUtils.setColorizedWxDrawable( holder.stationName, metar, 0 );
-            holder.stationWx.setText( "Unable to get weather details" );
+            if ( metar != null ) {
+                holder.stationWx.setText( "Unable to fetch weather data" );
+            } else {
+                holder.stationWx.setText( "Weather data not fetched" );
+            }
             holder.stationWx2.setVisibility( View.GONE );
             holder.reportAge.setVisibility( View.GONE );
         }

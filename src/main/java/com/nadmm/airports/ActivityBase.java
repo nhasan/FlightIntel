@@ -755,6 +755,10 @@ public class ActivityBase extends AppCompatActivity implements
         }
     }
 
+    public boolean isRefreshing() {
+        return mSwipeRefreshLayout.isRefreshing();
+    }
+
     public void enableDisableSwipeRefresh( boolean enable ) {
         if ( mSwipeRefreshLayout != null ) {
             mSwipeRefreshLayout.setEnabled( enable );

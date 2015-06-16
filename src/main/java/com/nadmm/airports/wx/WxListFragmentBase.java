@@ -170,8 +170,6 @@ public class WxListFragmentBase extends ListFragmentBase {
 
     private final class WxReceiver extends BroadcastReceiver {
 
-        protected int mWxUpdates = 0;
-
         @Override
         public void onReceive( Context context, Intent intent ) {
             Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
@@ -200,10 +198,7 @@ public class WxListFragmentBase extends ListFragmentBase {
                 ++pos;
             }
 
-            ++mWxUpdates;
-            if ( mWxUpdates == mStationWx.size() ) {
-                // We have all the wx updates, stop the refresh animation
-                mWxUpdates = 0;
+            if ( getActivityBase().isRefreshing() ) {
                 getActivityBase().onRefreshingStateChanged( false );
             }
         }
