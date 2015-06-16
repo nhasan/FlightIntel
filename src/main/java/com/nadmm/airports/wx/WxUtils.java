@@ -89,7 +89,7 @@ public class WxUtils {
     }
 
     static public void setColorizedCeilingDrawable( TextView tv, Metar metar ) {
-        SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
+        SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size() - 1 );
         showColorizedDrawable( tv, metar.flightCategory, sky.getDrawable() );
     }
 
@@ -97,14 +97,13 @@ public class WxUtils {
         Resources res = context.getResources();
         SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
         int color = getFlightCategoryColor( metar.flightCategory );
-        Drawable d = UiUtils.getColorizedDrawable( res, sky.getDrawable(), color );
-        return d;
+        return UiUtils.getColorizedDrawable( res, sky.getDrawable(), color );
     }
 
     static public Drawable getWindBarbDrawable( Context context, Metar metar, float declination ) {
         Drawable d = null;
         if ( isWindAvailable( metar ) ) {
-            int resid = 0;
+            int resid;
             if ( metar.windSpeedKnots >= 48 ) {
                 resid = R.drawable.windbarb50;
             } else if ( metar.windSpeedKnots >= 43 ) {
@@ -158,6 +157,8 @@ public class WxUtils {
                 Drawable d = getErrorDrawable( context );
                 UiUtils.setTextViewDrawable( tv, d );
             }
+        } else {
+            UiUtils.setTextViewDrawable( tv, null );
         }
     }
 
