@@ -298,11 +298,6 @@ public class ActivityBase extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public boolean canSwipeRefreshChildScrollUp() {
-        return false;
-    }
-
     //TODO: Remove this
     protected void setContentView() {
     }
@@ -621,6 +616,46 @@ public class ActivityBase extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return false;
+    }
+
+    protected void setProgressBarTopWhenActionBarShown( int progressBarTopWhenActionBarShown ) {
+        mProgressBarTopWhenActionBarShown = progressBarTopWhenActionBarShown;
+        updateSwipeRefreshProgressBarTop();
+    }
+
+    private void updateSwipeRefreshProgressBarTop() {
+        if ( mSwipeRefreshLayout == null ) {
+            return;
+        }
+
+        int progressBarStartMargin = getResources().getDimensionPixelSize(
+                R.dimen.swipe_refresh_progress_bar_start_margin );
+        int progressBarEndMargin = getResources().getDimensionPixelSize(
+                R.dimen.swipe_refresh_progress_bar_end_margin );
+        int top = mActionBarShown ? mProgressBarTopWhenActionBarShown : 0;
+        mSwipeRefreshLayout.setProgressViewOffset( false,
+                top + progressBarStartMargin, top + progressBarEndMargin );
+    }
+
+    public void onRefreshingStateChanged( boolean refreshing ) {
+        if ( mSwipeRefreshLayout != null ) {
+            mSwipeRefreshLayout.setRefreshing( refreshing );
+        }
+    }
+
+    public boolean isRefreshing() {
+        return mSwipeRefreshLayout.isRefreshing();
+    }
+
+    public void enableDisableSwipeRefresh( boolean enable ) {
+        if ( mSwipeRefreshLayout != null ) {
+            mSwipeRefreshLayout.setEnabled( enable );
+        }
+    }
+
     protected void requestDataRefresh() {
     }
 
@@ -712,8 +747,6 @@ public class ActivityBase extends AppCompatActivity implements
     }
 
     protected void onActionBarAutoShowOrHide( boolean shown ) {
-        updateSwipeRefreshProgressBarTop();
-
         for ( View view : mHideableHeaderViews ) {
             if ( shown ) {
                 view.animate()
@@ -727,41 +760,6 @@ public class ActivityBase extends AppCompatActivity implements
                         .setDuration( HEADER_HIDE_ANIM_DURATION )
                         .setInterpolator( new DecelerateInterpolator() );
             }
-        }
-    }
-
-    protected void setProgressBarTopWhenActionBarShown( int progressBarTopWhenActionBarShown ) {
-        mProgressBarTopWhenActionBarShown = progressBarTopWhenActionBarShown;
-        updateSwipeRefreshProgressBarTop();
-    }
-
-    private void updateSwipeRefreshProgressBarTop() {
-        if ( mSwipeRefreshLayout == null ) {
-            return;
-        }
-
-        int progressBarStartMargin = getResources().getDimensionPixelSize(
-                R.dimen.swipe_refresh_progress_bar_start_margin );
-        int progressBarEndMargin = getResources().getDimensionPixelSize(
-                R.dimen.swipe_refresh_progress_bar_end_margin );
-        int top = mActionBarShown ? mProgressBarTopWhenActionBarShown : 0;
-        mSwipeRefreshLayout.setProgressViewOffset( false,
-                top + progressBarStartMargin, top + progressBarEndMargin );
-    }
-
-    public void onRefreshingStateChanged( boolean refreshing ) {
-        if ( mSwipeRefreshLayout != null ) {
-            mSwipeRefreshLayout.setRefreshing( refreshing );
-        }
-    }
-
-    public boolean isRefreshing() {
-        return mSwipeRefreshLayout.isRefreshing();
-    }
-
-    public void enableDisableSwipeRefresh( boolean enable ) {
-        if ( mSwipeRefreshLayout != null ) {
-            mSwipeRefreshLayout.setEnabled( enable );
         }
     }
 
