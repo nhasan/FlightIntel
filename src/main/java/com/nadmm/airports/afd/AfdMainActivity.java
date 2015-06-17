@@ -37,6 +37,8 @@ import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.SlidingTabLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public final class AfdMainActivity extends ActivityBase {
 
@@ -56,7 +58,7 @@ public final class AfdMainActivity extends ActivityBase {
     private final int ID_NEARBY = 1;
     private final int ID_BROWSE = 2;
 
-    private ArrayList<Fragment> mAirportFragments = new ArrayList<>();
+    private HashMap<String, Fragment> mAfdFragments = new HashMap<>();
     private int mCurrentFragmentIndex = -1;
 
     private ViewPager mViewPager;
@@ -129,7 +131,8 @@ public final class AfdMainActivity extends ActivityBase {
         super.onSaveInstanceState( outState );
 
         FragmentManager fm = getSupportFragmentManager();
-        for ( Fragment fragment : mAirportFragments ) {
+        List<Fragment> fragments = fm.getFragments();
+        for ( Fragment fragment : fragments ) {
             // Save the fragments so we can restore them later
             fm.putFragment( outState, fragment.getClass().getName(), fragment );
         }
@@ -156,31 +159,27 @@ public final class AfdMainActivity extends ActivityBase {
             for ( Class<?> clss : mClasses ) {
                 // Restore the fragments from state saved earlier
                 Fragment fragment = fm.getFragment( savedInstanceState, clss.getName() );
-                if ( fragment == null ) {
-                    // Fragments were not saved
-                    break;
+                if ( fragment != null ) {
+                    mAfdFragments.put( clss.getName(), fragment );
                 }
-                mAirportFragments.add( fragment );
             }
         }
 
-        if ( mAirportFragments.isEmpty() ) {
-            // Create the fragments
-            for ( Class<?> clss : mClasses ) {
-                Bundle args = new Bundle();
-                args.putInt( ListFragmentBase.FRAGMENT_ID, mAirportFragments.size() );
+        Bundle args = getIntent().getExtras();
+        for ( Class<?> clss : mClasses ) {
+            if ( !mAfdFragments.containsKey( clss.getName() ) ) {
                 Fragment fragment = Fragment.instantiate( this, clss.getName(), args );
-                mAirportFragments.add( fragment );
+                mAfdFragments.put( clss.getName(), fragment );
             }
         }
     }
 
     private ListFragmentBase getCurrentFragment() {
-        return getFragmentAtPositoin( mCurrentFragmentIndex );
+        return getFragmentAtPosition( mCurrentFragmentIndex );
     }
 
-    private ListFragmentBase getFragmentAtPositoin( int position ) {
-        return (ListFragmentBase) mAirportFragments.get( position );
+    private ListFragmentBase getFragmentAtPosition( int position ) {
+        return (ListFragmentBase) mAfdFragments.get( mClasses[ position ].getName() );
     }
 
     @Override
@@ -217,7 +216,7 @@ public final class AfdMainActivity extends ActivityBase {
 
         @Override
         public Fragment getItem( int position ) {
-            return mAirportFragments.get( position );
+            return getFragmentAtPosition( position );
         }
 
         @Override

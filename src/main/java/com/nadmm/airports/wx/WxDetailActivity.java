@@ -71,6 +71,7 @@ public class WxDetailActivity extends ActivityBase {
     private WxViewPagerAdapter mViewPagerAdapter;
     private SlidingTabLayout mSlidingTabLayout;
     private HashMap<String, Fragment> mWxFragments = new HashMap<>();
+    private int mCurrentFragmentIndex = -1;
 
     private static final String WX_DETAIL_SAVED_TAB = "wxdetailtab";
 
@@ -94,17 +95,36 @@ public class WxDetailActivity extends ActivityBase {
         mSlidingTabLayout.setSelectedIndicatorColors( res.getColor( R.color.tab_selected_strip ) );
         mSlidingTabLayout.setDistributeEvenly( false );
         mSlidingTabLayout.setViewPager( mViewPager );
+
+        mSlidingTabLayout.setOnPageChangeListener( new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled( int position, float v, int i1 ) {
+            }
+
+            @Override
+            public void onPageSelected( int position ) {
+                mCurrentFragmentIndex = position;
+                enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
+            }
+
+            @Override
+            public void onPageScrollStateChanged( int state ) {
+                enableDisableSwipeRefresh( state == ViewPager.SCROLL_STATE_IDLE
+                        && getCurrentFragment().isRefreshable() );
+            }
+        } );
     }
 
     @Override
     protected void onPostCreate( Bundle savedInstanceState ) {
         super.onPostCreate( savedInstanceState );
 
-        int index = 0;
         if ( savedInstanceState != null ) {
-            index = savedInstanceState.getInt( WX_DETAIL_SAVED_TAB );
+            mCurrentFragmentIndex = savedInstanceState.getInt( WX_DETAIL_SAVED_TAB );
+        } else {
+            mCurrentFragmentIndex = 0;
         }
-        mViewPager.setCurrentItem( index );
+        mViewPager.setCurrentItem( mCurrentFragmentIndex );
     }
 
     @Override
@@ -148,15 +168,23 @@ public class WxDetailActivity extends ActivityBase {
         updateContentTopClearance( fragment );
     }
 
+    @Override
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_INVALID;
+    }
+
     private void updateContentTopClearance( FragmentBase fragment ) {
         int actionbarClearance = UiUtils.calculateActionBarSize( this );
         int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
         fragment.setContentTopClearance( actionbarClearance + tabbarClearance );
     }
 
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_INVALID;
+    private FragmentBase getCurrentFragment() {
+        return getFragmentAtPosition( mCurrentFragmentIndex );
+    }
+
+    private FragmentBase getFragmentAtPosition( int position ) {
+        return (FragmentBase) mWxFragments.get( mClasses[ position ].getName() );
     }
 
     private class WxViewPagerAdapter extends FragmentPagerAdapter {
@@ -167,7 +195,7 @@ public class WxDetailActivity extends ActivityBase {
 
         @Override
         public Fragment getItem( int position ) {
-            return mWxFragments.get( mClasses[ position ].getName() );
+            return getFragmentAtPosition( position );
         }
 
         @Override
