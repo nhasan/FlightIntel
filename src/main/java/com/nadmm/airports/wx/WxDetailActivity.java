@@ -141,6 +141,29 @@ public class WxDetailActivity extends ActivityBase {
         outState.putInt( WX_DETAIL_SAVED_TAB, mViewPager.getCurrentItem() );
     }
 
+    @Override
+    public void onFragmentStarted( FragmentBase fragment ) {
+        updateContentTopClearance( fragment );
+    }
+
+    @Override
+    protected void requestDataRefresh() {
+        FragmentBase fragment = getCurrentFragment();
+        if ( fragment.isRefreshable() ) {
+            fragment.requestDataRefresh();
+        }
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return getCurrentFragment().canSwipeRefreshChildScrollUp();
+    }
+
+    @Override
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_INVALID;
+    }
+
     private void initFragments( Bundle savedInstanceState ) {
         if ( savedInstanceState != null ) {
             FragmentManager fm = getSupportFragmentManager();
@@ -161,16 +184,6 @@ public class WxDetailActivity extends ActivityBase {
                 mWxFragments.put( clss.getName(), fragment );
             }
         }
-    }
-
-    @Override
-    public void onFragmentStarted( FragmentBase fragment ) {
-        updateContentTopClearance( fragment );
-    }
-
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_INVALID;
     }
 
     private void updateContentTopClearance( FragmentBase fragment ) {

@@ -75,7 +75,6 @@ public final class WxMainActivity extends ActivityBase {
         setActionBarTitle( "Weather", null );
 
         mViewPager = (ViewPager) findViewById( R.id.view_pager );
-        mViewPager.setOffscreenPageLimit( 2 );
         mViewPagerAdapter = new WxViewPagerAdapter( getSupportFragmentManager() );
         mViewPager.setAdapter( mViewPagerAdapter );
 
@@ -140,7 +139,7 @@ public final class WxMainActivity extends ActivityBase {
 
     @Override
     public void onFragmentStarted( FragmentBase fragment ) {
-        registerActionBarAutoHideListView( ((ListFragmentBase)fragment).getListView() );
+        registerActionBarAutoHideListView( ( (ListFragmentBase) fragment ).getListView() );
         updateContentTopClearance( fragment );
     }
 
@@ -155,6 +154,11 @@ public final class WxMainActivity extends ActivityBase {
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
         return getCurrentFragment().canSwipeRefreshChildScrollUp();
+    }
+
+    @Override
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_WX;
     }
 
     private void updateContentTopClearance( FragmentBase fragment ) {
@@ -214,11 +218,6 @@ public final class WxMainActivity extends ActivityBase {
         public CharSequence getPageTitle( int position ) {
             return mTabTitles[ position ];
         }
-    }
-
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_WX;
     }
 
     protected int getInitialFragmentId() {
