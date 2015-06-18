@@ -28,7 +28,6 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.CursorAdapter;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
@@ -80,25 +79,13 @@ public class WxListFragmentBase extends ListFragmentBase {
     }
 
     @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_refresh:
-            requestMetars( NoaaService.ACTION_GET_METAR, true );
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
-        }
-    }
-
-    @Override
     public boolean isRefreshable() {
         return true;
     }
 
     @Override
     public void requestDataRefresh() {
-        requestMetars( NoaaService.ACTION_GET_METAR, true );
+        requestMetars( NoaaService.ACTION_GET_METAR, true, true );
     }
 
     public void setCursor( Cursor c ) {
@@ -114,11 +101,7 @@ public class WxListFragmentBase extends ListFragmentBase {
 
         super.setCursor( c );
 
-        requestMetars( NoaaService.ACTION_GET_METAR, false );
-    }
-
-    protected void requestMetars( String action, boolean force ) {
-        requestMetars( action, force, true );
+        requestMetars( NoaaService.ACTION_GET_METAR, false, true );
     }
 
     protected void requestMetars( String action, boolean force, boolean showAnim ) {
