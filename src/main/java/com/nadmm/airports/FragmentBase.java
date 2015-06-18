@@ -38,6 +38,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -115,7 +116,13 @@ public class FragmentBase extends Fragment implements IRefreshable {
 
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
-        return ViewCompat.canScrollVertically( getView(), -1 );
+        if ( getView() != null ) {
+            View view = getView().findViewById( R.id.scroll_content );
+            return view != null
+                    && view instanceof ScrollView
+                    && ViewCompat.canScrollVertically( view, -1 );
+        }
+        return false;
     }
 
     @Override
