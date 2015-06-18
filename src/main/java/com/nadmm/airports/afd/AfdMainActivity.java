@@ -124,6 +124,7 @@ public final class AfdMainActivity extends ActivityBase {
             mCurrentFragmentIndex = getInitialFragmentId();
         }
         mViewPager.setCurrentItem( mCurrentFragmentIndex );
+        enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
     }
 
     @Override
