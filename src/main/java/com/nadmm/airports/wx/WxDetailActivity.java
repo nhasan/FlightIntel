@@ -125,6 +125,7 @@ public class WxDetailActivity extends ActivityBase {
             mCurrentFragmentIndex = 0;
         }
         mViewPager.setCurrentItem( mCurrentFragmentIndex );
+        enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
     }
 
     @Override
@@ -190,6 +191,7 @@ public class WxDetailActivity extends ActivityBase {
         int actionbarClearance = UiUtils.calculateActionBarSize( this );
         int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
         fragment.setContentTopClearance( actionbarClearance + tabbarClearance );
+        setProgressBarTopWhenActionBarShown( actionbarClearance + tabbarClearance );
     }
 
     private FragmentBase getCurrentFragment() {

@@ -121,6 +121,7 @@ public final class WxMainActivity extends ActivityBase {
             mCurrentFragmentIndex = getInitialFragmentId();
         }
         mViewPager.setCurrentItem( mCurrentFragmentIndex );
+        enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
     }
 
     @Override
@@ -198,6 +199,18 @@ public final class WxMainActivity extends ActivityBase {
         return (ListFragmentBase) mWxFragments.get( mClasses[ position ].getName() );
     }
 
+    protected int getInitialFragmentId() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
+        boolean alwaysShowNearby = prefs.getBoolean(
+                PreferencesActivity.KEY_ALWAYS_SHOW_NEARBY, false );
+        ArrayList<String> fav = getDbManager().getWxFavorites();
+        if ( alwaysShowNearby || fav.isEmpty() ) {
+            return ID_NEARBY;
+        } else {
+            return ID_FAVORITES;
+        }
+    }
+
     private class WxViewPagerAdapter extends FragmentPagerAdapter {
 
         public WxViewPagerAdapter( FragmentManager fm ) {
@@ -218,18 +231,7 @@ public final class WxMainActivity extends ActivityBase {
         public CharSequence getPageTitle( int position ) {
             return mTabTitles[ position ];
         }
-    }
 
-    protected int getInitialFragmentId() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-        boolean alwaysShowNearby = prefs.getBoolean(
-                PreferencesActivity.KEY_ALWAYS_SHOW_NEARBY, false );
-        ArrayList<String> fav = getDbManager().getWxFavorites();
-        if ( alwaysShowNearby || fav.isEmpty() ) {
-            return ID_NEARBY;
-        } else {
-            return ID_FAVORITES;
-        }
     }
 
 }
