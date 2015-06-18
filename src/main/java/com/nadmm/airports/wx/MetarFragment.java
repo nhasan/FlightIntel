@@ -101,19 +101,6 @@ public class MetarFragment extends WxFragmentBase {
     }
 
     @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-            case R.id.menu_refresh:
-                startRefreshAnimation();
-                requestMetar( true );
-                return true;
-            default:
-                return super.onOptionsItemSelected( item );
-        }
-    }
-
-    @Override
     protected void handleBroadcast( Intent intent ) {
         if ( mLocation == null ) {
             // This was probably intended for wx list view
@@ -123,7 +110,18 @@ public class MetarFragment extends WxFragmentBase {
         String type = intent.getStringExtra( NoaaService.TYPE );
         if ( type.equals( NoaaService.TYPE_TEXT ) ) {
             showMetar( intent );
+            getActivityBase().onRefreshingStateChanged( false );
         }
+    }
+
+    @Override
+    public boolean isRefreshable() {
+        return true;
+    }
+
+    @Override
+    public void requestDataRefresh() {
+        requestMetar( true );
     }
 
     private final class MetarTask extends CursorAsyncTask {
@@ -443,10 +441,9 @@ public class MetarFragment extends WxFragmentBase {
 
         // Fetch time
         tv = (TextView) findViewById( R.id.wx_fetch_time );
-        tv.setText( "Fetched on "+TimeUtils.formatDateTime( getActivity(), metar.fetchTime )  );
+        tv.setText( "Fetched on " + TimeUtils.formatDateTime( getActivity(), metar.fetchTime ) );
         tv.setVisibility( View.VISIBLE );
 
-        stopRefreshAnimation();
         setFragmentContentShown( true );
     }
 

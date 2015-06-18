@@ -68,17 +68,6 @@ public class PirepFragment extends WxFragmentBase {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        getActivityBase().onFragmentStarted( this );
-
-        Bundle args = getArguments();
-        String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new PirepDetailTask() ).execute( stationId );
-    }
-
-    @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.pirep_detail_view, container, false );
@@ -95,16 +84,21 @@ public class PirepFragment extends WxFragmentBase {
     }
 
     @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-            case R.id.menu_refresh:
-                startRefreshAnimation();
-                requestPirep( true );
-                return true;
-            default:
-                return super.onOptionsItemSelected( item );
-        }
+    public void onResume() {
+        super.onResume();
+
+        getActivityBase().onFragmentStarted( this );
+
+        Bundle args = getArguments();
+        String stationId = args.getString( NoaaService.STATION_ID );
+        setBackgroundTask( new PirepDetailTask() ).execute( stationId );
+    }
+
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
     }
 
     @Override
@@ -112,7 +106,18 @@ public class PirepFragment extends WxFragmentBase {
         String type = intent.getStringExtra( NoaaService.TYPE );
         if ( type.equals( NoaaService.TYPE_TEXT ) ) {
             showPirep( intent );
+            getActivityBase().onRefreshingStateChanged( false );
         }
+    }
+
+    @Override
+    public boolean isRefreshable() {
+        return true;
+    }
+
+    @Override
+    public void requestDataRefresh() {
+        requestPirep( true );
     }
 
     private final class PirepDetailTask extends CursorAsyncTask {

@@ -20,19 +20,17 @@
 package com.nadmm.airports.wx;
 
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TextFileViewActivity;
 
@@ -109,6 +107,11 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         getActivityBase().onFragmentStarted( this );
+    }
+
+    @Override
+    public void onPrepareOptionsMenu( Menu menu ) {
+        // Overide here to preven refresh menu item from being visible
     }
 
     @Override

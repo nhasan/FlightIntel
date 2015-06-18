@@ -20,12 +20,12 @@
 package com.nadmm.airports.wx;
 
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -34,7 +34,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ImageViewActivity;
 import com.nadmm.airports.R;
 
@@ -155,6 +154,11 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
         if ( type.equals( NoaaService.TYPE_IMAGE ) ) {
             showWxMap( intent );
         }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu( Menu menu ) {
+        // Overide here to preven refresh menu item from being visible
     }
 
     private void requestWxMap( String code ) {

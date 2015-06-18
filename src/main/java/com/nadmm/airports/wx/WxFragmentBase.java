@@ -26,8 +26,10 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.R;
 
 public class WxFragmentBase extends FragmentBase {
     private IntentFilter mFilter;
@@ -57,7 +59,23 @@ public class WxFragmentBase extends FragmentBase {
 
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( !getActivityBase().isNavDrawerOpen() );
+        super.onPrepareOptionsMenu( menu );
+
+        MenuItem refresh = menu.findItem( R.id.menu_refresh );
+        refresh.setVisible( true );
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+            case R.id.menu_refresh:
+                getActivityBase().onRefreshingStateChanged( true );
+                requestDataRefresh();
+                return true;
+            default:
+                return super.onOptionsItemSelected( item );
+        }
     }
 
     protected void setupBroadcastFilter( String action ) {

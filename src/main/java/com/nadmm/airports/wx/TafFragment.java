@@ -69,14 +69,6 @@ public class TafFragment extends WxFragmentBase {
     }
 
     @Override
-    protected void handleBroadcast( Intent intent ) {
-        String type = intent.getStringExtra( NoaaService.TYPE );
-        if ( type.equals( NoaaService.TYPE_TEXT ) ) {
-            showTaf( intent );
-        }
-    }
-
-    @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.taf_detail_view, container, false );
@@ -109,16 +101,22 @@ public class TafFragment extends WxFragmentBase {
     }
 
     @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-            case R.id.menu_refresh:
-                startRefreshAnimation();
-                requestTaf( mStationId, true );
-                return true;
-            default:
-                return super.onOptionsItemSelected( item );
+    protected void handleBroadcast( Intent intent ) {
+        String type = intent.getStringExtra( NoaaService.TYPE );
+        if ( type.equals( NoaaService.TYPE_TEXT ) ) {
+            showTaf( intent );
+            getActivityBase().onRefreshingStateChanged( false );
         }
+    }
+
+    @Override
+    public boolean isRefreshable() {
+        return true;
+    }
+
+    @Override
+    public void requestDataRefresh() {
+        requestTaf( mStationId, true );
     }
 
     private final class TafTask extends CursorAsyncTask {
