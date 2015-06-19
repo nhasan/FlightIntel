@@ -64,7 +64,7 @@
         <item name="android:typeface">monospace</item>
     </style>
 
-    <style name="TextMedium" parent="TextSmall">
+    <style name="TextMedium" parent="TextAppearance.AppCompat.Subhead">
         <item name="android:textSize">@dimen/medium_text_size</item>
     </style>
 
@@ -76,25 +76,20 @@
         <item name="android:textColor">#ffffff</item>
     </style>
 
-    <style name="TextLabel" parent="TextSmall">
-        <item name="android:textSize">@dimen/label_text_size</item>
+    <style name="TextLabel" parent="TextMedium">
+        <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextLabel.Bold" parent="TextAppearance.AppCompat.Title">
+    <style name="TextLabel.Bold">
+        <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextTitle" parent="TextMedium.Bold">
+    <style name="TextTitle" parent="TextAppearance.AppCompat.Title">
     </style>
 
     <style name="TextNormal" parent="@style/TextAppearance.AppCompat.Body1" />
 
     <style name="TextNormal.Bold">
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="TextHead" parent="TextAppearance.AppCompat.Subhead" />
-
-    <style name="TextHead.Bold">
         <item name="android:textStyle">bold</item>
     </style>
 
