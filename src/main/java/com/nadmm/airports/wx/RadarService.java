@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -29,9 +29,9 @@ import com.nadmm.airports.utils.UiUtils;
 public class RadarService extends NoaaService {
 
     private final String RADAR_IMAGE_NAME = "%s.gif";
-    private final String RADAR_IMAGE_PATH = "/Conus/RadarImg/";
+    private final String RADAR_IMAGE_PATH = "/ridge/Conus/RadarImg/";
 
-    private final static long RADAR_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
+    private final static long RADAR_CACHE_MAX_AGE = 10*DateUtils.MINUTE_IN_MILLIS;
 
     public RadarService() {
         super( "radar", RADAR_CACHE_MAX_AGE );
