@@ -87,7 +87,9 @@ import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.LUtils;
 import com.nadmm.airports.utils.SystemUtils;
+import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.MultiSwipeRefreshLayout;
+import com.nadmm.airports.views.ObservableScrollView;
 import com.nadmm.airports.views.ScrimInsetsScrollView;
 import com.nadmm.airports.wx.WxMainActivity;
 
@@ -661,7 +663,7 @@ public class ActivityBase extends AppCompatActivity implements
 
     public void registerActionBarAutoHideListView( final ListView listView ) {
         listView.setOnScrollListener( new AbsListView.OnScrollListener() {
-            final static int ITEMS_THRESHOLD = 2;
+            final int ITEMS_THRESHOLD = 2;
             int lastFvi = 0;
 
             @Override
@@ -671,6 +673,23 @@ public class ActivityBase extends AppCompatActivity implements
             @Override
             public void onScroll( AbsListView view, int firstVisibleItem, int visibleItemCount,
                                   int totalItemCount ) {
+                onMainContentScrolled( firstVisibleItem <= ITEMS_THRESHOLD ? 0 : Integer.MAX_VALUE,
+                        lastFvi - firstVisibleItem > 0 ? Integer.MIN_VALUE :
+                                lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE );
+                lastFvi = firstVisibleItem;
+            }
+        } );
+    }
+
+    public void registerActionBarAutoHideScrollView( final ObservableScrollView scrollView ) {
+        scrollView.setCallbacks( new ObservableScrollView.Callbacks() {
+            final int ITEM_SIZE = UiUtils.convertDpToPx( ActivityBase.this, 56 );
+            final int ITEMS_THRESHOLD = 2;
+            int lastFvi = 0;
+
+            @Override
+            public void onScrollChanged( int l, int t, int oldl, int oldt ) {
+                int firstVisibleItem = t/ITEM_SIZE;
                 onMainContentScrolled( firstVisibleItem <= ITEMS_THRESHOLD ? 0 : Integer.MAX_VALUE,
                         lastFvi - firstVisibleItem > 0 ? Integer.MIN_VALUE :
                                 lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE );

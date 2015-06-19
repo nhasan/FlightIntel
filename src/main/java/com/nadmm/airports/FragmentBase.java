@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -55,6 +54,7 @@ public class FragmentBase extends Fragment implements IRefreshable {
     private ActivityBase mActivity;
     private CursorAsyncTask mTask;
     private int mContentTopClearance;
+    private View mTopScrollView;
 
     private final OnClickListener mOnRowClickListener = new OnClickListener() {
         @Override
@@ -105,24 +105,15 @@ public class FragmentBase extends Fragment implements IRefreshable {
     }
 
     @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( false );
-    }
-
-    @Override
     public boolean isRefreshable() {
         return false;
     }
 
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
-        if ( getView() != null ) {
-            View view = getView().findViewById( R.id.scroll_content );
-            return view != null
-                    && view instanceof ScrollView
-                    && ViewCompat.canScrollVertically( view, -1 );
-        }
-        return false;
+        return mTopScrollView != null
+                && mTopScrollView instanceof ScrollView
+                && ViewCompat.canScrollVertically( mTopScrollView, -1 );
     }
 
     @Override
@@ -133,6 +124,9 @@ public class FragmentBase extends Fragment implements IRefreshable {
     public void onViewCreated( View view, Bundle savedInstanceState ) {
         super.onViewCreated( view, savedInstanceState );
 
+        if ( getView() != null ) {
+            mTopScrollView = getView().findViewById( R.id.scroll_content );
+        }
         mContentTopClearance = 0;
     }
 
@@ -148,9 +142,12 @@ public class FragmentBase extends Fragment implements IRefreshable {
     }
 
     protected void applyContentTopClearance( int clearance ) {
-        if ( getView() != null ) {
-            getView().setPadding( getView().getPaddingLeft(), clearance, getView().getPaddingRight(),
-                    getView().getPaddingBottom() );
+        if ( mTopScrollView != null ) {
+            View mainContent = mTopScrollView.findViewById( R.id.main_content );
+            if ( mainContent != null ) {
+                mainContent.setPadding( mainContent.getPaddingLeft(), clearance,
+                        mainContent.getPaddingRight(), mainContent.getPaddingBottom() );
+            }
         }
     }
 

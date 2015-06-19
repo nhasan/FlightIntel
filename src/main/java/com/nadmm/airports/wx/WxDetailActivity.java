@@ -20,8 +20,12 @@
 package com.nadmm.airports.wx;
 
 import android.os.Bundle;
+import android.view.View;
 
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.R;
 import com.nadmm.airports.TabPagerActivityBase;
+import com.nadmm.airports.views.ObservableScrollView;
 
 public class WxDetailActivity extends TabPagerActivityBase {
 
@@ -60,6 +64,20 @@ public class WxDetailActivity extends TabPagerActivityBase {
         super.onCreate( savedInstanceState );
 
         setActionBarTitle( "Weather", null );
+    }
+
+    @Override
+    public void onFragmentStarted( FragmentBase fragment ) {
+        super.onFragmentStarted( fragment );
+
+        View view = fragment.getView();
+        if ( view != null ) {
+            view = view.findViewById( R.id.scroll_content );
+            if ( view != null && view instanceof ObservableScrollView ) {
+                ObservableScrollView scrollView = (ObservableScrollView) view;
+                registerActionBarAutoHideScrollView( scrollView );
+            }
+        }
     }
 
     @Override
