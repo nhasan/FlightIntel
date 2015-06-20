@@ -60,7 +60,7 @@ public class RadarFragment extends WxMapFragmentBase {
     public RadarFragment() {
         super( NoaaService.ACTION_GET_RADAR, sRadarCodes, sRadarNames );
         setTitle( "NWS Radar Mosaic" );
-        setLabel( "Select Radar Region" );
+        setLabel( "Select Radar Sector" );
     }
 
     @Override

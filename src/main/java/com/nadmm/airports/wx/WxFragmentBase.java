@@ -61,8 +61,7 @@ public class WxFragmentBase extends FragmentBase {
     public void onPrepareOptionsMenu( Menu menu ) {
         super.onPrepareOptionsMenu( menu );
 
-        MenuItem refresh = menu.findItem( R.id.menu_refresh );
-        refresh.setVisible( true );
+        showRefreshMenu( menu, true );
     }
 
     @Override

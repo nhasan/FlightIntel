@@ -97,7 +97,7 @@ public class WxDetailActivity extends TabPagerActivityBase {
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_WX;
+        return NAVDRAWER_ITEM_INVALID;
     }
 
 }
