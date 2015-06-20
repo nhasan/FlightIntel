@@ -110,7 +110,7 @@ public class MetarFragment extends WxFragmentBase {
         String type = intent.getStringExtra( NoaaService.TYPE );
         if ( type.equals( NoaaService.TYPE_TEXT ) ) {
             showMetar( intent );
-            getActivityBase().onRefreshingStateChanged( false );
+            setRefreshing( false );
         }
     }
 

@@ -105,7 +105,7 @@ public class TafFragment extends WxFragmentBase {
         String type = intent.getStringExtra( NoaaService.TYPE );
         if ( type.equals( NoaaService.TYPE_TEXT ) ) {
             showTaf( intent );
-            getActivityBase().onRefreshingStateChanged( false );
+            setRefreshing( false );
         }
     }
 

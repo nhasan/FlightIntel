@@ -69,7 +69,7 @@ public class WxFragmentBase extends FragmentBase {
         // Handle item selection
         switch ( item.getItemId() ) {
             case R.id.menu_refresh:
-                getActivityBase().onRefreshingStateChanged( true );
+                setRefreshing( true );
                 requestDataRefresh();
                 return true;
             default:

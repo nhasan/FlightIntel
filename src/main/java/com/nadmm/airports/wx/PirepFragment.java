@@ -106,7 +106,7 @@ public class PirepFragment extends WxFragmentBase {
         String type = intent.getStringExtra( NoaaService.TYPE );
         if ( type.equals( NoaaService.TYPE_TEXT ) ) {
             showPirep( intent );
-            getActivityBase().onRefreshingStateChanged( false );
+            setRefreshing( false );
         }
     }
 

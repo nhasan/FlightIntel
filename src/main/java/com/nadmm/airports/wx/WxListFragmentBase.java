@@ -181,8 +181,8 @@ public class WxListFragmentBase extends ListFragmentBase {
                 ++pos;
             }
 
-            if ( getActivityBase().isRefreshing() ) {
-                getActivityBase().onRefreshingStateChanged( false );
+            if ( isRefreshing() ) {
+                setRefreshing( false );
             }
         }
 

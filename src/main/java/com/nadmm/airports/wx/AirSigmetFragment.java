@@ -107,7 +107,7 @@ public class AirSigmetFragment extends WxFragmentBase {
         String type = intent.getStringExtra( NoaaService.TYPE );
         if ( type.equals( NoaaService.TYPE_TEXT ) ) {
             showAirSigmetText( intent );
-            getActivityBase().onRefreshingStateChanged( false );
+            setRefreshing( false );
         }
     }
 
