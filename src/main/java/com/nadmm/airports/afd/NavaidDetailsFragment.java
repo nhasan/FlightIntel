@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -52,12 +52,14 @@ public final class NavaidDetailsFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
+
         Bundle args = getArguments();
         String navaidId = args.getString( Nav1.NAVAID_ID );
         String navaidType = args.getString( Nav1.NAVAID_TYPE );
         setBackgroundTask( new NavaidDetailsTask() ).execute( navaidId, navaidType );
-
-        super.onActivityCreated( savedInstanceState );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -107,9 +109,9 @@ public final class NavaidDetailsFragment extends FragmentBase {
         }
         String magVar = nav1.getString( nav1.getColumnIndex( Nav1.MAGNETIC_VARIATION_DEGREES ) );
         if ( magVar.length() > 0 ) {
-            String magDir = nav1.getString( nav1.getColumnIndex( 
+            String magDir = nav1.getString( nav1.getColumnIndex(
                     Nav1.MAGNETIC_VARIATION_DIRECTION ) );
-            String magYear = nav1.getString( nav1.getColumnIndex( 
+            String magYear = nav1.getString( nav1.getColumnIndex(
                     Nav1.MAGNETIC_VARIATION_YEAR ) );
             addRow( layout, "Magnetic variation", String.format( "%d\u00B0%s (%s)",
                     Integer.valueOf( magVar ), magDir, magYear ) );

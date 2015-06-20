@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -58,11 +58,13 @@ public final class CommunicationsFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new CommunicationsTask() ).execute( siteNumber );
-
-        super.onActivityCreated( savedInstanceState );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -86,8 +88,7 @@ public final class CommunicationsFragment extends FragmentBase {
 
         Cursor twr3 = result[ 2 ];
         if ( twr3.moveToFirst() ) {
-            HashMap<String, ArrayList<Pair<String, String>>> map =
-                new HashMap<String, ArrayList<Pair<String, String>>>();
+            HashMap<String, ArrayList<Pair<String, String>>> map = new HashMap<>();
             do {
                 String freq = twr3.getString( twr3.getColumnIndex( Tower3.MASTER_AIRPORT_FREQ ) );
                 String extra = "";
@@ -163,8 +164,7 @@ public final class CommunicationsFragment extends FragmentBase {
             depRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP ) );
         }
 
-        HashMap<String, ArrayList<Pair<String, String>>> map =
-            new HashMap<String, ArrayList<Pair<String, String>>>();
+        HashMap<String, ArrayList<Pair<String, String>>> map = new HashMap<>();
 
         Cursor twr3 = result[ 2 ];
         if ( twr3.moveToFirst() ) {
@@ -289,7 +289,7 @@ public final class CommunicationsFragment extends FragmentBase {
         if ( artcc.moveToFirst() ) {
             String facility = artcc.getString( artcc.getColumnIndex( AtcPhones.FACILITY_ID ) );
             String phone = artcc.getString( artcc.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
-            addPhoneRow( layout, DataUtils.decodeArtcc( facility ), phone, 
+            addPhoneRow( layout, DataUtils.decodeArtcc( facility ), phone,
                     "Regional duty office", "(24 Hr)" );
             phone = artcc.getString( artcc.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
             String hours = artcc.getString( artcc.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
@@ -333,7 +333,7 @@ public final class CommunicationsFragment extends FragmentBase {
             String key, String freq, String extra ) {
         ArrayList<Pair<String, String>> list = map.get( key );
         if ( list == null ) {
-            list = new ArrayList<Pair<String, String>>();
+            list = new ArrayList<>();
         }
         list.add( Pair.create( FormatUtils.formatFreq( Float.valueOf( freq ) ), extra.trim() ) );
         map.put( key, list );
@@ -352,7 +352,6 @@ public final class CommunicationsFragment extends FragmentBase {
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder = new SQLiteQueryBuilder();
             builder.setTables( Tower1.TABLE_NAME );
             Cursor c = builder.query( db, new String[] { "*" },
                     Tower1.SITE_NUMBER+"=?",

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,13 +52,15 @@ public final class IlsFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Ils1.SITE_NUMBER );
         String runwayId = args.getString( Ils1.RUNWAY_ID );
         String ilsType = args.getString( Ils1.ILS_TYPE );
         setBackgroundTask( new IlsTask() ).execute( siteNumber, runwayId, ilsType );
-
-        super.onActivityCreated( savedInstanceState );
     }
 
     protected void showDetails( Cursor[] result ) {

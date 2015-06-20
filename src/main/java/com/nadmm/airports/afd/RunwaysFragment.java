@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,12 +62,14 @@ public final class RunwaysFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         String runwayId = args.getString( Runways.RUNWAY_ID );
         setBackgroundTask( new RunwaysTask() ).execute( siteNumber, runwayId );
-
-        super.onActivityCreated( savedInstanceState );
     }
 
     protected void showDetails( Cursor[] result ) {

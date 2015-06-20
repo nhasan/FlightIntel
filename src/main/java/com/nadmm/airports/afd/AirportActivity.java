@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +20,18 @@
 package com.nadmm.airports.afd;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.view.View;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.UiUtils;
+import com.nadmm.airports.views.ObservableScrollView;
 
 public class AirportActivity extends ActivityBase {
 
-    FragmentBase mCurFragment;
+    private FragmentBase mCurFragment;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -56,17 +57,27 @@ public class AirportActivity extends ActivityBase {
         Bundle args = getIntent().getExtras();
         addFragment( AirportDetailsFragment.class, args );
 
-        registerHideableHeaderView( findViewById( R.id.headerbar ),
-                UiUtils.calculateActionBarSize( this ) );
-
-        updateContentTopClearance();
+        int actionBarSize = UiUtils.calculateActionBarSize( this );
+        setProgressBarTopWhenActionBarShown( actionBarSize );
     }
 
     @Override
-    public void onAttachFragment( Fragment fragment ) {
-        super.onAttachFragment( fragment );
+    public void onFragmentStarted( FragmentBase fragment ) {
+        super.onFragmentStarted( fragment );
 
-        mCurFragment = (FragmentBase) fragment;
+        // Action bar may be hidden when this fragment was started so make sure it is visible
+        autoShowOrHideActionBar( true );
+
+        View view = fragment.getView();
+        if ( view != null ) {
+            view = view.findViewById( R.id.scroll_content );
+            if ( view != null && view instanceof ObservableScrollView ) {
+                ObservableScrollView scrollView = (ObservableScrollView) view;
+                registerActionBarAutoHideScrollView( scrollView );
+            }
+        }
+
+        mCurFragment = fragment;
         enableDisableSwipeRefresh( mCurFragment.isRefreshable() );
     }
 
@@ -83,11 +94,6 @@ public class AirportActivity extends ActivityBase {
     @Override
     protected int getSelfNavDrawerItem() {
         return NAVDRAWER_ITEM_INVALID;
-    }
-
-    protected void updateContentTopClearance() {
-        int actionbarClearance = UiUtils.calculateActionBarSize( this );
-        setProgressBarTopWhenActionBarShown( actionbarClearance );
     }
 
 }

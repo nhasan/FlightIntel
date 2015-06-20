@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,6 +105,10 @@ public final class FssCommFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
+
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences( getActivity() );
         mRadius = Integer.valueOf( prefs.getString(
@@ -113,8 +117,6 @@ public final class FssCommFragment extends FragmentBase {
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new FssCommTask() ).execute( siteNumber );
-
-        super.onActivityCreated( savedInstanceState );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -238,7 +240,7 @@ public final class FssCommFragment extends FragmentBase {
                 columnNames[ i++ ] = col;
             }
             columnNames[ i++ ] = BEARING;
-            columnNames[ i++ ] = DISTANCE;
+            columnNames[ i ] = DISTANCE;
             @SuppressWarnings("resource")
             MatrixCursor matrix = new MatrixCursor( columnNames );
 

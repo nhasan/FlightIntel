@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -47,11 +47,13 @@ public final class AttendanceFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new AttendanceTask() ).execute( siteNumber );
-
-        super.onActivityCreated( savedInstanceState );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -94,7 +96,7 @@ public final class AttendanceFragment extends FragmentBase {
             do {
                 String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );
                 addBulletedRow( layout, remark );
-            } while ( rmk.moveToNext() );            
+            } while ( rmk.moveToNext() );
         }
     }
 
@@ -104,7 +106,7 @@ public final class AttendanceFragment extends FragmentBase {
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
             Cursor[] cursors = new Cursor[ 3 ];
-            
+
             cursors[ 0 ] = getAirportDetails( siteNumber );
 
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
@@ -112,7 +114,7 @@ public final class AttendanceFragment extends FragmentBase {
             builder.setTables( Attendance.TABLE_NAME );
             cursors[ 1 ] = builder.query( db,
                     new String[] { Attendance.ATTENDANCE_SCHEDULE },
-                    Attendance.SITE_NUMBER+"=?", new String[] { siteNumber }, 
+                    Attendance.SITE_NUMBER+"=?", new String[] { siteNumber },
                     null, null, Attendance.SEQUENCE_NUMBER, null );
 
             builder = new SQLiteQueryBuilder();

@@ -16,14 +16,15 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/scroll_view"
+<com.nadmm.airports.views.ObservableScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/scroll_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <LinearLayout android:id="@+id/activity_layout"
+    <LinearLayout android:id="@+id/main_content"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -199,4 +200,4 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
     </LinearLayout>
-</ScrollView>
+</com.nadmm.airports.views.ObservableScrollView>

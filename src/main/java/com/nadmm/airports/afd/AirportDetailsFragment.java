@@ -30,18 +30,16 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.nadmm.airports.Application;
@@ -108,9 +106,6 @@ public final class AirportDetailsFragment extends FragmentBase {
     private int mWxUpdates = 0;
     private String mHome;
     private String mSiteNumber;
-    private ScrollView mScrollView;
-
-    int mScrollPos = -1;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -157,13 +152,14 @@ public final class AirportDetailsFragment extends FragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.airport_detail_view, container, false );
-        mScrollView = (ScrollView) view.findViewById( R.id.scroll_view );
         return createContentView( view );
     }
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().onFragmentStarted( this );
 
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
@@ -187,8 +183,13 @@ public final class AirportDetailsFragment extends FragmentBase {
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
         bm.unregisterReceiver( mMetarReceiver );
         bm.unregisterReceiver( mDafdReceiver );
+    }
 
-        mScrollPos = mScrollView.getScrollY();
+    @Override
+    public void onPrepareOptionsMenu( Menu menu ) {
+        super.onPrepareOptionsMenu( menu );
+
+        showRefreshMenu( menu, true );
     }
 
     @Override
@@ -196,6 +197,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         // Handle item selection
         switch ( item.getItemId() ) {
         case R.id.menu_refresh:
+            setRefreshing( true );
             requestMetars( true );
             return true;
         default:
@@ -206,11 +208,6 @@ public final class AirportDetailsFragment extends FragmentBase {
     @Override
     public boolean isRefreshable() {
         return true;
-    }
-
-    @Override
-    public boolean canSwipeRefreshChildScrollUp() {
-        return ViewCompat.canScrollVertically( mScrollView, -1 );
     }
 
     @Override
@@ -237,17 +234,6 @@ public final class AirportDetailsFragment extends FragmentBase {
         showOtherDetails( result );
 
         requestMetars( false );
-
-        if ( mScrollPos > -1 ) {
-            new Handler().post( new Runnable() {
-
-                @Override
-                public void run() {
-                    ScrollView view = (ScrollView) findViewById( R.id.scroll_view );
-                    view.scrollTo( 0, mScrollPos );
-                }
-            } );
-        }
 
         setContentShown( true );
     }
