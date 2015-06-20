@@ -135,6 +135,10 @@ public class FragmentBase extends Fragment implements IRefreshable {
         return mTopScrollView;
     }
 
+    protected boolean isRefreshing() {
+        return getActivityBase().isRefreshing();
+    }
+
     protected void setRefreshing( boolean refreshing ) {
         getActivityBase().onRefreshingStateChanged( refreshing );
     }
