@@ -93,10 +93,6 @@ public abstract class TabPagerActivityBase extends ActivityBase {
     protected void onPostCreate( Bundle savedInstanceState ) {
         super.onPostCreate( savedInstanceState );
 
-        enableActionBarAutoHide();
-        registerHideableHeaderView( findViewById( R.id.headerbar ),
-                UiUtils.calculateActionBarSize( this ) );
-
         if ( savedInstanceState != null ) {
             mCurrentFragmentIndex = savedInstanceState.getInt( SAVED_TAB );
         } else {
@@ -121,11 +117,6 @@ public abstract class TabPagerActivityBase extends ActivityBase {
     }
 
     @Override
-    public void onFragmentStarted( FragmentBase fragment ) {
-        updateContentTopClearance( fragment );
-    }
-
-    @Override
     protected void requestDataRefresh() {
         FragmentBase fragment = getCurrentFragment();
         if ( fragment.isRefreshable() ) {
@@ -136,13 +127,6 @@ public abstract class TabPagerActivityBase extends ActivityBase {
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
         return getCurrentFragment().canSwipeRefreshChildScrollUp();
-    }
-
-    private void updateContentTopClearance( FragmentBase fragment ) {
-        int actionbarClearance = UiUtils.calculateActionBarSize( this );
-        int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
-        fragment.setContentTopClearance( actionbarClearance + tabbarClearance );
-        setProgressBarTopWhenActionBarShown( actionbarClearance + tabbarClearance );
     }
 
     private void initFragments( Bundle savedInstanceState ) {

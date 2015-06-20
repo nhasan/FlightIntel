@@ -262,6 +262,10 @@ public class ActivityBase extends AppCompatActivity implements
         updateSwipeRefreshProgressBarTop();
 
         enableDisableSwipeRefresh( false );
+        enableActionBarAutoHide();
+
+        registerHideableHeaderView( findViewById( R.id.headerbar ),
+                UiUtils.calculateActionBarSize( this ) );
 
         // Sync the toggle state after onRestoreInstanceState has occurred.
         if ( mDrawerToggle != null ) {
@@ -661,6 +665,20 @@ public class ActivityBase extends AppCompatActivity implements
     protected void requestDataRefresh() {
     }
 
+    public void onFragmentStarted( FragmentBase fragment ) {
+        updateContentTopClearance( fragment );
+    }
+
+    private void updateContentTopClearance( FragmentBase fragment ) {
+        int topClearance = UiUtils.calculateActionBarSize( this );
+        if ( findViewById( R.id.sliding_tabs ) != null ){
+            int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
+            topClearance += tabbarClearance;
+        }
+        fragment.setContentTopClearance( topClearance );
+        setProgressBarTopWhenActionBarShown( topClearance );
+    }
+
     public void registerActionBarAutoHideListView( final ListView listView ) {
         listView.setOnScrollListener( new AbsListView.OnScrollListener() {
             final int ITEMS_THRESHOLD = 2;
@@ -689,7 +707,7 @@ public class ActivityBase extends AppCompatActivity implements
 
             @Override
             public void onScrollChanged( int l, int t, int oldl, int oldt ) {
-                int firstVisibleItem = t/ITEM_SIZE;
+                int firstVisibleItem = t / ITEM_SIZE;
                 onMainContentScrolled( firstVisibleItem <= ITEMS_THRESHOLD ? 0 : Integer.MAX_VALUE,
                         lastFvi - firstVisibleItem > 0 ? Integer.MIN_VALUE :
                                 lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE );
@@ -957,8 +975,8 @@ public class ActivityBase extends AppCompatActivity implements
     public Cursor getAirportDetails( String siteNumber ) {
         SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
-                +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
+        builder.setTables( Airports.TABLE_NAME + " a LEFT OUTER JOIN " + States.TABLE_NAME + " s"
+                + " ON a." + Airports.ASSOC_STATE + "=s." + States.STATE_CODE );
         Cursor c = builder.query( db, new String[]{ "*" }, Airports.SITE_NUMBER + "=?",
                 new String[]{ siteNumber }, null, null, null, null );
         if ( !c.moveToFirst() ) {
@@ -1200,9 +1218,6 @@ public class ActivityBase extends AppCompatActivity implements
         default:
             return super.onOptionsItemSelected( item );
         }
-    }
-
-    public void onFragmentStarted( FragmentBase fragment ) {
     }
 
     public void setActionBarTitle( Cursor c ) {
