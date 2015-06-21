@@ -666,6 +666,9 @@ public class ActivityBase extends AppCompatActivity implements
     }
 
     public void onFragmentStarted( FragmentBase fragment ) {
+        // Action bar may be hidden when this fragment was attached so make sure it is visible
+        autoShowOrHideActionBar( true );
+
         updateContentTopClearance( fragment );
     }
 

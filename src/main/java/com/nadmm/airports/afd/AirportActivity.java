@@ -65,9 +65,6 @@ public class AirportActivity extends ActivityBase {
     public void onFragmentStarted( FragmentBase fragment ) {
         super.onFragmentStarted( fragment );
 
-        // Action bar may be hidden when this fragment was started so make sure it is visible
-        autoShowOrHideActionBar( true );
-
         View view = fragment.getView();
         if ( view != null ) {
             view = view.findViewById( R.id.scroll_content );
