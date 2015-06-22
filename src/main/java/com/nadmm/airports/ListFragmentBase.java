@@ -101,8 +101,10 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
     @Override
     public void onSaveInstanceState( Bundle outState ) {
         super.onSaveInstanceState( outState );
-        mListViewState = mListView.onSaveInstanceState();
-        outState.putParcelable( LISTVIEW_STATE, mListViewState );
+        if ( mListView != null ) {
+            mListViewState = mListView.onSaveInstanceState();
+            outState.putParcelable( LISTVIEW_STATE, mListViewState );
+        }
     }
 
     @Override
