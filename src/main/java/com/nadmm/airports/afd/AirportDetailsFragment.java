@@ -159,8 +159,6 @@ public final class AirportDetailsFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        getActivityBase().onFragmentStarted( this );
-
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new AirportDetailsTask() ).execute( siteNumber );
@@ -169,6 +167,8 @@ public final class AirportDetailsFragment extends FragmentBase {
     @Override
     public void onResume() {
         super.onResume();
+
+        getActivityBase().onFragmentStarted( this );
 
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
         bm.registerReceiver( mMetarReceiver, mMetarFilter );
