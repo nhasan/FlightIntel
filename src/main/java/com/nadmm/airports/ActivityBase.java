@@ -646,7 +646,7 @@ public class ActivityBase extends AppCompatActivity implements
                 top + progressBarStartMargin, top + progressBarEndMargin );
     }
 
-    public void onRefreshingStateChanged( boolean refreshing ) {
+    public void setRefreshing( boolean refreshing ) {
         if ( mSwipeRefreshLayout != null ) {
             mSwipeRefreshLayout.setRefreshing( refreshing );
         }

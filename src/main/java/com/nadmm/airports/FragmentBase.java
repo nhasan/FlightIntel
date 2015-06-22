@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,6 +100,7 @@ public class FragmentBase extends Fragment implements IRefreshable {
 
     @Override
     public void onPause() {
+        setRefreshing( false );
         if ( mTask != null ) {
             mTask.cancel( true );
         }
@@ -140,7 +141,7 @@ public class FragmentBase extends Fragment implements IRefreshable {
     }
 
     protected void setRefreshing( boolean refreshing ) {
-        getActivityBase().onRefreshingStateChanged( refreshing );
+        getActivityBase().setRefreshing( refreshing );
     }
 
     protected void showRefreshMenu( Menu menu, boolean show ) {

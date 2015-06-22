@@ -108,14 +108,14 @@ public class WxListFragmentBase extends ListFragmentBase {
         ActivityBase activity = getActivityBase();
 
         if ( mStationWx.isEmpty() ) {
-            activity.onRefreshingStateChanged( false );
+            activity.setRefreshing( false );
             return;
         }
 
         boolean cacheOnly = !NetworkUtils.canDownloadData( activity );
 
         if ( ( force || !cacheOnly ) && showAnim ) {
-            activity.onRefreshingStateChanged( true );
+            activity.setRefreshing( true );
         }
 
         ArrayList<String> stationIds = new ArrayList<>( mStationWx.keySet() );
