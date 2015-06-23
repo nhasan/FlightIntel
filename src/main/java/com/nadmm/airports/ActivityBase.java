@@ -1048,7 +1048,7 @@ public class ActivityBase extends AppCompatActivity implements
 
     public void showAirportTitle( Cursor c ) {
         View root = findViewById( R.id.airport_title_layout );
-        TextView tv = (TextView) root.findViewById( R.id.airport_name );
+        TextView tv = (TextView) root.findViewById( R.id.facility_name );
         String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
         if ( code == null || code.length() == 0 ) {
             code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
@@ -1059,21 +1059,24 @@ public class ActivityBase extends AppCompatActivity implements
         String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
         String type = DataUtils.decodeLandingFaclityType( siteNumber );
-        tv.setText( String.format( "%s - %s %s", code, name, type ) );
-        tv = (TextView) root.findViewById( R.id.airport_info );
+        tv.setText( String.format( "%s %s", name, type ) );
+        tv = (TextView) root.findViewById( R.id.facility_id );
+        tv.setTextColor( color );
+        tv.setText( code );
+        tv = (TextView) root.findViewById( R.id.facility_info );
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
         String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );
         if ( state == null ) {
             state = c.getString( c.getColumnIndex( Airports.ASSOC_COUNTY ) );
         }
         tv.setText( String.format( "%s, %s", city, state ) );
-        tv = (TextView) root.findViewById( R.id.airport_info2 );
+        tv = (TextView) root.findViewById( R.id.facility_info2 );
         int distance = c.getInt( c.getColumnIndex( Airports.DISTANCE_FROM_CITY_NM ) );
         String dir = c.getString( c.getColumnIndex( Airports.DIRECTION_FROM_CITY ) );
         String status = c.getString( c.getColumnIndex( Airports.STATUS_CODE ) );
         tv.setText( String.format( "%s, %d miles %s of city center",
                 DataUtils.decodeStatus( status ), distance, dir ) );
-        tv = (TextView) root.findViewById( R.id.airport_info3 );
+        tv = (TextView) root.findViewById( R.id.facility_info3 );
         float elev_msl = c.getFloat( c.getColumnIndex( Airports.ELEVATION_MSL ) );
         int tpa_agl = c.getInt( c.getColumnIndex( Airports.PATTERN_ALTITUDE_AGL ) );
         String est = "";
