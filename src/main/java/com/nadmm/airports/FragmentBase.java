@@ -108,6 +108,13 @@ public class FragmentBase extends Fragment implements IRefreshable {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        getActivityBase().onFragmentStarted( this );
+    }
+
+    @Override
     public boolean isRefreshable() {
         return false;
     }

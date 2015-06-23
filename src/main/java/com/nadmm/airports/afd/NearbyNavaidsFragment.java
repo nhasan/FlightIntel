@@ -121,8 +121,6 @@ public final class NearbyNavaidsFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        getActivityBase().onFragmentStarted( this );
-
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences( getActivity() );
         mRadius = Integer.valueOf( prefs.getString(

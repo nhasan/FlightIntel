@@ -54,8 +54,6 @@ public final class NavaidDetailsFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        getActivityBase().onFragmentStarted( this );
-
         Bundle args = getArguments();
         String navaidId = args.getString( Nav1.NAVAID_ID );
         String navaidType = args.getString( Nav1.NAVAID_TYPE );

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,11 +60,6 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
         View view = super.onCreateView( inflater, container, savedInstanceState );
         getActivityBase().onFragmentStarted( this );
         return view;
-    }
-
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
     }
 
     @Override

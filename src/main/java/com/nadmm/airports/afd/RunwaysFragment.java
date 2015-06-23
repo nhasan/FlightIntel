@@ -64,8 +64,6 @@ public final class RunwaysFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        getActivityBase().onFragmentStarted( this );
-
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         String runwayId = args.getString( Runways.RUNWAY_ID );
