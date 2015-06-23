@@ -33,6 +33,8 @@
             android:orientation="horizontal">
         <TextView android:id="@+id/facility_name"
                 style="@style/TextMedium.Bold"
+                android:singleLine="true"
+                android:ellipsize="end"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content" />
