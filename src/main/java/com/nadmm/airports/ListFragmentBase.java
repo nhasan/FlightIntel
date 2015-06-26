@@ -43,7 +43,6 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
 
     private ListView mListView;
     private String mEmptyText;
-    private int mFragmentId;
     private Parcelable mListViewState;
 
     @Override
@@ -52,13 +51,6 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
 
         if ( savedInstanceState != null && savedInstanceState.containsKey( LISTVIEW_STATE ) ) {
             mListViewState = savedInstanceState.getParcelable( LISTVIEW_STATE );
-        }
-
-        Bundle args = getArguments();
-        if ( args != null && args.containsKey( FRAGMENT_ID ) ) {
-            mFragmentId = args.getInt( FRAGMENT_ID );
-        } else {
-            mFragmentId = getId();
         }
     }
 
