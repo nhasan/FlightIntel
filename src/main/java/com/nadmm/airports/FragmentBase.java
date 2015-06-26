@@ -230,6 +230,10 @@ public class FragmentBase extends Fragment implements IRefreshable {
         mActivity.setActionBarTitle( title );
     }
 
+    protected void setActionBarTitle( String title, String subTitle ) {
+        mActivity.setActionBarTitle( title, subTitle );
+    }
+
     protected void setActionBarSubtitle( String subtitle ) {
         mActivity.setActionBarSubtitle( subtitle );
     }
@@ -239,7 +243,6 @@ public class FragmentBase extends Fragment implements IRefreshable {
     }
 
     public void showAirportTitle( Cursor c ) {
-        mActivity.setActionBarTitle( c );
         mActivity.showAirportTitle( c );
         mActivity.showFaddsEffectiveDate( c );
     }
