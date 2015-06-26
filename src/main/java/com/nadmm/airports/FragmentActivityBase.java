@@ -22,7 +22,11 @@ package com.nadmm.airports;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 
+import com.nadmm.airports.utils.UiUtils;
+
 public class FragmentActivityBase extends ActivityBase {
+
+    private FragmentBase mCurFragment;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -32,10 +36,44 @@ public class FragmentActivityBase extends ActivityBase {
     }
 
     @Override
-    public void setContentShown( boolean shown ) {
+    protected void onPostCreate( Bundle savedInstanceState ) {
+        super.onPostCreate( savedInstanceState );
+
         FragmentManager fm = getSupportFragmentManager();
-        FragmentBase f = (FragmentBase) fm.findFragmentById( R.id.fragment_container );
-        f.setFragmentContentShown( shown );
+        fm.addOnBackStackChangedListener( new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                FragmentManager fm = getSupportFragmentManager();
+                mCurFragment = (FragmentBase) fm.findFragmentById( R.id.fragment_container );
+                enableDisableSwipeRefresh( mCurFragment.isRefreshable() );
+            }
+        } );
+
+        int actionBarSize = UiUtils.calculateActionBarSize( this );
+        setProgressBarTopWhenActionBarShown( actionBarSize );
+    }
+
+    @Override
+    public void onFragmentStarted( FragmentBase fragment ) {
+        super.onFragmentStarted( fragment );
+
+        mCurFragment = fragment;
+        enableDisableSwipeRefresh( mCurFragment.isRefreshable() );
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return mCurFragment.canSwipeRefreshChildScrollUp();
+    }
+
+    @Override
+    protected void requestDataRefresh() {
+        mCurFragment.requestDataRefresh();
+    }
+
+    @Override
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_INVALID;
     }
 
 }

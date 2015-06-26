@@ -20,77 +20,30 @@
 package com.nadmm.airports.afd;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.view.View;
 
-import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.FragmentActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
-import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.ObservableScrollView;
 
-public class AirportActivity extends ActivityBase {
-
-    private FragmentBase mCurFragment;
-
-    @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        setContentView( R.layout.activity_main );
-    }
+public class AirportActivity extends FragmentActivityBase {
 
     @Override
     protected void onPostCreate( Bundle savedInstanceState ) {
         super.onPostCreate( savedInstanceState );
 
-        FragmentManager fm = getSupportFragmentManager();
-        fm.addOnBackStackChangedListener( new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                FragmentManager fm = getSupportFragmentManager();
-                mCurFragment = (FragmentBase) fm.findFragmentById( R.id.fragment_container );
-                enableDisableSwipeRefresh( mCurFragment.isRefreshable() );
-            }
-        } );
-
         Bundle args = getIntent().getExtras();
         addFragment( AirportDetailsFragment.class, args );
-
-        int actionBarSize = UiUtils.calculateActionBarSize( this );
-        setProgressBarTopWhenActionBarShown( actionBarSize );
     }
 
     @Override
     public void onFragmentStarted( FragmentBase fragment ) {
         super.onFragmentStarted( fragment );
 
-        View view = fragment.getView();
-        if ( view != null ) {
-            view = view.findViewById( R.id.scroll_content );
-            if ( view != null && view instanceof ObservableScrollView ) {
-                ObservableScrollView scrollView = (ObservableScrollView) view;
-                registerActionBarAutoHideScrollView( scrollView );
-            }
+        ObservableScrollView scrollView = (ObservableScrollView) findViewById( R.id.scroll_content );
+        if ( scrollView != null ) {
+            registerActionBarAutoHideScrollView( scrollView );
         }
-
-        mCurFragment = fragment;
-        enableDisableSwipeRefresh( mCurFragment.isRefreshable() );
-    }
-
-    @Override
-    public boolean canSwipeRefreshChildScrollUp() {
-        return mCurFragment.canSwipeRefreshChildScrollUp();
-    }
-
-    @Override
-    protected void requestDataRefresh() {
-        mCurFragment.requestDataRefresh();
-    }
-
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_INVALID;
     }
 
 }
