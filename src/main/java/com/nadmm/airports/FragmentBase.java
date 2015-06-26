@@ -133,14 +133,8 @@ public class FragmentBase extends Fragment implements IRefreshable {
     public void onViewCreated( View view, Bundle savedInstanceState ) {
         super.onViewCreated( view, savedInstanceState );
 
-        if ( getView() != null ) {
-            mTopScrollView = (ScrollView) getView().findViewById( R.id.scroll_content );
-        }
+        mTopScrollView = (ScrollView) findViewById( R.id.scroll_content );
         mContentTopClearance = 0;
-    }
-
-    protected ScrollView getTopScrollView() {
-        return mTopScrollView;
     }
 
     protected boolean isRefreshing() {
