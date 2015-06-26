@@ -70,13 +70,9 @@ public class WxDetailActivity extends TabPagerActivityBase {
     public void onFragmentStarted( FragmentBase fragment ) {
         super.onFragmentStarted( fragment );
 
-        View view = fragment.getView();
-        if ( view != null ) {
-            view = view.findViewById( R.id.scroll_content );
-            if ( view != null && view instanceof ObservableScrollView ) {
-                ObservableScrollView scrollView = (ObservableScrollView) view;
-                registerActionBarAutoHideScrollView( scrollView );
-            }
+        ObservableScrollView scrollView = (ObservableScrollView) findViewById( R.id.scroll_content );
+        if ( scrollView != null ) {
+            registerActionBarAutoHideScrollView( scrollView );
         }
     }
 
