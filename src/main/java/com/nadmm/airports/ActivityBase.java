@@ -264,9 +264,6 @@ public class ActivityBase extends AppCompatActivity implements
         enableDisableSwipeRefresh( false );
         enableActionBarAutoHide();
 
-        registerHideableHeaderView( findViewById( R.id.headerbar ),
-                UiUtils.calculateActionBarSize( this ) );
-
         // Sync the toggle state after onRestoreInstanceState has occurred.
         if ( mDrawerToggle != null ) {
             mDrawerToggle.syncState();
@@ -674,7 +671,7 @@ public class ActivityBase extends AppCompatActivity implements
 
     private void updateContentTopClearance( FragmentBase fragment ) {
         int topClearance = UiUtils.calculateActionBarSize( this );
-        if ( findViewById( R.id.sliding_tabs ) != null ){
+        if ( findViewById( R.id.sliding_tabs ) != null ) {
             int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
             topClearance += tabbarClearance;
         }
@@ -751,7 +748,14 @@ public class ActivityBase extends AppCompatActivity implements
     }
 
     protected void enableActionBarAutoHide() {
-        initActionBarAutoHide();
+        enableActionBarAutoHide( 0 );
+    }
+    protected void enableActionBarAutoHide( int extraOffset ) {
+        View header = findViewById( R.id.headerbar );
+        if ( header != null ) {
+            registerHideableHeaderView( header, UiUtils.calculateActionBarSize( this )+extraOffset );
+            initActionBarAutoHide();
+        }
     }
 
     /**
