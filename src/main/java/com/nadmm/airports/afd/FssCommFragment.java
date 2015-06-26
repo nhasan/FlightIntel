@@ -107,6 +107,8 @@ public final class FssCommFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        setActionBarTitle( "Nearby FSS", "" );
+
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences( getActivity() );
         mRadius = Integer.valueOf( prefs.getString(
@@ -121,7 +123,6 @@ public final class FssCommFragment extends FragmentBase {
         Cursor apt = result[ 0 ];
 
         showAirportTitle( apt );
-        setActionBarTitle( "Nearby FSS Outlets" );
         setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
         showFssDetails( result );
 

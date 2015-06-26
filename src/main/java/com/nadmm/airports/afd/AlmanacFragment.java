@@ -54,6 +54,8 @@ public final class AlmanacFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        setActionBarTitle( "Sunrise and sunset", "" );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new AlmanacDetailsTask() ).execute( siteNumber );

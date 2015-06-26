@@ -60,6 +60,8 @@ public final class CommunicationsFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        setActionBarTitle( "Communications", "" );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new CommunicationsTask() ).execute( siteNumber );

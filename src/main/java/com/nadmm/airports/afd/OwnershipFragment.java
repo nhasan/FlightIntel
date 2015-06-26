@@ -50,6 +50,8 @@ public final class OwnershipFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        setActionBarTitle( "Ownership info", "" );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new FragmentTask() ).execute( siteNumber );

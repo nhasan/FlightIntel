@@ -50,6 +50,8 @@ public final class ServicesFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        setActionBarTitle( "Services", "" );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new ServicesTask() ).execute( siteNumber );

@@ -54,6 +54,8 @@ public final class IlsFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        setActionBarTitle( "ILS details", "" );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Ils1.SITE_NUMBER );
         String runwayId = args.getString( Ils1.RUNWAY_ID );

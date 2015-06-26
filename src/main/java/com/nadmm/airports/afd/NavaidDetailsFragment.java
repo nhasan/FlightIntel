@@ -54,6 +54,8 @@ public final class NavaidDetailsFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        setActionBarTitle( "Navaid details", "" );
+
         Bundle args = getArguments();
         String navaidId = args.getString( Nav1.NAVAID_ID );
         String navaidType = args.getString( Nav1.NAVAID_TYPE );
@@ -70,8 +72,6 @@ public final class NavaidDetailsFragment extends FragmentBase {
         Cursor nav1 = result[ 0 ];
 
         String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
-        setActionBarTitle( id );
-        setActionBarSubtitle( "Navaid Details" );
         showNavaidTitle( nav1 );
         showNavaidDetails( result );
         showNavaidNotams( result );

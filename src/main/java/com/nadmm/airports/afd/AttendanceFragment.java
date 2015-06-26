@@ -49,6 +49,8 @@ public final class AttendanceFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        setActionBarTitle( "Attendance", "" );
+
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new AttendanceTask() ).execute( siteNumber );

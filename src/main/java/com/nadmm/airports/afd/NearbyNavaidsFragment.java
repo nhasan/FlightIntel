@@ -121,6 +121,8 @@ public final class NearbyNavaidsFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        setActionBarTitle( "Nearby Navaids", "" );
+
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences( getActivity() );
         mRadius = Integer.valueOf( prefs.getString(
@@ -138,8 +140,6 @@ public final class NearbyNavaidsFragment extends FragmentBase {
         Cursor ndb = result[ 2 ];
         if ( vor != null || ndb != null ) {
             showAirportTitle( apt );
-            setActionBarTitle( "Nearby Navaids" );
-            setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
             showNavaidDetails( result );
         } else {
             setContentMsg( String.format( Locale.US, "No navaids found within %d NM radius",
