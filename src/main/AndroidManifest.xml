@@ -103,7 +103,7 @@
 
         <activity
             android:label="@string/nearby_wx"
-            android:name=".wx.NearbyWxActivity"
+            android:name=".afd.NearbyWxActivity"
             android:parentActivityName=".FlightIntel">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

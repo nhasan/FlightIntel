@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.nadmm.airports.wx;
+package com.nadmm.airports.afd;
 
 import android.os.Bundle;
 import android.view.View;
@@ -29,6 +29,7 @@ import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.ObservableScrollView;
+import com.nadmm.airports.wx.NearbyWxFragment;
 
 public class NearbyWxActivity extends ActivityBase {
 

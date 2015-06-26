@@ -78,7 +78,6 @@ import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.MetarService;
-import com.nadmm.airports.wx.NearbyWxActivity;
 import com.nadmm.airports.wx.NearbyWxCursor;
 import com.nadmm.airports.wx.NoaaService;
 import com.nadmm.airports.wx.WxDetailActivity;
