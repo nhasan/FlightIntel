@@ -20,7 +20,6 @@
 package com.nadmm.airports.wx;
 
 import android.os.Bundle;
-import android.view.View;
 
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
@@ -64,6 +63,11 @@ public class WxDetailActivity extends TabPagerActivityBase {
         super.onCreate( savedInstanceState );
 
         setActionBarTitle( "Weather", null );
+
+        Bundle args = getIntent().getExtras();
+        for ( int i=0; i<mTabTitles.length; ++i ) {
+            addTab( mTabTitles[ i ], mClasses[ i ], args );
+        }
     }
 
     @Override
@@ -74,16 +78,6 @@ public class WxDetailActivity extends TabPagerActivityBase {
         if ( scrollView != null ) {
             registerActionBarAutoHideScrollView( scrollView );
         }
-    }
-
-    @Override
-    protected String[] getTabTitles() {
-        return mTabTitles;
-    }
-
-    @Override
-    protected Class<?>[] getTabFragments() {
-        return mClasses;
     }
 
     @Override

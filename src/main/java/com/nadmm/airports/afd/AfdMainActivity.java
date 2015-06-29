@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,26 +20,15 @@
 package com.nadmm.airports.afd;
 
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.PreferencesActivity;
-import com.nadmm.airports.R;
 import com.nadmm.airports.TabPagerActivityBase;
-import com.nadmm.airports.utils.UiUtils;
-import com.nadmm.airports.views.SlidingTabLayout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public final class AfdMainActivity extends TabPagerActivityBase {
 
@@ -64,6 +53,11 @@ public final class AfdMainActivity extends TabPagerActivityBase {
         super.onCreate( savedInstanceState );
 
         setActionBarTitle( "Airports", null );
+
+        Bundle args = new Bundle();
+        for ( int i=0; i<mTabTitles.length; ++i ) {
+            addTab( mTabTitles[ i ], mClasses[ i ], args );
+        }
     }
 
     @Override
@@ -71,16 +65,6 @@ public final class AfdMainActivity extends TabPagerActivityBase {
         super.onFragmentStarted( fragment );
 
         registerActionBarAutoHideListView( ( (ListFragmentBase) fragment ).getListView() );
-    }
-
-    @Override
-    protected String[] getTabTitles() {
-        return mTabTitles;
-    }
-
-    @Override
-    protected Class<?>[] getTabFragments() {
-        return mClasses;
     }
 
     @Override

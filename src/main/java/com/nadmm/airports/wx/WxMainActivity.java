@@ -50,6 +50,11 @@ public final class WxMainActivity extends TabPagerActivityBase {
         super.onCreate( savedInstanceState );
 
         setActionBarTitle( "Weather", null );
+
+        Bundle args = new Bundle();
+        for ( int i=0; i<mTabTitles.length; ++i ) {
+            addTab( mTabTitles[ i ], mClasses[ i ], args );
+        }
     }
 
     @Override
@@ -57,16 +62,6 @@ public final class WxMainActivity extends TabPagerActivityBase {
         super.onFragmentStarted( fragment );
 
         registerActionBarAutoHideListView( ( (ListFragmentBase) fragment ).getListView() );
-    }
-
-    @Override
-    protected String[] getTabTitles() {
-        return mTabTitles;
-    }
-
-    @Override
-    protected Class<?>[] getTabFragments() {
-        return mClasses;
     }
 
     @Override
