@@ -80,7 +80,7 @@ public class WxListFragmentBase extends ListFragmentBase {
 
     @Override
     public boolean isRefreshable() {
-        return true;
+        return getListAdapter() != null && !getListAdapter().isEmpty();
     }
 
     @Override

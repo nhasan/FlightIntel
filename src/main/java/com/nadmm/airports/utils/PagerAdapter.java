@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,18 +25,19 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
 public class PagerAdapter extends FragmentPagerAdapter  {
 
-    private final Context mContext;
-    private final ArrayList<TabInfo> mTabs = new ArrayList<>();
+    private Context mContext;
+    private ArrayList<TabInfo> mTabs = new ArrayList<>();
 
     public final class TabInfo {
-        private final Class<?> clss;
-        private final Bundle args;
-        private final String label;
+        private Class<?> clss;
+        private Bundle args;
+        private String label;
         private Fragment fragment;
 
         TabInfo( String _label, Class<?> _class, Bundle _args ) {
@@ -65,16 +66,23 @@ public class PagerAdapter extends FragmentPagerAdapter  {
     }
 
     @Override
+    public Object instantiateItem( ViewGroup container, int position ) {
+        TabInfo info = mTabs.get( position );
+        info.fragment = (Fragment) super.instantiateItem( container, position );
+        return info.fragment;
+    }
+
+    @Override
     public Fragment getItem( int position ) {
         if ( position < 0 || position >= getCount() ) {
             throw new IllegalArgumentException();
         }
 
         TabInfo info = mTabs.get( position );
-        if ( info.fragment == null ) {
-            info.fragment = Fragment.instantiate( mContext, info.clss.getName(), info.args );
+        if ( info.fragment != null ) {
+            return info.fragment;
         }
-        return info.fragment;
+        return Fragment.instantiate( mContext, info.clss.getName(), info.args );
     }
 
     @Override

@@ -156,7 +156,7 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
     }
 
     public ListAdapter getListAdapter() {
-        return mListView.getAdapter();
+        return mListView != null? mListView.getAdapter() : null;
     }
 
     public ListView getListView() {

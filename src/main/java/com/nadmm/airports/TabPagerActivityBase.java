@@ -89,7 +89,16 @@ public abstract class TabPagerActivityBase extends ActivityBase {
             mCurrentFragmentIndex = getInitialTabIndex();
         }
         mViewPager.setCurrentItem( mCurrentFragmentIndex );
-        enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
+        // We use this trick because ViewPager does not call the onPageSelected callback
+        // when setting the current page to 0. Due to this we need to enable/disable
+        // swipe refresh explicitly here. Also, we are calling this delayed to allow
+        // the viewpager to instantiate fragments first.
+        postRunnable( new Runnable() {
+            @Override
+            public void run() {
+                enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
+            }
+        }, 0 );
     }
 
     @Override
@@ -109,7 +118,8 @@ public abstract class TabPagerActivityBase extends ActivityBase {
 
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
-        return getCurrentFragment().canSwipeRefreshChildScrollUp();
+        FragmentBase fragment = getCurrentFragment();
+        return fragment != null && fragment.canSwipeRefreshChildScrollUp();
     }
 
     public void addTab( String label, Class<?> clss, Bundle args ) {
