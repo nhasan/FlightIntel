@@ -25,7 +25,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -40,8 +39,6 @@ import com.nadmm.airports.R;
 public abstract class WxMapFragmentBase extends WxFragmentBase {
 
     private String mAction;
-    private BroadcastReceiver mReceiver;
-    private IntentFilter mFilter;
     private String[] mWxTypeCodes;
     private String[] mWxTypeNames;
     private String[] mWxMapCodes;
@@ -113,10 +110,8 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
 
         LinearLayout layout = (LinearLayout) view.findViewById( R.id.wx_map_layout );
         for ( int i = 0; i < mWxMapCodes.length; ++i ) {
-            View row = addProgressRow( layout, mWxMapNames[ i ] );
-            row.setTag( mWxMapCodes[ i ] );
+            View row = addWxRow( layout, mWxMapNames[ i ], mWxMapCodes[ i ] );
             row.setOnClickListener( listener );
-            row.setBackgroundResource( R.drawable.row_selector_middle );
         }
 
         if ( mWxTypeCodes != null ) {

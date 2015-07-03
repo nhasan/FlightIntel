@@ -40,8 +40,6 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
     private final String[] mWxAreaCodes;
     private final String[] mWxAreaNames;
 
-    private BroadcastReceiver mReceiver;
-    private IntentFilter mFilter;
     private View mPendingRow;
 
     public WxTextFragmentBase( String action, String[] areaCodes, String[] areaNames ) {
@@ -86,10 +84,8 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
 
         LinearLayout layout = (LinearLayout) view.findViewById( R.id.wx_map_layout );
         for ( int i = 0; i < mWxAreaNames.length; ++i ) {
-            View row = addProgressRow( layout, mWxAreaNames[ i ] );
-            row.setTag( mWxAreaCodes[ i ] );
+            View row = addWxRow( layout, mWxAreaNames[ i ], mWxAreaCodes[ i ] );
             row.setOnClickListener( listener );
-            row.setBackgroundResource( R.drawable.row_selector_middle );
         }
 
         setFragmentContentShown( true );

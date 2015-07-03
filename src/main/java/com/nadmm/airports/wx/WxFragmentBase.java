@@ -27,9 +27,12 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.utils.UiUtils;
 
 public class WxFragmentBase extends FragmentBase {
     private IntentFilter mFilter;
@@ -91,6 +94,14 @@ public class WxFragmentBase extends FragmentBase {
                 }
             }
         };
+    }
+
+    protected View addWxRow( LinearLayout layout, String label, String code ) {
+        View row = addProgressRow( layout, label );
+        row.setTag( code );
+        int background = UiUtils.getSelectableItemBackgroundResource( getActivity() );
+        row.setBackgroundResource( background );
+        return row;
     }
 
     protected void handleBroadcast( Intent intent ) {
