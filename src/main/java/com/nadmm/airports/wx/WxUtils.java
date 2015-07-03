@@ -40,9 +40,9 @@ public class WxUtils {
     static public int getFlightCategoryColor( String flightCategory ) {
         int color = 0;
         if ( flightCategory.equals( CATEGORY_VFR ) ) {
-            color = Color.argb( 255, 0, 144, 224 );
-        } else if ( flightCategory.equals( CATEGORY_MVFR ) ) {
             color = Color.argb( 255, 0, 160, 32 );
+        } else if ( flightCategory.equals( CATEGORY_MVFR ) ) {
+            color = Color.argb( 255, 0, 144, 224 );
         } else if ( flightCategory.equals( CATEGORY_IFR ) ) {
             color = Color.argb( 255, 192, 32, 0 );
         } else if ( flightCategory.equals( CATEGORY_LIFR ) ) {
