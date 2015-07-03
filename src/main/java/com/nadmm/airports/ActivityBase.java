@@ -386,10 +386,8 @@ public class ActivityBase extends AppCompatActivity implements
         mNavDrawerItems.add( NAVDRAWER_ITEM_AFD );
         mNavDrawerItems.add( NAVDRAWER_ITEM_WX );
         mNavDrawerItems.add( NAVDRAWER_ITEM_TFR );
-        mNavDrawerItems.add( NAVDRAWER_ITEM_SEPARATOR );
         mNavDrawerItems.add( NAVDRAWER_ITEM_LIBRARY );
         mNavDrawerItems.add( NAVDRAWER_ITEM_CHARTS );
-        mNavDrawerItems.add( NAVDRAWER_ITEM_SEPARATOR );
         mNavDrawerItems.add( NAVDRAWER_ITEM_SCRATCHPAD );
         mNavDrawerItems.add( NAVDRAWER_ITEM_CLOCKS );
         mNavDrawerItems.add( NAVDRAWER_ITEM_E6B );
