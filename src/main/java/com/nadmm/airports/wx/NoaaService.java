@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,11 +43,10 @@ import com.nadmm.airports.utils.SystemUtils;
 
 public abstract class NoaaService extends IntentService {
 
-    protected final String NOAA_HOST = "weather.aero";
     protected final String RADAR_HOST = "radar.weather.gov";
     protected final String AWC_HOST = "aviationweather.gov";
 
-    protected final String NOAA_DATASERVER_PATH = "/dataserver1_4/httpparam";
+    protected final String ADDS_DATASERVER_PATH = "/adds/dataserver_current/httpparam";
 
     public static final String STATION_ID = "STATION_ID";
     public static final String STATION_IDS = "STATION_IDS";
@@ -105,12 +104,12 @@ public abstract class NoaaService extends IntentService {
 
     protected boolean fetchFromNoaa( String query, File file, boolean compressed )
             throws Exception {
-        return fetchFromNoaa( NOAA_DATASERVER_PATH, query, file, compressed );
+        return fetchFromNoaa( ADDS_DATASERVER_PATH, query, file, compressed );
     }
 
     protected boolean fetchFromNoaa( String path, String query, File file, boolean compressed )
             throws Exception {
-        return fetch( NOAA_HOST, path, query, file, compressed );
+        return fetch( AWC_HOST, path, query, file, compressed );
     }
 
     protected boolean fetch( String host, String path, String query, File file, boolean compressed )
