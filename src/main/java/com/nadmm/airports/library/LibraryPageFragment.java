@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ public class LibraryPageFragment extends FragmentBase {
     private BroadcastReceiver mReceiver;
     private OnClickListener mOnClickListener;
     private String mCategory;
-    private HashMap<String, View> mBookRowMap = new HashMap<String, View>();
+    private HashMap<String, View> mBookRowMap = new HashMap<>();
     private LibraryActivity mActivity;
     private View mContextMenuRow;
 
@@ -131,8 +131,7 @@ public class LibraryPageFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        View v = inflate( R.layout.library_detail_view, container );
-        return v;
+        return inflate( R.layout.library_detail_view, container );
     }
 
     @Override
@@ -182,8 +181,10 @@ public class LibraryPageFragment extends FragmentBase {
                         prevDesc = desc;
                     }
 
-                    Object[] values = new Object[] { name, desc, edition, author, size, flag };
-                    matrix.addRow( values );
+                    if ( matrix != null ) {
+                        Object[] values = new Object[]{ name, desc, edition, author, size, flag };
+                        matrix.addRow( values );
+                    }
                 } while ( c.moveToNext() );
             }
 
@@ -218,7 +219,7 @@ public class LibraryPageFragment extends FragmentBase {
                 mIsOk? R.drawable.ic_check : R.drawable.ic_error, 0, 0, 0 );
         tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 4 ) );
 
-        LinearLayout topLayout = (LinearLayout) findViewById( R.id.parent_layout );
+        LinearLayout topLayout = (LinearLayout) findViewById( R.id.main_content );
         for ( Cursor c : result ) {
             if ( c.moveToFirst() ) {
                 LinearLayout layout = (LinearLayout) inflate( R.layout.library_detail_section,
@@ -259,7 +260,8 @@ public class LibraryPageFragment extends FragmentBase {
         tv.setText( Formatter.formatShortFileSize( getActivity(), size ) );
         row.setTag( R.id.LIBRARY_PDF_NAME, name );
         row.setOnClickListener( mOnClickListener );
-        row.setBackgroundResource( R.drawable.row_selector_middle );
+        int background = UiUtils.getSelectableItemBackgroundResource( getActivity() );
+        row.setBackgroundResource( background );
         showStatus( row, false );
         mBookRowMap.put( name, row );
         layout.addView( row, new LinearLayout.LayoutParams(
@@ -328,7 +330,7 @@ public class LibraryPageFragment extends FragmentBase {
 
     protected void checkBooks() {
         Intent service = makeServiceIntent( LibraryService.ACTION_CHECK_BOOKS );
-        ArrayList<String> books = new ArrayList<String>( mBookRowMap.keySet() );
+        ArrayList<String> books = new ArrayList<>( mBookRowMap.keySet() );
         service.putExtra( LibraryService.BOOK_NAMES, books );
         getActivity().startService( service );
     }

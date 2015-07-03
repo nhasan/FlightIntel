@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,17 +23,26 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.View;
 
+import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DrawerActivityBase;
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.R;
+import com.nadmm.airports.TabPagerActivityBase;
+import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.views.DrawerListView;
+import com.nadmm.airports.views.ObservableScrollView;
 
 import java.util.HashMap;
 
-@SuppressWarnings( "BooleanMethodIsAlwaysInverted" )
-public class LibraryActivity extends DrawerActivityBase {
+public class LibraryActivity extends TabPagerActivityBase {
 
     private boolean mPending = false;
     private final Object mLock = new Object();
@@ -45,7 +54,9 @@ public class LibraryActivity extends DrawerActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mReceivers = new HashMap<String, BroadcastReceiver>();
+        setActionBarTitle( "Library", null );
+
+        mReceivers = new HashMap<>();
         mReceiver = new BroadcastReceiver() {
 
             @Override
@@ -74,8 +85,14 @@ public class LibraryActivity extends DrawerActivityBase {
         mFilter.addAction( LibraryService.ACTION_GET_BOOK );
         mFilter.addAction( LibraryService.ACTION_DOWNLOAD_PROGRESS );
 
-        Bundle args = getIntent().getExtras();
-        addFragment( LibraryMainFragment.class, args );
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_LIBRARY );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( DatabaseManager.BookCategories.TABLE_NAME );
+        Cursor c = builder.query( db, new String[] { "*" }, null, null, null, null,
+                DatabaseManager.BookCategories._ID );
+        populateTabs( c );
+
+        //setBackgroundTask( new LibraryCategoryTask() ).execute( "" );
     }
 
     @Override
@@ -99,6 +116,18 @@ public class LibraryActivity extends DrawerActivityBase {
         return NAVDRAWER_ITEM_LIBRARY;
     }
 
+    protected void populateTabs( Cursor c ) {
+        if ( c.moveToFirst() ) {
+            do {
+                String code = c.getString( c.getColumnIndex( DatabaseManager.BookCategories.CATEGORY_CODE ) );
+                String name = c.getString( c.getColumnIndex( DatabaseManager.BookCategories.CATEGORY_NAME ) );
+                Bundle args = new Bundle();
+                args.putString( DatabaseManager.BookCategories.CATEGORY_CODE, code );
+                addTab( name, LibraryPageFragment.class, args );
+            } while ( c.moveToNext() );
+        }
+    }
+
     public void setPending( boolean pending ) {
         synchronized ( mLock ) {
             mPending = pending;
@@ -117,6 +146,30 @@ public class LibraryActivity extends DrawerActivityBase {
 
     public void unregisterReceiver( String category ) {
         mReceivers.remove( category );
+    }
+
+    private final class LibraryCategoryTask extends CursorAsyncTask {
+
+        @Override
+        protected Cursor[] doInBackground( String... params ) {
+            Cursor[] result = new Cursor[ 1 ];
+
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_LIBRARY );
+            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+            builder.setTables( DatabaseManager.BookCategories.TABLE_NAME );
+            Cursor c = builder.query( db, new String[] { "*" }, null, null, null, null,
+                    DatabaseManager.BookCategories._ID );
+            result[ 0 ] = c;
+
+            return result;
+        }
+
+        @Override
+        protected boolean onResult( Cursor[] result ) {
+            populateTabs( result[ 0 ] );
+            return true;
+        }
+
     }
 
 }
