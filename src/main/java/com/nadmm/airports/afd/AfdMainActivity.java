@@ -61,13 +61,6 @@ public final class AfdMainActivity extends TabPagerActivityBase {
     }
 
     @Override
-    public void onFragmentStarted( FragmentBase fragment ) {
-        super.onFragmentStarted( fragment );
-
-        registerActionBarAutoHideListView( ( (ListFragmentBase) fragment ).getListView() );
-    }
-
-    @Override
     protected int getInitialTabIndex() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
         boolean showNearby = prefs.getBoolean( PreferencesActivity.KEY_ALWAYS_SHOW_NEARBY, false );

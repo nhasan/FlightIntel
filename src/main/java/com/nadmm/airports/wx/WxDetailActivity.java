@@ -70,24 +70,4 @@ public class WxDetailActivity extends TabPagerActivityBase {
         }
     }
 
-    @Override
-    public void onFragmentStarted( FragmentBase fragment ) {
-        super.onFragmentStarted( fragment );
-
-        ObservableScrollView scrollView = (ObservableScrollView) findViewById( R.id.scroll_content );
-        if ( scrollView != null ) {
-            registerActionBarAutoHideScrollView( scrollView );
-        }
-    }
-
-    @Override
-    protected int getInitialTabIndex() {
-        return 0;
-    }
-
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_INVALID;
-    }
-
 }

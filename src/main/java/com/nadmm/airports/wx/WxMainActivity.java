@@ -58,13 +58,6 @@ public final class WxMainActivity extends TabPagerActivityBase {
     }
 
     @Override
-    public void onFragmentStarted( FragmentBase fragment ) {
-        super.onFragmentStarted( fragment );
-
-        registerActionBarAutoHideListView( ( (ListFragmentBase) fragment ).getListView() );
-    }
-
-    @Override
     protected int getInitialTabIndex() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
         boolean alwaysShowNearby = prefs.getBoolean(

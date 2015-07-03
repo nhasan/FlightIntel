@@ -183,4 +183,9 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
     public void onStatusChanged( String provider, int status, Bundle extras ) {
     }
 
+    @Override
+    public void registerActionbarAutoHideView() {
+        getActivityBase().registerActionBarAutoHideListView( getListView() );
+    }
+
 }

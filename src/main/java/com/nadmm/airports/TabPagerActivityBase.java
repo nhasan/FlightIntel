@@ -29,7 +29,7 @@ import com.nadmm.airports.views.SlidingTabLayout;
 
 import java.util.HashMap;
 
-public abstract class TabPagerActivityBase extends ActivityBase {
+public class TabPagerActivityBase extends ActivityBase {
 
     private HashMap<String, Fragment> mWxFragments = new HashMap<>();
     private int mCurrentFragmentIndex = -1;
@@ -134,6 +134,8 @@ public abstract class TabPagerActivityBase extends ActivityBase {
         return (FragmentBase) mPagerAdapter.getItem( position );
     }
 
-    protected abstract int getInitialTabIndex();
+    protected int getInitialTabIndex() {
+        return 0;
+    }
 
 }

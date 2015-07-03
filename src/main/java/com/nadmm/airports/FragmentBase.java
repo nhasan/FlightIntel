@@ -50,6 +50,7 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.UiUtils;
+import com.nadmm.airports.views.ObservableScrollView;
 
 public class FragmentBase extends Fragment implements IRefreshable {
 
@@ -575,6 +576,17 @@ public class FragmentBase extends Fragment implements IRefreshable {
     }
 
     protected void setRefreshItemVisible( Boolean visible ) {
+    }
+
+    public void registerActionbarAutoHideView() {
+        View view = getView();
+        if ( view != null ) {
+            ObservableScrollView scrollView =
+                    (ObservableScrollView) view.findViewById( R.id.scroll_content );
+            if ( scrollView != null ) {
+                getActivityBase().registerActionBarAutoHideScrollView( scrollView );
+            }
+        }
     }
 
 }
