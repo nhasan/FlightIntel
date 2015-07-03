@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -28,13 +28,13 @@ import com.nadmm.airports.utils.UiUtils;
 
 public class WindService extends NoaaService {
 
-    private final String WIND_IMAGE_ZOOM_NAME = "ruc00hr_%s_%s_zoom.gif";
-    private final String WIND_IMAGE_ZOOM_PATH = "/data/winds/zoom/";
+    private final String WIND_IMAGE_ZOOM_NAME = "ruc00hr_%s_%s.gif";
+    private final String WIND_IMAGE_ZOOM_PATH = "/adds/data/winds/";
 
-    private static final long WIND_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
+    private static final long WIND_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
     public WindService() {
-        super( "progchart", WIND_CACHE_MAX_AGE );
+        super( "wind", WIND_CACHE_MAX_AGE );
     }
 
     @Override
@@ -49,8 +49,7 @@ public class WindService extends NoaaService {
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = WIND_IMAGE_ZOOM_PATH;
-                        path += imageName;
+                        String path = WIND_IMAGE_ZOOM_PATH+imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch Wind image: "+e.getMessage() );

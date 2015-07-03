@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -24,7 +24,6 @@ public class WxRegions {
 
     public static final String[] sWxRegionCodes = new String[] {
         "INA",
-        "PAK",
         "ALB",
         "ABQ",
         "AUS",
@@ -47,7 +46,6 @@ public class WxRegions {
 
     public static final String[] sWxRegionNames = new String[] {
         "Continental USA",
-        "Alaska",
         "Albany, NY",
         "Albuquerque, NM",
         "Austin, TX",

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -25,9 +25,9 @@ import android.content.Intent;
 public class CvaFragment extends WxMapFragmentBase {
 
     private static final String[] sTypeCodes = {
-        "metarsNCVAfcat",
-        "metarsNCVAceil",
-        "metarsNCVAvis"
+        "fcat",
+        "ceil",
+        "vis"
     };
 
     private static final String[] sTypeNames = {
@@ -49,14 +49,6 @@ public class CvaFragment extends WxMapFragmentBase {
     @Override
     protected Intent getServiceIntent() {
         return new Intent( getActivity(), CvaService.class );
-    }
-
-    @Override
-    protected void setServiceParams( Intent intent ) {
-        String region = intent.getStringExtra( NoaaService.IMAGE_CODE );
-        if ( region.equals( "INA" ) ) {
-            intent.putExtra( NoaaService.IMAGE_CODE, "US" );
-        }
     }
 
 }

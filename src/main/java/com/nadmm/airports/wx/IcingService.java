@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -28,9 +28,8 @@ import com.nadmm.airports.utils.UiUtils;
 
 public class IcingService extends NoaaService {
 
-    private final String ICING_IMAGE_NAME = "icing_SEVSLD_%s_%s.gif";
-    private final String ICING_IMAGE_PATH = "/tools/weatherproducts/icing/default/"
-            + "loadImage/altitude/%s/forecastHour/%s/product/SEVSLD/zoom/true";
+    private final String ICING_IMAGE_NAME = "%s_%s.gif";
+    private final String ICING_IMAGE_PATH = "/adds/data/icing/";
 
     private static final long ICING_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
 
@@ -50,7 +49,7 @@ public class IcingService extends NoaaService {
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = String.format( ICING_IMAGE_PATH, code, imgType );
+                        String path = ICING_IMAGE_PATH+imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch icing image: "+e.getMessage() );

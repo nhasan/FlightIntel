@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -24,21 +24,27 @@ import android.content.Intent;
 public class IcingFragment extends WxMapFragmentBase {
 
     private static final String[] sTypeCodes = {
-        "00",
-        "02",
-        "03",
-        "06",
-        "09",
-        "12"
+        "00_cip",
+        "01_fip",
+        "02_fip",
+        "03_fip",
+        "06_fip",
+        "09_fip",
+        "12_fip",
+        "15_fip",
+        "18_fip"
     };
 
     private static final String[] sTypeNames = {
         "CIP Analysis",
+        "FIP 1-hr Forecast",
         "FIP 2-hr Forecast",
         "FIP 3-hr Forecast",
         "FIP 6-hr Forecast",
         "FIP 9-hr Forecast",
         "FIP 12-hr Forecast",
+        "FIP 15-hr Forecast",
+        "FIP 18-hr Forecast"
     };
 
     private static final String[] sMapCodes = new String[] {
