@@ -101,6 +101,8 @@ public class WxListFragmentBase extends ListFragmentBase {
 
         super.setCursor( c );
 
+        getActivityBase().enableDisableSwipeRefresh( isRefreshable() );
+
         requestMetars( NoaaService.ACTION_GET_METAR, false, true );
     }
 
