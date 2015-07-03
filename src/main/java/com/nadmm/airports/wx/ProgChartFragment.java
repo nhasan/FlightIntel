@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -25,11 +25,17 @@ import android.content.Intent;
 public class ProgChartFragment extends WxMapFragmentBase {
 
     private static final String[] sProgChartCodes = new String[] {
-        "00hr",
-        "12hr",
-        "24hr",
-        "36hr",
-        "48hr"
+        "sfc_analysis",
+        "12_fcst",
+        "24_fcst",
+        "36_fcst",
+        "48_fcst",
+        "60_fcst",
+        "mid_072",
+        "mid_096",
+        "mid_120",
+        "mid_144",
+        "mid_168"
     };
 
     private static final String[] sProgChartNames = new String[] {
@@ -37,7 +43,13 @@ public class ProgChartFragment extends WxMapFragmentBase {
         "12 hr Surface Prognosis",
         "24 hr Surface Prognosis",
         "36 hr Surface Prognosis",
-        "48 hr Surface Prognosis" 
+        "48 hr Surface Prognosis",
+        "60 hr Surface Prognosis",
+        "3 day Surface Prognosis",
+        "4 day Surface Prognosis",
+        "5 day Surface Prognosis",
+        "6 day Surface Prognosis",
+        "7 day Surface Prognosis"
     };
 
     public ProgChartFragment() {

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -28,8 +28,8 @@ import com.nadmm.airports.utils.UiUtils;
 
 public class ProgChartService extends NoaaService {
 
-    private final String PROGCHART_IMAGE_ZOOM_NAME = "prog%s_zoom.gif";
-    private final String PROGCHART_IMAGE_ZOOM_PATH = "/data/progs/zoom/";
+    private final String PROGCHART_IMAGE_NAME = "hpc_%s.gif";
+    private final String PROGCHART_IMAGE_PATH = "/adds/data/progs/";
 
     private static final long PROGCHART_CACHE_MAX_AGE = 240*DateUtils.MINUTE_IN_MILLIS;
 
@@ -44,11 +44,11 @@ public class ProgChartService extends NoaaService {
             String type = intent.getStringExtra( TYPE );
             if ( type.equals( TYPE_IMAGE ) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
-                String imageName = String.format( PROGCHART_IMAGE_ZOOM_NAME, code );
+                String imageName = String.format( PROGCHART_IMAGE_NAME, code );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = PROGCHART_IMAGE_ZOOM_PATH;
+                        String path = PROGCHART_IMAGE_PATH;
                         path += imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
