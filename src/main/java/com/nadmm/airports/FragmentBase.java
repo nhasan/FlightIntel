@@ -358,11 +358,8 @@ public class FragmentBase extends Fragment implements IRefreshable {
     protected void makeRowClickable( View row, Object tag ) {
         row.setTag( tag );
         row.setOnClickListener( mOnRowClickListener );
-        int[] attrs = new int[]{ R.attr.selectableItemBackground };
-        TypedArray typedArray = getActivity().obtainStyledAttributes( attrs );
-        int backgroundResource = typedArray.getResourceId(0, 0);
+        int backgroundResource = UiUtils.getSelectableItemBackgroundResource( getActivity() );
         row.setBackgroundResource( backgroundResource );
-        typedArray.recycle();
     }
 
     protected View addClickableRow( LinearLayout layout, String label, String value,
