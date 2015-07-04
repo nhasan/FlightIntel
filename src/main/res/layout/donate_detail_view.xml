@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,12 @@
  */
  -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.nadmm.airports.views.ObservableScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/scroll_content"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
-    <LinearLayout
+    <LinearLayout android:id="@+id/main_content"
             android:orientation="vertical"
             android:paddingLeft="12dp"
             android:paddingTop="6dp"
@@ -68,4 +70,4 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>
-</ScrollView>
+</com.nadmm.airports.views.ObservableScrollView>
