@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.nadmm.airports;
+package com.nadmm.airports.data;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,6 +35,8 @@ import android.os.Environment;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import com.nadmm.airports.FlightIntel;
+
 public class DatabaseManager {
 
     public static final String TAG = DatabaseManager.class.getSimpleName();
@@ -46,7 +48,7 @@ public class DatabaseManager {
 
     private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
             = new File( Environment.getExternalStorageDirectory(),
-                    "Android/data/"+DownloadActivity.class.getPackage().getName() );
+                    "Android/data/"+FlightIntel.class.getPackage().getName() );
     public static File DATABASE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/databases" );
 
     public static final String DB_FADDS = "FADDS";
@@ -714,9 +716,8 @@ public class DatabaseManager {
                     File dbName = new File( DATABASE_DIR,
                             c.getString( c.getColumnIndex( Catalog.DB_NAME ) ) );
                     Log.i( TAG, "Opening db type="+type+", path="+dbName.getPath() );
-                    SQLiteDatabase db = null;
                     try {
-                        db = SQLiteDatabase.openDatabase( dbName.getPath(), null,
+                        SQLiteDatabase db = SQLiteDatabase.openDatabase( dbName.getPath(), null,
                                 SQLiteDatabase.OPEN_READONLY );
                         mDatabases.put( type, db );
                     } catch ( SQLiteException e ) {
