@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,13 +29,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/tfr_agency"
-            style="@style/TextLabel"
+            style="@style/TextMedium.Bold"
             android:gravity="right"
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/tfr_name"
-            style="@style/TextTitle"
+            style="@style/TextMedium.Bold"
             android:layout_toLeftOf="@id/tfr_agency"
             android:gravity="left"
             android:layout_marginRight="8dp"
@@ -45,14 +45,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/tfr_active"
-            style="@style/TextSmaller.Light"
+            style="@style/TextSmall.Light"
             android:layout_below="@id/tfr_agency"
             android:gravity="right"
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/tfr_time"
-            style="@style/TextSmaller.Light"
+            style="@style/TextSmall.Light"
             android:layout_below="@id/tfr_name"
             android:gravity="left"
             android:layout_marginRight="8dp"
