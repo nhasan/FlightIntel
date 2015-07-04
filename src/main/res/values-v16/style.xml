@@ -20,12 +20,11 @@
  */
  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="TextClock.Light" parent="@style/TextClock">
+    <style name="TextClock.Light" parent="TextClock">
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textStyle">normal</item>
     </style>
-    <style name="TextLabel" parent="@style/TextSmall">
+    <style name="TextLabel" parent="TextMedium.Bold">
         <item name="android:fontFamily">sans-serif-light</item>
-        <item name="android:textSize">@dimen/label_text_size</item>
     </style>
 </resources>

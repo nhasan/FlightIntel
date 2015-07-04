@@ -76,12 +76,7 @@
         <item name="android:textColor">#ffffff</item>
     </style>
 
-    <style name="TextLabel" parent="TextMedium">
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="TextLabel.Bold">
-        <item name="android:textStyle">bold</item>
+    <style name="TextLabel" parent="TextMedium.Bold">
     </style>
 
     <style name="TextTitle" parent="TextAppearance.AppCompat.Title">
