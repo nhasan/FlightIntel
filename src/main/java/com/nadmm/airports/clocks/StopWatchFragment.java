@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,7 @@
 
 package com.nadmm.airports.clocks;
 
-import java.util.ArrayList;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -38,11 +35,13 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nadmm.airports.DrawerActivityBase;
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.clocks.StopWatchService.OnTickHandler;
 import com.nadmm.airports.clocks.StopWatchService.StopWatchBinder;
+
+import java.util.ArrayList;
 
 public class StopWatchFragment extends FragmentBase implements OnTickHandler {
 
@@ -71,7 +70,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
+        ActivityBase activity = getActivityBase();
         Intent service = new Intent( activity, StopWatchService.class );
         activity.startService( service );
         setRetainInstance( true );
@@ -89,7 +88,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     public void onResume() {
         super.onResume();
 
-        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
+        ActivityBase activity = getActivityBase();
         activity.setDrawerIndicatorEnabled( false );
 
         Intent service = new Intent( activity, StopWatchService.class );
@@ -101,8 +100,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
         super.onPause();
 
         getView().setKeepScreenOn( false );
-        Activity activity = getActivity();
-        activity.unbindService( mConnection );
+        getActivity().unbindService( mConnection );
         mHandler.removeCallbacks( mBlink );
     }
 

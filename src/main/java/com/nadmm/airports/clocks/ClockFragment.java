@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,6 @@
 
 package com.nadmm.airports.clocks;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -39,11 +33,16 @@ import android.widget.TextView;
 
 import com.nadmm.airports.DatabaseManager;
 import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class ClockFragment extends FragmentBase {
 
@@ -84,8 +83,7 @@ public class ClockFragment extends FragmentBase {
     public void onResume() {
         super.onResume();
 
-        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
-        activity.setDrawerIndicatorEnabled( false );
+        getActivityBase().setDrawerIndicatorEnabled( false );
 
         if ( mRunnable != null ) {
             // Restart updates

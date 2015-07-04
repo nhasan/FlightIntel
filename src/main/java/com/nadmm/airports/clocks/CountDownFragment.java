@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.nadmm.airports.DrawerActivityBase;
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.clocks.CountDownService.CountDownBinder;
@@ -96,7 +96,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
     public void onResume() {
         super.onResume();
 
-        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
+        ActivityBase activity = getActivityBase();
         activity.setDrawerIndicatorEnabled( false );
 
         Intent service = new Intent( activity, CountDownService.class );

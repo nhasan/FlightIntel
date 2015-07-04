@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,13 +19,12 @@
 
 package com.nadmm.airports.clocks;
 
-import java.util.HashMap;
-
 import android.database.Cursor;
 
-import com.nadmm.airports.DrawerActivityBase;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
+
+import java.util.HashMap;
 
 public class ClocksMenuFragment extends ListMenuFragment {
 
@@ -41,8 +40,7 @@ public class ClocksMenuFragment extends ListMenuFragment {
     public void onResume() {
         super.onResume();
 
-        DrawerActivityBase activity = (DrawerActivityBase) getActivity();
-        activity.setDrawerIndicatorEnabled( true );
+        getActivityBase().setDrawerIndicatorEnabled( true );
     }
 
     @Override
