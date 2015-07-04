@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.CursorAdapter;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
@@ -75,7 +76,22 @@ public class WxListFragmentBase extends ListFragmentBase {
 
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
-        // Empty stub to prevent parent version being called
+        super.onPrepareOptionsMenu( menu );
+
+        showRefreshMenu( menu, isRefreshable() );
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+            case R.id.menu_refresh:
+                setRefreshing( true );
+                requestDataRefresh();
+                return true;
+            default:
+                return super.onOptionsItemSelected( item );
+        }
     }
 
     @Override
