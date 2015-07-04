@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@
  -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:orientation="vertical"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <com.nadmm.airports.scratchpad.FreeHandDrawView
@@ -33,6 +33,7 @@
             android:orientation="horizontal"
             android:layout_gravity="top"
             android:padding="0dp"
+            android:layout_marginTop="?actionBarSize"
             android:background="@color/scratchpad_toolbar_color"
             android:layout_width="match_parent"
             android:layout_height="48dp">
@@ -48,7 +49,7 @@
                 android:layout_toRightOf="@id/action_draw"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                     tools:ignore="ContentDescription"/>
+                tools:ignore="ContentDescription"/>
         <ImageButton android:id="@+id/action_discard"
                 android:src="@drawable/ic_delete"
                 style="@style/Widget.AppCompat.ActionButton"

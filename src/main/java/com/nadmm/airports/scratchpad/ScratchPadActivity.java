@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +21,9 @@ package com.nadmm.airports.scratchpad;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.DrawerActivityBase;
-import com.nadmm.airports.views.DrawerListView;
+import com.nadmm.airports.FragmentActivityBase;
 
-public class ScratchPadActivity extends DrawerActivityBase {
+public class ScratchPadActivity extends FragmentActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -32,7 +31,6 @@ public class ScratchPadActivity extends DrawerActivityBase {
 
         Bundle args = getIntent().getExtras();
         addFragment( ScratchPadFragment.class, args );
-
     }
 
     @Override
