@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <TextView android:id="@+id/wx_station_id"
-            style="@style/TextSmall.Bold"
+            style="@style/TextMedium.Bold"
             android:gravity="right"
             android:layout_alignParentRight="true"
             android:layout_marginLeft="@dimen/item_spacing"
@@ -41,7 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_freq"
-            style="@style/TextSmaller.Light"
+            style="@style/TextSmall.Light"
             android:gravity="right"
             android:layout_below="@id/wx_station_id"
             android:layout_alignParentRight="true"
@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_info"
-            style="@style/TextSmaller.Light"
+            style="@style/TextSmall.Light"
             android:layout_below="@id/wx_station_name"
             android:layout_toLeftOf="@id/wx_station_freq"
             android:layout_alignParentLeft="true"
@@ -59,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_phone"
-            style="@style/TextSmaller.Light"
+            style="@style/TextSmall.Light"
             android:gravity="right"
             android:layout_below="@id/wx_station_freq"
             android:layout_alignParentRight="true"
@@ -78,7 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_distance"
-            style="@style/TextSmaller.Light"
+            style="@style/TextSmall.Light"
             android:gravity="right"
             android:visibility="gone"
             android:layout_below="@id/wx_station_phone"
@@ -87,7 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/wx_station_wx"
-            style="@style/TextSmaller.Light"
+            style="@style/TextSmall.Light"
             android:layout_below="@id/wx_station_info2"
             android:layout_toLeftOf="@id/wx_station_distance"
             android:layout_alignParentLeft="true"

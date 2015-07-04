@@ -46,15 +46,15 @@
                 android:layout_height="wrap_content" />
     </LinearLayout>
     <TextView android:id="@+id/location"
-            style="@style/TextSmaller.Light"
+            style="@style/TextSmall.Light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/other_info"
-            style="@style/TextSmaller.Light"
+            style="@style/TextSmall.Light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/distance"
-            style="@style/TextSmaller.Light"
+            style="@style/TextSmall.Light"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 </LinearLayout>

@@ -53,7 +53,7 @@
     <dimen name="tabbar_height">48dp</dimen>
 
     <dimen name="small_text_size">14sp</dimen>
-    <dimen name="smaller_text_size">14sp</dimen>
+    <dimen name="smaller_text_size">13sp</dimen>
     <dimen name="medium_text_size">16sp</dimen>
     <dimen name="label_text_size">@dimen/medium_text_size</dimen>
     <dimen name="clock_text_size">64sp</dimen>
