@@ -25,9 +25,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.CursorAdapter;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -46,19 +49,19 @@ public class TfrListFragment extends FragmentBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+
         setHasOptionsMenu( true );
 
         mReceiver = new TfrReceiver();
         mFilter = new IntentFilter();
         mFilter.addAction( TfrService.ACTION_GET_TFR_LIST );
-
-        super.onCreate( savedInstanceState );
     }
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.tfr_list_view, container, false );
+        View view = inflater.inflate( R.layout.list_view_layout, container, false );
         mListView = (ListView) view.findViewById( android.R.id.list );
         View footer = inflater.inflate( R.layout.tfr_list_footer_view, mListView, false );
         footer.setLayoutParams( new ListView.LayoutParams(
@@ -108,7 +111,48 @@ public class TfrListFragment extends FragmentBase {
 
     @Override
     public void onPrepareOptionsMenu( Menu menu ) {
-        setRefreshItemVisible( true );
+        super.onPrepareOptionsMenu( menu );
+
+        showRefreshMenu( menu, isRefreshable() );
+    }
+
+    @Override
+    public void requestDataRefresh() {
+        requestTfrList( true );
+    }
+
+    @Override
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        // Handle item selection
+        switch ( item.getItemId() ) {
+            case R.id.menu_refresh:
+                setRefreshing( true );
+                requestTfrList( true );
+                return true;
+            default:
+                return super.onOptionsItemSelected( item );
+        }
+    }
+
+    @Override
+    public void registerActionbarAutoHideView() {
+        getActivityBase().registerActionBarAutoHideListView( mListView );
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        return ViewCompat.canScrollVertically( mListView, -1 );
+    }
+
+    @Override
+    protected void applyContentTopClearance( int clearance ) {
+        mListView.setPadding( mListView.getPaddingLeft(), clearance,
+                mListView.getPaddingRight(), mListView.getPaddingBottom() );
+    }
+
+    @Override
+    public boolean isRefreshable() {
+        return true;
     }
 
     private void onListItemClick( ListView l, View v, int position ) {
@@ -141,21 +185,12 @@ public class TfrListFragment extends FragmentBase {
             } else {
                 tv.setText( "Unable to fetch TFR list. Please try again later" );
             }
-            stopRefreshAnimation();
-            setFragmentContentShown( true );
-        }
-    }
 
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_refresh:
-            requestTfrList( true );
-            startRefreshAnimation();
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
+            if ( isRefreshing() ) {
+                setRefreshing( false );
+            }
+
+            setFragmentContentShown( true );
         }
     }
 

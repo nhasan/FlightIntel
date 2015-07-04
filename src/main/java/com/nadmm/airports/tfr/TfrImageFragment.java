@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.R;
 import com.nadmm.airports.tfr.TfrList.Tfr;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.ImageZoomView;
@@ -81,6 +82,7 @@ public class TfrImageFragment extends FragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         mImageView = new ImageZoomView( getActivity(), null );
+        mImageView.setId( R.id.main_content );
         mImageView.setLayoutParams( new ViewGroup.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT ) );
 

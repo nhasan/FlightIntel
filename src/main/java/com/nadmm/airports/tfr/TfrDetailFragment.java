@@ -88,10 +88,10 @@ public class TfrDetailFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
         setActionBarTitle( mTfr.name );
         setActionBarSubtitle( "TFR Details" );
-
-        super.onActivityCreated( savedInstanceState );
     }
 
 }

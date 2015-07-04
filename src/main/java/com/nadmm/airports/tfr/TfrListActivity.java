@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,19 +21,36 @@ package com.nadmm.airports.tfr;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.DrawerActivityBase;
-import com.nadmm.airports.views.DrawerListView;
+import com.nadmm.airports.FragmentActivityBase;
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.R;
+import com.nadmm.airports.views.ObservableScrollView;
 
-public class TfrListActivity extends DrawerActivityBase {
+public class TfrListActivity extends FragmentActivityBase {
 
     public static final String EXTRA_TFR = "TFR";
 
     @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
+    protected void onPostCreate( Bundle savedInstanceState ) {
+        super.onPostCreate( savedInstanceState );
 
         Bundle args = getIntent().getExtras();
         addFragment( TfrListFragment.class, args );
+    }
+
+    @Override
+    public void onFragmentStarted( FragmentBase fragment ) {
+        super.onFragmentStarted( fragment );
+
+        ObservableScrollView scrollView = (ObservableScrollView) findViewById( R.id.scroll_content );
+        if ( scrollView != null ) {
+            registerActionBarAutoHideScrollView( scrollView );
+        }
+    }
+
+    @Override
+    protected int getSelfNavDrawerItem() {
+        return NAVDRAWER_ITEM_TFR;
     }
 
 }
