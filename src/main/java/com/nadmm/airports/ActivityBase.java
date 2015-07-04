@@ -1281,8 +1281,10 @@ public class ActivityBase extends AppCompatActivity implements
 
     protected void showFaddsEffectiveDate( Cursor c ) {
         TextView tv = (TextView) findViewById( R.id.effective_date );
-        tv.setText( "Effective date: "
-                +c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
+        if ( tv != null ) {
+            tv.setText( "Effective date: "
+                    + c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
+        }
     }
 
 }
