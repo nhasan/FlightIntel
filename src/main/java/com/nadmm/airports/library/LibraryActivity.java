@@ -28,17 +28,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.View;
 
 import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DrawerActivityBase;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.R;
 import com.nadmm.airports.TabPagerActivityBase;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SystemUtils;
-import com.nadmm.airports.views.DrawerListView;
-import com.nadmm.airports.views.ObservableScrollView;
 
 import java.util.HashMap;
 
