@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,9 @@ package com.nadmm.airports.aeronav;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.DrawerActivityBase;
-import com.nadmm.airports.views.DrawerListView;
+import com.nadmm.airports.FragmentActivityBase;
 
-public class ChartsDownloadActivity extends DrawerActivityBase {
+public class ChartsDownloadActivity extends FragmentActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {

@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,39 +16,52 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.nadmm.airports.views.ObservableScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/scroll_content"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <LinearLayout android:id="@+id/buttons_layout"
-            android:orientation="horizontal"
-            android:layout_gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-        <Button android:id="@+id/btnDownload"
-                style="@style/FlatButton"
-                android:text="@string/download_all"
-                android:visibility="gone"
-                android:gravity="center"
-                android:layout_margin="@dimen/label_padding"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-        <Button android:id="@+id/btnDelete"
-                style="@style/FlatButton"
-                android:text="@string/delete_all"
-                android:visibility="gone"
-                android:gravity="center"
-                android:layout_margin="@dimen/label_padding"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-    </LinearLayout>
-    <LinearLayout android:id="@+id/dtpp_detail_layout"
+    <LinearLayout android:id="@+id/main_content"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
+        <include layout="@layout/airport_title_layout" />
+        <LinearLayout android:id="@+id/buttons_layout"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:paddingTop="@dimen/padding_top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            <Button android:id="@+id/btnDownload"
+                    style="@style/FlatButton"
+                    android:text="@string/download_all"
+                    android:visibility="gone"
+                    android:gravity="center"
+                    android:layout_margin="@dimen/label_padding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            <Button android:id="@+id/btnDelete"
+                    style="@style/FlatButton"
+                    android:text="@string/delete_all"
+                    android:visibility="gone"
+                    android:gravity="center"
+                    android:layout_margin="@dimen/label_padding"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+        </LinearLayout>
+        <LinearLayout android:id="@+id/dtpp_detail_layout"
+                android:paddingLeft="@dimen/padding_left"
+                android:paddingRight="@dimen/padding_right"
+                android:paddingTop="@dimen/padding_top"
+                android:paddingBottom="@dimen/padding_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</com.nadmm.airports.views.ObservableScrollView>

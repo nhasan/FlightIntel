@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,6 @@
 
 package com.nadmm.airports.aeronav;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -38,6 +30,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -58,6 +51,13 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
 
 public class ChartsDownloadFragment extends FragmentBase {
 
@@ -127,6 +127,20 @@ public class ChartsDownloadFragment extends FragmentBase {
     }
 
     @Override
+    public View onCreateView( LayoutInflater inflater, ViewGroup container,
+                              Bundle savedInstanceState ) {
+        View v = inflate( R.layout.charts_download_view );
+        return createContentView( v );
+    }
+
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        setBackgroundTask( new ChartsDownloadTask() ).execute();
+    }
+
+    @Override
     public void onResume() {
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
         bm.registerReceiver( mReceiver, mFilter );
@@ -141,20 +155,6 @@ public class ChartsDownloadFragment extends FragmentBase {
         finishOperation();
 
         super.onPause();
-    }
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View v = inflate( R.layout.charts_download_view );
-        return createContentView( v );
-    }
-
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        setBackgroundTask( new ChartsDownloadTask() ).execute();
-
-        super.onActivityCreated( savedInstanceState );
     }
 
     private void confirmStartDownload( final View v ) {
@@ -174,7 +174,6 @@ public class ChartsDownloadFragment extends FragmentBase {
             }
         } );
         builder.setNegativeButton( "No", null );
-        builder.setIcon( android.R.drawable.ic_dialog_alert );
         builder.show();
     }
 
@@ -202,7 +201,6 @@ public class ChartsDownloadFragment extends FragmentBase {
                     }
                 } );
         builder.setNegativeButton( android.R.string.no, null );
-        builder.setIcon( android.R.drawable.ic_dialog_alert );
         builder.show();
     }
 
@@ -225,7 +223,6 @@ public class ChartsDownloadFragment extends FragmentBase {
             }
         } );
         builder.setNegativeButton( "No", null );
-        builder.setIcon( android.R.drawable.ic_dialog_alert );
         builder.show();
     }
 
@@ -524,7 +521,8 @@ public class ChartsDownloadFragment extends FragmentBase {
         View row = mVolumeRowMap.get( tppVolume );
         if ( row != null ) {
             row.setOnClickListener( mOnClickListener );
-            row.setBackgroundResource( R.drawable.row_selector_middle );
+            int background = UiUtils.getSelectableItemBackgroundResource( getActivity() );
+            row.setBackgroundResource( background );
             row.setTag( R.id.DTPP_CHART_AVAIL, avail );
             int total = (Integer) row.getTag( R.id.DTPP_CHART_TOTAL );
             showStatus( row, avail, total );
