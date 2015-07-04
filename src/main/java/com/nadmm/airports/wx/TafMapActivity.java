@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -22,16 +22,25 @@ package com.nadmm.airports.wx;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.nadmm.airports.FragmentActivityBase;
+import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.R;
 
-public class TafMapActivity extends FragmentActivityBase {
+public class TafMapActivity extends ActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setContentView( R.layout.fragment_activity_layout_no_toolbar );
+
         Bundle args = getIntent().getExtras();
         addFragment( TafMapFragment.class, args );
+    }
+
+    @Override
+    public void onFragmentStarted( FragmentBase fragment ) {
+        // Do not call the parent implementation
     }
 
     public static class TafMapFragment extends WxMapFragmentBase {

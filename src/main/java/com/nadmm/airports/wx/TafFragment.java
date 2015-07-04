@@ -73,6 +73,9 @@ public class TafFragment extends WxFragmentBase {
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.taf_detail_view, container, false );
         Button btnGraphic = (Button) view.findViewById( R.id.btnViewGraphic );
+        // Latest TAF images are not available using simple naming convention.
+        // Will need more work to support the timestamped file names.
+        btnGraphic.setVisibility( View.GONE );
         btnGraphic.setOnClickListener( new OnClickListener() {
 
             @Override

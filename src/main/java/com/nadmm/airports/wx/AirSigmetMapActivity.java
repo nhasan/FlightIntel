@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -22,20 +22,18 @@ package com.nadmm.airports.wx;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.nadmm.airports.FragmentActivityBase;
+import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.R;
 
-
-public class AirSigmetMapActivity extends FragmentActivityBase {
+public class AirSigmetMapActivity extends ActivityBase {
 
     private static final String[] sAirSigmetCodes = new String[] {
         "ALL",
         "ASH",
         "CB",
-        "FZLVL",
         "IC",
         "IF",
-        "LLWS",
-        "SFC_WND",
         "TB"
     };
 
@@ -43,11 +41,8 @@ public class AirSigmetMapActivity extends FragmentActivityBase {
         "All G-AIRMETs and SIGMETs",
         "Volcanic Ash SIGMETs",
         "Convective SIGMETs and Outlooks",
-        "Freezing Level G-AIRMETs",
         "Icing G-AIRMETs and SIGMETs",
         "IFR/Mtn. Obsc. G-AIRMETs and Sand/Dust Storm SIGMETs",
-        "Low Level Wind Shear G-AIRMETs",
-        "Surface Wind G-AIRMETs",
         "Turbulence G-AIRMETs and SIGMETs"
     };
 
@@ -55,8 +50,15 @@ public class AirSigmetMapActivity extends FragmentActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        setContentView( R.layout.fragment_activity_layout_no_toolbar );
+
         Bundle args = getIntent().getExtras();
         addFragment( AirSigmetMapFragment.class, args );
+    }
+
+    @Override
+    public void onFragmentStarted( FragmentBase fragment ) {
+        // Do not call the parent implementation
     }
 
     public static class AirSigmetMapFragment extends WxMapFragmentBase {
@@ -72,5 +74,5 @@ public class AirSigmetMapActivity extends FragmentActivityBase {
         }
 
     }
-    
+
 }

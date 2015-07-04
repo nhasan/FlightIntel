@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -32,10 +32,9 @@ public class TafService extends NoaaService {
     private final String TAF_IMAGE_NAME = "taf_%s.gif";
     private final String TAF_TEXT_QUERY = "dataSource=tafs&requestType=retrieve"
             +"&format=xml&compression=gzip&hoursBeforeNow=%d&mostRecent=true&stationString=%s";
-    private final String TAF_IMAGE_PATH = "/tools/weatherproducts/tafs/default/"
-            + "loadImage/region/%s/product/prevail/zoom/true";
+    private final String TAF_IMAGE_PATH = "/adds/data/tafs";
 
-    private static final long TAF_CACHE_MAX_AGE = 2*DateUtils.HOUR_IN_MILLIS;
+    private static final long TAF_CACHE_MAX_AGE = DateUtils.HOUR_IN_MILLIS;
 
     protected TafParser mParser;
 
@@ -92,7 +91,7 @@ public class TafService extends NoaaService {
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = String.format( TAF_IMAGE_PATH, code );
+                        String path = TAF_IMAGE_PATH+imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch TAF image: "+e.getMessage() );

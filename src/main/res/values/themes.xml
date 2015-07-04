@@ -38,23 +38,7 @@
         <item name="searchViewStyle">@style/Widget.FlightIntel.SearchView</item>
     </style>
 
-    <style name="Theme.Light.Dialog" parent="Theme.AppCompat.Light">
-        <item name="android:windowFrame">@null</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
-        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
-
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowActionModeOverlay">true</item>
-        <item name="android:windowCloseOnTouchOutside">true</item>
-        <item name="android:windowNoTitle">false</item>
-        <item name="android:backgroundDimAmount">0.6</item>
-
-        <item name="android:colorBackgroundCacheHint">@null</item>
-
-        <item name="windowActionBar">false</item>
-        <item name="android:windowTitleStyle">@style/TextMedium.Bold</item>
+    <style name="Theme.Light.Dialog" parent="Theme.AppCompat.Light.Dialog">
     </style>
 
     <style name="Widget.FlightIntel.PopupMenu" parent="Widget.AppCompat.Light.PopupMenu">

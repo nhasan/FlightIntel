@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -35,12 +35,11 @@ import com.nadmm.airports.utils.UiUtils;
 
 public class MetarService extends NoaaService {
 
-    private final String METAR_IMAGE_NAME = "metar_%s.gif";
+    private final String METAR_IMAGE_NAME = "sfc_%s.gif";
     private final String METAR_TEXT_QUERY = "datasource=metars&requesttype=retrieve"
     		+ "&hoursBeforeNow=%d&mostRecentForEachStation=constraint"
             + "&format=xml&compression=gzip&stationString=%s";
-    private final String METAR_IMAGE_PATH = "/tools/weatherproducts/metars/default/"
-    		+ "loadImage/region/%s/product/METARs/zoom/true";
+    private final String METAR_IMAGE_PATH = "/adds/data/metars/";
 
     private static final long METAR_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
@@ -69,7 +68,7 @@ public class MetarService extends NoaaService {
                 }
 
                 if ( forceRefresh || !cacheOnly ) {
-                    ArrayList<String> missing = new ArrayList<String>();
+                    ArrayList<String> missing = new ArrayList<>();
                     for ( String stationId : stationIds ) {
                         if ( forceRefresh|| !getObjFile( stationId ).exists() ) {
                             missing.add( stationId );
@@ -116,12 +115,12 @@ public class MetarService extends NoaaService {
                     }
                 }
             } else if ( type.equals( TYPE_IMAGE ) ) {
-                String code = intent.getStringExtra( IMAGE_CODE );
+                String code = intent.getStringExtra( IMAGE_CODE ).toLowerCase();
                 String imageName = String.format( METAR_IMAGE_NAME, code );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = String.format( METAR_IMAGE_PATH, code );
+                        String path = METAR_IMAGE_PATH+imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch METAR image: "+e.getMessage() );

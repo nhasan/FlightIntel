@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -29,13 +29,13 @@ import com.nadmm.airports.utils.UiUtils;
 
 public class AirSigmetService extends NoaaService {
 
-    private final String AIRSIGMET_IMAGE_ZOOM_NAME = "zoom_airmets_%s.gif";
+    private final String AIRSIGMET_IMAGE_ZOOM_NAME = "airmets_%s.gif";
     private final String AIRSIGMET_TEXT_QUERY =
             "datasource=airsigmets&requesttype=retrieve&format=xml&compression=gzip"
             + "&hoursBeforeNow=%d&minLat=%.2f&maxLat=%.2f&minLon=%.2f&maxLon=%.2f";
-    private final String AIRSIGMET_IMAGE_ZOOM_PATH = "/data/airmets/zoom/";
+    private final String AIRSIGMET_IMAGE_PATH = "/adds/data/airmets/";
 
-    private static final long AIRSIGMET_CACHE_MAX_AGE = 60*DateUtils.MINUTE_IN_MILLIS;
+    private static final long AIRSIGMET_CACHE_MAX_AGE = DateUtils.HOUR_IN_MILLIS;
 
     private final AirSigmetParser mParser;
 
@@ -58,7 +58,7 @@ public class AirSigmetService extends NoaaService {
 
                 File xmlFile = getDataFile( "AIRSIGMET_"+stationId+".xml" );
                 File objFile = getDataFile( "AIRSIGMET_"+stationId+".obj" );
-                AirSigmet airSigmet = null;
+                AirSigmet airSigmet;
 
                 if ( forceRefresh || ( !cacheOnly && !xmlFile.exists() ) ) {
                     try {
@@ -88,7 +88,7 @@ public class AirSigmetService extends NoaaService {
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = AIRSIGMET_IMAGE_ZOOM_PATH;
+                        String path = AIRSIGMET_IMAGE_PATH;
                         path += imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {

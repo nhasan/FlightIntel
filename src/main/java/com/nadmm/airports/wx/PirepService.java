@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,11 +31,11 @@ import com.nadmm.airports.utils.UiUtils;
 
 public class PirepService extends NoaaService {
 
-    private final String PIREP_IMAGE_ZOOM_NAME = "pireps_%s_%s_zoom.gif";
+    private final String PIREP_IMAGE_ZOOM_NAME = "pireps_%s_%s.gif";
     private final String PIREP_TEXT_QUERY =
             "dataSource=aircraftreports&requestType=retrieve&format=xml&compression=gzip"
             + "&hoursBeforeNow=%d&radialDistance=%.0f;%.2f,%.2f";
-    private final String PIREP_IMAGE_ZOOM_PATH = "/data/pireps/zoom/";
+    private final String PIREP_IMAGE_ZOOM_PATH = "/adds/data/pireps/";
 
     private static final long PIREP_CACHE_MAX_AGE = DateUtils.HOUR_IN_MILLIS;
 
@@ -62,7 +62,7 @@ public class PirepService extends NoaaService {
 
                 File xmlFile = getDataFile( "PIREP_"+stationId+".xml" );
                 File objFile = getDataFile( "PIREP_"+stationId+".obj" );
-                Pirep pirep = null;
+                Pirep pirep;
 
                 if ( forceRefresh || ( !cacheOnly && !xmlFile.exists() ) ) {
                     try {
