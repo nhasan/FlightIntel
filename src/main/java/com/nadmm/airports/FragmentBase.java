@@ -565,15 +565,6 @@ public class FragmentBase extends Fragment implements IRefreshable {
         return mActivity.inflate( id, root );
     }
 
-    protected void startRefreshAnimation() {
-    }
-
-    protected void stopRefreshAnimation() {
-    }
-
-    protected void setRefreshItemVisible( Boolean visible ) {
-    }
-
     public void registerActionbarAutoHideView() {
         View view = getView();
         if ( view != null ) {
