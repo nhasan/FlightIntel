@@ -25,8 +25,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Wxs;
 
 import java.util.ArrayList;
 

@@ -29,7 +29,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.nadmm.airports.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.TabPagerActivityBase;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SystemUtils;

@@ -31,8 +31,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;

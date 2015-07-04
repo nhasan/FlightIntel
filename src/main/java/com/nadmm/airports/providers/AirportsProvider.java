@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.afd.AirportsCursorHelper;
 
 public class AirportsProvider extends ContentProvider {

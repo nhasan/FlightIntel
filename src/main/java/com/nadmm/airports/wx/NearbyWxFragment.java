@@ -26,11 +26,9 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.view.View;
 
-import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.LocationColumns;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.LocationColumns;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.utils.NearbyHelper;
 

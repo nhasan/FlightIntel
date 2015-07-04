@@ -42,9 +42,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Awos1;
-import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Airports;
+import com.nadmm.airports.data.DatabaseManager.Awos1;
+import com.nadmm.airports.data.DatabaseManager.Wxs;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;

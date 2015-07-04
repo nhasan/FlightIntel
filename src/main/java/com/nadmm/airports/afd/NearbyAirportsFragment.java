@@ -32,8 +32,8 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
 
-import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.LocationColumns;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.LocationColumns;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.utils.NearbyHelper;

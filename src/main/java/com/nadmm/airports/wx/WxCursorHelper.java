@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -24,9 +24,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.provider.BaseColumns;
 
-import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Awos1;
-import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.data.DatabaseManager.Airports;
+import com.nadmm.airports.data.DatabaseManager.Awos1;
+import com.nadmm.airports.data.DatabaseManager.Wxs;
 
 public class WxCursorHelper {
 

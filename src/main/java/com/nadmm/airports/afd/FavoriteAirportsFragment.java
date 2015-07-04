@@ -31,8 +31,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.utils.CursorAsyncTask;
 

@@ -34,11 +34,11 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Awos1;
-import com.nadmm.airports.DatabaseManager.Awos2;
-import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Airports;
+import com.nadmm.airports.data.DatabaseManager.Awos1;
+import com.nadmm.airports.data.DatabaseManager.Awos2;
+import com.nadmm.airports.data.DatabaseManager.Wxs;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;

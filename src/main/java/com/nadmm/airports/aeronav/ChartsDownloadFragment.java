@@ -42,9 +42,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.Application;
-import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.Dtpp;
-import com.nadmm.airports.DatabaseManager.DtppCycle;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Dtpp;
+import com.nadmm.airports.data.DatabaseManager.DtppCycle;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;

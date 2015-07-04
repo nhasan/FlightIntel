@@ -33,8 +33,8 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DownloadActivity;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DownloadActivity;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.afd;
@@ -27,9 +27,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.provider.BaseColumns;
 
-import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.LocationColumns;
-import com.nadmm.airports.DatabaseManager.States;
+import com.nadmm.airports.data.DatabaseManager.Airports;
+import com.nadmm.airports.data.DatabaseManager.LocationColumns;
+import com.nadmm.airports.data.DatabaseManager.States;
 import com.nadmm.airports.utils.GeoUtils;
 
 public class NearbyAirportsCursor extends MatrixCursor {
@@ -73,7 +73,7 @@ public class NearbyAirportsCursor extends MatrixCursor {
             +") AND ("+Airports.REF_LONGITUDE_DEGREES+">=? "
             +(isCrossingMeridian180? "OR " : "AND ")+Airports.REF_LONGITUDE_DEGREES+"<=?)";
         String[] selectionArgs = {
-                String.valueOf( Math.toDegrees( radLatMin ) ), 
+                String.valueOf( Math.toDegrees( radLatMin ) ),
                 String.valueOf( Math.toDegrees( radLatMax ) ),
                 String.valueOf( Math.toDegrees( radLonMin ) ),
                 String.valueOf( Math.toDegrees( radLonMax ) )
@@ -159,7 +159,7 @@ public class NearbyAirportsCursor extends MatrixCursor {
 
             // Now calculate the distance to this airport
             float[] results = new float[ 2 ];
-            Location.distanceBetween( location.getLatitude(), location.getLongitude(), 
+            Location.distanceBetween( location.getLatitude(), location.getLongitude(),
                     LATITUDE, LONGITUDE, results );
             DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
             BEARING = ( results[ 1 ]+declination+360 )%360;

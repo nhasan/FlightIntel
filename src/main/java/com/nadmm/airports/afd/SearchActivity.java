@@ -29,7 +29,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.DatabaseManager.Airports;
+import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.providers.AirportsProvider;

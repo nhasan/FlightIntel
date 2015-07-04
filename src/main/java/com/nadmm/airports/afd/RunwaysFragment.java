@@ -34,12 +34,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nadmm.airports.DatabaseManager;
-import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Ars;
-import com.nadmm.airports.DatabaseManager.Ils1;
-import com.nadmm.airports.DatabaseManager.Remarks;
-import com.nadmm.airports.DatabaseManager.Runways;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Airports;
+import com.nadmm.airports.data.DatabaseManager.Ars;
+import com.nadmm.airports.data.DatabaseManager.Ils1;
+import com.nadmm.airports.data.DatabaseManager.Remarks;
+import com.nadmm.airports.data.DatabaseManager.Runways;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;

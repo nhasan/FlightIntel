@@ -27,10 +27,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.provider.BaseColumns;
 
-import com.nadmm.airports.DatabaseManager.Airports;
-import com.nadmm.airports.DatabaseManager.Awos1;
-import com.nadmm.airports.DatabaseManager.LocationColumns;
-import com.nadmm.airports.DatabaseManager.Wxs;
+import com.nadmm.airports.data.DatabaseManager.Airports;
+import com.nadmm.airports.data.DatabaseManager.Awos1;
+import com.nadmm.airports.data.DatabaseManager.LocationColumns;
+import com.nadmm.airports.data.DatabaseManager.Wxs;
 import com.nadmm.airports.utils.GeoUtils;
 
 public class NearbyWxCursor extends MatrixCursor {
