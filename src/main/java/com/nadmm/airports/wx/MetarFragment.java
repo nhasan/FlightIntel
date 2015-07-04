@@ -248,7 +248,6 @@ public class MetarFragment extends WxFragmentBase {
             addBulletedRow( layout, "Station is currently out of service" );
             addBulletedRow( layout, "Station has not updated the METAR for more than 3 hours" );
             detail.setVisibility( View.GONE );
-            stopRefreshAnimation();
             setFragmentContentShown( true );
             return;
         } else {

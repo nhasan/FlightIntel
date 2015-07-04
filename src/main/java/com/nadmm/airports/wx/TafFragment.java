@@ -244,7 +244,7 @@ public class TafFragment extends WxFragmentBase {
                         +" within %dNM radius", stationId, TAF_RADIUS ) );
                 View title = findViewById( R.id.wx_title_layout );
                 title.setVisibility( View.GONE );
-                stopRefreshAnimation();
+                setRefreshing( false );
                 setContentShown( true );
             } else {
                 // Show the weather station info
@@ -292,7 +292,6 @@ public class TafFragment extends WxFragmentBase {
             addBulletedRow( layout, "Station is currently out of service" );
             addBulletedRow( layout, "Station has not updated the TAF for more than 12 hours" );
             detail.setVisibility( View.GONE );
-            stopRefreshAnimation();
             setFragmentContentShown( true );
             return;
         } else {
@@ -449,7 +448,6 @@ public class TafFragment extends WxFragmentBase {
         tv.setText( "Fetched on "+TimeUtils.formatDateTime( getActivity(), taf.fetchTime )  );
         tv.setVisibility( View.VISIBLE );
 
-        stopRefreshAnimation();
         setFragmentContentShown( true );
     }
 

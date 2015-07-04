@@ -164,6 +164,7 @@ public class PirepFragment extends WxFragmentBase {
                 String stationId = args.getString( NoaaService.STATION_ID );
                 String error = String.format( "Unable to get station info for %s", stationId );
                 showError( error );
+                setRefreshing( false );
             } else {
                 mLocation = new Location( "" );
                 float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
@@ -215,7 +216,6 @@ public class PirepFragment extends WxFragmentBase {
         tv.setText( "Fetched on "+TimeUtils.formatDateTime( getActivity(), pirep.fetchTime )  );
         tv.setVisibility( View.VISIBLE );
 
-        stopRefreshAnimation();
         setFragmentContentShown( true );
     }
 
@@ -355,7 +355,6 @@ public class PirepFragment extends WxFragmentBase {
         tv.setText( error );
         View title = findViewById( R.id.wx_title_layout );
         title.setVisibility( View.GONE );
-        stopRefreshAnimation();
         setContentShown( true );
     }
 
