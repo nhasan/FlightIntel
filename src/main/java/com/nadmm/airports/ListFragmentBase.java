@@ -108,10 +108,6 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
     protected void applyContentTopClearance( int clearance ) {
         mListView.setPadding( mListView.getPaddingLeft(), clearance,
                 mListView.getPaddingRight(), mListView.getPaddingBottom() );
-        CursorAdapter adapter = (CursorAdapter) mListView.getAdapter();
-        if ( adapter != null ) {
-            adapter.notifyDataSetChanged();
-        }
     }
 
     protected void setCursor( Cursor c ) {
