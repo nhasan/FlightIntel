@@ -148,7 +148,7 @@ public class FragmentBase extends Fragment implements IRefreshable {
 
     protected void showRefreshMenu( Menu menu, boolean show ) {
         MenuItem refresh = menu.findItem( R.id.menu_refresh );
-        refresh.setVisible( true );
+        refresh.setVisible( show );
     }
 
     public void setContentTopClearance( int clearance ) {
