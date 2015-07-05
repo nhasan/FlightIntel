@@ -24,7 +24,4 @@
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textStyle">normal</item>
     </style>
-    <style name="TextLabel" parent="TextMedium.Bold">
-        <item name="android:fontFamily">sans-serif-light</item>
-    </style>
 </resources>
