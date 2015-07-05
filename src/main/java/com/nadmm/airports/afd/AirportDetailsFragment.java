@@ -158,7 +158,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        setActionBarTitle( "Airport details", "" );
+        setActionBarTitle( "Airport Data", "" );
 
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
