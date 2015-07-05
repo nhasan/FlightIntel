@@ -57,15 +57,20 @@ public class ClockFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.clocks_clock_view );
+        View view = inflate( R.layout.clocks_clock_view );
+        return createContentView( view );
     }
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
+
         SharedPreferences prefs =
                 PreferenceManager.getDefaultSharedPreferences( getActivity() );
         mHome = prefs.getString( PreferencesActivity.KEY_HOME_AIRPORT, "" );
+
+        setFragmentContentShown( true );
+
         setBackgroundTask( new ClockTask() ).execute();
     }
 

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,8 @@ public class AltitudesFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_altimetry_altitudes_view );
+        View view = inflater.inflate( R.layout.e6b_altimetry_altitudes_view, container, false );
+        return createContentView( view );
     }
 
     @Override
@@ -83,6 +84,8 @@ public class AltitudesFragment extends FragmentBase {
         mElevationEdit.addTextChangedListener( mTextWatcher );
         mAltimeterEdit.addTextChangedListener( mTextWatcher );
         mTemperatureEdit.addTextChangedListener( mTextWatcher );
+
+        setFragmentContentShown( true );
     }
 
     private void processInput() {

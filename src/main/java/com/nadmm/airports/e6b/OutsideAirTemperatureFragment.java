@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,8 @@ public class OutsideAirTemperatureFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_altimetry_oat_view );
+        View view = inflater.inflate( R.layout.e6b_altimetry_oat_view, container, false );
+        return createContentView( view );
     }
 
     @Override
@@ -84,13 +85,14 @@ public class OutsideAirTemperatureFragment extends FragmentBase {
         mIatEdit.addTextChangedListener( mTextWatcher );
         mRecoveryFactorEdit.addTextChangedListener( mTextWatcher );
         mTasEdit.addTextChangedListener( mTextWatcher );
+
+        setFragmentContentShown( true );
     }
 
     private void processInput() {
         double iat = Double.MAX_VALUE;
         double k = Double.MAX_VALUE;
         double tas = Double.MAX_VALUE;
-        double oat = Double.MAX_VALUE;
 
         try {
             iat = Double.parseDouble( mIatEdit.getText().toString() );
@@ -100,7 +102,7 @@ public class OutsideAirTemperatureFragment extends FragmentBase {
         }
 
         if ( iat != Double.MAX_VALUE && k != Double.MAX_VALUE && tas != Double.MAX_VALUE ) {
-            oat = iat - k*Math.pow( tas, 2 )/7592;
+            double oat = iat - k*Math.pow( tas, 2 )/7592;
             mOatEdit.setText( String.valueOf( Math.round( oat ) ) );
         } else {
             mOatEdit.setText( "" );

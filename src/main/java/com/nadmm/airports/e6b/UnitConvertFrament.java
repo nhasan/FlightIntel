@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,8 +87,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         new Gram()
     };
 
-    private static final HashMap<String, Unit[]> mUnitTypeMap
-        = new HashMap<String, Unit[]>();
+    private static final HashMap<String, Unit[]> mUnitTypeMap = new HashMap<>();
     static {
         mUnitTypeMap.put( "Temperature", mTemperatureUnits );
         mUnitTypeMap.put( "Length", mLengthUnits );
@@ -98,8 +97,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         mUnitTypeMap.put( "Pressure", mPressureUnits );
     }
 
-    private final HashMap<String, ArrayAdapter<Unit>> mUnitAdapters
-            = new HashMap<String, ArrayAdapter<Unit>>();
+    private final HashMap<String, ArrayAdapter<Unit>> mUnitAdapters = new HashMap<>();
 
     private DecimalFormat mFormat;
 
@@ -112,7 +110,8 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.unit_convert_view );
+        View view = inflater.inflate( R.layout.unit_convert_view, container, false );
+        return createContentView( view );
     }
 
     @Override
@@ -168,6 +167,8 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
                 mToUnitValue.setText( "" );
             }
         } );
+
+        setFragmentContentShown( true );
     }
 
     @Override
@@ -207,14 +208,14 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
     }
 
     protected ArrayAdapter<Unit> getArrayAdapter( Unit[] units ) {
-        ArrayAdapter<Unit> adapter = new ArrayAdapter<Unit>( getActivity(),
+        ArrayAdapter<Unit> adapter = new ArrayAdapter<>( getActivity(),
                 android.R.layout.simple_spinner_item, units );
         adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
         return adapter;
     }
 
     protected ArrayAdapter<String> getArrayAdapter( Set<String> list ) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>( getActivity(),
+        ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
                 android.R.layout.simple_spinner_item, list.toArray( new String[ list.size() ] ) );
         adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
         return adapter;

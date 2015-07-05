@@ -78,10 +78,18 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
         Activity activity = getActivity();
         Intent service = new Intent( activity, CountDownService.class );
         activity.startService( service );
         setRetainInstance( true );
+    }
+
+    @Override
+    public View onCreateView( LayoutInflater inflater, ViewGroup container,
+                              Bundle savedInstanceState ) {
+        View view = inflater.inflate( R.layout.clocks_countdown_view, container, false );
+        return createContentView( view );
     }
 
     @Override
@@ -111,12 +119,6 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
         Activity activity = getActivity();
         activity.unbindService( mConnection );
         stopBlink();
-    }
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        return inflate( R.layout.clocks_countdown_view );
     }
 
     @Override
@@ -209,6 +211,8 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
                 restartPressed();
             }
         } );
+
+        setFragmentContentShown( true );
     }
 
     @Override

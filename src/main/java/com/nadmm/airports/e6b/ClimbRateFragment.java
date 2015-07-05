@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,8 @@ public class ClimbRateFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_climb_rate_view );
+        View view = inflater.inflate( R.layout.e6b_climb_rate_view, container, false );
+        return createContentView( view );
     }
 
     @Override
@@ -82,13 +83,13 @@ public class ClimbRateFragment extends FragmentBase {
 
         mClimbGradEdit.addTextChangedListener( mTextWatcher );
         mGsEdit.addTextChangedListener( mTextWatcher );
+
+        setFragmentContentShown( true );
     }
 
     private void processInput() {
         double climbGrad = Double.MAX_VALUE;
         double gs = Double.MAX_VALUE;
-        double climbRate = Double.MAX_VALUE;
-        double climbGradPct = Double.MAX_VALUE;
 
         try {
             climbGrad = Double.parseDouble( mClimbGradEdit.getText().toString() );
@@ -97,8 +98,8 @@ public class ClimbRateFragment extends FragmentBase {
         }
 
         if ( climbGrad != Double.MAX_VALUE && gs != Double.MAX_VALUE ) {
-            climbRate = climbGrad*gs/60;
-            climbGradPct = ( climbGrad/6076.115 )*100;
+            double climbRate = climbGrad*gs/60;
+            double climbGradPct = ( climbGrad/6076.115 )*100;
             mClimbRateEdit.setText( String.format( Locale.US, "%d", Math.round( climbRate ) ) );
             mClimbGradPctEdit.setText( String.format( Locale.US, "%.1f", climbGradPct ) );
         } else {

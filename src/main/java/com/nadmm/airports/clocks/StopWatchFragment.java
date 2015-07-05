@@ -77,6 +77,13 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     }
 
     @Override
+    public View onCreateView( LayoutInflater inflater, ViewGroup container,
+                              Bundle savedInstanceState ) {
+        View view = inflater.inflate( R.layout.clocks_stopwatch_view, container, false );
+        return createContentView( view );
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         if ( mService != null ) {
@@ -102,12 +109,6 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
         getView().setKeepScreenOn( false );
         getActivity().unbindService( mConnection );
         mHandler.removeCallbacks( mBlink );
-    }
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        return inflate( R.layout.clocks_stopwatch_view );
     }
 
     @Override
@@ -143,6 +144,8 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
             }
         } );
         mLegsLayout = (LinearLayout) findViewById( R.id.legs_view );
+
+        setFragmentContentShown( true );
     }
 
     protected void actionPressed() {

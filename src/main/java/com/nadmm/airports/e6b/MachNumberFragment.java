@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,8 @@ public class MachNumberFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_altimetry_mach_view );
+        View view = inflater.inflate( R.layout.e6b_altimetry_mach_view, container, false );
+        return createContentView( view );
     }
 
     @Override
@@ -79,12 +80,13 @@ public class MachNumberFragment extends FragmentBase {
 
         mTasEdit.addTextChangedListener( mTextWatcher );
         mOatEdit.addTextChangedListener( mTextWatcher );
+
+        setFragmentContentShown( true );
     }
 
     private void processInput() {
         double tas = Double.MAX_VALUE;
         double oat = Double.MAX_VALUE;
-        double mach = Double.MAX_VALUE;
 
         try {
             tas = Double.parseDouble( mTasEdit.getText().toString() );
@@ -93,7 +95,7 @@ public class MachNumberFragment extends FragmentBase {
         }
 
         if ( tas != Double.MAX_VALUE && oat != Double.MAX_VALUE ) {
-            mach = tas/( 38.967854*Math.sqrt( oat+273.15 ) );
+            double mach = tas/( 38.967854*Math.sqrt( oat+273.15 ) );
             mMachEdit.setText( String.format( Locale.US, "%.2f", mach ) );
         } else {
             mMachEdit.setText( "" );

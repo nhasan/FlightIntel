@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,8 @@ public class IsaFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_altimetry_isa_view );
+        View view = inflater.inflate( R.layout.e6b_altimetry_isa_view, container, false );
+        return createContentView( view );
     }
 
     @Override
@@ -82,6 +83,8 @@ public class IsaFragment extends FragmentBase {
         mPressureMbEdit = (EditText) findViewById( R.id.e6b_edit_pressure_mb );
 
         mAltitudeEdit.addTextChangedListener( mTextWatcher );
+
+        setFragmentContentShown( true );
     }
 
     private void processInput() {
@@ -105,7 +108,7 @@ public class IsaFragment extends FragmentBase {
             mTemperatureCEdit.setText( String.format( "%.1f", isaTempC ) );
             mTemperatureFEdit.setText( String.format( "%.1f", isaTempF ) );
 
-            double isaPressureInHg = 0;
+            double isaPressureInHg;
             if ( altitude < 36089.24 ) {
                 isaPressureInHg = 29.92126*Math.pow( 1-6.8755856e-6*altitude, 5.2558797 );
             } else {

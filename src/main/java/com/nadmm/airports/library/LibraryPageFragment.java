@@ -29,16 +29,26 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.text.format.Formatter;
-import android.view.*;
+import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.*;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.nadmm.airports.Application;
-import com.nadmm.airports.data.DatabaseManager;
-import com.nadmm.airports.data.DatabaseManager.Library;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Library;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
@@ -131,16 +141,19 @@ public class LibraryPageFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.library_detail_view, container );
+
+        View view = inflate( R.layout.library_detail_view, container );
+        return createContentView( view );
     }
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
         mActivity = (LibraryActivity) getActivity();
+
         LibraryTask task = new LibraryTask();
         task.execute( mCategory );
-
-        super.onActivityCreated( savedInstanceState );
     }
 
     private class LibraryTask extends CursorAsyncTask {
@@ -236,6 +249,8 @@ public class LibraryPageFragment extends FragmentBase {
                 } while ( c.moveToNext() );
             }
         }
+
+        setFragmentContentShown( true );
 
         checkBooks();
     }

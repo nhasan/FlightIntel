@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,8 @@ public class TopOfDescentFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_top_of_descent_view );
+        View view = inflater.inflate( R.layout.e6b_top_of_descent_view, container, false );
+        return createContentView( view );
     }
 
     @Override
@@ -87,6 +88,8 @@ public class TopOfDescentFragment extends FragmentBase {
         mDesiredAltEdit.addTextChangedListener( mTextWatcher );
         mGsEdit.addTextChangedListener( mTextWatcher );
         mDscntRateEdit.addTextChangedListener( mTextWatcher );
+
+        setFragmentContentShown( true );
     }
 
     private void processInput() {
@@ -94,7 +97,6 @@ public class TopOfDescentFragment extends FragmentBase {
         double desiredAlt = Double.MAX_VALUE;
         double gs = Double.MAX_VALUE;
         double dscntRate = Double.MAX_VALUE;
-        double distance = Double.MAX_VALUE;
 
         try {
             initAlt = Double.parseDouble( mInitAltEdit.getText().toString() );
@@ -106,7 +108,7 @@ public class TopOfDescentFragment extends FragmentBase {
 
         if ( initAlt != Double.MAX_VALUE && desiredAlt != Double.MAX_VALUE
                 && gs != Double.MAX_VALUE && dscntRate != Double.MAX_VALUE ) {
-            distance = gs*( ( initAlt-desiredAlt )/( dscntRate*60 ) );
+            double distance = gs*( ( initAlt-desiredAlt )/( dscntRate*60 ) );
             mDistanceEdit.setText( String.format( Locale.US,  "%.1f", distance ) );
         } else {
             mDistanceEdit.setText( "" );

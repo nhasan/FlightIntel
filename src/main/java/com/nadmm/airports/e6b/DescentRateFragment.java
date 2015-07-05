@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,8 @@ public class DescentRateFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        return inflate( R.layout.e6b_descent_rate_view );
+        View view = inflater.inflate( R.layout.e6b_descent_rate_view, container, false );
+        return createContentView( view );
     }
 
     @Override
@@ -88,6 +89,8 @@ public class DescentRateFragment extends FragmentBase {
         mCrossAltEdit.addTextChangedListener( mTextWatcher );
         mGsEdit.addTextChangedListener( mTextWatcher );
         mFixDistEdit.addTextChangedListener( mTextWatcher );
+
+        setFragmentContentShown( true );
     }
 
     private void processInput() {
@@ -95,7 +98,6 @@ public class DescentRateFragment extends FragmentBase {
         double crossAlt = Double.MAX_VALUE;
         double gs = Double.MAX_VALUE;
         double fixDist = Double.MAX_VALUE;
-        double dscntRate = Double.MAX_VALUE;
 
         try {
             initAlt = Double.parseDouble( mInitAltEdit.getText().toString() );
@@ -107,7 +109,7 @@ public class DescentRateFragment extends FragmentBase {
 
         if ( initAlt != Double.MAX_VALUE && crossAlt != Double.MAX_VALUE
                 && gs != Double.MAX_VALUE && fixDist != Double.MAX_VALUE ) {
-            dscntRate = ( initAlt-crossAlt )/( ( fixDist/gs )*60 );
+            double dscntRate = ( initAlt-crossAlt )/( ( fixDist/gs )*60 );
             mDscntRateEdit.setText( String.format( Locale.US, "%d", Math.round( dscntRate ) ) );
         } else {
             mDscntRateEdit.setText( "" );

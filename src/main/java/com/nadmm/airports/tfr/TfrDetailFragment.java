@@ -41,8 +41,15 @@ public class TfrDetailFragment extends FragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        Context context = getActivity();
         View view = inflater.inflate( R.layout.tfr_detail_view, container, false );
+        return createContentView( view );
+    }
+
+    @Override
+    public void onViewCreated( View view, Bundle savedInstanceState ) {
+        super.onViewCreated( view, savedInstanceState );
+
+        Context context = getActivity();
 
         Button btnGraphic = (Button) view.findViewById( R.id.btnViewGraphic );
         btnGraphic.setOnClickListener( new OnClickListener() {
@@ -80,10 +87,10 @@ public class TfrDetailFragment extends FragmentBase {
 
         TextView tv = (TextView) view.findViewById( R.id.tfr_warning_text );
         tv.setText( "Depicted TFR data may not be a complete listing. Pilots should not use "
-        		+ "the information for flight planning purposes. For the latest information, "
-        		+ "call your local Flight Service Station at 1-800-WX-BRIEF." );
+                + "the information for flight planning purposes. For the latest information, "
+                + "call your local Flight Service Station at 1-800-WX-BRIEF." );
 
-        return view;
+        setFragmentContentShown( true );
     }
 
     @Override

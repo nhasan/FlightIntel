@@ -37,7 +37,8 @@ public class AirportNotamFragment extends NotamFragmentBase {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState ) {
-        return inflater.inflate( R.layout.airport_notam_view, container, false );
+        View view = inflater.inflate( R.layout.airport_notam_view, container, false );
+        return createContentView( view );
     }
 
     @Override

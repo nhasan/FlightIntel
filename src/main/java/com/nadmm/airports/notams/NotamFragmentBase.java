@@ -94,8 +94,6 @@ public class NotamFragmentBase extends FragmentBase {
     }
 
     protected void showNotams( File notamFile ) {
-        setContentShown( true );
-
         LinearLayout content = (LinearLayout) findViewById( R.id.notam_content_layout );
 
         HashMap<String, ArrayList<String>> notams = parseNotams( notamFile );
@@ -134,16 +132,18 @@ public class NotamFragmentBase extends FragmentBase {
         TextView title2 = (TextView) findViewById( R.id.notam_title2 );
         Date lastModified = new Date( notamFile.lastModified() );
         title2.setText( "Updated "+ TimeUtils.formatElapsedTime( lastModified.getTime() ) );
+
+        setFragmentContentShown( true );
     }
 
     private HashMap<String, ArrayList<String>> parseNotams( File notamFile ) {
         // Remeber the ids we have seen to remove duplicates
-        HashMap<String, ArrayList<String>> notams = new HashMap<String, ArrayList<String>>();
+        HashMap<String, ArrayList<String>> notams = new HashMap<>();
         BufferedReader in = null;
 
         // Build the NOTAM list group by the subject
         try {
-            Set<String> notamIDs = new HashSet<String>();
+            Set<String> notamIDs = new HashSet<>();
             in = new BufferedReader( new FileReader( notamFile ) );
             String notam;
             while ( ( notam = in.readLine() ) != null ) {
@@ -154,7 +154,7 @@ public class NotamFragmentBase extends FragmentBase {
                     String subject = DataUtils.getNotamSubjectFromKeyword( keyword );
                     ArrayList<String> list = notams.get( subject );
                     if ( list == null ) {
-                        list = new ArrayList<String>();
+                        list = new ArrayList<>();
                     }
                     list.add( notam );
                     notams.put( subject, list );
