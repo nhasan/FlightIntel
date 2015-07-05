@@ -326,11 +326,11 @@ public class ChartsDownloadFragment extends FragmentBase {
             msg = "Connected to a metered network";
             mIsOk = false;
         }
+
         tv = (TextView) findViewById( R.id.charts_download_warning );
         tv.setText( msg );
-        tv.setCompoundDrawablesWithIntrinsicBounds(
-                mIsOk? R.drawable.ic_check : R.drawable.ic_highlight_remove, 0, 0, 0 );
-        tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 4 ) );
+        UiUtils.setTextViewDrawable( tv, mIsOk?
+                R.drawable.ic_check : R.drawable.ic_highlight_remove );
 
         LinearLayout layout = (LinearLayout) findViewById( R.id.vol_chart_details );
         c = result[ 1 ];
@@ -532,11 +532,9 @@ public class ChartsDownloadFragment extends FragmentBase {
     protected void showStatus( View row, int avail, int total ) {
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         if ( avail == total ) {
-            tv.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_check_box, 0, 0, 0 );
+            UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box );
         } else {
-            tv.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_check_box_outline_blank, 0, 0, 0 );
+            UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box_outline_blank );
         }
     }
 

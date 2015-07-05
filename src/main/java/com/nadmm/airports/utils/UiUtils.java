@@ -27,6 +27,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.LruCache;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -124,16 +125,19 @@ public class UiUtils {
         Drawable d = getDrawableFromCache( key );
         if ( d == null ) {
             Resources res = tv.getResources();
-            d = res.getDrawable( resid );
+            d = ResourcesCompat.getDrawable( res, resid, null );
             putDrawableIntoCache( key, d );
         }
         setTextViewDrawable( tv, d.mutate() );
     }
 
     static public void setTextViewDrawable( TextView tv, Drawable d ) {
-        DisplayMetrics dm = tv.getResources().getDisplayMetrics();
         tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
-        tv.setCompoundDrawablePadding( (int) ( dm.density * 6 + 0.5 ) );
+        tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( tv.getContext(), 6 ) );
+    }
+
+    static public void removeTextViewDrawable( TextView tv ) {
+        tv.setCompoundDrawablesWithIntrinsicBounds( 0, 0, 0, 0 );
     }
 
     static public Drawable getColorizedDrawable( Resources res, int resid, int color ) {
@@ -141,7 +145,7 @@ public class UiUtils {
         String key = String.format( Locale.US, "%d:%d", resid, color );
         Drawable d = getDrawableFromCache( key );
         if ( d == null ) {
-            d = res.getDrawable( resid ).mutate();
+            d = ResourcesCompat.getDrawable( res, resid, null ).mutate();
             d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
             putDrawableIntoCache( key, d );
         }

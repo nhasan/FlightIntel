@@ -345,13 +345,10 @@ public class DtppFragment extends FragmentBase {
 
     protected void showChartAvailability( View view, boolean available ) {
         TextView tv = (TextView) view.findViewById( R.id.item_label );
-        tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 4 ) );
         if ( available ) {
-            tv.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_check_box, 0, 0, 0 );
+            UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box );
         } else {
-            tv.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_check_box_outline_blank, 0, 0, 0 );
+            UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box_outline_blank );
         }
     }
 

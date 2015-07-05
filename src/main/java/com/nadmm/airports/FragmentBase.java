@@ -334,12 +334,11 @@ public class FragmentBase extends Fragment implements IRefreshable {
         PackageManager pm = mActivity.getPackageManager();
         boolean hasTelephony = pm.hasSystemFeature( PackageManager.FEATURE_TELEPHONY );
         if ( hasTelephony && tv.getText().length() > 0 ) {
-            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.ic_phone, 0, 0, 0 );
-            tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( mActivity, 3 ) );
+            UiUtils.setTextViewDrawable( tv, R.drawable.ic_phone );
             tv.setTag( Intent.ACTION_DIAL );
             tv.setOnClickListener( mOnPhoneClickListener );
         } else {
-            tv.setCompoundDrawablesWithIntrinsicBounds( 0, 0, 0, 0 );
+            UiUtils.removeTextViewDrawable( tv );
             tv.setOnClickListener( null );
         }
     }

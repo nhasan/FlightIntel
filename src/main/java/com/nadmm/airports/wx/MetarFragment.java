@@ -472,8 +472,7 @@ public class MetarFragment extends WxFragmentBase {
         if ( metar.windDirDegrees > 0 ) {
             float declination = GeoUtils.getMagneticDeclination( mLocation );
             Drawable wind= WxUtils.getWindBarbDrawable( tv.getContext(), metar, declination );
-            tv.setCompoundDrawablesWithIntrinsicBounds( wind, null, null, null );
-            tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 6 ) );
+            UiUtils.setTextViewDrawable( tv, wind );
         }
         if ( metar.windGustKnots < Integer.MAX_VALUE ) {
             double gustFactor = metar.windGustKnots - metar.windSpeedKnots;

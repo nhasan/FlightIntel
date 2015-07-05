@@ -226,11 +226,10 @@ public class LibraryPageFragment extends FragmentBase {
             msg = "Connected to a metered network";
             mIsOk = false;
         }
+
         TextView tv = (TextView) findViewById( R.id.msg_txt );
         tv.setText( msg );
-        tv.setCompoundDrawablesWithIntrinsicBounds(
-                mIsOk? R.drawable.ic_check : R.drawable.ic_error, 0, 0, 0 );
-        tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( getActivity(), 4 ) );
+        UiUtils.setTextViewDrawable( tv, mIsOk ? R.drawable.ic_check : R.drawable.ic_error );
 
         LinearLayout topLayout = (LinearLayout) findViewById( R.id.main_content );
         for ( Cursor c : result ) {
@@ -267,7 +266,7 @@ public class LibraryPageFragment extends FragmentBase {
         tv = (TextView) row.findViewById( R.id.book_edition );
         tv.setText( edition );
         if ( flag.equals( "N" ) ) {
-            tv.setCompoundDrawablesWithIntrinsicBounds( R.drawable.star, 0, 0, 0 );
+            UiUtils.setTextViewDrawable( tv, R.drawable.star );
         }
         tv = (TextView) row.findViewById( R.id.book_author );
         tv.setText( author );
@@ -323,11 +322,9 @@ public class LibraryPageFragment extends FragmentBase {
     protected void showStatus( View row, boolean isAvailable ) {
         TextView tv = (TextView) row.findViewById( R.id.book_desc );
         if ( isAvailable ) {
-            tv.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_check_box, 0, 0, 0 );
+            UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box );
         } else {
-            tv.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_check_box_outline_blank, 0, 0, 0 );
+            UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box_outline_blank );
         }
     }
 
