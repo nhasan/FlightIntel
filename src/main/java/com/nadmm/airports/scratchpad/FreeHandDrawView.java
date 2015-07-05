@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.nadmm.airports.utils.UiUtils;
+
 public class FreeHandDrawView extends View {
 
     public interface EventListener {
@@ -39,10 +41,8 @@ public class FreeHandDrawView extends View {
         void actionUp();
     }
 
-    private static final int STROKE_WIDTH = 3;
-    private static final int ERASE_WIDTH = 5*STROKE_WIDTH;
-    private static final int PAPER_COLOR = 0xffe0e0e0;
-    private static final int PEN_COLOR = 0xff000000;
+    private static final int PAPER_COLOR = 0xffffffff;
+    private static final int PEN_COLOR = 0xde000000;
 
     private Bitmap mBitmap;
     private Canvas mCanvas;
@@ -54,12 +54,18 @@ public class FreeHandDrawView extends View {
     private MaskFilter mBlurFilter;
     private EventListener mEventListener;
 
+    private final int mStrokeWidth;
+    private final int mEraseWidth;
+
     public FreeHandDrawView( Context context, AttributeSet attrs ) {
         super( context, attrs );
 
         mPath = new Path();
         mBitmapPaint = new Paint( Paint.DITHER_FLAG );
         mBlurFilter = new BlurMaskFilter( 8, BlurMaskFilter.Blur.SOLID );
+
+        mStrokeWidth = UiUtils.convertDpToPx( context, 2 );
+        mEraseWidth = 10*mStrokeWidth;
 
         mFingerPaint = new Paint();
         mFingerPaint.setAntiAlias( true );
@@ -122,7 +128,7 @@ public class FreeHandDrawView extends View {
     private void touch_move( float x, float y ) {
         float dx = Math.abs( x - mLastX );
         float dy = Math.abs( y - mLastY );
-        if ( dx >= STROKE_WIDTH || dy >= STROKE_WIDTH ) {
+        if ( dx >= mStrokeWidth || dy >= mStrokeWidth ) {
             mPath.quadTo( mLastX, mLastY, (x + mLastX)/2, (y + mLastY)/2 );
             mLastX = x;
             mLastY = y;
@@ -136,7 +142,7 @@ public class FreeHandDrawView extends View {
 
         if ( mPath.isEmpty() ) {
             // If this was just a touch, make sure to draw a point
-            mPath.addCircle( mLastX, mLastY, STROKE_WIDTH/2, Path.Direction.CW );
+            mPath.addCircle( mLastX, mLastY, mStrokeWidth /2, Path.Direction.CW );
         } else {
             // Finish up the path
             mPath.lineTo( mLastX, mLastY );
@@ -161,13 +167,13 @@ public class FreeHandDrawView extends View {
     public void setDrawMode() {
         mFingerPaint.setColor( PEN_COLOR );
         mFingerPaint.setMaskFilter( null );
-        mFingerPaint.setStrokeWidth( STROKE_WIDTH );
+        mFingerPaint.setStrokeWidth( mStrokeWidth );
     }
 
     public void setEraseMode() {
         mFingerPaint.setColor( PAPER_COLOR );
         mFingerPaint.setMaskFilter( mBlurFilter );
-        mFingerPaint.setStrokeWidth( ERASE_WIDTH );
+        mFingerPaint.setStrokeWidth( mEraseWidth );
     }
 
     public void setEventListener( EventListener listener ) {

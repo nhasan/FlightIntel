@@ -63,8 +63,7 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.scratchpad_view, container, false );
-        return createContentView( view );
+        return inflater.inflate( R.layout.scratchpad_view, container, false );
     }
 
     @Override
@@ -118,8 +117,6 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
                 startActivity( Intent.createChooser( intent, "Share Scratchpad" ) );
             }
         } );
-
-        setFragmentContentShown( true );
     }
 
     @Override
