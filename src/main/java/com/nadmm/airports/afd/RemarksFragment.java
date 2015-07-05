@@ -62,7 +62,7 @@ public final class RemarksFragment extends FragmentBase {
         showAirportTitle( apt );
         showRemarksDetails( result );
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected void showRemarksDetails( Cursor[] result ) {

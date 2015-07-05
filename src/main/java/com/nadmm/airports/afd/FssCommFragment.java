@@ -126,7 +126,7 @@ public final class FssCommFragment extends FragmentBase {
         setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
         showFssDetails( result );
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     private void showFssDetails( Cursor[] result ) {

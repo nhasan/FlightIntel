@@ -66,7 +66,7 @@ public final class AlmanacFragment extends FragmentBase {
         showAirportTitle( apt );
         showSolarInfo( result );
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     private void showSolarInfo( Cursor[] result ) {

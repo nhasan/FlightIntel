@@ -146,7 +146,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
                     mRadius ) );
         }
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected void showNavaidDetails( Cursor[] result ) {

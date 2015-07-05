@@ -80,7 +80,7 @@ public final class IlsFragment extends FragmentBase {
             setContentMsg( "ILS details not found" );
         }
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected void showIlsDetails( Cursor[] result ) {

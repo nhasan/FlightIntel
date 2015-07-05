@@ -89,7 +89,7 @@ public final class RunwaysFragment extends FragmentBase {
             showReciprocalEndInformation( result );
         }
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected void showCommonInformation( Cursor[] result ) {

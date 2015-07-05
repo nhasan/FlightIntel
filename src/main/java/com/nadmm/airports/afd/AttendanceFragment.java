@@ -63,7 +63,7 @@ public final class AttendanceFragment extends FragmentBase {
         showAttendanceDetails( result );
         showAttendanceRemarks( result );
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected void showAttendanceDetails( Cursor[] result ) {

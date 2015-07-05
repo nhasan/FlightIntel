@@ -65,7 +65,7 @@ public final class ServicesFragment extends FragmentBase {
         showFaaServices( result );
         showFssServices( result );
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected void showAirportServices( Cursor[] result ) {

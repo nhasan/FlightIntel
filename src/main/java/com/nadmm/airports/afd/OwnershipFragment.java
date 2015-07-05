@@ -66,7 +66,7 @@ public final class OwnershipFragment extends FragmentBase {
         showManagerInfo( result );
         showRemarks( result );
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected void showOwnershipType( Cursor[] result ) {

@@ -234,7 +234,7 @@ public final class AirportDetailsFragment extends FragmentBase {
 
         requestMetars( false );
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected void showCommunicationsDetails( Cursor[] result ) {

@@ -77,7 +77,7 @@ public final class NavaidDetailsFragment extends FragmentBase {
         showNavaidNotams( result );
         showNavaidRemarks( result );
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected void showNavaidDetails( Cursor[] result ) {

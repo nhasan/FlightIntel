@@ -58,7 +58,7 @@ public final class AircraftOpsFragment extends FragmentBase {
         showBasedAircraft( apt );
         showAnnualOps( apt );
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected void showBasedAircraft( Cursor apt ) {

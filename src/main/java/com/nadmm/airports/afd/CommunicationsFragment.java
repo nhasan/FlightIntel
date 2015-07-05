@@ -76,7 +76,7 @@ public final class CommunicationsFragment extends FragmentBase {
         showAtcPhones( result );
         showRemarks( result );
 
-        setContentShown( true );
+        setFragmentContentShown( true );
     }
 
     protected void showAirportFrequencies( Cursor[] result ) {
