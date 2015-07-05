@@ -34,7 +34,9 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="TextSmall" parent="TextAppearance.AppCompat.Body1" />
+    <style name="TextSmall" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">@dimen/small_text_size</item>
+    </style>
 
     <style name="TextSmall.Bold">
         <item name="android:textStyle">bold</item>

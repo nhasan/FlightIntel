@@ -31,9 +31,6 @@
     <dimen name="item_spacing">8dip</dimen>
     <dimen name="list_item_height">48dip</dimen>
 
-    <dimen name="list_nav_text1_size">16sp</dimen>
-    <dimen name="list_nav_text2_size">10sp</dimen>
-
     <dimen name="action_bar_auto_hide_min_y">64dp</dimen>
     <dimen name="action_bar_auto_hide_sensivity">16dp</dimen>
 
@@ -45,16 +42,13 @@
     <dimen name="swipe_refresh_progress_bar_start_margin">-40dp</dimen>
     <dimen name="swipe_refresh_progress_bar_end_margin">16dp</dimen>
 
-    <dimen name="actionbar_spinner_width">200dp</dimen>
-    <dimen name="spinner_left_padding">16dp</dimen>
-
     <dimen name="headerbar_elevation">4dp</dimen>
 
     <dimen name="tabbar_height">48dp</dimen>
 
-    <dimen name="smaller_text_size">13sp</dimen>
-    <dimen name="small_text_size">14sp</dimen>
-    <dimen name="medium_text_size">16sp</dimen>
+    <dimen name="smaller_text_size">15sp</dimen>
+    <dimen name="small_text_size">16sp</dimen>
+    <dimen name="medium_text_size">18sp</dimen>
     <dimen name="clock_text_size">64sp</dimen>
     <dimen name="clock_tenths_text_size">36sp</dimen>
 </resources>

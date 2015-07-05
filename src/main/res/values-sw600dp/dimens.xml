@@ -21,5 +21,7 @@
  -->
 
 <resources>
-    <dimen name="smaller_text_size">14sp</dimen>
+    <dimen name="smaller_text_size">16sp</dimen>
+    <dimen name="small_text_size">17sp</dimen>
+    <dimen name="medium_text_size">19sp</dimen>
 </resources>
