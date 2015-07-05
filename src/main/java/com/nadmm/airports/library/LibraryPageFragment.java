@@ -229,7 +229,8 @@ public class LibraryPageFragment extends FragmentBase {
 
         TextView tv = (TextView) findViewById( R.id.msg_txt );
         tv.setText( msg );
-        UiUtils.setTextViewDrawable( tv, mIsOk ? R.drawable.ic_check : R.drawable.ic_error );
+        UiUtils.setTextViewDrawable( tv, mIsOk?
+                R.drawable.ic_check : R.drawable.ic_highlight_remove );
 
         LinearLayout topLayout = (LinearLayout) findViewById( R.id.main_content );
         for ( Cursor c : result ) {
