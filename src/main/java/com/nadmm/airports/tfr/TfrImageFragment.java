@@ -91,10 +91,10 @@ public class TfrImageFragment extends FragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
         setActionBarTitle( mTfr.name );
         setActionBarSubtitle( "TFR Graphic" );
-
-        super.onActivityCreated( savedInstanceState );
     }
 
     private final class TfrReceiver extends BroadcastReceiver {
