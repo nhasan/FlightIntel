@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,9 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
+import android.support.v7.widget.Toolbar;
 
-public class PreferencesActivity extends PreferenceActivity
+public class PreferencesActivity extends AppCompatPreferenceActivity
             implements OnSharedPreferenceChangeListener {
 
     public static final String KEY_HOME_AIRPORT = "home_airport";
@@ -45,7 +45,12 @@ public class PreferencesActivity extends PreferenceActivity
     @SuppressWarnings("deprecation")
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate(savedInstanceState);
+        super.onCreate( savedInstanceState );
+
+        setContentView( R.layout.preferences_list_layout );
+        Toolbar toolbar = (Toolbar) findViewById( R.id.toolbar_actionbar );
+        setSupportActionBar( toolbar );
+
         addPreferencesFromResource( R.xml.preferences );
         mSharedPrefs = getPreferenceScreen().getSharedPreferences();
     }
