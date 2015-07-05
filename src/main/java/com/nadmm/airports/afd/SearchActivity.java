@@ -28,22 +28,19 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
 
-import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.data.DatabaseManager.Airports;
+import com.nadmm.airports.FragmentActivityBase;
 import com.nadmm.airports.ListFragmentBase;
-import com.nadmm.airports.R;
+import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.providers.AirportsProvider;
 
-public class SearchActivity extends ActivityBase {
+public class SearchActivity extends FragmentActivityBase {
 
-    private CursorAdapter mListAdapter = null;
     SearchFragment mFragment;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( R.layout.activity_main );
         mFragment = (SearchFragment) addFragment( SearchFragment.class, null );
 
         handleIntent();
@@ -57,15 +54,18 @@ public class SearchActivity extends ActivityBase {
 
     private void handleIntent() {
         Intent intent = getIntent();
-        if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
+        String action = intent.getAction();
+        if ( Intent.ACTION_SEARCH.equals( action ) ) {
             // Perform the search using user provided query string
             String query = intent.getStringExtra( SearchManager.QUERY );
             showResults( query );
-        } else if ( Intent.ACTION_VIEW.equals( intent.getAction() ) ) {
+        } else if ( Intent.ACTION_VIEW.equals( action ) ) {
             // User clicked on a suggestion
             Bundle extra = intent.getExtras();
             String siteNumber = extra.getString( SearchManager.EXTRA_DATA_KEY );
-            startAirportActivity( siteNumber );
+            Intent apt = new Intent( this, AirportActivity.class );
+            apt.putExtra( Airports.SITE_NUMBER, siteNumber );
+            startActivity( apt );
             finish();
         }
     }
@@ -73,26 +73,21 @@ public class SearchActivity extends ActivityBase {
     @SuppressWarnings("deprecation")
     private void showResults( String query ) {
         Cursor c = managedQuery( AirportsProvider.CONTENT_URI, null, null,
-                new String[] { query }, null );
-        int count = c.getCount();
+                new String[]{ query }, null );
         if ( c.getCount() == 1 ) {
             // If there was only one result, start the airport activity directly instead of
             // showing search results in a list view
             c.moveToFirst();
             String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
             c.close();
-            startAirportActivity( siteNumber );
+            Intent apt = new Intent( this, AirportActivity.class );
+            apt.putExtra( Airports.SITE_NUMBER, siteNumber );
+            startActivity( apt );
             finish();
         }
 
         startManagingCursor( c );
         mFragment.setSearchCursor( c );
-    }
-
-    private void startAirportActivity( String siteNumber ) {
-        Intent apt = new Intent( this, AirportActivity.class );
-        apt.putExtra( Airports.SITE_NUMBER, siteNumber );
-        startActivity( apt );
     }
 
     public static class SearchFragment extends ListFragmentBase {
@@ -107,19 +102,25 @@ public class SearchActivity extends ActivityBase {
         @Override
         protected void onListItemClick( ListView l, View v, int position ) {
             String siteNumber = mCursor.getString( mCursor.getColumnIndex( Airports.SITE_NUMBER ) );
-            SearchActivity activity = (SearchActivity) getActivityBase();
-            activity.startAirportActivity( siteNumber );
+            Intent apt = new Intent( getActivity(), AirportActivity.class );
+            apt.putExtra( Airports.SITE_NUMBER, siteNumber );
+            startActivity( apt );
         }
 
         @Override
         public void onActivityCreated( Bundle savedInstanceState ) {
             super.onActivityCreated( savedInstanceState );
 
-            setCursor( mCursor );
+            if ( mCursor != null ) {
+                setCursor( mCursor );
+            }
         }
 
         public void setSearchCursor( Cursor c ) {
             mCursor = c;
+            if ( getActivity() != null && getView() != null ) {
+                setCursor( mCursor );
+            }
         }
 
     }
