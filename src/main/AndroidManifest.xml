@@ -58,7 +58,8 @@
 
         <activity
             android:label="@string/navaid_notams"
-            android:name=".notams.NavaidNotamActivity">
+            android:name=".notams.NavaidNotamActivity"
+            android:parentActivityName=".afd.AirportActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".FlightIntel" />
@@ -66,7 +67,8 @@
 
         <activity
             android:label="@string/airport_notams"
-            android:name=".notams.AirportNotamActivity">
+            android:name=".notams.AirportNotamActivity"
+            android:parentActivityName=".afd.AirportActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".FlightIntel" />
