@@ -87,7 +87,6 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.FormatUtils;
-import com.nadmm.airports.utils.LUtils;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.MultiSwipeRefreshLayout;
@@ -117,9 +116,6 @@ public class ActivityBase extends AppCompatActivity implements
     private int mActionBarAutoHideMinY = 0;
     private int mActionBarAutoHideSignal = 0;
     private boolean mActionBarShown = true;
-
-    // Helper methods for L APIs
-    private LUtils mLUtils;
 
     private Intent mIntent = null;
     private Handler mHandler;
@@ -225,7 +221,6 @@ public class ActivityBase extends AppCompatActivity implements
             db.close();
         }
 
-        mLUtils = LUtils.getInstance( this );
         mThemedStatusBarColor = getResources().getColor( R.color.color_primary_dark );
         mNormalStatusBarColor = mThemedStatusBarColor;
 
