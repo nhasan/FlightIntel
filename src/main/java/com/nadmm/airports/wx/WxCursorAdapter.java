@@ -273,9 +273,9 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
        } else {
             WxUtils.setColorizedWxDrawable( holder.stationName, metar, 0 );
             if ( metar != null ) {
-                holder.stationWx.setText( "Unable to fetch weather data" );
+                holder.stationWx.setText( "Unable to fetch Wx data" );
             } else {
-                holder.stationWx.setText( "Weather data not fetched" );
+                holder.stationWx.setText( "Wx not fetched" );
             }
             holder.stationWx2.setVisibility( View.GONE );
             holder.reportAge.setVisibility( View.GONE );
