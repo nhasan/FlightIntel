@@ -19,17 +19,25 @@
 
 package com.nadmm.airports;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceFragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
-public class PreferencesActivity extends AppCompatPreferenceActivity
-            implements OnSharedPreferenceChangeListener {
+public class PreferencesActivity extends FragmentActivityBase {
 
     public static final String KEY_HOME_AIRPORT = "home_airport";
-    public static final String KEY_STARTUP_CHECK_EXPIRED_DATA = "startup_check_expired_data";
     public static final String KEY_LOCATION_USE_GPS = "location_use_gps";
     public static final String KEY_LOCATION_NEARBY_RADIUS = "location_nearby_radius";
     public static final String KEY_SHOW_EXTRA_RUNWAY_DATA = "extra_runway_data";
@@ -40,58 +48,114 @@ public class PreferencesActivity extends AppCompatPreferenceActivity
     public static final String KEY_HOME_SCREEN = "home_screen";
     public static final String KEY_ALWAYS_SHOW_NEARBY = "always_show_nearby";
 
-    private SharedPreferences mSharedPrefs;
-
     @SuppressWarnings("deprecation")
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( R.layout.preferences_list_layout );
         Toolbar toolbar = (Toolbar) findViewById( R.id.toolbar_actionbar );
+
         setSupportActionBar( toolbar );
+        ActionBar actionBar = getSupportActionBar();
+        if ( actionBar != null ) {
+            actionBar.setDisplayHomeAsUpEnabled( true );
+            actionBar.setDisplayShowHomeEnabled( true );
+        }
 
-        addPreferencesFromResource( R.xml.preferences );
-        mSharedPrefs = getPreferenceScreen().getSharedPreferences();
+        addPreferencesFragment();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        // Initialize the preference screen
-        onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_SCREEN );
-        onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
-        onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_AIRPORT );
+    public boolean onPrepareOptionsMenu( Menu menu ) {
+        MenuItem settings = menu.findItem( R.id.menu_settings );
+        settings.setVisible( false );
 
-        // Set up a listener whenever a key changes
-        mSharedPrefs.registerOnSharedPreferenceChangeListener( this );
+        return super.onPrepareOptionsMenu( menu );
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        // Unregister the listener whenever a key changes
-        mSharedPrefs.unregisterOnSharedPreferenceChangeListener( this );
+    public boolean onOptionsItemSelected( MenuItem item ) {
+        switch ( item.getItemId() ) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected( item );
+        }
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
-        Preference pref = findPreference( key );
-        if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
-            String radius = mSharedPrefs.getString( key, "30" );
-            pref.setSummary( "Show locations within "+radius+" NM radius" );
-        } else if ( key.equals( KEY_HOME_SCREEN ) ) {
-            String home = mSharedPrefs.getString( key, "A/FD" );
-            pref.setSummary( "Show "+home+" at startup" );
-        } else if ( key.equals( KEY_HOME_AIRPORT ) ) {
-            String code = mSharedPrefs.getString( KEY_HOME_AIRPORT, "" );
-            if ( code.length() > 0 ) {
-                pref.setSummary( "Home airport set to "+code );
-            } else {
-                pref.setSummary( "Set the code for your home airport" );
+    protected Fragment addPreferencesFragment() {
+        Class clss = PreferencesFragment.class;
+        String tag = clss.getSimpleName();
+        FragmentManager fm = getFragmentManager();
+        Fragment f = fm.findFragmentByTag( tag );
+        if ( f == null ) {
+            f = Fragment.instantiate( this, clss.getName(), getIntent().getExtras() );
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add( R.id.fragment_container, f, tag );
+            ft.commit();
+        }
+        return f;
+    }
+
+    public static class PreferencesFragment extends PreferenceFragment
+            implements OnSharedPreferenceChangeListener {
+
+        private SharedPreferences mSharedPrefs;
+
+        @SuppressWarnings("deprecation")
+        @Override
+        public void onCreate( Bundle savedInstanceState ) {
+            super.onCreate( savedInstanceState );
+
+            addPreferencesFromResource( R.xml.preferences );
+            mSharedPrefs = getPreferenceScreen().getSharedPreferences();
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            // Initialize the preference screen
+            onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_SCREEN );
+            onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
+            onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_AIRPORT );
+
+            // Set up a listener whenever a key changes
+            mSharedPrefs.registerOnSharedPreferenceChangeListener( this );
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            // Unregister the listener whenever a key changes
+            mSharedPrefs.unregisterOnSharedPreferenceChangeListener( this );
+        }
+
+        @Override
+        public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
+            return inflater.inflate( R.layout.preferences_list_layout, container, false );
+        }
+
+        @SuppressWarnings("deprecation")
+        @Override
+        public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
+            Preference pref = findPreference( key );
+            if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
+                String radius = mSharedPrefs.getString( key, "30" );
+                pref.setSummary( "Show locations within "+radius+" NM radius" );
+            } else if ( key.equals( KEY_HOME_SCREEN ) ) {
+                String home = mSharedPrefs.getString( key, "A/FD" );
+                pref.setSummary( "Show "+home+" at startup" );
+            } else if ( key.equals( KEY_HOME_AIRPORT ) ) {
+                String code = mSharedPrefs.getString( KEY_HOME_AIRPORT, "" );
+                if ( code != null && code.length() > 0 ) {
+                    pref.setSummary( "Home airport set to "+code );
+                } else {
+                    pref.setSummary( "Set the code for your home airport" );
+                }
             }
         }
+
     }
 
 }
