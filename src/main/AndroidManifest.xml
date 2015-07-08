@@ -167,6 +167,15 @@
         </activity>
 
         <activity
+            android:label=""
+            android:name=".tfr.TfrImageActivity"
+            android:parentActivityName=".tfr.TfrListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".tfr.TfrListActivity" />
+        </activity>
+
+        <activity
             android:label="@string/app_name"
             android:name=".utils.ExternalStorageActivity"
             android:parentActivityName=".FlightIntel">

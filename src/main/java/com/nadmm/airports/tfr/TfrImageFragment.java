@@ -54,7 +54,7 @@ public class TfrImageFragment extends FragmentBase {
         mFilter.addAction( TfrImageService.ACTION_GET_TFR_IMAGE );
 
         Bundle args = getArguments();
-        mTfr = (Tfr) args.getSerializable( TfrImageService.TFR_ENTRY );
+        mTfr = (Tfr) args.getSerializable( TfrListActivity.EXTRA_TFR );
 
         Intent service = new Intent( getActivity(), TfrImageService.class );
         service.setAction( TfrImageService.ACTION_GET_TFR_IMAGE );

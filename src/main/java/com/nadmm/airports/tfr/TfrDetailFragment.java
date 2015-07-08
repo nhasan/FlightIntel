@@ -20,6 +20,7 @@
 package com.nadmm.airports.tfr;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,9 +57,12 @@ public class TfrDetailFragment extends FragmentBase {
 
             @Override
             public void onClick( View v ) {
-                Bundle args = new Bundle();
-                args.putSerializable( TfrImageService.TFR_ENTRY, mTfr );
-                getActivityBase().replaceFragment( TfrImageFragment.class, args );
+                //Bundle args = new Bundle();
+                //args.putSerializable( TfrImageService.TFR_ENTRY, mTfr );
+                Intent intent = new Intent( getActivity(), TfrImageActivity.class );
+                intent.putExtra( TfrListActivity.EXTRA_TFR, mTfr );
+                startActivity( intent );
+                //getActivityBase().replaceFragment( TfrImageFragment.class, args );
             }
         } );
 
