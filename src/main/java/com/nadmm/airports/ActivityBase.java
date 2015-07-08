@@ -139,7 +139,7 @@ public class ActivityBase extends AppCompatActivity implements
     private ArrayList<View> mHideableHeaderViews = new ArrayList<>();
 
     private static final int HEADER_HIDE_ANIM_DURATION = 300;
-    private static final int NAVDRAWER_LAUNCH_DELAY = 250;
+    private static final int NAVDRAWER_LAUNCH_DELAY = 300;
 
     protected static final int NAVDRAWER_ITEM_AFD = 0;
     protected static final int NAVDRAWER_ITEM_WX = 1;
@@ -912,19 +912,19 @@ public class ActivityBase extends AppCompatActivity implements
         setContentView( createContentView( tv ) );
     }
 
-    public Fragment replaceFragment( Class<?> clss, Bundle args, boolean addToStack ) {
+    protected Fragment replaceFragment( Class<?> clss, Bundle args, boolean addToStack ) {
         return replaceFragment( clss, args, R.id.fragment_container, addToStack );
     }
 
-    public Fragment replaceFragment( Class<?> clss, Bundle args ) {
+    protected Fragment replaceFragment( Class<?> clss, Bundle args ) {
         return replaceFragment( clss, args, R.id.fragment_container );
     }
 
-    public Fragment replaceFragment( Class<?> clss, Bundle args, int id  ) {
+    protected Fragment replaceFragment( Class<?> clss, Bundle args, int id  ) {
         return replaceFragment( clss, args, id, true );
     }
 
-    public Fragment replaceFragment( Class<?> clss, Bundle args, int id, boolean addToStack  ) {
+    protected Fragment replaceFragment( Class<?> clss, Bundle args, int id, boolean addToStack  ) {
         String tag = clss.getSimpleName();
         if ( args != null && args.containsKey( FRAGMENT_TAG_EXTRA ) ) {
             String extra = args.getString( FRAGMENT_TAG_EXTRA );
@@ -944,11 +944,11 @@ public class ActivityBase extends AppCompatActivity implements
         return f;
     }
 
-    public Fragment addFragment( Class<?> clss, Bundle args ) {
+    protected Fragment addFragment( Class<?> clss, Bundle args ) {
         return addFragment( clss, args, R.id.fragment_container );
     }
 
-    public Fragment addFragment( Class<?> clss, Bundle args, int id ) {
+    protected Fragment addFragment( Class<?> clss, Bundle args, int id ) {
         String tag = clss.getSimpleName();
         FragmentManager fm = getSupportFragmentManager();
         Fragment f = fm.findFragmentByTag( tag );
@@ -1216,6 +1216,10 @@ public class ActivityBase extends AppCompatActivity implements
         case R.id.menu_donate:
             Intent donate = new Intent( this, DonateActivity.class );
             startActivity( donate );
+            return true;
+        case R.id.menu_settings:
+            Intent intent = new Intent( this, PreferencesActivity.class );
+            startActivity( intent );
             return true;
         case R.id.menu_about:
             Intent about = new Intent( this, AboutActivity.class );
