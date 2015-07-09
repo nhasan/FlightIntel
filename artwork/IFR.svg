@@ -15,9 +15,9 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    sodipodi:docname="IFR.svg"
-   inkscape:export-filename="/home/nhasan/android/workspace/Airports/res/drawable-xhdpi/mvfr.png"
-   inkscape:export-xdpi="7.2521248"
-   inkscape:export-ydpi="7.2521248">
+   inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/ifr.png"
+   inkscape:export-xdpi="108"
+   inkscape:export-ydpi="108">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -28,7 +28,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.9899495"
-     inkscape:cx="342.11197"
+     inkscape:cx="388.40483"
      inkscape:cy="178.81741"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -46,7 +46,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -55,27 +55,24 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-652.36218)">
-    <g
-       id="g3336"
-       transform="matrix(1,0,0,1.008035,0,-5.3334388)">
-      <rect
-         y="663.79077"
-         x="10"
-         height="377.14285"
-         width="780"
-         id="rect2985"
-         style="fill:#c02000;fill-opacity:1;stroke:#902000;stroke-width:19.92013168;stroke-linejoin:round;stroke-miterlimit:6;stroke-dasharray:none;stroke-opacity:1" />
-      <text
-         sodipodi:linespacing="125%"
-         id="text3755"
-         y="937.67468"
-         x="215.01953"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:240px;line-height:125%;font-family:Roboto;-inkscape-font-specification:Roboto;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#f0f0f0;fill-opacity:1;stroke:none"
-         xml:space="preserve"><tspan
-           y="937.67468"
-           x="215.01953"
-           id="tspan4342"
-           sodipodi:role="line">IFR</tspan></text>
-    </g>
+    <rect
+       style="fill:#c02000;fill-opacity:1;stroke:#902000;stroke-width:20;stroke-linejoin:round;stroke-miterlimit:6;stroke-dasharray:none;stroke-opacity:1"
+       id="rect2985"
+       width="780"
+       height="380.17319"
+       x="10"
+       y="663.79089" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:280px;line-height:125%;font-family:Roboto;-inkscape-font-specification:'Roboto, Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;"
+       x="186.68192"
+       y="949.99878"
+       id="text3755"
+       sodipodi:linespacing="125%"
+       transform="scale(0.99600652,1.0040095)"><tspan
+         sodipodi:role="line"
+         id="tspan4342"
+         x="186.68192"
+         y="949.99878">IFR</tspan></text>
   </g>
 </svg>
