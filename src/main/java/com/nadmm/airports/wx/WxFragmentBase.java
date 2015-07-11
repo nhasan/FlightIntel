@@ -60,13 +60,6 @@ public class WxFragmentBase extends FragmentBase {
         bm.unregisterReceiver( mReceiver );
     }
 
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        super.onPrepareOptionsMenu( menu );
-
-        showRefreshMenu( menu, true );
-    }
-
     protected void setupBroadcastFilter( String action ) {
         mFilter = new IntentFilter();
         mFilter.addAction( action );

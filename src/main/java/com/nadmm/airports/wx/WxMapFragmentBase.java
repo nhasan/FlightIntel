@@ -149,11 +149,6 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
         }
     }
 
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        // Overide here to preven refresh menu item from being visible
-    }
-
     private void requestWxMap( String code ) {
         setProgressBarVisible( true );
         Intent service = getServiceIntent();

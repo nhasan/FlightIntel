@@ -184,13 +184,6 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        super.onPrepareOptionsMenu( menu );
-
-        showRefreshMenu( menu, true );
-    }
-
-    @Override
     public boolean isRefreshable() {
         return true;
     }

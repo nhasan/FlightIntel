@@ -131,6 +131,14 @@ public class FragmentBase extends Fragment implements IRefreshable {
     }
 
     @Override
+    public void onPrepareOptionsMenu( Menu menu ) {
+        super.onPrepareOptionsMenu( menu );
+
+        MenuItem refresh = menu.findItem( R.id.menu_refresh );
+        refresh.setVisible( isRefreshable() );
+    }
+
+    @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
         // Handle item selection
         switch ( item.getItemId() ) {
@@ -157,11 +165,6 @@ public class FragmentBase extends Fragment implements IRefreshable {
 
     protected void setRefreshing( boolean refreshing ) {
         getActivityBase().setRefreshing( refreshing );
-    }
-
-    protected void showRefreshMenu( Menu menu, boolean show ) {
-        MenuItem refresh = menu.findItem( R.id.menu_refresh );
-        refresh.setVisible( show );
     }
 
     public void setContentTopClearance( int clearance ) {

@@ -75,13 +75,6 @@ public class WxListFragmentBase extends ListFragmentBase {
     }
 
     @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        super.onPrepareOptionsMenu( menu );
-
-        showRefreshMenu( menu, isRefreshable() );
-    }
-
-    @Override
     public boolean isRefreshable() {
         return getListAdapter() != null && !getListAdapter().isEmpty();
     }

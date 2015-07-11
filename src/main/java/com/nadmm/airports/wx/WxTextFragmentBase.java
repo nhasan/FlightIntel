@@ -106,11 +106,6 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
     }
 
     @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        // Overide here to preven refresh menu item from being visible
-    }
-
-    @Override
     protected void handleBroadcast( Intent intent ) {
         if ( mPendingRow != null ) {
             TextView tv = (TextView) mPendingRow.findViewById( R.id.text );

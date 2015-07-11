@@ -110,13 +110,6 @@ public class TfrListFragment extends FragmentBase {
     }
 
     @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        super.onPrepareOptionsMenu( menu );
-
-        showRefreshMenu( menu, isRefreshable() );
-    }
-
-    @Override
     public void registerActionbarAutoHideView() {
         getActivityBase().registerActionBarAutoHideListView( mListView );
     }
