@@ -190,11 +190,11 @@ public class DownloadFragment extends FragmentBase {
     public void onPrepareOptionsMenu( Menu menu ) {
         super.onPrepareOptionsMenu( menu );
 
-        menu.findItem( R.id.menu_download ).setEnabled( false );
+        menu.findItem( R.id.menu_download ).setVisible( false );
         Cursor c = mDbManager.getCurrentFromCatalog();
-        boolean enabled = c.moveToFirst();
+        boolean visible = c.moveToFirst();
         c.close();
-        menu.findItem( R.id.menu_search ).setEnabled( enabled );
+        menu.findItem( R.id.menu_search ).setVisible( visible );
     }
 
     private void checkNetworkAndDownload() {
@@ -740,9 +740,7 @@ public class DownloadFragment extends FragmentBase {
         }
 
         private boolean isInstalled( DataInfo available ) {
-            Iterator<DataInfo> it = mInstalledData.iterator();
-            while ( it.hasNext() ) {
-                DataInfo installed = it.next();
+            for( DataInfo installed : mInstalledData ) {
                 if ( available.equals( installed ) ) {
                     return true;
                 }
