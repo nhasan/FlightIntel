@@ -29,7 +29,9 @@
         android:text="@string/download_all"
         android:layout_gravity="center"
         android:layout_margin="10dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
     <ListView android:id="@android:id/list"
             android:divider="@drawable/list_divider"
             android:footerDividersEnabled="false"

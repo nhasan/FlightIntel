@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -30,5 +30,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="14dp"
         android:layout_marginBottom="14dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </LinearLayout>
