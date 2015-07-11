@@ -33,7 +33,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -115,26 +114,10 @@ public final class AirportDetailsFragment extends FragmentBase {
 
             @Override
             public void onReceive( Context context, Intent intent ) {
-                Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
-                if ( metar != null ) {
-                    showWxInfo( metar );
-
-                    ++mWxUpdates;
-                    if ( mWxUpdates == mAwosViews.size() ) {
-                        // We have all the wx updates, stop the refresh animation
-                        mWxUpdates = 0;
-                        setRefreshing( false );
-                    }
-                }
+                handleMetarBroadcast( intent );
             }
 
         };
-
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences( getActivity() );
-        mRadius = Integer.valueOf( prefs.getString(
-                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
-        mHome = prefs.getString( PreferencesActivity.KEY_HOME_AIRPORT, "" );
 
         mDafdFilter = new IntentFilter();
         mDafdFilter.addAction( DafdService.ACTION_GET_AFD );
@@ -144,11 +127,18 @@ public final class AirportDetailsFragment extends FragmentBase {
                 handleDafdBroadcast( intent );
             }
         };
+
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences( getActivity() );
+        mRadius = Integer.valueOf( prefs.getString(
+                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
+        mHome = prefs.getString( PreferencesActivity.KEY_HOME_AIRPORT, "" );
     }
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
+        mAwosViews.clear();
         View view = inflater.inflate( R.layout.airport_detail_view, container, false );
         return createContentView( view );
     }
@@ -193,6 +183,38 @@ public final class AirportDetailsFragment extends FragmentBase {
         requestMetars( true );
     }
 
+    protected void handleMetarBroadcast( Intent intent ) {
+        Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
+        if ( metar != null && metar.rawText != null ) {
+            showWxInfo( metar );
+
+            ++mWxUpdates;
+            if ( mWxUpdates == mAwosViews.size() ) {
+                // We have all the wx updates, stop the refresh animation
+                mWxUpdates = 0;
+                setRefreshing( false );
+            }
+        }
+    }
+
+    protected void handleDafdBroadcast( Intent intent ) {
+        String action = intent.getAction();
+        if ( action.equals( DafdService.ACTION_GET_AFD ) ) {
+            String path = intent.getStringExtra( DafdService.PDF_PATH );
+            if ( path != null ) {
+                SystemUtils.startPDFViewer( getActivity(), path );
+            }
+        }
+    }
+
+    protected void getAfdPage( String afdCycle, String pdfName ) {
+        Intent service = new Intent( getActivity(), DafdService.class );
+        service.setAction( DafdService.ACTION_GET_AFD );
+        service.putExtra( DafdService.CYCLE_NAME, afdCycle );
+        service.putExtra( DafdService.PDF_NAME, pdfName );
+        getActivity().startService( service );
+    }
+
     protected void showDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
 
@@ -222,7 +244,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_comm_layout );
 
         String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
-        addRow( layout, "CTAF", ctaf.length() > 0? ctaf : "None" );
+        addRow( layout, "CTAF", ctaf.length() > 0 ? ctaf : "None" );
         String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
         if ( unicom.length() > 0 ) {
             addRow( layout, "Unicom", unicom );
@@ -360,7 +382,6 @@ public final class AirportDetailsFragment extends FragmentBase {
         TextView label = (TextView) findViewById( R.id.detail_awos_label );
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_awos_layout );
         Cursor awos1 = result[ 7 ];
-
         if ( awos1.moveToFirst() ) {
             do {
                 if ( awos1.getPosition() == MAX_WX_STATIONS ) {
@@ -667,24 +688,6 @@ public final class AirportDetailsFragment extends FragmentBase {
         } else {
             Intent intent = new Intent( getActivity(), DonateActivity.class );
             addClickableRow( layout, "Please donate to enable this section", intent );
-        }
-    }
-
-    protected void getAfdPage( String afdCycle, String pdfName ) {
-        Intent service = new Intent( getActivity(), DafdService.class );
-        service.setAction( DafdService.ACTION_GET_AFD );
-        service.putExtra( DafdService.CYCLE_NAME, afdCycle );
-        service.putExtra( DafdService.PDF_NAME, pdfName );
-        getActivity().startService( service );
-    }
-
-    protected void handleDafdBroadcast( Intent intent ) {
-        String action = intent.getAction();
-        if ( action.equals( DafdService.ACTION_GET_AFD ) ) {
-            String path = intent.getStringExtra( DafdService.PDF_PATH );
-            if ( path != null ) {
-                SystemUtils.startPDFViewer( getActivity(), path );
-            }
         }
     }
 
