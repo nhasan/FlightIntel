@@ -157,36 +157,35 @@ public class DtppFragment extends FragmentBase {
         String from = cycle.getString( cycle.getColumnIndex( DatabaseManager.DtppCycle.FROM_DATE ) );
         String to = cycle.getString( cycle.getColumnIndex( DatabaseManager.DtppCycle.TO_DATE ) );
 
+        RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
+        TextView tv = (TextView) item.findViewById( R.id.group_name );
+        tv.setVisibility( View.GONE );
+        LinearLayout layout = (LinearLayout) item.findViewById( R.id.group_details );
+        addRow( layout, "Cycle", mTppCycle );
+
         // Parse chart cycle effective dates
         SimpleDateFormat df = new SimpleDateFormat( "HHmm'Z' MM/dd/yy", Locale.US );
         df.setTimeZone( java.util.TimeZone.getTimeZone( "UTC" ) );
-        Date fromDate = null;
         Date toDate = null;
         try {
-            fromDate = df.parse( from );
             toDate = df.parse( to );
         } catch ( ParseException ignored ) {
         }
 
-        // Determine if chart cycle has expired
-        Date now = new Date();
-        if ( now.getTime() > toDate.getTime() ) {
-            mExpired = true;
-        }
+        if ( toDate != null ) {
+            addRow( layout, "Valid", TimeUtils.formatDateTime( getActivity(), toDate.getTime() ) );
 
-        RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
-        TextView tv = (TextView) item.findViewById( R.id.group_name );
-        LinearLayout layout = (LinearLayout) item.findViewById( R.id.group_details );
-        tv.setText( String.format( "Chart Cycle %s", mTppCycle ) );
+            Cursor dtpp = result[ 2 ];
+            dtpp.moveToFirst();
+            String tppVolume = dtpp.getString( 0 );
+            addRow( layout, "Volume", tppVolume );
 
-        Cursor dtpp = result[ 2 ];
-        dtpp.moveToFirst();
-        String tppVolume = dtpp.getString( 0 );
-        addRow( layout, "Volume", tppVolume );
-        addRow( layout, "Valid", TimeUtils.formatDateRange( getActivity(),
-                fromDate.getTime(), toDate.getTime() ) );
-        if ( mExpired ) {
-            addRow( layout, "WARNING: This chart cycle has expired." );
+            // Determine if chart cycle has expired
+            Date now = new Date();
+            if ( now.getTime() > toDate.getTime() ) {
+                mExpired = true;
+                addRow( layout, "WARNING: This chart cycle has expired." );
+            }
         }
 
         topLayout.addView( item, new LinearLayout.LayoutParams(
