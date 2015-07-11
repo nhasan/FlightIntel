@@ -67,19 +67,6 @@ public class WxFragmentBase extends FragmentBase {
         showRefreshMenu( menu, true );
     }
 
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-            case R.id.menu_refresh:
-                setRefreshing( true );
-                requestDataRefresh();
-                return true;
-            default:
-                return super.onOptionsItemSelected( item );
-        }
-    }
-
     protected void setupBroadcastFilter( String action ) {
         mFilter = new IntentFilter();
         mFilter.addAction( action );

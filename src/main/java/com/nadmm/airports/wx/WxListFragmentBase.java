@@ -82,19 +82,6 @@ public class WxListFragmentBase extends ListFragmentBase {
     }
 
     @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-            case R.id.menu_refresh:
-                setRefreshing( true );
-                requestDataRefresh();
-                return true;
-            default:
-                return super.onOptionsItemSelected( item );
-        }
-    }
-
-    @Override
     public boolean isRefreshable() {
         return getListAdapter() != null && !getListAdapter().isEmpty();
     }

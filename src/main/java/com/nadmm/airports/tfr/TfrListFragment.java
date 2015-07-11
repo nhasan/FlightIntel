@@ -117,24 +117,6 @@ public class TfrListFragment extends FragmentBase {
     }
 
     @Override
-    public void requestDataRefresh() {
-        requestTfrList( true );
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-            case R.id.menu_refresh:
-                setRefreshing( true );
-                requestTfrList( true );
-                return true;
-            default:
-                return super.onOptionsItemSelected( item );
-        }
-    }
-
-    @Override
     public void registerActionbarAutoHideView() {
         getActivityBase().registerActionBarAutoHideListView( mListView );
     }
@@ -153,6 +135,11 @@ public class TfrListFragment extends FragmentBase {
     @Override
     public boolean isRefreshable() {
         return true;
+    }
+
+    @Override
+    public void requestDataRefresh() {
+        requestTfrList( true );
     }
 
     private void onListItemClick( ListView l, View v, int position ) {

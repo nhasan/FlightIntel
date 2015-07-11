@@ -34,7 +34,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -43,6 +42,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.Application;
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.PreferencesActivity;
+import com.nadmm.airports.R;
+import com.nadmm.airports.aeronav.DafdService;
+import com.nadmm.airports.aeronav.DtppActivity;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Aff3;
 import com.nadmm.airports.data.DatabaseManager.Airports;
@@ -60,11 +64,6 @@ import com.nadmm.airports.data.DatabaseManager.Tower6;
 import com.nadmm.airports.data.DatabaseManager.Tower7;
 import com.nadmm.airports.data.DatabaseManager.Tower8;
 import com.nadmm.airports.data.DatabaseManager.Wxs;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.PreferencesActivity;
-import com.nadmm.airports.R;
-import com.nadmm.airports.aeronav.DafdService;
-import com.nadmm.airports.aeronav.DtppActivity;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.notams.AirportNotamActivity;
 import com.nadmm.airports.tfr.TfrListActivity;
@@ -189,19 +188,6 @@ public final class AirportDetailsFragment extends FragmentBase {
         super.onPrepareOptionsMenu( menu );
 
         showRefreshMenu( menu, true );
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-        case R.id.menu_refresh:
-            setRefreshing( true );
-            requestMetars( true );
-            return true;
-        default:
-            return super.onOptionsItemSelected( item );
-        }
     }
 
     @Override
