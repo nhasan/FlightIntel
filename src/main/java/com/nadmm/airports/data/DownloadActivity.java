@@ -41,7 +41,6 @@ public final class DownloadActivity extends FragmentActivityBase {
 
         Bundle args = getIntent().getExtras();
         addFragment( DownloadFragment.class, args );
-
     }
 
     @Override
