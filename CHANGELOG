@@ -1,3 +1,13 @@
+v6.0.1 (7/12/2015)
+==================
+* Bug fixes for the Material design rewrite
+
+v6.0.0 (7/5/2015)
+==================
+* Material Design for FlightIntel is finally ready. Please report bugs on GitHub.
+* Wx should work again. Switched to Operational ADDS as Experimental ADDS was shut off.
+* Donations should work again.
+
 v5.5.4 (1/20/2014)
 ==================
 * Fixed a crash when selecting an airport from search result list
