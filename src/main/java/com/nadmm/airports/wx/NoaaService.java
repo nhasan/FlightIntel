@@ -19,9 +19,18 @@
 
 package com.nadmm.airports.wx;
 
+import android.app.IntentService;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
+
+import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.SystemUtils;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.utils.URIUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -30,16 +39,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.utils.URIUtils;
-
-import android.app.IntentService;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
-
-import com.nadmm.airports.utils.NetworkUtils;
-import com.nadmm.airports.utils.SystemUtils;
 
 public abstract class NoaaService extends IntentService {
 
@@ -77,6 +76,7 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_ICING = "flightintel.intent.action.wx.GET_ICING";
     public static final String ACTION_GET_FA = "flightintel.intent.action.wx.GET_FA";
     public static final String ACTION_GET_FB = "flightintel.intent.action.wx.GET_FB";
+    public static final String ACTION_GET_SATELLITE = "flightintel.intent.action.wx.GET_SATELLITE";
 
     private File mDataDir;
     private HttpClient mHttpClient;

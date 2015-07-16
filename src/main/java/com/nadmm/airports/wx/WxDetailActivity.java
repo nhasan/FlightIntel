@@ -21,10 +21,7 @@ package com.nadmm.airports.wx;
 
 import android.os.Bundle;
 
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.R;
 import com.nadmm.airports.TabPagerActivityBase;
-import com.nadmm.airports.views.ObservableScrollView;
 
 public class WxDetailActivity extends TabPagerActivityBase {
 
@@ -34,6 +31,7 @@ public class WxDetailActivity extends TabPagerActivityBase {
             "PIREP",
             "AIRMET/SIGMET",
             "RADAR",
+            "SATELLITE",
             "PROGNOSIS CHARTS",
             "WINDS/TEMPERATURE",
             "WINDS ALOFT",
@@ -49,6 +47,7 @@ public class WxDetailActivity extends TabPagerActivityBase {
             PirepFragment.class,
             AirSigmetFragment.class,
             RadarFragment.class,
+            SatelliteFragment.class,
             ProgChartFragment.class,
             WindFragment.class,
             WindsAloftFragment.class,
