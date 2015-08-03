@@ -1,4 +1,3 @@
-import org.gradle.api.tasks.wrapper.Wrapper
 
 buildscript
 {
@@ -6,7 +5,7 @@ buildscript
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'com.android.tools.build:gradle:1.3.0'
     }
 }
 
@@ -14,7 +13,7 @@ apply plugin: 'com.android.application'
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
-    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:appcompat-v7:22.2.1'
     compile 'com.google.android.gms:play-services:7.5.0'
 }
 
@@ -26,8 +25,8 @@ android {
         applicationId "com.nadmm.airports"
         minSdkVersion 15
         targetSdkVersion 22
-        versionName "6.0.0"
-        versionCode 6000
+        versionName "6.0.2"
+        versionCode 6002
     }
 
     signingConfigs {
@@ -41,6 +40,4 @@ android {
         }
     }
 
-    task wrapper(type: Wrapper) {
-    }
 }
