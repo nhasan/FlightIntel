@@ -132,14 +132,14 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_426.pdf", "Callback",
+        "Issue 426 (Jul 2015)", "NASA", 523994, "N" );
 insert_book( "periodicals", "cb_425.pdf", "Callback",
-        "Issue 425 (Jun 2015)", "NASA", 744935, "N" );
+        "Issue 425 (Jun 2015)", "NASA", 744935, "" );
 insert_book( "periodicals", "cb_424.pdf", "Callback",
         "Issue 424 (May 2015)", "NASA", 607383, "" );
 insert_book( "periodicals", "cb_423.pdf", "Callback",
         "Issue 423 (Apr 2015)", "NASA", 637565, "" );
-insert_book( "periodicals", "cb_422.pdf", "Callback",
-        "Issue 422 (Mar 2015)", "NASA", 606293, "" );
 insert_book( "periodicals", "14feb-front.pdf", "The Front",
         "Feb 2014", "NOAA", 811510, "" );
 insert_book( "periodicals", "13jun-front.pdf", "The Front",
@@ -148,14 +148,14 @@ insert_book( "periodicals", "13apr-front.pdf", "The Front",
         "Apr 2013", "NOAA", 2475943, "" );
 insert_book( "periodicals", "12dec-front.pdf", "The Front",
         "Dec 2012", "NOAA", 2150530, "" );
+insert_book( "periodicals", "JulAug2015.pdf", "FAA Safety Briefing",
+        "Jul/Aug 2015", "FAA", 8580198, "N" );
 insert_book( "periodicals", "MayJune2015.pdf", "FAA Safety Briefing",
         "May/Jun 2015", "FAA", 5691465, "" );
 insert_book( "periodicals", "MarApr2015.pdf", "FAA Safety Briefing",
         "Mar/Apr 2015", "FAA", 5836207, "" );
 insert_book( "periodicals", "JanFeb2015.pdf", "FAA Safety Briefing",
         "Jan/Feb 2015", "FAA", 6540077, "" );
-insert_book( "periodicals", "NovDec2014.pdf", "FAA Safety Briefing",
-        "Nov/Dec 2014", "FAA", 16200490, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -181,15 +181,15 @@ insert_book( "safety", "takeoff_safety.pdf", "Pilot Guide to Takeoff Safety",
         "2008", "FAA", 2678525, "" );
 
 insert_book( "regs", "aim_150625.pdf", "Aeronautical Information Manual (AIM)",
-        "Jun 2015", "FAA", 13225665, "N" );
+        "Jun 2015", "FAA", 13225665, "" );
 insert_book( "regs", "CFR-2015-title14-vol1.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 1-59", "US GPO 2015", 12844315, "N" );
+        "Parts 1-59", "US GPO 2015", 12844315, "" );
 insert_book( "regs", "CFR-2015-title14-vol2.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 60-109", "US GPO2015 ", 15151964, "" );
+        "Parts 60-109", "US GPO 2015", 15151964, "" );
 insert_book( "regs", "CFR-2015-title14-vol3.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 110-199", "US GPO 2015", 5368153, "" );
-insert_book( "regs", "CFR-2014-title14-vol4.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 200-1199", "US GPO 2014", 16922247, "" );
+insert_book( "regs", "CFR-2015-title14-vol4.pdf", "Federal Aviation Regulations (FAR)",
+        "Parts 200-1199", "US GPO 2015", 16778211, "N" );
 insert_book( "regs", "CFR-2015-title14-vol5.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 1200-1310", "US GPO 2015", 2060784, "" );
 
@@ -235,15 +235,15 @@ insert_book( "testguide", "lsp.pdf", "Airmen Knowledge Test Question Bank",
         "Jan 2014", "Light Sport", 29261, "" );
 
 insert_book( "misc", "AIP_150625.pdf", "Aeronautical Information Publication",
-        "23rd Edition Jun 2015", "FAA", 52986337, "N" );
+        "23rd Edition Jun 2015", "FAA", 52986337, "" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
 insert_book( "misc", "PCG_150625.pdf", "Pilot/Controller Glossary",
-        "Jun 2015", "FAA", 1145058, "N" );
+        "Jun 2015", "FAA", 1145058, "" );
 insert_book( "misc", "RNProadmap.pdf", "Roadmap for Performance-Based Navigation",
         "2006", "FAA", 1513616, "" );
 insert_book( "misc", "ATC_150625.pdf", "ATC Order 7110.65V", 
-        "Jun 2015", "FAA", 4950302, "N" );
+        "Jun 2015", "FAA", 4950302, "" );
 
 insert_book( "canada", "AWS_Guide_EN.pdf", "Aviation Weather Service Guide",
         "Aug 2011", "Nav Canada", 1092048, "" );
