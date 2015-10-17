@@ -86,6 +86,7 @@ insert_category( "regs", "REGULATIONS" );
 insert_category( "risk", "RISK MANAGEMENT" );
 insert_category( "circular", "ADVISORY CIRCULARS" );
 insert_category( "testguide", "TEST GUIDE" );
+insert_category( "pts", "PTS" );
 insert_category( "canada", "CANADA" );
 insert_category( "misc", "MISCELLANEOUS" );
 
@@ -132,14 +133,14 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_429.pdf", "Callback",
+        "Issue 429 (Oct 2015)", "NASA", 193550, "N" );
+insert_book( "periodicals", "cb_428.pdf", "Callback",
+        "Issue 428 (Sep 2015)", "NASA", 196376, "" );
+insert_book( "periodicals", "cb_427.pdf", "Callback",
+        "Issue 427 (Aug 2015)", "NASA", 171351, "" );
 insert_book( "periodicals", "cb_426.pdf", "Callback",
-        "Issue 426 (Jul 2015)", "NASA", 523994, "N" );
-insert_book( "periodicals", "cb_425.pdf", "Callback",
-        "Issue 425 (Jun 2015)", "NASA", 744935, "" );
-insert_book( "periodicals", "cb_424.pdf", "Callback",
-        "Issue 424 (May 2015)", "NASA", 607383, "" );
-insert_book( "periodicals", "cb_423.pdf", "Callback",
-        "Issue 423 (Apr 2015)", "NASA", 637565, "" );
+        "Issue 426 (Jul 2015)", "NASA", 523994, "" );
 insert_book( "periodicals", "14feb-front.pdf", "The Front",
         "Feb 2014", "NOAA", 811510, "" );
 insert_book( "periodicals", "13jun-front.pdf", "The Front",
@@ -148,14 +149,14 @@ insert_book( "periodicals", "13apr-front.pdf", "The Front",
         "Apr 2013", "NOAA", 2475943, "" );
 insert_book( "periodicals", "12dec-front.pdf", "The Front",
         "Dec 2012", "NOAA", 2150530, "" );
+insert_book( "periodicals", "SepOct2015.pdf", "FAA Safety Briefing",
+        "Sep/Oct 2015", "FAA", 3479442, "" );
 insert_book( "periodicals", "JulAug2015.pdf", "FAA Safety Briefing",
-        "Jul/Aug 2015", "FAA", 8580198, "N" );
+        "Jul/Aug 2015", "FAA", 8580198, "" );
 insert_book( "periodicals", "MayJune2015.pdf", "FAA Safety Briefing",
         "May/Jun 2015", "FAA", 5691465, "" );
 insert_book( "periodicals", "MarApr2015.pdf", "FAA Safety Briefing",
         "Mar/Apr 2015", "FAA", 5836207, "" );
-insert_book( "periodicals", "JanFeb2015.pdf", "FAA Safety Briefing",
-        "Jan/Feb 2015", "FAA", 6540077, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -189,7 +190,7 @@ insert_book( "regs", "CFR-2015-title14-vol2.pdf", "Federal Aviation Regulations 
 insert_book( "regs", "CFR-2015-title14-vol3.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 110-199", "US GPO 2015", 5368153, "" );
 insert_book( "regs", "CFR-2015-title14-vol4.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 200-1199", "US GPO 2015", 16778211, "N" );
+        "Parts 200-1199", "US GPO 2015", 16778211, "" );
 insert_book( "regs", "CFR-2015-title14-vol5.pdf", "Federal Aviation Regulations (FAR)",
         "Parts 1200-1310", "US GPO 2015", 2060784, "" );
 
@@ -233,6 +234,23 @@ insert_book( "testguide", "atp.pdf", "Airmen Knowledge Test Question Bank",
         "Feb 2014", "ATP", 394250, "" );
 insert_book( "testguide", "lsp.pdf", "Airmen Knowledge Test Question Bank",
         "Jan 2014", "Light Sport", 29261, "" );
+
+insert_book( "pts", "faa-s-8081-12c.pdf", "Commercial Pilot PTS",
+        "Jun 2012", "FAA-S-8081-12C", 472242, "" );
+insert_book( "pts", "faa-s-8081-14b.pdf", "Private Pilot PTS",
+        "Jun 2012", "FAA-S-8081-14B", 490370, "" );
+insert_book( "pts", "faa-s-8081-29.pdf", "Sport Pilot PTS",
+        "Dec 2004", "FAA-S-8081-29", 583474, "" );
+insert_book( "pts", "faa-s-8081-3a.pdf", "Recreational Pilot PTS",
+        "Aug 2006", "FAA-S-8081-3A", 439253, "" );
+insert_book( "pts", "faa-s-8081-4e.pdf", "Instrument Rating PTS",
+        "Jan 2010", "FAA-S-8081-4E", 283337, "" );
+insert_book( "pts", "faa-s-8081-5f.pdf", "Airline Transport Pilot PTS",
+        "Jul 2008", "FAA-S-8081-5F", 391519, "" );
+insert_book( "pts", "faa-s-8081-6d.pdf", "Flight Instructor PTS",
+        "Dec 2012", "FAA-S-8081-6D", 645207, "" );
+insert_book( "pts", "faa-s-8081-9d.pdf", "Flight Instructor Instrument PTS",
+        "Jul 2010", "FAA-S-8081-9D", 169064, "" );
 
 insert_book( "misc", "AIP_150625.pdf", "Aeronautical Information Publication",
         "23rd Edition Jun 2015", "FAA", 52986337, "" );
