@@ -30,7 +30,7 @@ my $BASE_DIR = shift @ARGV;
 my $dbfile = shift @ARGV;
 
 my $STATIONS_FILE = "$BASE_DIR/wx_stations.txt";
-my $wx_url = "http://weather.aero/dataserver1_4/httpparam?"
+my $wx_url = "http://aviationweather.gov/adds/dataserver_current/httpparam?"
         ."dataSource=stations&requestType=retrieve&format=xml&stationString=~us,~ca";
 my $count = 0;
 
