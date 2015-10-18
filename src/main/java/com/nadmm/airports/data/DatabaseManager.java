@@ -424,6 +424,16 @@ public class DatabaseManager {
         public static final String ILS_REMARKS = "ILS_REMARKS";
     }
 
+    public static final class Aff1 implements BaseColumns {
+        public static final String TABLE_NAME = "aff1";
+        public static final String ARTCC_ID = "ARTCC_ID";
+        public static final String ARTCC_NAME = "ARTCC_NAME";
+        public static final String SITE_LOCATION = "SITE_LOCATION";
+        public static final String FACILITY_TYPE = "FACILITY_TYPE";
+        public static final String ARTCC_LATTITUDE_DEGREES = "ARTCC_LATTITUDE_DEGREES";
+        public static final String ARTCC_LONGITUDE_DEGREES = "ARTCC_LONGITUDE_DEGREES";
+    }
+
     public static final class Aff3 implements BaseColumns {
         public static final String TABLE_NAME = "aff3";
         public static final String ARTCC_ID = "ARTCC_ID";
