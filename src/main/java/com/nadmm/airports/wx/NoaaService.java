@@ -26,9 +26,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.utils.URIUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -36,7 +33,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.net.URI;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
 
@@ -79,11 +75,9 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_SATELLITE = "flightintel.intent.action.wx.GET_SATELLITE";
 
     private File mDataDir;
-    private HttpClient mHttpClient;
 
     public NoaaService( String name, long age ) {
         super( name );
-        mHttpClient = NetworkUtils.getHttpClient();
         mDataDir = SystemUtils.getExternalDir( "wx/"+name );
 
         // Remove any old files from cache first
@@ -114,13 +108,8 @@ public abstract class NoaaService extends IntentService {
 
     protected boolean fetch( String host, String path, String query, File file, boolean compressed )
             throws Exception {
-        URI uri = URIUtils.createURI( "http", host, 80, path, query, null );
-        return fetch( uri, file, compressed );
-    }
-
-    protected boolean fetch( URI uri, File file, boolean compressed ) throws Exception {
-        return NetworkUtils.doHttpGet( this, mHttpClient, uri, file, null, null,
-                compressed? GZIPInputStream.class : null );
+        return NetworkUtils.doHttpGet( this, host, 80, path, query, file, null, null,
+                compressed ? GZIPInputStream.class : null );
     }
 
     protected File getDataFile( String name ) {

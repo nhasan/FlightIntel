@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,14 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.aeronav;
-
-import java.io.File;
-
-import org.apache.http.client.HttpClient;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -32,6 +28,8 @@ import com.nadmm.airports.utils.FileUtils;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
+
+import java.io.File;
 
 public abstract class AeroNavService extends IntentService {
 
@@ -53,12 +51,10 @@ public abstract class AeroNavService extends IntentService {
     private final String AERONAV_HOST = "aeronav.faa.gov";
 
     private final File mDataDir;
-    private final HttpClient mHttpClient;
 
     public AeroNavService( String name ) {
         super( name );
 
-        mHttpClient = NetworkUtils.getHttpClient();
         mDataDir = SystemUtils.getExternalDir( name );
     }
 
@@ -73,7 +69,7 @@ public abstract class AeroNavService extends IntentService {
 
     protected boolean fetch( String path, File file ) {
         try {
-            return NetworkUtils.doHttpGet( this, mHttpClient, AERONAV_HOST, 80, path, null, file );
+            return NetworkUtils.doHttpGet( this, AERONAV_HOST, 80, path, null, file );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "Error: "+e.getMessage() );
         }

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,16 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.tfr;
-
-import java.io.File;
-import java.net.URI;
-import java.util.Date;
-
-import org.apache.http.client.HttpClient;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -34,18 +28,19 @@ import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 
+import java.io.File;
+import java.util.Date;
+
 public abstract class TfrServiceBase extends IntentService {
 
     private  static final String SERVICE_NAME = "tfr";
 
     private final File mDataDir;
-    private final HttpClient mHttpClient;
     private final long TFR_CACHE_MAX_AGE = 15*DateUtils.MINUTE_IN_MILLIS;
 
     public TfrServiceBase() {
         super( SERVICE_NAME );
 
-        mHttpClient = NetworkUtils.getHttpClient();
         mDataDir = SystemUtils.getExternalDir( SERVICE_NAME );
 
         // Remove any old files from cache first
@@ -64,9 +59,9 @@ public abstract class TfrServiceBase extends IntentService {
         }
     }
 
-    protected void fetch( URI uri, File tfrFile ) {
+    protected void fetch( String host, String path, String query, File tfrFile ) {
         try {
-            NetworkUtils.doHttpGet( this, mHttpClient, uri, tfrFile, null, null, null );
+            NetworkUtils.doHttpGet( this, host, 80, path, query, tfrFile, null, null, null );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "TFR: "+e.getMessage() );
         }

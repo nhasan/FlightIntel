@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,18 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.library;
-
-import java.io.File;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.zip.GZIPInputStream;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.utils.URIUtils;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -36,6 +28,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
+
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
 
 public class LibraryService extends IntentService {
 
@@ -53,12 +49,10 @@ public class LibraryService extends IntentService {
     public static final String PDF_PATH = "PDF_PATH";
 
     private final File mDataDir;
-    private final HttpClient mHttpClient;
 
     public LibraryService() {
         super( SERVICE_NAME );
 
-        mHttpClient = NetworkUtils.getHttpClient();
         mDataDir = SystemUtils.getExternalDir( SERVICE_NAME );
     }
 
@@ -115,16 +109,15 @@ public class LibraryService extends IntentService {
 
     private boolean fetch( String category, File pdfFile ) {
         try {
-            String path = LIBRARY_PATH+"/"+category+"/"+pdfFile.getName()+".gz";
-            URI uri = URIUtils.createURI( "http", LIBRARY_HOST, 80, path, null, null );
-
             ProgressReceiver receiver = new ProgressReceiver();
             Bundle result = new Bundle();
             result.putString( NetworkUtils.CONTENT_NAME, pdfFile.getName() );
             result.putString( CATEGORY, category );
 
-            return NetworkUtils.doHttpGet( this, mHttpClient, uri, pdfFile, receiver, result,
-                    GZIPInputStream.class );
+            String path = LIBRARY_PATH+"/"+category+"/"+pdfFile.getName()+".gz";
+            URL url = new URL( "http", LIBRARY_HOST, path );
+
+            return NetworkUtils.doHttpGetGzip( this, url, pdfFile, receiver, result );
         } catch ( Exception e ) {
             UiUtils.showToast( this, e.getMessage() );
         }

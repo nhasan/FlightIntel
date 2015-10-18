@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,21 +14,15 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.tfr;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-
-import org.apache.http.client.utils.URIUtils;
-
 import android.content.Intent;
 
-import com.nadmm.airports.utils.UiUtils;
+import java.io.File;
+import java.util.Collections;
 
 public class TfrService extends TfrServiceBase {
 
@@ -62,13 +56,7 @@ public class TfrService extends TfrServiceBase {
 
         File tfrFile = getFile( TFR_CACHE_NAME );
         if ( !tfrFile.exists() || force ) {
-            URI uri;
-            try {
-                uri = URIUtils.createURI( "http", TFR_HOST, 80, TFR_PATH, TFR_QUERY, null );
-                fetch( uri, tfrFile );
-            } catch ( URISyntaxException e ) {
-                UiUtils.showToast( this, "TFR: "+e.getMessage() );
-            }
+            fetch( TFR_HOST, TFR_PATH, TFR_QUERY, tfrFile );
         }
 
         TfrList tfrList = new TfrList();
