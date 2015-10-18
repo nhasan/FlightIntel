@@ -175,9 +175,9 @@ public class NetworkUtils {
             throw new Exception( "Result cannot be null when receiver is passed" );
         }
 
-        InputStream f;
-        CountingInputStream in;
-        OutputStream out;
+        InputStream f = null;
+        CountingInputStream in = null;
+        OutputStream out = null;
 
         try {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
