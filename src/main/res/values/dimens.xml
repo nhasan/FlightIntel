@@ -51,4 +51,6 @@
     <dimen name="medium_text_size">18sp</dimen>
     <dimen name="clock_text_size">64sp</dimen>
     <dimen name="clock_tenths_text_size">36sp</dimen>
+
+    <dimen name="product_logo_bottom">16dp</dimen>
 </resources>

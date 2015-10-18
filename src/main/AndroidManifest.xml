@@ -20,6 +20,7 @@
         <activity
             android:label="@string/app_name"
             android:name=".FlightIntel"
+            android:theme="@style/Theme.FlightIntel.Launcher"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

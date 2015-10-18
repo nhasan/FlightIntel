@@ -38,6 +38,10 @@
         <item name="searchViewStyle">@style/Widget.FlightIntel.SearchView</item>
     </style>
 
+    <style name="Theme.FlightIntel.Launcher">
+        <item name="android:windowBackground">@drawable/launch_screen</item>
+    </style>
+
     <style name="Theme.Light.Dialog" parent="Theme.AppCompat.Light.Dialog">
     </style>
 
