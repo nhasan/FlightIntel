@@ -47,7 +47,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.format.Time;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -68,14 +67,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nadmm.airports.aeronav.ChartsDownloadActivity;
+import com.nadmm.airports.afd.AfdMainActivity;
+import com.nadmm.airports.clocks.ClocksActivity;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Catalog;
 import com.nadmm.airports.data.DatabaseManager.Nav1;
 import com.nadmm.airports.data.DatabaseManager.States;
-import com.nadmm.airports.aeronav.ChartsDownloadActivity;
-import com.nadmm.airports.afd.AfdMainActivity;
-import com.nadmm.airports.clocks.ClocksActivity;
 import com.nadmm.airports.data.DownloadActivity;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
@@ -95,6 +94,8 @@ import com.nadmm.airports.views.ScrimInsetsScrollView;
 import com.nadmm.airports.wx.WxMainActivity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 
 public class ActivityBase extends AppCompatActivity implements
@@ -296,10 +297,6 @@ public class ActivityBase extends AppCompatActivity implements
             // Lastly, it will rely on the system behavior for back
             super.onBackPressed();
         }
-    }
-
-    //TODO: Remove this
-    protected void setContentView() {
     }
 
     private void setupNavDrawer() {
@@ -928,7 +925,9 @@ public class ActivityBase extends AppCompatActivity implements
         String tag = clss.getSimpleName();
         if ( args != null && args.containsKey( FRAGMENT_TAG_EXTRA ) ) {
             String extra = args.getString( FRAGMENT_TAG_EXTRA );
-            tag = tag.concat( extra );
+            if ( extra != null ) {
+                tag = tag.concat( extra );
+            }
         }
         FragmentManager fm = getSupportFragmentManager();
         Fragment f = fm.findFragmentByTag( tag );
@@ -1086,18 +1085,16 @@ public class ActivityBase extends AppCompatActivity implements
         }
         tv.setText( String.format( "%s MSL elevation - %s MSL TPA %s",
                 FormatUtils.formatFeet( elev_msl ),
-                FormatUtils.formatFeet( elev_msl+tpa_agl ), est ) );
+                FormatUtils.formatFeet( elev_msl + tpa_agl ), est ) );
 
         String s = c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) );
-        Time endDate = new Time();
-        endDate.set( Integer.valueOf( s.substring( 3, 5 ) ),
-                Integer.valueOf( s.substring( 0, 2 ) )-1,
-                Integer.valueOf( s.substring( 6 ) ) );
+        GregorianCalendar endDate = new GregorianCalendar(
+                        Integer.valueOf( s.substring( 6 ) ),
+                        Integer.valueOf( s.substring( 3, 5 ) ),
+                        Integer.valueOf( s.substring( 0, 2 ) ) ) ;
         // Calculate end date of the 56-day cycle
-        endDate.monthDay += 56;
-        endDate.normalize( false );
-        Time now = new Time();
-        now.setToNow();
+        endDate.add( GregorianCalendar.DAY_OF_MONTH, 56 );
+        Calendar now = Calendar.getInstance();
         if ( now.after( endDate ) ) {
             // Show the expired warning
             tv = (TextView) root.findViewById( R.id.expired_label );
