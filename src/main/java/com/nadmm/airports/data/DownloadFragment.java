@@ -63,8 +63,6 @@ import com.nadmm.airports.utils.SectionedCursorAdapter;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -396,8 +394,6 @@ public class DownloadFragment extends FragmentBase {
             } );
 
             try {
-                DefaultHttpClient httpClient = new DefaultHttpClient();
-
                 if ( !DatabaseManager.DATABASE_DIR.exists()
                         && !DatabaseManager.DATABASE_DIR.mkdirs() ) {
                     UiUtils.showToast( mActivity, "Unable to create folder on external storage" );
@@ -414,7 +410,7 @@ public class DownloadFragment extends FragmentBase {
                 };
 
                 Bundle result = new Bundle();
-                NetworkUtils.doHttpGet( mActivity, httpClient, HOST, PORT,
+                NetworkUtils.doHttpGet( mActivity, HOST, PORT,
                         PATH + "/" + data.fileName + ".gz", "uuid=" + UUID.randomUUID().toString(),
                         dbFile, receiver, result, GZIPInputStream.class );
             } catch ( Exception e ) {
@@ -605,7 +601,6 @@ public class DownloadFragment extends FragmentBase {
                     return -1;
                 }
 
-                DefaultHttpClient httpClient = new DefaultHttpClient();
                 File manifest = new File( getActivity().getCacheDir(), MANIFEST );
 
                 boolean fetch = true;
@@ -618,7 +613,7 @@ public class DownloadFragment extends FragmentBase {
                 }
 
                 if ( fetch ) {
-                    NetworkUtils.doHttpGet( mActivity, httpClient, HOST, PORT, PATH + "/" + MANIFEST,
+                    NetworkUtils.doHttpGet( mActivity, HOST, PORT, PATH + "/" + MANIFEST,
                             "uuid=" + UUID.randomUUID().toString(), manifest );
                 }
             } catch ( Exception e ) {
