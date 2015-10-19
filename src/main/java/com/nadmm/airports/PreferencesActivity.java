@@ -19,21 +19,22 @@
 
 package com.nadmm.airports;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.nadmm.airports.utils.UiUtils;
 
 public class PreferencesActivity extends FragmentActivityBase {
 
@@ -87,7 +88,7 @@ public class PreferencesActivity extends FragmentActivityBase {
     protected Fragment addPreferencesFragment() {
         Class clss = PreferencesFragment.class;
         String tag = clss.getSimpleName();
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         Fragment f = fm.findFragmentByTag( tag );
         if ( f == null ) {
             f = Fragment.instantiate( this, clss.getName(), getIntent().getExtras() );
@@ -98,7 +99,7 @@ public class PreferencesActivity extends FragmentActivityBase {
         return f;
     }
 
-    public static class PreferencesFragment extends PreferenceFragment
+    public static class PreferencesFragment extends PreferenceFragmentCompat
             implements OnSharedPreferenceChangeListener {
 
         private SharedPreferences mSharedPrefs;
@@ -107,7 +108,10 @@ public class PreferencesActivity extends FragmentActivityBase {
         @Override
         public void onCreate( Bundle savedInstanceState ) {
             super.onCreate( savedInstanceState );
+        }
 
+        @Override
+        public void onCreatePreferences( Bundle bundle, String s ) {
             addPreferencesFromResource( R.xml.preferences );
             mSharedPrefs = getPreferenceScreen().getSharedPreferences();
         }
@@ -133,13 +137,17 @@ public class PreferencesActivity extends FragmentActivityBase {
 
         @Override
         public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
-            return inflater.inflate( R.layout.preferences_list_layout, container, false );
+            View view = super.onCreateView( inflater, container, savedInstanceState );
+            int actionbarSize = UiUtils.calculateActionBarSize( getActivity() );
+            view.setPadding( view.getPaddingLeft(), actionbarSize,
+                    view.getPaddingRight(), view.getPaddingBottom() );
+            return view;
         }
 
         @SuppressWarnings("deprecation")
         @Override
         public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
-            Preference pref = findPreference( key );
+            android.support.v7.preference.Preference pref = findPreference( key );
             if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
                 String radius = mSharedPrefs.getString( key, "30" );
                 pref.setSummary( "Show locations within "+radius+" NM radius" );

@@ -36,6 +36,8 @@
         <item name="android:dropDownListViewStyle">@style/Widget.FlightIntel.ListView.DropDown</item>
 
         <item name="searchViewStyle">@style/Widget.FlightIntel.SearchView</item>
+
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="Theme.FlightIntel.Launcher">

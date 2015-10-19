@@ -28,7 +28,7 @@
             android:entries="@array/home_screen"
             android:entryValues="@array/home_screen"
             android:defaultValue="@string/afd" />
-        <CheckBoxPreference
+        <SwitchPreferenceCompat
             android:key="always_show_nearby"
             android:title="Always show nearby"
             android:summaryOn="Always show nearby locations"
@@ -44,7 +44,7 @@
                 android:summary="Set the code for your home airport" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Location settings">
-        <CheckBoxPreference
+        <SwitchPreferenceCompat
                 android:key="location_use_gps"
                 android:title="Use GPS for location"
                 android:summaryOn="Using GPS-based accurate location"
@@ -58,13 +58,13 @@
                 android:defaultValue="30" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Airport details">
-        <CheckBoxPreference
+        <SwitchPreferenceCompat
                 android:key="extra_runway_data"
                 android:title="Show extra runway data"
                 android:summaryOn="Showing extended runway information"
                 android:summaryOff="Showing basic runway information"
                 android:defaultValue="false" />
-        <CheckBoxPreference
+        <SwitchPreferenceCompat
                 android:key="show_gps_notams"
                 android:title="Show GPS NOTAMs"
                 android:summaryOn="GPS NOTAMs will also be shown"
@@ -72,13 +72,13 @@
                 android:defaultValue="false" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Miscellaneous">
-        <CheckBoxPreference
+        <SwitchPreferenceCompat
                 android:key="auto_download_on_3G"
                 android:title="Use mobile data freely"
                 android:summaryOn="Do not ask before using mobile data"
                 android:summaryOff="Ask before using mobile data"
                 android:defaultValue="false" />
-        <CheckBoxPreference
+        <SwitchPreferenceCompat
                 android:key="show_local_time"
                 android:title="Show local time"
                 android:summaryOn="Time displayed using local timezone"
