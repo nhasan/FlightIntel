@@ -21,10 +21,8 @@ package com.nadmm.airports.afd;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.v7.preference.PreferenceManager;
 
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.TabPagerActivityBase;
 

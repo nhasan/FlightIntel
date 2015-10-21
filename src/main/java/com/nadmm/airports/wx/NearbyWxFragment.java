@@ -25,11 +25,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.v7.preference.PreferenceManager;
 
+import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.LocationColumns;
-import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.utils.NearbyHelper;
 
 public class NearbyWxFragment extends WxListFragmentBase {

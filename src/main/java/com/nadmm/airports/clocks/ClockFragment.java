@@ -25,17 +25,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
+import android.support.v7.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.nadmm.airports.data.DatabaseManager;
-import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 import java.text.DateFormat;
