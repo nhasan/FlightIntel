@@ -29,8 +29,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.R;
 import com.nadmm.airports.TabPagerActivityBase;
+import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SystemUtils;
 
@@ -107,7 +108,7 @@ public class LibraryActivity extends TabPagerActivityBase {
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_LIBRARY;
+        return R.id.navdrawer_library;
     }
 
     protected void populateTabs( Cursor c ) {

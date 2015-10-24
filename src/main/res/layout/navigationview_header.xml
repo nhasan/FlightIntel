@@ -1,7 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,32 +14,19 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ *onRequestPermissionsResult
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+ -->
 
-package com.nadmm.airports.aeronav;
-
-
-import android.os.Bundle;
-
-import com.nadmm.airports.FragmentActivityBase;
-import com.nadmm.airports.R;
-
-public class ChartsDownloadActivity extends FragmentActivityBase {
-
-    @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        Bundle args = getIntent().getExtras();
-        addFragment( ChartsDownloadFragment.class, args );
-    }
-
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return R.id.navdrawer_charts;
-    }
-
-}
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:orientation="vertical">
+    <ImageView
+        android:src="@drawable/navdrawer_header"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/navdrawer_image_height" />
+</FrameLayout>

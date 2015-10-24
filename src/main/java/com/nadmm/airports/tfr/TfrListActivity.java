@@ -50,7 +50,7 @@ public class TfrListActivity extends FragmentActivityBase {
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_TFR;
+        return R.id.navdrawer_tfr;
     }
 
 }

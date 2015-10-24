@@ -40,7 +40,7 @@ public class ClocksActivity extends FragmentActivityBase {
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_CLOCKS;
+        return R.id.navdrawer_clocks;
     }
 
 }

@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 
 import com.nadmm.airports.PreferencesActivity;
+import com.nadmm.airports.R;
 import com.nadmm.airports.TabPagerActivityBase;
 
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public final class AfdMainActivity extends TabPagerActivityBase {
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_AFD;
+        return R.id.navdrawer_afd;
     }
 
 }

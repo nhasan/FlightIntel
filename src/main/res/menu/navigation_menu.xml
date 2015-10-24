@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/main_group" android:checkableBehavior="single">
+        <item android:id="@+id/navdrawer_afd"
+              android:icon="@drawable/ic_navdrawer_afd"
+              android:title="@string/title_navdrawer_afd" />
+        <item android:id="@+id/navdrawer_wx"
+              android:icon="@drawable/ic_navdrawer_wx"
+              android:title="@string/title_navdrawer_wx" />
+        <item android:id="@+id/navdrawer_tfr"
+              android:icon="@drawable/ic_navdrawer_tfr"
+              android:title="@string/title_navdrawer_tfr" />
+        <item android:id="@+id/navdrawer_library"
+              android:icon="@drawable/ic_navdrawer_library"
+              android:title="@string/title_navdrawer_library" />
+        <item android:id="@+id/navdrawer_charts"
+              android:icon="@drawable/ic_navdrawer_charts"
+              android:title="@string/title_navdrawer_charts" />
+        <item android:id="@+id/navdrawer_scratchpad"
+              android:icon="@drawable/ic_navdrawer_scratchpad"
+              android:title="@string/title_navdrawer_scratchpad" />
+        <item android:id="@+id/navdrawer_clocks"
+              android:icon="@drawable/ic_navdrawer_clocks"
+              android:title="@string/title_navdrawer_clocks" />
+        <item android:id="@+id/navdrawer_e6b"
+              android:icon="@drawable/ic_navdrawer_e6b"
+              android:title="@string/title_navdrawer_e6b" />
+    </group>
+    <group android:id="@+id/settings_group" android:checkableBehavior="single">
+        <item android:id="@+id/navdrawer_settings"
+              android:icon="@drawable/ic_navdrawer_settings"
+              android:title="@string/title_navdrawer_settings" />
+    </group>
+</menu>

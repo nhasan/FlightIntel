@@ -20,32 +20,12 @@
  */
  -->
 
-<com.nadmm.airports.views.ScrimInsetsScrollView
+<android.support.design.widget.NavigationView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/navdrawer"
         android:layout_width="@dimen/navdrawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:id="@+id/navdrawer"
-        android:background="@color/navdrawer_background"
-        android:fitsSystemWindows="true"
-        app:insetForeground="#4000">
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-        <ImageView
-                android:src="@drawable/navdrawer_header"
-                android:scaleType="centerCrop"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/navdrawer_image_height" />
-        <!-- Drawer items -->
-        <LinearLayout
-                android:id="@+id/navdrawer_items_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/item_spacing"
-                android:layout_marginBottom="@dimen/item_spacing"
-                android:orientation="vertical" />
-    </LinearLayout>
-</com.nadmm.airports.views.ScrimInsetsScrollView>
+        app:headerLayout="@layout/navigationview_header"
+        app:menu="@menu/navigation_menu" />

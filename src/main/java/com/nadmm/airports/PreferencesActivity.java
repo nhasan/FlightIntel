@@ -86,6 +86,11 @@ public class PreferencesActivity extends FragmentActivityBase {
         }
     }
 
+    @Override
+    protected int getSelfNavDrawerItem() {
+        return R.id.navdrawer_settings;
+    }
+
     protected Fragment addPreferencesFragment() {
         Class clss = PreferencesFragment.class;
         String tag = clss.getSimpleName();
@@ -121,7 +126,6 @@ public class PreferencesActivity extends FragmentActivityBase {
         public void onResume() {
             super.onResume();
             // Initialize the preference screen
-            onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_SCREEN );
             onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
             onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_AIRPORT );
 
@@ -152,12 +156,9 @@ public class PreferencesActivity extends FragmentActivityBase {
             if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
                 String radius = mSharedPrefs.getString( key, "30" );
                 pref.setSummary( "Show locations within "+radius+" NM radius" );
-            } else if ( key.equals( KEY_HOME_SCREEN ) ) {
-                String home = mSharedPrefs.getString( key, "A/FD" );
-                pref.setSummary( "Show "+home+" at startup" );
             } else if ( key.equals( KEY_HOME_AIRPORT ) ) {
                 String code = mSharedPrefs.getString( KEY_HOME_AIRPORT, "" );
-                if ( code != null && code.length() > 0 ) {
+                if ( code.length() > 0 ) {
                     pref.setSummary( "Home airport set to "+code );
                 } else {
                     pref.setSummary( "Set the code for your home airport" );

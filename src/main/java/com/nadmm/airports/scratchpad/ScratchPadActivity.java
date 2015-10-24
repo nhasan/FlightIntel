@@ -22,6 +22,7 @@ package com.nadmm.airports.scratchpad;
 import android.os.Bundle;
 
 import com.nadmm.airports.FragmentActivityBase;
+import com.nadmm.airports.R;
 
 public class ScratchPadActivity extends FragmentActivityBase {
 
@@ -35,7 +36,7 @@ public class ScratchPadActivity extends FragmentActivityBase {
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_SCRATCHPAD;
+        return R.id.navdrawer_scratchpad;
     }
 
 }

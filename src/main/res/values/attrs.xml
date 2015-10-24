@@ -21,10 +21,6 @@
  -->
 <resources>
 
-    <declare-styleable name="ScrimInsetsView">
-        <attr name="insetForeground" format="reference|color" />
-    </declare-styleable>
-
     <declare-styleable name="BaseTheme">
         <attr name="popupItemBackground" format="reference" />
     </declare-styleable>

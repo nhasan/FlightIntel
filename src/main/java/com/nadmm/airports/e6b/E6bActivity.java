@@ -41,7 +41,7 @@ public class E6bActivity extends FragmentActivityBase {
 
     @Override
     protected int getSelfNavDrawerItem() {
-        return NAVDRAWER_ITEM_E6B;
+        return R.id.navdrawer_e6b;
     }
 
 }
