@@ -21,12 +21,10 @@ package com.nadmm.airports;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 
 import com.nadmm.airports.afd.AfdMainActivity;
-import com.nadmm.airports.wx.WxMainActivity;
 
 public class FlightIntel extends ActivityBase {
 
@@ -53,14 +51,7 @@ public class FlightIntel extends ActivityBase {
             return;
         }
 
-        Resources res = getResources();
-        String afd = res.getString( R.string.afd );
-        String home = prefs.getString( PreferencesActivity.KEY_HOME_SCREEN, afd );
-        if ( home.equals( afd ) ) {
-            intent = new Intent( this, AfdMainActivity.class );
-        } else {
-            intent = new Intent( this, WxMainActivity.class );
-        }
+        intent = new Intent( this, AfdMainActivity.class );
         startActivity( intent );
         finish();
     }

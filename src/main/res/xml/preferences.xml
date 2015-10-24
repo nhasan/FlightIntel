@@ -22,12 +22,6 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="Startup settings">
-        <ListPreference
-            android:key="home_screen"
-            android:title="Home screen"
-            android:entries="@array/home_screen"
-            android:entryValues="@array/home_screen"
-            android:defaultValue="@string/afd" />
         <SwitchPreferenceCompat
             android:key="always_show_nearby"
             android:title="Always show nearby"
