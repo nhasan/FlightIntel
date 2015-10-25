@@ -37,6 +37,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -116,7 +117,6 @@ public class ActivityBase extends AppCompatActivity implements
     private int mActionBarAutoHideSignal = 0;
     private boolean mActionBarShown = true;
 
-    private Intent mIntent = null;
     private Handler mHandler;
 
     private int mProgressBarTopWhenActionBarShown;
@@ -251,25 +251,30 @@ public class ActivityBase extends AppCompatActivity implements
     }
 
     private void setupNavDrawer() {
+        int selfItem = getSelfNavDrawerItem();
+
         mDrawerLayout = (DrawerLayout) findViewById( R.id.drawer_layout );
         if ( mDrawerLayout == null ) {
             return;
         }
         mDrawerLayout.setStatusBarBackgroundColor(
-                getResources().getColor( R.color.color_primary_dark ) );
+                ContextCompat.getColor( this, R.color.color_primary_dark ) );
+
+        mNavigationView = (NavigationView) mDrawerLayout.findViewById( R.id.navdrawer );
+        if ( selfItem == NAVDRAWER_ITEM_INVALID ) {
+            // do not show a nav drawer
+            if ( mNavigationView != null ) {
+                ((ViewGroup) mNavigationView.getParent()).removeView( mNavigationView );
+            }
+            mDrawerLayout = null;
+            return;
+        }
 
         mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout,
                 getActionBarToolbar(), R.string.drawer_open, R.string.drawer_close ) {
 
             public void onDrawerClosed( View view ) {
                 supportInvalidateOptionsMenu();
-
-                if ( mIntent != null ) {
-                    mIntent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
-                    mIntent.setFlags( Intent.FLAG_ACTIVITY_SINGLE_TOP );
-                    startActivity( mIntent );
-                    mIntent = null;
-                }
                 onNavDrawerStateChanged( false, false );
             }
 
@@ -289,21 +294,7 @@ public class ActivityBase extends AppCompatActivity implements
         mDrawerLayout.setDrawerListener( mDrawerToggle );
         updateDrawerToggle();
 
-        int selfItem = getSelfNavDrawerItem();
-
-        mNavigationView = (NavigationView) mDrawerLayout.findViewById( R.id.navdrawer );
-        if ( selfItem == NAVDRAWER_ITEM_INVALID ) {
-            // do not show a nav drawer
-            if ( mNavigationView != null ) {
-                ((ViewGroup) mNavigationView.getParent()).removeView( mNavigationView );
-            }
-            mDrawerLayout = null;
-            return;
-        }
-
-        MenuItem item = mNavigationView.getMenu().findItem( selfItem );
-        item.setChecked( true );
-
+        // Initialize navigation drawer
         mNavigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -326,6 +317,8 @@ public class ActivityBase extends AppCompatActivity implements
                         return false;
                     }
                 } );
+        MenuItem item = mNavigationView.getMenu().findItem( selfItem );
+        item.setChecked( true );
     }
 
     protected void updateDrawerToggle() {
@@ -662,7 +655,7 @@ public class ActivityBase extends AppCompatActivity implements
 
     public View createContentView( View view ) {
         FrameLayout root = new FrameLayout( this );
-        int white = getResources().getColor( android.R.color.white );
+        int white = ContextCompat.getColor( this, android.R.color.white );
         root.setBackgroundColor( white );
         root.setDrawingCacheBackgroundColor( white );
         root.setLayoutParams( new FrameLayout.LayoutParams(
