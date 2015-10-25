@@ -21,11 +21,11 @@ package com.nadmm.airports;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 
 import com.nadmm.airports.utils.PagerAdapter;
-import com.nadmm.airports.views.SlidingTabLayout;
 
 import java.util.HashMap;
 
@@ -35,7 +35,7 @@ public class TabPagerActivityBase extends ActivityBase {
     private int mCurrentFragmentIndex = -1;
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
-    private SlidingTabLayout mSlidingTabLayout;
+    private TabLayout mTabLayout;
 
     private static final String SAVED_TAB = "saved_tab";
 
@@ -48,20 +48,24 @@ public class TabPagerActivityBase extends ActivityBase {
         mViewPager = (ViewPager) findViewById( R.id.view_pager );
         mPagerAdapter = new PagerAdapter( this, getSupportFragmentManager(), mViewPager );
 
-        Resources res = getResources();
-        mSlidingTabLayout = (SlidingTabLayout) findViewById( R.id.sliding_tabs );
-        mSlidingTabLayout.setCustomTabView( R.layout.tab_indicator, android.R.id.text1 );
-        mSlidingTabLayout.setSelectedIndicatorColors( res.getColor( R.color.tab_selected_strip ) );
-        mSlidingTabLayout.setDistributeEvenly( false );
+        mViewPager.addOnPageChangeListener( new ViewPager.SimpleOnPageChangeListener() {
 
-        mSlidingTabLayout.setOnPageChangeListener( new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled( int position, float v, int i1 ) {
+            public void onPageScrollStateChanged( int state ) {
+                // Disable the swipe refresh while moving between pages
+                if ( getCurrentFragment().isRefreshable() ) {
+                    enableDisableSwipeRefresh( state == ViewPager.SCROLL_STATE_IDLE );
+                }
             }
+        } );
+
+        Resources res = getResources();
+        mTabLayout = (TabLayout) findViewById( R.id.sliding_tabs );
+
+        mTabLayout.setOnTabSelectedListener( new TabLayout.OnTabSelectedListener() {
 
             @Override
-            public void onPageSelected( int position ) {
-                mCurrentFragmentIndex = position;
+            public void onTabSelected( TabLayout.Tab tab ) {
+                mCurrentFragmentIndex = tab.getPosition();
                 enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
                 // Show the actionbar when a new page is selected
                 resetActionBarAutoHide();
@@ -69,9 +73,11 @@ public class TabPagerActivityBase extends ActivityBase {
             }
 
             @Override
-            public void onPageScrollStateChanged( int state ) {
-                enableDisableSwipeRefresh( state == ViewPager.SCROLL_STATE_IDLE
-                        && getCurrentFragment().isRefreshable() );
+            public void onTabUnselected( TabLayout.Tab tab ) {
+            }
+
+            @Override
+            public void onTabReselected( TabLayout.Tab tab ) {
             }
         } );
     }
@@ -80,8 +86,7 @@ public class TabPagerActivityBase extends ActivityBase {
     protected void onPostCreate( Bundle savedInstanceState ) {
         super.onPostCreate( savedInstanceState );
 
-        // Set the adapter here after subclass has added items to the adapter in onCreate()
-        mSlidingTabLayout.setViewPager( mViewPager );
+        mTabLayout.setupWithViewPager( mViewPager );
 
         if ( savedInstanceState != null ) {
             mCurrentFragmentIndex = savedInstanceState.getInt( SAVED_TAB );
@@ -89,16 +94,6 @@ public class TabPagerActivityBase extends ActivityBase {
             mCurrentFragmentIndex = getInitialTabIndex();
         }
         mViewPager.setCurrentItem( mCurrentFragmentIndex );
-        // We use this trick because ViewPager does not call the onPageSelected callback
-        // when setting the current page to 0. Due to this we need to enable/disable
-        // swipe refresh explicitly here. Also, we are calling this delayed to allow
-        // the viewpager to instantiate fragments first.
-        postRunnable( new Runnable() {
-            @Override
-            public void run() {
-                enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
-            }
-        }, 0 );
     }
 
     @Override
