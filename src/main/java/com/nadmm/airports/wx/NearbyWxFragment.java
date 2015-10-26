@@ -19,99 +19,34 @@
 
 package com.nadmm.airports.wx;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.preference.PreferenceManager;
 
-import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.data.DatabaseManager;
-import com.nadmm.airports.data.DatabaseManager.LocationColumns;
-import com.nadmm.airports.utils.NearbyHelper;
 
 public class NearbyWxFragment extends WxListFragmentBase {
-
-    private NearbyHelper mNearbyHelper;
-    private int mRadius;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( getActivity() );
-        mRadius = Integer.valueOf( prefs.getString(
-                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
-
         setEmptyText( "No wx stations found nearby." );
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-
-        startLocationUpdates();
+    protected LocationTask newLocationTask() {
+        return new NearbyWxTask();
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        stopLocationUpdates();
-    }
-
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
-
-        Location location = null;
-        Bundle args = getArguments();
-        if ( args != null ) {
-            location = args.getParcelable( LocationColumns.LOCATION );
-        }
-        if ( location != null ) {
-            // If we are passed a location use that
-            onLocationChanged( location );
-        } else {
-            // Otherwise get the current location updates
-            mNearbyHelper = new NearbyHelper( getActivity(), this );
-        }
-
-        getView().setKeepScreenOn( true );
-
-        getActivityBase().onFragmentStarted( this );
-    }
-
-    @Override
-    public void onLocationChanged( Location location ) {
-        if ( getActivity() != null ) {
-            new NearbyWxTask().execute( location );
-        } else {
-            stopLocationUpdates();
-        }
-    }
-
-    private void startLocationUpdates() {
-        if ( mNearbyHelper != null ) {
-            mNearbyHelper.startLocationUpdates();
-        }
-    }
-
-    private void stopLocationUpdates() {
-        if ( mNearbyHelper != null ) {
-            mNearbyHelper.stopLocationUpdates();
-        }
-    }
-
-    private final class NearbyWxTask extends AsyncTask<Location, Void, Cursor> {
+    private final class NearbyWxTask extends LocationTask {
 
         @Override
         protected Cursor doInBackground( Location... params ) {
             Location location = params[ 0 ];
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            return new NearbyWxCursor( db, location, mRadius );
+            return new NearbyWxCursor( db, location, getNearbyRadius() );
         }
 
         @Override

@@ -21,7 +21,7 @@ package com.nadmm.airports.wx;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
+import android.location.Location;
 import android.os.Bundle;
 
 import com.nadmm.airports.ActivityBase;
@@ -42,7 +42,7 @@ public class FavoriteWxFragment extends WxListFragmentBase {
     public void onResume() {
         super.onResume();
 
-        new FavoriteWxTask().execute( (Void[]) null );
+        new FavoriteWxTask().execute( (Location[]) null );
     }
 
     @Override
@@ -52,10 +52,20 @@ public class FavoriteWxFragment extends WxListFragmentBase {
         getActivityBase().onFragmentStarted( this );
     }
 
-    public class FavoriteWxTask extends AsyncTask<Void, Void, Cursor> {
+    @Override
+    protected LocationTask newLocationTask() {
+        return new FavoriteWxTask();
+    }
+
+    @Override
+    protected boolean isLocationEnabled() {
+        return false;
+    }
+
+    public class FavoriteWxTask extends LocationTask {
 
         @Override
-        protected Cursor doInBackground( Void... params ) {
+        protected Cursor doInBackground( Location... params ) {
             ActivityBase activity = (ActivityBase) getActivity();
             if ( activity == null ) {
                 cancel( false );

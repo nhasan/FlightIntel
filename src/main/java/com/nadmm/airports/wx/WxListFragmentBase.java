@@ -27,21 +27,19 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.CursorAdapter;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
 import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.data.DatabaseManager.Wxs;
-import com.nadmm.airports.ListFragmentBase;
+import com.nadmm.airports.LocationListFragmentBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.data.DatabaseManager.Wxs;
 import com.nadmm.airports.utils.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class WxListFragmentBase extends ListFragmentBase {
+public abstract class WxListFragmentBase extends LocationListFragmentBase {
 
     private HashMap<String, Metar> mStationWx = new HashMap<>();
     private BroadcastReceiver mReceiver;
