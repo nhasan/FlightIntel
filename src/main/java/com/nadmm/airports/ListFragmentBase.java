@@ -21,8 +21,6 @@ package com.nadmm.airports;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.location.Location;
-import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.view.ViewCompat;
@@ -36,7 +34,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public abstract class ListFragmentBase extends FragmentBase implements LocationListener {
+public abstract class ListFragmentBase extends FragmentBase {
 
     public static final String FRAGMENT_ID = "FRAGMENT_ID";
     private static final String LISTVIEW_STATE = "LISTVIEW_STATE";
@@ -162,22 +160,6 @@ public abstract class ListFragmentBase extends FragmentBase implements LocationL
     abstract protected CursorAdapter newListAdapter( Context context, Cursor c );
 
     abstract protected void onListItemClick( ListView l, View v, int position );
-
-    @Override
-    public void onLocationChanged( Location location ) {
-    }
-
-    @Override
-    public void onProviderDisabled( String provider ) {
-    }
-
-    @Override
-    public void onProviderEnabled( String provider ) {
-    }
-
-    @Override
-    public void onStatusChanged( String provider, int status, Bundle extras ) {
-    }
 
     @Override
     public void registerActionbarAutoHideView() {
