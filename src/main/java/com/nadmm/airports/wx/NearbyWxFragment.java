@@ -43,10 +43,9 @@ public class NearbyWxFragment extends WxListFragmentBase {
     private final class NearbyWxTask extends LocationTask {
 
         @Override
-        protected Cursor doInBackground( Location... params ) {
-            Location location = params[ 0 ];
+        protected Cursor doInBackground( Void... params ) {
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            return new NearbyWxCursor( db, location, getNearbyRadius() );
+            return new NearbyWxCursor( db, getLastLocation(), getNearbyRadius() );
         }
 
         @Override

@@ -29,8 +29,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.preference.PreferenceManager;
@@ -40,17 +39,14 @@ import android.view.View;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.utils.GeoUtils;
 
-import java.util.Date;
-
 public abstract class LocationListFragmentBase extends ListFragmentBase
         implements LocationListener {
 
     private LocationManager mLocationManager;
     private int mRadius;
     private boolean mPermissionDenied = false;
-    private boolean mIsUpdatingLocation = true;
-
-    private final long TOO_OLD = 5*DateUtils.MINUTE_IN_MILLIS;
+    private boolean mLocationUpdatesEnabled = true;
+    private Location mLastLocation;
 
     private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
 
@@ -61,9 +57,22 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( getActivity() );
         mRadius = Integer.valueOf(
                 prefs.getString( PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
-        if ( isLocationEnabled() ) {
+
+        Bundle args = getArguments();
+        if ( ( args != null ) && args.containsKey( DatabaseManager.LocationColumns.LOCATION ) ) {
+            mLastLocation = args.getParcelable( DatabaseManager.LocationColumns.LOCATION );
+            if ( mLastLocation != null ) {
+                // A location is passed so current location is not needed
+                mLocationUpdatesEnabled = false;
+            }
+        }
+
+        if ( mLocationUpdatesEnabled ) {
             mLocationManager = (LocationManager) getActivity().getSystemService(
                     Context.LOCATION_SERVICE );
+            if ( mLocationManager == null ) {
+                mLocationUpdatesEnabled = false;
+            }
         }
     }
 
@@ -71,7 +80,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
     public void onResume() {
         super.onResume();
 
-        if ( isLocationEnabled() ) {
+        if ( mLocationUpdatesEnabled ) {
             startLocationUpdates();
         }
     }
@@ -80,7 +89,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
     public void onPause() {
         super.onPause();
 
-        if ( isLocationEnabled() ) {
+        if ( mLocationUpdatesEnabled ) {
             stopLocationUpdates();
         }
     }
@@ -89,18 +98,13 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        Location location = null;
-        Bundle args = getArguments();
-        if ( args != null ) {
-            if ( args.containsKey( DatabaseManager.LocationColumns.LOCATION )) {
-                // Location was passed so disable updates based on current location
-                mIsUpdatingLocation = false;
-                location = args.getParcelable( DatabaseManager.LocationColumns.LOCATION );
-                if ( location != null ) {
-                    // If we are passed a location use that
-                    onLocationChanged( location );
-                }
-            }
+        if ( mLastLocation != null ) {
+            // If we are passed a location use that
+            newLocationTask().execute();
+        } else if ( mLocationManager == null ) {
+            setEmptyText( "Location is not available on this device." );
+            setListShown( false );
+            setFragmentContentShown( true );
         }
 
         getActivityBase().onFragmentStarted( this );
@@ -109,11 +113,10 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
     @Override
     public void onLocationChanged( Location location ) {
         if ( getActivity() != null ) {
-            newLocationTask().execute( location );
+            mLastLocation = location;
+            newLocationTask().execute();
         } else {
-            if ( isLocationEnabled() ) {
-                stopLocationUpdates();
-            }
+            stopLocationUpdates();
         }
     }
 
@@ -130,19 +133,18 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
     }
 
     @Override
-    public void onRequestPermissionsResult( int requestCode, String[] permissions,
-                                            int[] grantResults ) {
+    public void onRequestPermissionsResult( int requestCode, @NonNull String[] permissions,
+                                            @NonNull int[] grantResults ) {
         if ( requestCode == PERMISSION_REQUEST_FINE_LOCATION ) {
             if ( grantResults.length == 1
                     && grantResults[ 0 ] == PackageManager.PERMISSION_GRANTED ) {
+                startLocationUpdates();
             } else {
                 // Set the flag so we do not ask for permission repeatedly during the
                 // fragment lifetime
                 mPermissionDenied = true;
-                Snackbar.make( getView(), "FlightIntel needs location permissions.",
-                        Snackbar.LENGTH_LONG ).show();
                 setEmptyText( "Unable to show nearby locations.\n"
-                        + "Grant location permission by going to:\n"
+                        + "FlightIntel needs location permission.\n"
                         + "Settings -> Apps -> FlightIntel -> Permission" );
                 setListShown( false );
                 setFragmentContentShown( true );
@@ -156,16 +158,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
         if ( ContextCompat.checkSelfPermission(
                 getActivity(), Manifest.permission.ACCESS_FINE_LOCATION )
                 == PackageManager.PERMISSION_GRANTED ) {
-            final Location location = getLastKnownGoodLocation();
-            if ( location != null ) {
-                new Handler( Looper.getMainLooper() ).postDelayed( new Runnable() {
-                    @Override
-                    public void run() {
-                        onLocationChanged( location );
-                    }
-                }, 0 );
-            }
-
             mLocationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
                     30 * DateUtils.SECOND_IN_MILLIS, 0.5f * GeoUtils.METERS_PER_STATUTE_MILE,
                     this );
@@ -186,13 +178,13 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
                         "FlightIntel needs access to device's location.",
                         Snackbar.LENGTH_INDEFINITE )
                         .setAction( android.R.string.ok, new View.OnClickListener() {
-                            @Override
-                            public void onClick( View v ) {
-                                requestPermissions(
-                                        new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
-                                        PERMISSION_REQUEST_FINE_LOCATION );
-                            }
-                        } )
+                @Override
+                public void onClick( View v ) {
+                    requestPermissions(
+                            new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
+                            PERMISSION_REQUEST_FINE_LOCATION );
+                }
+            } )
                         .show();
 
             } else {
@@ -210,41 +202,17 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
         }
     }
 
-    protected Location getLastKnownGoodLocation() {
-        Location location = null;
-        if ( ContextCompat.checkSelfPermission(
-                getActivity(), Manifest.permission.ACCESS_FINE_LOCATION )
-                == PackageManager.PERMISSION_GRANTED ) {
-            // Get the last known location to use a starting point
-            location = mLocationManager.getLastKnownLocation( LocationManager.GPS_PROVIDER );
-            if ( location == null ) {
-                // Try to get last location from network provider
-                location = mLocationManager.getLastKnownLocation( LocationManager.NETWORK_PROVIDER );
-            }
-
-            if ( location != null ) {
-                Date now = new Date();
-                long age = now.getTime() - location.getTime();
-                if ( age > TOO_OLD ) {
-                    // Discard too old
-                    location = null;
-                }
-            }
-        }
-        return location;
-    }
-
     protected int getNearbyRadius() {
         return mRadius;
     }
 
-    protected boolean isLocationEnabled() {
-        return mIsUpdatingLocation;
+    protected Location getLastLocation() {
+        return mLastLocation;
     }
 
     protected abstract LocationTask newLocationTask();
 
-    protected abstract class LocationTask extends AsyncTask<Location, Void, Cursor> {
+    protected abstract class LocationTask extends AsyncTask<Void, Void, Cursor> {
     }
 
 }

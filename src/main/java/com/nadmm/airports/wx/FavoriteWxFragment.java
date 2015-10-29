@@ -42,14 +42,7 @@ public class FavoriteWxFragment extends WxListFragmentBase {
     public void onResume() {
         super.onResume();
 
-        new FavoriteWxTask().execute( (Location[]) null );
-    }
-
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
-
-        getActivityBase().onFragmentStarted( this );
+        new FavoriteWxTask().execute();
     }
 
     @Override
@@ -57,15 +50,10 @@ public class FavoriteWxFragment extends WxListFragmentBase {
         return new FavoriteWxTask();
     }
 
-    @Override
-    protected boolean isLocationEnabled() {
-        return false;
-    }
-
     public class FavoriteWxTask extends LocationTask {
 
         @Override
-        protected Cursor doInBackground( Location... params ) {
+        protected Cursor doInBackground( Void... params ) {
             ActivityBase activity = (ActivityBase) getActivity();
             if ( activity == null ) {
                 cancel( false );
@@ -85,10 +73,8 @@ public class FavoriteWxFragment extends WxListFragmentBase {
 
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
             String selection = Wxs.STATION_ID+" in ("+selectionList+")";
-            Cursor c = WxCursorHelper.query( db, selection, null, null, null,
+            return WxCursorHelper.query( db, selection, null, null, null,
                     Wxs.STATION_NAME, null );
-
-            return c;
         }
 
         @Override
