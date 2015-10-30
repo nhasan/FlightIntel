@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
@@ -36,7 +37,6 @@ import android.widget.TextView;
 
 public abstract class ListFragmentBase extends FragmentBase {
 
-    public static final String FRAGMENT_ID = "FRAGMENT_ID";
     private static final String LISTVIEW_STATE = "LISTVIEW_STATE";
 
     private ListView mListView;
@@ -64,7 +64,8 @@ public abstract class ListFragmentBase extends FragmentBase {
                 onListItemClick( mListView, view, position );
             }
         } );
-        mListView.setCacheColorHint( getResources().getColor( android.R.color.white ) );
+        mListView.setCacheColorHint( ContextCompat.getColor(
+                getActivity(), android.R.color.white ) );
 
         return createContentView( view );
     }
