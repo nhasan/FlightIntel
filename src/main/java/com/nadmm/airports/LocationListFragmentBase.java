@@ -65,6 +65,8 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
                 // A location is passed so current location is not needed
                 mLocationUpdatesEnabled = false;
             }
+        } else {
+            mLastLocation = null;
         }
 
         if ( mLocationUpdatesEnabled ) {
@@ -143,7 +145,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
                 // Set the flag so we do not ask for permission repeatedly during the
                 // fragment lifetime
                 mPermissionDenied = true;
-                setEmptyText( "Unable to show nearby locations.\n"
+                setEmptyText( "Unable to show nearby facilities.\n"
                         + "FlightIntel needs location permission.\n"
                         + "Settings -> Apps -> FlightIntel -> Permission" );
                 setListShown( false );
@@ -178,15 +180,13 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
                         "FlightIntel needs access to device's location.",
                         Snackbar.LENGTH_INDEFINITE )
                         .setAction( android.R.string.ok, new View.OnClickListener() {
-                @Override
-                public void onClick( View v ) {
-                    requestPermissions(
-                            new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
-                            PERMISSION_REQUEST_FINE_LOCATION );
-                }
-            } )
-                        .show();
-
+                    @Override
+                    public void onClick( View v ) {
+                        requestPermissions(
+                                new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
+                                PERMISSION_REQUEST_FINE_LOCATION );
+                    }
+                } ).show();
             } else {
                 requestPermissions( new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
                         PERMISSION_REQUEST_FINE_LOCATION );
