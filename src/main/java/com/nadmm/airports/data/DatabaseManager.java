@@ -19,11 +19,6 @@
 
 package com.nadmm.airports.data;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -31,11 +26,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.os.Environment;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import com.nadmm.airports.FlightIntel;
+import com.nadmm.airports.utils.SystemUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 public class DatabaseManager {
 
@@ -43,13 +42,9 @@ public class DatabaseManager {
 
     private final CatalogDbOpenHelper mCatalogDbHelper;
     private final UserDataDbOpenHelper mUserDataDbHelper;
-    private final Context mContext;
     private final HashMap<String, SQLiteDatabase> mDatabases;
 
-    private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
-            = new File( Environment.getExternalStorageDirectory(),
-                    "Android/data/"+FlightIntel.class.getPackage().getName() );
-    public static File DATABASE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/databases" );
+    private File mDatabaseDir;
 
     public static final String DB_FADDS = "FADDS";
     public static final String DB_DTPP = "DTPP";
@@ -564,10 +559,16 @@ public class DatabaseManager {
     }
 
     private DatabaseManager( Context context ) {
-        mContext = context;
-        mCatalogDbHelper = new CatalogDbOpenHelper( mContext );
-        mUserDataDbHelper = new UserDataDbOpenHelper( mContext );
+        mCatalogDbHelper = new CatalogDbOpenHelper( context );
+        mUserDataDbHelper = new UserDataDbOpenHelper( context );
         mDatabases = new HashMap<>();
+
+        // First entry is always the primary external storage directory
+        mDatabaseDir = SystemUtils.getExternalDir( context, "databases" );
+    }
+
+    public File getDatabaseFile( String dbName ) {
+        return new File( mDatabaseDir, dbName );
     }
 
     public SQLiteDatabase getCatalogDb() {
@@ -592,8 +593,7 @@ public class DatabaseManager {
     public Cursor getCurrentFromCatalog() {
         try {
             SQLiteDatabase db = getCatalogDb();
-            String query = "SELECT *,"
-                +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now') as age"
+            String query = "SELECT *"
                 +" FROM "+Catalog.TABLE_NAME+" c1"
                 +" WHERE "
                     +Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
@@ -602,35 +602,15 @@ public class DatabaseManager {
                     +" AND strftime('%s', c2."+Catalog.START_DATE
                     +") <= strftime('%s', 'now') )";
             return db.rawQuery( query, null );
-        } catch ( Exception ignored ) {
-        }
-        return null;
-    }
-
-    public Cursor getCurrentFromCatalog( String type ) {
-        try {
-            SQLiteDatabase db = getCatalogDb();
-            String query = "SELECT *,"
-                +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now') as age"
-                +" FROM "+Catalog.TABLE_NAME+" c1"
-                +" WHERE "
-                    +Catalog.TYPE+"='"+type+"' AND "
-                    +Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
-                    +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
-                    +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE
-                    +" AND strftime('%s', c2."+Catalog.START_DATE
-                    +") <= strftime('%s', 'now') )";
-            return db.rawQuery( query, null );
-        } catch ( Exception ignored ) {
+        } catch ( Exception e ) {
+            Log.d( e.getClass().getSimpleName(), e.getMessage() );
         }
         return null;
     }
 
     public Cursor getAllFromCatalog() {
         SQLiteDatabase db = getCatalogDb();
-        String query = "SELECT *,"
-            +" strftime('%s', "+Catalog.END_DATE+")-strftime('%s', 'now') as age"
-            +" FROM "+Catalog.TABLE_NAME;
+        String query = "SELECT * FROM "+Catalog.TABLE_NAME;
         return db.rawQuery( query, null );
     }
 
@@ -723,7 +703,7 @@ public class DatabaseManager {
             if ( c.moveToFirst() ) {
                 do {
                     String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
-                    File dbName = new File( DATABASE_DIR,
+                    File dbName = getDatabaseFile(
                             c.getString( c.getColumnIndex( Catalog.DB_NAME ) ) );
                     Log.i( TAG, "Opening db type="+type+", path="+dbName.getPath() );
                     try {
