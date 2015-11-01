@@ -27,12 +27,18 @@ import android.text.format.DateUtils;
 
 import com.nadmm.airports.PreferencesActivity;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
 public class TimeUtils {
+
+    private static final SimpleDateFormat ISO3339_FORMAT =
+            new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.US );
+    private static final SimpleDateFormat ISO3339_MILLIS_FORMAT =
+            new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ", Locale.US );
 
     public static CharSequence formatLongDateTime( long time ) {
         return DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( time ) );
@@ -72,11 +78,11 @@ public class TimeUtils {
     public static String formatDateTimeUTC( Context context, long millis ) {
         String s = DateUtils.formatDateRange( context, millis, millis,
                 DateUtils.FORMAT_24HOUR
-                | DateUtils.FORMAT_SHOW_DATE
-                | DateUtils.FORMAT_SHOW_TIME
-                | DateUtils.FORMAT_NO_YEAR
-                | DateUtils.FORMAT_ABBREV_ALL
-                | DateUtils.FORMAT_UTC );
+                        | DateUtils.FORMAT_SHOW_DATE
+                        | DateUtils.FORMAT_SHOW_TIME
+                        | DateUtils.FORMAT_NO_YEAR
+                        | DateUtils.FORMAT_ABBREV_ALL
+                        | DateUtils.FORMAT_UTC );
         return String.format( "%s UTC", s );
     }
 
@@ -158,6 +164,31 @@ public class TimeUtils {
         SimpleDateFormat tzFormat = new SimpleDateFormat( "'(UTC'Z')'", Locale.US );
         tzFormat.setTimeZone( tz );
         return String.format( "%s %s", tzName, tzFormat.format( now ) );
+    }
+
+    public static String format3339( Date date ) {
+        return ISO3339_FORMAT.format( date );
+    }
+
+    public static Date parse3339( String s ) {
+        // This is needed as SimpleDateFormat does not parse RFC3339 "Z" for UTC.
+        // Convert to ISO8601 format first if using "Z"
+        String iso8601 = s.replaceAll( "Z$", "+00:00" );
+        Date date;
+        try {
+            date = ISO3339_FORMAT.parse( iso8601 );
+        } catch ( ParseException e ) {
+            date = null;
+        }
+
+        if ( date == null ) {
+            try {
+                date = ISO3339_MILLIS_FORMAT.parse( iso8601 );
+            } catch ( ParseException e ) {
+            }
+        }
+
+        return date;
     }
 
 }
