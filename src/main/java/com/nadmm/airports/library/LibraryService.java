@@ -48,12 +48,17 @@ public class LibraryService extends IntentService {
     public static final String BOOK_NAMES = "BOOK_NAMES";
     public static final String PDF_PATH = "PDF_PATH";
 
-    private final File mDataDir;
+    private File mDataDir;
 
     public LibraryService() {
         super( SERVICE_NAME );
+    }
 
-        mDataDir = SystemUtils.getExternalDir( SERVICE_NAME );
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        mDataDir = SystemUtils.getExternalDir( this, SERVICE_NAME );
     }
 
     @Override

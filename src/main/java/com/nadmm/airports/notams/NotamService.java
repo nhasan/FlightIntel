@@ -19,6 +19,14 @@
 
 package com.nadmm.airports.notams;
 
+import android.app.IntentService;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
+import android.text.format.DateUtils;
+
+import com.nadmm.airports.utils.SystemUtils;
+import com.nadmm.airports.utils.UiUtils;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,14 +44,6 @@ import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import android.app.IntentService;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
-import android.text.format.DateUtils;
-
-import com.nadmm.airports.utils.SystemUtils;
-import com.nadmm.airports.utils.UiUtils;
-
 public class NotamService extends IntentService {
 
     private static final String SERVICE_NAME = "notam";
@@ -54,21 +54,22 @@ public class NotamService extends IntentService {
     public static final String NOTAM_PATH = "NOTAM_PATH";
     private static final long NOTAM_CACHE_MAX_AGE = 15*DateUtils.MINUTE_IN_MILLIS;
 
-    private final File NOTAM_DIR;
-    private final URL NOTAM_URL;
+    private final URL NOTAM_URL = new URL( "https://pilotweb.nas.faa.gov"
+            +"/PilotWeb/notamRetrievalByICAOAction.do?method=displayByICAOs" );
     private final String NOTAM_PARAM = "formatType=ICAO&retrieveLocId=%s&reportType=RAW"
             +"&actionType=notamRetrievalByICAOs&openItems=&submit=View%%20NOTAMs";
 
+    private File mDataDir;
+
     public NotamService() throws MalformedURLException {
         super( SERVICE_NAME );
-        NOTAM_DIR = SystemUtils.getExternalDir( SERVICE_NAME );
-        NOTAM_URL = new URL( "https://pilotweb.nas.faa.gov"
-                +"/PilotWeb/notamRetrievalByICAOAction.do?method=displayByICAOs" );
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        mDataDir = SystemUtils.getExternalDir( this, SERVICE_NAME );
 
         cleanupCache();
     }
@@ -76,7 +77,7 @@ public class NotamService extends IntentService {
     @Override
     protected void onHandleIntent( Intent intent ) {
         String icaoCode = intent.getStringExtra( ICAO_CODE );
-        File notamFile = new File( NOTAM_DIR, "NOTAM_"+icaoCode+".txt" );
+        File notamFile = new File( mDataDir, "NOTAM_"+icaoCode+".txt" );
         if ( !notamFile.exists() ) {
             try {
                 fetchNotams( icaoCode, notamFile );
@@ -88,7 +89,6 @@ public class NotamService extends IntentService {
     }
 
     private void fetchNotams( String icaoCode, File notamFile ) throws IOException {
-        InputStream in = null;
         String params = String.format( NOTAM_PARAM, icaoCode );
 
         HttpsURLConnection conn = (HttpsURLConnection) NOTAM_URL.openConnection();
@@ -111,7 +111,7 @@ public class NotamService extends IntentService {
         int response = conn.getResponseCode();
         if ( response == HttpURLConnection.HTTP_OK ) {
             // Request was successful, parse the html to extract notams
-            in = conn.getInputStream();
+            InputStream in = conn.getInputStream();
             ArrayList<String> notams = parseNotamsFromHtml( in );
             in.close();
 
@@ -127,11 +127,11 @@ public class NotamService extends IntentService {
     }
 
     private ArrayList<String> parseNotamsFromHtml( InputStream in ) throws IOException {
-        ArrayList<String> notams = new ArrayList<String>();
+        ArrayList<String> notams = new ArrayList<>();
 
         BufferedReader reader = new BufferedReader( new InputStreamReader( in ) );
 
-        String line = null;
+        String line;
         boolean inside = false;
         StringBuilder builder = null;
         while ( ( line = reader.readLine() ) != null ) {
@@ -175,7 +175,7 @@ public class NotamService extends IntentService {
 
     private void cleanupCache() {
         Date now = new Date();
-        File[] files = NOTAM_DIR.listFiles();
+        File[] files = mDataDir.listFiles();
         for ( File file : files ) {
             long age = now.getTime()-file.lastModified();
             if ( age > NOTAM_CACHE_MAX_AGE ) {

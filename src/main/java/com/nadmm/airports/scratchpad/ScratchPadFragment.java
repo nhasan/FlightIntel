@@ -51,6 +51,7 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
     private FreeHandDrawView mDrawView;
     private View mToolbar;
     private Animation mFadeIn, mFadeOut;
+    private File mImgFile;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -58,6 +59,7 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
 
         mFadeIn = AnimationUtils.loadAnimation( getActivity(), R.anim.fade_in );
         mFadeOut = AnimationUtils.loadAnimation( getActivity(), R.anim.fade_out );
+        mImgFile = SystemUtils.getExternalFile( getActivity(), DIR_NAME, FILE_NAME );
     }
 
     @Override
@@ -98,8 +100,7 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
             @Override
             public void onClick( View v ) {
                 mDrawView.discardBitmap();
-                File file = SystemUtils.getExternalFile( DIR_NAME, FILE_NAME );
-                file.delete();
+                mImgFile.delete();
             }
         } );
 
@@ -112,7 +113,7 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
                 Intent intent = new Intent( Intent.ACTION_SEND );
                 intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
                 intent.setType( "image/*" );
-                Uri uri = Uri.fromFile( SystemUtils.getExternalFile( DIR_NAME, FILE_NAME ) );
+                Uri uri = Uri.fromFile( mImgFile );
                 intent.putExtra( Intent.EXTRA_STREAM, uri );
                 startActivity( Intent.createChooser( intent, "Share Scratchpad" ) );
             }
@@ -155,8 +156,7 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
 
     private void saveBitmap() {
         try {
-            File file = SystemUtils.getExternalFile( DIR_NAME, FILE_NAME );
-            FileOutputStream stream = new FileOutputStream( file );
+            FileOutputStream stream = new FileOutputStream( mImgFile );
             Bitmap bitmap = mDrawView.getBitmap();
             bitmap.compress( CompressFormat.PNG, 0, stream );
         } catch ( FileNotFoundException e ) {
@@ -165,15 +165,14 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
     }
 
     private void loadBitmap() {
-        File file = SystemUtils.getExternalFile( DIR_NAME, FILE_NAME );
-        if ( file.exists() ) {
+        if ( mImgFile.exists() ) {
             try {
-                FileInputStream stream = new FileInputStream( file );
+                FileInputStream stream = new FileInputStream( mImgFile );
                 Bitmap bitmap = BitmapFactory.decodeStream( stream );
                 mDrawView.setBitmap( bitmap );
                 bitmap.recycle();
             } catch ( FileNotFoundException e ) {
-                file.delete();
+                mImgFile.delete();
                 UiUtils.showToast( getActivity(), "Unable to restore scratchpad data" );
             }
         }

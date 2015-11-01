@@ -49,13 +49,21 @@ public abstract class AeroNavService extends IntentService {
     public static final String DOWNLOAD_IF_MISSING = "DOWNLOAD_IF_MISSING";
 
     private final String AERONAV_HOST = "aeronav.faa.gov";
+    private final String mName;
 
-    private final File mDataDir;
+    private File mDataDir;
 
     public AeroNavService( String name ) {
         super( name );
 
-        mDataDir = SystemUtils.getExternalDir( name );
+        mName = name;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        mDataDir = SystemUtils.getExternalDir( this, mName );
     }
 
     protected File getCycleDir( String cycle ) {

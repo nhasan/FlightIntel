@@ -74,14 +74,26 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_FB = "flightintel.intent.action.wx.GET_FB";
     public static final String ACTION_GET_SATELLITE = "flightintel.intent.action.wx.GET_SATELLITE";
 
+    private final String mName;
+    private final long mAge;
+
     private File mDataDir;
 
     public NoaaService( String name, long age ) {
         super( name );
-        mDataDir = SystemUtils.getExternalDir( "wx/"+name );
+
+        mName = name;
+        mAge = age;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        mDataDir = SystemUtils.getExternalDir( this, "wx/"+mName );
 
         // Remove any old files from cache first
-        cleanupCache( mDataDir, age );
+        cleanupCache( mDataDir, mAge );
     }
 
     private void cleanupCache( File dir, long maxAge ) {

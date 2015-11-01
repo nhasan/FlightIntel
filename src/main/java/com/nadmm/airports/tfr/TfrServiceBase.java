@@ -35,13 +35,18 @@ public abstract class TfrServiceBase extends IntentService {
 
     private  static final String SERVICE_NAME = "tfr";
 
-    private final File mDataDir;
+    private File mDataDir;
     private final long TFR_CACHE_MAX_AGE = 15*DateUtils.MINUTE_IN_MILLIS;
 
     public TfrServiceBase() {
         super( SERVICE_NAME );
+    }
 
-        mDataDir = SystemUtils.getExternalDir( SERVICE_NAME );
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        mDataDir = SystemUtils.getExternalDir( this, SERVICE_NAME );
 
         // Remove any old files from cache first
         cleanupCache( mDataDir, TFR_CACHE_MAX_AGE );
