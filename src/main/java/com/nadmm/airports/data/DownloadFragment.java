@@ -41,7 +41,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
-import android.text.format.Time;
 import android.util.Log;
 import android.util.TimeFormatException;
 import android.util.Xml;
@@ -61,6 +60,7 @@ import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 import com.nadmm.airports.utils.SystemUtils;
+import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 import java.io.File;
@@ -99,8 +99,8 @@ public class DownloadFragment extends FragmentBase {
         public int version;
         public String fileName;
         public int size;
-        public Time start;
-        public Time end;
+        public Date start;
+        public Date end;
 
         public DataInfo() {
         }
@@ -129,7 +129,7 @@ public class DownloadFragment extends FragmentBase {
             if ( !type.equals( info.type ) ) {
                 return type.compareTo( info.type );
             }
-            return Time.compare( start, info.start );
+            return start.compareTo( info.start );
         }
 
     }
@@ -251,23 +251,23 @@ public class DownloadFragment extends FragmentBase {
     protected void cleanupExpiredData() {
         SQLiteDatabase catalogDb = mDbManager.getCatalogDb();
 
-        Time now = new Time();
-        now.setToNow();
-        String today = now.format3339( true );
-
         Cursor c = mDbManager.getAllFromCatalog();
         if ( c.moveToFirst() ) {
+            Date now = new Date();
+
             do {
                 // Check and delete all the expired databases
-                String end = c.getString( c.getColumnIndex( DatabaseManager.Catalog.END_DATE ) );
-                if ( end.compareTo( today ) < 0 ) {
+                String s = c.getString( c.getColumnIndex( DatabaseManager.Catalog.END_DATE ) );
+                Date end = TimeUtils.parse3339( s );
+                if ( !end.after( now ) ) {
                     // This database has expired, remove it
                     Integer _id = c.getInt( c.getColumnIndex( DatabaseManager.Catalog._ID ) );
                     String dbName = c.getString( c.getColumnIndex( DatabaseManager.Catalog.DB_NAME ) );
-                    File file = new File( DatabaseManager.DATABASE_DIR, dbName );
+                    File file = mDbManager.getDatabaseFile( dbName );
                     if ( catalogDb.isOpen() && file.delete() ) {
                         // Now delete the catalog entry for the file
-                        catalogDb.delete( DatabaseManager.Catalog.TABLE_NAME, DatabaseManager.Catalog._ID + "=?",
+                        catalogDb.delete( DatabaseManager.Catalog.TABLE_NAME,
+                                DatabaseManager.Catalog._ID + "=?",
                                 new String[]{ Integer.toString( _id ) } );
                     }
                 }
@@ -394,13 +394,7 @@ public class DownloadFragment extends FragmentBase {
             } );
 
             try {
-                if ( !DatabaseManager.DATABASE_DIR.exists()
-                        && !DatabaseManager.DATABASE_DIR.mkdirs() ) {
-                    UiUtils.showToast( mActivity, "Unable to create folder on external storage" );
-                    return -3;
-                }
-
-                File dbFile = new File( DatabaseManager.DATABASE_DIR, data.fileName );
+                File dbFile = mDbManager.getDatabaseFile( data.fileName );
 
                 ResultReceiver receiver = new ResultReceiver( mHandler ) {
                     protected void onReceiveResult( int resultCode, Bundle resultData ) {
@@ -422,16 +416,15 @@ public class DownloadFragment extends FragmentBase {
         }
 
         protected int updateCatalog( DataInfo data ) {
-            Time now = new Time();
-            now.set( System.currentTimeMillis() );
+            Date now = new Date();
             ContentValues values = new ContentValues();
             values.put( DatabaseManager.Catalog.TYPE, data.type );
             values.put( DatabaseManager.Catalog.DESCRIPTION, data.desc );
             values.put( DatabaseManager.Catalog.VERSION, data.version );
-            values.put( DatabaseManager.Catalog.START_DATE, data.start.format3339( false ) );
-            values.put( DatabaseManager.Catalog.END_DATE, data.end.format3339( false ) );
+            values.put( DatabaseManager.Catalog.START_DATE, TimeUtils.format3339( data.start ) );
+            values.put( DatabaseManager.Catalog.END_DATE, TimeUtils.format3339( data.end ) );
             values.put( DatabaseManager.Catalog.DB_NAME, data.fileName );
-            values.put( DatabaseManager.Catalog.INSTALL_DATE, now.format3339( false ) );
+            values.put( DatabaseManager.Catalog.INSTALL_DATE, TimeUtils.format3339( now ) );
 
             Log.i( TAG, "Inserting catalog: type=" + data.type
                     + ", version=" + data.version + ", db=" + data.fileName );
@@ -470,7 +463,7 @@ public class DownloadFragment extends FragmentBase {
                     String dbName = cursor.getString( cursor.getColumnIndex( DatabaseManager.Catalog.DB_NAME ) );
 
                     // Delete the db file on the external device
-                    File file = new File( DatabaseManager.DATABASE_DIR, dbName );
+                    File file = mDbManager.getDatabaseFile( dbName );
                     // Now delete the catalog entry for the file
                     int rows = catalogDb.delete( DatabaseManager.Catalog.TABLE_NAME, "_id=?",
                             new String[]{ Integer.toString( _id ) } );
@@ -560,8 +553,7 @@ public class DownloadFragment extends FragmentBase {
 
         private int getInstalled() {
             mInstalledData.clear();
-            Time now = new Time();
-            now.setToNow();
+            Date now = new Date();
 
             Cursor c = mDbManager.getAllFromCatalog();
             if ( c.moveToFirst() ) {
@@ -574,12 +566,8 @@ public class DownloadFragment extends FragmentBase {
                     String end = c.getString( c.getColumnIndex( DatabaseManager.Catalog.END_DATE ) );
                     Log.i( TAG, info.type + "," + start + "," + end );
                     try {
-                        info.start = new Time();
-                        info.start.parse3339( start );
-                        info.start.normalize( false );
-                        info.end = new Time();
-                        info.end.parse3339( end );
-                        info.end.normalize( false );
+                        info.start = TimeUtils.parse3339( start );
+                        info.end = TimeUtils.parse3339( end );
                         if ( now.before( info.end ) ) {
                             mInstalledData.add( info );
                         }
@@ -683,9 +671,7 @@ public class DownloadFragment extends FragmentBase {
                         new EndTextElementListener() {
                             @Override
                             public void end( String body ) {
-                                info.start = new Time();
-                                info.start.parse3339( body );
-                                info.start.normalize( false );
+                                info.start = TimeUtils.parse3339( body );
                             }
                         }
                 );
@@ -693,9 +679,7 @@ public class DownloadFragment extends FragmentBase {
                         new EndTextElementListener() {
                             @Override
                             public void end( String body ) {
-                                info.end = new Time();
-                                info.end.parse3339( body );
-                                info.end.normalize( false );
+                                info.end = TimeUtils.parse3339( body );
                             }
                         }
                 );
@@ -714,8 +698,7 @@ public class DownloadFragment extends FragmentBase {
         }
 
         private void processManifest() {
-            Time now = new Time();
-            now.setToNow();
+            Date now = new Date();
             Iterator<DataInfo> it = mAvailableData.iterator();
             while ( it.hasNext() ) {
                 DataInfo available = it.next();
@@ -754,7 +737,7 @@ public class DownloadFragment extends FragmentBase {
         private static final String EXPIRED = "EXPIRED";
 
         private int mId = 0;
-        private final long mNow = System.currentTimeMillis();
+        private final Date mNow = new Date();
         private final long mSpeed = 500;
 
         public DownloadCursor() {
@@ -768,12 +751,12 @@ public class DownloadFragment extends FragmentBase {
                     .add( info.type )
                     .add( info.desc )
                     .add( "Effective " + DateUtils.formatDateRange( getActivity(),
-                            info.start.toMillis( false ), info.end.toMillis( false ) + 1000,
+                            info.start.getTime(), info.end.getTime() + 1000,
                             DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_ALL ) )
                     .add( String.format( "%s (%s @ %dkbps)",
                             Formatter.formatShortFileSize( getActivity(), info.size ),
-                            DateUtils.formatElapsedTime( info.size / ( mSpeed * 1024 / 8 ) ), mSpeed ) )
-                    .add( ( mNow > info.end.toMillis( false ) ) ? "Y" : "N" );
+                            DateUtils.formatElapsedTime( info.size/( mSpeed*1024/8 ) ), mSpeed ) )
+                    .add( !mNow.before( info.end )? "Y" : "N" );
         }
 
     }
