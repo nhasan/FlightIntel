@@ -14,13 +14,10 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.utils;
-
-import java.io.File;
-import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,14 +25,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
 
-import com.nadmm.airports.FlightIntel;
+import java.io.File;
+import java.util.List;
 
 public class SystemUtils {
-
-    public static final String EXTERNAL_STORAGE_DATA_DIRECTORY
-            = Environment.getExternalStorageDirectory()
-            + "/Android/data/"+FlightIntel.class.getPackage().getName();
 
     private final static String MIME_TYPE_PDF = "application/pdf";
 
@@ -70,16 +65,12 @@ public class SystemUtils {
         }
     }
 
-    public static File getExternalDir( String dirName ) {
-        File dir = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, dirName );
-        if ( !dir.exists() ) {
-            dir.mkdirs();
-        }
-        return dir;
+    public static File getExternalDir( Context context, String dirName ) {
+        return ContextCompat.getExternalFilesDirs( context, dirName )[ 0 ];
     }
 
-    public static File getExternalFile( String dirName, String fileName ) {
-        File dir = SystemUtils.getExternalDir( dirName );
+    public static File getExternalFile( Context context, String dirName, String fileName ) {
+        File dir = SystemUtils.getExternalDir( context, dirName );
         return new File( dir, fileName );
     }
 
