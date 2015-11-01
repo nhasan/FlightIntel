@@ -87,6 +87,7 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.SystemUtils;
+import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.MultiSwipeRefreshLayout;
 import com.nadmm.airports.views.ObservableScrollView;
@@ -94,6 +95,7 @@ import com.nadmm.airports.wx.WxMainActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 
@@ -837,12 +839,14 @@ public class ActivityBase extends AppCompatActivity implements
 
         // Check if we have any expired data. If yes, then redirect to download activity
         if ( c.moveToFirst() ) {
+            Date now = new Date();
             do {
                 String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
                 installed.add( type );
+                String s = c.getString( c.getColumnIndex( Catalog.END_DATE ) );
+                Date end = TimeUtils.parse3339( s );
 
-                int age = c.getInt( c.getColumnIndex( "age" ) );
-                if ( age <= 0 ) {
+                if ( !now.before( end ) ) {
                     msg = "One or more data items have expired";
                     break;
                 }
