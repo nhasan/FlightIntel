@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ package com.nadmm.airports.wx;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -33,8 +34,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import android.text.format.Time;
-import android.util.TimeFormatException;
+import com.nadmm.airports.utils.TimeUtils;
 
 public class TafParser {
 
@@ -58,6 +58,7 @@ public class TafParser {
         protected Taf.Forecast forecast;
         protected Taf.Temperature temperature;
         private StringBuilder text = new StringBuilder();
+        private Date now = new Date();
 
         public TafHandler( Taf taf ) {
             this.taf = taf;
@@ -73,6 +74,7 @@ public class TafParser {
         public void startElement( String uri, String localName, String qName,
                 Attributes attributes ) throws SAXException {
             if ( qName.equalsIgnoreCase( "taf" ) ) {
+                taf.isValid = false;
             } else if ( qName.equals( "forecast" ) ) {
                 forecast = new Taf.Forecast();
             } else if ( qName.equals( "temperature" ) ) {
@@ -126,67 +128,41 @@ public class TafParser {
             if ( qName.equalsIgnoreCase( "raw_text" ) ) {
                 taf.rawText = text.toString();
             } else if ( qName.equalsIgnoreCase( "issue_time" ) ) {
-                try {
-                    Time time = new Time();
-                    time.parse3339( text.toString() );
-                    taf.issueTime = time.toMillis( true );
-                } catch ( TimeFormatException ignored ) {
-                }
+                Date time = TimeUtils.parse3339( text.toString() );
+                taf.issueTime = time.getTime();
             } else if ( qName.equalsIgnoreCase( "bulletin_time" ) ) {
-                try {
-                    Time time = new Time();
-                    time.parse3339( text.toString() );
-                    taf.bulletinTime = time.toMillis( true );
-                } catch ( TimeFormatException ignored ) {
-                }
+                Date time = TimeUtils.parse3339( text.toString() );
+                taf.bulletinTime = time.getTime();
             } else if ( qName.equalsIgnoreCase( "valid_time_from" ) ) {
-                try {
-                    Time time = new Time();
-                    time.parse3339( text.toString() );
-                    taf.validTimeFrom = time.toMillis( true );
-                } catch ( TimeFormatException ignored ) {
-                }
+                Date time = TimeUtils.parse3339( text.toString() );
+                taf.validTimeFrom = time.getTime();
             } else if ( qName.equalsIgnoreCase( "valid_time_to" ) ) {
-                try {
-                    Time time = new Time();
-                    time.parse3339( text.toString() );
-                    taf.validTimeTo = time.toMillis( true );
-                } catch ( TimeFormatException ignored ) {
-                }
+                Date time = TimeUtils.parse3339( text.toString() );
+                taf.validTimeTo = time.getTime();
             } else if ( qName.equalsIgnoreCase( "elevation_m" ) ) {
                 taf.stationElevationMeters = Float.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "remarks" ) ) {
                 taf.remarks = text.toString();
             } else if ( qName.equalsIgnoreCase( "forecast" ) ) {
-                if ( forecast.wxList.isEmpty() ) {
-                    forecast.wxList.add( WxSymbol.get( "NSW", "" ) );
+                if ( now.getTime() < forecast.timeTo ) {
+                    if ( forecast.wxList.isEmpty() ) {
+                        forecast.wxList.add( WxSymbol.get( "NSW", "" ) );
+                    }
+                    taf.forecasts.add( forecast );
                 }
-                taf.forecasts.add( forecast );
             } else if ( qName.equalsIgnoreCase( "temperature" ) ) {
                 forecast.temperatures.add( temperature );
             } else if ( qName.equalsIgnoreCase( "wx_string" ) ) {
                 WxSymbol.parseWxSymbols( forecast.wxList, text.toString() );
             } else if ( qName.equalsIgnoreCase( "fcst_time_from" ) ) {
-                try {
-                    Time time = new Time();
-                    time.parse3339( text.toString() );
-                    forecast.timeFrom = time.toMillis( true );
-                } catch ( TimeFormatException ignored ) {
-                }
+                Date time = TimeUtils.parse3339( text.toString() );
+                forecast.timeFrom = time.getTime();
             } else if ( qName.equalsIgnoreCase( "fcst_time_to" ) ) {
-                try {
-                    Time time = new Time();
-                    time.parse3339( text.toString() );
-                    forecast.timeTo = time.toMillis( true );
-                } catch ( TimeFormatException ignored ) {
-                }
+                Date time = TimeUtils.parse3339( text.toString() );
+                forecast.timeTo = time.getTime();
             } else if ( qName.equalsIgnoreCase( "time_becoming" ) ) {
-                try {
-                    Time time = new Time();
-                    time.parse3339( text.toString() );
-                    forecast.timeBecoming = time.toMillis( true );
-                } catch ( TimeFormatException ignored ) {
-                }
+                Date time = TimeUtils.parse3339( text.toString() );
+                forecast.timeBecoming = time.getTime();
             } else if ( qName.equalsIgnoreCase( "change_indicator" ) ) {
                 forecast.changeIndicator = text.toString();
             } else if ( qName.equalsIgnoreCase( "probability" ) ) {
@@ -210,12 +186,8 @@ public class TafParser {
             } else if ( qName.equalsIgnoreCase( "vert_vis_ft" ) ) {
                 forecast.vertVisibilityFeet = Integer.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "valid_time" ) ) {
-                try {
-                    Time time = new Time();
-                    time.parse3339( text.toString() );
-                    temperature.validTime = time.toMillis( true );
-                } catch ( TimeFormatException ignored ) {
-                }
+                Date time = TimeUtils.parse3339( text.toString() );
+                temperature.validTime = time.getTime();
             } else if ( qName.equalsIgnoreCase( "sfc_temp_c" ) ) {
                 temperature.surfaceTempCentigrade = Float.valueOf( text.toString() );
             } else if ( qName.equalsIgnoreCase( "taf" ) ) {
