@@ -134,21 +134,15 @@ insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
 insert_book( "periodicals", "cb_429.pdf", "Callback",
-        "Issue 429 (Oct 2015)", "NASA", 193550, "N" );
+        "Issue 429 (Oct 2015)", "NASA", 193550, "" );
 insert_book( "periodicals", "cb_428.pdf", "Callback",
         "Issue 428 (Sep 2015)", "NASA", 196376, "" );
 insert_book( "periodicals", "cb_427.pdf", "Callback",
         "Issue 427 (Aug 2015)", "NASA", 171351, "" );
 insert_book( "periodicals", "cb_426.pdf", "Callback",
         "Issue 426 (Jul 2015)", "NASA", 523994, "" );
-insert_book( "periodicals", "14feb-front.pdf", "The Front",
-        "Feb 2014", "NOAA", 811510, "" );
-insert_book( "periodicals", "13jun-front.pdf", "The Front",
-        "Jun 2013", "NOAA", 2677124, "" );
-insert_book( "periodicals", "13apr-front.pdf", "The Front",
-        "Apr 2013", "NOAA", 2475943, "" );
-insert_book( "periodicals", "12dec-front.pdf", "The Front",
-        "Dec 2012", "NOAA", 2150530, "" );
+insert_book( "periodicals", "NovDec2015.pdf", "FAA Safety Briefing",
+        "Nov/Dec 2015", "FAA", 4918355, "N" );
 insert_book( "periodicals", "SepOct2015.pdf", "FAA Safety Briefing",
         "Sep/Oct 2015", "FAA", 3479442, "" );
 insert_book( "periodicals", "JulAug2015.pdf", "FAA Safety Briefing",
