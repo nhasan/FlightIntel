@@ -29,7 +29,7 @@ my $cycle = shift @ARGV;
 my $TPP_METADATA_FILE = "$BASE_DIR/d-TPP_Metafile.xml";
 #my $dtpp_url = "http://aeronav.faa.gov/d-tpp/$cycle/xml_data/d-TPP_Metafile.xml";
 #my $dtpp_url = "https://nfdc.faa.gov/webContent/dtpp/current.xml";
-my $dtpp_url = "file:///home/nhasan/Downloads/DAFD/d-TPP_Metafile.xml";
+my $dtpp_url = "file:///home/nhasan/Documents/FlightIntel/d-TPP/d-TPP_Metafile.xml";
 my $count = 0;
 
 my $ofh = select STDOUT;
@@ -37,11 +37,10 @@ $| = 1;
 select $ofh;
 
 print "Downloading the d-TPP metafile: ".$dtpp_url."...";
-my $ret = 200;
 my $ret = getstore( $dtpp_url, $TPP_METADATA_FILE );
 if ( $ret != 200 )
 {
-    die "\nERROR: Unable to download d-TPP metadata. $ret\n\n";
+    die "\nERROR: Unable to download d-TPP metadata. HTTP-$ret\n\n";
 }
 print "done\n";
 

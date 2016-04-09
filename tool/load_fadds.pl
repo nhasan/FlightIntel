@@ -1587,7 +1587,7 @@ while ( my $line = <TWR_FILE> )
 {
     ++$i;
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         $dbh->do( "PRAGMA synchronous=ON" );
     }
@@ -1688,7 +1688,7 @@ while ( my $line = <TWR_FILE> )
         $sth_twr9->execute();
     }
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         print( "\rProcessed $i records..." );
         $| = 1;
@@ -1710,7 +1710,7 @@ while ( my $line = <AWOS_FILE> )
 {
     ++$i;
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         $dbh->do( "PRAGMA synchronous=ON" );
     }
@@ -1762,7 +1762,7 @@ while ( my $line = <AWOS_FILE> )
         $sth_awos2->execute();
     }
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         print( "\rProcessed $i records..." );
         $| = 1;
@@ -1792,7 +1792,7 @@ while ( my $line = <NAV_FILE> )
 {
     ++$i;
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         $dbh->do( "PRAGMA synchronous=ON" );
     }
@@ -1870,7 +1870,7 @@ while ( my $line = <NAV_FILE> )
         $sth_nav2->execute();
     }
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         print( "\rProcessed $i records..." );
         $| = 1;
@@ -1892,7 +1892,7 @@ while ( my $line = <ILS_FILE> )
 {
     ++$i;
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         $dbh->do( "PRAGMA synchronous=ON" );
     }
@@ -2028,7 +2028,7 @@ while ( my $line = <ILS_FILE> )
         $sth_ils6->execute();
     }
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         print( "\rProcessed $i records..." );
         $| = 1;
@@ -2050,7 +2050,7 @@ while ( my $line = <AFF_FILE> )
 {
     ++$i;
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         $dbh->do( "PRAGMA synchronous=ON" );
     }
@@ -2136,7 +2136,7 @@ while ( my $line = <AFF_FILE> )
         $sth_aff4->execute();
     }
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         print( "\rProcessed $i records..." );
         $| = 1;
@@ -2158,7 +2158,7 @@ while ( my $line = <WXL_FILE> )
 {
     ++$i;
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         $dbh->do( "PRAGMA synchronous=ON" );
     }
@@ -2204,7 +2204,7 @@ while ( my $line = <WXL_FILE> )
 
     $sth_wxl->execute();
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         print( "\rProcessed $i records..." );
         $| = 1;
@@ -2226,7 +2226,7 @@ while ( my $line = <COM_FILE> )
 {
     ++$i;
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         $dbh->do( "PRAGMA synchronous=ON" );
     }
@@ -2265,7 +2265,7 @@ while ( my $line = <COM_FILE> )
 
     $sth_com->execute();
 
-    if ( ($i % 1000) == 0 )
+    if ( ($i % 100) == 0 )
     {
         print( "\rProcessed $i records..." );
         $| = 1;

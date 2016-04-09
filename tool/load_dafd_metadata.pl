@@ -29,7 +29,7 @@ my $BASE_DIR = shift @ARGV;
 our $cycle = shift @ARGV;
 my $AFD_METADATA_FILE = "$BASE_DIR/d-AFD_Metadata.xml";
 #my $dafd_url = "http://aeronav.faa.gov/afd/afd_$cycle.xml";
-my $dafd_url = "file:///home/nhasan/Downloads/DAFD/afd_$cycle.xml";
+my $dafd_url = "file:///home/nhasan/Documents/FlightIntel/d-AFD/afd_$cycle.xml";
 my $count = 0;
 
 print "Downloading the d-AFD metafile: ".$dafd_url."...";
