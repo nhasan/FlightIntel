@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,7 @@ package com.nadmm.airports.tfr;
 import android.os.Bundle;
 
 import com.nadmm.airports.FragmentActivityBase;
-import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
-import com.nadmm.airports.views.ObservableScrollView;
 
 public class TfrListActivity extends FragmentActivityBase {
 

@@ -22,9 +22,6 @@ package com.nadmm.airports.afd;
 import android.os.Bundle;
 
 import com.nadmm.airports.FragmentActivityBase;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.R;
-import com.nadmm.airports.views.ObservableScrollView;
 
 public class AirportActivity extends FragmentActivityBase {
 
