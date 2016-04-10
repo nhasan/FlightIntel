@@ -39,16 +39,6 @@ public class TfrListActivity extends FragmentActivityBase {
     }
 
     @Override
-    public void onFragmentStarted( FragmentBase fragment ) {
-        super.onFragmentStarted( fragment );
-
-        ObservableScrollView scrollView = (ObservableScrollView) findViewById( R.id.scroll_content );
-        if ( scrollView != null ) {
-            registerActionBarAutoHideScrollView( scrollView );
-        }
-    }
-
-    @Override
     protected int getSelfNavDrawerItem() {
         return R.id.navdrawer_tfr;
     }
