@@ -68,7 +68,7 @@ public class TfrListFragment extends ListFragmentBase {
         tv.setText( "Depicted TFR data may not be a complete listing. Pilots should not use "
                 + "the information for flight planning purposes. For the latest information, "
                 + "call your local Flight Service Station at 1-800-WX-BRIEF." );
-        listView.addFooterView( footer );
+        listView.addFooterView( footer, null, false );
         listView.setFooterDividersEnabled( true );
 
         return view;
@@ -114,9 +114,11 @@ public class TfrListFragment extends ListFragmentBase {
     protected void onListItemClick( ListView l, View v, int position ) {
         ListAdapter adapter = getListView().getAdapter();
         Tfr tfr = (Tfr) adapter.getItem( position );
-        Intent activity = new Intent( getActivity(), TfrDetailActivity.class );
-        activity.putExtra( TfrListActivity.EXTRA_TFR, tfr );
-        startActivity( activity );
+        if ( tfr != null ) {
+            Intent activity = new Intent( getActivity(), TfrDetailActivity.class );
+            activity.putExtra( TfrListActivity.EXTRA_TFR, tfr );
+            startActivity( activity );
+        }
     }
 
     private void requestTfrList( boolean force ) {
