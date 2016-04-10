@@ -485,7 +485,7 @@ public class ActivityBase extends AppCompatActivity implements
     public void onFragmentStarted( FragmentBase fragment ) {
         // Action bar may be hidden when this fragment was attached so make sure it is visible
         autoShowOrHideActionBar( true );
-        fragment.registerActionbarAutoHideView();
+        fragment.registerActionBarAutoHideView();
 
         updateContentTopClearance( fragment );
     }
@@ -522,7 +522,7 @@ public class ActivityBase extends AppCompatActivity implements
 
     public void registerActionBarAutoHideScrollView( final ObservableScrollView scrollView ) {
         scrollView.setCallbacks( new ObservableScrollView.Callbacks() {
-            final int ITEM_SIZE = UiUtils.convertDpToPx( ActivityBase.this, 56 );
+            final int ITEM_SIZE = dpToPx( 56 );
             final int ITEMS_THRESHOLD = 2;
             int lastFvi = 0;
 
@@ -728,7 +728,7 @@ public class ActivityBase extends AppCompatActivity implements
     protected void setContentMsg( String msg ) {
         TextView tv = new TextView( this );
         tv.setGravity( Gravity.CENTER_HORIZONTAL|Gravity.CENTER_VERTICAL );
-        tv.setPadding( 12, 8, 12, 8 );
+        tv.setPadding( dpToPx( 12 ), dpToPx( 8 ), dpToPx( 12 ), dpToPx( 8 ) );
         tv.setText( msg );
         setContentView( createContentView( tv ) );
     }
@@ -1068,6 +1068,10 @@ public class ActivityBase extends AppCompatActivity implements
             }
             actionBar.setTitle( String.format( Locale.US, "%s - %s %s", code, name, type ) );
         }
+    }
+
+    public int dpToPx( float dp ) {
+        return UiUtils.convertDpToPx( this, dp );
     }
 
     protected void setActionBarTitle( Cursor c, String subtitle ) {
