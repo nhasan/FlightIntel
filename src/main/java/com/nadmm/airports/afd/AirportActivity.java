@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,16 +34,6 @@ public class AirportActivity extends FragmentActivityBase {
 
         Bundle args = getIntent().getExtras();
         addFragment( AirportDetailsFragment.class, args );
-    }
-
-    @Override
-    public void onFragmentStarted( FragmentBase fragment ) {
-        super.onFragmentStarted( fragment );
-
-        ObservableScrollView scrollView = (ObservableScrollView) findViewById( R.id.scroll_content );
-        if ( scrollView != null ) {
-            registerActionBarAutoHideScrollView( scrollView );
-        }
     }
 
 }
