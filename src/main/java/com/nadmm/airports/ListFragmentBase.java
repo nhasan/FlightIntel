@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,9 +73,9 @@ public abstract class ListFragmentBase extends FragmentBase {
     @Override
     public void onDestroy() {
         if ( mListView != null ) {
-            CursorAdapter adapter = (CursorAdapter) mListView.getAdapter();
-            if ( adapter != null ) {
-                Cursor c = adapter.getCursor();
+            ListAdapter adapter = mListView.getAdapter();
+            if ( adapter != null && adapter instanceof CursorAdapter ) {
+                Cursor c = ( (CursorAdapter)adapter ).getCursor();
                 c.close();
             }
         }
@@ -116,15 +116,21 @@ public abstract class ListFragmentBase extends FragmentBase {
             return;
         }
 
-        setListShown( c.getCount() > 0 );
-
         CursorAdapter adapter = (CursorAdapter) mListView.getAdapter();
         if ( adapter == null ) {
             adapter = newListAdapter( getActivity(), c );
-            mListView.setAdapter( adapter );
+            setAdapter( adapter );
         } else {
             adapter.changeCursor( c );
+            setListShown( c.getCount() > 0 );
         }
+    }
+
+    public void setAdapter( ListAdapter adapter ) {
+        mListView.setAdapter( adapter );
+
+        int count = adapter == null? 0 : adapter.getCount();
+        setListShown( count > 0 );
 
         if ( mListViewState != null ) {
             mListView.onRestoreInstanceState( mListViewState );
@@ -158,12 +164,15 @@ public abstract class ListFragmentBase extends FragmentBase {
         return mListView;
     }
 
-    abstract protected CursorAdapter newListAdapter( Context context, Cursor c );
+    protected CursorAdapter newListAdapter( Context context, Cursor c )
+    {
+        return null;
+    }
 
     abstract protected void onListItemClick( ListView l, View v, int position );
 
     @Override
-    public void registerActionbarAutoHideView() {
+    public void registerActionBarAutoHideView() {
         getActivityBase().registerActionBarAutoHideListView( getListView() );
     }
 
