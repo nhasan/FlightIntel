@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,6 +84,7 @@ import com.nadmm.airports.wx.WxUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public final class AirportDetailsFragment extends FragmentBase {
@@ -231,7 +232,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         showOperationsDetails( result );
         showAeroNavDetails( result );
         showServicesDetails( result );
-        showOtherDetails( result );
+        showOtherDetails();
 
         requestMetars( false );
 
@@ -379,7 +380,6 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     protected void showAwosDetails( Cursor[] result ) {
-        TextView label = (TextView) findViewById( R.id.detail_awos_label );
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_awos_layout );
         Cursor awos1 = result[ 7 ];
         if ( awos1.moveToFirst() ) {
@@ -429,8 +429,7 @@ public final class AirportDetailsFragment extends FragmentBase {
                 addClickableRow( layout, "More...", intent );
             }
         } else {
-            label.setVisibility( View.GONE );
-            layout.setVisibility( View.GONE );
+            addRow( layout, "No Wx stations found nearby." );
         }
     }
 
@@ -467,7 +466,7 @@ public final class AirportDetailsFragment extends FragmentBase {
                 int initialBearing = Math.round( ( results[ 1 ]+mDeclination+360 )%360 );
                 int finalBearing = Math.round( ( results[ 2 ]+mDeclination+360 )%360 );
 
-                addRow( layout, "Distance from "+mHome, String.format( "%s %s",
+                addRow( layout, "Distance from "+mHome, String.format( Locale.US, "%s %s",
                         FormatUtils.formatNauticalMiles( distance ),
                         GeoUtils.getCardinalDirection( initialBearing ) ) );
                 addRow( layout, "Initial bearing",
@@ -514,15 +513,15 @@ public final class AirportDetailsFragment extends FragmentBase {
         String lon = apt.getString( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
         if ( lat.length() > 0 && lon.length() > 0 ) {
             // Link to the sectional at VFRMAP if location is available
-            Uri uri = Uri.parse( String.format(
-                    "http://vfrmap.com/?type=vfrc&lat=%s&lon=%s&zoom=12", lat, lon ) );
+            Uri uri = Uri.parse( String.format( Locale.US,
+                    "http://vfrmap.com/?type=vfrc&lat=%s&lon=%s&zoom=10", lat, lon ) );
             Intent intent = new Intent( Intent.ACTION_VIEW, uri );
             addClickableRow( layout, "Sectional VFR", sectional, intent );
-            uri = Uri.parse( String.format(
+            uri = Uri.parse( String.format( Locale.US,
                     "http://vfrmap.com/?type=ifrlc&lat=%s&lon=%s&zoom=10", lat, lon ) );
             intent = new Intent( Intent.ACTION_VIEW, uri );
             addClickableRow( layout, "Low-altitude IFR", intent );
-            uri = Uri.parse( String.format(
+            uri = Uri.parse( String.format( Locale.US,
                     "http://vfrmap.com/?type=ehc&lat=%s&lon=%s&zoom=10", lat, lon ) );
             intent = new Intent( Intent.ACTION_VIEW, uri );
             addClickableRow( layout, "High-altitude IFR", intent );
@@ -576,7 +575,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             if ( hours == null || hours.length() == 0 ) {
                 towerValue = "Yes";
             } else {
-                towerValue = String.format( "Yes (%s)", hours );
+                towerValue = String.format( Locale.US, "Yes (%s)", hours );
             }
         } else {
             towerValue = "No";
@@ -608,16 +607,16 @@ public final class AirportDetailsFragment extends FragmentBase {
             String year = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_YEAR ) );
             if ( year.length() > 0 ) {
                 addRow( layout, "Magnetic variation",
-                        String.format( "%d\u00B0 %s (%s)", variation, dir, year ) );
+                        String.format( Locale.US, "%d\u00B0 %s (%s)", variation, dir, year ) );
             } else {
                 addRow( layout, "Magnetic variation",
-                        String.format( "%d\u00B0 %s", variation, dir ) );
+                        String.format( Locale.US, "%d\u00B0 %s", variation, dir ) );
             }
         } else {
             int variation = Math.round( GeoUtils.getMagneticDeclination( mLocation ) );
             dir = ( variation >= 0 )? "W" : "E";
             addRow( layout, "Magnetic variation",
-                    String.format( "%d\u00B0 %s (actual)", Math.abs( variation ), dir ) );
+                    String.format( Locale.US, "%d\u00B0 %s (actual)", Math.abs( variation ), dir ) );
         }
         String intlEntry = apt.getString( apt.getColumnIndex( Airports.INTL_ENTRY_AIRPORT ) );
         if ( intlEntry != null && intlEntry.equals( "Y" ) ) {
@@ -709,11 +708,11 @@ public final class AirportDetailsFragment extends FragmentBase {
         if ( repair.length() == 0 ) {
             repair = "No";
         }
-        addRow( layout, "Powerplant repair", repair );
+        addRow( layout, "Power plant repair", repair );
         addClickableRow( layout, "Other services", ServicesFragment.class, getArguments() );
     }
 
-    protected void showOtherDetails( Cursor[] result ) {
+    protected void showOtherDetails() {
         Bundle args = getArguments();
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_other_layout );
         addClickableRow( layout, "Ownership and contact", OwnershipFragment.class, args );
@@ -748,7 +747,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         if ( mIcaoCode.equals( id ) ) {
             sb.append( ", On-site" );
         } else {
-            sb.append( String.format( ", %.1f NM %s", distance,
+            sb.append( String.format( Locale.US, ", %.1f NM %s", distance,
                     GeoUtils.getCardinalDirection( bearing ) ) );
         }
         String label2 = sb.toString();
@@ -807,7 +806,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
 
         tv = (TextView) row.findViewById( R.id.runway_size );
-        tv.setText( String.format( "%s x %s",
+        tv.setText( String.format( Locale.US, "%s x %s",
                 FormatUtils.formatFeet( length ), FormatUtils.formatFeet( width ) ) );
 
         tv = (TextView) row.findViewById( R.id.runway_surface );
@@ -902,17 +901,17 @@ public final class AirportDetailsFragment extends FragmentBase {
             crossWind = Math.abs( crossWind );
             StringBuilder windInfo = new StringBuilder();
             if ( crossWind > 0 ) {
-                windInfo.append( String.format( "%d %s %s x-wind",
+                windInfo.append( String.format( Locale.US, "%d %s %s x-wind",
                         crossWind, crossWind > 1? "knots" : "knot", side ) );
             } else {
                 windInfo.append( "no x-wind" );
             }
             if ( metar.windGustKnots < Integer.MAX_VALUE ) {
                 double gustFactor = (metar.windGustKnots-metar.windSpeedKnots)/2;
-                windInfo.append( String.format( ", %d knots gust factor",
+                windInfo.append( String.format( Locale.US, ", %d knots gust factor",
                         Math.round( gustFactor ) ) );
             }
-            tv.setText( String.format( "Rwy %s: %s", id, windInfo.toString() ) );
+            tv.setText( String.format( Locale.US, "Rwy %s: %s", id, windInfo.toString() ) );
             tv.setVisibility( View.VISIBLE );
         }
     }
