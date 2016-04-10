@@ -13,4 +13,5 @@ ant.properties
 local.properties
 proguard.cfg
 project.properties
+Airports.iml
 .directory
