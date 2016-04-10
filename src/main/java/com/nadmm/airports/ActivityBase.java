@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,6 +98,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.Locale;
 
 public class ActivityBase extends AppCompatActivity implements
         MultiSwipeRefreshLayout.CanChildScrollUpCallback  {
@@ -293,7 +294,7 @@ public class ActivityBase extends AppCompatActivity implements
                 onBackPressed();
             }
         } );
-        mDrawerLayout.setDrawerListener( mDrawerToggle );
+        mDrawerLayout.addDrawerListener( mDrawerToggle );
         updateDrawerToggle();
 
         // Initialize navigation drawer
@@ -534,10 +535,6 @@ public class ActivityBase extends AppCompatActivity implements
                 lastFvi = firstVisibleItem;
             }
         } );
-    }
-
-    protected void registerHideableHeaderView( View hideableHeaderView ) {
-        registerHideableHeaderView( hideableHeaderView, hideableHeaderView.getBottom() );
     }
 
     protected void registerHideableHeaderView( View hideableHeaderView, int offset ) {
@@ -832,43 +829,46 @@ public class ActivityBase extends AppCompatActivity implements
             return new Intent( this, ExternalStorageActivity.class );
         }
 
-        Cursor c = mDbManager.getCurrentFromCatalog();
-
+        boolean force = false;
         String msg = null;
         HashSet<String> installed = new HashSet<>();
 
-        // Check if we have any expired data. If yes, then redirect to download activity
+        Cursor c = mDbManager.getCurrentFromCatalog();
         if ( c.moveToFirst() ) {
             Date now = new Date();
             do {
                 String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
-                installed.add( type );
                 String s = c.getString( c.getColumnIndex( Catalog.END_DATE ) );
                 Date end = TimeUtils.parse3339( s );
 
                 if ( !now.before( end ) ) {
                     msg = "One or more data items have expired";
-                    break;
                 }
+
+                installed.add( type );
 
                 // Try to make sure we can open the databases
                 SQLiteDatabase db = mDbManager.getDatabase( type );
                 if ( db == null ) {
                     msg = "Database is corrupted. Please delete and re-install";
+                    force = true;
                     break;
                 }
             } while ( c.moveToNext() );
         }
         c.close();
 
-        if ( installed.size() < 4 ) {
+        if ( installed.size() < 4 && msg != null ) {
             msg = "Please download the required database";
+            force = true;
         }
 
         Intent intent = null;
-        if ( msg != null ) {
+        if ( force ) {
             intent = new Intent( this, DownloadActivity.class );
             intent.putExtra( "MSG", msg );
+        } else if ( msg != null && !msg.isEmpty() ) {
+            UiUtils.showToast( this, msg );
         }
 
         return intent;
@@ -887,7 +887,7 @@ public class ActivityBase extends AppCompatActivity implements
         String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
         String type = DataUtils.decodeLandingFaclityType( siteNumber );
-        tv.setText( String.format( "%s %s", name, type ) );
+        tv.setText( String.format( Locale.US, "%s %s", name, type ) );
         tv = (TextView) root.findViewById( R.id.facility_id );
         tv.setTextColor( color );
         tv.setText( code );
@@ -897,12 +897,12 @@ public class ActivityBase extends AppCompatActivity implements
         if ( state == null ) {
             state = c.getString( c.getColumnIndex( Airports.ASSOC_COUNTY ) );
         }
-        tv.setText( String.format( "%s, %s", city, state ) );
+        tv.setText( String.format( Locale.US, "%s, %s", city, state ) );
         tv = (TextView) root.findViewById( R.id.facility_info2 );
         int distance = c.getInt( c.getColumnIndex( Airports.DISTANCE_FROM_CITY_NM ) );
         String dir = c.getString( c.getColumnIndex( Airports.DIRECTION_FROM_CITY ) );
         String status = c.getString( c.getColumnIndex( Airports.STATUS_CODE ) );
-        tv.setText( String.format( "%s, %d miles %s of city center",
+        tv.setText( String.format( Locale.US, "%s, %d miles %s of city center",
                 DataUtils.decodeStatus( status ), distance, dir ) );
         tv = (TextView) root.findViewById( R.id.facility_info3 );
         float elev_msl = c.getFloat( c.getColumnIndex( Airports.ELEVATION_MSL ) );
@@ -912,7 +912,7 @@ public class ActivityBase extends AppCompatActivity implements
             tpa_agl = 1000;
             est = " (est.)";
         }
-        tv.setText( String.format( "%s MSL elevation - %s MSL TPA %s",
+        tv.setText( String.format( Locale.US, "%s MSL elevation - %s MSL TPA %s",
                 FormatUtils.formatFeet( elev_msl ),
                 FormatUtils.formatFeet( elev_msl + tpa_agl ), est ) );
 
@@ -978,15 +978,15 @@ public class ActivityBase extends AppCompatActivity implements
         String name = c.getString( c.getColumnIndex( Nav1.NAVAID_NAME ) );
         String type = c.getString( c.getColumnIndex( Nav1.NAVAID_TYPE ) );
         TextView tv = (TextView) root.findViewById( R.id.navaid_name );
-        tv.setText( String.format( "%s - %s %s", id, name, type ) );
+        tv.setText( String.format( Locale.US, "%s - %s %s", id, name, type ) );
         String city = c.getString( c.getColumnIndex( Nav1.ASSOC_CITY ) );
         String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );
         tv = (TextView) root.findViewById( R.id.navaid_info );
-        tv.setText( String.format( "%s, %s", city, state ) );
+        tv.setText( String.format( Locale.US, "%s, %s", city, state ) );
         String use = c.getString( c.getColumnIndex( Nav1.PUBLIC_USE ) );
         Float elev_msl = c.getFloat( c.getColumnIndex( Nav1.ELEVATION_MSL ) );
         tv = (TextView) root.findViewById( R.id.navaid_info2 );
-        tv.setText( String.format( "%s, %s elevation",
+        tv.setText( String.format( Locale.US, "%s, %s elevation",
                 use.equals( "Y" )? "Public use" : "Private use",
                 FormatUtils.formatFeetMsl( elev_msl ) ) );
         tv = (TextView) root.findViewById( R.id.navaid_morse1 );
@@ -1066,7 +1066,7 @@ public class ActivityBase extends AppCompatActivity implements
             if ( code == null || code.length() == 0 ) {
                 code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
             }
-            actionBar.setTitle( String.format( "%s - %s %s", code, name, type ) );
+            actionBar.setTitle( String.format( Locale.US, "%s - %s %s", code, name, type ) );
         }
     }
 
@@ -1081,7 +1081,7 @@ public class ActivityBase extends AppCompatActivity implements
             String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
             String type = DataUtils.decodeLandingFaclityType( siteNumber );
             String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
-            title = String.format( "%s - %s %s", code, name, type );
+            title = String.format( Locale.US, "%s - %s %s", code, name, type );
         }
 
         setActionBarTitle( title, subtitle );
