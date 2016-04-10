@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2015-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 
 package com.nadmm.airports;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -58,14 +57,24 @@ public class TabPagerActivityBase extends ActivityBase {
             }
         } );
 
-        Resources res = getResources();
         mTabLayout = (TabLayout) findViewById( R.id.sliding_tabs );
+    }
+
+    @Override
+    protected void onPostCreate( Bundle savedInstanceState ) {
+        super.onPostCreate( savedInstanceState );
+
+        mTabLayout.setupWithViewPager( mViewPager );
 
         mTabLayout.setOnTabSelectedListener( new TabLayout.OnTabSelectedListener() {
 
+            int mPosition = -1;
+
             @Override
             public void onTabSelected( TabLayout.Tab tab ) {
-                mCurrentFragmentIndex = tab.getPosition();
+                mPosition = tab.getPosition();
+                mViewPager.setCurrentItem( mPosition );
+                mCurrentFragmentIndex = mPosition;
                 enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
                 // Show the actionbar when a new page is selected
                 resetActionBarAutoHide();
@@ -78,22 +87,24 @@ public class TabPagerActivityBase extends ActivityBase {
 
             @Override
             public void onTabReselected( TabLayout.Tab tab ) {
+                if ( mPosition != tab.getPosition() ) {
+                    onTabSelected( tab );
+                }
             }
         } );
-    }
-
-    @Override
-    protected void onPostCreate( Bundle savedInstanceState ) {
-        super.onPostCreate( savedInstanceState );
-
-        mTabLayout.setupWithViewPager( mViewPager );
 
         if ( savedInstanceState != null ) {
             mCurrentFragmentIndex = savedInstanceState.getInt( SAVED_TAB );
         } else {
             mCurrentFragmentIndex = getInitialTabIndex();
         }
-        mViewPager.setCurrentItem( mCurrentFragmentIndex );
+
+        postRunnable( new Runnable() {
+            @Override
+            public void run() {
+                mTabLayout.getTabAt( mCurrentFragmentIndex ).select();
+            }
+        }, 0 );
     }
 
     @Override
