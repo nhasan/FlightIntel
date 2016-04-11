@@ -35,8 +35,8 @@ public class WxCursorHelper {
             Wxs.STATION_ID,
             Wxs.STATION_NAME,
             Wxs.STATION_ELEVATOIN_METER,
-            "x."+Wxs.STATION_LATITUDE_DEGREES,
-            "x."+Wxs.STATION_LONGITUDE_DEGREES,
+            "w."+Awos1.STATION_LATTITUDE_DEGREES,
+            "w."+Awos1.STATION_LONGITUDE_DEGREES,
             Awos1.WX_SENSOR_IDENT,
             Awos1.WX_SENSOR_TYPE,
             Awos1.STATION_FREQUENCY,
@@ -50,11 +50,11 @@ public class WxCursorHelper {
     public static Cursor query( SQLiteDatabase db, String selection, String[] selectionArgs,
             String groupBy, String having, String sortOrder, String limit ) {
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( Wxs.TABLE_NAME+" x"
+        builder.setTables( Awos1.TABLE_NAME+" w"
                 +" LEFT JOIN "+Airports.TABLE_NAME+" a"
-                +" ON x."+Wxs.STATION_ID+" = a."+Airports.ICAO_CODE
-                +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
-                +" ON w."+Awos1.WX_SENSOR_IDENT+" = a."+Airports.FAA_CODE );
+                +" ON w."+Awos1.WX_SENSOR_IDENT+" = a."+Airports.FAA_CODE
+                +" LEFT JOIN "+Wxs.TABLE_NAME+" x"
+                +" ON x."+Wxs.STATION_ID+" = a."+Airports.ICAO_CODE );
 
         return builder.query( db, sQueryColumns, selection, selectionArgs,
                 groupBy, having, sortOrder, limit );

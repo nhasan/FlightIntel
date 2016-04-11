@@ -26,6 +26,7 @@ import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Awos1;
@@ -48,8 +49,8 @@ public class NearbyWxCursor extends MatrixCursor {
             Airports.ASSOC_CITY,
             Airports.ASSOC_STATE,
             Wxs.STATION_ELEVATOIN_METER,
-            Wxs.STATION_LATITUDE_DEGREES,
-            Wxs.STATION_LONGITUDE_DEGREES,
+            Awos1.STATION_LATTITUDE_DEGREES,
+            Awos1.STATION_LONGITUDE_DEGREES,
             LocationColumns.DISTANCE,
             LocationColumns.BEARING
     };
@@ -70,11 +71,11 @@ public class NearbyWxCursor extends MatrixCursor {
         boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
 
         String selection = "("
-                +"x."+Wxs.STATION_LATITUDE_DEGREES+">=? AND "
-                +"x."+Wxs.STATION_LATITUDE_DEGREES+"<=?"
-                +") AND (x."+Wxs.STATION_LONGITUDE_DEGREES+">=? "
+                +"w."+Awos1.STATION_LATTITUDE_DEGREES+">=? AND "
+                +"w."+Awos1.STATION_LATTITUDE_DEGREES+"<=?"
+                +") AND (w."+Awos1.STATION_LONGITUDE_DEGREES+">=? "
                 +(isCrossingMeridian180? "OR " : "AND ")
-                +"x."+Wxs.STATION_LONGITUDE_DEGREES+"<=?)";
+                +"w."+Awos1.STATION_LONGITUDE_DEGREES+"<=?)";
         String[] selectionArgs = {
                 String.valueOf( Math.toDegrees( radLatMin ) ),
                 String.valueOf( Math.toDegrees( radLatMax ) ),
@@ -95,6 +96,7 @@ public class NearbyWxCursor extends MatrixCursor {
             Arrays.sort( awosList );
 
             for ( AwosData awos : awosList ) {
+                Log.d( "AWOS", awos.ICAO_CODE+" "+awos.SENSOR_IDENT+" "+awos.STATUS+" "+awos.DISTANCE+" "+awos.SENSOR_TYPE );
                 if ( awos.STATUS == null || awos.STATUS.equals( "N" ) ) {
                     continue;
                 }
@@ -152,9 +154,12 @@ public class NearbyWxCursor extends MatrixCursor {
             CITY = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
             STATE = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
             ELEVATION = c.getInt( c.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
-            LATITUDE = c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-            LONGITUDE = c.getDouble( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+            LATITUDE = c.getDouble( c.getColumnIndex( Awos1.STATION_LATTITUDE_DEGREES ) );
+            LONGITUDE = c.getDouble( c.getColumnIndex( Awos1.STATION_LONGITUDE_DEGREES ) );
 
+            if ( ICAO_CODE == null || ICAO_CODE.length() == 0 ) {
+                ICAO_CODE = "K"+SENSOR_IDENT;
+            }
             if ( SENSOR_TYPE == null || SENSOR_TYPE.length() == 0 ) {
                 SENSOR_TYPE = "ASOS/AWOS";
             }
