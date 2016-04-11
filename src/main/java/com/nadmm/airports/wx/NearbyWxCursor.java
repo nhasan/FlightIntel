@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +19,20 @@
 
 package com.nadmm.airports.wx;
 
-import java.util.Arrays;
-
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.provider.BaseColumns;
-import android.util.Log;
+import android.support.annotation.NonNull;
 
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Awos1;
 import com.nadmm.airports.data.DatabaseManager.LocationColumns;
 import com.nadmm.airports.data.DatabaseManager.Wxs;
 import com.nadmm.airports.utils.GeoUtils;
+
+import java.util.Arrays;
 
 public class NearbyWxCursor extends MatrixCursor {
 
@@ -49,8 +49,8 @@ public class NearbyWxCursor extends MatrixCursor {
             Airports.ASSOC_CITY,
             Airports.ASSOC_STATE,
             Wxs.STATION_ELEVATOIN_METER,
-            Awos1.STATION_LATTITUDE_DEGREES,
-            Awos1.STATION_LONGITUDE_DEGREES,
+            Wxs.STATION_LATITUDE_DEGREES,
+            Wxs.STATION_LONGITUDE_DEGREES,
             LocationColumns.DISTANCE,
             LocationColumns.BEARING
     };
@@ -71,11 +71,11 @@ public class NearbyWxCursor extends MatrixCursor {
         boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
 
         String selection = "("
-                +"w."+Awos1.STATION_LATTITUDE_DEGREES+">=? AND "
-                +"w."+Awos1.STATION_LATTITUDE_DEGREES+"<=?"
-                +") AND (w."+Awos1.STATION_LONGITUDE_DEGREES+">=? "
+                +"x."+Wxs.STATION_LATITUDE_DEGREES+">=? AND "
+                +"x."+Wxs.STATION_LATITUDE_DEGREES+"<=?"
+                +") AND (x."+Wxs.STATION_LONGITUDE_DEGREES+">=? "
                 +(isCrossingMeridian180? "OR " : "AND ")
-                +"w."+Awos1.STATION_LONGITUDE_DEGREES+"<=?)";
+                +"x."+Wxs.STATION_LONGITUDE_DEGREES+"<=?)";
         String[] selectionArgs = {
                 String.valueOf( Math.toDegrees( radLatMin ) ),
                 String.valueOf( Math.toDegrees( radLatMax ) ),
@@ -96,8 +96,7 @@ public class NearbyWxCursor extends MatrixCursor {
             Arrays.sort( awosList );
 
             for ( AwosData awos : awosList ) {
-                Log.d( "AWOS", awos.ICAO_CODE+" "+awos.SENSOR_IDENT+" "+awos.STATUS+" "+awos.DISTANCE+" "+awos.SENSOR_TYPE );
-                if ( awos.STATUS == null || awos.STATUS.equals( "N" ) ) {
+                if ( awos.STATUS != null && awos.STATUS.equals( "N" ) ) {
                     continue;
                 }
                 if ( awos.DISTANCE > radius ) {
@@ -154,12 +153,13 @@ public class NearbyWxCursor extends MatrixCursor {
             CITY = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
             STATE = c.getString( c.getColumnIndex( Airports.ASSOC_STATE ) );
             ELEVATION = c.getInt( c.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
-            LATITUDE = c.getDouble( c.getColumnIndex( Awos1.STATION_LATTITUDE_DEGREES ) );
-            LONGITUDE = c.getDouble( c.getColumnIndex( Awos1.STATION_LONGITUDE_DEGREES ) );
+            LATITUDE = c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+            LONGITUDE = c.getDouble( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
 
             if ( ICAO_CODE == null || ICAO_CODE.length() == 0 ) {
                 ICAO_CODE = "K"+SENSOR_IDENT;
             }
+
             if ( SENSOR_TYPE == null || SENSOR_TYPE.length() == 0 ) {
                 SENSOR_TYPE = "ASOS/AWOS";
             }
@@ -173,7 +173,7 @@ public class NearbyWxCursor extends MatrixCursor {
         }
 
         @Override
-        public int compareTo( AwosData another ) {
+        public int compareTo( @NonNull AwosData another ) {
             if ( this.DISTANCE > another.DISTANCE ) {
                 return 1;
             } else if ( this.DISTANCE < another.DISTANCE ) {
