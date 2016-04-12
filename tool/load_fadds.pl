@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 # * GNU General Public License for more details.
 # *
 # * You should have received a copy of the GNU General Public License
-# * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+# * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # */
 
 use strict;
@@ -469,7 +469,7 @@ my $insert_runways_record = "INSERT INTO runways ("
         ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
         ."?, ?, ?, ?, ?, ?, ?, ?, ?)";
- 
+
 my $create_attendance_table = "CREATE TABLE attendance ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."SITE_NUMBER TEXT, "
@@ -534,6 +534,27 @@ my $insert_tower1_record = "INSERT INTO tower1 ("
         ."RADIO_CALL_TOWER, "
         ."RADIO_CALL_APCH, "
         ."RADIO_CALL_DEP"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?"
+        .");";
+
+my $create_tower2_table = "CREATE TABLE tower2 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."FACILITY_ID TEXT, "
+        ."PRIMARY_APPROACH_HOURS TEXT, "
+        ."SECONDARY_APPROACH_HOURS TEXT, "
+        ."PRIMARY_DEPARTURE_HOURS TEXT, "
+        ."SECONDARY_DEPARTURE_HOURS TEXT, "
+        ."CONTROL_TOWER_HOURS TEXT"
+        .");";
+
+my $insert_tower2_record = "INSERT INTO tower2 ("
+        ."FACILITY_ID, "
+        ."PRIMARY_APPROACH_HOURS, "
+        ."SECONDARY_APPROACH_HOURS, "
+        ."PRIMARY_DEPARTURE_HOURS, "
+        ."SECONDARY_DEPARTURE_HOURS, "
+        ."CONTROL_TOWER_HOURS"
         .") VALUES ("
         ."?, ?, ?, ?, ?, ?"
         .");";
@@ -1030,8 +1051,8 @@ my $insert_com_record = "INSERT INTO com ("
 $dbh->do( "DROP TABLE IF EXISTS airports" );
 $dbh->do( $create_airports_table );
 $dbh->do( "CREATE INDEX idx_apt_site_number on airports ( SITE_NUMBER );" );
-#$dbh->do( "CREATE INDEX idx_faa_code on airports ( FAA_CODE );" );
-#$dbh->do( "CREATE INDEX idx_icao_code on airports ( ICAO_CODE );" );
+$dbh->do( "CREATE INDEX idx_faa_code on airports ( FAA_CODE );" );
+$dbh->do( "CREATE INDEX idx_icao_code on airports ( ICAO_CODE );" );
 #$dbh->do( "CREATE INDEX idx_name on airports ( FACILITY_NAME );" );
 #$dbh->do( "CREATE INDEX idx_city on airports ( ASSOC_CITY );" );
 
@@ -1054,6 +1075,11 @@ $dbh->do( "CREATE INDEX idx_ars_site_number on ars ( SITE_NUMBER );" );
 $dbh->do( "DROP TABLE IF EXISTS tower1" );
 $dbh->do( $create_tower1_table );
 $dbh->do( "CREATE INDEX idx_twr1_site_number on tower1 ( SITE_NUMBER );" );
+$dbh->do( "CREATE INDEX idx_twr1_facility_id on tower1 ( FACILITY_ID );" );
+
+$dbh->do( "DROP TABLE IF EXISTS tower2" );
+$dbh->do( $create_tower2_table );
+$dbh->do( "CREATE INDEX idx_twr2_facility_id on tower2 ( FACILITY_ID );" );
 
 $dbh->do( "DROP TABLE IF EXISTS tower3" );
 $dbh->do( $create_tower3_table );
@@ -1145,6 +1171,7 @@ my $sth_att = $dbh->prepare( $insert_attendance_record );
 my $sth_rmk = $dbh->prepare( $insert_remarks_record );
 my $sth_ars = $dbh->prepare( $insert_ars_record );
 my $sth_twr1 = $dbh->prepare( $insert_tower1_record );
+my $sth_twr2 = $dbh->prepare( $insert_tower2_record );
 my $sth_twr3 = $dbh->prepare( $insert_tower3_record );
 my $sth_twr6 = $dbh->prepare( $insert_tower6_record );
 my $sth_twr7 = $dbh->prepare( $insert_tower7_record );
@@ -1517,7 +1544,7 @@ while ( my $line = <APT_FILE> )
         $sth_rwy->bind_param( 68, substrim( $line, 1009,  5  ) );
         #RECIPROCAL_END_LAHSO_RUNWAY
         $sth_rwy->bind_param( 69, substrim( $line, 1014,  7  ) );
- 
+
         $sth_rwy->execute();
     }
     elsif ( $type eq "ATT" )
@@ -1530,7 +1557,7 @@ while ( my $line = <APT_FILE> )
         $sth_att->bind_param( 2, substrim( $line, 16,   2 ) );
         #ATTENDANCE_SCHEDULE
         $sth_att->bind_param( 3, substrim( $line, 18, 108 ) );
- 
+
         $sth_att->execute();
     }
     elsif ( $type eq "RMK" )
@@ -1543,7 +1570,7 @@ while ( my $line = <APT_FILE> )
         $sth_rmk->bind_param( 2, substrim( $line, 16,   13 ) );
         #REMARK_TEXT
         $sth_rmk->bind_param( 3, substrim( $line, 29, 1500 ) );
- 
+
         $sth_rmk->execute();
     }
     elsif ( $type eq "ARS" )
@@ -1558,7 +1585,7 @@ while ( my $line = <APT_FILE> )
         $sth_ars->bind_param( 3, substrim( $line, 23,   3 ) );
         #ARRESTING_DEVICE
         $sth_ars->bind_param( 4, substrim( $line, 26,   9 ) );
- 
+
         $sth_ars->execute();
     }
 
@@ -1608,8 +1635,25 @@ while ( my $line = <TWR_FILE> )
         $sth_twr1->bind_param( 5, capitalize( $line, 856, 26 ) );
         #RADIO_CALL_DEP
         $sth_twr1->bind_param( 6, capitalize( $line, 908, 26 ) );
- 
+
         $sth_twr1->execute();
+    }
+    elsif ( $type eq "TWR2" )
+    {
+        #FACILITY_ID
+        $sth_twr2->bind_param( 1, substrim( $line, 4, 4 ) );
+        #PRIMARY_APPROACH_HOURS
+        $sth_twr2->bind_param( 2, substrim( $line, 608, 200 ) );
+        #SECONDARY_APPROACH_HOURS
+        $sth_twr2->bind_param( 3, substrim( $line, 808, 200 ) );
+        #PRIMARY_DEPARTURE_HOURS
+        $sth_twr2->bind_param( 4, substrim( $line, 1008, 200 ) );
+        #SECONDARY_DEPARTURE_HOURS
+        $sth_twr2->bind_param( 5, substrim( $line, 1208, 200 ) );
+        #CONTROL_TOWER_HOURS
+        $sth_twr2->bind_param( 6, substrim( $line, 1408, 200 ) );
+
+        $sth_twr2->execute();
     }
     elsif ( $type eq "TWR3" )
     {
@@ -1629,7 +1673,7 @@ while ( my $line = <TWR_FILE> )
             $sth_twr3->bind_param( 2, $freq );
             #MASTER_AIRPORT_FREQ_USE
             $sth_twr3->bind_param( 3, $freq_use );
- 
+
             $sth_twr3->execute();
             ++$j;
         }
@@ -1642,7 +1686,7 @@ while ( my $line = <TWR_FILE> )
         $sth_twr6->bind_param( 2, substrim( $line,  8,   5 ) );
         #REMARK_TEXT
         $sth_twr6->bind_param( 3, substrim( $line, 13, 800 ) );
- 
+
         $sth_twr6->execute();
     }
     elsif ( $type eq "TWR7" )
@@ -1657,7 +1701,7 @@ while ( my $line = <TWR_FILE> )
         $sth_twr7->bind_param( 4, substrim( $line, 326, 11 ) );
         #SATELLITE_AIRPORT_FREQ_FULL
         $sth_twr7->bind_param( 5, substrim( $line, 462, 60 ) );
- 
+
         $sth_twr7->execute();
     }
     elsif ( $type eq "TWR8" )
@@ -1669,7 +1713,7 @@ while ( my $line = <TWR_FILE> )
         $sth_twr8->bind_param( 2, substrim( $line,  8,   4 ) );
         #AIRSPACE_HOURS
         $sth_twr8->bind_param( 3, substrim( $line, 12, 300 ) );
- 
+
         $sth_twr8->execute();
     }
     elsif ( $type eq "TWR9" )
@@ -1684,7 +1728,7 @@ while ( my $line = <TWR_FILE> )
         $sth_twr9->bind_param( 4, substrim( $line, 212, 100 ) );
         #ATIS_PHONE
         $sth_twr9->bind_param( 5, substrim( $line, 312,  18 ) );
- 
+
         $sth_twr9->execute();
     }
 
@@ -2084,7 +2128,7 @@ while ( my $line = <AFF_FILE> )
 
         $sth_aff1->execute();
     }
-    elsif ( $type eq "AFF2" ) 
+    elsif ( $type eq "AFF2" )
     {
         #ARTCC_ID
         $sth_aff2->bind_param( 1, substrim( $line,  4,   4 ) );
@@ -2099,7 +2143,7 @@ while ( my $line = <AFF_FILE> )
 
         $sth_aff2->execute();
     }
-    elsif ( $type eq "AFF3" ) 
+    elsif ( $type eq "AFF3" )
     {
         #ARTCC_ID
         $sth_aff3->bind_param( 1, substrim( $line,  4,  4 ) );
@@ -2118,7 +2162,7 @@ while ( my $line = <AFF_FILE> )
 
         $sth_aff3->execute();
     }
-    elsif ( $type eq "AFF4" ) 
+    elsif ( $type eq "AFF4" )
     {
         #ARTCC_ID
         $sth_aff4->bind_param( 1, substrim( $line,  4,   4 ) );
