@@ -557,30 +557,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             addRow( layout, "Airspace", value, hours );
         }
         String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
-        String towerValue;
-        if ( tower.equals( "Y" ) ) {
-            Cursor att = result[ 10 ];
-            String hours = null;
-            if ( att.moveToFirst() && att.getCount() == 1 ) {
-                String schedule = att.getString( att.getColumnIndex(
-                        Attendance.ATTENDANCE_SCHEDULE ) );
-                String[] parts = schedule.split( "/" );
-                if ( parts.length == 3 ) {
-                    hours = parts[ 2 ];
-                    if ( hours.equals( "ALL" ) ) {
-                        hours = "24 Hours";
-                    }
-                }
-            }
-            if ( hours == null || hours.length() == 0 ) {
-                towerValue = "Yes";
-            } else {
-                towerValue = String.format( Locale.US, "Yes (%s)", hours );
-            }
-        } else {
-            towerValue = "No";
-        }
-        addRow( layout, "Control tower", towerValue );
+        addRow( layout, "Control tower", tower.equals( "Y" )? "Yes" : "No" );
         String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
         addRow( layout, "Wind indicator", DataUtils.decodeWindIndicator( windIndicator ) );
         String circle = apt.getString( apt.getColumnIndex( Airports.SEGMENTED_CIRCLE ) );
