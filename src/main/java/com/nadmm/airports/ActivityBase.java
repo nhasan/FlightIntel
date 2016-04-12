@@ -844,9 +844,6 @@ public class ActivityBase extends AppCompatActivity implements
                 if ( !now.before( end ) ) {
                     msg = "One or more data items have expired";
                 }
-
-                installed.add( type );
-
                 // Try to make sure we can open the databases
                 SQLiteDatabase db = mDbManager.getDatabase( type );
                 if ( db == null ) {
@@ -854,11 +851,13 @@ public class ActivityBase extends AppCompatActivity implements
                     force = true;
                     break;
                 }
+
+                installed.add( type );
             } while ( c.moveToNext() );
         }
         c.close();
 
-        if ( installed.size() < 4 && msg != null ) {
+        if ( installed.size() < 4 ) {
             msg = "Please download the required database";
             force = true;
         }
@@ -1016,9 +1015,11 @@ public class ActivityBase extends AppCompatActivity implements
 
         MenuItem searchItem = menu.findItem( R.id.menu_search );
         SearchView searchView = (SearchView) MenuItemCompat.getActionView( searchItem );
-        SearchManager searchManager = (SearchManager) getSystemService( Context.SEARCH_SERVICE );
-        searchView.setSearchableInfo( searchManager.getSearchableInfo( getComponentName() ) );
-        searchView.setIconifiedByDefault( false );
+        if ( searchView != null ) {
+            SearchManager searchManager = (SearchManager) getSystemService( Context.SEARCH_SERVICE );
+            searchView.setSearchableInfo( searchManager.getSearchableInfo( getComponentName() ) );
+            searchView.setIconifiedByDefault( false );
+        }
 
         return super.onCreateOptionsMenu( menu );
     }
