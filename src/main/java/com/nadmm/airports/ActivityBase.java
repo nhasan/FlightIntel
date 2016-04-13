@@ -19,7 +19,6 @@
 
 package com.nadmm.airports;
 
-import android.annotation.TargetApi;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -1004,7 +1003,6 @@ public class ActivityBase extends AppCompatActivity implements
         return mHandler.postDelayed( r, delayMillis );
     }
 
-    @TargetApi(11)
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
         MenuInflater inflater = getMenuInflater();
@@ -1015,11 +1013,9 @@ public class ActivityBase extends AppCompatActivity implements
 
         MenuItem searchItem = menu.findItem( R.id.menu_search );
         SearchView searchView = (SearchView) MenuItemCompat.getActionView( searchItem );
-        if ( searchView != null ) {
-            SearchManager searchManager = (SearchManager) getSystemService( Context.SEARCH_SERVICE );
-            searchView.setSearchableInfo( searchManager.getSearchableInfo( getComponentName() ) );
-            searchView.setIconifiedByDefault( false );
-        }
+        SearchManager searchManager = (SearchManager) getSystemService( Context.SEARCH_SERVICE );
+        searchView.setSearchableInfo( searchManager.getSearchableInfo( getComponentName() ) );
+        searchView.setIconifiedByDefault( false );
 
         return super.onCreateOptionsMenu( menu );
     }

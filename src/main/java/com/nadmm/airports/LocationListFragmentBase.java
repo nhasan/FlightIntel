@@ -83,7 +83,12 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
         super.onResume();
 
         if ( mLocationUpdatesEnabled ) {
-            startLocationUpdates();
+            getActivityBase().postRunnable( new Runnable() {
+                @Override
+                public void run() {
+                    startLocationUpdates();
+                }
+            }, 0 );
         }
     }
 
