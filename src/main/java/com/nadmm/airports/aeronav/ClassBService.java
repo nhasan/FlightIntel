@@ -21,6 +21,7 @@ package com.nadmm.airports.aeronav;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.utils.ClassBUtils;
@@ -28,6 +29,7 @@ import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 import java.io.File;
+import java.util.Date;
 
 public class ClassBService extends AeroNavService {
 
@@ -41,6 +43,25 @@ public class ClassBService extends AeroNavService {
 
     public ClassBService() {
         super( "classb" );
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        cleanupCache( getDataDir(), DateUtils.DAY_IN_MILLIS );
+    }
+
+    private void cleanupCache( File dir, long maxAge ) {
+        // Delete all files that are older
+        Date now = new Date();
+        File[] files = dir.listFiles();
+        for ( File file : files ) {
+            long age = now.getTime()-file.lastModified();
+            if ( age > maxAge ) {
+                file.delete();
+            }
+        }
     }
 
     @Override
