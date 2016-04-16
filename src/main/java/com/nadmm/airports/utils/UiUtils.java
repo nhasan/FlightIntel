@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,19 +20,24 @@
 package com.nadmm.airports.utils;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.LruCache;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.nadmm.airports.R;
 
 import java.util.Locale;
@@ -140,21 +145,53 @@ public class UiUtils {
         tv.setCompoundDrawablesWithIntrinsicBounds( 0, 0, 0, 0 );
     }
 
-    static public Drawable getColorizedDrawable( Resources res, int resid, int color ) {
+    static public Drawable getTintedDrawable( Context context, int resid, int color ) {
         // Get a mutable copy of the drawable so each can be set to a different color
         String key = String.format( Locale.US, "%d:%d", resid, color );
         Drawable d = getDrawableFromCache( key );
         if ( d == null ) {
-            d = ResourcesCompat.getDrawable( res, resid, null ).mutate();
-            d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
+            d = ResourcesCompat.getDrawable( context.getResources(), resid, null ).mutate();
+            DrawableCompat.setTint( d, color );
             putDrawableIntoCache( key, d );
         }
         return d;
     }
 
-    static public void setColorizedTextViewDrawable( TextView tv, int resid, int color ) {
-        Resources res = tv.getResources();
-        Drawable d = getColorizedDrawable( res, resid, color );
+    static public Drawable getDefaultTintedDrawable( Context context, int resid ) {
+        TypedValue value = new TypedValue();
+        ColorStateList tintList = null;
+        if ( context.getTheme().resolveAttribute(
+                android.R.attr.textColorSecondary, value, true ) ) {
+            tintList = context.getResources().getColorStateList( value.resourceId );
+        }
+
+        return getTintedDrawable( context, resid, tintList );
+    }
+
+    static public Drawable getTintedDrawable( Context context, int resid, ColorStateList tintList ) {
+        // Get a mutable copy of the drawable so each can be set to a different color
+        String key = String.format( Locale.US, "%d:%d", resid, tintList.getDefaultColor() );
+        Drawable d = getDrawableFromCache( key );
+        if ( d == null ) {
+            d = ResourcesCompat.getDrawable( context.getResources(), resid, null ).mutate();
+            DrawableCompat.setTintList( d, tintList );
+            putDrawableIntoCache( key, d );
+        }
+        return d;
+    }
+
+    static public void setTintedTextViewDrawable( TextView tv, int resid, int color ) {
+        Drawable d = getTintedDrawable( tv.getContext(), resid, color );
+        setTextViewDrawable( tv, d );
+    }
+
+    static public void setDefaultTintedTextViewDrawable( TextView tv, int resid ) {
+        Drawable d = getDefaultTintedDrawable( tv.getContext(), resid );
+        setTextViewDrawable( tv, d );
+    }
+
+    static public void setTintedTextViewDrawable( TextView tv, int resid, ColorStateList tintList ) {
+        Drawable d = getTintedDrawable( tv.getContext(), resid, tintList );
         setTextViewDrawable( tv, d );
     }
 

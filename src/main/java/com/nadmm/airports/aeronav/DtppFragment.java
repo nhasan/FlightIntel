@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.NetworkUtils;
@@ -345,9 +345,11 @@ public class DtppFragment extends FragmentBase {
     protected void showChartAvailability( View view, boolean available ) {
         TextView tv = (TextView) view.findViewById( R.id.item_label );
         if ( available ) {
-            UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box );
+            UiUtils.setDefaultTintedTextViewDrawable(
+                    tv, R.drawable.ic_check_box );
         } else {
-            UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box_outline_blank );
+            UiUtils.setDefaultTintedTextViewDrawable(
+                    tv, R.drawable.ic_check_box_outline_blank );
         }
     }
 
