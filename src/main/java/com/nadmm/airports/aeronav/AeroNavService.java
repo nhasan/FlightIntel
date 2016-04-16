@@ -66,6 +66,10 @@ public abstract class AeroNavService extends IntentService {
         mDataDir = SystemUtils.getExternalDir( this, mName );
     }
 
+    protected File getDataDir() {
+        return mDataDir;
+    }
+
     protected File getCycleDir( String cycle ) {
         File dir = new File( mDataDir, cycle );
         if ( !dir.exists() ) {

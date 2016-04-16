@@ -44,6 +44,7 @@ import com.nadmm.airports.Application;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
+import com.nadmm.airports.aeronav.ClassBService;
 import com.nadmm.airports.aeronav.DafdService;
 import com.nadmm.airports.aeronav.DtppActivity;
 import com.nadmm.airports.data.DatabaseManager;
@@ -66,6 +67,7 @@ import com.nadmm.airports.data.DatabaseManager.Wxs;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.notams.AirportNotamActivity;
 import com.nadmm.airports.tfr.TfrListActivity;
+import com.nadmm.airports.utils.ClassBUtils;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
@@ -93,10 +95,8 @@ public final class AirportDetailsFragment extends FragmentBase {
     private final HashSet<TextView> mRunwayViews = new HashSet<>();
     private final int MAX_WX_STATIONS = 5;
 
-    private BroadcastReceiver mMetarReceiver;
-    private BroadcastReceiver mDafdReceiver;
-    private IntentFilter mMetarFilter;
-    private IntentFilter mDafdFilter;
+    private BroadcastReceiver mBcastReceiver;
+    private IntentFilter mBcastFilter;
     private Location mLocation;
     private float mDeclination;
     private String mIcaoCode;
@@ -109,24 +109,17 @@ public final class AirportDetailsFragment extends FragmentBase {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mMetarFilter = new IntentFilter();
-        mMetarFilter.addAction( NoaaService.ACTION_GET_METAR );
-        mMetarReceiver = new BroadcastReceiver() {
+        mBcastFilter = new IntentFilter();
+        mBcastFilter.addAction( NoaaService.ACTION_GET_METAR );
+        mBcastFilter.addAction( DafdService.ACTION_GET_AFD );
+        mBcastFilter.addAction( ClassBService.ACTION_GET_CLASSB_GRAPHIC );
+        mBcastReceiver = new BroadcastReceiver() {
 
             @Override
             public void onReceive( Context context, Intent intent ) {
-                handleMetarBroadcast( intent );
+                handleBroadcast( intent );
             }
 
-        };
-
-        mDafdFilter = new IntentFilter();
-        mDafdFilter.addAction( DafdService.ACTION_GET_AFD );
-        mDafdReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                handleDafdBroadcast( intent );
-            }
         };
 
         SharedPreferences prefs =
@@ -160,8 +153,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         super.onResume();
 
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mMetarReceiver, mMetarFilter );
-        bm.registerReceiver( mDafdReceiver, mDafdFilter );
+        bm.registerReceiver( mBcastReceiver, mBcastFilter );
         requestMetars( false );
     }
 
@@ -170,8 +162,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         super.onPause();
 
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mMetarReceiver );
-        bm.unregisterReceiver( mDafdReceiver );
+        bm.unregisterReceiver( mBcastReceiver );
     }
 
     @Override
@@ -184,24 +175,27 @@ public final class AirportDetailsFragment extends FragmentBase {
         requestMetars( true );
     }
 
-    protected void handleMetarBroadcast( Intent intent ) {
-        Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
-        if ( metar != null && metar.rawText != null ) {
-            showWxInfo( metar );
-
-            ++mWxUpdates;
-            if ( mWxUpdates == mAwosViews.size() ) {
-                // We have all the wx updates, stop the refresh animation
-                mWxUpdates = 0;
-                setRefreshing( false );
-            }
-        }
-    }
-
-    protected void handleDafdBroadcast( Intent intent ) {
+    protected void handleBroadcast( Intent intent ) {
         String action = intent.getAction();
-        if ( action.equals( DafdService.ACTION_GET_AFD ) ) {
+        if ( action.equals( MetarService.ACTION_GET_METAR ) ) {
+            Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
+            if ( metar != null && metar.rawText != null ) {
+                showWxInfo( metar );
+
+                ++mWxUpdates;
+                if ( mWxUpdates == mAwosViews.size() ) {
+                    // We have all the wx updates, stop the refresh animation
+                    mWxUpdates = 0;
+                    setRefreshing( false );
+                }
+            }
+        } else if ( action.equals( DafdService.ACTION_GET_AFD ) ) {
             String path = intent.getStringExtra( DafdService.PDF_PATH );
+            if ( path != null ) {
+                SystemUtils.startPDFViewer( getActivity(), path );
+            }
+        } else if ( action.equals( ClassBService.ACTION_GET_CLASSB_GRAPHIC ) ) {
+            String path = intent.getStringExtra( ClassBService.PDF_PATH );
             if ( path != null ) {
                 SystemUtils.startPDFViewer( getActivity(), path );
             }
@@ -213,6 +207,13 @@ public final class AirportDetailsFragment extends FragmentBase {
         service.setAction( DafdService.ACTION_GET_AFD );
         service.putExtra( DafdService.CYCLE_NAME, afdCycle );
         service.putExtra( DafdService.PDF_NAME, pdfName );
+        getActivity().startService( service );
+    }
+
+    protected void getClassBGraphic( String faaCode ) {
+        Intent service = new Intent( getActivity(), ClassBService.class );
+        service.setAction( ClassBService.ACTION_GET_CLASSB_GRAPHIC );
+        service.putExtra( Airports.FAA_CODE, faaCode );
         getActivity().startService( service );
     }
 
@@ -516,7 +517,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             Uri uri = Uri.parse( String.format( Locale.US,
                     "http://vfrmap.com/?type=vfrc&lat=%s&lon=%s&zoom=10", lat, lon ) );
             Intent intent = new Intent( Intent.ACTION_VIEW, uri );
-            addClickableRow( layout, "Sectional VFR", sectional, intent );
+            addClickableRow( layout, sectional+" Sectional VFR", null, intent );
             uri = Uri.parse( String.format( Locale.US,
                     "http://vfrmap.com/?type=ifrlc&lat=%s&lon=%s&zoom=10", lat, lon ) );
             intent = new Intent( Intent.ACTION_VIEW, uri );
@@ -525,11 +526,36 @@ public final class AirportDetailsFragment extends FragmentBase {
                     "http://vfrmap.com/?type=ehc&lat=%s&lon=%s&zoom=10", lat, lon ) );
             intent = new Intent( Intent.ACTION_VIEW, uri );
             addClickableRow( layout, "High-altitude IFR", intent );
+        } else {
+            addRow( layout, "Sectional chart", sectional );
+        }
+
+        Cursor classb = result[ 15 ];
+        if ( classb.moveToFirst() ) {
+            HashSet<String> seen = new HashSet<>();
+            do {
+                String faaCode = classb.getString( classb.getColumnIndex( Airports.FAA_CODE ) );
+                String classBName = ClassBUtils.getClassBName( faaCode );
+                if ( !seen.contains( classBName ) ) {
+                    View row = addClickableRow( layout, classBName + " Class B airspace", null );
+                    row.setTag( faaCode );
+                    row.setOnClickListener( new OnClickListener() {
+
+                        @Override
+                        public void onClick( View v ) {
+                            String faaCode = (String) v.getTag();
+                            getClassBGraphic( faaCode );
+                        }
+                    } );
+                    seen.add( classBName );
+                }
+            } while ( classb.moveToNext() );
+        }
+
+        if ( layout.getChildCount() > 1 ) {
             View row = addRow( layout, "Charts require internet connection" );
             TextView tv = (TextView) row.findViewById( R.id.item_label );
             tv.setTextAppearance( getActivity(), R.style.TextSmall_Light );
-        } else {
-            addRow( layout, "Sectional chart", sectional );
         }
     }
 
@@ -900,7 +926,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             mSiteNumber = params[ 0 ];
 
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 15 ];
+            Cursor[] cursors = new Cursor[ 16 ];
 
             Cursor apt = getAirportDetails( mSiteNumber );
             cursors[ 0 ] = apt;
@@ -1016,8 +1042,9 @@ public final class AirportDetailsFragment extends FragmentBase {
                 cursors[ 13 ] = c;
             }
 
+            db = getDatabase( DatabaseManager.DB_FADDS );
+
             if ( mHome.length() > 0 ) {
-                db = getDatabase( DatabaseManager.DB_FADDS );
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Airports.TABLE_NAME );
                 c = builder.query( db,
@@ -1030,6 +1057,11 @@ public final class AirportDetailsFragment extends FragmentBase {
                         new String[] { mHome, mHome }, null, null, null, null );
                 cursors[ 14 ] = c;
             }
+
+            // Get nearby Class B airports
+            String selection =
+                    " AND "+Airports.FAA_CODE+" IN ("+ ClassBUtils.getClassBFacilityList()+")";
+            cursors[ 15 ] = new NearbyAirportsCursor( db, mLocation, 50, selection );
 
             return cursors;
         }
