@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
 
 package com.nadmm.airports.afd;
 
-import java.util.Arrays;
-
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -31,6 +29,8 @@ import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.LocationColumns;
 import com.nadmm.airports.data.DatabaseManager.States;
 import com.nadmm.airports.utils.GeoUtils;
+
+import java.util.Arrays;
 
 public class NearbyAirportsCursor extends MatrixCursor {
 
@@ -53,7 +53,8 @@ public class NearbyAirportsCursor extends MatrixCursor {
             LocationColumns.BEARING
     };
 
-    public NearbyAirportsCursor( SQLiteDatabase db, Location location, int radius ) {
+    public NearbyAirportsCursor( SQLiteDatabase db, Location location, int radius,
+                                 String extraSelection ) {
         super( sColumns );
 
         float declination = GeoUtils.getMagneticDeclination( location );
@@ -72,6 +73,9 @@ public class NearbyAirportsCursor extends MatrixCursor {
             +Airports.REF_LATTITUDE_DEGREES+">=? AND "+Airports.REF_LATTITUDE_DEGREES+"<=?"
             +") AND ("+Airports.REF_LONGITUDE_DEGREES+">=? "
             +(isCrossingMeridian180? "OR " : "AND ")+Airports.REF_LONGITUDE_DEGREES+"<=?)";
+        if ( extraSelection != null ) {
+            selection = selection.concat( extraSelection );
+        }
         String[] selectionArgs = {
                 String.valueOf( Math.toDegrees( radLatMin ) ),
                 String.valueOf( Math.toDegrees( radLatMax ) ),
@@ -95,7 +99,7 @@ public class NearbyAirportsCursor extends MatrixCursor {
 
             // Build a cursor out of the sorted airport list
             for ( AirportData airport : airports ) {
-                if ( airport.DISTANCE > 0 && airport.DISTANCE <= radius ) {
+                if ( airport.DISTANCE >= 0 && airport.DISTANCE <= radius ) {
                     MatrixCursor.RowBuilder row = newRow();
                     row.add( getPosition() )
                         .add( airport.SITE_NUMBER )
