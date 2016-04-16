@@ -69,6 +69,7 @@ public class DtppFragment extends FragmentBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
 
         mFilter = new IntentFilter();
         mFilter.addAction( DtppService.ACTION_CHECK_CHARTS );
@@ -93,24 +94,22 @@ public class DtppFragment extends FragmentBase {
                 }
             }
         };
-
-        super.onCreate( savedInstanceState );
     }
 
     @Override
     public void onResume() {
+        super.onResume();
+
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
         bm.registerReceiver( mReceiver, mFilter );
-
-        super.onResume();
     }
 
     @Override
     public void onPause() {
+        super.onPause();
+
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
         bm.unregisterReceiver( mReceiver );
-
-        super.onPause();
     }
 
     @Override
