@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ public abstract class AeroNavService extends IntentService {
 
     protected boolean fetch( String path, File file ) {
         try {
-            return NetworkUtils.doHttpGet( this, AERONAV_HOST, 80, path, null, file );
+            return NetworkUtils.doHttpGet( this, AERONAV_HOST, path, file );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "Error: "+e.getMessage() );
         }
