@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -147,6 +147,11 @@ public class NetworkUtils {
                                      File file, ResultReceiver receiver, Bundle result )
             throws Exception {
         return doHttpGet( context, url, file, receiver, result, GZIPInputStream.class );
+    }
+
+    public static boolean doHttpGet( Context context, String host, String path, File file )
+            throws Exception {
+        return doHttpGet( context, host, 80, path, null, file, null, null, null );
     }
 
     public static boolean doHttpGet( Context context, String host, int port,
