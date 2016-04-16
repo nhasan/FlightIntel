@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ public class WxUtils {
 
     static public void showColorizedDrawable( TextView tv, String flightCategory, int resid ) {
         int color = getFlightCategoryColor( flightCategory );
-        UiUtils.setColorizedTextViewDrawable( tv, resid, color );
+        UiUtils.setTintedTextViewDrawable( tv, resid, color );
     }
 
     static public void setFlightCategoryDrawable( TextView tv, String flightCategory ) {
@@ -94,10 +94,9 @@ public class WxUtils {
     }
 
     static public Drawable getSkycoverDrawable( Context context, Metar metar ) {
-        Resources res = context.getResources();
         SkyCondition sky = metar.skyConditions.get( metar.skyConditions.size()-1 );
         int color = getFlightCategoryColor( metar.flightCategory );
-        return UiUtils.getColorizedDrawable( res, sky.getDrawable(), color );
+        return UiUtils.getTintedDrawable( context, sky.getDrawable(), color );
     }
 
     static public Drawable getWindBarbDrawable( Context context, Metar metar, float declination ) {
