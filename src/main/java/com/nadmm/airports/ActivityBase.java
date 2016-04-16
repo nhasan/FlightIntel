@@ -385,6 +385,10 @@ public class ActivityBase extends AppCompatActivity implements
                 startActivity( intent );
                 finish();
                 break;
+            case R.id.menu_donate:
+                Intent donate = new Intent( this, DonateActivity.class );
+                startActivity( donate );
+                break;
             case R.id.navdrawer_settings:
                 intent = new Intent( this, PreferencesActivity.class );
                 startActivity( intent );
@@ -1035,10 +1039,6 @@ public class ActivityBase extends AppCompatActivity implements
         case R.id.menu_download:
             Intent download = new Intent( this, DownloadActivity.class );
             startActivity( download );
-            return true;
-        case R.id.menu_donate:
-            Intent donate = new Intent( this, DonateActivity.class );
-            startActivity( donate );
             return true;
         case R.id.menu_settings:
             Intent intent = new Intent( this, PreferencesActivity.class );
