@@ -1,3 +1,11 @@
+v6.1.4 (4/17/2016)
+==================
+* Now you can download enhanced Class B airspace graphic when viewing an airport that is within 50 miles of a Class B airport
+* Support for Marshmallow permission model
+* Do not delete data on expiry in case new one is not available yet
+* Fixed the issue where certain Wx station would not appear
+* Other minor bug fixes
+
 v6.0.3 (8/16/2015)
 ==================
 * Fix for IFR icon appearing huge on certain phones
