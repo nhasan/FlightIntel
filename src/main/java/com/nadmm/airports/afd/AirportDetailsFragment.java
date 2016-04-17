@@ -181,11 +181,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
             if ( metar != null && metar.rawText != null ) {
                 showWxInfo( metar );
-
-                ++mWxUpdates;
-                if ( mWxUpdates == mAwosViews.size() ) {
-                    // We have all the wx updates, stop the refresh animation
-                    mWxUpdates = 0;
+                if ( isRefreshing() ) {
                     setRefreshing( false );
                 }
             }
