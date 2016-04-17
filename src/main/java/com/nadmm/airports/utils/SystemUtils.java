@@ -39,7 +39,7 @@ public class SystemUtils {
         Intent intent = new Intent( Intent.ACTION_VIEW );
         intent.setType( mimeType );
         List<ResolveInfo> list = pm.queryIntentActivities( intent,
-                PackageManager.MATCH_DEFAULT_ONLY );
+                PackageManager.MATCH_ALL );
         return !list.isEmpty();
     }
 
@@ -59,7 +59,7 @@ public class SystemUtils {
             // No PDF viewer is installed, send user to Play Store
             UiUtils.showToast( context, "Please install a PDF viewer app first" );
             Intent market = new Intent( Intent.ACTION_VIEW );
-            Uri uri = Uri.parse( "market://details?id=org.ebookdroid" );
+            Uri uri = Uri.parse( "market://details?id=com.google.android.apps.pdfviewer" );
             market.setData( uri );
             context.startActivity( market );
         }
