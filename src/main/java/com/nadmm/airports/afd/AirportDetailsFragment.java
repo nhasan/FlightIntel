@@ -547,12 +547,6 @@ public final class AirportDetailsFragment extends FragmentBase {
                 }
             } while ( classb.moveToNext() );
         }
-
-        if ( layout.getChildCount() > 1 ) {
-            View row = addRow( layout, "Charts require internet connection" );
-            TextView tv = (TextView) row.findViewById( R.id.item_label );
-            tv.setTextAppearance( getActivity(), R.style.TextSmall_Light );
-        }
     }
 
     protected void showOperationsDetails( Cursor[] result ) {
