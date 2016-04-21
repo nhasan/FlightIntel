@@ -381,7 +381,7 @@ public class ActivityBase extends AppCompatActivity implements
                 startActivity( intent );
                 finish();
                 break;
-            case R.id.menu_donate:
+            case R.id.navdrawer_donate:
                 Intent donate = new Intent( this, DonateActivity.class );
                 startActivity( donate );
                 break;

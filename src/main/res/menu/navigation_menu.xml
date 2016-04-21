@@ -47,11 +47,11 @@
               android:icon="@drawable/ic_navdrawer_e6b"
               android:title="@string/title_navdrawer_e6b" />
     </group>
-    <group android:id="@+id/settings_group" android:checkableBehavior="single">
+    <group android:id="@+id/misc_group" android:checkableBehavior="single">
         <item android:id="@+id/navdrawer_settings"
               android:icon="@drawable/ic_navdrawer_settings"
               android:title="@string/title_navdrawer_settings" />
-        <item android:id="@+id/menu_donate"
+        <item android:id="@+id/navdrawer_donate"
               android:icon="@drawable/ic_navdrawer_donate"
               android:title="@string/donate" />
     </group>
