@@ -71,7 +71,6 @@ import com.nadmm.airports.afd.AfdMainActivity;
 import com.nadmm.airports.clocks.ClocksActivity;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Airports;
-import com.nadmm.airports.data.DatabaseManager.Catalog;
 import com.nadmm.airports.data.DatabaseManager.Nav1;
 import com.nadmm.airports.data.DatabaseManager.States;
 import com.nadmm.airports.data.DownloadActivity;
@@ -86,7 +85,6 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.SystemUtils;
-import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.MultiSwipeRefreshLayout;
 import com.nadmm.airports.views.ObservableScrollView;
@@ -94,9 +92,7 @@ import com.nadmm.airports.wx.WxMainActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.Locale;
 
 public class ActivityBase extends AppCompatActivity implements
@@ -298,27 +294,27 @@ public class ActivityBase extends AppCompatActivity implements
 
         // Initialize navigation drawer
         mNavigationView.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected( MenuItem item ) {
-                        item.setChecked( true );
-                        final int id = item.getItemId();
+            new NavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected( MenuItem item ) {
+                    item.setChecked( true );
+                    final int id = item.getItemId();
 
-                        if ( id != getSelfNavDrawerItem() ) {
-                            // Launch the target Activity after a short delay to allow the drawer close
-                            // animation to finish without stutter
-                            mHandler.postDelayed( new Runnable() {
-                                @Override
-                                public void run() {
-                                    goToNavDrawerItem( id );
-                                }
-                            }, NAVDRAWER_LAUNCH_DELAY );
-                        }
-
-                        mDrawerLayout.closeDrawer( GravityCompat.START );
-                        return false;
+                    if ( id != getSelfNavDrawerItem() ) {
+                        // Launch the target Activity after a short delay to allow the drawer close
+                        // animation to finish without stutter
+                        mHandler.postDelayed( new Runnable() {
+                            @Override
+                            public void run() {
+                                goToNavDrawerItem( id );
+                            }
+                        }, NAVDRAWER_LAUNCH_DELAY );
                     }
-                } );
+
+                    mDrawerLayout.closeDrawer( GravityCompat.START );
+                    return false;
+                }
+            } );
         MenuItem item = mNavigationView.getMenu().findItem( selfItem );
         item.setChecked( true );
     }
@@ -818,62 +814,12 @@ public class ActivityBase extends AppCompatActivity implements
     public SQLiteDatabase getDatabase( String type ) {
         SQLiteDatabase db = mDbManager.getDatabase( type );
         if ( db == null ) {
-            Intent intent = checkData();
-            if ( intent != null ) {
-                startActivity( intent );
-                finish();
-            }
+            Intent intent = new Intent( this, DownloadActivity.class );
+            intent.putExtra( "MSG", "Database is corrupted. Please delete and re-install" );
+            startActivity( intent );
+            finish();
         }
         return db;
-    }
-
-    protected Intent checkData() {
-        if ( !SystemUtils.isExternalStorageAvailable() ) {
-            return new Intent( this, ExternalStorageActivity.class );
-        }
-
-        boolean force = false;
-        String msg = null;
-        HashSet<String> installed = new HashSet<>();
-
-        Cursor c = mDbManager.getCurrentFromCatalog();
-        if ( c.moveToFirst() ) {
-            Date now = new Date();
-            do {
-                String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
-                String s = c.getString( c.getColumnIndex( Catalog.END_DATE ) );
-                Date end = TimeUtils.parse3339( s );
-
-                if ( !now.before( end ) ) {
-                    msg = "One or more data items have expired";
-                }
-                // Try to make sure we can open the databases
-                SQLiteDatabase db = mDbManager.getDatabase( type );
-                if ( db == null ) {
-                    msg = "Database is corrupted. Please delete and re-install";
-                    force = true;
-                    break;
-                }
-
-                installed.add( type );
-            } while ( c.moveToNext() );
-        }
-        c.close();
-
-        if ( installed.size() < 4 ) {
-            msg = "Please download the required database";
-            force = true;
-        }
-
-        Intent intent = null;
-        if ( force ) {
-            intent = new Intent( this, DownloadActivity.class );
-            intent.putExtra( "MSG", msg );
-        } else if ( msg != null && !msg.isEmpty() ) {
-            UiUtils.showToast( this, msg );
-        }
-
-        return intent;
     }
 
     public void showAirportTitle( Cursor c ) {
@@ -914,7 +860,7 @@ public class ActivityBase extends AppCompatActivity implements
             tpa_agl = 1000;
             est = " (est.)";
         }
-        tv.setText( String.format( Locale.US, "%s MSL elevation - %s MSL TPA %s",
+        tv.setText( String.format( Locale.US, "%s MSL elev. - %s MSL TPA %s",
                 FormatUtils.formatFeet( elev_msl ),
                 FormatUtils.formatFeet( elev_msl + tpa_agl ), est ) );
 
@@ -922,7 +868,7 @@ public class ActivityBase extends AppCompatActivity implements
         GregorianCalendar endDate = new GregorianCalendar(
                         Integer.valueOf( s.substring( 6 ) ),
                         Integer.valueOf( s.substring( 3, 5 ) ),
-                        Integer.valueOf( s.substring( 0, 2 ) ) ) ;
+                        Integer.valueOf( s.substring( 0, 2 ) ) );
         // Calculate end date of the 56-day cycle
         endDate.add( GregorianCalendar.DAY_OF_MONTH, 56 );
         Calendar now = Calendar.getInstance();
@@ -1067,7 +1013,7 @@ public class ActivityBase extends AppCompatActivity implements
         }
     }
 
-    public int dpToPx( float dp ) {
+    protected int dpToPx( float dp ) {
         return UiUtils.convertDpToPx( this, dp );
     }
 
