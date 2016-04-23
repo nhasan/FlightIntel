@@ -29,7 +29,7 @@ my $cycle = shift @ARGV;
 my $TPP_METADATA_FILE = "$BASE_DIR/d-TPP_Metafile.xml";
 #my $dtpp_url = "http://aeronav.faa.gov/d-tpp/$cycle/xml_data/d-TPP_Metafile.xml";
 #my $dtpp_url = "https://nfdc.faa.gov/webContent/dtpp/current.xml";
-my $dtpp_url = "file:///home/nhasan/Documents/FlightIntel/d-TPP/d-TPP_Metafile.xml";
+my $dtpp_url = "file:///home/nhasan/Documents/FlightIntel/d-TPP/DDTPPE_$cycle/d-TPP_Metafile.xml";
 my $count = 0;
 
 my $ofh = select STDOUT;
