@@ -106,7 +106,7 @@ insert_book( "handbooks", "faa-h-8083-16-2014.pdf", "Instrument Procedures Handb
 insert_book( "handbooks", "faa-h-8083-6-2009.pdf", "Advanced Avionics Handbook",
         "2009", "FAA-H-8083-6", 20664164, "" );
 insert_book( "handbooks", "faa-h-8083-27a-2006.pdf", "Student Pilot Guide",
-        "2008", "FAA-H-8083-27A", 231353, "" );
+        "2016", "FAA-H-8083-27A", 231353, "" );
 insert_book( "handbooks", "faa-h-8083-9a-2008.pdf", "Aviation Instructor's Handbook",
         "2008", "FAA-H-8083-9A", 13672806, "" );
 insert_book( "handbooks", "faa-h-8083-1a-2007.pdf", "Aircraft Weight and Balance Handbook",
@@ -114,7 +114,7 @@ insert_book( "handbooks", "faa-h-8083-1a-2007.pdf", "Aircraft Weight and Balance
 insert_book( "handbooks", "faa-h-8083-21a-2012.pdf", "Helicopter Flying Handbook",
         "2012", "FAA-H-8083-21A", 74947815, "" );
 insert_book( "handbooks", "faa-h-8083-2-2009.pdf", "Risk Management Handbook",
-        "2009", "FAA-H-8083-2", 19766175, "N" );
+        "2016", "FAA-H-8083-2", 19766175, "" );
 insert_book( "handbooks", "faa-fs-i-8700-1-2003.pdf", "Information for Banner Tow Operations",
         "2003", "FAA/FS-I-8799-1", 845400, "" );
 insert_book( "handbooks", "fcm-h1-2005.pdf", "Federal Meteorological Handbook No. 1",
@@ -133,22 +133,30 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_435.pdf", "Callback",
+        "Issue 435 (Apr 2016)", "NASA", 178200, "" );
 insert_book( "periodicals", "cb_434.pdf", "Callback",
-        "Issue 434 (Mar 2016)", "NASA", 299081, "N" );
+        "Issue 434 (Mar 2016)", "NASA", 299081, "" );
 insert_book( "periodicals", "cb_433.pdf", "Callback",
         "Issue 433 (Feb 2016)", "NASA", 259935, "" );
 insert_book( "periodicals", "cb_432.pdf", "Callback",
         "Issue 432 (Jan 2016)", "NASA", 237216, "" );
-insert_book( "periodicals", "cb_431.pdf", "Callback",
-        "Issue 431 (Dec 2015)", "NASA", 304490, "" );
 insert_book( "periodicals", "MarApr2016.pdf", "FAA Safety Briefing",
-        "Mar/Apr 2016", "FAA", 1559322, "N" );
+        "Mar/Apr 2016", "FAA", 1559322, "" );
 insert_book( "periodicals", "JanFeb2016.pdf", "FAA Safety Briefing",
         "Jan/Feb 2016", "FAA", 4356524, "" );
 insert_book( "periodicals", "NovDec2015.pdf", "FAA Safety Briefing",
         "Nov/Dec 2015", "FAA", 4918355, "" );
 insert_book( "periodicals", "SepOct2015.pdf", "FAA Safety Briefing",
         "Sep/Oct 2015", "FAA", 3479442, "" );
+insert_book( "periodicals", "SE_Topic_16-04.pdf", "Safety Fact Sheets",
+        "Apr 2016", "FAA", 430788, "" );
+insert_book( "periodicals", "SE_Topic_16-03.pdf", "Safety Fact Sheets",
+        "Mar 2016", "FAA", 488453, "" );
+insert_book( "periodicals", "SE_Topic_16-02.pdf", "Safety Fact Sheets",
+        "Feb 2016", "FAA", 500529, "" );
+insert_book( "periodicals", "SE_Topic_16-01.pdf", "Safety Fact Sheets",
+        "Jan 2016", "FAA", 513358, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -175,16 +183,16 @@ insert_book( "safety", "takeoff_safety.pdf", "Pilot Guide to Takeoff Safety",
 
 insert_book( "regs", "aim_151210.pdf", "Aeronautical Information Manual (AIM)",
         "Dec 2015", "FAA", 14957115, "" );
-insert_book( "regs", "CFR-2015-title14-vol1.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 1-59", "US GPO 2015", 12844315, "" );
+insert_book( "regs", "CFR-2016-title14-vol1.pdf", "Federal Aviation Regulations (FAR)",
+        "Parts 1-59", "US GPO 2016", 12799362, "" );
 insert_book( "regs", "CFR-2016-title14-vol2.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 60-109", "US GPO 2016", 15195044, "N" );
+        "Parts 60-109", "US GPO 2016", 15195044, "" );
 insert_book( "regs", "CFR-2016-title14-vol3.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 110-199", "US GPO 2016", 5447388, "N" );
-insert_book( "regs", "CFR-2015-title14-vol4.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 200-1199", "US GPO 2015", 16778211, "" );
+        "Parts 110-199", "US GPO 2016", 5447388, "" );
+insert_book( "regs", "CFR-2016-title14-vol4.pdf", "Federal Aviation Regulations (FAR)",
+        "Parts 200-1199", "US GPO 2016", 16794385, "" );
 insert_book( "regs", "CFR-2016-title14-vol5.pdf", "Federal Aviation Regulations (FAR)",
-        "Parts 1200-1310", "US GPO 2016", 2061019, "N" );
+        "Parts 1200-1399", "US GPO 2016", 2061019, "" );
 
 insert_book( "risk", "ga_weather_decision_making.pdf", "General Aviation Pilot’s Guide",
         "2009", "FAA", 659230, "" );
@@ -249,7 +257,7 @@ insert_book( "misc", "AIP_151210.pdf", "Aeronautical Information Publication",
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
 insert_book( "misc", "PCG_151210.pdf", "Pilot/Controller Glossary",
-        "Dec 2015", "FAA", 1135830, "N" );
+        "Dec 2015", "FAA", 1135830, "" );
 insert_book( "misc", "RNProadmap.pdf", "Roadmap for Performance-Based Navigation",
         "2006", "FAA", 1513616, "" );
 insert_book( "misc", "ATC_151210.pdf", "ATC Order 7110.65W", 
