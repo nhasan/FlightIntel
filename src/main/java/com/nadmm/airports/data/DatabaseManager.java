@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,10 +26,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.os.Environment;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import com.nadmm.airports.utils.SystemUtils;
+import com.nadmm.airports.FlightIntel;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,7 +45,10 @@ public class DatabaseManager {
     private final UserDataDbOpenHelper mUserDataDbHelper;
     private final HashMap<String, SQLiteDatabase> mDatabases;
 
-    private File mDatabaseDir;
+    private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
+            = new File( Environment.getExternalStorageDirectory(),
+            "Android/data/"+FlightIntel.class.getPackage().getName() );
+    public static File DATABASE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/databases" );
 
     public static final String DB_FADDS = "FADDS";
     public static final String DB_DTPP = "DTPP";
@@ -562,13 +566,10 @@ public class DatabaseManager {
         mCatalogDbHelper = new CatalogDbOpenHelper( context );
         mUserDataDbHelper = new UserDataDbOpenHelper( context );
         mDatabases = new HashMap<>();
-
-        // First entry is always the primary external storage directory
-        mDatabaseDir = SystemUtils.getExternalDir( context, "databases" );
     }
 
     public File getDatabaseFile( String dbName ) {
-        return new File( mDatabaseDir, dbName );
+        return new File( DatabaseManager.DATABASE_DIR, dbName );
     }
 
     public SQLiteDatabase getCatalogDb() {
