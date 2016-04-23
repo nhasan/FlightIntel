@@ -26,11 +26,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.os.Environment;
 import android.provider.BaseColumns;
 import android.util.Log;
 
-import com.nadmm.airports.FlightIntel;
+import com.nadmm.airports.utils.SystemUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,14 +40,10 @@ public class DatabaseManager {
 
     public static final String TAG = DatabaseManager.class.getSimpleName();
 
+    protected Context mContext;
     private final CatalogDbOpenHelper mCatalogDbHelper;
     private final UserDataDbOpenHelper mUserDataDbHelper;
     private final HashMap<String, SQLiteDatabase> mDatabases;
-
-    private static final File EXTERNAL_STORAGE_DATA_DIRECTORY
-            = new File( Environment.getExternalStorageDirectory(),
-            "Android/data/"+FlightIntel.class.getPackage().getName() );
-    public static File DATABASE_DIR = new File( EXTERNAL_STORAGE_DATA_DIRECTORY, "/databases" );
 
     public static final String DB_FADDS = "FADDS";
     public static final String DB_DTPP = "DTPP";
@@ -563,13 +558,14 @@ public class DatabaseManager {
     }
 
     private DatabaseManager( Context context ) {
+        mContext = context;
         mCatalogDbHelper = new CatalogDbOpenHelper( context );
         mUserDataDbHelper = new UserDataDbOpenHelper( context );
         mDatabases = new HashMap<>();
     }
 
     public File getDatabaseFile( String dbName ) {
-        return new File( DatabaseManager.DATABASE_DIR, dbName );
+        return SystemUtils.getExternalFile( mContext, "databases", dbName );
     }
 
     public SQLiteDatabase getCatalogDb() {
