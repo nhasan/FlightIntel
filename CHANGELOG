@@ -1,3 +1,7 @@
+v6.1.9 (4/23/2016)
+==================
+* Fix issues with database downloads.
+
 v6.1.6 (4/17/2016)
 ==================
 * Now you can download enhanced Class B airspace graphic when viewing an airport that is within 50 miles of a Class B airport
