@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,20 +14,20 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.tfr;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
 
 import android.content.Context;
 import android.location.Location;
 
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.TimeUtils;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class TfrList implements Serializable {
 
@@ -61,7 +61,7 @@ public class TfrList implements Serializable {
         public String notamId;
         public String name;
         public String type;
-        public String comment;
+        public String text;
         public int minAltitudeFeet;
         public AltitudeType minAltitudeType;
         public int maxAltitudeFeet;
@@ -93,11 +93,11 @@ public class TfrList implements Serializable {
                 }
                 sb.append( " to " );
                 sb.append( formatAltitude( maxAltitudeFeet, maxAltitudeType ) );
-            } else if ( minAltitudeFeet < Integer.MAX_VALUE 
+            } else if ( minAltitudeFeet < Integer.MAX_VALUE
                     && maxAltitudeFeet == Integer.MAX_VALUE ) {
                 sb.append( formatAltitude( minAltitudeFeet, minAltitudeType ) );
                 sb.append( " and above" );
-            } else if ( minAltitudeFeet == Integer.MAX_VALUE 
+            } else if ( minAltitudeFeet == Integer.MAX_VALUE
                     && maxAltitudeFeet < Integer.MAX_VALUE ) {
                 sb.append( formatAltitude( maxAltitudeFeet, maxAltitudeType ) );
                 sb.append( " and below" );
@@ -152,7 +152,7 @@ public class TfrList implements Serializable {
 
         @Override
         public int compareTo( Tfr another ) {
-            return name.compareTo( another.name );
+            return modifyTime == another.modifyTime? 0 : modifyTime < another.modifyTime? 1 : -1;
         }
     }
 

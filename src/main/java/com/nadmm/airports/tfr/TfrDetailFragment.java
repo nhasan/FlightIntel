@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ public class TfrDetailFragment extends FragmentBase {
         }
 
         layout = (LinearLayout) view.findViewById( R.id.tfr_text_layout );
-        addRow( layout, mTfr.comment.replace( "\\n", "\n" ) );
+        addRow( layout, mTfr.text.replace( "\\n", "\n" ) );
 
         TextView tv = (TextView) view.findViewById( R.id.tfr_warning_text );
         tv.setText( "Depicted TFR data may not be a complete listing. Pilots should not use "

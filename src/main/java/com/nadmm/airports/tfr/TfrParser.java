@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,15 @@
 
 package com.nadmm.airports.tfr;
 
+import com.nadmm.airports.tfr.TfrList.AltitudeType;
+import com.nadmm.airports.tfr.TfrList.Tfr;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+
 import java.io.File;
 import java.io.FileReader;
 import java.text.ParseException;
@@ -28,15 +37,6 @@ import java.util.TimeZone;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-
-import com.nadmm.airports.tfr.TfrList.AltitudeType;
-import com.nadmm.airports.tfr.TfrList.Tfr;
 
 public class TfrParser {
 
@@ -95,8 +95,8 @@ public class TfrParser {
                 tfr.notamId = text.toString().trim();
             } else if ( qName.equalsIgnoreCase( "NAME" ) ) {
                 tfr.name = text.toString().trim();
-            } else if ( qName.equalsIgnoreCase( "COMMENT" ) ) {
-                tfr.comment = text.toString().trim();
+            } else if ( qName.equalsIgnoreCase( "SRC" ) ) {
+                tfr.text = text.toString().trim();
             } else if ( qName.equalsIgnoreCase( "TYPE" ) ) {
                 tfr.type = text.toString().trim();
             } else if ( qName.equalsIgnoreCase( "MINALT" ) ) {
@@ -120,6 +120,10 @@ public class TfrParser {
                 }
             } else if ( qName.toUpperCase( Locale.US ).matches( "TFR\\d+" ) ) {
                 if ( !tfr.name.equalsIgnoreCase( "Latest Update" ) ) {
+                    if ( tfr.modifyTime == 0 )
+                    {
+                        tfr.modifyTime = tfr.createTime;
+                    }
                     tfrList.entries.add( tfr );
                 }
             }
