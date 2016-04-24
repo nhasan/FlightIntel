@@ -1,6 +1,8 @@
-v6.2.0 (4/23/2016)
+v6.2.1 (4/24/2016)
 ==================
-* Fix issues with database downloads.
+* Fix issues with database downloads for devices running Android version prior to 4.3
+* Show TFRs in reverse chronological order of modification
+* Show actual TFR NOTAM text in the details
 
 v6.1.6 (4/17/2016)
 ==================
