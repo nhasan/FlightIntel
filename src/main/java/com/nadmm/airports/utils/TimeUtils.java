@@ -35,6 +35,8 @@ import java.util.TimeZone;
 
 public class TimeUtils {
 
+    private static final SimpleDateFormat ISO3339_FORMAT_UTC =
+            new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss", Locale.US );
     private static final SimpleDateFormat ISO3339_FORMAT =
             new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.US );
     private static final SimpleDateFormat ISO3339_MILLIS_FORMAT =
@@ -42,6 +44,10 @@ public class TimeUtils {
 
     public static CharSequence formatLongDateTime( long time ) {
         return DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( time ) );
+    }
+
+    static {
+        ISO3339_FORMAT_UTC.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
     }
 
     public static String formatDateTime( Context context, long millis ) {
@@ -167,7 +173,7 @@ public class TimeUtils {
     }
 
     public static String format3339( Date date ) {
-        return ISO3339_FORMAT.format( date );
+        return ISO3339_FORMAT_UTC.format( date )+"Z";
     }
 
     public static Date parse3339( String s ) {

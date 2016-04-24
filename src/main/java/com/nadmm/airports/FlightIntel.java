@@ -77,6 +77,11 @@ public class FlightIntel extends ActivityBase {
             do {
                 String s = c.getString( c.getColumnIndex( DatabaseManager.Catalog.END_DATE ) );
                 Date end = TimeUtils.parse3339( s );
+                if ( end == null ) {
+                    msg = "Database is corrupted. Please delete and re-install";
+                    break;
+                }
+
                 if ( msg == null && !now.before( end ) ) {
                     msg = "You are using expired data";
                 }

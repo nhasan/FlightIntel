@@ -259,7 +259,7 @@ public class DownloadFragment extends FragmentBase {
                 // Check and delete all the expired databases
                 String s = c.getString( c.getColumnIndex( DatabaseManager.Catalog.END_DATE ) );
                 Date end = TimeUtils.parse3339( s );
-                if ( !end.after( now ) ) {
+                if ( end == null || !end.after( now ) ) {
                     // This database has expired, remove it
                     Integer _id = c.getInt( c.getColumnIndex( DatabaseManager.Catalog._ID ) );
                     String dbName = c.getString( c.getColumnIndex( DatabaseManager.Catalog.DB_NAME ) );
@@ -568,7 +568,7 @@ public class DownloadFragment extends FragmentBase {
                     try {
                         info.start = TimeUtils.parse3339( start );
                         info.end = TimeUtils.parse3339( end );
-                        if ( now.before( info.end ) ) {
+                        if ( info.end != null && now.before( info.end ) ) {
                             mInstalledData.add( info );
                         }
                     } catch ( TimeFormatException e ) {
