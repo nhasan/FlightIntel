@@ -285,7 +285,7 @@ public class DatabaseManager {
     }
 
     public static final class Tower9 implements BaseColumns {
-        public static final String TABLE_NAME = "tower8";
+        public static final String TABLE_NAME = "tower9";
         public static final String FACILITY_ID = "FACILITY_ID";
         public static final String ATIS_SERIAL_NO = "ATIS_SERIAL_NO";
         public static final String ATIS_HOURS = "ATIS_HOURS";

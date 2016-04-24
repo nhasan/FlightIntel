@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,6 @@
 
 package com.nadmm.airports.afd;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -33,6 +30,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Aff3;
 import com.nadmm.airports.data.DatabaseManager.Airports;
@@ -41,11 +40,13 @@ import com.nadmm.airports.data.DatabaseManager.Tower1;
 import com.nadmm.airports.data.DatabaseManager.Tower3;
 import com.nadmm.airports.data.DatabaseManager.Tower6;
 import com.nadmm.airports.data.DatabaseManager.Tower7;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.R;
+import com.nadmm.airports.data.DatabaseManager.Tower9;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public final class CommunicationsFragment extends FragmentBase {
 
@@ -314,6 +315,18 @@ public final class CommunicationsFragment extends FragmentBase {
             String hours = atct.getString( atct.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
             addPhoneRow( layout, name+" Tower", phone, "Business office", "("+hours+")" );
         }
+
+        Cursor twr9 = result[ 11 ];
+        if ( twr9.moveToFirst() ) {
+            do {
+                String atisPurpose = twr9.getString( twr9.getColumnIndex( Tower9.ATIS_PURPOSE ) );
+                String atisPhone = twr9.getString( twr9.getColumnIndex( Tower9.ATIS_PHONE ) );
+
+                if ( !atisPhone.isEmpty() ) {
+                    addPhoneRow( layout, "ATIS", atisPhone, atisPurpose, null );
+                }
+            } while ( twr9.moveToNext() );
+        }
     }
 
     protected void showRemarks( Cursor[] result ) {
@@ -344,7 +357,7 @@ public final class CommunicationsFragment extends FragmentBase {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 11 ];
+            Cursor[] cursors = new Cursor[ 12 ];
 
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -434,6 +447,13 @@ public final class CommunicationsFragment extends FragmentBase {
                     "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
                     new String[] { "ATCT", faaCode }, null, null, null, null );
             cursors[ 10 ] = c;
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Tower9.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" },
+                    Tower9.FACILITY_ID+"=?",
+                    new String[] { faaCode }, null, null, Tower9.ATIS_SERIAL_NO, null );
+            cursors[ 11 ] = c;
 
             return cursors;
         }
