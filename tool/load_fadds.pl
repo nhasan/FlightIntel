@@ -574,6 +574,19 @@ my $insert_tower3_record = "INSERT INTO tower3 ("
         ."?, ?, ?"
         .");";
 
+my $create_tower4_table = "CREATE TABLE tower4 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."FACILITY_ID TEXT, "
+        ."MASTER_AIRPORT_SERVICES TEXT"
+        .");";
+
+my $insert_tower4_record = "INSERT INTO tower4 ("
+        ."FACILITY_ID, "
+        ."MASTER_AIRPORT_SERVICES"
+        .") VALUES ("
+        ."?, ?"
+        .");";
+
 my $create_tower6_table = "CREATE TABLE tower6 ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."FACILITY_ID TEXT, "
@@ -1085,6 +1098,10 @@ $dbh->do( "DROP TABLE IF EXISTS tower3" );
 $dbh->do( $create_tower3_table );
 $dbh->do( "CREATE INDEX idx_twr3_facility_id on tower3 ( FACILITY_ID );" );
 
+$dbh->do( "DROP TABLE IF EXISTS tower4" );
+$dbh->do( $create_tower4_table );
+$dbh->do( "CREATE INDEX idx_twr4_facility_id on tower4 ( FACILITY_ID );" );
+
 $dbh->do( "DROP TABLE IF EXISTS tower6" );
 $dbh->do( $create_tower6_table );
 $dbh->do( "CREATE INDEX idx_twr6_facility_id on tower6 ( FACILITY_ID );" );
@@ -1173,6 +1190,7 @@ my $sth_ars = $dbh->prepare( $insert_ars_record );
 my $sth_twr1 = $dbh->prepare( $insert_tower1_record );
 my $sth_twr2 = $dbh->prepare( $insert_tower2_record );
 my $sth_twr3 = $dbh->prepare( $insert_tower3_record );
+my $sth_twr4 = $dbh->prepare( $insert_tower4_record );
 my $sth_twr6 = $dbh->prepare( $insert_tower6_record );
 my $sth_twr7 = $dbh->prepare( $insert_tower7_record );
 my $sth_twr8 = $dbh->prepare( $insert_tower8_record );
@@ -1677,6 +1695,15 @@ while ( my $line = <TWR_FILE> )
             $sth_twr3->execute();
             ++$j;
         }
+    }
+    elsif ( $type eq "TWR4" )
+    {
+        #FACILITY_ID
+        $sth_twr4->bind_param( 1, substrim( $line, 4, 4 ) );
+        #MASTER_AIRPORT_SERVICES
+        $sth_twr4->bind_param( 2, substrim( $line, 8, 100 ) );
+
+        $sth_twr4->execute();
     }
     elsif ( $type eq "TWR6" )
     {
