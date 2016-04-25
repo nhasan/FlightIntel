@@ -37,6 +37,7 @@ import com.nadmm.airports.data.DatabaseManager.Aff3;
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.AtcPhones;
 import com.nadmm.airports.data.DatabaseManager.Tower1;
+import com.nadmm.airports.data.DatabaseManager.Tower2;
 import com.nadmm.airports.data.DatabaseManager.Tower3;
 import com.nadmm.airports.data.DatabaseManager.Tower6;
 import com.nadmm.airports.data.DatabaseManager.Tower7;
@@ -74,6 +75,7 @@ public final class CommunicationsFragment extends FragmentBase {
         showAirportTitle( apt );
         showAirportFrequencies( result );
         showAtcFrequencies( result );
+        showAtcHours( result );
         showAtcPhones( result );
         showRemarks( result );
 
@@ -270,6 +272,59 @@ public final class CommunicationsFragment extends FragmentBase {
         }
     }
 
+    protected void showAtcHours( Cursor[] result ) {
+        HashMap<String, String> hoursMap = new HashMap<>();
+
+        Cursor hours = result[ 12 ];
+        if ( hours != null && hours.moveToFirst() ) {
+            do {
+                String primaryAppHours = hours.getString(
+                        hours.getColumnIndex( Tower2.PRIMARY_APPROACH_HOURS ) );
+                if ( primaryAppHours != null && !primaryAppHours.isEmpty() ) {
+                    hoursMap.put( "Primary approach", primaryAppHours );
+                }
+                String secondaryAppHours = hours.getString(
+                        hours.getColumnIndex( Tower2.SECONDARY_APPROARCH_HOURS ) );
+                if ( secondaryAppHours != null && !secondaryAppHours.isEmpty() ) {
+                    hoursMap.put( "Secondary approach", secondaryAppHours );
+                }
+                String primaryDepHours = hours.getString(
+                        hours.getColumnIndex( Tower2.PRIMARY_DEPARTURE_HOURS ) );
+                if ( primaryDepHours != null && !primaryDepHours.isEmpty() ) {
+                    hoursMap.put( "Primary departure", primaryDepHours );
+                }
+                String secondaryDepHours = hours.getString(
+                        hours.getColumnIndex( Tower2.SECONDARY_DEPARTURE_HOURS ) );
+                if ( secondaryDepHours != null && !secondaryDepHours.isEmpty() ) {
+                    hoursMap.put( "Secondary departure", secondaryDepHours );
+                }
+                String towerHours = hours.getString(
+                        hours.getColumnIndex( Tower2.CONTROL_TOWER_HOURS ) );
+                if ( towerHours != null && !towerHours.isEmpty() ) {
+                    hoursMap.put( "Control tower", towerHours );
+                }
+            } while ( hours.moveToNext() );
+        }
+
+        Cursor twr9 = result[ 11 ];
+        if ( twr9.moveToFirst() ) {
+            String atisHours = twr9.getString( twr9.getColumnIndex( Tower9.ATIS_HOURS ) );
+            if ( atisHours != null && !atisHours.isEmpty() ) {
+                hoursMap.put( "ATIS", atisHours );
+            }
+        }
+
+        if ( !hoursMap.isEmpty() ) {
+            TextView tv = (TextView) findViewById( R.id.atc_hours_label );
+            tv.setVisibility( View.VISIBLE );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.atc_hours_details );
+            layout.setVisibility( View.VISIBLE );
+            for ( String key : hoursMap.keySet() ) {
+                addRow( layout, key, hoursMap.get( key ) );
+            }
+        }
+    }
+
     protected void showAtcPhones( Cursor[] result ) {
         LinearLayout layout = (LinearLayout) findViewById( R.id.atc_phones_details );
 
@@ -357,7 +412,7 @@ public final class CommunicationsFragment extends FragmentBase {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 12 ];
+            Cursor[] cursors = new Cursor[ 13 ];
 
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -454,6 +509,16 @@ public final class CommunicationsFragment extends FragmentBase {
                     Tower9.FACILITY_ID+"=?",
                     new String[] { faaCode }, null, null, Tower9.ATIS_SERIAL_NO, null );
             cursors[ 11 ] = c;
+
+            try {
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Tower2.TABLE_NAME );
+                c = builder.query( db, new String[]{ "*" },
+                        Tower2.FACILITY_ID + "=?",
+                        new String[]{ faaCode }, null, null, null, null );
+                cursors[ 12 ] = c;
+            } catch ( Exception e ) {
+            }
 
             return cursors;
         }

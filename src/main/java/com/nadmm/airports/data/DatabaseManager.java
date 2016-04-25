@@ -255,6 +255,16 @@ public class DatabaseManager {
         public static final String RADIO_CALL_DEP = "RADIO_CALL_DEP";
     }
 
+    public static final class Tower2 implements BaseColumns {
+        public static final String TABLE_NAME = "tower2";
+        public static final String FACILITY_ID = "FACILITY_ID";
+        public static final String PRIMARY_APPROACH_HOURS = "PRIMARY_APPROACH_HOURS";
+        public static final String SECONDARY_APPROARCH_HOURS = "SECONDARY_APPROARCH_HOURS";
+        public static final String PRIMARY_DEPARTURE_HOURS = "PRIMARY_DEPARTURE_HOURS";
+        public static final String SECONDARY_DEPARTURE_HOURS = "SECONDARY_DEPARTURE_HOURS";
+        public static final String CONTROL_TOWER_HOURS = "CONTROL_TOWER_HOURS";
+    }
+
     public static final class Tower3 implements BaseColumns {
         public static final String TABLE_NAME = "tower3";
         public static final String FACILITY_ID = "FACILITY_ID";

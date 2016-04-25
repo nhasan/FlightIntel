@@ -55,6 +55,7 @@
     <string name="home_airport">Home Airport</string>
     <string name="airport_attendance">Airport Attendance</string>
     <string name="atc_communications">ATC Communications</string>
+    <string name="atc_hours">ATC Hours</string>
     <string name="atc_phones">ATC Phone Numbers</string>
     <string name="sunrise_sunset">Sunrise and Sunset</string>
     <string name="runways">Runways</string>
