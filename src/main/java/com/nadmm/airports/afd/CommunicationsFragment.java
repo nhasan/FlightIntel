@@ -39,6 +39,7 @@ import com.nadmm.airports.data.DatabaseManager.AtcPhones;
 import com.nadmm.airports.data.DatabaseManager.Tower1;
 import com.nadmm.airports.data.DatabaseManager.Tower2;
 import com.nadmm.airports.data.DatabaseManager.Tower3;
+import com.nadmm.airports.data.DatabaseManager.Tower4;
 import com.nadmm.airports.data.DatabaseManager.Tower6;
 import com.nadmm.airports.data.DatabaseManager.Tower7;
 import com.nadmm.airports.data.DatabaseManager.Tower9;
@@ -320,7 +321,7 @@ public final class CommunicationsFragment extends FragmentBase {
             LinearLayout layout = (LinearLayout) findViewById( R.id.atc_hours_details );
             layout.setVisibility( View.VISIBLE );
             for ( String key : hoursMap.keySet() ) {
-                addRow( layout, key, hoursMap.get( key ) );
+                addRow( layout, key, formatHours( hoursMap.get( key ) ) );
             }
         }
     }
@@ -386,6 +387,7 @@ public final class CommunicationsFragment extends FragmentBase {
 
     protected void showRemarks( Cursor[] result ) {
         LinearLayout layout = (LinearLayout) findViewById( R.id.comm_remarks_layout );
+
         Cursor twr6 = result[ 3 ];
         if ( twr6.moveToFirst() ) {
             do {
@@ -393,8 +395,23 @@ public final class CommunicationsFragment extends FragmentBase {
                 addBulletedRow( layout, remark );
             } while ( twr6.moveToNext() );
         }
+
+        Cursor twr4 = result[ 13 ];
+        if ( twr4 != null && twr4.moveToFirst() ) {
+            addBulletedRow( layout, "Services to satellite airports:" );
+            do {
+                String services = twr4.getString(
+                        twr4.getColumnIndex( Tower4.MASTER_AIRPORT_SERVICES ) );
+                addBulletedRow( layout, "    "+services );
+            } while ( twr4.moveToNext() );
+        }
+
         addBulletedRow( layout, "Facilities can be contacted by phone through the"
                 +" regional duty officer during non-business hours." );
+    }
+
+    protected String formatHours( String hours ) {
+        return hours.equals( "24" )? "24 Hr" : hours;
     }
 
     protected void addFrequencyToMap( HashMap<String, ArrayList<Pair<String, String>>> map,
@@ -412,7 +429,7 @@ public final class CommunicationsFragment extends FragmentBase {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 13 ];
+            Cursor[] cursors = new Cursor[ 14 ];
 
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -517,6 +534,16 @@ public final class CommunicationsFragment extends FragmentBase {
                         Tower2.FACILITY_ID + "=?",
                         new String[]{ faaCode }, null, null, null, null );
                 cursors[ 12 ] = c;
+            } catch ( Exception e ) {
+            }
+
+            try {
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Tower4.TABLE_NAME );
+                c = builder.query( db, new String[]{ "*" },
+                        Tower4.FACILITY_ID + "=?",
+                        new String[]{ faaCode }, null, null, null, null );
+                cursors[ 13 ] = c;
             } catch ( Exception e ) {
             }
 

@@ -272,6 +272,12 @@ public class DatabaseManager {
         public static final String MASTER_AIRPORT_FREQ_USE = "MASTER_AIRPORT_FREQ_USE";
     }
 
+    public static final class Tower4 implements BaseColumns {
+        public static final String TABLE_NAME = "tower4";
+        public static final String FACILITY_ID = "FACILITY_ID";
+        public static final String MASTER_AIRPORT_SERVICES = "MASTER_AIRPORT_SERVICES";
+    }
+
     public static final class Tower6 implements BaseColumns {
         public static final String TABLE_NAME = "tower6";
         public static final String FACILITY_ID = "FACILITY_ID";
