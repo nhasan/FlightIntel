@@ -253,6 +253,10 @@ public class DatabaseManager {
         public static final String RADIO_CALL_TOWER = "RADIO_CALL_TOWER";
         public static final String RADIO_CALL_APCH = "RADIO_CALL_APCH";
         public static final String RADIO_CALL_DEP = "RADIO_CALL_DEP";
+        public static final String RADIO_CALL_APCH_PRIMARY = "RADIO_CALL_APCH_PRIMARY";
+        public static final String RADIO_CALL_DEP_PRIMARY = "RADIO_CALL_DEP_PRIMARY";
+        public static final String RADIO_CALL_APCH_SECONDARY = "RADIO_CALL_APCH_SECONDARY";
+        public static final String RADIO_CALL_DEP_SECONDARY = "RADIO_CALL_DEP_SECONDARY";
     }
 
     public static final class Tower2 implements BaseColumns {
