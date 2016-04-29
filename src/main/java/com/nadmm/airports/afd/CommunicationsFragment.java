@@ -49,6 +49,8 @@ import com.nadmm.airports.utils.FormatUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public final class CommunicationsFragment extends FragmentBase {
 
@@ -75,7 +77,6 @@ public final class CommunicationsFragment extends FragmentBase {
 
         showAirportTitle( apt );
         showAirportFrequencies( result );
-        showAtcFrequencies( result );
         showAtcHours( result );
         showAtcPhones( result );
         showRemarks( result );
@@ -84,163 +85,33 @@ public final class CommunicationsFragment extends FragmentBase {
     }
 
     protected void showAirportFrequencies( Cursor[] result ) {
-        Cursor twr1 = result[ 1 ];
         String towerRadioCall = "";
-        if ( twr1.moveToFirst() ) {
-            towerRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_TOWER ) );
-        }
-
-        Cursor twr3 = result[ 2 ];
-        if ( twr3.moveToFirst() ) {
-            HashMap<String, ArrayList<Pair<String, String>>> map = new HashMap<>();
-            do {
-                String freq = twr3.getString( twr3.getColumnIndex( Tower3.MASTER_AIRPORT_FREQ ) );
-                String extra = "";
-                String freqUse = twr3.getString( twr3.getColumnIndex(
-                        Tower3.MASTER_AIRPORT_FREQ_USE ) );
-                int i = 0;
-                while ( i < freq.length() ) {
-                    char c = freq.charAt( i );
-                    if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
-                        ++i;
-                        continue;
-                    }
-                    extra = freq.substring( i );
-                    freq = freq.substring( 0, i );
-                    break;
-                }
-                if ( freqUse.contains( "LCL" ) || freqUse.contains( "LC/P" ) ) {
-                    addFrequencyToMap( map, towerRadioCall+" Tower", freq, extra );
-                }
-                if ( freqUse.contains( "GND" ) ) {
-                    addFrequencyToMap( map, towerRadioCall+" Ground", freq, extra );
-                }
-                if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC" ) ) {
-                    addFrequencyToMap( map, "Clearance Delivery", freq, extra );
-                }
-                if ( freqUse.contains( "CLASS B" ) ) {
-                    addFrequencyToMap( map, "Class B", freq, extra );
-                }
-                if ( freqUse.contains( "CLASS C" ) ) {
-                    addFrequencyToMap( map, "Class C", freq, extra );
-                }
-                if ( freqUse.contains( "ATIS" ) ) {
-                    if ( freqUse.contains( "D-ATIS" ) ) {
-                        addFrequencyToMap( map, "D-ATIS", freq, extra );
-                    } else {
-                        addFrequencyToMap( map, "ATIS", freq, extra );
-                    }
-                }
-                if ( freqUse.contains( "RADAR" ) || freqUse.contains( "RDR" ) ) {
-                    addFrequencyToMap( map, "Radar", freq, extra );
-                }
-                if ( freqUse.contains( "TRSA" ) ) {
-                    addFrequencyToMap( map, "TRSA", freq, extra );
-                }
-                if ( freqUse.contains( "TAXI CLNC" ) ) {
-                    addFrequencyToMap( map, "Taxi Clearance", freq, extra );
-                }
-                if ( freqUse.contains( "EMERG" ) ) {
-                    addFrequencyToMap( map, "Emergency", freq, extra );
-                }
-            } while ( twr3.moveToNext() );
-
-            if ( !map.isEmpty() ) {
-                TextView tv = (TextView) findViewById( R.id.airport_comm_label );
-                tv.setVisibility( View.VISIBLE );
-                LinearLayout layout = (LinearLayout) findViewById( R.id.airport_comm_details );
-                layout.setVisibility( View.VISIBLE );
-                for ( String key : map.keySet() ) {
-                    for ( Pair<String, String> pair : map.get( key ) ) {
-                        addRow( layout, key, pair.first, pair.second );
-                    }
-                }
-            }
-        }
-    }
-
-    protected void showAtcFrequencies( Cursor[] result ) {
-        Cursor twr1 = result[ 1 ];
         String apchRadioCall = "";
         String depRadioCall = "";
+        Map<String, ArrayList<Pair<String, String>>> map = new TreeMap<>();
+
+        Cursor twr1 = result[ 1 ];
         if ( twr1.moveToFirst() ) {
+            towerRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_TOWER ) );
             apchRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_APCH ) );
             depRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP ) );
         }
 
-        HashMap<String, ArrayList<Pair<String, String>>> map = new HashMap<>();
-
         Cursor twr3 = result[ 2 ];
         if ( twr3.moveToFirst() ) {
             do {
+                String freqUse = twr3.getString( twr3.getColumnIndex( Tower3.MASTER_AIRPORT_FREQ_USE ) );
                 String freq = twr3.getString( twr3.getColumnIndex( Tower3.MASTER_AIRPORT_FREQ ) );
-                String extra = "";
-                String freqUse = twr3.getString( twr3.getColumnIndex(
-                        Tower3.MASTER_AIRPORT_FREQ_USE ) );
-                // Remove any text past the frequency
-                int i = 0;
-                while ( i < freq.length() ) {
-                    char c = freq.charAt( i );
-                    if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
-                        ++i;
-                        continue;
-                    }
-                    extra = freq.substring( i );
-                    freq = freq.substring( 0, i );
-                    break;
-                }
-                if ( freqUse.contains( "APCH" ) || freqUse.contains( "ARRIVAL" ) ) {
-                    addFrequencyToMap( map, apchRadioCall+" Approach", freq, extra );
-                }
-                if ( freqUse.contains( "DEP" ) ) {
-                    addFrequencyToMap( map, depRadioCall+" Departure", freq, extra );
-                }
+                processFrequency( map, towerRadioCall, apchRadioCall, depRadioCall, freqUse, freq );
             } while ( twr3.moveToNext() );
         }
 
         Cursor twr7 = result[ 4 ];
         if ( twr7.moveToFirst() ) {
             do {
-                String freq = twr7.getString( twr7.getColumnIndex(
-                        Tower7.SATELLITE_AIRPORT_FREQ ) );
-                String extra = "";
-                String freqUse = twr7.getString( twr7.getColumnIndex(
-                        Tower7.SATELLITE_AIRPORT_FREQ_USE ) );
-                int i = 0;
-                while ( i < freq.length() ) {
-                    char c = freq.charAt( i );
-                    if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
-                        ++i;
-                        continue;
-                    }
-                    extra = freq.substring( i );
-                    freq = freq.substring( 0, i );
-                    break;
-                }
-                if ( freqUse.contains( "APCH" ) || freqUse.contains( "ARRIVAL" ) ) {
-                    addFrequencyToMap( map, apchRadioCall+" Approach", freq, extra );
-                }
-                if ( freqUse.contains( "DEP" ) ) {
-                    addFrequencyToMap( map, depRadioCall+" Departure", freq, extra );
-                }
-                if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC" ) ) {
-                    addFrequencyToMap( map, "Clearance Delivery", freq, extra );
-                }
-                if ( freqUse.contains( "OPNS" ) ) {
-                    addFrequencyToMap( map, "Operations", freq, extra );
-                }
-                if ( freqUse.contains( "FINAL" ) ) {
-                    addFrequencyToMap( map, "Final Vector", freq, extra );
-                }
-                if ( freqUse.contains( "RADAR" ) || freqUse.contains( "RDR" ) ) {
-                    addFrequencyToMap( map, "Radar", freq, extra );
-                }
-                if ( freqUse.contains( "CLASS B" ) ) {
-                    addFrequencyToMap( map, "Class B", freq, extra );
-                }
-                if ( freqUse.contains( "CLASS C" ) ) {
-                    addFrequencyToMap( map, "Class C", freq, extra );
-                }
+                String freqUse = twr7.getString( twr7.getColumnIndex( Tower7.SATELLITE_AIRPORT_FREQ_USE ) );
+                String freq = twr7.getString( twr7.getColumnIndex( Tower7.SATELLITE_AIRPORT_FREQ ) );
+                processFrequency( map, towerRadioCall, apchRadioCall, depRadioCall, freqUse, freq );
             } while ( twr7.moveToNext() );
         }
 
@@ -261,9 +132,9 @@ public final class CommunicationsFragment extends FragmentBase {
         }
 
         if ( !map.isEmpty() ) {
-            TextView tv = (TextView) findViewById( R.id.atc_comm_label );
+            TextView tv = (TextView) findViewById( R.id.airport_comm_label );
             tv.setVisibility( View.VISIBLE );
-            LinearLayout layout = (LinearLayout) findViewById( R.id.atc_comm_details );
+            LinearLayout layout = (LinearLayout) findViewById( R.id.airport_comm_details );
             layout.setVisibility( View.VISIBLE );
             for ( String key : map.keySet() ) {
                 for ( Pair<String, String> pair : map.get( key ) ) {
@@ -273,10 +144,121 @@ public final class CommunicationsFragment extends FragmentBase {
         }
     }
 
+    protected void processFrequency( Map<String, ArrayList<Pair<String, String>>> map,
+                                     String towerRadioCall, String apchRadioCall,
+                                     String depRadioCall, String freqUse, String freq ) {
+        boolean found = false;
+        String extra = "";
+
+        int i = 0;
+        while ( i < freq.length() ) {
+            char c = freq.charAt( i );
+            if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
+                ++i;
+                continue;
+            }
+            extra = freq.substring( i );
+            freq = freq.substring( 0, i );
+            if ( extra.equals( "X" ) ) {
+                extra = "Khz";
+            }
+            break;
+        }
+        if ( freqUse.contains( "LCL" ) || freqUse.contains( "LC/P" ) ) {
+            addFrequencyToMap( map, towerRadioCall+" Tower", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "GND" ) ) {
+            addFrequencyToMap( map, towerRadioCall+" Ground", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "APCH" ) || freqUse.contains( "ARRIVAL" ) ) {
+            addFrequencyToMap( map, apchRadioCall+" Approach", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "DEP" ) ) {
+            addFrequencyToMap( map, depRadioCall+" Departure", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "CD" ) || freqUse.contains( "CLNC" ) ) {
+            addFrequencyToMap( map, "Clearance Delivery", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "CLASS B" ) ) {
+            addFrequencyToMap( map, "Class B", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "CLASS C" ) ) {
+            addFrequencyToMap( map, "Class C", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "ATIS" ) ) {
+            if ( freqUse.contains( "D-ATIS" ) ) {
+                addFrequencyToMap( map, "D-ATIS", freq, extra );
+            } else {
+                addFrequencyToMap( map, "ATIS", freq, extra );
+            }
+            found = true;
+        }
+        if ( freqUse.contains( "RADAR" ) || freqUse.contains( "RDR" ) ) {
+            addFrequencyToMap( map, "Radar", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "TRSA" ) ) {
+            addFrequencyToMap( map, "TRSA", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "TAXI CLNC" ) ) {
+            addFrequencyToMap( map, "Taxi Clearance", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "EMERG" ) ) {
+            addFrequencyToMap( map, "Emergency", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "VFR-ADV" ) ) {
+            addFrequencyToMap( map, "VFR Advisory", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "VFR ADZY" ) ) {
+            addFrequencyToMap( map, "VFR Advisory", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "SFA" ) ) {
+            addFrequencyToMap( map, "Single Freq Approach", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "PTC" ) ) {
+            addFrequencyToMap( map, "PTC", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "PAR" ) ) {
+            addFrequencyToMap( map, "PAR", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "AFIS" ) ) {
+            addFrequencyToMap( map, "AFIS", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "PMSV" ) ) {
+            addFrequencyToMap( map, "Operations", freq, extra );
+            found = true;
+        }
+        if ( freqUse.contains( "IC" ) ) {
+            addFrequencyToMap( map, "IC", freq, extra );
+            found = true;
+        }
+
+        if ( !found ) {
+            // Not able to recognize any token so show it as is
+            addFrequencyToMap( map, freqUse, freq, extra );
+        }
+    }
+
     protected void showAtcHours( Cursor[] result ) {
         HashMap<String, String> hoursMap = new HashMap<>();
 
-        Cursor hours = result[ 12 ];
+        Cursor hours = result[ 13 ];
         if ( hours != null && hours.moveToFirst() ) {
             do {
                 String primaryAppHours = hours.getString(
@@ -357,13 +339,24 @@ public final class CommunicationsFragment extends FragmentBase {
         Cursor tracon = result[ 9 ];
         if ( tracon != null && tracon.moveToFirst() ) {
             String faaCode = tracon.getString( tracon.getColumnIndex( AtcPhones.FACILITY_ID ) );
+            String type = tracon.getString( tracon.getColumnIndex( AtcPhones.FACILITY_TYPE ) );
             String phone = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
             String hours = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
-            String name = DataUtils.getTraconName( faaCode );
+            String name = DataUtils.getAtcFacilityName( faaCode+":"+type );
             addPhoneRow( layout, name+" TRACON", phone, "Business office", "("+hours+")" );
         }
 
-        Cursor atct = result[ 10 ];
+        tracon = result[ 10 ];
+        if ( tracon != null && tracon.moveToFirst() ) {
+            String faaCode = tracon.getString( tracon.getColumnIndex( AtcPhones.FACILITY_ID ) );
+            String type = tracon.getString( tracon.getColumnIndex( AtcPhones.FACILITY_TYPE ) );
+            String phone = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
+            String hours = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
+            String name = DataUtils.getAtcFacilityName( faaCode+":"+type );
+            addPhoneRow( layout, name+" TRACON", phone, "Business office", "("+hours+")" );
+        }
+
+        Cursor atct = result[ 11 ];
         if ( atct.moveToFirst() ) {
             Cursor tower1 = result[ 1 ];
             String name = tower1.getString( tower1.getColumnIndex( Tower1.RADIO_CALL_TOWER ) );
@@ -372,7 +365,7 @@ public final class CommunicationsFragment extends FragmentBase {
             addPhoneRow( layout, name+" Tower", phone, "Business office", "("+hours+")" );
         }
 
-        Cursor twr9 = result[ 11 ];
+        Cursor twr9 = result[ 12 ];
         if ( twr9.moveToFirst() ) {
             do {
                 String atisPurpose = twr9.getString( twr9.getColumnIndex( Tower9.ATIS_PURPOSE ) );
@@ -396,7 +389,7 @@ public final class CommunicationsFragment extends FragmentBase {
             } while ( twr6.moveToNext() );
         }
 
-        Cursor twr4 = result[ 13 ];
+        Cursor twr4 = result[ 14 ];
         if ( twr4 != null && twr4.moveToFirst() ) {
             addBulletedRow( layout, "Services to satellite airports:" );
             do {
@@ -414,7 +407,7 @@ public final class CommunicationsFragment extends FragmentBase {
         return hours.equals( "24" )? "24 Hr" : hours;
     }
 
-    protected void addFrequencyToMap( HashMap<String, ArrayList<Pair<String, String>>> map,
+    protected void addFrequencyToMap( Map<String, ArrayList<Pair<String, String>>> map,
             String key, String freq, String extra ) {
         ArrayList<Pair<String, String>> list = map.get( key );
         if ( list == null ) {
@@ -429,7 +422,7 @@ public final class CommunicationsFragment extends FragmentBase {
         @Override
         protected Cursor[] doInBackground( String... params ) {
             String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 14 ];
+            Cursor[] cursors = new Cursor[ 15 ];
 
             Cursor apt = getAirportDetails( siteNumber );
             cursors[ 0 ] = apt;
@@ -497,19 +490,52 @@ public final class CommunicationsFragment extends FragmentBase {
 
             Cursor twr1 = cursors[ 1 ];
             if ( twr1.moveToFirst() ) {
-                String apch = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_APCH ) );
-                String tracon = DataUtils.getTraconId( apch );
-                if ( tracon.length() == 0 ) {
-                    String dep = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP ) );
-                    tracon = DataUtils.getTraconId( dep );
+                String apchName;
+                try {
+                    apchName = twr1.getString( twr1.getColumnIndex(
+                            Tower1.RADIO_CALL_APCH_PRIMARY ) );
+                } catch ( Exception e ) {
+                    apchName = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_APCH ) );
                 }
-                if ( tracon.length() > 0 ) {
+                String[] apchId = DataUtils.getAtcFacilityId( apchName );
+                if ( apchId == null ) {
+                    try {
+                        apchName = twr1.getString( twr1.getColumnIndex(
+                                Tower1.RADIO_CALL_APCH_SECONDARY ) );
+                        apchId = DataUtils.getAtcFacilityId( apchName );
+                    } catch ( Exception e ) {
+                    }
+                }
+                if ( apchId != null ) {
                     builder = new SQLiteQueryBuilder();
                     builder.setTables( AtcPhones.TABLE_NAME );
                     c = builder.query( db, new String[] { "*" },
                             "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
-                            new String[] { "TRACON", tracon }, null, null, null, null );
+                            new String[] { apchId[ 1 ], apchId[ 0 ] }, null, null, null, null );
                     cursors[ 9 ] = c;
+                }
+
+                String depName;
+                try {
+                    depName = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP_PRIMARY ) );
+                } catch ( Exception e ) {
+                    depName = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP ) );
+                }
+                String depId[] = DataUtils.getAtcFacilityId( depName );
+                if ( depId == null ) {
+                    try {
+                        depName = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP_SECONDARY ) );
+                        depId = DataUtils.getAtcFacilityId( depName );
+                    } catch ( Exception e ) {
+                    }
+                }
+                if ( depId != null ) {
+                    builder = new SQLiteQueryBuilder();
+                    builder.setTables( AtcPhones.TABLE_NAME );
+                    c = builder.query( db, new String[] { "*" },
+                            "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
+                            new String[] { depId[ 0 ], depId[ 1 ] }, null, null, null, null );
+                    cursors[ 10 ] = c;
                 }
             }
 
@@ -518,14 +544,14 @@ public final class CommunicationsFragment extends FragmentBase {
             c = builder.query( db, new String[] { "*" },
                     "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
                     new String[] { "ATCT", faaCode }, null, null, null, null );
-            cursors[ 10 ] = c;
+            cursors[ 11 ] = c;
 
             builder = new SQLiteQueryBuilder();
             builder.setTables( Tower9.TABLE_NAME );
             c = builder.query( db, new String[] { "*" },
                     Tower9.FACILITY_ID+"=?",
                     new String[] { faaCode }, null, null, Tower9.ATIS_SERIAL_NO, null );
-            cursors[ 11 ] = c;
+            cursors[ 12 ] = c;
 
             try {
                 builder = new SQLiteQueryBuilder();
@@ -533,7 +559,7 @@ public final class CommunicationsFragment extends FragmentBase {
                 c = builder.query( db, new String[]{ "*" },
                         Tower2.FACILITY_ID + "=?",
                         new String[]{ faaCode }, null, null, null, null );
-                cursors[ 12 ] = c;
+                cursors[ 13 ] = c;
             } catch ( Exception e ) {
             }
 
@@ -543,7 +569,7 @@ public final class CommunicationsFragment extends FragmentBase {
                 c = builder.query( db, new String[]{ "*" },
                         Tower4.FACILITY_ID + "=?",
                         new String[]{ faaCode }, null, null, null, null );
-                cursors[ 13 ] = c;
+                cursors[ 14 ] = c;
             } catch ( Exception e ) {
             }
 
