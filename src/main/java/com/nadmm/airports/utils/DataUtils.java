@@ -836,30 +836,176 @@ public final class DataUtils {
         }
     }
 
-    private static final Map<String, String> sTracons = new HashMap<>();
+    private static final Map<String, String> sAtcIdToName = new HashMap<>();
+    private static final Map<String, String> sAtcNameToId = new HashMap<>();
+
     static {
-        sTracons.put( "A80", "Atlanta" );
-        sTracons.put( "C90", "Chicago" );
-        sTracons.put( "D10", "Regional" );
-        sTracons.put( "D01", "Denver" );
-        sTracons.put( "I90", "Houston" );
-        sTracons.put( "N90", "New York" );
-        sTracons.put( "NCT", "Norcal" );
-        sTracons.put( "PCT", "Potomac" );
-        sTracons.put( "SCT", "Socal" );
-    }
+        sAtcIdToName.put( "A11:TRACON", "Anchorage" );
+        sAtcIdToName.put( "A80:TRACON", "Atlanta" );
+        sAtcIdToName.put( "A90:TRACON", "Boston" );
+        sAtcIdToName.put( "BOI:TRACON", "Big Sky" );
+        sAtcIdToName.put( "C90:TRACON", "Chicago" );
+        sAtcIdToName.put( "D01:TRACON", "Denver" );
+        sAtcIdToName.put( "D10:TRACON", "Dallas-Ft Worth" );
+        sAtcIdToName.put( "D21:TRACON", "Detroit" );
+        sAtcIdToName.put( "F11:TRACON", "Central Florida" );
+        sAtcIdToName.put( "I90:TRACON", "Houston" );
+        sAtcIdToName.put( "K90:TRACON", "Cape" );
+        sAtcIdToName.put( "L30:TRACON", "Las Vegas" );
+        sAtcIdToName.put( "M03:TRACON", "Memphis" );
+        sAtcIdToName.put( "M98:TRACON", "Minneapolis" );
+        sAtcIdToName.put( "N90:TRACON", "New York" );
+        sAtcIdToName.put( "NCT:TRACON", "Norcal" );
+        sAtcIdToName.put( "NMM:TRACON", "Meridian" );
+        sAtcIdToName.put( "P31:TRACON", "Pensacola" );
+        sAtcIdToName.put( "P50:TRACON", "Phoenix" );
+        sAtcIdToName.put( "P80:TRACON", "Portland" );
+        sAtcIdToName.put( "PCT:TRACON", "Potomac" );
+        sAtcIdToName.put( "R90:TRACON", "Omaha" );
+        sAtcIdToName.put( "S46:TRACON", "Seattle" );
+        sAtcIdToName.put( "S56:TRACON", "Salt Lake City" );
+        sAtcIdToName.put( "SCT:TRACON", "Socal" );
+        sAtcIdToName.put( "T75:TRACON", "St Louis" );
+        sAtcIdToName.put( "U90:TRACON", "Tucson" );
+        sAtcIdToName.put( "Y90:TRACON", "Yankee" );
 
-    public static String getTraconId( String name ) {
-        for ( Entry<String, String> entry : sTracons.entrySet() ) {
-            if ( name.equals( entry.getValue() ) ) {
-                return entry.getKey();
-            }
+        sAtcIdToName.put( "ABE:ATCT", "Allentown" );
+        sAtcIdToName.put( "ABI:ATCT", "Abilene" );
+        sAtcIdToName.put( "ABQ:ATCT", "Albuquerque" );
+        sAtcIdToName.put( "ACT:ATCT", "Waco" );
+        sAtcIdToName.put( "ACY:ATCT", "Atlantic City" );
+        sAtcIdToName.put( "AGS:ATCT", "Augusta" );
+        sAtcIdToName.put( "ALB:ATCT", "Albany" );
+        sAtcIdToName.put( "ALO:ATCT", "Waterloo" );
+        sAtcIdToName.put( "AMA:ATCT", "Amarillo" );
+        sAtcIdToName.put( "ASE:ATCT", "Aspen" );
+        sAtcIdToName.put( "AUS:ATCT", "Austin" );
+        sAtcIdToName.put( "AVL:ATCT", "Asheville" );
+        sAtcIdToName.put( "AVP:ATCT", "Wilkes-Barre" );
+        sAtcIdToName.put( "AZO:ATCT", "Kalamazoo" );
+        sAtcIdToName.put( "BFL:ATCT", "Bakersfield" );
+        sAtcIdToName.put( "BGM:ATCT", "Binghamton" );
+        sAtcIdToName.put( "BGR:ATCT", "Bangor" );
+        sAtcIdToName.put( "BHM:ATCT", "Birmingham" );
+        sAtcIdToName.put( "BIL:ATCT", "Billings" );
+        sAtcIdToName.put( "BIS:ATCT", "Bismarck" );
+        sAtcIdToName.put( "BNA:ATCT", "Nashville" );
+        sAtcIdToName.put( "BOI:ATCT", "Boise" );
+        sAtcIdToName.put( "BTR:ATCT", "Baton Rouge" );
+        sAtcIdToName.put( "BTV:ATCT", "Burlington" );
+        sAtcIdToName.put( "BUF:ATCT", "Buffalo" );
+        sAtcIdToName.put( "CAE:ATCT", "Columbia" );
+        sAtcIdToName.put( "CAK:ATCT", "Akron-Canton" );
+        sAtcIdToName.put( "CHA:ATCT", "Chatanooga" );
+        sAtcIdToName.put( "CHS:ATCT", "Charlston" );
+        sAtcIdToName.put( "CID:ATCT", "Cedar Rapids" );
+        sAtcIdToName.put( "CKB:ATCT", "Clarksburg" );
+        sAtcIdToName.put( "CLE:ATCT", "Cleveland" );
+        sAtcIdToName.put( "CLT:ATCT", "Charlotte" );
+        sAtcIdToName.put( "CMH:ATCT", "Columbus" );
+        sAtcIdToName.put( "CMI:ATCT", "Champaign" );
+        sAtcIdToName.put( "COS:ATCT", "Colorado Springs" );
+        sAtcIdToName.put( "CPR:ATCT", "Casper" );
+        sAtcIdToName.put( "CRP:ATCT", "Corpus Christi" );
+        sAtcIdToName.put( "CRW:ATCT", "Charlston" );
+        sAtcIdToName.put( "CVG:ATCT", "Cincinnati" );
+        sAtcIdToName.put( "DAB:ATCT", "Daytona Beach" );
+        sAtcIdToName.put( "DAY:ATCT", "Dayton" );
+        sAtcIdToName.put( "DLH:ATCT", "Duluth" );
+        sAtcIdToName.put( "DMA:ATCT", "Duluth" );
+        sAtcIdToName.put( "DSM:ATCT", "Des Moines" );
+        sAtcIdToName.put( "ELM:ATCT", "Elmira" );
+        sAtcIdToName.put( "ELP:ATCT", "El Paso" );
+        sAtcIdToName.put( "ERI:ATCT", "Erie" );
+        sAtcIdToName.put( "EUG:ATCT", "Eugene" );
+        sAtcIdToName.put( "EVV:ATCT", "Evansville" );
+        sAtcIdToName.put( "FAI:ATCT", "Fairbanks" );
+        sAtcIdToName.put( "FAR:ATCT", "Fargo" );
+        sAtcIdToName.put( "FAT:ATCT", "Fresno" );
+        sAtcIdToName.put( "FAY:ATCT", "Fayetteville" );
+        sAtcIdToName.put( "FLO:ATCT", "Florence" );
+        sAtcIdToName.put( "FNT:ATCT", "Flint" );
+        sAtcIdToName.put( "FSD:ATCT", "Sioux Falls" );
+        sAtcIdToName.put( "FSM:ATCT", "Fort Smith" );
+        sAtcIdToName.put( "FWA:ATCT", "Fort Wayne" );
+        sAtcIdToName.put( "GEG:ATCT", "Spokane" );
+        sAtcIdToName.put( "GGG:ATCT", "Longview" );
+        sAtcIdToName.put( "GPT:ATCT", "Gulfport" );
+        sAtcIdToName.put( "GRB:ATCT", "Greenbay" );
+        sAtcIdToName.put( "GRR:ATCT", "Grand Rapids" );
+        sAtcIdToName.put( "GSO:ATCT", "Greensboro" );
+        sAtcIdToName.put( "GSP:ATCT", "Greer" );
+        sAtcIdToName.put( "GTF:ATCT", "Great Falls" );
+        sAtcIdToName.put( "HLN:ATCT", "Helena" );
+        sAtcIdToName.put( "HSV:ATCT", "Huntsville" );
+        sAtcIdToName.put( "HTS:ATCT", "Huntington" );
+        sAtcIdToName.put( "HUF:ATCT", "Hulman" );
+        sAtcIdToName.put( "ICT:ATCT", "Wichita" );
+        sAtcIdToName.put( "ILM:ATCT", "Wilmington" );
+        sAtcIdToName.put( "IND:ATCT", "Indianapolis" );
+        sAtcIdToName.put( "ITO:ATCT", "Hilo" );
+        sAtcIdToName.put( "JAN:ATCT", "Jackson" );
+        sAtcIdToName.put( "JAX:ATCT", "Jacksonville" );
+        sAtcIdToName.put( "LAN:ATCT", "Lansing" );
+        sAtcIdToName.put( "LBB:ATCT", "Lubbock" );
+        sAtcIdToName.put( "LCH:ATCT", "Lake Charles" );
+        sAtcIdToName.put( "LEX:ATCT", "Lexington" );
+        sAtcIdToName.put( "LFT:ATCT", "Lafayette" );
+        sAtcIdToName.put( "LIT:ATCT", "Little Rock" );
+        sAtcIdToName.put( "MAF:ATCT", "Midland" );
+        sAtcIdToName.put( "MBS:ATCT", "Saginaw" );
+        sAtcIdToName.put( "MCI:ATCT", "Kansas City" );
+        sAtcIdToName.put( "MDT:ATCT", "Harrisburg" );
+        sAtcIdToName.put( "MFD:ATCT", "Mansfield" );
+        sAtcIdToName.put( "MGM:ATCT", "Montgomery" );
+        sAtcIdToName.put( "MIA:ATCT", "Miami" );
+        sAtcIdToName.put( "MKE:ATCT", "Milwaukee" );
+        sAtcIdToName.put( "MKG:ATCT", "Muskegon" );
+        sAtcIdToName.put( "MLI:ATCT", "Quad City" );
+        sAtcIdToName.put( "MLU:ATCT", "Monroe" );
+        sAtcIdToName.put( "MOB:ATCT", "Mobile" );
+        sAtcIdToName.put( "MSN:ATCT", "Madison" );
+        sAtcIdToName.put( "MSY:ATCT", "New Orleans" );
+        sAtcIdToName.put( "MWH:ATCT", "Grant County" );
+        sAtcIdToName.put( "MYR:ATCT", "Myrtle Beach" );
+        sAtcIdToName.put( "OKC:ATCT", "Oke City" );
+        sAtcIdToName.put( "ORF:ATCT", "Norfolk" );
+        sAtcIdToName.put( "PBI:ATCT", "Palm Beach" );
+        sAtcIdToName.put( "PHL:ATCT", "Philadelphia" );
+        sAtcIdToName.put( "PIA:ATCT", "Peoria" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+        sAtcIdToName.put( ":ATCT", "" );
+
+        for ( Entry<String, String> entry : sAtcIdToName.entrySet() ) {
+            sAtcNameToId.put( entry.getValue(), entry.getKey() );
         }
-        return "";
+
     }
 
-    public static String getTraconName( String id ) {
-        return sTracons.get( id );
+    public static String[] getAtcFacilityId( String name ) {
+        return sAtcNameToId.containsKey( name )? sAtcNameToId.get( name ).split( ":" ) : null;
+    }
+
+    public static String getAtcFacilityName( String id ) {
+        return sAtcIdToName.get( id );
     }
 
     public static long metersToFeet( float meters ) {
