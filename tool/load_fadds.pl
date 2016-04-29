@@ -523,8 +523,10 @@ my $create_tower1_table = "CREATE TABLE tower1 ("
         ."SITE_NUMBER TEXT, "
         ."FACILITY_TYPE TEXT, "
         ."RADIO_CALL_TOWER TEXT, "
-        ."RADIO_CALL_APCH TEXT, "
-        ."RADIO_CALL_DEP TEXT "
+        ."RADIO_CALL_APCH_PRIMARY TEXT, "
+        ."RADIO_CALL_APCH_SECONDARY TEXT, "
+        ."RADIO_CALL_DEP_PRIMARY TEXT, "
+        ."RADIO_CALL_DEP_SECONDARY TEXT "
         .");";
 
 my $insert_tower1_record = "INSERT INTO tower1 ("
@@ -532,10 +534,12 @@ my $insert_tower1_record = "INSERT INTO tower1 ("
         ."SITE_NUMBER, "
         ."FACILITY_TYPE, "
         ."RADIO_CALL_TOWER, "
-        ."RADIO_CALL_APCH, "
-        ."RADIO_CALL_DEP"
+        ."RADIO_CALL_APCH_PRIMARY, "
+        ."RADIO_CALL_APCH_SECONDARY, "
+        ."RADIO_CALL_DEP_PRIMARY, "
+        ."RADIO_CALL_DEP_SECONDARY"
         .") VALUES ("
-        ."?, ?, ?, ?, ?, ?"
+        ."?, ?, ?, ?, ?, ?, ?, ?"
         .");";
 
 my $create_tower2_table = "CREATE TABLE tower2 ("
@@ -1649,10 +1653,14 @@ while ( my $line = <TWR_FILE> )
         $sth_twr1->bind_param( 3, substrim( $line, 238, 12 ) );
         #RADIO_CALL_TOWER
         $sth_twr1->bind_param( 4, capitalize( $line, 804, 26 ) );
-        #RADIO_CALL_APCH
+        #RADIO_CALL_APCH_PRIMARY
         $sth_twr1->bind_param( 5, capitalize( $line, 856, 26 ) );
-        #RADIO_CALL_DEP
-        $sth_twr1->bind_param( 6, capitalize( $line, 908, 26 ) );
+        #RADIO_CALL_APCH_SECONDARY
+        $sth_twr1->bind_param( 6, capitalize( $line, 882, 26 ) );
+        #RADIO_CALL_DEP_PRIMARY
+        $sth_twr1->bind_param( 7, capitalize( $line, 908, 26 ) );
+        #RADIO_CALL_DEP_SECONDARY
+        $sth_twr1->bind_param( 8, capitalize( $line, 934, 26 ) );
 
         $sth_twr1->execute();
     }
