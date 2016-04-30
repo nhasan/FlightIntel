@@ -136,9 +136,15 @@ public final class CommunicationsFragment extends FragmentBase {
             tv.setVisibility( View.VISIBLE );
             LinearLayout layout = (LinearLayout) findViewById( R.id.airport_comm_details );
             layout.setVisibility( View.VISIBLE );
+            String lastKey = null;
             for ( String key : map.keySet() ) {
                 for ( Pair<String, String> pair : map.get( key ) ) {
-                    addRow( layout, key, pair.first, pair.second );
+                    if ( !key.equals( lastKey ) ) {
+                        addRow( layout, key, pair.first, pair.second );
+                        lastKey = key;
+                    } else {
+                        addRow( layout, "", pair.first, pair.second );
+                    }
                 }
             }
         }
@@ -289,7 +295,7 @@ public final class CommunicationsFragment extends FragmentBase {
             } while ( hours.moveToNext() );
         }
 
-        Cursor twr9 = result[ 11 ];
+        Cursor twr9 = result[ 12 ];
         if ( twr9.moveToFirst() ) {
             String atisHours = twr9.getString( twr9.getColumnIndex( Tower9.ATIS_HOURS ) );
             if ( atisHours != null && !atisHours.isEmpty() ) {
@@ -328,32 +334,33 @@ public final class CommunicationsFragment extends FragmentBase {
         if ( artcc.moveToFirst() ) {
             String facility = artcc.getString( artcc.getColumnIndex( AtcPhones.FACILITY_ID ) );
             String phone = artcc.getString( artcc.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
-            addPhoneRow( layout, DataUtils.decodeArtcc( facility ), phone,
-                    "Regional duty office", "(24 Hr)" );
+            addPhoneRow( layout, DataUtils.decodeArtcc( facility ), phone );
             phone = artcc.getString( artcc.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
-            String hours = artcc.getString( artcc.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
-            addPhoneRow( layout, DataUtils.decodeArtcc( facility ), phone,
-                    "Business office", "("+hours+")" );
+            addPhoneRow( layout, "", phone );
         }
 
         Cursor tracon = result[ 9 ];
         if ( tracon != null && tracon.moveToFirst() ) {
             String faaCode = tracon.getString( tracon.getColumnIndex( AtcPhones.FACILITY_ID ) );
             String type = tracon.getString( tracon.getColumnIndex( AtcPhones.FACILITY_TYPE ) );
-            String phone = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
-            String hours = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
             String name = DataUtils.getAtcFacilityName( faaCode+":"+type );
-            addPhoneRow( layout, name+" TRACON", phone, "Business office", "("+hours+")" );
+
+            String phone = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
+            addPhoneRow( layout, name+" TRACON", phone );
+            phone = tracon.getString( tracon.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
+            addPhoneRow( layout, "", phone );
         }
 
         tracon = result[ 10 ];
         if ( tracon != null && tracon.moveToFirst() ) {
             String faaCode = tracon.getString( tracon.getColumnIndex( AtcPhones.FACILITY_ID ) );
             String type = tracon.getString( tracon.getColumnIndex( AtcPhones.FACILITY_TYPE ) );
-            String phone = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
-            String hours = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
             String name = DataUtils.getAtcFacilityName( faaCode+":"+type );
-            addPhoneRow( layout, name+" TRACON", phone, "Business office", "("+hours+")" );
+
+            String phone = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
+            addPhoneRow( layout, name+" TRACON", phone );
+            phone = tracon.getString( tracon.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
+            addPhoneRow( layout, "", phone );
         }
 
         Cursor atct = result[ 11 ];
@@ -361,18 +368,15 @@ public final class CommunicationsFragment extends FragmentBase {
             Cursor tower1 = result[ 1 ];
             String name = tower1.getString( tower1.getColumnIndex( Tower1.RADIO_CALL_TOWER ) );
             String phone = atct.getString( atct.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
-            String hours = atct.getString( atct.getColumnIndex( AtcPhones.BUSINESS_HOURS ) );
-            addPhoneRow( layout, name+" Tower", phone, "Business office", "("+hours+")" );
+            addPhoneRow( layout, name+" Tower", phone );
         }
 
         Cursor twr9 = result[ 12 ];
         if ( twr9.moveToFirst() ) {
             do {
-                String atisPurpose = twr9.getString( twr9.getColumnIndex( Tower9.ATIS_PURPOSE ) );
                 String atisPhone = twr9.getString( twr9.getColumnIndex( Tower9.ATIS_PHONE ) );
-
                 if ( !atisPhone.isEmpty() ) {
-                    addPhoneRow( layout, "ATIS", atisPhone, atisPurpose, null );
+                    addPhoneRow( layout, "ATIS", atisPhone );
                 }
             } while ( twr9.moveToNext() );
         }
@@ -387,6 +391,14 @@ public final class CommunicationsFragment extends FragmentBase {
                 String remark = twr6.getString( twr6.getColumnIndex( Tower6.REMARK_TEXT ) );
                 addBulletedRow( layout, remark );
             } while ( twr6.moveToNext() );
+        }
+
+        Cursor twr9 = result[ 12 ];
+        if ( twr9.moveToFirst() ) {
+            do {
+                String remark = twr9.getString( twr9.getColumnIndex( Tower9.ATIS_PURPOSE ) );
+                addBulletedRow( layout, remark );
+            } while ( twr9.moveToNext() );
         }
 
         Cursor twr4 = result[ 14 ];
