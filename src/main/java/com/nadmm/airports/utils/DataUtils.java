@@ -990,6 +990,7 @@ public final class DataUtils {
         sAtcIdToName.put( "RDG:ATCT", "Reading" );
         sAtcIdToName.put( "RDU:ATCT", "Raleigh-Durham" );
         sAtcIdToName.put( "RFD:ATCT", "Rockford" );
+        sAtcIdToName.put( "RNO:ATCT", "Reno" );
         sAtcIdToName.put( "ROA:ATCT", "Roanoke" );
         sAtcIdToName.put( "ROC:ATCT", "Rochester" );
         sAtcIdToName.put( "ROW:ATCT", "Roswell" );
