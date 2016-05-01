@@ -90,6 +90,14 @@ public final class CommunicationsFragment extends FragmentBase {
         String depRadioCall = "";
         Map<String, ArrayList<Pair<String, String>>> map = new TreeMap<>();
 
+        Cursor apt = result[ 0 ];
+        String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
+        addFrequencyToMap( map, "CTAF", !ctaf.isEmpty()? ctaf : "None", "" );
+        String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
+        if ( !unicom.isEmpty() ) {
+            addFrequencyToMap( map, "Unicom", unicom, "" );
+        }
+
         Cursor twr1 = result[ 1 ];
         if ( twr1.moveToFirst() ) {
             towerRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_TOWER ) );
@@ -397,7 +405,9 @@ public final class CommunicationsFragment extends FragmentBase {
         if ( twr9.moveToFirst() ) {
             do {
                 String remark = twr9.getString( twr9.getColumnIndex( Tower9.ATIS_PURPOSE ) );
-                addBulletedRow( layout, remark );
+                if ( !remark.isEmpty() ) {
+                    addBulletedRow( layout, remark );
+                }
             } while ( twr9.moveToNext() );
         }
 
