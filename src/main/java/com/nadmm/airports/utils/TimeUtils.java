@@ -41,6 +41,8 @@ public class TimeUtils {
             new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.US );
     private static final SimpleDateFormat ISO3339_MILLIS_FORMAT =
             new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ", Locale.US );
+    private static final SimpleDateFormat FAA_FORMAT =
+            new SimpleDateFormat( "MM/dd/yyyy", Locale.US );
 
     public static CharSequence formatLongDateTime( long time ) {
         return DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( time ) );
@@ -48,6 +50,7 @@ public class TimeUtils {
 
     static {
         ISO3339_FORMAT_UTC.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+        FAA_FORMAT.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
     }
 
     public static String formatDateTime( Context context, long millis ) {
@@ -197,4 +200,14 @@ public class TimeUtils {
         return date;
     }
 
+    public static Date parseFaaDate( String s ) {
+        Date date;
+        try {
+            date = FAA_FORMAT.parse( s );
+        } catch ( ParseException e ) {
+            date = null;
+        }
+
+        return date;
+    }
 }

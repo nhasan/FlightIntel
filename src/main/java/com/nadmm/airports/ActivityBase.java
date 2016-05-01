@@ -85,6 +85,7 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.SystemUtils;
+import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.MultiSwipeRefreshLayout;
 import com.nadmm.airports.views.ObservableScrollView;
@@ -92,6 +93,7 @@ import com.nadmm.airports.wx.WxMainActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
@@ -1056,8 +1058,17 @@ public class ActivityBase extends AppCompatActivity implements
     protected void showFaddsEffectiveDate( Cursor c ) {
         TextView tv = (TextView) findViewById( R.id.effective_date );
         if ( tv != null ) {
-            tv.setText( "Effective date: "
-                    + c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) ) );
+            String s = c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) );
+            Date date = TimeUtils.parseFaaDate( s );
+            if ( date != null ) {
+                Calendar start = Calendar.getInstance();
+                start.setTime( date );
+                start.add( Calendar.MINUTE, 9 * 60 + 1 );
+                Calendar end = (Calendar) start.clone();
+                end.add( Calendar.DATE, 56 );
+                s = TimeUtils.formatDateRange( this, start.getTimeInMillis(), end.getTimeInMillis() );
+                tv.setText( s );
+            }
         }
     }
 
