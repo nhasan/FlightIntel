@@ -29,6 +29,7 @@ import com.nadmm.airports.PreferencesActivity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -71,6 +72,10 @@ public class TimeUtils {
         } else {
             return formatDateTimeYearUTC( context, millis );
         }
+    }
+
+    public static String formatDateRange( Context context, Calendar start, Calendar end ) {
+        return formatDateRange( context, start.getTimeInMillis(), end.getTimeInMillis() );
     }
 
     public static String formatDateRange( Context context, long startMillis, long endMillis ) {

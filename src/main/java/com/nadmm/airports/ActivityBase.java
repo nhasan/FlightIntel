@@ -1066,7 +1066,7 @@ public class ActivityBase extends AppCompatActivity implements
                 start.add( Calendar.MINUTE, 9 * 60 + 1 );
                 Calendar end = (Calendar) start.clone();
                 end.add( Calendar.DATE, 56 );
-                s = TimeUtils.formatDateRange( this, start.getTimeInMillis(), end.getTimeInMillis() );
+                s = TimeUtils.formatDateRange( this, start, end );
                 tv.setText( s );
             }
         }
