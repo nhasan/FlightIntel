@@ -92,7 +92,9 @@ public final class CommunicationsFragment extends FragmentBase {
 
         Cursor apt = result[ 0 ];
         String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
-        addFrequencyToMap( map, "CTAF", !ctaf.isEmpty()? ctaf : "None", "" );
+        if ( !ctaf.isEmpty() ) {
+            addFrequencyToMap( map, "CTAF", ctaf, "" );
+        }
         String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
         if ( !unicom.isEmpty() ) {
             addFrequencyToMap( map, "Unicom", unicom, "" );
@@ -101,8 +103,18 @@ public final class CommunicationsFragment extends FragmentBase {
         Cursor twr1 = result[ 1 ];
         if ( twr1.moveToFirst() ) {
             towerRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_TOWER ) );
-            apchRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_APCH ) );
-            depRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP ) );
+            try {
+                apchRadioCall = twr1.getString( twr1.getColumnIndex(
+                        Tower1.RADIO_CALL_APCH_PRIMARY ) );
+            } catch ( Exception e ) {
+                apchRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_APCH ) );
+            }
+            try {
+                depRadioCall = twr1.getString( twr1.getColumnIndex(
+                        Tower1.RADIO_CALL_DEP_PRIMARY ) );
+            } catch ( Exception e ) {
+                depRadioCall = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP ) );
+            }
         }
 
         Cursor twr3 = result[ 2 ];
@@ -173,9 +185,6 @@ public final class CommunicationsFragment extends FragmentBase {
             }
             extra = freq.substring( i );
             freq = freq.substring( 0, i );
-            if ( extra.equals( "X" ) ) {
-                extra = "Khz";
-            }
             break;
         }
         if ( freqUse.contains( "LCL" ) || freqUse.contains( "LC/P" ) ) {
@@ -272,35 +281,35 @@ public final class CommunicationsFragment extends FragmentBase {
     protected void showAtcHours( Cursor[] result ) {
         HashMap<String, String> hoursMap = new HashMap<>();
 
-        Cursor hours = result[ 13 ];
-        if ( hours != null && hours.moveToFirst() ) {
+        Cursor twr2 = result[ 13 ];
+        if ( twr2 != null && twr2.moveToFirst() ) {
             do {
-                String primaryAppHours = hours.getString(
-                        hours.getColumnIndex( Tower2.PRIMARY_APPROACH_HOURS ) );
-                if ( primaryAppHours != null && !primaryAppHours.isEmpty() ) {
+                String primaryAppHours = twr2.getString(
+                        twr2.getColumnIndex( Tower2.PRIMARY_APPROACH_HOURS ) );
+                if ( !primaryAppHours.isEmpty() ) {
                     hoursMap.put( "Primary approach", primaryAppHours );
                 }
-                String secondaryAppHours = hours.getString(
-                        hours.getColumnIndex( Tower2.SECONDARY_APPROARCH_HOURS ) );
-                if ( secondaryAppHours != null && !secondaryAppHours.isEmpty() ) {
+                String secondaryAppHours = twr2.getString(
+                        twr2.getColumnIndex( Tower2.SECONDARY_APPROACH_HOURS ) );
+                if ( !secondaryAppHours.isEmpty() ) {
                     hoursMap.put( "Secondary approach", secondaryAppHours );
                 }
-                String primaryDepHours = hours.getString(
-                        hours.getColumnIndex( Tower2.PRIMARY_DEPARTURE_HOURS ) );
-                if ( primaryDepHours != null && !primaryDepHours.isEmpty() ) {
+                String primaryDepHours = twr2.getString(
+                        twr2.getColumnIndex( Tower2.PRIMARY_DEPARTURE_HOURS ) );
+                if ( !primaryDepHours.isEmpty() ) {
                     hoursMap.put( "Primary departure", primaryDepHours );
                 }
-                String secondaryDepHours = hours.getString(
-                        hours.getColumnIndex( Tower2.SECONDARY_DEPARTURE_HOURS ) );
-                if ( secondaryDepHours != null && !secondaryDepHours.isEmpty() ) {
+                String secondaryDepHours = twr2.getString(
+                        twr2.getColumnIndex( Tower2.SECONDARY_DEPARTURE_HOURS ) );
+                if ( !secondaryDepHours.isEmpty() ) {
                     hoursMap.put( "Secondary departure", secondaryDepHours );
                 }
-                String towerHours = hours.getString(
-                        hours.getColumnIndex( Tower2.CONTROL_TOWER_HOURS ) );
-                if ( towerHours != null && !towerHours.isEmpty() ) {
+                String towerHours = twr2.getString(
+                        twr2.getColumnIndex( Tower2.CONTROL_TOWER_HOURS ) );
+                if ( !towerHours.isEmpty() ) {
                     hoursMap.put( "Control tower", towerHours );
                 }
-            } while ( hours.moveToNext() );
+            } while ( twr2.moveToNext() );
         }
 
         Cursor twr9 = result[ 12 ];
@@ -344,7 +353,9 @@ public final class CommunicationsFragment extends FragmentBase {
             String phone = artcc.getString( artcc.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
             addPhoneRow( layout, DataUtils.decodeArtcc( facility ), phone );
             phone = artcc.getString( artcc.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
-            addPhoneRow( layout, "", phone );
+            if ( phone != null && !phone.isEmpty() ) {
+                addPhoneRow( layout, "", phone );
+            }
         }
 
         Cursor tracon = result[ 9 ];
@@ -353,10 +364,12 @@ public final class CommunicationsFragment extends FragmentBase {
             String type = tracon.getString( tracon.getColumnIndex( AtcPhones.FACILITY_TYPE ) );
             String name = DataUtils.getAtcFacilityName( faaCode+":"+type );
 
-            String phone = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
+            String phone = tracon.getString( tracon.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
             addPhoneRow( layout, name+" TRACON", phone );
-            phone = tracon.getString( tracon.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
-            addPhoneRow( layout, "", phone );
+            phone = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
+            if ( phone != null && !phone.isEmpty() ) {
+                addPhoneRow( layout, "", phone );
+            }
         }
 
         tracon = result[ 10 ];
@@ -365,18 +378,24 @@ public final class CommunicationsFragment extends FragmentBase {
             String type = tracon.getString( tracon.getColumnIndex( AtcPhones.FACILITY_TYPE ) );
             String name = DataUtils.getAtcFacilityName( faaCode+":"+type );
 
-            String phone = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
+            String phone = tracon.getString( tracon.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
             addPhoneRow( layout, name+" TRACON", phone );
-            phone = tracon.getString( tracon.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
-            addPhoneRow( layout, "", phone );
+            phone = tracon.getString( tracon.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
+            if ( phone != null && !phone.isEmpty() ) {
+                addPhoneRow( layout, "", phone );
+            }
         }
 
         Cursor atct = result[ 11 ];
         if ( atct.moveToFirst() ) {
             Cursor tower1 = result[ 1 ];
             String name = tower1.getString( tower1.getColumnIndex( Tower1.RADIO_CALL_TOWER ) );
-            String phone = atct.getString( atct.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
+            String phone = atct.getString( atct.getColumnIndex( AtcPhones.DUTY_OFFICE_PHONE ) );
             addPhoneRow( layout, name+" Tower", phone );
+            phone = atct.getString( atct.getColumnIndex( AtcPhones.BUSINESS_PHONE ) );
+            if ( phone != null && !phone.isEmpty() ) {
+                addPhoneRow( layout, "", phone );
+            }
         }
 
         Cursor twr9 = result[ 12 ];
@@ -413,12 +432,15 @@ public final class CommunicationsFragment extends FragmentBase {
 
         Cursor twr4 = result[ 14 ];
         if ( twr4 != null && twr4.moveToFirst() ) {
-            addBulletedRow( layout, "Services to satellite airports:" );
+            String services = "";
             do {
-                String services = twr4.getString(
-                        twr4.getColumnIndex( Tower4.MASTER_AIRPORT_SERVICES ) );
-                addBulletedRow( layout, "    "+services );
+                if ( !services.isEmpty() ) {
+                    services = services.concat( ", " );
+                }
+                services = services.concat( twr4.getString(
+                        twr4.getColumnIndex( Tower4.MASTER_AIRPORT_SERVICES ) ) ).trim();
             } while ( twr4.moveToNext() );
+            addBulletedRow( layout, "Services to satellite airports: ".concat( services ) );
         }
 
         addBulletedRow( layout, "Facilities can be contacted by phone through the"
