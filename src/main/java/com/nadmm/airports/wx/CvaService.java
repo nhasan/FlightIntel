@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ public class CvaService extends NoaaService {
     private final String CVA_IMAGE_NAME = "NCVA%s.gif";
     private final String CVA_IMAGE_PATH = "/adds/data/ceil_vis/";
 
-    private static final long CVA_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
+    private static final long CVA_CACHE_MAX_AGE = 10*DateUtils.MINUTE_IN_MILLIS;
 
     public CvaService() {
         super( "cva", CVA_CACHE_MAX_AGE );
