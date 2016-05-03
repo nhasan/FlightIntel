@@ -242,9 +242,9 @@ public final class AirportDetailsFragment extends FragmentBase {
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_comm_layout );
 
         String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
-        addRow( layout, "CTAF", ctaf.length() > 0 ? ctaf : "None" );
+        addRow( layout, "CTAF", !ctaf.isEmpty() ? ctaf : "None" );
         String unicom = apt.getString( apt.getColumnIndex( Airports.UNICOM_FREQS ) );
-        if ( unicom.length() > 0 ) {
+        if ( !unicom.isEmpty() ) {
             addRow( layout, "Unicom", unicom );
         }
 
@@ -388,12 +388,12 @@ public final class AirportDetailsFragment extends FragmentBase {
                         awos1.getColumnIndex( Wxs.STATION_ID ) );
                 String sensorId = awos1.getString(
                         awos1.getColumnIndex( Awos1.WX_SENSOR_IDENT ) );
-                if ( icaoCode == null || icaoCode.length() == 0 ) {
+                if ( icaoCode == null || icaoCode.isEmpty() ) {
                     icaoCode = "K"+sensorId;
                 }
                 String type = awos1.getString( awos1.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
                 String freq = awos1.getString( awos1.getColumnIndex( Awos1.STATION_FREQUENCY ) );
-                if ( freq == null || freq.length() == 0 ) {
+                if ( freq == null || freq.isEmpty() ) {
                     freq = awos1.getString( awos1.getColumnIndex( Awos1.SECOND_STATION_FREQUENCY ) );
                 }
                 String phone = awos1.getString( awos1.getColumnIndex( Awos1.STATION_PHONE_NUMBER ) );
@@ -503,12 +503,12 @@ public final class AirportDetailsFragment extends FragmentBase {
         Cursor apt = result[ 0 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_charts_layout );
         String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
-        if ( sectional == null || sectional.length() == 0 ) {
+        if ( sectional == null || sectional.isEmpty() ) {
             sectional = "N/A";
         }
         String lat = apt.getString( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
         String lon = apt.getString( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-        if ( lat.length() > 0 && lon.length() > 0 ) {
+        if ( !lat.isEmpty() && !lon.isEmpty() ) {
             // Link to the sectional at VFRMAP if location is available
             Uri uri = Uri.parse( String.format( Locale.US,
                     "http://vfrmap.com/?type=vfrc&lat=%s&lon=%s&zoom=10", lat, lon ) );
@@ -557,12 +557,12 @@ public final class AirportDetailsFragment extends FragmentBase {
         String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
         addRow( layout, "FAA code", faaCode );
         String timezoneId = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
-        if ( timezoneId.length() > 0 ) {
+        if ( !timezoneId.isEmpty() ) {
             TimeZone tz = TimeZone.getTimeZone( timezoneId );
             addRow( layout, "Local time zone", TimeUtils.getTimeZoneAsString( tz ) );
         }
         String activation = apt.getString( apt.getColumnIndex( Airports.ACTIVATION_DATE ) );
-        if ( activation.length() > 0 ) {
+        if ( !activation.isEmpty() ) {
             addRow( layout, "Activation date", activation );
         }
         Cursor twr8 = result[ 9 ];
@@ -582,12 +582,12 @@ public final class AirportDetailsFragment extends FragmentBase {
         addRow( layout, "Beacon", DataUtils.decodeBeacon( beacon ) );
         String lighting;
         lighting = apt.getString( apt.getColumnIndex( Airports.LIGHTING_SCHEDULE ) );
-        if ( lighting.length() > 0 ) {
+        if ( !lighting.isEmpty() ) {
             addRow( layout, "Airport lighting", lighting );
         }
         try {
             lighting = apt.getString( apt.getColumnIndex( Airports.BEACON_LIGHTING_SCHEDULE ) );
-            if ( lighting.length() > 0 ) {
+            if ( !lighting.isEmpty() ) {
                 addRow( layout, "Beacon lighting", lighting );
             }
         } catch ( Exception ignored ) {
@@ -595,10 +595,10 @@ public final class AirportDetailsFragment extends FragmentBase {
         String landingFee = apt.getString( apt.getColumnIndex( Airports.LANDING_FEE ) );
         addRow( layout, "Landing fee", landingFee.equals( "Y" )? "Yes" : "No" );
         String dir = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DIRECTION ) );
-        if ( dir.length() > 0 ) {
+        if ( !dir.isEmpty() ) {
             int variation = apt.getInt( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_DEGREES ) );
             String year = apt.getString( apt.getColumnIndex( Airports.MAGNETIC_VARIATION_YEAR ) );
-            if ( year.length() > 0 ) {
+            if ( !year.isEmpty() ) {
                 addRow( layout, "Magnetic variation",
                         String.format( Locale.US, "%d\u00B0 %s (%s)", variation, dir, year ) );
             } else {
@@ -688,17 +688,17 @@ public final class AirportDetailsFragment extends FragmentBase {
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_services_layout );
         String fuelTypes = DataUtils.decodeFuelTypes(
                 apt.getString( apt.getColumnIndex( Airports.FUEL_TYPES ) ) );
-        if ( fuelTypes.length() == 0 ) {
+        if ( fuelTypes.isEmpty() ) {
             fuelTypes = "No";
         }
         addRow( layout, "Fuel available", fuelTypes );
         String repair = apt.getString( apt.getColumnIndex( Airports.AIRFRAME_REPAIR_SERVICE ) );
-        if ( repair.length() == 0 ) {
+        if ( repair.isEmpty() ) {
             repair = "No";
         }
         addRow( layout, "Airframe repair", repair );
         repair = apt.getString( apt.getColumnIndex( Airports.POWER_PLANT_REPAIR_SERVICE ) );
-        if ( repair.length() == 0 ) {
+        if ( repair.isEmpty() ) {
             repair = "No";
         }
         addRow( layout, "Power plant repair", repair );
@@ -720,14 +720,14 @@ public final class AirportDetailsFragment extends FragmentBase {
             final Runnable runnable ) {
         StringBuilder sb = new StringBuilder();
         sb.append( id );
-        if ( name != null && name.length() > 0 ) {
+        if ( name != null && !name.isEmpty() ) {
             sb.append( " - " );
             sb.append( name );
         }
         String label1 = sb.toString();
 
         sb.setLength( 0 );
-        if ( freq != null && freq.length() > 0 ) {
+        if ( freq != null && !freq.isEmpty() ) {
             try {
                 sb.append( FormatUtils.formatFreq( Float.valueOf( freq ) ) );
             } catch ( NumberFormatException ignored ) {
@@ -926,7 +926,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
             int elev_msl = apt.getInt( apt.getColumnIndex( Airports.ELEVATION_MSL ) );
             mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-            if ( mIcaoCode == null || mIcaoCode.length() == 0 ) {
+            if ( mIcaoCode == null || mIcaoCode.isEmpty() ) {
                 mIcaoCode = "K"+apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
             }
 
@@ -1034,7 +1034,7 @@ public final class AirportDetailsFragment extends FragmentBase {
 
             db = getDatabase( DatabaseManager.DB_FADDS );
 
-            if ( mHome.length() > 0 ) {
+            if ( !mHome.isEmpty() ) {
                 builder = new SQLiteQueryBuilder();
                 builder.setTables( Airports.TABLE_NAME );
                 c = builder.query( db,
