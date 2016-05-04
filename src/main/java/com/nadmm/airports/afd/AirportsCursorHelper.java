@@ -48,7 +48,9 @@ public class AirportsCursorHelper {
             Airports.REF_LATTITUDE_DEGREES,
             Airports.REF_LONGITUDE_DEGREES,
             States.STATE_NAME
-         };
+    };
+
+    private AirportsCursorHelper() {}
 
     static HashMap<String, String> buildProjectionMap() {
         HashMap<String, String> map = new HashMap<String, String>();
@@ -73,9 +75,8 @@ public class AirportsCursorHelper {
         builder.setTables( Airports.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
                 +" ON a."+Airports.ASSOC_STATE+"=s."+States.STATE_CODE );
         builder.setProjectionMap( buildProjectionMap() );
-        Cursor c = builder.query( db, mQueryColumns, selection, selectionArgs,
+        return builder.query( db, mQueryColumns, selection, selectionArgs,
                 groupBy, having, sortOrder, limit );
-        return c;
     }
 
 }

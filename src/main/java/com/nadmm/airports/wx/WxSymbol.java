@@ -30,9 +30,15 @@ import com.nadmm.airports.R;
 public abstract class WxSymbol implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
+    public static final String MINUS_SIGN = "-";
+    public static final String PLUS_SIGN = "+";
 
     private static Map<String, WxSymbol> sWxSymbolsMap = new HashMap<String, WxSymbol>();
     private static ArrayList<String> sSymbols = new ArrayList<String>();
+
+
+    protected String mIntensity;
+    protected String mSymbol;
 
     private WxSymbol() {}
 
@@ -52,9 +58,9 @@ public abstract class WxSymbol implements Serializable, Cloneable {
     public String toString() {
         String desc = getDescription();
         if ( mIntensity.length() > 0 ) {
-            if ( mIntensity.equals( "+" ) ) {
+            if ( mIntensity.equals(PLUS_SIGN) ) {
                 desc = "Heavy "+desc.toLowerCase( Locale.US );
-            } else if ( mIntensity.equals( "-" ) ) {
+            } else if ( mIntensity.equals(MINUS_SIGN) ) {
                 desc = "Light "+desc.toLowerCase( Locale.US );
             }
         }
@@ -87,648 +93,84 @@ public abstract class WxSymbol implements Serializable, Cloneable {
     abstract public int getDrawable();
     abstract protected String getDescription();
 
-    protected String mIntensity;
-    protected String mSymbol;
-
     static {
-        new WxSymbol( "BCFG" ) {
+        createWxSymbol("BCFG", R.drawable.bcfg, "Patches of fog");
 
-            private static final long serialVersionUID = 1L;
+        createWxSymbol("PRFG", R.drawable.prfg, "Partial fog");
 
-            @Override
-            public int getDrawable() {
-                return R.drawable.bcfg;
-            }
+        createWxSymbol("MIFG", R.drawable.mifg, "Shallow fog");
 
-            @Override
-            protected String getDescription() {
-                return "Patches of fog";
-            }
-        };
+        createWxSymbol("BLDU", R.drawable.sa, "Blowing dust");
 
-        new WxSymbol( "PRFG" ) {
+        createWxSymbol("BLSA", R.drawable.sa, "Blowing sand");
 
-            private static final long serialVersionUID = 1L;
+        createWxSymbol("BLSN", R.drawable.blsn, "Blowing snow");
 
-            @Override
-            public int getDrawable() {
-                return R.drawable.prfg;
-            }
+        createWxSymbol("BLPY", R.drawable.sa, "Blowing spray");
 
-            @Override
-            protected String getDescription() {
-                return "Partial fog";
-            }
-        };
+        createWxSymbol("VCBR", R.drawable.vcbr, "Mist in the vicinity");
 
-        new WxSymbol( "MIFG" ) {
+        createWxSymbol("TSGS", R.drawable.h_tsgr, R.drawable.tsgr, "Thunderstorm with small hail", PLUS_SIGN);
 
-            private static final long serialVersionUID = 1L;
+        createWxSymbol("TSGR", R.drawable.h_tsgr, R.drawable.tsgr, "Thunderstorm with hail", PLUS_SIGN);
 
-            @Override
-            public int getDrawable() {
-                return R.drawable.mifg;
-            }
+        createWxSymbol("VCTS", R.drawable.vcts, "Thunderstorm in the vicinity");
 
-            @Override
-            protected String getDescription() {
-                return "Shallow fog";
-            }
-        };
+        createWxSymbol("DRDU", R.drawable.ss, "Low drifting dust");
 
-        new WxSymbol( "BLDU" ) {
+        createWxSymbol("DRSA", R.drawable.ss, "Low drifting sand");
 
-            private static final long serialVersionUID = 1L;
+        createWxSymbol("DRSN", R.drawable.drsn, "Low drifting snow");
 
-            @Override
-            public int getDrawable() {
-                return R.drawable.sa;
-            }
+        createWxSymbol("FZFG", R.drawable.fzfg, "Freezing fog");
 
-            @Override
-            protected String getDescription() {
-                return "Blowing dust";
-            }
-        };
+        createWxSymbol("FZDZ", R.drawable.l_fzdz, R.drawable.fzdz, "Freezing drizzle", MINUS_SIGN);
 
-        new WxSymbol( "BLSA" ) {
+        createWxSymbol("FZRA", R.drawable.l_fzra, R.drawable.fzra, "Freezing rain", MINUS_SIGN);
 
-            private static final long serialVersionUID = 1L;
+        createWxSymbol("SHRA", R.drawable.l_sh, R.drawable.sh, "Rainshowers", MINUS_SIGN);
 
-            @Override
-            public int getDrawable() {
-                return R.drawable.sa;
-            }
+        createWxSymbol("SHSN", R.drawable.l_shsn, R.drawable.shsn, "Snowshowers", MINUS_SIGN);
 
-            @Override
-            protected String getDescription() {
-                return "Blowing sand";
-            }
-        };
+        createWxSymbol("SHPL", R.drawable.pl, "Ice pellet showers");
 
-        new WxSymbol( "BLSN" ) {
+        createWxSymbol("SHGS", R.drawable.l_gs, R.drawable.gs, "Small hail showers", MINUS_SIGN);
 
-            private static final long serialVersionUID = 1L;
+        createWxSymbol("SHGR", R.drawable.l_gr, R.drawable.gr, "Hail showers", MINUS_SIGN);
 
-            @Override
-            public int getDrawable() {
-                return R.drawable.blsn;
-            }
+        createWxSymbol("VCFG", R.drawable.vcfg, "Fog in the vicinity");
 
-            @Override
-            protected String getDescription() {
-                return "Blowing snow";
-            }
-        };
+        createWxSymbol("VCFC", R.drawable.fc, "Funel clouds in the vicinity");
 
-        new WxSymbol( "BLPY" ) {
+        createWxSymbol("VCSS", R.drawable.vcss, "Sandstorm in the vicinity");
 
-            private static final long serialVersionUID = 1L;
+        createWxSymbol("VCDS", R.drawable.vcss, "Duststorm in the vicinity");
 
-            @Override
-            public int getDrawable() {
-                return R.drawable.sa;
-            }
+        createWxSymbol("VCSH", R.drawable.vcsh, "Showers in the vicinity");
 
-            @Override
-            protected String getDescription() {
-                return "Blowing spray";
-            }
-        };
-
-        new WxSymbol( "VCBR" ) {
-
-            private static final long serialVersionUID = 1L;
+        createWxSymbol("VCPO", R.drawable.po, "Dust/sand whirls in the vicinity");
 
-            @Override
-            public int getDrawable() {
-                return R.drawable.vcbr;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Mist in the vicinity";
-            }
-        };
-
-        new WxSymbol( "TSGS" ) {
-
-            private static final long serialVersionUID = 1L;
+        createWxSymbol("VCBLDU", R.drawable.sa, "Blowing dust in the vicinity");
 
-            @Override
-            public int getDrawable() {
-                if (mIntensity.equals( "+" ) ) {
-                    return R.drawable.h_tsgr;
-                } else {
-                    return R.drawable.tsgr;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Thunderstorm with small hail";
-            }
-        };
+        createWxSymbol("VCBLSA", R.drawable.sa, "Blowing sand in the vicinity");
 
-        new WxSymbol( "TSGR" ) {
+        createWxSymbol("VCBLSN", R.drawable.blsn, "Blowing snow in the vicinity");
 
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if (mIntensity.equals( "+" ) ) {
-                    return R.drawable.h_tsgr;
-                } else {
-                    return R.drawable.tsgr;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Thunderstorm with hail";
-            }
-        };
-
-        new WxSymbol( "VCTS" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.vcts;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Thunderstorm in the vicinity";
-            }
-        };
-
-        new WxSymbol( "DRDU" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.ss;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Low drifting dust";
-            }
-        };
-
-        new WxSymbol( "DRSA" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.ss;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Low drifting sand";
-            }
-        };
-
-        new WxSymbol( "DRSN" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.drsn;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Low drifting snow";
-            }
-        };
-
-        new WxSymbol( "FZFG" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.fzfg;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Freezing fog";
-            }
-        };
-
-        new WxSymbol( "FZDZ" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "-" ) ) {
-                    return R.drawable.l_fzdz;
-                } else {
-                    return R.drawable.fzdz;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Freezing drizzle";
-            }
-        };
-
-        new WxSymbol( "FZRA" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "-" ) ) {
-                    return R.drawable.l_fzra;
-                } else {
-                    return R.drawable.fzra;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Freezing rain";
-            }
-        };
-
-        new WxSymbol( "SHRA" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "-" ) ) {
-                    return R.drawable.l_sh;
-                } else {
-                    return R.drawable.sh;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Rainshowers";
-            }
-        };
-
-        new WxSymbol( "SHSN" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "-" ) ) {
-                    return R.drawable.l_shsn;
-                } else {
-                    return R.drawable.shsn;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Snowshowers";
-            }
-        };
-
-        new WxSymbol( "SHPL" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.pl;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Ice pellet showers";
-            }
-        };
-
-        new WxSymbol( "SHGS" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "-" ) ) {
-                    return R.drawable.l_gs;
-                } else {
-                    return R.drawable.gs;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Small hail showers";
-            }
-        };
-
-        new WxSymbol( "SHGR" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "-" ) ) {
-                    return R.drawable.l_gr;
-                } else {
-                    return R.drawable.gr;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Hail showers";
-            }
-        };
-
-        new WxSymbol( "VCFG" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.vcfg;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Fog in the vicinity";
-            }
-        };
-
-        new WxSymbol( "VCFC" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.fc;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Funel clouds in the vicinity";
-            }
-        };
-
-        new WxSymbol( "VCSS" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.vcss;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Sandstorm in the vicinity";
-            }
-        };
-
-        new WxSymbol( "VCDS" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.vcss;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Duststorm in the vicinity";
-            }
-        };
-
-        new WxSymbol( "VCSH" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.vcsh;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Showers in the vicinity";
-            }
-        };
-
-        new WxSymbol( "VCPO" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.po;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Dust/sand whirls in the vicinity";
-            }
-        };
-
-        new WxSymbol( "VCBLDU" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.sa;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Blowing dust in the vicinity";
-            }
-        };
-
-        new WxSymbol( "VCBLSA" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.sa;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Blowing sand in the vicinity";
-            }
-        };
-
-        new WxSymbol( "VCBLSN" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.blsn;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Blowing snow in the vicinity";
-            }
-        };
-
-        new WxSymbol( "TSRA" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "+" ) ) {
-                    return R.drawable.h_tsra;
-                } else {
-                    return R.drawable.tsra;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Thunderstorm with rain";
-            }
-        };
-
-        new WxSymbol( "TSPL" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "+" ) ) {
-                    return R.drawable.h_tsra;
-                } else {
-                    return R.drawable.tsra;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Thunderstorm with ice pellets";
-            }
-        };
-
-        new WxSymbol( "TSSN" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "+" ) ) {
-                    return R.drawable.h_tsra;
-                } else {
-                    return R.drawable.tsra;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Thunderstorm with snow";
-            }
-        };
-
-        new WxSymbol( "BR" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.br;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Mist";
-            }
-        };
-
-        new WxSymbol( "DU" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.du;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Widespread dust";
-            }
-        };
-
-        new WxSymbol( "DZ" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "+" ) ) {
-                    return R.drawable.h_dz;
-                } else if ( mIntensity.equals( "-" ) ) {
-                    return R.drawable.l_dz;
-                } else {
-                    return R.drawable.dz;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Drizzle";
-            }
-        };
-
-        new WxSymbol( "DS" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "+" ) ) {
-                    return R.drawable.h_ss;
-                } else {
-                    return R.drawable.ss;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Duststorm";
-            }
-        };
-
-        new WxSymbol( "FG" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.fg;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Fog";
-            }
-        };
+        createWxSymbol("TSRA", R.drawable.h_tsra, R.drawable.tsra, "Thunderstorm with rain", PLUS_SIGN);
+
+        createWxSymbol("TSPL", R.drawable.h_tsra, R.drawable.tsra, "Thunderstorm with ice pellets", PLUS_SIGN);
+
+        createWxSymbol("TSSN", R.drawable.h_tsra, R.drawable.tsra, "Thunderstorm with snow", PLUS_SIGN);
+
+        createWxSymbol("BR", R.drawable.br, "Mist");
+
+        createWxSymbol("DU", R.drawable.du, "Widespread dust");
+
+        createWxSymbol("DZ", R.drawable.h_dz, R.drawable.l_dz, R.drawable.dz, "Drizzle");
+
+        createWxSymbol("DS", R.drawable.h_ss, R.drawable.ss, "Duststorm", PLUS_SIGN);
+
+        createWxSymbol("FG", R.drawable.fg, "Fog");
 
         new WxSymbol( "FC" ) {
 
@@ -747,7 +189,7 @@ public abstract class WxSymbol implements Serializable, Cloneable {
             @Override
             public String toString() {
                 String desc;
-                if ( mIntensity.equals( "+" ) ) {
+                if ( mIntensity.equals(PLUS_SIGN) ) {
                     desc = "Tornado";
                 } else {
                     desc = "Funnel clouds";
@@ -756,301 +198,100 @@ public abstract class WxSymbol implements Serializable, Cloneable {
             }
         };
 
-        new WxSymbol( "FU" ) {
+        createWxSymbol("FU", R.drawable.fu, "Smoke");
+
+        createWxSymbol("GS", R.drawable.l_gs, R.drawable.gs, "Small hail", MINUS_SIGN);
+
+        createWxSymbol("GR", R.drawable.l_gr, R.drawable.gr, "Hail", MINUS_SIGN);
+
+        createWxSymbol("HZ", R.drawable.hz, "Haze");
+
+        createWxSymbol("IC", R.drawable.ic, "Ice crystals");
+
+        createWxSymbol("UP", R.drawable.up, "Unknown precipitation");
+
+        createWxSymbol("PL", R.drawable.pl, "Ice pellets");
+
+        createWxSymbol("PO", R.drawable.po, "Dust/sand whirls");
+
+        createWxSymbol("RA", R.drawable.h_ra, R.drawable.l_ra, R.drawable.ra, "Rain");
+
+        createWxSymbol("SN", R.drawable.h_sn, R.drawable.l_sn, R.drawable.sn, "Snow");
+
+        createWxSymbol("SG", R.drawable.sg, "Snow grains");
+
+        createWxSymbol("SQ", R.drawable.sq, "Squalls");
+
+        createWxSymbol("SA", R.drawable.sa, "Sand");
+
+        createWxSymbol("SS", R.drawable.h_ss, R.drawable.ss, "Sandstorm", PLUS_SIGN);
+
+        createWxSymbol("SH", R.drawable.l_sh, R.drawable.sh, "Showers", MINUS_SIGN);
+
+        createWxSymbol("TS", R.drawable.ts, "Thunderstorm");
+
+        createWxSymbol("VA", R.drawable.fu, "Volcanic ash");
+
+        createWxSymbol("NSW", 0, "No significant weather");
+    }
+
+    private static void createWxSymbol(String code, final int drawable, final String description) {
+        new WxSymbol(code) {
 
             private static final long serialVersionUID = 1L;
 
             @Override
             public int getDrawable() {
-                return R.drawable.fu;
+                return drawable;
             }
 
             @Override
             protected String getDescription() {
-                return "Smoke";
+                return description;
             }
         };
+    }
 
-        new WxSymbol( "GS" ) {
+    private static void createWxSymbol(String code, final int drawable1, final int drawable2, final String description, final String sign) {
+        new WxSymbol(code) {
 
             private static final long serialVersionUID = 1L;
 
             @Override
             public int getDrawable() {
-                if ( mIntensity.equals( "-" ) ) {
-                    return R.drawable.l_gs;
+                if (mIntensity.equals(sign) ) {
+                    return drawable1;
                 } else {
-                    return R.drawable.gs;
+                    return drawable2;
                 }
             }
 
             @Override
             protected String getDescription() {
-                return "Small hail";
+                return description;
             }
         };
+    }
 
-        new WxSymbol( "GR" ) {
+    private static void createWxSymbol(String code, final int drawable1, final int drawable2, final int drawable3, final String description) {
+        new WxSymbol(code) {
 
             private static final long serialVersionUID = 1L;
 
             @Override
             public int getDrawable() {
-                if ( mIntensity.equals( "-" ) ) {
-                    return R.drawable.l_gr;
+                if ( mIntensity.equals(PLUS_SIGN) ) {
+                    return drawable1;
+                } else if ( mIntensity.equals(MINUS_SIGN) ) {
+                    return drawable2;
                 } else {
-                    return R.drawable.gr;
+                    return drawable3;
                 }
             }
 
             @Override
             protected String getDescription() {
-                return "Hail";
-            }
-        };
-
-        new WxSymbol( "HZ" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.hz;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Haze";
-            }
-        };
-
-        new WxSymbol( "IC" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.ic;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Ice crystals";
-            }
-        };
-
-        new WxSymbol( "UP" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.up;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Unknown precipitation";
-            }
-        };
-
-        new WxSymbol( "PL" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.pl;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Ice pellets";
-            }
-        };
-
-        new WxSymbol( "PO" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.po;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Dust/sand whirls";
-            }
-        };
-
-        new WxSymbol( "RA" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "+" ) ) {
-                    return R.drawable.h_ra;
-                } else if ( mIntensity.equals( "-" ) ) {
-                    return R.drawable.l_ra;
-                } else {
-                    return R.drawable.ra;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Rain";
-            }
-        };
-
-        new WxSymbol( "SN" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "+" ) ) {
-                    return R.drawable.h_sn;
-                } else if ( mIntensity.equals( "-" ) ) {
-                    return R.drawable.l_sn;
-                } else {
-                    return R.drawable.sn;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Snow";
-            }
-        };
-
-        new WxSymbol( "SG" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.sg;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Snow grains";
-            }
-        };
-
-        new WxSymbol( "SQ" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.sq;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Squalls";
-            }
-        };
-
-        new WxSymbol( "SA" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.sa;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Sand";
-            }
-        };
-
-        new WxSymbol( "SS" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "+" ) ) {
-                    return R.drawable.h_ss;
-                } else {
-                    return R.drawable.ss;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Sandstorm";
-            }
-        };
-
-        new WxSymbol( "SH" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals( "-" ) ) {
-                    return R.drawable.l_sh;
-                } else {
-                    return R.drawable.sh;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Showers";
-            }
-        };
-
-        new WxSymbol( "TS" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.ts;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Thunderstorm";
-            }
-        };
-
-        new WxSymbol( "VA" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return R.drawable.fu;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "Volcanic ash";
-            }
-        };
-
-        new WxSymbol( "NSW" ) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return 0;
-            }
-
-            @Override
-            protected String getDescription() {
-                return "No significant weather";
+                return description;
             }
         };
     }

@@ -53,12 +53,21 @@ public class DatabaseManager {
     private static final Object sLock = new Object();
     private static DatabaseManager sInstance = null;
 
+    private DatabaseManager( Context context ) {
+        mContext = context;
+        mCatalogDbHelper = new CatalogDbOpenHelper( context );
+        mUserDataDbHelper = new UserDataDbOpenHelper( context );
+        mDatabases = new HashMap<>();
+    }
+
     public static final class LocationColumns {
         public static final String LOCATION = "LOCATION";
         public static final String DISTANCE = "DISTANCE";
         public static final String BEARING = "BEARING";
         public static final String RADIUS = "RADIUS";
         public static final String RADIAL = "RADIAL";
+
+        private LocationColumns() {}
     }
 
     public static final class Airports implements BaseColumns {
@@ -144,6 +153,8 @@ public class DatabaseManager {
         public static final String WIND_INDICATOR = "WIND_INDICATOR";
         public static final String ICAO_CODE = "ICAO_CODE";
         public static final String TIMEZONE_ID = "TIMEZONE_ID";
+
+        private Airports() {}
     }
 
     public static final class Runways implements BaseColumns {
@@ -221,6 +232,8 @@ public class DatabaseManager {
         public static final String RECIPROCAL_END_LDA = "RECIPROCAL_END_LDA";
         public static final String RECIPROCAL_END_LAHSO_DISTANCE = "RECIPROCAL_END_LAHSO_DISTANCE";
         public static final String RECIPROCAL_END_LAHSO_RUNWAY = "RECIPROCAL_END_LAHSO_RUNWAY";
+
+        private Runways() {}
     }
 
     public static final class Ars implements BaseColumns {
@@ -229,6 +242,8 @@ public class DatabaseManager {
         public static final String RUNWAY_ID = "RUNWAY_ID";
         public static final String RUNWAY_END_ID = "RUNWAY_END_ID";
         public static final String ARRESTING_DEVICE = "ARRESTING_DEVICE";
+
+        private Ars() {}
     }
 
     public static final class Remarks implements BaseColumns {
@@ -236,6 +251,8 @@ public class DatabaseManager {
         public static final String SITE_NUMBER = "SITE_NUMBER";
         public static final String REMARK_NAME = "REMARK_NAME";
         public static final String REMARK_TEXT = "REMARK_TEXT";
+
+        private Remarks() {}
     }
 
     public static final class Attendance implements BaseColumns {
@@ -243,6 +260,8 @@ public class DatabaseManager {
         public static final String SITE_NUMBER = "SITE_NUMBER";
         public static final String SEQUENCE_NUMBER = "SEQUENCE_NUMBER";
         public static final String ATTENDANCE_SCHEDULE = "ATTENDANCE_SCHEDULE";
+
+        private Attendance() {}
     }
 
     public static final class Tower1 implements BaseColumns {
@@ -257,6 +276,8 @@ public class DatabaseManager {
         public static final String RADIO_CALL_DEP_PRIMARY = "RADIO_CALL_DEP_PRIMARY";
         public static final String RADIO_CALL_APCH_SECONDARY = "RADIO_CALL_APCH_SECONDARY";
         public static final String RADIO_CALL_DEP_SECONDARY = "RADIO_CALL_DEP_SECONDARY";
+
+        private Tower1() {}
     }
 
     public static final class Tower2 implements BaseColumns {
@@ -267,6 +288,8 @@ public class DatabaseManager {
         public static final String PRIMARY_DEPARTURE_HOURS = "PRIMARY_DEPARTURE_HOURS";
         public static final String SECONDARY_DEPARTURE_HOURS = "SECONDARY_DEPARTURE_HOURS";
         public static final String CONTROL_TOWER_HOURS = "CONTROL_TOWER_HOURS";
+
+        private Tower2() {}
     }
 
     public static final class Tower3 implements BaseColumns {
@@ -274,12 +297,16 @@ public class DatabaseManager {
         public static final String FACILITY_ID = "FACILITY_ID";
         public static final String MASTER_AIRPORT_FREQ = "MASTER_AIRPORT_FREQ";
         public static final String MASTER_AIRPORT_FREQ_USE = "MASTER_AIRPORT_FREQ_USE";
+
+        private Tower3() {}
     }
 
     public static final class Tower4 implements BaseColumns {
         public static final String TABLE_NAME = "tower4";
         public static final String FACILITY_ID = "FACILITY_ID";
         public static final String MASTER_AIRPORT_SERVICES = "MASTER_AIRPORT_SERVICES";
+
+        private Tower4() {}
     }
 
     public static final class Tower6 implements BaseColumns {
@@ -287,6 +314,8 @@ public class DatabaseManager {
         public static final String FACILITY_ID = "FACILITY_ID";
         public static final String ELEMENT_NUMBER = "ELEMENT_NUMBER";
         public static final String REMARK_TEXT = "REMARK_TEXT";
+
+        private Tower6() {}
     }
 
     public static final class Tower7 implements BaseColumns {
@@ -295,6 +324,8 @@ public class DatabaseManager {
         public static final String SATELLITE_AIRPORT_SITE_NUMBER = "SATELLITE_AIRPORT_SITE_NUMBER";
         public static final String MASTER_AIRPORT_SITE_NUMBER = "MASTER_AIRPORT_SITE_NUMBER";
         public static final String SATELLITE_AIRPORT_FREQ = "SATELLITE_AIRPORT_FREQ";
+
+        private Tower7() {}
     }
 
     public static final class Tower8 implements BaseColumns {
@@ -302,6 +333,8 @@ public class DatabaseManager {
         public static final String FACILITY_ID = "FACILITY_ID";
         public static final String AIRSPACE_TYPES = "AIRSPACE_TYPES";
         public static final String AIRSPACE_HOURS = "AIRSPACE_HOURS";
+
+        private Tower8() {}
     }
 
     public static final class Tower9 implements BaseColumns {
@@ -311,6 +344,8 @@ public class DatabaseManager {
         public static final String ATIS_HOURS = "ATIS_HOURS";
         public static final String ATIS_PURPOSE = "ATIS_PURPOSE";
         public static final String ATIS_PHONE = "ATIS_PHONE";
+
+        private Tower9() {}
     }
 
     public static final class Awos1 implements BaseColumns {
@@ -324,6 +359,8 @@ public class DatabaseManager {
         public static final String SECOND_STATION_FREQUENCY = "SECOND_STATION_FREQUENCY";
         public static final String STATION_PHONE_NUMBER = "STATION_PHONE_NUMBER";
         public static final String SITE_NUMBER = "SITE_NUMBER";
+
+        private Awos1() {}
     }
 
 
@@ -332,6 +369,8 @@ public class DatabaseManager {
         public static final String WX_SENSOR_IDENT = "WX_SENSOR_IDENT";
         public static final String WX_SENSOR_TYPE = "WX_SENSOR_TYPE";
         public static final String WX_STATION_REMARKS = "WX_STATION_REMARKS";
+
+        private Awos2() {}
     }
 
     public static final class Nav1 implements BaseColumns {
@@ -357,6 +396,8 @@ public class DatabaseManager {
         public static final String NAVAID_FREQUENCY = "NAVAID_FREQUENCY";
         public static final String FANMARKER_TYPE = "FANMARKER_TYPE";
         public static final String PROTECTED_FREQUENCY_ALTITUDE = "PROTECTED_FREQUENCY_ALTITUDE";
+
+        private Nav1() {}
     }
 
     public static final class Nav2 implements BaseColumns {
@@ -364,6 +405,8 @@ public class DatabaseManager {
         public static final String NAVAID_ID = "NAVAID_ID";
         public static final String NAVAID_TYPE = "NAVAID_TYPE";
         public static final String REMARK_TEXT = "REMARK_TEXT";
+
+        private Nav2() {}
     }
 
     public static final class Ils1 implements BaseColumns {
@@ -374,6 +417,8 @@ public class DatabaseManager {
         public static final String ILS_ID = "ILS_ID";
         public static final String ILS_CATEGORY = "ILS_CATEGORY";
         public static final String ILS_MAGNETIC_BEARING = "ILS_MAGNETIC_BEARING";
+
+        private Ils1() {}
     }
 
     public static final class Ils2 implements BaseColumns {
@@ -386,6 +431,8 @@ public class DatabaseManager {
         public static final String LOCALIZER_FREQUENCY = "LOCALIZER_FREQUENCY";
         public static final String LOCALIZER_BACK_COURSE_STATUS = "LOCALIZER_BACK_COURSE_STATUS";
         public static final String LOCALIZER_COURSE_WIDTH = "LOCALIZER_COURSE_WIDTH";
+
+        private Ils2() {}
     }
 
     public static final class Ils3 implements BaseColumns {
@@ -398,6 +445,8 @@ public class DatabaseManager {
         public static final String GLIDE_SLOPE_TYPE = "GLIDE_SLOPE_TYPE";
         public static final String GLIDE_SLOPE_ANGLE = "GLIDE_SLOPE_ANGLE";
         public static final String GLIDE_SLOPE_FREQUENCY = "GLIDE_SLOPE_FREQUENCY";
+
+        private Ils3() {}
     }
 
     public static final class Ils4 implements BaseColumns {
@@ -408,6 +457,8 @@ public class DatabaseManager {
         public static final String OPERATIONAL_STATUS = "OPERATIONAL_STATUS";
         public static final String OPERATIONAL_EFFECTIVE_DATE = "OPERATIONAL_EFFECTIVE_DATE";
         public static final String DME_CHANNEL = "DME_CHANNEL";
+
+        private Ils4() {}
     }
 
     public static final class Ils5 implements BaseColumns {
@@ -428,6 +479,8 @@ public class DatabaseManager {
         public static final String MARKER_BEACON_FREQUENCY = "MARKER_BEACON_FREQUENCY";
         public static final String MARKER_NAVAID_ID = "MARKER_NAVAID_ID";
         public static final String MARKER_SERVICE = "MARKER_SERVICE";
+
+        private Ils5() {}
     }
 
     public static final class Ils6 implements BaseColumns {
@@ -436,6 +489,8 @@ public class DatabaseManager {
         public static final String RUNWAY_ID = "RUNWAY_ID";
         public static final String ILS_TYPE = "ILS_TYPE";
         public static final String ILS_REMARKS = "ILS_REMARKS";
+
+        private Ils6() {}
     }
 
     public static final class Aff1 implements BaseColumns {
@@ -446,6 +501,8 @@ public class DatabaseManager {
         public static final String FACILITY_TYPE = "FACILITY_TYPE";
         public static final String ARTCC_LATTITUDE_DEGREES = "ARTCC_LATTITUDE_DEGREES";
         public static final String ARTCC_LONGITUDE_DEGREES = "ARTCC_LONGITUDE_DEGREES";
+
+        private Aff1() {}
     }
 
     public static final class Aff3 implements BaseColumns {
@@ -457,6 +514,8 @@ public class DatabaseManager {
         public static final String FREQ_ALTITUDE = "FREQ_ALTITUDE";
         public static final String FREQ_USAGE_NAME= "FREQ_USAGE_NAME";
         public static final String IFR_FACILITY_ID = "IFR_FACILITY_ID";
+
+        private Aff3() {}
     }
 
     public static final class Com implements BaseColumns {
@@ -470,6 +529,8 @@ public class DatabaseManager {
         public static final String COMM_OUTLET_FREQS = "COMM_OUTLET_FREQS";
         public static final String FSS_IDENT = "FSS_IDENT";
         public static final String FSS_NAME = "FSS_NAME";
+
+        private Com() {}
     }
 
     public static final class Wxs implements BaseColumns {
@@ -483,6 +544,8 @@ public class DatabaseManager {
         public static final String STATION_COUNTRY = "STATION_COUNTRY";
         public static final String STATION_ELEVATOIN_METER = "STATION_ELEVATION_METER";
         public static final String STATION_SITE_TYPES = "STATION_SITE_TYPES";
+
+        private Wxs() {}
     }
 
     public static final class AtcPhones implements BaseColumns {
@@ -492,6 +555,8 @@ public class DatabaseManager {
         public static final String DUTY_OFFICE_PHONE = "DUTY_OFFICE_PHONE";
         public static final String BUSINESS_HOURS = "BUSINESS_HOURS";
         public static final String BUSINESS_PHONE = "BUSINESS_PHONE";
+
+        private AtcPhones() {}
     }
 
     public static final class DtppCycle implements BaseColumns {
@@ -499,6 +564,8 @@ public class DatabaseManager {
         public static final String TPP_CYCLE = "TPP_CYCLE";
         public static final String FROM_DATE = "FROM_DATE";
         public static final String TO_DATE = "TO_DATE";
+
+        private DtppCycle() {}
     }
 
     public static final class Dtpp implements BaseColumns {
@@ -513,6 +580,8 @@ public class DatabaseManager {
         public static final String FAANFD18_CODE = "FAANFD18_CODE";
         public static final String MILITARY_USE = "MILITARY_USE";
         public static final String COPTER_USE = "COPTER_USE";
+
+        private Dtpp() {}
     }
 
     public static final class DafdCycle implements BaseColumns {
@@ -520,18 +589,24 @@ public class DatabaseManager {
         public static final String AFD_CYCLE = "AFD_CYCLE";
         public static final String FROM_DATE = "FROM_DATE";
         public static final String TO_DATE = "TO_DATE";
+
+        private DafdCycle() {}
     }
 
     public static final class Dafd implements BaseColumns {
         public static final String TABLE_NAME = "dafd";
         public static final String FAA_CODE = "FAA_CODE";
         public static final String PDF_NAME = "PDF_NAME";
+
+        private Dafd() {}
     }
 
     public static final class BookCategories implements BaseColumns {
         public static final String TABLE_NAME = "bookcategories";
         public static final String CATEGORY_CODE = "CATEGORY_CODE";
         public static final String CATEGORY_NAME = "CATEGORY_NAME";
+
+        private BookCategories() {}
     }
 
     public static final class Library implements BaseColumns {
@@ -543,6 +618,8 @@ public class DatabaseManager {
         public static final String EDITION = "EDITION";
         public static final String DOWNLOAD_SIZE = "DOWNLOAD_SIZE";
         public static final String FLAG = "FLAG";
+
+        private Library() {}
     }
 
     public static final class Catalog implements BaseColumns {
@@ -554,18 +631,24 @@ public class DatabaseManager {
         public static final String END_DATE = "END_DATE";
         public static final String DB_NAME = "DB_NAME";
         public static final String INSTALL_DATE = "INSTALL_DATE";
+
+        private Catalog() {}
     }
 
     public static final class States implements BaseColumns {
         public static final String TABLE_NAME = "states";
         public static final String STATE_CODE = "STATE_CODE";
         public static final String STATE_NAME = "STATE_NAME";
+
+        private States() {}
     }
 
     public static final class Favorites implements BaseColumns {
         public static final String TABLE_NAME = "favorites";
         public static final String TYPE = "TYPE";
         public static final String LOCATION_ID = "LOCATION_ID";
+
+        private Favorites() {}
     }
 
     public static DatabaseManager instance( Context context ) {
@@ -575,13 +658,6 @@ public class DatabaseManager {
             }
             return sInstance;
         }
-    }
-
-    private DatabaseManager( Context context ) {
-        mContext = context;
-        mCatalogDbHelper = new CatalogDbOpenHelper( context );
-        mUserDataDbHelper = new UserDataDbOpenHelper( context );
-        mDatabases = new HashMap<>();
     }
 
     public File getDatabaseFile( String dbName ) {

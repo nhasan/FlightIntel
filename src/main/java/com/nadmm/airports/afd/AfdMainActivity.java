@@ -64,7 +64,7 @@ public final class AfdMainActivity extends TabPagerActivityBase {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
         boolean showNearby = prefs.getBoolean( PreferencesActivity.KEY_ALWAYS_SHOW_NEARBY, false );
         ArrayList<String> fav = getDbManager().getAptFavorites();
-        if ( !showNearby && fav.size() > 0 ) {
+        if ( !showNearby && !fav.isEmpty() ) {
             return ID_FAVORITES;
         } else {
             return ID_NEARBY;

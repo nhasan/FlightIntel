@@ -37,6 +37,8 @@ public class WxUtils {
     private static final String CATEGORY_IFR = "IFR";
     private static final String CATEGORY_LIFR = "LIFR";
 
+    private WxUtils() {}
+
     static public int getFlightCategoryColor( String flightCategory ) {
         int color = 0;
         if ( flightCategory.equals( CATEGORY_VFR ) ) {

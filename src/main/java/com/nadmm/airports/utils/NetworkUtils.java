@@ -54,6 +54,8 @@ public class NetworkUtils {
     public static final String CONTENT_LENGTH = "CONTENT_LENGTH";
     public static final String CONTENT_NAME = "CONTENT_NAME";
 
+    private NetworkUtils() {}
+
     public static boolean isNetworkAvailable( Context context ) {
         return isNetworkAvailable( context, true );
     }

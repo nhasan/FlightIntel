@@ -29,6 +29,8 @@ public class ClassBUtils {
     static private HashMap<String, String> mClassBFileNames = new HashMap<>();
     static private String mClassBFacilityList = new String();
 
+    private ClassBUtils() {}
+
     static {
         mClassBNames.put( "ATL", "Atlanta" );
         mClassBNames.put( "BOS", "Boston" );

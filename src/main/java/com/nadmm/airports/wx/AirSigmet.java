@@ -26,6 +26,10 @@ public class AirSigmet implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public boolean isValid;
+    public long fetchTime;
+    public ArrayList<AirSigmetEntry> entries;
+
     public static class AirSigmetPoint implements Serializable {
 
         private static final long serialVersionUID = 1L;
@@ -70,9 +74,5 @@ public class AirSigmet implements Serializable {
         fetchTime = Long.MAX_VALUE;
         entries = new ArrayList<>();
     }
-
-    public boolean isValid;
-    public long fetchTime;
-    public ArrayList<AirSigmetEntry> entries;
 
 }
