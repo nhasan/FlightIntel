@@ -282,6 +282,23 @@ public class DatabaseManager {
         public static final String MASTER_AIRPORT_SERVICES = "MASTER_AIRPORT_SERVICES";
     }
 
+    public static final class Tower5 implements BaseColumns {
+        public static final String TABLE_NAME = "tower5";
+        public static final String FACILITY_ID = "FACILITY_ID";
+        public static final String PRIMARY_APPROACH_RADAR = "PRIMARY_APPROACH_RADAR";
+        public static final String SECONDARY_APPROACH_RADAR = "SECONDARY_APPROACH_RADAR";
+        public static final String PRIMARY_DEPARTURE_RADAR = "PRIMARY_DEPARTURE_RADAR";
+        public static final String SECONDARY_DEPARTURE_RADAR = "SECONDARY_DEPARTURE_RADAR";
+        public static final String TOWER_RADAR_TYPE_1 = "TOWER_RADAR_TYPE_1";
+        public static final String TOWER_RADAR_HOURS_1 = "TOWER_RADAR_HOURS_1";
+        public static final String TOWER_RADAR_TYPE_2 = "TOWER_RADAR_TYPE_2";
+        public static final String TOWER_RADAR_HOURS_2 = "TOWER_RADAR_HOURS_2";
+        public static final String TOWER_RADAR_TYPE_3 = "TOWER_RADAR_TYPE_3";
+        public static final String TOWER_RADAR_HOURS_3 = "TOWER_RADAR_HOURS_3";
+        public static final String TOWER_RADAR_TYPE_4 = "TOWER_RADAR_TYPE_4";
+        public static final String TOWER_RADAR_HOURS_4 = "TOWER_RADAR_HOURS_4";
+    }
+
     public static final class Tower6 implements BaseColumns {
         public static final String TABLE_NAME = "tower6";
         public static final String FACILITY_ID = "FACILITY_ID";

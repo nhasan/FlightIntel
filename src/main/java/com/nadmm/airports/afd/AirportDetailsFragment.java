@@ -60,6 +60,7 @@ import com.nadmm.airports.data.DatabaseManager.Remarks;
 import com.nadmm.airports.data.DatabaseManager.Runways;
 import com.nadmm.airports.data.DatabaseManager.Tower1;
 import com.nadmm.airports.data.DatabaseManager.Tower3;
+import com.nadmm.airports.data.DatabaseManager.Tower5;
 import com.nadmm.airports.data.DatabaseManager.Tower6;
 import com.nadmm.airports.data.DatabaseManager.Tower7;
 import com.nadmm.airports.data.DatabaseManager.Tower8;
@@ -574,6 +575,38 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
         String tower = apt.getString( apt.getColumnIndex( Airports.TOWER_ON_SITE ) );
         addRow( layout, "Control tower", tower.equals( "Y" )? "Yes" : "No" );
+
+        Cursor twr5 = result[ 16 ];
+        if ( twr5 != null && twr5.moveToFirst() ) {
+            HashSet<String> radarList = new HashSet<>();
+            String towerRadar = twr5.getString( twr5.getColumnIndex( Tower5.TOWER_RADAR_TYPE_1 ) );
+            if ( !towerRadar.isEmpty() && !radarList.contains( towerRadar ) ) {
+                radarList.add( towerRadar );
+            }
+            towerRadar = twr5.getString( twr5.getColumnIndex( Tower5.TOWER_RADAR_TYPE_2 ) );
+            if ( !towerRadar.isEmpty() && !radarList.contains( towerRadar ) ) {
+                radarList.add( towerRadar );
+            }
+            towerRadar = twr5.getString( twr5.getColumnIndex( Tower5.TOWER_RADAR_TYPE_3 ) );
+            if ( !towerRadar.isEmpty() && !radarList.contains( towerRadar ) ) {
+                radarList.add( towerRadar );
+            }
+            towerRadar = twr5.getString( twr5.getColumnIndex( Tower5.TOWER_RADAR_TYPE_4 ) );
+            if ( !towerRadar.isEmpty() && !radarList.contains( towerRadar ) ) {
+                radarList.add( towerRadar );
+            }
+            String radars = "";
+            for ( String radar : radarList ) {
+                if ( !radars.isEmpty() ) {
+                    radars = radars.concat( ", " );
+                }
+                radars = radars.concat( radar );
+            }
+            if ( !radars.isEmpty() ) {
+                addRow( layout, "Tower radar", radars );
+            }
+        }
+
         String windIndicator = apt.getString( apt.getColumnIndex( Airports.WIND_INDICATOR ) );
         addRow( layout, "Wind indicator", DataUtils.decodeWindIndicator( windIndicator ) );
         String circle = apt.getString( apt.getColumnIndex( Airports.SEGMENTED_CIRCLE ) );
@@ -916,7 +949,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             mSiteNumber = params[ 0 ];
 
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 16 ];
+            Cursor[] cursors = new Cursor[ 17 ];
 
             Cursor apt = getAirportDetails( mSiteNumber );
             cursors[ 0 ] = apt;
@@ -1052,6 +1085,12 @@ public final class AirportDetailsFragment extends FragmentBase {
             String selection =
                     " AND "+Airports.FAA_CODE+" IN ("+ ClassBUtils.getClassBFacilityList()+")";
             cursors[ 15 ] = new NearbyAirportsCursor( db, mLocation, 50, selection );
+
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Tower5.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" }, Tower5.FACILITY_ID+"=? ",
+                    new String[] { faaCode }, null, null, null, null );
+            cursors[ 16 ] = c;
 
             return cursors;
         }
