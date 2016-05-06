@@ -591,6 +591,41 @@ my $insert_tower4_record = "INSERT INTO tower4 ("
         ."?, ?"
         .");";
 
+my $create_tower5_table = "CREATE TABLE tower5 ("
+        ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        ."FACILITY_ID TEXT, "
+        ."PRIMARY_APPROACH_RADAR TEXT, "
+        ."SECONDARY_APPROACH_RADAR TEXT, "
+        ."PRIMARY_DEPARTURE_RADAR TEXT, "
+        ."SECONDARY_DEPARTURE_RADAR TEXT, "
+        ."TOWER_RADAR_TYPE_1 TEXT, "
+        ."TOWER_RADAR_HOURS_1 TEXT, "
+        ."TOWER_RADAR_TYPE_2 TEXT, "
+        ."TOWER_RADAR_HOURS_2 TEXT, "
+        ."TOWER_RADAR_TYPE_3 TEXT, "
+        ."TOWER_RADAR_HOURS_3 TEXT, "
+        ."TOWER_RADAR_TYPE_4 TEXT, "
+        ."TOWER_RADAR_HOURS_4 TEXT"
+        .");";
+
+my $insert_tower5_record = "INSERT INTO tower5 ("
+        ."FACILITY_ID, "
+        ."PRIMARY_APPROACH_RADAR, "
+        ."SECONDARY_APPROACH_RADAR, "
+        ."PRIMARY_DEPARTURE_RADAR, "
+        ."SECONDARY_DEPARTURE_RADAR, "
+        ."TOWER_RADAR_TYPE_1, "
+        ."TOWER_RADAR_HOURS_1, "
+        ."TOWER_RADAR_TYPE_2, "
+        ."TOWER_RADAR_HOURS_2, "
+        ."TOWER_RADAR_TYPE_3, "
+        ."TOWER_RADAR_HOURS_3, "
+        ."TOWER_RADAR_TYPE_4, "
+        ."TOWER_RADAR_HOURS_4"
+        .") VALUES ("
+        ."?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
+        .");";
+
 my $create_tower6_table = "CREATE TABLE tower6 ("
         ."_id INTEGER PRIMARY KEY AUTOINCREMENT, "
         ."FACILITY_ID TEXT, "
@@ -1106,6 +1141,10 @@ $dbh->do( "DROP TABLE IF EXISTS tower4" );
 $dbh->do( $create_tower4_table );
 $dbh->do( "CREATE INDEX idx_twr4_facility_id on tower4 ( FACILITY_ID );" );
 
+$dbh->do( "DROP TABLE IF EXISTS tower5" );
+$dbh->do( $create_tower5_table );
+$dbh->do( "CREATE INDEX idx_twr5_facility_id on tower5 ( FACILITY_ID );" );
+
 $dbh->do( "DROP TABLE IF EXISTS tower6" );
 $dbh->do( $create_tower6_table );
 $dbh->do( "CREATE INDEX idx_twr6_facility_id on tower6 ( FACILITY_ID );" );
@@ -1195,6 +1234,7 @@ my $sth_twr1 = $dbh->prepare( $insert_tower1_record );
 my $sth_twr2 = $dbh->prepare( $insert_tower2_record );
 my $sth_twr3 = $dbh->prepare( $insert_tower3_record );
 my $sth_twr4 = $dbh->prepare( $insert_tower4_record );
+my $sth_twr5 = $dbh->prepare( $insert_tower5_record );
 my $sth_twr6 = $dbh->prepare( $insert_tower6_record );
 my $sth_twr7 = $dbh->prepare( $insert_tower7_record );
 my $sth_twr8 = $dbh->prepare( $insert_tower8_record );
@@ -1712,6 +1752,38 @@ while ( my $line = <TWR_FILE> )
         $sth_twr4->bind_param( 2, substrim( $line, 8, 100 ) );
 
         $sth_twr4->execute();
+    }
+    elsif ( $type eq "TWR5" )
+    {
+        // NCT, SCT, C90, K90, N90, D10, I90
+        #FACILITY_ID
+        $sth_twr5->bind_param(  1, substrim( $line,  4, 4 ) );
+        #PRIMARY_APPROACH_RADAR
+        $sth_twr5->bind_param(  2, substrim( $line,  8, 9 ) );
+        #SECONDARY_APPROACH_RADAR
+        $sth_twr5->bind_param(  3, substrim( $line,  17, 9 ) );
+        #PRIMARY_DEPARTURE_RADAR
+        $sth_twr5->bind_param(  4, substrim( $line,  26, 9 ) );
+        #SECONDARY_DEPARTURE_RADAR
+        $sth_twr5->bind_param(  5, substrim( $line,  35, 9 ) );
+        #TOWER_RADAR_TYPE_1
+        $sth_twr5->bind_param(  6, substrim( $line,  44, 10 ) );
+        #TOWER_RADAR_HOURS_1
+        $sth_twr5->bind_param(  7, substrim( $line,  54, 200 ) );
+        #TOWER_RADAR_TYPE_2
+        $sth_twr5->bind_param(  8, substrim( $line, 254, 10 ) );
+        #TOWER_RADAR_HOURS_2
+        $sth_twr5->bind_param(  9, substrim( $line, 264, 200 ) );
+        #TOWER_RADAR_TYPE_3
+        $sth_twr5->bind_param( 10, substrim( $line, 464, 10 ) );
+        #TOWER_RADAR_HOURS_3
+        $sth_twr5->bind_param( 11, substrim( $line, 474, 200 ) );
+        #TOWER_RADAR_TYPE_4
+        $sth_twr5->bind_param( 12, substrim( $line, 674, 10 ) );
+        #TOWER_RADAR_HOURS_4
+        $sth_twr5->bind_param( 13, substrim( $line, 684, 200 ) );
+
+        $sth_twr5->execute();
     }
     elsif ( $type eq "TWR6" )
     {
