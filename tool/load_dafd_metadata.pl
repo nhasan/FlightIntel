@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 # * GNU General Public License for more details.
 # *
 # * You should have received a copy of the GNU General Public License
-# * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+# * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # */
 
 use strict;
@@ -29,7 +29,7 @@ my $BASE_DIR = shift @ARGV;
 our $cycle = shift @ARGV;
 my $AFD_METADATA_FILE = "$BASE_DIR/d-AFD_Metadata.xml";
 #my $dafd_url = "http://aeronav.faa.gov/afd/afd_$cycle.xml";
-my $dafd_url = "file:///home/nhasan/Documents/FlightIntel/d-AFD/afd_$cycle.xml";
+my $dafd_url = "file:///home/nhasan/Documents/FlightIntel/d-CS/afd_$cycle.xml";
 my $count = 0;
 
 print "Downloading the d-AFD metafile: ".$dafd_url."...";
@@ -41,7 +41,7 @@ if ( $ret != 200 )
 }
 print "done\n";
 
-my $dbfile = "$BASE_DIR/dafd.db";
+my $dbfile = "$BASE_DIR/dafd_$cycle.db";
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );
@@ -94,7 +94,7 @@ $dbh->do( "CREATE INDEX idx_dafd_faa_code on dafd ( FAA_CODE );" );
 my $sth_dafd = $dbh->prepare( $insert_dafd_record );
 
 my $twig= new XML::Twig(
-                        start_tag_handlers => { 
+                        start_tag_handlers => {
                             airports => \&airports,
                             location => \&location },
                         twig_handlers => {
@@ -149,11 +149,11 @@ sub airport
         $sth_dafd->bind_param( 2, $faa_code );
         #PDF_NAME
         $sth_dafd->bind_param( 3, $pdf_name );
-    
+
         print "\rLoading # $count...";
-    
+
         $sth_dafd->execute;
-    
+
         $twig->purge;
         ++$count;
     }
