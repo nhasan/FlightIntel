@@ -33,6 +33,10 @@ public class TfrList implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public boolean isValid;
+    public long fetchTime;
+    public ArrayList<Tfr> entries;
+
     public enum AltitudeType {
         AGL {
             @Override
@@ -161,9 +165,5 @@ public class TfrList implements Serializable {
         fetchTime = Long.MAX_VALUE;
         entries = new ArrayList<Tfr>();
     }
-
-    public boolean isValid;
-    public long fetchTime;
-    public ArrayList<Tfr> entries;
 
 }

@@ -34,6 +34,8 @@ public class SystemUtils {
 
     private final static String MIME_TYPE_PDF = "application/pdf";
 
+    private SystemUtils() {}
+
     public static boolean canDisplayMimeType( Context context, String mimeType ) {
         PackageManager pm = context.getPackageManager();
         Intent intent = new Intent( Intent.ACTION_VIEW );

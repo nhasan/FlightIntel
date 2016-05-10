@@ -55,6 +55,8 @@ public class DonateDatabase {
         public static final String TABLE_NAME = "donations";
         public static final String PRODUCT_ID = "PRODUCT_ID";
         public static final String PURCHASE_TIME = "PURCHASE_TIME";
+
+        private Donations() {}
     }
 
     public  void deleteAllDonations() {

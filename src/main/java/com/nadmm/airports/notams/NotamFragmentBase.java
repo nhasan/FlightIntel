@@ -147,7 +147,7 @@ public class NotamFragmentBase extends FragmentBase {
             in = new BufferedReader( new FileReader( notamFile ) );
             String notam;
             while ( ( notam = in.readLine() ) != null ) {
-                String parts[] = notam.split( " ", 5 );
+                String[] parts = notam.split( " ", 5 );
                 String notamID = parts[ 1 ];
                 if ( !notamIDs.contains( notamID ) ) {
                     String keyword = parts[0].equals( "!FDC" )? "FDC" : parts[ 3 ];

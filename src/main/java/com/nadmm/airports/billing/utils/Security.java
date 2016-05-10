@@ -43,6 +43,8 @@ public class Security {
     private static final String KEY_FACTORY_ALGORITHM = "RSA";
     private static final String SIGNATURE_ALGORITHM = "SHA1withRSA";
 
+    private Security() {}
+
     /**
      * Verifies that the data was signed with the given signature, and returns
      * the verified purchase. The data is in JSON format and signed

@@ -29,6 +29,8 @@ import java.io.Reader;
 @SuppressWarnings( "TryFinallyCanBeTryWithResources" )
 public class FileUtils {
 
+    private FileUtils() {}
+
     public static void removeDir( File dir ) {
         File[] files = dir.listFiles();
         if ( files != null ) {

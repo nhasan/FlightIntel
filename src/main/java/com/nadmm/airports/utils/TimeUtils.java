@@ -45,6 +45,8 @@ public class TimeUtils {
     private static final SimpleDateFormat FAA_FORMAT =
             new SimpleDateFormat( "MM/dd/yyyy", Locale.US );
 
+    private TimeUtils() {}
+
     public static CharSequence formatLongDateTime( long time ) {
         return DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( time ) );
     }

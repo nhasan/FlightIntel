@@ -865,7 +865,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     protected void requestMetars( String action, boolean force, boolean cacheOnly ) {
-        if ( mAwosViews.size() == 0 ) {
+        if ( mAwosViews.isEmpty() ) {
             return;
         }
 

@@ -101,7 +101,7 @@ public final class IlsFragment extends FragmentBase {
         addRow( layout, "Magnetic bearing", bearing+"\u00B0" );
     }
 
-    protected void showLocalizerDetails( Cursor result[] ) {
+    protected void showLocalizerDetails( Cursor[] result ) {
         Cursor ils2 = result[ 2 ];
         if ( ils2.moveToFirst() ) {
             LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_loc_details );
@@ -124,7 +124,7 @@ public final class IlsFragment extends FragmentBase {
         }
     }
 
-    protected void showGlideslopeDetails( Cursor result[] ) {
+    protected void showGlideslopeDetails( Cursor[] result ) {
         Cursor ils3 = result[ 3 ];
         if ( ils3.moveToFirst() ) {
             LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_gs_details );
@@ -145,7 +145,7 @@ public final class IlsFragment extends FragmentBase {
         }
     }
 
-    protected void showInnerMarkerDetails( Cursor result[] ) {
+    protected void showInnerMarkerDetails( Cursor[] result ) {
         Cursor ils5 = result[ 5 ];
         if ( ils5.moveToFirst() ) {
             LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_im_details );
@@ -164,7 +164,7 @@ public final class IlsFragment extends FragmentBase {
         }
     }
 
-    protected void showMiddleMarkerDetails( Cursor result[] ) {
+    protected void showMiddleMarkerDetails( Cursor[] result ) {
         Cursor ils5 = result[ 6 ];
         if ( ils5.moveToFirst() ) {
             LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_mm_details );
@@ -195,7 +195,7 @@ public final class IlsFragment extends FragmentBase {
         }
     }
 
-    protected void showOuterMarkerDetails( Cursor result[] ) {
+    protected void showOuterMarkerDetails( Cursor[] result ) {
         Cursor ils5 = result[ 7 ];
         if ( ils5.moveToFirst() ) {
             LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_om_details );
@@ -226,7 +226,7 @@ public final class IlsFragment extends FragmentBase {
         }
     }
 
-    protected void showIlsRemarks( Cursor result[] ) {
+    protected void showIlsRemarks( Cursor[] result ) {
         Cursor ils6 = result[ 8 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_ils_remarks );
         if ( ils6.moveToFirst() ) {

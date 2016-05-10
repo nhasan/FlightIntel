@@ -769,6 +769,29 @@ public class ImageZoomView extends View implements Observer {
         /** Handler for posting runnables */
         private final Handler mHandler = new Handler();
 
+        /**
+         * Runnable that updates dynamics state
+         */
+        private final Runnable mUpdateRunnable = new Runnable() {
+            public void run() {
+                final long startTime = SystemClock.uptimeMillis();
+                mPanDynamicsX.update(startTime);
+                mPanDynamicsY.update(startTime);
+                final boolean isAtRest = mPanDynamicsX.isAtRest(REST_VELOCITY_TOLERANCE,
+                        REST_POSITION_TOLERANCE)
+                        && mPanDynamicsY.isAtRest(REST_VELOCITY_TOLERANCE, REST_POSITION_TOLERANCE);
+                mState.setPanX(mPanDynamicsX.getPosition());
+                mState.setPanY(mPanDynamicsY.getPosition());
+
+                if (!isAtRest) {
+                    final long stopTime = SystemClock.uptimeMillis();
+                    mHandler.postDelayed(mUpdateRunnable, 1000 / FPS - (stopTime - startTime));
+                }
+
+                mState.notifyObservers();
+            }
+        };
+
         /** Creates new zoom control */
         public DynamicZoomControl() {
             mPanDynamicsX.setFriction(3f);
@@ -855,29 +878,6 @@ public class ImageZoomView extends View implements Observer {
 
             mState.notifyObservers();
         }
-
-        /**
-         * Runnable that updates dynamics state
-         */
-        private final Runnable mUpdateRunnable = new Runnable() {
-            public void run() {
-                final long startTime = SystemClock.uptimeMillis();
-                mPanDynamicsX.update(startTime);
-                mPanDynamicsY.update(startTime);
-                final boolean isAtRest = mPanDynamicsX.isAtRest(REST_VELOCITY_TOLERANCE,
-                        REST_POSITION_TOLERANCE)
-                        && mPanDynamicsY.isAtRest(REST_VELOCITY_TOLERANCE, REST_POSITION_TOLERANCE);
-                mState.setPanX(mPanDynamicsX.getPosition());
-                mState.setPanY(mPanDynamicsY.getPosition());
-
-                if (!isAtRest) {
-                    final long stopTime = SystemClock.uptimeMillis();
-                    mHandler.postDelayed(mUpdateRunnable, 1000 / FPS - (stopTime - startTime));
-                }
-
-                mState.notifyObservers();
-            }
-        };
 
         /**
          * Release control and start pan fling animation

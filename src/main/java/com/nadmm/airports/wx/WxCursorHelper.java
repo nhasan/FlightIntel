@@ -47,6 +47,8 @@ public class WxCursorHelper {
             Airports.ASSOC_STATE,
     };
 
+    private WxCursorHelper() {}
+
     public static Cursor query( SQLiteDatabase db, String selection, String[] selectionArgs,
             String groupBy, String having, String sortOrder, String limit ) {
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();

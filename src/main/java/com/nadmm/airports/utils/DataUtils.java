@@ -29,6 +29,12 @@ public final class DataUtils {
     private final static String DOT = "\u2022";
     private final static String DASH = "\u2013";
     private static HashMap<String, String> sMorseCodes = new HashMap<>();
+
+    private static final Map<String, String> sAtcIdToName = new HashMap<>();
+    private static final Map<String, String> sAtcNameToId = new HashMap<>();
+
+    private DataUtils() {}
+
     static {
         sMorseCodes.put( "A", DOT+DASH );
         sMorseCodes.put( "B", DASH+DOT+DOT+DOT );
@@ -835,9 +841,6 @@ public final class DataUtils {
             return "Other";
         }
     }
-
-    private static final Map<String, String> sAtcIdToName = new HashMap<>();
-    private static final Map<String, String> sAtcNameToId = new HashMap<>();
 
     static {
         sAtcIdToName.put( "A11:TRACON", "Anchorage" );
