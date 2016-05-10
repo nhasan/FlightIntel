@@ -24,7 +24,7 @@ import com.google.android.gms.analytics.Tracker;
 
 public class Application extends android.app.Application {
 
-    public static Boolean sDonationDone = null;
+    public static Boolean sDonationDone = true;
     public static Tracker sTracker = null;
 
     @Override
