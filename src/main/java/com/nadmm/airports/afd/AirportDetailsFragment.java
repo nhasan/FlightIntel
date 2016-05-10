@@ -1086,11 +1086,14 @@ public final class AirportDetailsFragment extends FragmentBase {
                     " AND "+Airports.FAA_CODE+" IN ("+ ClassBUtils.getClassBFacilityList()+")";
             cursors[ 15 ] = new NearbyAirportsCursor( db, mLocation, 50, selection );
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower5.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" }, Tower5.FACILITY_ID+"=? ",
-                    new String[] { faaCode }, null, null, null, null );
-            cursors[ 16 ] = c;
+            try {
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( Tower5.TABLE_NAME );
+                c = builder.query( db, new String[]{ "*" }, Tower5.FACILITY_ID + "=? ",
+                        new String[]{ faaCode }, null, null, null, null );
+                cursors[ 16 ] = c;
+            } catch ( Exception e ) {
+            }
 
             return cursors;
         }
