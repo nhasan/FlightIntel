@@ -172,8 +172,7 @@ public class SolarCalculator {
     }
 
     private double getUtcTime( double localMeanTime ) {
-        double utcTime = localMeanTime-getBaseLongitudeHour();
-        return utcTime;
+        return localMeanTime-getBaseLongitudeHour();
     }
 
     private double getLocalTime( double localMeanTime, Calendar date ) {

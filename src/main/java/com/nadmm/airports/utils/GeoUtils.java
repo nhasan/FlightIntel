@@ -42,6 +42,8 @@ public class GeoUtils {
 
     private static final int TWO_MINUTES = 1000 * 60 * 2;
 
+    private GeoUtils() {}
+
     public static double getEarthRadius( double radLat ) {
         // Earth radius in nautical miles at a given lattitude, according to the WGS-84 ellipsoid
         // http://en.wikipedia.org/wiki/Earth_radius
@@ -82,7 +84,7 @@ public class GeoUtils {
     }
 
     public static double[] getBoundingBoxDegrees( Location location, int r ) {
-        double box[] = getBoundingBoxRadians( location, r );
+        double[] box = getBoundingBoxRadians( location, r );
         box[ 0 ] = Math.toDegrees( box[ 0 ] );
         box[ 1 ] = Math.toDegrees( box[ 1 ] );
         box[ 2 ] = Math.toDegrees( box[ 2 ] );

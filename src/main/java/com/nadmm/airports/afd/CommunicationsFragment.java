@@ -565,7 +565,7 @@ public final class CommunicationsFragment extends FragmentBase {
                 } catch ( Exception e ) {
                     depName = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP ) );
                 }
-                String depId[] = DataUtils.getAtcFacilityId( depName );
+                String[] depId = DataUtils.getAtcFacilityId( depName );
                 if ( depId == null ) {
                     try {
                         depName = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP_SECONDARY ) );

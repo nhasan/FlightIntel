@@ -66,4 +66,5 @@ public class WxRegions {
         "Winnemucca, NV"
     };
 
+    private WxRegions() {}
 }

@@ -47,8 +47,12 @@ public class UiUtils {
 
     private static final LruCache<String, Drawable> sDrawableCache = new LruCache<>( 100 );
 
-    private final static Handler sHandler;
-    private final static Paint sPaint = new Paint( Paint.FILTER_BITMAP_FLAG );
+    private static final  Handler sHandler;
+    private static final  Paint sPaint = new Paint( Paint.FILTER_BITMAP_FLAG );
+
+    private static final int[] RES_IDS_ACTION_BAR_SIZE = { R.attr.actionBarSize };
+
+    private UiUtils() {}
 
     static {
         // Make sure to associate with the Looper in the main (Gui) thread
@@ -229,8 +233,6 @@ public class UiUtils {
         tv.setCompoundDrawablesWithIntrinsicBounds( d, null, null, null );
         tv.setCompoundDrawablePadding( UiUtils.convertDpToPx( context, 5 ) );
     }
-
-    private static final int[] RES_IDS_ACTION_BAR_SIZE = { R.attr.actionBarSize };
 
     /** Calculates the Action Bar height in pixels. */
     public static int calculateActionBarSize( Context context ) {

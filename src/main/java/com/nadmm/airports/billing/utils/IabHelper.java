@@ -149,6 +149,11 @@ public class IabHelper {
     public static final String GET_SKU_DETAILS_ITEM_LIST = "ITEM_ID_LIST";
     public static final String GET_SKU_DETAILS_ITEM_TYPE_LIST = "ITEM_TYPE_LIST";
 
+
+    // The listener registered on launchPurchaseFlow, which we have to call back when
+    // the purchase finishes
+    OnIabPurchaseFinishedListener mPurchaseListener;
+
     /**
      * Creates an instance. After creation, it will not yet be ready to use. You must perform
      * setup by calling {@link #startSetup} and wait for setup to complete. This constructor does not
@@ -324,10 +329,6 @@ public class IabHelper {
          */
         void onIabPurchaseFinished(IabResult result, Purchase info);
     }
-
-    // The listener registered on launchPurchaseFlow, which we have to call back when
-    // the purchase finishes
-    OnIabPurchaseFinishedListener mPurchaseListener;
 
     public void launchPurchaseFlow(Activity act, String sku, int requestCode, OnIabPurchaseFinishedListener listener) {
         launchPurchaseFlow(act, sku, requestCode, listener, "");
@@ -906,7 +907,7 @@ public class IabHelper {
             }
         }
 
-        if (skuList.size() == 0) {
+        if (skuList.isEmpty()) {
             logDebug("queryPrices: nothing to do because there are no SKUs.");
             return BILLING_RESPONSE_RESULT_OK;
         }

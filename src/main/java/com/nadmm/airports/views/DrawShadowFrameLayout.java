@@ -39,6 +39,20 @@ public class DrawShadowFrameLayout extends FrameLayout {
     private ObjectAnimator mAnimator;
     private float mAlpha = 1f;
 
+    private static Property<DrawShadowFrameLayout, Float> SHADOW_ALPHA
+            = new Property<DrawShadowFrameLayout, Float>(Float.class, "shadowAlpha") {
+        @Override
+        public Float get(DrawShadowFrameLayout dsfl) {
+            return dsfl.mAlpha;
+        }
+
+        @Override
+        public void set(DrawShadowFrameLayout dsfl, Float value) {
+            dsfl.mAlpha = value;
+            ViewCompat.postInvalidateOnAnimation( dsfl );
+        }
+    };
+
     public DrawShadowFrameLayout( Context context ) {
         this(context, null, 0);
     }
@@ -116,17 +130,4 @@ public class DrawShadowFrameLayout extends FrameLayout {
         setWillNotDraw(!mShadowVisible || mShadowDrawable == null);
     }
 
-    private static Property<DrawShadowFrameLayout, Float> SHADOW_ALPHA
-            = new Property<DrawShadowFrameLayout, Float>(Float.class, "shadowAlpha") {
-        @Override
-        public Float get(DrawShadowFrameLayout dsfl) {
-            return dsfl.mAlpha;
-        }
-
-        @Override
-        public void set(DrawShadowFrameLayout dsfl, Float value) {
-            dsfl.mAlpha = value;
-            ViewCompat.postInvalidateOnAnimation( dsfl );
-        }
-    };
 }

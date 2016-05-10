@@ -36,6 +36,8 @@ public class FormatUtils {
     private final static DecimalFormat sNMFormat;
     private final static NumberFormat sDollarFormat;
 
+    private FormatUtils() {}
+
     static {
         sFeetFormat = new DecimalFormat();
         sFeetFormat.applyPattern( "#,##0.# ft" );
