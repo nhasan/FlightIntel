@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,301 +19,240 @@
 
 package com.nadmm.airports.wx;
 
+import com.nadmm.airports.R;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
-import com.nadmm.airports.R;
-
-public abstract class WxSymbol implements Serializable, Cloneable {
+public class WxSymbol implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
-    public static final String MINUS_SIGN = "-";
-    public static final String PLUS_SIGN = "+";
+    private static final String MINUS_SIGN = "-";
+    private static final String PLUS_SIGN = "+";
 
-    private static Map<String, WxSymbol> sWxSymbolsMap = new HashMap<String, WxSymbol>();
-    private static ArrayList<String> sSymbols = new ArrayList<String>();
+    private static HashMap<String, WxSymbol> sWxSymbolsMap = new HashMap<>();
+    private static ArrayList<String> sSymbolNames = new ArrayList<>();
 
-
-    protected String mIntensity;
     protected String mSymbol;
+    protected int mDrawable;
+    protected String mDesc;
 
     private WxSymbol() {}
 
-    private WxSymbol( String symbol )
+    private WxSymbol( String symbol, int drawable, String desc )
     {
-        mIntensity = "";
         mSymbol = symbol;
-        sSymbols.add( symbol );
+        mDrawable = drawable;
+        mDesc = desc;
+
         sWxSymbolsMap.put( symbol, this );
+
+        // Do not add the prefixed variants of the main symbol
+        if ( !symbol.startsWith( PLUS_SIGN ) && !symbol.startsWith( MINUS_SIGN ) ) {
+            sSymbolNames.add( symbol );
+        }
     }
 
     public String getSymbol() {
         return mSymbol;
     }
 
-    @Override
-    public String toString() {
-        String desc = getDescription();
-        if ( mIntensity.length() > 0 ) {
-            if ( mIntensity.equals(PLUS_SIGN) ) {
-                desc = "Heavy "+desc.toLowerCase( Locale.US );
-            } else if ( mIntensity.equals(MINUS_SIGN) ) {
-                desc = "Light "+desc.toLowerCase( Locale.US );
-            }
-        }
-        return desc;
+    public int getDrawable() {
+        return mDrawable;
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        WxSymbol o = (WxSymbol) super.clone();
-        o.mIntensity = mIntensity;
-        return o;
+    public String toString() {
+        return mDesc;
     }
 
     public static WxSymbol get( String name, String intensity ) {
         WxSymbol symbol = null;
         try {
-            if ( sWxSymbolsMap.containsKey( name ) ) {
+            String key = intensity+name;
+            if ( sWxSymbolsMap.containsKey( key ) ) {
+                symbol = (WxSymbol) sWxSymbolsMap.get( key ).clone();
+            } else if ( sWxSymbolsMap.containsKey( name ) ) {
                 symbol = (WxSymbol) sWxSymbolsMap.get( name ).clone();
-                symbol.mIntensity = intensity;
+            } else {
+                symbol = new WxSymbol( key, 0, key );
             }
         } catch ( CloneNotSupportedException ignored ) {
         }
         return symbol;
     }
 
-    public static ArrayList<String> getSymbols() {
-        return sSymbols;
-    }
-
-    abstract public int getDrawable();
-    abstract protected String getDescription();
-
     static {
-        createWxSymbol("BCFG", R.drawable.bcfg, "Patches of fog");
+        new WxSymbol( "SHRA", R.drawable.sh, "Rainshowers" );
+        new WxSymbol( "+SHRA", R.drawable.sh, "Heavy rainshowers" );
+        new WxSymbol( "-SHRA", R.drawable.l_sh, "Light rainshowers" );
 
-        createWxSymbol("PRFG", R.drawable.prfg, "Partial fog");
+        new WxSymbol( "SHGS", R.drawable.gs, "Small hail showers" );
+        new WxSymbol( "+SHGS", R.drawable.gs, "Heavy small hail showers" );
+        new WxSymbol( "-SHGS", R.drawable.l_gs, "Light small hail showers" );
 
-        createWxSymbol("MIFG", R.drawable.mifg, "Shallow fog");
+        new WxSymbol( "SHSN", R.drawable.shsn, "Snowshowers" );
+        new WxSymbol( "+SHSN", R.drawable.shsn, "Heavy snowshowers" );
+        new WxSymbol( "-SHSN", R.drawable.l_shsn, "Light snowshowers" );
 
-        createWxSymbol("BLDU", R.drawable.sa, "Blowing dust");
+        new WxSymbol( "SHGR", R.drawable.gr, "Hail showers" );
+        new WxSymbol( "+SHGR", R.drawable.gr, "Heavy hail showers" );
+        new WxSymbol( "-SHGR", R.drawable.l_gr, "Light hail showers" );
 
-        createWxSymbol("BLSA", R.drawable.sa, "Blowing sand");
+        new WxSymbol( "SHPL", R.drawable.pl, "Ice pellet showers" );
+        new WxSymbol( "SHPE", R.drawable.pl, "Ice pellet showers" );
 
-        createWxSymbol("BLSN", R.drawable.blsn, "Blowing snow");
+        new WxSymbol( "SH", R.drawable.sh, "Showers" );
+        new WxSymbol( "+SH", R.drawable.sh, "Heavy showers" );
+        new WxSymbol( "-SH", R.drawable.l_sh, "Light showers" );
 
-        createWxSymbol("BLPY", R.drawable.sa, "Blowing spray");
+        new WxSymbol( "RA", R.drawable.ra, "Rain" );
+        new WxSymbol( "+RA", R.drawable.h_ra, "Heavy rain" );
+        new WxSymbol( "-RA", R.drawable.l_ra, "Light rain" );
 
-        createWxSymbol("VCBR", R.drawable.vcbr, "Mist in the vicinity");
+        new WxSymbol( "SN", R.drawable.sn, "Snow" );
+        new WxSymbol( "+SN", R.drawable.h_sn, "Heavy snow" );
+        new WxSymbol( "-SN", R.drawable.l_sn, "Light snow" );
 
-        createWxSymbol("TSGS", R.drawable.h_tsgr, R.drawable.tsgr, "Thunderstorm with small hail", PLUS_SIGN);
+        new WxSymbol( "DZ", R.drawable.dz, "Drizzle" );
+        new WxSymbol( "+DZ", R.drawable.h_dz, "Heavy drizzle" );
+        new WxSymbol( "-DZ", R.drawable.l_dz, "Light drizzle" );
 
-        createWxSymbol("TSGR", R.drawable.h_tsgr, R.drawable.tsgr, "Thunderstorm with hail", PLUS_SIGN);
+        new WxSymbol( "TSRA", R.drawable.tsra, "Thunderstorm with rain" );
+        new WxSymbol( "+TSRA", R.drawable.h_tsra, "Heavy thunderstorm with rain" );
 
-        createWxSymbol("VCTS", R.drawable.vcts, "Thunderstorm in the vicinity");
+        new WxSymbol( "TSPL", R.drawable.tsra, "Thunderstorm with ice pellets" );
+        new WxSymbol( "+TSPL", R.drawable.h_tsra, "Heavy thunderstorm with ice pellets" );
 
-        createWxSymbol("DRDU", R.drawable.ss, "Low drifting dust");
+        new WxSymbol( "TSSN", R.drawable.tsra, "Thunderstorm with snow" );
+        new WxSymbol( "+TSSN", R.drawable.h_tsra, "Heavy thunderstorm with snow" );
 
-        createWxSymbol("DRSA", R.drawable.ss, "Low drifting sand");
+        new WxSymbol( "TSGS", R.drawable.tsgr, "Thunderstorm with small hail" );
+        new WxSymbol( "+TSGS", R.drawable.h_tsgr, "Heavy thunderstorm with small hail" );
 
-        createWxSymbol("DRSN", R.drawable.drsn, "Low drifting snow");
+        new WxSymbol( "TSGR", R.drawable.tsgr, "Thunderstorm with hail" );
+        new WxSymbol( "+TSGR", R.drawable.h_tsgr, "Heavy thunderstorm with hail" );
 
-        createWxSymbol("FZFG", R.drawable.fzfg, "Freezing fog");
+        new WxSymbol( "FZDZ", R.drawable.fzdz, "Freezing drizzle" );
+        new WxSymbol( "+FZDZ", R.drawable.fzdz, "Heavy freezing drizzle" );
+        new WxSymbol( "-FZDZ", R.drawable.l_fzdz, "Light freezing drizzle" );
 
-        createWxSymbol("FZDZ", R.drawable.l_fzdz, R.drawable.fzdz, "Freezing drizzle", MINUS_SIGN);
+        new WxSymbol( "FZRA", R.drawable.fzra, "Freezing rain" );
+        new WxSymbol( "+FZRA", R.drawable.fzra, "Heavy freezing rain" );
+        new WxSymbol( "-FZRA", R.drawable.l_fzra, "Light freezing rain" );
 
-        createWxSymbol("FZRA", R.drawable.l_fzra, R.drawable.fzra, "Freezing rain", MINUS_SIGN);
+        new WxSymbol( "PL", R.drawable.pl, "Ice pellets" );
+        new WxSymbol( "PE", R.drawable.pl, "Ice pellets" );
 
-        createWxSymbol("SHRA", R.drawable.l_sh, R.drawable.sh, "Rainshowers", MINUS_SIGN);
+        new WxSymbol( "GS", R.drawable.gs, "Small hail" );
+        new WxSymbol( "+GS", R.drawable.gs, "Heavy small hail" );
+        new WxSymbol( "-GS", R.drawable.l_gs, "Light small hail" );
 
-        createWxSymbol("SHSN", R.drawable.l_shsn, R.drawable.shsn, "Snowshowers", MINUS_SIGN);
+        new WxSymbol( "GR", R.drawable.gr, "Hail" );
+        new WxSymbol( "+GR", R.drawable.gr, "Heavy hail" );
+        new WxSymbol( "-GR", R.drawable.l_gr, "Light hail" );
 
-        createWxSymbol("SHPL", R.drawable.pl, "Ice pellet showers");
+        new WxSymbol( "DS", R.drawable.ss, "Duststorm" );
+        new WxSymbol( "+DS", R.drawable.h_ss, "Heavy duststorm" );
 
-        createWxSymbol("SHGS", R.drawable.l_gs, R.drawable.gs, "Small hail showers", MINUS_SIGN);
+        new WxSymbol( "SS", R.drawable.ss, "Sandstorm" );
+        new WxSymbol( "+SS", R.drawable.h_ss, "Heavy sandstorm" );
 
-        createWxSymbol("SHGR", R.drawable.l_gr, R.drawable.gr, "Hail showers", MINUS_SIGN);
+        new WxSymbol( "FC", R.drawable.fc, "Funnel clouds" );
+        new WxSymbol( "+FC", R.drawable.fc, "Tornado" );
 
-        createWxSymbol("VCFG", R.drawable.vcfg, "Fog in the vicinity");
+        new WxSymbol( "BCFG", R.drawable.bcfg, "Patches of fog" );
 
-        createWxSymbol("VCFC", R.drawable.fc, "Funel clouds in the vicinity");
+        new WxSymbol( "PRFG", R.drawable.prfg, "Partial fog" );
 
-        createWxSymbol("VCSS", R.drawable.vcss, "Sandstorm in the vicinity");
+        new WxSymbol( "MIFG", R.drawable.mifg, "Shallow fog" );
 
-        createWxSymbol("VCDS", R.drawable.vcss, "Duststorm in the vicinity");
+        new WxSymbol( "BLDU", R.drawable.sa, "Blowing dust" );
 
-        createWxSymbol("VCSH", R.drawable.vcsh, "Showers in the vicinity");
+        new WxSymbol( "BLSA", R.drawable.sa, "Blowing sand" );
 
-        createWxSymbol("VCPO", R.drawable.po, "Dust/sand whirls in the vicinity");
+        new WxSymbol( "BLSN", R.drawable.blsn, "Blowing snow" );
 
-        createWxSymbol("VCBLDU", R.drawable.sa, "Blowing dust in the vicinity");
+        new WxSymbol( "BLPY", R.drawable.sa, "Blowing spray" );
 
-        createWxSymbol("VCBLSA", R.drawable.sa, "Blowing sand in the vicinity");
+        new WxSymbol( "VCBR", R.drawable.vcbr, "Mist in the vicinity" );
 
-        createWxSymbol("VCBLSN", R.drawable.blsn, "Blowing snow in the vicinity");
+        new WxSymbol( "VCTS", R.drawable.vcts, "Thunderstorm in the vicinity" );
 
-        createWxSymbol("TSRA", R.drawable.h_tsra, R.drawable.tsra, "Thunderstorm with rain", PLUS_SIGN);
+        new WxSymbol( "DRDU", R.drawable.ss, "Low drifting dust" );
 
-        createWxSymbol("TSPL", R.drawable.h_tsra, R.drawable.tsra, "Thunderstorm with ice pellets", PLUS_SIGN);
+        new WxSymbol( "DRSA", R.drawable.ss, "Low drifting sand" );
 
-        createWxSymbol("TSSN", R.drawable.h_tsra, R.drawable.tsra, "Thunderstorm with snow", PLUS_SIGN);
+        new WxSymbol( "DRSN", R.drawable.drsn, "Low drifting snow" );
 
-        createWxSymbol("BR", R.drawable.br, "Mist");
+        new WxSymbol( "FZFG", R.drawable.fzfg, "Freezing fog" );
 
-        createWxSymbol("DU", R.drawable.du, "Widespread dust");
+        new WxSymbol( "VCFG", R.drawable.vcfg, "Fog in the vicinity" );
 
-        createWxSymbol("DZ", R.drawable.h_dz, R.drawable.l_dz, R.drawable.dz, "Drizzle");
+        new WxSymbol( "VCFC", R.drawable.fc, "Funel clouds in the vicinity" );
 
-        createWxSymbol("DS", R.drawable.h_ss, R.drawable.ss, "Duststorm", PLUS_SIGN);
+        new WxSymbol( "VCSS", R.drawable.vcss, "Sandstorm in the vicinity" );
 
-        createWxSymbol("FG", R.drawable.fg, "Fog");
+        new WxSymbol( "VCDS", R.drawable.vcss, "Duststorm in the vicinity" );
 
-        new WxSymbol( "FC" ) {
+        new WxSymbol( "VCSH", R.drawable.vcsh, "Showers in the vicinity" );
 
-            private static final long serialVersionUID = 1L;
+        new WxSymbol( "VCPO", R.drawable.po, "Dust/sand whirls in the vicinity" );
 
-            @Override
-            public int getDrawable() {
-                return R.drawable.fc;
-            }
+        new WxSymbol( "VCBLDU", R.drawable.sa, "Blowing dust in the vicinity" );
 
-            @Override
-            protected String getDescription() {
-                return "Funnel clouds";
-            }
+        new WxSymbol( "VCBLSA", R.drawable.sa, "Blowing sand in the vicinity" );
 
-            @Override
-            public String toString() {
-                String desc;
-                if ( mIntensity.equals(PLUS_SIGN) ) {
-                    desc = "Tornado";
-                } else {
-                    desc = "Funnel clouds";
-                }
-                return desc;
-            }
-        };
+        new WxSymbol( "VCBLSN", R.drawable.blsn, "Blowing snow in the vicinity" );
 
-        createWxSymbol("FU", R.drawable.fu, "Smoke");
+        new WxSymbol( "BR", R.drawable.br, "Mist" );
 
-        createWxSymbol("GS", R.drawable.l_gs, R.drawable.gs, "Small hail", MINUS_SIGN);
+        new WxSymbol( "DU", R.drawable.du, "Widespread dust" );
 
-        createWxSymbol("GR", R.drawable.l_gr, R.drawable.gr, "Hail", MINUS_SIGN);
+        new WxSymbol( "FG", R.drawable.fg, "Fog" );
 
-        createWxSymbol("HZ", R.drawable.hz, "Haze");
+        new WxSymbol( "FU", R.drawable.fu, "Smoke" );
 
-        createWxSymbol("IC", R.drawable.ic, "Ice crystals");
+        new WxSymbol( "HZ", R.drawable.hz, "Haze" );
 
-        createWxSymbol("UP", R.drawable.up, "Unknown precipitation");
+        new WxSymbol( "IC", R.drawable.ic, "Ice crystals" );
 
-        createWxSymbol("PL", R.drawable.pl, "Ice pellets");
+        new WxSymbol( "UP", R.drawable.up, "Unknown precipitation" );
 
-        createWxSymbol("PO", R.drawable.po, "Dust/sand whirls");
+        new WxSymbol( "PO", R.drawable.po, "Dust/sand whirls" );
 
-        createWxSymbol("RA", R.drawable.h_ra, R.drawable.l_ra, R.drawable.ra, "Rain");
+        new WxSymbol( "SG", R.drawable.sg, "Snow grains" );
 
-        createWxSymbol("SN", R.drawable.h_sn, R.drawable.l_sn, R.drawable.sn, "Snow");
+        new WxSymbol( "SQ", R.drawable.sq, "Squalls" );
 
-        createWxSymbol("SG", R.drawable.sg, "Snow grains");
+        new WxSymbol( "SA", R.drawable.sa, "Sand" );
 
-        createWxSymbol("SQ", R.drawable.sq, "Squalls");
+        new WxSymbol( "TS", R.drawable.ts, "Thunderstorm" );
 
-        createWxSymbol("SA", R.drawable.sa, "Sand");
+        new WxSymbol( "VA", R.drawable.fu, "Volcanic ash" );
 
-        createWxSymbol("SS", R.drawable.h_ss, R.drawable.ss, "Sandstorm", PLUS_SIGN);
-
-        createWxSymbol("SH", R.drawable.l_sh, R.drawable.sh, "Showers", MINUS_SIGN);
-
-        createWxSymbol("TS", R.drawable.ts, "Thunderstorm");
-
-        createWxSymbol("VA", R.drawable.fu, "Volcanic ash");
-
-        createWxSymbol("NSW", 0, "No significant weather");
-    }
-
-    private static void createWxSymbol(String code, final int drawable, final String description) {
-        new WxSymbol(code) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                return drawable;
-            }
-
-            @Override
-            protected String getDescription() {
-                return description;
-            }
-        };
-    }
-
-    private static void createWxSymbol(String code, final int drawable1, final int drawable2, final String description, final String sign) {
-        new WxSymbol(code) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if (mIntensity.equals(sign) ) {
-                    return drawable1;
-                } else {
-                    return drawable2;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return description;
-            }
-        };
-    }
-
-    private static void createWxSymbol(String code, final int drawable1, final int drawable2, final int drawable3, final String description) {
-        new WxSymbol(code) {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public int getDrawable() {
-                if ( mIntensity.equals(PLUS_SIGN) ) {
-                    return drawable1;
-                } else if ( mIntensity.equals(MINUS_SIGN) ) {
-                    return drawable2;
-                } else {
-                    return drawable3;
-                }
-            }
-
-            @Override
-            protected String getDescription() {
-                return description;
-            }
-        };
+        new WxSymbol( "NSW", 0, "No significant weather" );
     }
 
     public static void parseWxSymbols( ArrayList<WxSymbol> wxList, String wxString ) {
         String[] groups = wxString.split( "\\s+" );
-        ArrayList<String> names = WxSymbol.getSymbols();
         for ( String group : groups ) {
             int offset = 0;
             String intensity = "";
-            if ( group.charAt( offset ) == '+' || group.charAt( offset ) == '-' ) {
-                intensity = group.substring( offset, offset+1 );
+            String check = group.substring( offset, offset+1 );
+            if ( check.equals( PLUS_SIGN ) || check.equals( MINUS_SIGN ) ) {
+                intensity = check;
                 ++offset;
             }
             while ( offset < group.length() ) {
                 WxSymbol wx = null;
-                for  ( String name : names  ) {
+                for  ( String name : sSymbolNames  ) {
                     if ( group.substring( offset ).startsWith( name ) ) {
                         wx = WxSymbol.get( name, intensity );
                         intensity = "";
                         wxList.add( wx );
-                        offset += wx.getSymbol().length();
+                        offset += name.length();
                         break;
                     }
                 }
