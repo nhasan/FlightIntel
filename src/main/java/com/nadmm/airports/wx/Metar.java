@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,10 @@ public final class Metar implements Serializable {
             public String toString() {
                 return "Freezing rain sensor is not operating";
             }
+        },
+        NoSignal {
+            @Override
+            public String toString() { return "No signal from station"; }
         }
     }
 
@@ -142,8 +146,8 @@ public final class Metar implements Serializable {
         vertVisibilityFeet = Integer.MAX_VALUE;
         stationElevationMeters = Float.MAX_VALUE;
 
-        wxList = new ArrayList<WxSymbol>();
-        skyConditions = new ArrayList<SkyCondition>();
+        wxList = new ArrayList<>();
+        skyConditions = new ArrayList<>();
 
         flags = EnumSet.noneOf( Flags.class );
         presrr = false;

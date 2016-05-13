@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ import com.nadmm.airports.wx.Metar.Flags;
 public final class MetarParser {
 
     private long mFetchTime;
-    public HashMap<String, Metar> mMetars = new HashMap<String, Metar>();
+    public HashMap<String, Metar> mMetars = new HashMap<>();
 
     public ArrayList<Metar> parse( File xmlFile, ArrayList<String> stationIds )
             throws ParserConfigurationException, SAXException, IOException {
@@ -55,7 +55,7 @@ public final class MetarParser {
         XMLReader xmlReader = parser.getXMLReader();
         xmlReader.setContentHandler( handler );
         xmlReader.parse( input );
-        ArrayList<Metar> metars = new ArrayList<Metar>( mMetars.values() );
+        ArrayList<Metar> metars = new ArrayList<>( mMetars.values() );
         // Now put the missing ones
         for ( String stationId : stationIds ) {
             if ( !mMetars.containsKey( stationId ) ) {
@@ -163,6 +163,10 @@ public final class MetarParser {
             } else if ( qName.equalsIgnoreCase( "freezing_rain_sensor_off" ) ) {
                 if ( text.toString().equalsIgnoreCase( "true" ) ) {
                     metar.flags.add( Flags.FreezingRainSensorOff ) ;
+                }
+            } else if ( qName.equalsIgnoreCase( "no_signal" ) ) {
+                if ( text.toString().equalsIgnoreCase( "true" ) ) {
+                    metar.flags.add( Flags.NoSignal ) ;
                 }
             } else if ( qName.equalsIgnoreCase( "wx_string" ) ) {
                 WxSymbol.parseWxSymbols( metar.wxList, text.toString() );
