@@ -28,8 +28,8 @@ import java.util.HashMap;
 public class WxSymbol implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
-    private static final String MINUS_SIGN = "-";
-    private static final String PLUS_SIGN = "+";
+    private static final char MINUS_SIGN = '-';
+    private static final char PLUS_SIGN = '+';
 
     private static HashMap<String, WxSymbol> sWxSymbolsMap = new HashMap<>();
     private static ArrayList<String> sSymbolNames = new ArrayList<>();
@@ -49,7 +49,8 @@ public class WxSymbol implements Serializable, Cloneable {
         sWxSymbolsMap.put( symbol, this );
 
         // Do not add the prefixed variants of the main symbol
-        if ( !symbol.startsWith( PLUS_SIGN ) && !symbol.startsWith( MINUS_SIGN ) ) {
+        char firstChar = symbol.charAt( 0 );
+        if ( firstChar != PLUS_SIGN && firstChar != MINUS_SIGN ) {
             sSymbolNames.add( symbol );
         }
     }
@@ -240,9 +241,9 @@ public class WxSymbol implements Serializable, Cloneable {
         for ( String group : groups ) {
             int offset = 0;
             String intensity = "";
-            String check = group.substring( offset, offset+1 );
-            if ( check.equals( PLUS_SIGN ) || check.equals( MINUS_SIGN ) ) {
-                intensity = check;
+            char firstChar = group.charAt( offset );
+            if ( firstChar == PLUS_SIGN || firstChar == MINUS_SIGN ) {
+                intensity = String.valueOf( firstChar );
                 ++offset;
             }
             while ( offset < group.length() ) {
@@ -250,8 +251,8 @@ public class WxSymbol implements Serializable, Cloneable {
                 for  ( String name : sSymbolNames  ) {
                     if ( group.substring( offset ).startsWith( name ) ) {
                         wx = WxSymbol.get( name, intensity );
-                        intensity = "";
                         wxList.add( wx );
+                        intensity = "";
                         offset += name.length();
                         break;
                     }
