@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,12 +34,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Awos1;
 import com.nadmm.airports.data.DatabaseManager.Awos2;
 import com.nadmm.airports.data.DatabaseManager.Wxs;
-import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
@@ -316,6 +316,10 @@ public class MetarFragment extends WxFragmentBase {
         layout.removeAllViews();
         visibility = View.GONE;
         if ( !metar.skyConditions.isEmpty() ) {
+            SkyCondition ceiling = WxUtils.getCeiling( metar.skyConditions );
+            if ( !ceiling.getSkyCover().equals( "NSC" ) ) {
+                addRow( layout, "Ceiling is "+FormatUtils.formatFeetAgl( ceiling.getCloudBaseAGL() ) );
+            }
             for ( SkyCondition sky : metar.skyConditions ) {
                 addSkyConditionRow( layout, sky, metar.flightCategory );
             }
