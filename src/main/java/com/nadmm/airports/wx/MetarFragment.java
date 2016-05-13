@@ -49,6 +49,7 @@ import com.nadmm.airports.wx.Metar.Flags;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MetarFragment extends WxFragmentBase {
 
@@ -339,7 +340,7 @@ public class MetarFragment extends WxFragmentBase {
             if ( metar.dewpointCelsius < Float.MAX_VALUE ) {
                 addRow( layout, "Dew point",
                         FormatUtils.formatTemperature( metar.dewpointCelsius ) );
-                addRow( layout,"Relative humidity", String.format( "%.0f%%",
+                addRow( layout,"Relative humidity", String.format( Locale.US, "%.0f%%",
                         WxUtils.getRelativeHumidity( metar ) ) );
 
                 long denAlt = WxUtils.getDensityAltitude( metar );
@@ -384,13 +385,13 @@ public class MetarFragment extends WxFragmentBase {
             long presAlt = WxUtils.getPressureAltitude( metar );
             addRow( layout, "Pressure altitude", FormatUtils.formatFeet( presAlt ) );
             if ( metar.pressureTend3HrMb < Float.MAX_VALUE ) {
-                addRow( layout, "3-hour tendency", String.format( "%+.2f mb",
+                addRow( layout, "3-hour tendency", String.format( Locale.US, "%+.2f mb",
                         metar.pressureTend3HrMb ) );
             }
             if ( metar.presfr ) {
-                addRow( layout, "Pressure falling rapidly" );
+                addRow( layout, "Pressure is falling rapidly" );
             } if ( metar.presrr ) {
-                addRow( layout, "Pressure rising rapidly" );
+                addRow( layout, "Pressure is rising rapidly" );
             }
             visibility = View.VISIBLE;
         }
@@ -403,22 +404,22 @@ public class MetarFragment extends WxFragmentBase {
         layout.removeAllViews();
         if ( metar.precipInches < Float.MAX_VALUE ) {
             addRow( layout, "1-hour precipitation",
-                    String.format( "%.2f\"", metar.precipInches ) );
+                    String.format( Locale.US, "%.2f\"", metar.precipInches ) );
         }
         if ( metar.precip3HrInches < Float.MAX_VALUE ) {
             addRow( layout, "3-hour precipitation",
-                    String.format( "%.2f\"", metar.precip3HrInches ) );
+                    String.format( Locale.US, "%.2f\"", metar.precip3HrInches ) );
         }
         if ( metar.precip6HrInches < Float.MAX_VALUE ) {
             addRow( layout, "6-hour precipitation",
-                    String.format( "%.2f\"", metar.precip6HrInches ) );
+                    String.format( Locale.US, "%.2f\"", metar.precip6HrInches ) );
         }
         if ( metar.precip24HrInches < Float.MAX_VALUE ) {
             addRow( layout, "24-hour precipitation",
-                    String.format( "%.2f\"", metar.precip24HrInches ) );
+                    String.format( Locale.US, "%.2f\"", metar.precip24HrInches ) );
         }
         if ( metar.snowInches < Float.MAX_VALUE ) {
-            addRow( layout, "Snow depth", String.format( "%.0f\"", metar.snowInches ) );
+            addRow( layout, "Snow depth", String.format( Locale.US, "%.0f\"", metar.snowInches ) );
         }
         if ( metar.snincr ) {
             addRow( layout, "Snow is increasing rapidly" );
@@ -454,17 +455,18 @@ public class MetarFragment extends WxFragmentBase {
         if ( metar.windDirDegrees == 0 && metar.windSpeedKnots == 0 ) {
             s.append( "Winds are calm" );
         } else if ( metar.windDirDegrees == 0 ) {
-            s.append( String.format( "Winds variable at %d knots", metar.windSpeedKnots ) );
+            s.append( String.format( Locale.US, "Winds variable at %d knots",
+                    metar.windSpeedKnots ) );
         } else {
-            s.append( String.format( "From %s (%s true) at %d knots",
+            s.append( String.format( Locale.US, "From %s (%s true) at %d knots",
                     GeoUtils.getCardinalDirection( metar.windDirDegrees ),
                     FormatUtils.formatDegrees( metar.windDirDegrees ), metar.windSpeedKnots ) );
             if ( metar.windGustKnots < Integer.MAX_VALUE ) {
-                s.append( String.format( " gusting to %d knots", metar.windGustKnots ) );
+                s.append( String.format( Locale.US, " gusting to %d knots", metar.windGustKnots ) );
             }
             if ( metar.windPeakKnots < Integer.MAX_VALUE
                     && metar.windPeakKnots != metar.windGustKnots ) {
-                s.append( String.format( ", peak at %d knots", metar.windPeakKnots ) );
+                s.append( String.format( Locale.US, ", peak at %d knots", metar.windPeakKnots ) );
             }
         }
         return s.toString();
@@ -480,7 +482,7 @@ public class MetarFragment extends WxFragmentBase {
         }
         if ( metar.windGustKnots < Integer.MAX_VALUE ) {
             double gustFactor = metar.windGustKnots - metar.windSpeedKnots;
-            addRow( layout, String.format( "Add %d knots to your normal approach speed",
+            addRow( layout, String.format( Locale.US, "Add %d knots to your normal approach speed",
                     Math.round( gustFactor/2 ) ) );
         }
         if ( metar.wshft ) {
