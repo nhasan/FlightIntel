@@ -2,6 +2,9 @@
 *.db.gz
 *.zip
 *.txt
+*.iml
+*.log
+.gradle
 .settings
 bin/
 gen/
@@ -11,7 +14,7 @@ build/
 .idea/
 ant.properties
 local.properties
-proguard.cfg
 project.properties
-Airports.iml
+gradle.properties
+proguard.cfg
 .directory
