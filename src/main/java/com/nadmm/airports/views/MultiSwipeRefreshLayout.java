@@ -22,6 +22,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import com.nadmm.airports.R;
 
@@ -68,8 +69,8 @@ public class MultiSwipeRefreshLayout extends SwipeRefreshLayout {
         mCanChildScrollUpCallback = canChildScrollUpCallback;
     }
 
-    public static interface CanChildScrollUpCallback {
-        public boolean canSwipeRefreshChildScrollUp();
+    public interface CanChildScrollUpCallback {
+        boolean canSwipeRefreshChildScrollUp();
     }
 
     @Override

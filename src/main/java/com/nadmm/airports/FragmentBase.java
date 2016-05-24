@@ -27,9 +27,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,13 +52,11 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.UiUtils;
-import com.nadmm.airports.views.ObservableScrollView;
 
 public class FragmentBase extends Fragment implements IRefreshable {
 
     private ActivityBase mActivity;
     private CursorAsyncTask mTask;
-    private int mContentTopClearance;
     private ScrollView mTopScrollView;
 
     private final OnClickListener mOnRowClickListener = new OnClickListener() {
@@ -116,18 +116,10 @@ public class FragmentBase extends Fragment implements IRefreshable {
     }
 
     @Override
-    public boolean isRefreshable() {
-        return false;
-    }
+    public void onViewCreated( View view, Bundle savedInstanceState ) {
+        super.onViewCreated( view, savedInstanceState );
 
-    @Override
-    public boolean canSwipeRefreshChildScrollUp() {
-        return mTopScrollView != null
-                && ViewCompat.canScrollVertically( mTopScrollView, -1 );
-    }
-
-    @Override
-    public void requestDataRefresh() {
+        //mTopScrollView = (ScrollView) findViewById( R.id.scroll_content );
     }
 
     @Override
@@ -152,11 +144,20 @@ public class FragmentBase extends Fragment implements IRefreshable {
     }
 
     @Override
-    public void onViewCreated( View view, Bundle savedInstanceState ) {
-        super.onViewCreated( view, savedInstanceState );
+    public boolean isRefreshable() {
+        return false;
+    }
 
-        mTopScrollView = (ScrollView) findViewById( R.id.scroll_content );
-        mContentTopClearance = 0;
+    @Override
+    public void requestDataRefresh() {
+    }
+
+    @Override
+    public boolean canSwipeRefreshChildScrollUp() {
+        boolean ret = mTopScrollView != null
+                && ViewCompat.canScrollVertically( mTopScrollView, -1 );
+        Log.d( "canChildScrollUp", getClass().getSimpleName()+"-"+ret );
+        return ret;
     }
 
     protected boolean isRefreshing() {
@@ -165,23 +166,6 @@ public class FragmentBase extends Fragment implements IRefreshable {
 
     protected void setRefreshing( boolean refreshing ) {
         getActivityBase().setRefreshing( refreshing );
-    }
-
-    public void setContentTopClearance( int clearance ) {
-        if ( mContentTopClearance != clearance ) {
-            mContentTopClearance = clearance;
-            applyContentTopClearance( mContentTopClearance );
-        }
-    }
-
-    protected void applyContentTopClearance( int clearance ) {
-        if ( getView() != null ) {
-            View mainContent = getView().findViewById( R.id.main_content );
-            if ( mainContent != null ) {
-                mainContent.setPadding( mainContent.getPaddingLeft(), clearance,
-                        mainContent.getPaddingRight(), mainContent.getPaddingBottom() );
-            }
-        }
     }
 
     public DatabaseManager getDbManager() {
@@ -579,17 +563,6 @@ public class FragmentBase extends Fragment implements IRefreshable {
 
     protected View inflate( int id, ViewGroup root ) {
         return mActivity.inflate( id, root );
-    }
-
-    public void registerActionBarAutoHideView() {
-        View view = getView();
-        if ( view != null ) {
-            ObservableScrollView scrollView =
-                    (ObservableScrollView) view.findViewById( R.id.scroll_content );
-            if ( scrollView != null ) {
-                getActivityBase().registerActionBarAutoHideScrollView( scrollView );
-            }
-        }
     }
 
 }

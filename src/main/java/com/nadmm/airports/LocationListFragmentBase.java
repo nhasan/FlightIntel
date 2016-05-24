@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2015-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,8 +113,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
             setListShown( false );
             setFragmentContentShown( true );
         }
-
-        getActivityBase().onFragmentStarted( this );
     }
 
     @Override
@@ -122,8 +120,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
         if ( getActivity() != null ) {
             mLastLocation = location;
             newLocationTask().execute();
-        } else {
-            stopLocationUpdates();
         }
     }
 
@@ -162,26 +158,38 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
     }
 
     protected void startLocationUpdates() {
+        boolean providerOk = false;
         if ( ContextCompat.checkSelfPermission(
                 getActivity(), Manifest.permission.ACCESS_FINE_LOCATION )
                 == PackageManager.PERMISSION_GRANTED ) {
-            mLocationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
-                    30 * DateUtils.SECOND_IN_MILLIS, 0.5f * GeoUtils.METERS_PER_STATUTE_MILE,
-                    this );
+            if ( mLocationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER ) ) {
+                mLocationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
+                        30 * DateUtils.SECOND_IN_MILLIS, 0.5f * GeoUtils.METERS_PER_STATUTE_MILE,
+                        this );
+                providerOk = true;
+            }
 
             SharedPreferences prefs =
                     PreferenceManager.getDefaultSharedPreferences( getActivity() );
             boolean useGps = prefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
-            if ( useGps ) {
+            if ( useGps && mLocationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
                 mLocationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
                         30 * DateUtils.SECOND_IN_MILLIS, 0.5f * GeoUtils.METERS_PER_STATUTE_MILE,
                         this );
+                providerOk = true;
+            }
+
+            if ( !providerOk ) {
+                setEmptyText( "Unable to show nearby facilities.\n"
+                        + "Location is not available on this device." );
+                setListShown( false );
+                setFragmentContentShown( true );
             }
         } else if ( !mPermissionDenied ) {
             if ( shouldShowRequestPermissionRationale(
                     Manifest.permission.ACCESS_FINE_LOCATION ) )
             {
-                Snackbar.make( getView(),
+                Snackbar.make( getActivityBase().getAppBar(),
                         "FlightIntel needs access to device's location.",
                         Snackbar.LENGTH_INDEFINITE )
                         .setAction( android.R.string.ok, new View.OnClickListener() {

@@ -21,16 +21,12 @@ package com.nadmm.airports;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 
 import com.nadmm.airports.utils.PagerAdapter;
 
-import java.util.HashMap;
-
 public class TabPagerActivityBase extends ActivityBase {
 
-    private HashMap<String, Fragment> mWxFragments = new HashMap<>();
     private int mCurrentFragmentIndex = -1;
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
@@ -65,20 +61,14 @@ public class TabPagerActivityBase extends ActivityBase {
         super.onPostCreate( savedInstanceState );
 
         mTabLayout.setupWithViewPager( mViewPager );
-
         mTabLayout.setOnTabSelectedListener( new TabLayout.OnTabSelectedListener() {
-
-            int mPosition = -1;
 
             @Override
             public void onTabSelected( TabLayout.Tab tab ) {
-                mPosition = tab.getPosition();
-                mViewPager.setCurrentItem( mPosition );
-                mCurrentFragmentIndex = mPosition;
+                mCurrentFragmentIndex = tab.getPosition();
+                mViewPager.setCurrentItem( mCurrentFragmentIndex );
                 enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
-                // Show the actionbar when a new page is selected
-                resetActionBarAutoHide();
-                autoShowOrHideActionBar( true );
+                showAppBar( true );
             }
 
             @Override
@@ -87,7 +77,7 @@ public class TabPagerActivityBase extends ActivityBase {
 
             @Override
             public void onTabReselected( TabLayout.Tab tab ) {
-                if ( mPosition != tab.getPosition() ) {
+                if ( mCurrentFragmentIndex != tab.getPosition() ) {
                     onTabSelected( tab );
                 }
             }
@@ -124,8 +114,7 @@ public class TabPagerActivityBase extends ActivityBase {
 
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
-        FragmentBase fragment = getCurrentFragment();
-        return fragment != null && fragment.canSwipeRefreshChildScrollUp();
+        return getCurrentFragment().canSwipeRefreshChildScrollUp();
     }
 
     public void addTab( String label, Class<?> clss, Bundle args ) {
@@ -133,11 +122,7 @@ public class TabPagerActivityBase extends ActivityBase {
     }
 
     private FragmentBase getCurrentFragment() {
-        return getFragmentAtPosition( mCurrentFragmentIndex );
-    }
-
-    protected FragmentBase getFragmentAtPosition( int position ) {
-        return (FragmentBase) mPagerAdapter.getItem( position );
+        return (FragmentBase) mPagerAdapter.getItem( mCurrentFragmentIndex );
     }
 
     protected int getInitialTabIndex() {

@@ -103,12 +103,6 @@ public abstract class ListFragmentBase extends FragmentBase {
         return ViewCompat.canScrollVertically( mListView, -1 );
     }
 
-    @Override
-    protected void applyContentTopClearance( int clearance ) {
-        mListView.setPadding( mListView.getPaddingLeft(), clearance,
-                mListView.getPaddingRight(), mListView.getPaddingBottom() );
-    }
-
     protected void setCursor( Cursor c ) {
         if ( getActivity() == null ) {
             // We may get called here after activity has detached
@@ -170,10 +164,5 @@ public abstract class ListFragmentBase extends FragmentBase {
     }
 
     abstract protected void onListItemClick( ListView l, View v, int position );
-
-    @Override
-    public void registerActionBarAutoHideView() {
-        getActivityBase().registerActionBarAutoHideListView( getListView() );
-    }
 
 }

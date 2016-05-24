@@ -20,9 +20,7 @@
 package com.nadmm.airports;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-
-import com.nadmm.airports.utils.UiUtils;
+import android.util.Log;
 
 public class FragmentActivityBase extends ActivityBase {
 
@@ -36,28 +34,11 @@ public class FragmentActivityBase extends ActivityBase {
     }
 
     @Override
-    protected void onPostCreate( Bundle savedInstanceState ) {
-        super.onPostCreate( savedInstanceState );
-
-        FragmentManager fm = getSupportFragmentManager();
-        fm.addOnBackStackChangedListener( new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
-                FragmentManager fm = getSupportFragmentManager();
-                mCurFragment = (FragmentBase) fm.findFragmentById( R.id.fragment_container );
-                enableDisableSwipeRefresh( mCurFragment.isRefreshable() );
-            }
-        } );
-
-        int actionBarSize = UiUtils.calculateActionBarSize( this );
-        setProgressBarTopWhenActionBarShown( actionBarSize );
-    }
-
-    @Override
     public void onFragmentStarted( FragmentBase fragment ) {
         super.onFragmentStarted( fragment );
 
         mCurFragment = fragment;
+        Log.d( "FragmentStarted", mCurFragment.getClass().getSimpleName() );
         enableDisableSwipeRefresh( mCurFragment.isRefreshable() );
     }
 

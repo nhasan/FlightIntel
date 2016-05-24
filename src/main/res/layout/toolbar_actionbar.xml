@@ -19,8 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
-<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/toolbar_actionbar"
-        style="@style/Widget.Flightintel.Toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?actionBarSize" />
+<app:android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/toolbar_actionbar"
+            style="@style/Widget.Flightintel.Toolbar"
+            app:layout_scrollFlags="scroll|enterAlways"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize" />

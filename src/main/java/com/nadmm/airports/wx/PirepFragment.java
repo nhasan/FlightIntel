@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,18 +86,9 @@ public class PirepFragment extends WxFragmentBase {
     public void onResume() {
         super.onResume();
 
-        getActivityBase().onFragmentStarted( this );
-
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         setBackgroundTask( new PirepDetailTask() ).execute( stationId );
-    }
-
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
-
-        getActivityBase().onFragmentStarted( this );
     }
 
     @Override

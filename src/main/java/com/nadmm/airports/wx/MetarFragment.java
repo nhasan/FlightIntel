@@ -94,13 +94,6 @@ public class MetarFragment extends WxFragmentBase {
     }
 
     @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
-
-        getActivityBase().onFragmentStarted( this );
-    }
-
-    @Override
     protected void handleBroadcast( Intent intent ) {
         if ( mLocation == null ) {
             // This was probably intended for wx list view

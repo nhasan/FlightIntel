@@ -37,12 +37,4 @@ public class NearbyWxActivity extends FragmentActivityBase {
         addFragment( NearbyWxFragment.class, args );
     }
 
-    @Override
-    public void onFragmentStarted( FragmentBase fragment ) {
-        super.onFragmentStarted( fragment );
-
-        ListView listView = ( (ListFragmentBase) fragment ).getListView();
-        registerActionBarAutoHideListView( listView );
-    }
-
 }

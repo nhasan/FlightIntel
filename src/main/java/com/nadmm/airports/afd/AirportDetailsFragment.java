@@ -102,7 +102,6 @@ public final class AirportDetailsFragment extends FragmentBase {
     private float mDeclination;
     private String mIcaoCode;
     private int mRadius;
-    private int mWxUpdates = 0;
     private String mHome;
     private String mSiteNumber;
 
@@ -142,7 +141,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        setActionBarTitle( "Airport Data", "" );
+        setActionBarTitle( "Airport Details", "" );
 
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );

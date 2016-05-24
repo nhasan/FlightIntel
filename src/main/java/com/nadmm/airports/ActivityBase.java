@@ -32,6 +32,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -55,13 +56,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.AbsListView;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -88,10 +86,8 @@ import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.MultiSwipeRefreshLayout;
-import com.nadmm.airports.views.ObservableScrollView;
 import com.nadmm.airports.wx.WxMainActivity;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -109,29 +105,15 @@ public class ActivityBase extends AppCompatActivity implements
 
     private Toolbar mActionBarToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-
-    // variables that control the Action Bar auto hide behavior (aka "quick recall")
-    private boolean mActionBarAutoHideEnabled = false;
-    private int mActionBarAutoHideSensivity = 0;
-    private int mActionBarAutoHideMinY = 0;
-    private int mActionBarAutoHideSignal = 0;
-    private boolean mActionBarShown = true;
+    private AppBarLayout mAppBar;
 
     private Handler mHandler;
-
-    private int mProgressBarTopWhenActionBarShown;
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private NavigationView mNavigationView;
 
-    // When set, these components will be shown/hidden in sync with the action bar
-    // to implement the "quick recall" effect (the Action Bar and the header views disappear
-    // when you scroll down a list, and reappear quickly when you scroll up).
-    private ArrayList<View> mHideableHeaderViews = new ArrayList<>();
-
-    private static final int HEADER_HIDE_ANIM_DURATION = 300;
-    private static final int NAVDRAWER_LAUNCH_DELAY = 300;
+    private static final int NAVDRAWER_LAUNCH_DELAY = 250;
 
     protected static final int NAVDRAWER_ITEM_INVALID = -1;
 
@@ -208,10 +190,7 @@ public class ActivityBase extends AppCompatActivity implements
 
         setupNavDrawer();
         trySetupSwipeRefresh();
-        updateSwipeRefreshProgressBarTop();
-
         enableDisableSwipeRefresh( false );
-        enableActionBarAutoHide();
 
         // Sync the toggle state after onRestoreInstanceState has occurred.
         if ( mDrawerToggle != null ) {
@@ -402,6 +381,7 @@ public class ActivityBase extends AppCompatActivity implements
 
     protected Toolbar getActionBarToolbar() {
         if ( mActionBarToolbar == null ) {
+            mAppBar = (AppBarLayout) findViewById( R.id.appbar );
             mActionBarToolbar = (Toolbar) findViewById( R.id.toolbar_actionbar );
             if ( mActionBarToolbar != null ) {
                 setSupportActionBar( mActionBarToolbar );
@@ -445,25 +425,6 @@ public class ActivityBase extends AppCompatActivity implements
         return false;
     }
 
-    protected void setProgressBarTopWhenActionBarShown( int progressBarTopWhenActionBarShown ) {
-        mProgressBarTopWhenActionBarShown = progressBarTopWhenActionBarShown;
-        updateSwipeRefreshProgressBarTop();
-    }
-
-    private void updateSwipeRefreshProgressBarTop() {
-        if ( mSwipeRefreshLayout == null ) {
-            return;
-        }
-
-        int progressBarStartMargin = getResources().getDimensionPixelSize(
-                R.dimen.swipe_refresh_progress_bar_start_margin );
-        int progressBarEndMargin = getResources().getDimensionPixelSize(
-                R.dimen.swipe_refresh_progress_bar_end_margin );
-        int top = mActionBarShown ? mProgressBarTopWhenActionBarShown : 0;
-        mSwipeRefreshLayout.setProgressViewOffset( false,
-                top + progressBarStartMargin, top + progressBarEndMargin );
-    }
-
     public void setRefreshing( boolean refreshing ) {
         if ( mSwipeRefreshLayout != null ) {
             mSwipeRefreshLayout.setRefreshing( refreshing );
@@ -471,7 +432,7 @@ public class ActivityBase extends AppCompatActivity implements
     }
 
     public boolean isRefreshing() {
-        return mSwipeRefreshLayout.isRefreshing();
+        return mSwipeRefreshLayout != null && mSwipeRefreshLayout.isRefreshing();
     }
 
     public void enableDisableSwipeRefresh( boolean enable ) {
@@ -480,156 +441,25 @@ public class ActivityBase extends AppCompatActivity implements
         }
     }
 
+    public AppBarLayout getAppBar() {
+        return mAppBar;
+    }
+
     protected void requestDataRefresh() {
     }
 
+    protected void showAppBar( boolean show ) {
+        if ( mAppBar != null ) {
+            mAppBar.setExpanded( show, true );
+        }
+    }
+
     public void onFragmentStarted( FragmentBase fragment ) {
-        // Action bar may be hidden when this fragment was attached so make sure it is visible
-        autoShowOrHideActionBar( true );
-        fragment.registerActionBarAutoHideView();
-
-        updateContentTopClearance( fragment );
-    }
-
-    private void updateContentTopClearance( FragmentBase fragment ) {
-        int topClearance = UiUtils.calculateActionBarSize( this );
-        if ( findViewById( R.id.sliding_tabs ) != null ) {
-            int tabbarClearance = getResources().getDimensionPixelSize( R.dimen.tabbar_height );
-            topClearance += tabbarClearance;
-        }
-        fragment.setContentTopClearance( topClearance );
-        setProgressBarTopWhenActionBarShown( topClearance );
-    }
-
-    public void registerActionBarAutoHideListView( final ListView listView ) {
-        listView.setOnScrollListener( new AbsListView.OnScrollListener() {
-            final int ITEMS_THRESHOLD = 2;
-            int lastFvi = 0;
-
-            @Override
-            public void onScrollStateChanged( AbsListView view, int scrollState ) {
-            }
-
-            @Override
-            public void onScroll( AbsListView view, int firstVisibleItem, int visibleItemCount,
-                                  int totalItemCount ) {
-                onMainContentScrolled( firstVisibleItem <= ITEMS_THRESHOLD ? 0 : Integer.MAX_VALUE,
-                        lastFvi - firstVisibleItem > 0 ? Integer.MIN_VALUE :
-                                lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE );
-                lastFvi = firstVisibleItem;
-            }
-        } );
-    }
-
-    public void registerActionBarAutoHideScrollView( final ObservableScrollView scrollView ) {
-        scrollView.setCallbacks( new ObservableScrollView.Callbacks() {
-            final int ITEM_SIZE = dpToPx( 56 );
-            final int ITEMS_THRESHOLD = 2;
-            int lastFvi = 0;
-
-            @Override
-            public void onScrollChanged( int l, int t, int oldl, int oldt ) {
-                int firstVisibleItem = t / ITEM_SIZE;
-                onMainContentScrolled( firstVisibleItem <= ITEMS_THRESHOLD ? 0 : Integer.MAX_VALUE,
-                        lastFvi - firstVisibleItem > 0 ? Integer.MIN_VALUE :
-                                lastFvi == firstVisibleItem ? 0 : Integer.MAX_VALUE );
-                lastFvi = firstVisibleItem;
-            }
-        } );
-    }
-
-    protected void registerHideableHeaderView( View hideableHeaderView, int offset ) {
-        if ( !mHideableHeaderViews.contains( hideableHeaderView ) ) {
-            hideableHeaderView.setTag( R.id.AUTOHIDE_OFFSET, offset );
-            mHideableHeaderViews.add( hideableHeaderView );
-        }
-    }
-
-    protected void autoShowOrHideActionBar( boolean show ) {
-        if ( show == mActionBarShown ) {
-            return;
-        }
-
-        mActionBarShown = show;
-        onActionBarAutoShowOrHide( show );
-    }
-
-    /**
-     * Initializes the Action Bar auto-hide (aka Quick Recall) effect.
-     */
-    private void initActionBarAutoHide() {
-        mActionBarAutoHideEnabled = true;
-        mActionBarAutoHideMinY = getResources().getDimensionPixelSize(
-                R.dimen.action_bar_auto_hide_min_y);
-        mActionBarAutoHideSensivity = getResources().getDimensionPixelSize(
-                R.dimen.action_bar_auto_hide_sensivity);
-    }
-
-    protected void enableActionBarAutoHide() {
-        enableActionBarAutoHide( 0 );
-    }
-    protected void enableActionBarAutoHide( int extraOffset ) {
-        View header = findViewById( R.id.headerbar );
-        if ( header != null ) {
-            registerHideableHeaderView( header, UiUtils.calculateActionBarSize( this )+extraOffset );
-            initActionBarAutoHide();
-        }
-    }
-
-    /**
-     * Indicates that the main content has scrolled (for the purposes of showing/hiding
-     * the action bar for the "action bar auto hide" effect). currentY and deltaY may be exact
-     * (if the underlying view supports it) or may be approximate indications:
-     * deltaY may be INT_MAX to mean "scrolled forward indeterminately" and INT_MIN to mean
-     * "scrolled backward indeterminately".  currentY may be 0 to mean "somewhere close to the
-     * start of the list" and INT_MAX to mean "we don't know, but not at the start of the list"
-     */
-    private void onMainContentScrolled(int currentY, int deltaY) {
-        if (deltaY > mActionBarAutoHideSensivity) {
-            deltaY = mActionBarAutoHideSensivity;
-        } else if (deltaY < -mActionBarAutoHideSensivity) {
-            deltaY = -mActionBarAutoHideSensivity;
-        }
-
-        if (Math.signum(deltaY) * Math.signum(mActionBarAutoHideSignal) < 0) {
-            // deltaY is a motion opposite to the accumulated signal, so reset signal
-            mActionBarAutoHideSignal = deltaY;
-        } else {
-            // add to accumulated signal
-            mActionBarAutoHideSignal += deltaY;
-        }
-
-        boolean shouldShow = currentY < mActionBarAutoHideMinY ||
-                (mActionBarAutoHideSignal <= -mActionBarAutoHideSensivity );
-        autoShowOrHideActionBar( shouldShow );
-    }
-
-    protected void resetActionBarAutoHide() {
-        mActionBarAutoHideSignal = 0;
-    }
-
-    protected void onActionBarAutoShowOrHide( boolean shown ) {
-        for ( View view : mHideableHeaderViews ) {
-            if ( shown ) {
-                view.animate()
-                        .translationY( 0 )
-                        .setDuration( HEADER_HIDE_ANIM_DURATION )
-                        .setInterpolator( new DecelerateInterpolator() );
-            } else {
-                int offset = (int)view.getTag( R.id.AUTOHIDE_OFFSET );
-                view.animate()
-                        .translationY( -offset )
-                        .setDuration( HEADER_HIDE_ANIM_DURATION )
-                        .setInterpolator( new DecelerateInterpolator() );
-            }
-        }
+        showAppBar( true );
     }
 
     // Subclasses can override this for custom behavior
     protected void onNavDrawerStateChanged( boolean isOpen, boolean isAnimating ) {
-        if ( mActionBarAutoHideEnabled && isOpen ) {
-            autoShowOrHideActionBar( true );
-        }
     }
 
     protected CursorAsyncTask setBackgroundTask( CursorAsyncTask task ) {
@@ -807,7 +637,8 @@ public class ActivityBase extends AppCompatActivity implements
         Cursor c = builder.query( db, new String[]{ "*" }, Airports.SITE_NUMBER + "=?",
                 new String[]{ siteNumber }, null, null, null, null );
         if ( !c.moveToFirst() ) {
-            return null;
+            c.close();
+            c = null;
         }
 
         return c;

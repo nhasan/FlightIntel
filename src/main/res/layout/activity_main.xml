@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,14 +29,23 @@
         android:layout_height="match_parent">
 
     <!-- Main layout -->
-    <com.nadmm.airports.views.DrawShadowFrameLayout
+    <android.support.design.widget.CoordinatorLayout
             android:clipChildren="false"
-            app:shadowDrawable="@drawable/header_shadow"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+        <android.support.design.widget.AppBarLayout
+                android:id="@+id/appbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/toolbar_actionbar" />
+        </android.support.design.widget.AppBarLayout>
+
         <com.nadmm.airports.views.MultiSwipeRefreshLayout
                 android:id="@+id/swipe_refresh_layout"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -48,16 +57,7 @@
                     android:layout_height="match_parent" />
         </com.nadmm.airports.views.MultiSwipeRefreshLayout>
 
-        <LinearLayout style="@style/HeaderBar"
-                android:id="@+id/headerbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            <include layout="@layout/toolbar_actionbar" />
-        </LinearLayout>
-
-    </com.nadmm.airports.views.DrawShadowFrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
     <!-- The navigation drawer -->
     <include layout="@layout/navdrawer" />

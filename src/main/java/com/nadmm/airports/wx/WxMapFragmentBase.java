@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -132,13 +132,6 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
         super.onResume();
 
         mPendingRow = null;
-    }
-
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
-
-        getActivityBase().onFragmentStarted( this );
     }
 
     @Override

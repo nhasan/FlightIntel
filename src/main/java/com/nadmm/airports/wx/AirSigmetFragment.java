@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Wxs;
-import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
@@ -85,13 +85,6 @@ public class AirSigmetFragment extends WxFragmentBase {
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         setBackgroundTask( new AirSigmetTask() ).execute( stationId );
-    }
-
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
-
-        getActivityBase().onFragmentStarted( this );
     }
 
     @Override
