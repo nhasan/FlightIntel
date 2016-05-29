@@ -83,4 +83,13 @@
     <screenName name="com.nadmm.airports.scratchpad.ScratchPadActivity" >
         Scratch Pad
     </screenName>
+    <screenName name="com.nadmm.airports.data.DownloadActivity" >
+        Downloads
+    </screenName>
+    <screenName name="com.nadmm.airports.SearchActivity" >
+        Search
+    </screenName>
+    <screenName name="com.nadmm.airports.donate.DonateActivity" >
+        Donations
+    </screenName>
 </resources>
