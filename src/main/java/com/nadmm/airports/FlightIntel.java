@@ -21,6 +21,7 @@ package com.nadmm.airports;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
@@ -34,6 +35,7 @@ import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
+import com.nadmm.airports.wx.WxMainActivity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -78,7 +80,14 @@ public class FlightIntel extends ActivityBase {
                 }
             }
 
-            intent = new Intent( this, AfdMainActivity.class );
+            Resources res = getResources();
+            String afd = res.getString( R.string.afd );
+            String home = prefs.getString( PreferencesActivity.KEY_HOME_SCREEN, afd );
+            if ( home.equals( afd ) ) {
+                intent = new Intent( this, AfdMainActivity.class );
+            } else {
+                intent = new Intent( this, WxMainActivity.class );
+            }
         }
 
         if ( msg != null ) {

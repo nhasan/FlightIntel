@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,13 +29,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.nadmm.airports.utils.UiUtils;
 
 public class PreferencesActivity extends FragmentActivityBase {
 
@@ -128,6 +123,7 @@ public class PreferencesActivity extends FragmentActivityBase {
             // Initialize the preference screen
             onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
             onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_AIRPORT );
+            onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_SCREEN );
 
             // Set up a listener whenever a key changes
             mSharedPrefs.registerOnSharedPreferenceChangeListener( this );
@@ -138,15 +134,6 @@ public class PreferencesActivity extends FragmentActivityBase {
             super.onPause();
             // Unregister the listener whenever a key changes
             mSharedPrefs.unregisterOnSharedPreferenceChangeListener( this );
-        }
-
-        @Override
-        public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
-            View view = super.onCreateView( inflater, container, savedInstanceState );
-            int actionbarSize = UiUtils.calculateActionBarSize( getActivity() );
-            view.setPadding( view.getPaddingLeft(), actionbarSize,
-                    view.getPaddingRight(), view.getPaddingBottom() );
-            return view;
         }
 
         @SuppressWarnings("deprecation")
@@ -161,8 +148,11 @@ public class PreferencesActivity extends FragmentActivityBase {
                 if ( code.length() > 0 ) {
                     pref.setSummary( "Home airport set to "+code );
                 } else {
-                    pref.setSummary( "Set the code for your home airport" );
+                    pref.setSummary( "Home airport is not set" );
                 }
+            } else if ( key.equals( KEY_HOME_SCREEN ) ) {
+                String code = mSharedPrefs.getString( KEY_HOME_SCREEN, "" );
+                pref.setSummary( "Show "+code+" screen on startup" );
             }
         }
 
