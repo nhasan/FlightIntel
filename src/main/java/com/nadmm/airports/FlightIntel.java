@@ -23,19 +23,20 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 
 import com.nadmm.airports.afd.AfdMainActivity;
-import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Catalog;
 import com.nadmm.airports.data.DownloadActivity;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 
 public class FlightIntel extends ActivityBase {
 
@@ -43,75 +44,84 @@ public class FlightIntel extends ActivityBase {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        Intent intent;
-        PreferenceManager.setDefaultValues( this, R.xml.preferences, false );
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-
-        // Check if user has agreed with the disclaimer
-        boolean agreed = prefs.getBoolean( PreferencesActivity.KEY_DISCLAIMER_AGREED, false );
-        intent = !agreed? new Intent( this, DisclaimerActivity.class ) : null;
-        if ( intent == null ) {
-            // User has already agreed to the disclaimer, check data validity
-            intent = checkData();
-            if ( intent == null ) {
-                // Data is good, start normally
-                intent = new Intent( this, AfdMainActivity.class );
-            }
-        }
-
-        startActivity( intent );
-        finish();
+        new LaunchTask().execute();
     }
 
-    private Intent checkData() {
-        if ( !SystemUtils.isExternalStorageAvailable() ) {
-            return new Intent( this, ExternalStorageActivity.class );
-        }
-
+    private void startMainActivity( ArrayList<Date> installed ) {
         String msg = null;
-        HashSet<String> installed = new HashSet<>();
 
-        Cursor c = getDbManager().getCurrentFromCatalog();
-        if ( c.moveToFirst() ) {
-            Date now = new Date();
-            do {
-                String s = c.getString( c.getColumnIndex( DatabaseManager.Catalog.END_DATE ) );
-                Date end = TimeUtils.parse3339( s );
-                if ( end == null ) {
-                    msg = "Database is corrupted. Please delete and re-install";
-                    break;
-                }
-
-                if ( msg == null && !now.before( end ) ) {
-                    msg = "You are using expired data";
-                }
-
-                // Try to make sure we can open the databases
-                String type = c.getString( c.getColumnIndex( DatabaseManager.Catalog.TYPE ) );
-                SQLiteDatabase db = getDbManager().getDatabase( type );
-                if ( db == null ) {
-                    msg = "Database is corrupted. Please delete and re-install";
-                    break;
-                }
-
-                installed.add( type );
-            } while ( c.moveToNext() );
-        }
-        c.close();
-
-        Intent intent = null;
-        if ( installed.size() < 4 ) {
-            // This should really happen only on first install
-            if ( msg == null ) {
-                msg = "Please download the required database";
+        PreferenceManager.setDefaultValues( this, R.xml.preferences, false );
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
+        // Check if user has agreed with the disclaimer
+        boolean agreed = prefs.getBoolean( PreferencesActivity.KEY_DISCLAIMER_AGREED, false );
+        Intent intent = !agreed? new Intent( this, DisclaimerActivity.class ) : null;
+        if ( intent == null ) {
+            if ( !SystemUtils.isExternalStorageAvailable() ) {
+                intent = new Intent( this, ExternalStorageActivity.class );
             }
-            intent = new Intent( this, DownloadActivity.class );
-            intent.putExtra( "MSG", msg );
-        } else if ( msg != null ) {
+        }
+
+        if ( intent == null ) {
+            if ( installed.size() < 4 ) {
+                // This should really happen only on first install
+                msg = "Please download the required database";
+                intent = new Intent( this, DownloadActivity.class );
+            }
+        }
+
+        if ( intent == null ) {
+            Date now = new Date();
+            for ( Date end : installed ) {
+                if ( !now.before( end ) ) {
+                    msg = "You are using expired data";
+                    break;
+                }
+            }
+
+            intent = new Intent( this, AfdMainActivity.class );
+        }
+
+        if ( msg != null ) {
             UiUtils.showToast( this, msg );
         }
 
-        return intent;
+        startActivity( intent );
+
+        finish();
+    }
+
+    private final class LaunchTask extends AsyncTask<Void, Void, ArrayList<Date>> {
+        @Override
+        protected ArrayList<Date> doInBackground( Void... params ) {
+            Cursor c = getDbManager().getCurrentFromCatalog();
+            ArrayList<Date> installed = new ArrayList<>();
+
+            if ( c.moveToFirst() ) {
+                do {
+                    String s = c.getString( c.getColumnIndex( Catalog.END_DATE ) );
+                    Date end = TimeUtils.parse3339( s );
+                    if ( end == null ) {
+                        break;
+                    }
+
+                    // Try to make sure we can open the databases
+                    String type = c.getString( c.getColumnIndex( Catalog.TYPE ) );
+                    SQLiteDatabase db = getDbManager().getDatabase( type );
+                    if ( db == null ) {
+                        break;
+                    }
+
+                    installed.add( end );
+                } while ( c.moveToNext() );
+            }
+            c.close();
+
+            return installed;
+        }
+
+        protected void onPostExecute( ArrayList<Date> result ) {
+            startMainActivity( result );
+        }
     }
 
 }
