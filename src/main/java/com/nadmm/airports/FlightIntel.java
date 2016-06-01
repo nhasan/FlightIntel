@@ -19,6 +19,7 @@
 
 package com.nadmm.airports;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -34,7 +35,6 @@ import com.nadmm.airports.data.DownloadActivity;
 import com.nadmm.airports.utils.ExternalStorageActivity;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.TimeUtils;
-import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.wx.WxMainActivity;
 
 import java.util.ArrayList;
@@ -49,59 +49,9 @@ public class FlightIntel extends ActivityBase {
         new LaunchTask().execute();
     }
 
-    private void startMainActivity( ArrayList<Date> installed ) {
-        String msg = null;
-
-        PreferenceManager.setDefaultValues( this, R.xml.preferences, false );
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-        // Check if user has agreed with the disclaimer
-        boolean agreed = prefs.getBoolean( PreferencesActivity.KEY_DISCLAIMER_AGREED, false );
-        Intent intent = !agreed? new Intent( this, DisclaimerActivity.class ) : null;
-        if ( intent == null ) {
-            if ( !SystemUtils.isExternalStorageAvailable() ) {
-                intent = new Intent( this, ExternalStorageActivity.class );
-            }
-        }
-
-        if ( intent == null ) {
-            if ( installed.size() < 4 ) {
-                // This should really happen only on first install
-                msg = "Please download the required database";
-                intent = new Intent( this, DownloadActivity.class );
-            }
-        }
-
-        if ( intent == null ) {
-            Date now = new Date();
-            for ( Date end : installed ) {
-                if ( !now.before( end ) ) {
-                    msg = "You are using expired data";
-                    break;
-                }
-            }
-
-            Resources res = getResources();
-            String afd = res.getString( R.string.afd );
-            String home = prefs.getString( PreferencesActivity.KEY_HOME_SCREEN, afd );
-            if ( home.equals( afd ) ) {
-                intent = new Intent( this, AfdMainActivity.class );
-            } else {
-                intent = new Intent( this, WxMainActivity.class );
-            }
-        }
-
-        if ( msg != null ) {
-            UiUtils.showToast( this, msg );
-        }
-
-        startActivity( intent );
-
-        finish();
-    }
-
-    private final class LaunchTask extends AsyncTask<Void, Void, ArrayList<Date>> {
+    private final class LaunchTask extends AsyncTask<Void, Void, Intent> {
         @Override
-        protected ArrayList<Date> doInBackground( Void... params ) {
+        protected Intent doInBackground( Void... params ) {
             Cursor c = getDbManager().getCurrentFromCatalog();
             ArrayList<Date> installed = new ArrayList<>();
 
@@ -125,11 +75,57 @@ public class FlightIntel extends ActivityBase {
             }
             c.close();
 
-            return installed;
+            String msg = null;
+            Context context = FlightIntel.this;
+
+            PreferenceManager.setDefaultValues( context, R.xml.preferences, false );
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( context );
+            // Check if user has agreed with the disclaimer
+            boolean agreed = prefs.getBoolean( PreferencesActivity.KEY_DISCLAIMER_AGREED, false );
+            Intent intent = !agreed? new Intent( context, DisclaimerActivity.class ) : null;
+            if ( intent == null ) {
+                if ( !SystemUtils.isExternalStorageAvailable() ) {
+                    intent = new Intent( context, ExternalStorageActivity.class );
+                }
+            }
+
+            if ( intent == null ) {
+                if ( installed.size() < 4 ) {
+                    // This should really happen only on first install
+                    msg = "Please download the required database";
+                    intent = new Intent( context, DownloadActivity.class );
+                }
+            }
+
+            if ( intent == null ) {
+                Date now = new Date();
+                for ( Date end : installed ) {
+                    if ( !now.before( end ) ) {
+                        msg = "You are using expired data";
+                        break;
+                    }
+                }
+
+                Resources res = getResources();
+                String afd = res.getString( R.string.afd );
+                String home = prefs.getString( PreferencesActivity.KEY_HOME_SCREEN, afd );
+                if ( home.equals( afd ) ) {
+                    intent = new Intent( context, AfdMainActivity.class );
+                } else {
+                    intent = new Intent( context, WxMainActivity.class );
+                }
+            }
+
+            if ( msg != null ) {
+                intent.putExtra( EXTRA_MSG, msg );
+            }
+
+            return intent;
         }
 
-        protected void onPostExecute( ArrayList<Date> result ) {
-            startMainActivity( result );
+        protected void onPostExecute( Intent result ) {
+            startActivity( result );
+            finish();
         }
     }
 
