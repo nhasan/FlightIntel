@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,12 +32,6 @@ public final class DownloadActivity extends FragmentActivityBase {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
-
-        Intent intent = getIntent();
-        if ( intent.hasExtra( "MSG" ) ) {
-            String msg = intent.getStringExtra( "MSG" );
-            Toast.makeText( this, msg, Toast.LENGTH_LONG ).show();
-        }
 
         Bundle args = getIntent().getExtras();
         addFragment( DownloadFragment.class, args );
