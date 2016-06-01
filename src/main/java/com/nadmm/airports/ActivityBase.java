@@ -114,8 +114,8 @@ public class ActivityBase extends AppCompatActivity implements
     private NavigationView mNavigationView;
 
     private static final int NAVDRAWER_LAUNCH_DELAY = 250;
-
     protected static final int NAVDRAWER_ITEM_INVALID = -1;
+    protected static final String EXTRA_MSG = "MSG";
 
     private FragmentManager.OnBackStackChangedListener mBackStackChangedListener =
             new FragmentManager.OnBackStackChangedListener() {
@@ -158,6 +158,12 @@ public class ActivityBase extends AppCompatActivity implements
             db.close();
         }
 
+        Intent intent = getIntent();
+        if ( intent.hasExtra( EXTRA_MSG ) ) {
+            String msg = intent.getStringExtra( EXTRA_MSG );
+            Toast.makeText( this, msg, Toast.LENGTH_LONG ).show();
+        }
+
         // Enable Google Analytics
         ( (Application) getApplication() ).getAnalyticsTracker();
     }
@@ -177,6 +183,10 @@ public class ActivityBase extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         registerReceiver( mExternalStorageReceiver, mFilter );
+
+        if ( mNavigationView != null ) {
+            mNavigationView.setCheckedItem( getSelfNavDrawerItem() );
+        }
 
         // Whenever the fragment back stack changes, we may need to update the
         // action bar toggle: only top level screens show the hamburger-like icon, inner
@@ -296,8 +306,6 @@ public class ActivityBase extends AppCompatActivity implements
                     return false;
                 }
             } );
-        MenuItem item = mNavigationView.getMenu().findItem( selfItem );
-        item.setChecked( true );
     }
 
     protected void updateDrawerToggle() {
@@ -791,6 +799,7 @@ public class ActivityBase extends AppCompatActivity implements
         MenuInflater inflater = getMenuInflater();
         inflater.inflate( R.menu.mainmenu, menu );
 
+        // Settings item should be visible in the menu if not using Nav Drawer
         MenuItem settingsItem = menu.findItem( R.id.menu_settings );
         settingsItem.setVisible( getSelfNavDrawerItem() == NAVDRAWER_ITEM_INVALID );
 
