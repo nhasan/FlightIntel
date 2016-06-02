@@ -30,7 +30,6 @@
     <dimen name="label_padding">4dip</dimen>
     <dimen name="item_spacing">8dip</dimen>
     <dimen name="list_item_height">48dip</dimen>
-    <dimen name="bottom_margin_listview">?actionBarSize</dimen>
 
     <dimen name="action_bar_auto_hide_min_y">64dp</dimen>
     <dimen name="action_bar_auto_hide_sensivity">16dp</dimen>
