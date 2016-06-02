@@ -23,5 +23,6 @@
     <style name="Platform.Theme.FlightIntel" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="listview_margin_bottom">0dip</item>
     </style>
 </resources>

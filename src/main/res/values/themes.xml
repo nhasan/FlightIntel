@@ -22,6 +22,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="Platform.Theme.FlightIntel" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="listview_margin_bottom">?actionBarSize</item>
     </style>
 
     <style name="Theme.FlightIntel" parent="Platform.Theme.FlightIntel">
@@ -60,5 +61,4 @@
     <style name="Widget.FlightIntel.SearchView" parent="Widget.AppCompat.SearchView">
         <item name="searchIcon">@null</item>
     </style>
-
 </resources>
