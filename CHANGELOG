@@ -1,3 +1,11 @@
+v6.3.3 (6/2/2016)
+==================
+* Many enhancements to Communications screen
+*   Show ATC operating hours
+*   Show all available frequencies
+*   Show phone numbers for all towered airports
+* Other minor enhancements and bug fixes
+
 v6.2.1 (4/24/2016)
 ==================
 * Fix issues with database downloads for devices running Android version prior to 4.3
