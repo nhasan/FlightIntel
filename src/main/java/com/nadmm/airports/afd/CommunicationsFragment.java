@@ -279,10 +279,10 @@ public final class CommunicationsFragment extends FragmentBase {
     }
 
     protected void showAtcHours( Cursor[] result ) {
-        HashMap<String, String> hoursMap = new HashMap<>();
+        TreeMap<String, String> hoursMap = new TreeMap<>();
 
         Cursor twr2 = result[ 13 ];
-        if ( twr2 != null && twr2.moveToFirst() ) {
+        if ( twr2.moveToFirst() ) {
             do {
                 String primaryAppHours = twr2.getString(
                         twr2.getColumnIndex( Tower2.PRIMARY_APPROACH_HOURS ) );
@@ -431,7 +431,7 @@ public final class CommunicationsFragment extends FragmentBase {
         }
 
         Cursor twr4 = result[ 14 ];
-        if ( twr4 != null && twr4.moveToFirst() ) {
+        if ( twr4.moveToFirst() ) {
             String services = "";
             do {
                 if ( !services.isEmpty() ) {
@@ -534,21 +534,13 @@ public final class CommunicationsFragment extends FragmentBase {
 
             Cursor twr1 = cursors[ 1 ];
             if ( twr1.moveToFirst() ) {
-                String apchName;
-                try {
-                    apchName = twr1.getString( twr1.getColumnIndex(
-                            Tower1.RADIO_CALL_APCH_PRIMARY ) );
-                } catch ( Exception e ) {
-                    apchName = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_APCH ) );
-                }
+                String apchName = twr1.getString( twr1.getColumnIndex(
+                        Tower1.RADIO_CALL_APCH_PRIMARY ) );
                 String[] apchId = DataUtils.getAtcFacilityId( apchName );
                 if ( apchId == null ) {
-                    try {
-                        apchName = twr1.getString( twr1.getColumnIndex(
-                                Tower1.RADIO_CALL_APCH_SECONDARY ) );
-                        apchId = DataUtils.getAtcFacilityId( apchName );
-                    } catch ( Exception e ) {
-                    }
+                    apchName = twr1.getString( twr1.getColumnIndex(
+                            Tower1.RADIO_CALL_APCH_SECONDARY ) );
+                    apchId = DataUtils.getAtcFacilityId( apchName );
                 }
                 if ( apchId != null ) {
                     builder = new SQLiteQueryBuilder();
@@ -559,19 +551,13 @@ public final class CommunicationsFragment extends FragmentBase {
                     cursors[ 9 ] = c;
                 }
 
-                String depName;
-                try {
-                    depName = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP_PRIMARY ) );
-                } catch ( Exception e ) {
-                    depName = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP ) );
-                }
+                String depName = twr1.getString( twr1.getColumnIndex(
+                        Tower1.RADIO_CALL_DEP_PRIMARY ) );
                 String[] depId = DataUtils.getAtcFacilityId( depName );
                 if ( depId == null ) {
-                    try {
-                        depName = twr1.getString( twr1.getColumnIndex( Tower1.RADIO_CALL_DEP_SECONDARY ) );
-                        depId = DataUtils.getAtcFacilityId( depName );
-                    } catch ( Exception e ) {
-                    }
+                    depName = twr1.getString( twr1.getColumnIndex(
+                            Tower1.RADIO_CALL_DEP_SECONDARY ) );
+                    depId = DataUtils.getAtcFacilityId( depName );
                 }
                 if ( depId != null ) {
                     builder = new SQLiteQueryBuilder();
@@ -597,25 +583,19 @@ public final class CommunicationsFragment extends FragmentBase {
                     new String[] { faaCode }, null, null, Tower9.ATIS_SERIAL_NO, null );
             cursors[ 12 ] = c;
 
-            try {
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Tower2.TABLE_NAME );
-                c = builder.query( db, new String[]{ "*" },
-                        Tower2.FACILITY_ID + "=?",
-                        new String[]{ faaCode }, null, null, null, null );
-                cursors[ 13 ] = c;
-            } catch ( Exception e ) {
-            }
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Tower2.TABLE_NAME );
+            c = builder.query( db, new String[]{ "*" },
+                    Tower2.FACILITY_ID + "=?",
+                    new String[]{ faaCode }, null, null, null, null );
+            cursors[ 13 ] = c;
 
-            try {
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Tower4.TABLE_NAME );
-                c = builder.query( db, new String[]{ "*" },
-                        Tower4.FACILITY_ID + "=?",
-                        new String[]{ faaCode }, null, null, null, null );
-                cursors[ 14 ] = c;
-            } catch ( Exception e ) {
-            }
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Tower4.TABLE_NAME );
+            c = builder.query( db, new String[]{ "*" },
+                    Tower4.FACILITY_ID + "=?",
+                    new String[]{ faaCode }, null, null, null, null );
+            cursors[ 14 ] = c;
 
             return cursors;
         }
