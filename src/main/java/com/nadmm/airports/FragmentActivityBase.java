@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 package com.nadmm.airports;
 
 import android.os.Bundle;
-import android.util.Log;
 
 public class FragmentActivityBase extends ActivityBase {
 
@@ -38,7 +37,6 @@ public class FragmentActivityBase extends ActivityBase {
         super.onFragmentStarted( fragment );
 
         mCurFragment = fragment;
-        Log.d( "FragmentStarted", mCurFragment.getClass().getSimpleName() );
         enableDisableSwipeRefresh( mCurFragment.isRefreshable() );
     }
 

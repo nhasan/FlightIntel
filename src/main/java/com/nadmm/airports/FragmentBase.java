@@ -27,11 +27,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -154,10 +152,8 @@ public class FragmentBase extends Fragment implements IRefreshable {
 
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
-        boolean ret = mTopScrollView != null
+        return mTopScrollView != null
                 && ViewCompat.canScrollVertically( mTopScrollView, -1 );
-        Log.d( "canChildScrollUp", getClass().getSimpleName()+"-"+ret );
-        return ret;
     }
 
     protected boolean isRefreshing() {
