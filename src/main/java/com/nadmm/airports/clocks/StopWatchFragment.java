@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ import com.nadmm.airports.clocks.StopWatchService.OnTickHandler;
 import com.nadmm.airports.clocks.StopWatchService.StopWatchBinder;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class StopWatchFragment extends FragmentBase implements OnTickHandler {
 
@@ -106,7 +107,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     public void onPause() {
         super.onPause();
 
-        getView().setKeepScreenOn( false );
+        setKeepScreenOn( false );
         getActivity().unbindService( mConnection );
         mHandler.removeCallbacks( mBlink );
     }
@@ -151,7 +152,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     protected void actionPressed() {
         if ( !mService.isRunning() ) {
             mService.startTimimg();
-            getView().setKeepScreenOn( true );
+            setKeepScreenOn( true );
         } else {
             mService.stopTimimg();
         }
@@ -159,7 +160,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     }
 
     protected void resetPressed() {
-        getView().setKeepScreenOn( false );
+        setKeepScreenOn( false );
         mService.reset();
         updateUiState();
     }
@@ -174,13 +175,20 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
         showElapsedTime();
     }
 
+    protected void setKeepScreenOn( boolean keepScreenOn ) {
+        if ( getView() != null ) {
+            getView().setKeepScreenOn( keepScreenOn );
+        }
+    }
+
     protected void blink() {
         mHandler.postDelayed( mBlink, BLINK_DELAY );
-        boolean visible = ( mTimeSeconds.getVisibility()==View.VISIBLE );
-        mTimeMinutes.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
-        mTimeColon.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
-        mTimeSeconds.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
-        mTimeTenths.setVisibility( visible? View.INVISIBLE : View.VISIBLE );
+        int visible = ( mTimeSeconds.getVisibility()==View.VISIBLE )?
+                View.INVISIBLE : View.VISIBLE;
+        mTimeMinutes.setVisibility( visible );
+        mTimeColon.setVisibility( visible );
+        mTimeSeconds.setVisibility( visible );
+        mTimeTenths.setVisibility( visible );
     }
 
     protected void startBlink() {
@@ -240,7 +248,6 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
     protected void showLegs() {
         ArrayList<Long> legsList = mService.getLegs();
         int size = legsList.size();
-        View parent = findViewById( R.id.legs_view_parent );
 
         if ( size > 0 ) {
             int count = mLegsLayout.getChildCount();
@@ -249,10 +256,10 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
                 long prev = count==0? 0 : legsList.get( count-1 );
                 addLeg( ++count, leg, prev );
             }
-            parent.setVisibility( View.VISIBLE );
+            mLegsLayout.setVisibility( View.VISIBLE );
         } else {
             mLegsLayout.removeAllViews();
-            parent.setVisibility( View.GONE );
+            mLegsLayout.setVisibility( View.GONE );
         }
     }
 
@@ -260,7 +267,7 @@ public class StopWatchFragment extends FragmentBase implements OnTickHandler {
         long delta = leg-prev;
         View view = inflate( R.layout.leg_item_view );
         TextView tv = (TextView) view.findViewById( R.id.leg_label );
-        tv.setText( String.format( "Leg %d", count ) );
+        tv.setText( String.format( Locale.US, "Leg %d", count ) );
         tv = (TextView) view.findViewById( R.id.leg_delta );
         tv.setText( formatElapsedTime( delta ) );
         tv = (TextView) view.findViewById( R.id.leg_total );
