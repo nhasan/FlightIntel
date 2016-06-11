@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
     public void onPause() {
         super.onPause();
 
-        getView().setKeepScreenOn( false );
+        setKeepScreenOn( false );
         Activity activity = getActivity();
         activity.unbindService( mConnection );
         stopBlink();
@@ -237,7 +237,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
                 mLastMillis = mRemainMillis;
             }
             mService.startCountDown( mRemainMillis );
-            getView().setKeepScreenOn( true );
+            setKeepScreenOn( true );
         } else {
             mService.stopCountDown();
         }
@@ -248,7 +248,7 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
         if ( mMode == COUNTDOWN_MODE ) {
             mService.resetCountDown();
             mRemainMillis = mLastMillis;
-            getView().setKeepScreenOn( false );
+            setKeepScreenOn( false );
         } else {
             mRemainMillis = 0;
         }
@@ -256,10 +256,16 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
     }
 
     protected void restartPressed() {
-        getView().setKeepScreenOn( false );
+        setKeepScreenOn( false );
         mRemainMillis = mLastMillis;
         mService.startCountDown( mRemainMillis );
         updateUiState();
+    }
+
+    protected void setKeepScreenOn( boolean keepScreenOn ) {
+        if ( getView() != null ) {
+            getView().setKeepScreenOn( keepScreenOn );
+        }
     }
 
     protected void startBlink() {
