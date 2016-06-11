@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.wx;
@@ -138,7 +138,7 @@ public class Pirep implements Serializable {
         ArrayList<WxSymbol> wxList;
         ArrayList<TurbulenceCondition> turbulenceConditions;
         ArrayList<IcingCondition> icingConditions;
-    
+
         public PirepEntry() {
             isValid = false;
             receiptTime = 0;
@@ -153,11 +153,11 @@ public class Pirep implements Serializable {
             windDirDegrees = Integer.MAX_VALUE;
             windSpeedKnots = Integer.MAX_VALUE;
             vertGustKnots = Integer.MAX_VALUE;
-            flags = new ArrayList<Flags>();
-            skyConditions = new ArrayList<SkyCondition>();
-            wxList = new ArrayList<WxSymbol>();
-            turbulenceConditions = new ArrayList<TurbulenceCondition>();
-            icingConditions = new ArrayList<IcingCondition>();
+            flags = new ArrayList<>();
+            skyConditions = new ArrayList<>();
+            wxList = new ArrayList<>();
+            turbulenceConditions = new ArrayList<>();
+            icingConditions = new ArrayList<>();
         }
     }
 
@@ -166,7 +166,7 @@ public class Pirep implements Serializable {
 
     public Pirep() {
         fetchTime = 0;
-        entries = new ArrayList<PirepEntry>();
+        entries = new ArrayList<>();
     }
 
 }
