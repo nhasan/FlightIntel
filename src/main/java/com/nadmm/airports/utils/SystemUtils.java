@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ public class SystemUtils {
         Intent intent = new Intent( Intent.ACTION_VIEW );
         intent.setType( mimeType );
         List<ResolveInfo> list = pm.queryIntentActivities( intent,
-                PackageManager.MATCH_ALL );
+                PackageManager.MATCH_DEFAULT_ONLY );
         return !list.isEmpty();
     }
 
