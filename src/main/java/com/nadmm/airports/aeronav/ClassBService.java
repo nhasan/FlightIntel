@@ -49,7 +49,7 @@ public class ClassBService extends AeroNavService {
     public void onCreate() {
         super.onCreate();
 
-        cleanupCache( getDataDir(), DateUtils.DAY_IN_MILLIS );
+        cleanupCache( getServiceDataDir(), DateUtils.DAY_IN_MILLIS );
     }
 
     private void cleanupCache( File dir, long maxAge ) {
@@ -76,7 +76,7 @@ public class ClassBService extends AeroNavService {
         String facility = intent.getStringExtra( Airports.FAA_CODE );
         String classBFilename = ClassBUtils.getClassBFilename( facility );
 
-        File pdfFile = new File( getDataDir(), classBFilename );
+        File pdfFile = new File( getServiceDataDir(), classBFilename );
         if ( !pdfFile.exists() ) {
             try {
                 NetworkUtils.doHttpGet( this, FAA_HOST, CLASS_B_PATH+"/"+classBFilename, pdfFile );

@@ -66,7 +66,7 @@ public abstract class AeroNavService extends IntentService {
         mDataDir = SystemUtils.getExternalDir( this, mName );
     }
 
-    protected File getDataDir() {
+    protected File getServiceDataDir() {
         return mDataDir;
     }
 
