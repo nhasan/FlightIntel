@@ -108,8 +108,10 @@ sub capitalize($$$)
     return $string;
 }
 
-my $dbfile = "fadds.db";
 my $FADDS_BASE = shift @ARGV;
+my $cycle = shift @ARGV;
+my $dbfile = "fadds_$cycle.db";
+$FADDS_BASE = $FADDS_BASE."/".$cycle;
 
 my %site_number;
 
@@ -1755,7 +1757,6 @@ while ( my $line = <TWR_FILE> )
     }
     elsif ( $type eq "TWR5" )
     {
-        // NCT, SCT, C90, K90, N90, D10, I90
         #FACILITY_ID
         $sth_twr5->bind_param(  1, substrim( $line,  4, 4 ) );
         #PRIMARY_APPROACH_RADAR
