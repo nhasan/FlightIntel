@@ -133,30 +133,30 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_440.pdf", "Callback",
+        "Issue 440 (Sep 2016)", "NASA", 218487, "" );
+insert_book( "periodicals", "cb_439.pdf", "Callback",
+        "Issue 439 (Aug 2016)", "NASA", 144957, "" );
+insert_book( "periodicals", "cb_438.pdf", "Callback",
+        "Issue 438 (Jul 2016)", "NASA", 193270, "" );
 insert_book( "periodicals", "cb_437.pdf", "Callback",
         "Issue 437 (Jun 2016)", "NASA", 156526, "" );
-insert_book( "periodicals", "cb_436.pdf", "Callback",
-        "Issue 436 (May 2016)", "NASA", 354154, "" );
-insert_book( "periodicals", "cb_435.pdf", "Callback",
-        "Issue 435 (Apr 2016)", "NASA", 178200, "" );
-insert_book( "periodicals", "cb_434.pdf", "Callback",
-        "Issue 434 (Mar 2016)", "NASA", 299081, "" );
+insert_book( "periodicals", "SepOct2016.pdf", "FAA Safety Briefing",
+        "Sep/Oct 2016", "FAA", 4746647, "" );
+insert_book( "periodicals", "JulAug2016.pdf", "FAA Safety Briefing",
+        "Jul/Aug 2016", "FAA", 10581046, "" );
 insert_book( "periodicals", "MayJun2016.pdf", "FAA Safety Briefing",
         "May/Jun 2016", "FAA", 5600805, "" );
 insert_book( "periodicals", "MarApr2016.pdf", "FAA Safety Briefing",
         "Mar/Apr 2016", "FAA", 1559322, "" );
-insert_book( "periodicals", "JanFeb2016.pdf", "FAA Safety Briefing",
-        "Jan/Feb 2016", "FAA", 4356524, "" );
-insert_book( "periodicals", "NovDec2015.pdf", "FAA Safety Briefing",
-        "Nov/Dec 2015", "FAA", 4918355, "" );
+insert_book( "periodicals", "SE_Topic_16-09.pdf", "Safety Fact Sheets",
+        "Sep 2016", "FAA", 587946, "" );
+insert_book( "periodicals", "SE_Topic_16-08.pdf", "Safety Fact Sheets",
+        "Aug 2016", "FAA", 445196, "" );
+insert_book( "periodicals", "SE_Topic_16-07.pdf", "Safety Fact Sheets",
+        "Jul 2016", "FAA", 559853, "" );
 insert_book( "periodicals", "SE_Topic_16-06.pdf", "Safety Fact Sheets",
         "Jun 2016", "FAA", 483788, "" );
-insert_book( "periodicals", "SE_Topic_16-05.pdf", "Safety Fact Sheets",
-        "May 2016", "FAA", 484671, "" );
-insert_book( "periodicals", "SE_Topic_16-04.pdf", "Safety Fact Sheets",
-        "Apr 2016", "FAA", 430788, "" );
-insert_book( "periodicals", "SE_Topic_16-03.pdf", "Safety Fact Sheets",
-        "Mar 2016", "FAA", 488453, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -209,8 +209,8 @@ insert_book( "circular", "ac-60-22-1991.pdf", "Aeronautical Decision Making",
         "1991", "AC-60-22", 3915178, "" );
 insert_book( "circular", "ac-91-13c-1979.pdf", "Cold Weather Operation of Aircraft",
         "1979", "AC-91-13C", 553456, "" );
-insert_book( "circular", "ac-91-74a-2007.pdf", "Flight In Icing Conditions",
-        "2007", "AC-91-74A", 584587, "" );
+insert_book( "circular", "ac-91-74b-2015.pdf", "Flight In Icing Conditions",
+        "2015", "AC-91-74B", 1001510, "" );
 insert_book( "circular", "ac-00-54-1988.pdf", "Pilot Windshear Guide",
         "1988", "AC-00-54", 4475314, "" );
 insert_book( "circular", "ac-00-46e-2011.pdf", "Aviation Safety Reporting Program",
