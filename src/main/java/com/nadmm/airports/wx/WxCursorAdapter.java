@@ -198,7 +198,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             if ( metar.windSpeedKnots < Integer.MAX_VALUE ) {
                 info.append( ", " );
                 if ( metar.windSpeedKnots == 0 ) {
-                    info.append( "calm" );
+                    info.append( "winds calm" );
                 } else if ( metar.windGustKnots < Integer.MAX_VALUE ) {
                     info.append( String.format( "%dG%dKT",
                             metar.windSpeedKnots, metar.windGustKnots ) );
@@ -233,8 +233,6 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 info.append( "Ceiling indefinite" );
             } else if ( !skyCover.equals( "NSC" ) ) {
                 info.append( "Ceiling " );
-                info.append( skyCover );
-                info.append( " " );
                 info.append( FormatUtils.formatFeet( ceiling ) );
             } else {
                 if ( !metar.skyConditions.isEmpty() ) {
