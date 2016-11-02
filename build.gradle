@@ -5,7 +5,7 @@ buildscript
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:2.2.2'
     }
 }
 
@@ -13,23 +13,23 @@ apply plugin: 'com.android.application'
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support:preference-v7:24.2.1'
-    compile 'com.android.support:preference-v14:24.2.1'
-    compile 'com.google.android.gms:play-services-analytics:9.6.1'
+    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.android.support:design:25.0.0'
+    compile 'com.android.support:preference-v7:25.0.0'
+    compile 'com.android.support:preference-v14:25.0.0'
+    compile 'com.google.android.gms:play-services-analytics:9.8.0'
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
 
     defaultConfig {
         applicationId "com.nadmm.airports"
         minSdkVersion 15
-        targetSdkVersion 24
-        versionName "6.4.1"
-        versionCode 60401
+        targetSdkVersion 25
+        versionName "6.4.2"
+        versionCode 60402
     }
 
     signingConfigs {
