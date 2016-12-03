@@ -95,10 +95,10 @@ $dbh->do( $create_library_table );
 $dbh->do( "CREATE INDEX idx_library_book on library ( CATEGORY_CODE, BOOK_NAME );" );
 my $sth_library = $dbh->prepare( $insert_library_record );
 
-insert_book( "handbooks", "faa-h-8083-3a-2004.pdf", "Airplane Flying Handbook", 
-        "2004", "FAA-H-8083-3A", 14042341, "" );
-insert_book( "handbooks", "faa-h-8083-25a-2008.pdf", "Pilot's Handbook of Aeronautical Knowledge",
-        "2008", "FAA-H-8083-25A", 56064788, "" );
+insert_book( "handbooks", "faa-h-8083-3b-2016.pdf", "Airplane Flying Handbook", 
+        "2016", "FAA-H-8083-3B", 94300974, "" );
+insert_book( "handbooks", "faa-h-8083-25b-2016.pdf", "Pilot's Handbook of Aeronautical Knowledge",
+        "2016", "FAA-H-8083-25B", 56400327, "" );
 insert_book( "handbooks", "faa-h-8083-15b-2012.pdf", "Instrument Flying Handbook",
         "2012", "FAA-H-8083-15B", 53239138, "" );
 insert_book( "handbooks", "faa-h-8083-16a-2015.pdf", "Instrument Procedures Handbook",
@@ -109,8 +109,8 @@ insert_book( "handbooks", "faa-h-8083-27a-2006.pdf", "Student Pilot Guide",
         "2016", "FAA-H-8083-27A", 231353, "" );
 insert_book( "handbooks", "faa-h-8083-9a-2008.pdf", "Aviation Instructor's Handbook",
         "2008", "FAA-H-8083-9A", 13672806, "" );
-insert_book( "handbooks", "faa-h-8083-1a-2007.pdf", "Aircraft Weight and Balance Handbook",
-        "2007", "FAA-H-8083-1A", 12373020, "" );
+insert_book( "handbooks", "faa-h-8083-1b-2007.pdf", "Aircraft Weight and Balance Handbook",
+        "2007", "FAA-H-8083-1B", 14879984, "" );
 insert_book( "handbooks", "faa-h-8083-21a-2012.pdf", "Helicopter Flying Handbook",
         "2012", "FAA-H-8083-21A", 74947815, "" );
 insert_book( "handbooks", "faa-h-8083-2-2009.pdf", "Risk Management Handbook",
@@ -133,30 +133,30 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_441.pdf", "Callback",
+        "Issue 441 (Oct 2016)", "NASA", 310357, "" );
 insert_book( "periodicals", "cb_440.pdf", "Callback",
         "Issue 440 (Sep 2016)", "NASA", 218487, "" );
 insert_book( "periodicals", "cb_439.pdf", "Callback",
         "Issue 439 (Aug 2016)", "NASA", 144957, "" );
 insert_book( "periodicals", "cb_438.pdf", "Callback",
         "Issue 438 (Jul 2016)", "NASA", 193270, "" );
-insert_book( "periodicals", "cb_437.pdf", "Callback",
-        "Issue 437 (Jun 2016)", "NASA", 156526, "" );
+insert_book( "periodicals", "NovDec2016.pdf", "FAA Safety Briefing",
+        "Nov/Dec 2016", "FAA", 4761832, "" );
 insert_book( "periodicals", "SepOct2016.pdf", "FAA Safety Briefing",
         "Sep/Oct 2016", "FAA", 4746647, "" );
 insert_book( "periodicals", "JulAug2016.pdf", "FAA Safety Briefing",
         "Jul/Aug 2016", "FAA", 10581046, "" );
 insert_book( "periodicals", "MayJun2016.pdf", "FAA Safety Briefing",
         "May/Jun 2016", "FAA", 5600805, "" );
-insert_book( "periodicals", "MarApr2016.pdf", "FAA Safety Briefing",
-        "Mar/Apr 2016", "FAA", 1559322, "" );
+insert_book( "periodicals", "SE_Topic_16-11.pdf", "Safety Fact Sheets",
+        "Nov 2016", "FAA", 414821, "" );
+insert_book( "periodicals", "SE_Topic_16-10.pdf", "Safety Fact Sheets",
+        "Oct 2016", "FAA", 605936, "" );
 insert_book( "periodicals", "SE_Topic_16-09.pdf", "Safety Fact Sheets",
         "Sep 2016", "FAA", 587946, "" );
 insert_book( "periodicals", "SE_Topic_16-08.pdf", "Safety Fact Sheets",
         "Aug 2016", "FAA", 445196, "" );
-insert_book( "periodicals", "SE_Topic_16-07.pdf", "Safety Fact Sheets",
-        "Jul 2016", "FAA", 559853, "" );
-insert_book( "periodicals", "SE_Topic_16-06.pdf", "Safety Fact Sheets",
-        "Jun 2016", "FAA", 483788, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -166,8 +166,6 @@ insert_book( "safety", "faa-p-8740-30-2008.pdf", "How to Obtain a Good Weather B
         "2008", "FAA", 768237, "" );
 insert_book( "safety", "faa-p-8740-36-2008.pdf", "Proficiency and the Private Pilot",
         "2008", "FAA", 728809, "" );
-insert_book( "safety", "faa-p-8740-40-2008.pdf", "Wind Shear",
-        "2008", "FAA", 1572833, "" );
 insert_book( "safety", "faa-p-8740-48-2008.pdf", "On Landings Part 1",
         "2008", "FAA", 7959581, "" );
 insert_book( "safety", "faa-p-8740-49-2008.pdf", "On Landings Part 2",
@@ -185,8 +183,8 @@ insert_book( "safety", "AP_UpsetRecovery_Book.pdf", "Upset Recovery Training Aid
 insert_book( "safety", "tfrweb_2003.pdf.gz", "Pilot's Guide to TFR",
         "2003", "FAA", 1794432, "" );
 
-insert_book( "regs", "aim_160526.pdf", "AIM",
-        "May 2016", "FAA", 13394936, "" );
+insert_book( "regs", "aim_161110.pdf", "AIM",
+        "Nov 2016", "FAA", 13735250, "" );
 insert_book( "regs", "CFR-2016-title14-vol1.pdf", "FAR",
         "Parts 1-59", "US GPO 2016", 12799362, "" );
 insert_book( "regs", "CFR-2016-title14-vol2.pdf", "FAR",
@@ -232,6 +230,8 @@ insert_book( "testguide", "PARSampleExam_160613.pdf", "Airmen Knowledge Test Que
         "Jun 2016", "Private", 166283, "" );
 insert_book( "testguide", "IRASampleExam_160613.pdf", "Airmen Knowledge Test Question Bank",
         "Jun 2016", "Instrument", 42473, "" );
+insert_book( "testguide", "IRASampleExam_160613.pdf", "Airmen Knowledge Test Question Bank",
+        "Jun 2016", "Instrument", 42473, "" );
 insert_book( "testguide", "com.pdf", "Airmen Knowledge Test Question Bank",
         "Jan 2014", "Commercial", 36750, "" );
 insert_book( "testguide", "atp.pdf", "Airmen Knowledge Test Question Bank",
@@ -256,12 +256,12 @@ insert_book( "pts", "faa-s-8081-6d.pdf", "Flight Instructor PTS",
 insert_book( "pts", "faa-s-8081-9d.pdf", "Flight Instructor Instrument PTS",
         "Jul 2010", "FAA-S-8081-9D", 169064, "" );
 
-insert_book( "misc", "AIP_160526.pdf.gz", "Aeronautical Information Publication",
-        "May 2016", "FAA", 28985214, "" );
+insert_book( "misc", "aip_161110.pdf.gz", "Aeronautical Information Publication",
+        "Nov 2016", "FAA", 17065371, "" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
-insert_book( "misc", "PCG_160526.pdf", "Pilot/Controller Glossary",
-        "May 2016", "FAA", 553553, "" );
+insert_book( "misc", "pcg_161110.pdf", "Pilot/Controller Glossary",
+        "Nov 2016", "FAA", 523076, "" );
 insert_book( "misc", "RNProadmap.pdf", "Roadmap for Performance-Based Navigation",
         "2006", "FAA", 1513616, "" );
 insert_book( "misc", "ATC_160526.pdf", "ATC Order 7110.65W", 
