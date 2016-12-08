@@ -16,7 +16,7 @@
 # * GNU General Public License for more details.
 # *
 # * You should have received a copy of the GNU General Public License
-# * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+# * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # */
 
 use strict;
@@ -95,7 +95,7 @@ $dbh->do( $create_library_table );
 $dbh->do( "CREATE INDEX idx_library_book on library ( CATEGORY_CODE, BOOK_NAME );" );
 my $sth_library = $dbh->prepare( $insert_library_record );
 
-insert_book( "handbooks", "faa-h-8083-3b-2016.pdf", "Airplane Flying Handbook", 
+insert_book( "handbooks", "faa-h-8083-3b-2016.pdf", "Airplane Flying Handbook",
         "2016", "FAA-H-8083-3B", 94300974, "" );
 insert_book( "handbooks", "faa-h-8083-25b-2016.pdf", "Pilot's Handbook of Aeronautical Knowledge",
         "2016", "FAA-H-8083-25B", 56400327, "" );
@@ -109,8 +109,8 @@ insert_book( "handbooks", "faa-h-8083-27a-2006.pdf", "Student Pilot Guide",
         "2016", "FAA-H-8083-27A", 231353, "" );
 insert_book( "handbooks", "faa-h-8083-9a-2008.pdf", "Aviation Instructor's Handbook",
         "2008", "FAA-H-8083-9A", 13672806, "" );
-insert_book( "handbooks", "faa-h-8083-1b-2007.pdf", "Aircraft Weight and Balance Handbook",
-        "2007", "FAA-H-8083-1B", 14879984, "" );
+insert_book( "handbooks", "faa-h-8083-1b-2016.pdf", "Weight and Balance Handbook",
+        "2016", "FAA-H-8083-1B", 10295944, "" );
 insert_book( "handbooks", "faa-h-8083-21a-2012.pdf", "Helicopter Flying Handbook",
         "2012", "FAA-H-8083-21A", 74947815, "" );
 insert_book( "handbooks", "faa-h-8083-2-2009.pdf", "Risk Management Handbook",
@@ -133,14 +133,14 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_442.pdf", "Callback",
+        "Issue 442 (Nov 2016)", "NASA", 303504, "" );
 insert_book( "periodicals", "cb_441.pdf", "Callback",
         "Issue 441 (Oct 2016)", "NASA", 310357, "" );
 insert_book( "periodicals", "cb_440.pdf", "Callback",
         "Issue 440 (Sep 2016)", "NASA", 218487, "" );
 insert_book( "periodicals", "cb_439.pdf", "Callback",
         "Issue 439 (Aug 2016)", "NASA", 144957, "" );
-insert_book( "periodicals", "cb_438.pdf", "Callback",
-        "Issue 438 (Jul 2016)", "NASA", 193270, "" );
 insert_book( "periodicals", "NovDec2016.pdf", "FAA Safety Briefing",
         "Nov/Dec 2016", "FAA", 4761832, "" );
 insert_book( "periodicals", "SepOct2016.pdf", "FAA Safety Briefing",
@@ -264,8 +264,8 @@ insert_book( "misc", "pcg_161110.pdf", "Pilot/Controller Glossary",
         "Nov 2016", "FAA", 523076, "" );
 insert_book( "misc", "RNProadmap.pdf", "Roadmap for Performance-Based Navigation",
         "2006", "FAA", 1513616, "" );
-insert_book( "misc", "ATC_160526.pdf", "ATC Order 7110.65W", 
-        "May 2016", "FAA", 4959712, "" );
+insert_book( "misc", "atc_161110.pdf", "ATC Order 7110.65W",
+        "Nov 2016", "FAA", 2352398, "" );
 
 insert_book( "canada", "AWS-Guide-EN_1602.pdf", "Aviation Weather Service Guide",
         "Feb 2016", "Nav Canada", 5043235, "" );
