@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -370,9 +370,13 @@ public class ActivityBase extends AppCompatActivity implements
                 startActivity( intent );
                 finish();
                 break;
-            case R.id.navdrawer_donate:
-                Intent donate = new Intent( this, DonateActivity.class );
-                startActivity( donate );
+            case R.id.navdrawer_download:
+                Intent download = new Intent( this, DownloadActivity.class );
+                startActivity( download );
+                break;
+            case R.id.navdrawer_about:
+                Intent about = new Intent( this, AboutActivity.class );
+                startActivity( about );
                 break;
             case R.id.navdrawer_settings:
                 intent = new Intent( this, PreferencesActivity.class );
@@ -799,10 +803,6 @@ public class ActivityBase extends AppCompatActivity implements
         MenuInflater inflater = getMenuInflater();
         inflater.inflate( R.menu.mainmenu, menu );
 
-        // Settings item should be visible in the menu if not using Nav Drawer
-        MenuItem settingsItem = menu.findItem( R.id.menu_settings );
-        settingsItem.setVisible( getSelfNavDrawerItem() == NAVDRAWER_ITEM_INVALID );
-
         MenuItem searchItem = menu.findItem( R.id.menu_search );
         SearchView searchView = (SearchView) MenuItemCompat.getActionView( searchItem );
         SearchManager searchManager = (SearchManager) getSystemService( Context.SEARCH_SERVICE );
@@ -823,18 +823,6 @@ public class ActivityBase extends AppCompatActivity implements
             onBackPressed();
             return true;
         case R.id.menu_search:
-            return true;
-        case R.id.menu_download:
-            Intent download = new Intent( this, DownloadActivity.class );
-            startActivity( download );
-            return true;
-        case R.id.menu_settings:
-            Intent intent = new Intent( this, PreferencesActivity.class );
-            startActivity( intent );
-            return true;
-        case R.id.menu_about:
-            Intent about = new Intent( this, AboutActivity.class );
-            startActivity( about );
             return true;
         default:
             return super.onOptionsItemSelected( item );

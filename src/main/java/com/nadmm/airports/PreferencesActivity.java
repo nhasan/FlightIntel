@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,14 +60,6 @@ public class PreferencesActivity extends FragmentActivityBase {
         }
 
         addPreferencesFragment();
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu( Menu menu ) {
-        MenuItem settings = menu.findItem( R.id.menu_settings );
-        settings.setVisible( false );
-
-        return super.onPrepareOptionsMenu( menu );
     }
 
     @Override

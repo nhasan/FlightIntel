@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2015-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2015-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,11 @@
         <item android:id="@+id/navdrawer_settings"
               android:icon="@drawable/ic_navdrawer_settings"
               android:title="@string/title_navdrawer_settings" />
-        <item android:id="@+id/navdrawer_donate"
-              android:icon="@drawable/ic_navdrawer_donate"
-              android:title="@string/donate" />
+        <item android:id="@+id/navdrawer_download"
+              android:title="@string/downloads"
+              android:icon="@drawable/ic_navdrawer_downloads" />
+        <item android:id="@+id/navdrawer_about"
+              android:title="@string/about"
+              android:icon="@drawable/ic_navdrawer_about" />
     </group>
 </menu>

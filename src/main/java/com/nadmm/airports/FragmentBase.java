@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,27 +118,6 @@ public class FragmentBase extends Fragment implements IRefreshable {
         super.onViewCreated( view, savedInstanceState );
 
         //mTopScrollView = (ScrollView) findViewById( R.id.scroll_content );
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
-        super.onPrepareOptionsMenu( menu );
-
-        MenuItem refresh = menu.findItem( R.id.menu_refresh );
-        refresh.setVisible( isRefreshable() );
-    }
-
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        // Handle item selection
-        switch ( item.getItemId() ) {
-            case R.id.menu_refresh:
-                setRefreshing( true );
-                requestDataRefresh();
-                return true;
-            default:
-                return super.onOptionsItemSelected( item );
-        }
     }
 
     @Override

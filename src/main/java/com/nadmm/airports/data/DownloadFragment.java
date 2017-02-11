@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -188,7 +188,6 @@ public class DownloadFragment extends FragmentBase {
     public void onPrepareOptionsMenu( Menu menu ) {
         super.onPrepareOptionsMenu( menu );
 
-        menu.findItem( R.id.menu_download ).setVisible( false );
         Cursor c = mDbManager.getCurrentFromCatalog();
         boolean visible = c.moveToFirst();
         c.close();

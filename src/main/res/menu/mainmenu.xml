@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +21,6 @@
  -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/menu_refresh"
-          android:title="@string/refresh"
-          android:visible="false" />
-    <item android:id="@+id/menu_download"
-          android:title="@string/downloads"
-          android:icon="@android:drawable/ic_menu_save" />
-    <item android:id="@+id/menu_settings"
-          android:title="@string/settings"
-          android:icon="@android:drawable/ic_menu_preferences" />
-    <item android:id="@+id/menu_about"
-          android:title="@string/about"
-          android:icon="@android:drawable/ic_menu_info_details" />
     <item android:id="@+id/menu_search"
           android:title="@string/search"
           android:icon="@drawable/ic_action_search"
