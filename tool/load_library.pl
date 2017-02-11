@@ -24,9 +24,9 @@ use DBI;
 
 
 my $BASE_DIR = shift @ARGV;
-my $dbfile = shift @ARGV;
+my $cycle = shift @ARGV;
 
-my $dbh = DBI->connect( "dbi:SQLite:dbname=$BASE_DIR/$dbfile", "", "" );
+my $dbh = DBI->connect( "dbi:SQLite:dbname=$BASE_DIR/library_$cycle.db", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );
 $dbh->do( "PRAGMA synchronous=OFF" );
@@ -133,30 +133,30 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_444.pdf", "Callback",
+        "Issue 444 (Jan 2017)", "NASA", 157013, "" );
+insert_book( "periodicals", "cb_443.pdf", "Callback",
+        "Issue 443 (Dec 2016)", "NASA", 209282, "" );
 insert_book( "periodicals", "cb_442.pdf", "Callback",
         "Issue 442 (Nov 2016)", "NASA", 303504, "" );
 insert_book( "periodicals", "cb_441.pdf", "Callback",
         "Issue 441 (Oct 2016)", "NASA", 310357, "" );
-insert_book( "periodicals", "cb_440.pdf", "Callback",
-        "Issue 440 (Sep 2016)", "NASA", 218487, "" );
-insert_book( "periodicals", "cb_439.pdf", "Callback",
-        "Issue 439 (Aug 2016)", "NASA", 144957, "" );
+insert_book( "periodicals", "JanFeb2017.pdf", "FAA Safety Briefing",
+        "Jan/Feb 2017", "FAA", 4341053, "" );
 insert_book( "periodicals", "NovDec2016.pdf", "FAA Safety Briefing",
         "Nov/Dec 2016", "FAA", 4761832, "" );
 insert_book( "periodicals", "SepOct2016.pdf", "FAA Safety Briefing",
         "Sep/Oct 2016", "FAA", 4746647, "" );
 insert_book( "periodicals", "JulAug2016.pdf", "FAA Safety Briefing",
         "Jul/Aug 2016", "FAA", 10581046, "" );
-insert_book( "periodicals", "MayJun2016.pdf", "FAA Safety Briefing",
-        "May/Jun 2016", "FAA", 5600805, "" );
+insert_book( "periodicals", "SE_Topic_17_01.pdf", "Safety Fact Sheets",
+        "Jan 2017", "FAA", 567211, "" );
+insert_book( "periodicals", "SE_Topic_16-12.pdf", "Safety Fact Sheets",
+        "Dec 2016", "FAA", 552520, "" );
 insert_book( "periodicals", "SE_Topic_16-11.pdf", "Safety Fact Sheets",
         "Nov 2016", "FAA", 414821, "" );
 insert_book( "periodicals", "SE_Topic_16-10.pdf", "Safety Fact Sheets",
         "Oct 2016", "FAA", 605936, "" );
-insert_book( "periodicals", "SE_Topic_16-09.pdf", "Safety Fact Sheets",
-        "Sep 2016", "FAA", 587946, "" );
-insert_book( "periodicals", "SE_Topic_16-08.pdf", "Safety Fact Sheets",
-        "Aug 2016", "FAA", 445196, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
