@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports;
@@ -38,16 +38,6 @@ public class AboutActivity extends ActivityBase {
         setContentView( R.layout.about_view );
         WebView webView = (WebView) findViewById( R.id.about_content );
         webView.loadUrl( "file:///android_asset/about.html" );
-
-        Button btnDonate = (Button) findViewById( R.id.btn_donate );
-        btnDonate.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                Intent intent = new Intent( AboutActivity.this, DonateActivity.class );
-                startActivity( intent );
-            }
-        } );
 
         Button btnOk = (Button) findViewById( R.id.btn_close );
         btnOk.setOnClickListener( new OnClickListener() {
