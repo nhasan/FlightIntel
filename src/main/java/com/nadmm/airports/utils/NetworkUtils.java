@@ -43,7 +43,6 @@ import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.zip.GZIPInputStream;
 
 @SuppressWarnings( "BooleanMethodIsAlwaysInverted" )
 public class NetworkUtils {
@@ -145,12 +144,6 @@ public class NetworkUtils {
         }
     }
 
-    public static boolean doHttpGetGzip( Context context, URL url,
-                                     File file, ResultReceiver receiver, Bundle result )
-            throws Exception {
-        return doHttpGet( context, url, file, receiver, result, GZIPInputStream.class );
-    }
-
     public static boolean doHttpGet( Context context, String host, String path, File file )
             throws Exception {
         return doHttpGet( context, "http", host, 80, path, null, file, null, null, null );
@@ -161,11 +154,19 @@ public class NetworkUtils {
         return doHttpGet( context, "https", host, 443, path, null, file, null, null, null );
     }
 
-    public static boolean doHttpGet( Context context, String host, int port, String path,
+    public static boolean doHttpGet( Context context, String host, String path,
                                      String query, File file, ResultReceiver receiver,
                                      Bundle result, Class<? extends FilterInputStream> filter )
             throws Exception {
-        URI uri = new URI( "http", null, host, port, path, query, null );
+        URI uri = new URI( "http", null, host, 80, path, query, null );
+        return doHttpGet( context, uri.toURL(), file, receiver, result, filter );
+    }
+
+    public static boolean doHttpsGet( Context context, String host, String path,
+                                     String query, File file, ResultReceiver receiver,
+                                     Bundle result, Class<? extends FilterInputStream> filter )
+            throws Exception {
+        URI uri = new URI( "https", null, host, 443, path, query, null );
         return doHttpGet( context, uri.toURL(), file, receiver, result, filter );
     }
 
@@ -224,7 +225,7 @@ public class NetworkUtils {
                 f = in;
             }
 
-            long chunk = Math.max( length/100, 16*1024 );
+            long chunk = Math.max( length/50, sBuffer.length );
             long last = 0;
 
             int count;

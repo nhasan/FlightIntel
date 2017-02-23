@@ -120,7 +120,7 @@ public abstract class NoaaService extends IntentService {
 
     protected boolean fetch( String host, String path, String query, File file, boolean compressed )
             throws Exception {
-        return NetworkUtils.doHttpGet( this, host, 80, path, query, file, null, null,
+        return NetworkUtils.doHttpsGet( this, host, path, query, file, null, null,
                 compressed ? GZIPInputStream.class : null );
     }
 

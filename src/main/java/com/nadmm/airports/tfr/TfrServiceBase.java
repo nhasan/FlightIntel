@@ -66,7 +66,7 @@ public abstract class TfrServiceBase extends IntentService {
 
     protected void fetch( String host, String path, String query, File tfrFile ) {
         try {
-            NetworkUtils.doHttpGet( this, host, 80, path, query, tfrFile, null, null, null );
+            NetworkUtils.doHttpGet( this, host, path, query, tfrFile, null, null, null );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "TFR: "+e.getMessage() );
         }

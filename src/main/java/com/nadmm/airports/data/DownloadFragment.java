@@ -402,8 +402,8 @@ public class DownloadFragment extends FragmentBase {
                 };
 
                 Bundle result = new Bundle();
-                NetworkUtils.doHttpGet( mActivity, HOST, 80,
-                        PATH + "/" + data.fileName + ".gz", "uuid=" + UUID.randomUUID().toString(),
+                NetworkUtils.doHttpsGet( mActivity, HOST,
+                        PATH + "/" +     data.fileName + ".gz", null,
                         dbFile, receiver, result, GZIPInputStream.class );
             } catch ( Exception e ) {
                 UiUtils.showToast( mActivity, e.getMessage() );
@@ -599,7 +599,7 @@ public class DownloadFragment extends FragmentBase {
                 }
 
                 if ( fetch ) {
-                    NetworkUtils.doHttpGet( mActivity, HOST, PATH + "/" + MANIFEST, manifest );
+                    NetworkUtils.doHttpsGet( mActivity, HOST, PATH + "/" + MANIFEST, manifest );
                 }
             } catch ( Exception e ) {
                 UiUtils.showToast( mActivity, e.getMessage() );

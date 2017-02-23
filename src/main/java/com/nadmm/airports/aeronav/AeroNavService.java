@@ -81,7 +81,7 @@ public abstract class AeroNavService extends IntentService {
 
     protected boolean fetch( String path, File file ) {
         try {
-            return NetworkUtils.doHttpGet( this, AERONAV_HOST, path, file );
+            return NetworkUtils.doHttpsGet( this, AERONAV_HOST, path, file );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "Error: "+e.getMessage() );
         }

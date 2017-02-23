@@ -32,6 +32,7 @@ import com.nadmm.airports.utils.UiUtils;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
 
 public class LibraryService extends IntentService {
 
@@ -120,9 +121,9 @@ public class LibraryService extends IntentService {
             result.putString( CATEGORY, category );
 
             String path = LIBRARY_PATH+"/"+category+"/"+pdfFile.getName()+".gz";
-            URL url = new URL( "http", LIBRARY_HOST, path );
 
-            return NetworkUtils.doHttpGetGzip( this, url, pdfFile, receiver, result );
+            return NetworkUtils.doHttpsGet( this, LIBRARY_HOST, path, null,
+                    pdfFile, receiver, result, GZIPInputStream.class );
         } catch ( Exception e ) {
             UiUtils.showToast( this, e.getMessage() );
         }
@@ -146,7 +147,7 @@ public class LibraryService extends IntentService {
         File[] list = categoryDir.listFiles();
         if ( list != null ) {
             for ( File pdfFile : list ) {
-                if ( !books.contains( pdfFile.getName() ) ) {
+                if ( !books.contains( pdfFile.getName() ) || pdfFile.length() == 0 ) {
                     pdfFile.delete();
                 }
             }
