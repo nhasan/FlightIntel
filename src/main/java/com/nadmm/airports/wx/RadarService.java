@@ -19,12 +19,13 @@
 
 package com.nadmm.airports.wx;
 
-import java.io.File;
-
 import android.content.Intent;
 import android.text.format.DateUtils;
 
+import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.UiUtils;
+
+import java.io.File;
 
 public class RadarService extends NoaaService {
 
@@ -49,7 +50,7 @@ public class RadarService extends NoaaService {
                 if ( !imageFile.exists() ) {
                     try {
                         String path = RADAR_IMAGE_PATH+imageName;
-                        fetch( RADAR_HOST, path, null, imageFile, false );
+                        NetworkUtils.doHttpsGet( this, RADAR_HOST, path, imageFile );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch RADAR image: "+e.getMessage() );
                     }
