@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-files-path name="library" path="library" />
+    <external-files-path name="dtpp" path="dtpp" />
+    <external-files-path name="dafd" path="dafd" />
+    <external-files-path name="classb" path="classb" />
+</paths>
