@@ -153,13 +153,12 @@ public class NetworkUtils {
 
     public static boolean doHttpGet( Context context, String host, String path, File file )
             throws Exception {
-        return doHttpGet( context, host, 80, path, null, file, null, null, null );
+        return doHttpGet( context, "http", host, 80, path, null, file, null, null, null );
     }
 
-    public static boolean doHttpGet( Context context, String host, int port,
-                                     String path, String query, File file )
+    public static boolean doHttpsGet( Context context, String host, String path, File file )
             throws Exception {
-        return doHttpGet( context, host, port, path, query, file, null, null, null );
+        return doHttpGet( context, "https", host, 443, path, null, file, null, null, null );
     }
 
     public static boolean doHttpGet( Context context, String host, int port, String path,
@@ -167,6 +166,14 @@ public class NetworkUtils {
                                      Bundle result, Class<? extends FilterInputStream> filter )
             throws Exception {
         URI uri = new URI( "http", null, host, port, path, query, null );
+        return doHttpGet( context, uri.toURL(), file, receiver, result, filter );
+    }
+
+    public static boolean doHttpGet( Context context, String scheme, String host, int port,
+                                     String path, String query, File file, ResultReceiver receiver,
+                                     Bundle result, Class<? extends FilterInputStream> filter )
+            throws Exception {
+        URI uri = new URI( scheme, null, host, port, path, query, null );
         return doHttpGet( context, uri.toURL(), file, receiver, result, filter );
     }
 

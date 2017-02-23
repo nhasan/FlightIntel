@@ -79,7 +79,7 @@ public class ClassBService extends AeroNavService {
         File pdfFile = new File( getServiceDataDir(), classBFilename );
         if ( !pdfFile.exists() ) {
             try {
-                NetworkUtils.doHttpGet( this, FAA_HOST, CLASS_B_PATH+"/"+classBFilename, pdfFile );
+                NetworkUtils.doHttpsGet( this, FAA_HOST, CLASS_B_PATH+"/"+classBFilename, pdfFile );
             } catch ( Exception e ) {
                 UiUtils.showToast( this, "Error: " + e.getMessage() );
             }
