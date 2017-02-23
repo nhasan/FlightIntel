@@ -78,7 +78,6 @@ public class DownloadFragment extends FragmentBase {
 
     private static final String TAG = DownloadActivity.class.getName();
     private static final String HOST = "commondatastorage.googleapis.com";
-    private static final Integer PORT = 80;
     private static final String PATH = "/flightintel/database";
     private static final String MANIFEST = "manifest.xml";
 
@@ -403,7 +402,7 @@ public class DownloadFragment extends FragmentBase {
                 };
 
                 Bundle result = new Bundle();
-                NetworkUtils.doHttpGet( mActivity, HOST, PORT,
+                NetworkUtils.doHttpGet( mActivity, HOST, 80,
                         PATH + "/" + data.fileName + ".gz", "uuid=" + UUID.randomUUID().toString(),
                         dbFile, receiver, result, GZIPInputStream.class );
             } catch ( Exception e ) {
@@ -600,8 +599,7 @@ public class DownloadFragment extends FragmentBase {
                 }
 
                 if ( fetch ) {
-                    NetworkUtils.doHttpGet( mActivity, HOST, PORT, PATH + "/" + MANIFEST,
-                            "uuid=" + UUID.randomUUID().toString(), manifest );
+                    NetworkUtils.doHttpGet( mActivity, HOST, PATH + "/" + MANIFEST, manifest );
                 }
             } catch ( Exception e ) {
                 UiUtils.showToast( mActivity, e.getMessage() );
