@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ if ( $ret != 200 )
 }
 print "done\n";
 
-my $dbfile = "$BASE_DIR/dafd_$cycle.db";
+my $dbfile = "$BASE_DIR/dcs_$cycle.db";
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );

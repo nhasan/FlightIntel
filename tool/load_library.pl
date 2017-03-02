@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2012-2017 Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -133,14 +133,14 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_445.pdf", "Callback",
+        "Issue 445 (Feb 2017)", "NASA", 353563, "" );
 insert_book( "periodicals", "cb_444.pdf", "Callback",
         "Issue 444 (Jan 2017)", "NASA", 157013, "" );
 insert_book( "periodicals", "cb_443.pdf", "Callback",
         "Issue 443 (Dec 2016)", "NASA", 209282, "" );
 insert_book( "periodicals", "cb_442.pdf", "Callback",
         "Issue 442 (Nov 2016)", "NASA", 303504, "" );
-insert_book( "periodicals", "cb_441.pdf", "Callback",
-        "Issue 441 (Oct 2016)", "NASA", 310357, "" );
 insert_book( "periodicals", "JanFeb2017.pdf", "FAA Safety Briefing",
         "Jan/Feb 2017", "FAA", 4341053, "" );
 insert_book( "periodicals", "NovDec2016.pdf", "FAA Safety Briefing",
@@ -149,14 +149,14 @@ insert_book( "periodicals", "SepOct2016.pdf", "FAA Safety Briefing",
         "Sep/Oct 2016", "FAA", 4746647, "" );
 insert_book( "periodicals", "JulAug2016.pdf", "FAA Safety Briefing",
         "Jul/Aug 2016", "FAA", 10581046, "" );
+insert_book( "periodicals", "SE_Topic_17_02.pdf", "Safety Fact Sheets",
+        "Feb 2017", "FAA", 802425, "" );
 insert_book( "periodicals", "SE_Topic_17_01.pdf", "Safety Fact Sheets",
         "Jan 2017", "FAA", 567211, "" );
 insert_book( "periodicals", "SE_Topic_16-12.pdf", "Safety Fact Sheets",
         "Dec 2016", "FAA", 552520, "" );
 insert_book( "periodicals", "SE_Topic_16-11.pdf", "Safety Fact Sheets",
         "Nov 2016", "FAA", 414821, "" );
-insert_book( "periodicals", "SE_Topic_16-10.pdf", "Safety Fact Sheets",
-        "Oct 2016", "FAA", 605936, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -213,6 +213,14 @@ insert_book( "circular", "ac-00-54-1988.pdf", "Pilot Windshear Guide",
         "1988", "AC-00-54", 4475314, "" );
 insert_book( "circular", "ac-00-46e-2011.pdf", "Aviation Safety Reporting Program",
         "2011", "AC-00-46E", 46601, "" );
+insert_book( "circular", "ac-61-134-2003.pdf", "Controlled Flight Into Terrain Awareness",
+        "2003", "AC-61-134", 259747, "" );
+insert_book( "circular", "ac-61-65f-2016.pdf", "Pilots and Flight and Ground Instructors",
+        "2016", "AC-61-65F", 407258, "" );
+insert_book( "circular", "ac-120-76c-2014.pdf", "Use of Electronics Flight Bags",
+        "2014", "AC-120-76C", 483260, "" );
+insert_book( "circular", "ac-120-12a-1986.pdf", "Private Carriage vs Common Carriage",
+        "1986", "AC-120-12A", 57908, "" );
 
 insert_book( "testguide", "FAA-G-8082-17I_151001.pdf", "Private Pilot Knowledge Test Guide",
         "Oct 2015", "FAA-G-8082-17I", 684970, "" );
