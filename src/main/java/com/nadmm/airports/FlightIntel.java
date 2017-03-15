@@ -105,7 +105,7 @@ public class FlightIntel extends ActivityBase {
             Cursor c = getDbManager().getCurrentFromCatalog();
             ArrayList<Date> installed = new ArrayList<>();
 
-            if ( c.moveToFirst() ) {
+            if ( c != null && c.moveToFirst() ) {
                 do {
                     String s = c.getString( c.getColumnIndex( Catalog.END_DATE ) );
                     Date end = TimeUtils.parse3339( s );
@@ -122,8 +122,9 @@ public class FlightIntel extends ActivityBase {
 
                     installed.add( end );
                 } while ( c.moveToNext() );
+
+                c.close();
             }
-            c.close();
 
             return installed;
         }
