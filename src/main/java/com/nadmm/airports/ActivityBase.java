@@ -974,6 +974,8 @@ public class ActivityBase extends AppCompatActivity implements
         Bundle bundle = new Bundle();
         bundle.putString( FirebaseAnalytics.Param.ITEM_CATEGORY, categ );
         logAnalyticsEvent( FirebaseAnalytics.Event.VIEW_ITEM_LIST, bundle );
+
+        faLogSelectContent( categ, "list" );
     }
 
     public void faLogViewItem( String categ, String id ) {
@@ -989,6 +991,8 @@ public class ActivityBase extends AppCompatActivity implements
         }
         logAnalyticsEvent( FirebaseAnalytics.Event.VIEW_ITEM, bundle );
 
+        // Firebase dashboard currently does not show details or VIEW_ITEM, so use
+        // SELECT_CONTENT as well to view reports on parameter data.
         faLogSelectContent( categ, id );
     }
 
