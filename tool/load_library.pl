@@ -133,30 +133,30 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_446.pdf", "Callback",
+        "Issue 446 (Mar 2017)", "NASA", 142200, "" );
 insert_book( "periodicals", "cb_445.pdf", "Callback",
         "Issue 445 (Feb 2017)", "NASA", 353563, "" );
 insert_book( "periodicals", "cb_444.pdf", "Callback",
         "Issue 444 (Jan 2017)", "NASA", 157013, "" );
 insert_book( "periodicals", "cb_443.pdf", "Callback",
         "Issue 443 (Dec 2016)", "NASA", 209282, "" );
-insert_book( "periodicals", "cb_442.pdf", "Callback",
-        "Issue 442 (Nov 2016)", "NASA", 303504, "" );
+insert_book( "periodicals", "MarApr2017.pdf", "FAA Safety Briefing",
+        "Mar/Apr 2017", "FAA", 19676542, "" );
 insert_book( "periodicals", "JanFeb2017.pdf", "FAA Safety Briefing",
         "Jan/Feb 2017", "FAA", 4341053, "" );
 insert_book( "periodicals", "NovDec2016.pdf", "FAA Safety Briefing",
         "Nov/Dec 2016", "FAA", 4761832, "" );
 insert_book( "periodicals", "SepOct2016.pdf", "FAA Safety Briefing",
         "Sep/Oct 2016", "FAA", 4746647, "" );
-insert_book( "periodicals", "JulAug2016.pdf", "FAA Safety Briefing",
-        "Jul/Aug 2016", "FAA", 10581046, "" );
+insert_book( "periodicals", "SE_Topic_17_03.pdf", "Safety Fact Sheets",
+        "Mar 2017", "FAA", 1032987, "" );
 insert_book( "periodicals", "SE_Topic_17_02.pdf", "Safety Fact Sheets",
         "Feb 2017", "FAA", 802425, "" );
 insert_book( "periodicals", "SE_Topic_17_01.pdf", "Safety Fact Sheets",
         "Jan 2017", "FAA", 567211, "" );
 insert_book( "periodicals", "SE_Topic_16-12.pdf", "Safety Fact Sheets",
         "Dec 2016", "FAA", 552520, "" );
-insert_book( "periodicals", "SE_Topic_16-11.pdf", "Safety Fact Sheets",
-        "Nov 2016", "FAA", 414821, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -196,8 +196,7 @@ insert_book( "regs", "CFR-2016-title14-vol4.pdf", "FAR",
 insert_book( "regs", "CFR-2016-title14-vol5.pdf", "FAR",
         "Parts 1200-1399", "US GPO 2016", 2061019, "" );
 
-insert_book( "risk", "ga_weather_decision_making.pdf", "General Aviation Pilot’s Guide",
-        "2009", "FAA", 659230, "" );
+insert_book( "risk", "wx_decision.pdf", "Weather Decision Making", "2009", "FAA", 659230, "" );
 insert_book( "risk", "local_vfr.pdf", "Local VFR Flying", "2012", "FAA", 300310, "" );
 insert_book( "risk", "night_vfr.pdf", "Night VFR Flying", "2012", "FAA", 294394, "" );
 insert_book( "risk", "pract_riskman.pdf", "Practical Risk Management", "2012", "FAA", 452295, "" );
