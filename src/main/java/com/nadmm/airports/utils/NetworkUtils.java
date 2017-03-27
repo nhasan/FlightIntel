@@ -30,6 +30,7 @@ import android.os.ResultReceiver;
 import android.support.v4.net.ConnectivityManagerCompat;
 import android.support.v7.preference.PreferenceManager;
 
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.PreferencesActivity;
 
 import java.io.BufferedInputStream;
@@ -104,13 +105,10 @@ public class NetworkUtils {
         }
     }
 
-    public static boolean canDownloadData( Context context ) {
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences( context );
-        boolean alwaysAutoFetch = prefs.getBoolean(
-                PreferencesActivity.KEY_AUTO_DOWNLOAD_ON_3G, false );
+    public static boolean canDownloadData( ActivityBase activity ) {
+        boolean alwaysAutoFetch = activity.getPrefAutoDownoadOnMeteredNetwork();
         return ( alwaysAutoFetch
-                || !NetworkUtils.isConnectedToMeteredNetwork( context ) );
+                || !NetworkUtils.isConnectedToMeteredNetwork( activity ) );
     }
 
     /*

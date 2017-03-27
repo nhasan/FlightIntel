@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,40 +20,24 @@
 package com.nadmm.airports.e6b;
 
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.ListMenuFragment;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
+
 import com.nadmm.airports.R;
 
 import java.util.Locale;
 
-public class FuelWeightFragment extends FragmentBase {
+public class FuelWeightFragment extends E6bFragmentBase {
 
     private Spinner mFuelTypes;
     private EditText mFuelTotal;
     private EditText mFuelWeight;
-
-    private TextWatcher mTextWatcher = new TextWatcher() {
-
-        @Override
-        public void onTextChanged( CharSequence s, int start, int before, int count ) {
-        }
-
-        @Override
-        public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
-        }
-
-        @Override
-        public void afterTextChanged( Editable s ) {
-            processInput();
-        }
-    };
 
     private static abstract class FuelWeight {
         public abstract double lbsPerGallon();
@@ -152,16 +136,6 @@ public class FuelWeightFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        Bundle args = getArguments();
-        String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
-        TextView label = (TextView) findViewById( R.id.e6b_label );
-        label.setText( title );
-
-        TextView msg = (TextView) findViewById( R.id.e6b_msg );
-        msg.setText( "Fuel density used is valid at 15\u00B0C (59\u00B0F) and is an average" +
-        		" value. Actual weight varies and depends on the API gravity of the batch" +
-        		" and the ambient temperature. Use this calculator for only an estimate." );
-
         mFuelTypes = (Spinner) findViewById( R.id.e6b_fuel_types );
         ArrayAdapter<FuelWeight> adapter = new ArrayAdapter<>( getActivity(),
                 android.R.layout.simple_spinner_item, mFuels );
@@ -188,7 +162,15 @@ public class FuelWeightFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    private void processInput() {
+    @Override
+    protected String getMessage() {
+        return "Fuel density used is valid at 15\u00B0C (59\u00B0F) and is an average" +
+                " value. Actual weight varies and depends on the API gravity of the batch" +
+                " and the ambient temperature. Use this calculator for only an estimate.";
+    }
+
+    @Override
+    protected void processInput() {
         double fuelTotal = Double.MAX_VALUE;
 
         try {

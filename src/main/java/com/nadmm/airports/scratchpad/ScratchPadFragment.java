@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,13 +111,15 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
             public void onClick( View v ) {
                 saveBitmap();
                 Intent intent = new Intent( Intent.ACTION_SEND );
-                intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET );
+                intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
                 intent.setType( "image/*" );
                 Uri uri = Uri.fromFile( mImgFile );
                 intent.putExtra( Intent.EXTRA_STREAM, uri );
                 startActivity( Intent.createChooser( intent, "Share Scratchpad" ) );
             }
         } );
+
+        getActivityBase().faLogViewItem( "scratchpad", "" );
     }
 
     @Override

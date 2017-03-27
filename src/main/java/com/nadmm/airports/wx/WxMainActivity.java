@@ -58,11 +58,8 @@ public final class WxMainActivity extends TabPagerActivityBase {
 
     @Override
     protected int getInitialTabIndex() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-        boolean alwaysShowNearby = prefs.getBoolean(
-                PreferencesActivity.KEY_ALWAYS_SHOW_NEARBY, false );
         ArrayList<String> fav = getDbManager().getWxFavorites();
-        if ( alwaysShowNearby || fav.isEmpty() ) {
+        if ( getPrefAlwaysShowNearby() || fav.isEmpty() ) {
             return ID_NEARBY;
         } else {
             return ID_FAVORITES;

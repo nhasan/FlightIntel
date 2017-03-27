@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,9 +93,14 @@ public final class RunwaysFragment extends FragmentBase {
     }
 
     protected void showCommonInformation( Cursor[] result ) {
-        // Common runway information
+        Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
+
+        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
+
+        getActivityBase().faLogViewItem( "runway", icaoCode, runwayId );
+
         int length = rwy.getInt( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_HEADING ) );
         if ( heading > 0 ) {
@@ -124,22 +129,20 @@ public final class RunwaysFragment extends FragmentBase {
         Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
 
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences( getActivity() );
-        boolean showExtra = prefs.getBoolean( PreferencesActivity.KEY_SHOW_EXTRA_RUNWAY_DATA,
-                false );
         StringBuilder sb = new StringBuilder();
 
-        String runwayId = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ID ) );
+        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        String baseEndID = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ID ) );
+
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_HEADING ) );
         if ( heading > 0 ) {
             heading = DataUtils.calculateMagneticHeading( heading, Math.round( mDeclination ) );
         } else {
             // Actual heading is not available, try to deduce it from runway id
-            heading = DataUtils.getRunwayHeading( runwayId );
+            heading = DataUtils.getRunwayHeading( baseEndID );
         }
         TextView tv = (TextView) findViewById( R.id.rwy_base_end_label );
-        tv.setText( "Runway "+runwayId );
+        tv.setText( "Runway "+baseEndID );
 
         LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_base_end_details );
         addRow( layout, "Magnetic heading", FormatUtils.formatDegrees( heading ) );
@@ -150,8 +153,9 @@ public final class RunwaysFragment extends FragmentBase {
                     Airports.SITE_NUMBER ) );
             Bundle args = new Bundle();
             args.putString( Ils1.SITE_NUMBER, siteNumber );
-            args.putString( Ils1.RUNWAY_ID, runwayId );
+            args.putString( Ils1.RUNWAY_ID, baseEndID );
             args.putString( Ils1.ILS_TYPE, ilsType );
+            args.putString( Airports.ICAO_CODE, icaoCode );
             addClickableRow( layout, "Instrument approach...", ilsType,
                     IlsFragment.class, args );
         }
@@ -166,7 +170,7 @@ public final class RunwaysFragment extends FragmentBase {
         double gradient = rwy.getDouble( rwy.getColumnIndex( Runways.BASE_END_GRADIENT ) );
         if ( gradient > 0 ) {
             sb.setLength( 0 );
-            sb.append( String.format( "%.1f%%", gradient ) );
+            sb.append( String.format( Locale.US, "%.1f%%", gradient ) );
             String gradientDir = rwy.getString( rwy.getColumnIndex(
                     Runways.BASE_END_GRADIENT_DIRECTION ) );
             if ( gradientDir.length() > 0 ) {
@@ -218,6 +222,8 @@ public final class RunwaysFragment extends FragmentBase {
         if ( displacedThreshold > 0 ) {
             addRow( layout, "Displaced threshold", FormatUtils.formatFeet( displacedThreshold ) );
         }
+
+        boolean showExtra = getActivityBase().getPrefShowExtraRunwayData();
 
         if ( showExtra ) {
             String centerline = rwy.getString( rwy.getColumnIndex(
@@ -272,22 +278,20 @@ public final class RunwaysFragment extends FragmentBase {
         Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
 
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences( getActivity() );
-        boolean extra =
-                prefs.getBoolean( PreferencesActivity.KEY_SHOW_EXTRA_RUNWAY_DATA, false );
         StringBuilder sb = new StringBuilder();
 
-        String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
+        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        String reciprocalId = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
+
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.RECIPROCAL_END_HEADING ) );
         if ( heading > 0 ) {
             heading = DataUtils.calculateMagneticHeading( heading, Math.round( mDeclination ) );
         } else {
             // Actual heading is not available, try to deduce it from runway id
-            heading = DataUtils.getRunwayHeading( runwayId );
+            heading = DataUtils.getRunwayHeading( reciprocalId );
         }
         TextView tv = (TextView) findViewById( R.id.rwy_reciprocal_end_label );
-        tv.setText( "Runway "+runwayId );
+        tv.setText( "Runway "+reciprocalId );
 
         LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_reciprocal_end_details );
         addRow( layout, "Magnetic heading", FormatUtils.formatDegrees( heading ) );
@@ -298,8 +302,9 @@ public final class RunwaysFragment extends FragmentBase {
                     Airports.SITE_NUMBER ) );
             Bundle args = new Bundle();
             args.putString( Ils1.SITE_NUMBER, siteNumber );
-            args.putString( Ils1.RUNWAY_ID, runwayId );
+            args.putString( Ils1.RUNWAY_ID, reciprocalId );
             args.putString( Ils1.ILS_TYPE, ilsType );
+            args.putString( Airports.ICAO_CODE, icaoCode );
             addClickableRow( layout, "Instrument approach", ilsType, IlsFragment.class, args );
         }
         Float elevation = rwy.getFloat( rwy.getColumnIndex(
@@ -313,7 +318,7 @@ public final class RunwaysFragment extends FragmentBase {
         double gradient = rwy.getDouble( rwy.getColumnIndex( Runways.RECIPROCAL_END_GRADIENT ) );
         if ( gradient > 0 ) {
             sb.setLength( 0 );
-            sb.append( String.format( "%.1f%%", gradient ) );
+            sb.append( String.format( Locale.US, "%.1f%%", gradient ) );
             String gradientDir = rwy.getString( rwy.getColumnIndex(
                     Runways.RECIPROCAL_END_GRADIENT_DIRECTION ) );
             if ( gradientDir.length() > 0 ) {
@@ -367,6 +372,7 @@ public final class RunwaysFragment extends FragmentBase {
             addRow( layout, "Displaced threshold", FormatUtils.formatFeet( displacedThreshold ) );
         }
 
+        boolean extra = getActivityBase().getPrefShowExtraRunwayData();
         if ( extra ) {
             String centerline = rwy.getString( rwy.getColumnIndex(
                     Runways.RECIPROCAL_END_CENTERLINE_LIGHTS_AVAILABLE ) );
@@ -427,8 +433,14 @@ public final class RunwaysFragment extends FragmentBase {
         layout = (LinearLayout) findViewById( R.id.rwy_reciprocal_end_details );
         layout.setVisibility( View.GONE );
 
+        Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
+
+        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
         String helipadId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
+
+        getActivityBase().faLogViewItem( "helipad", icaoCode, helipadId );
+
         tv = (TextView) findViewById( R.id.rwy_common_label );
         tv.setText( "Helipad "+helipadId );
 
@@ -591,7 +603,7 @@ public final class RunwaysFragment extends FragmentBase {
                             FormatUtils.formatFeet( value ), dir );
                 }
                 if ( slope > 0 ) {
-                    text += String.format( ", %d:1 slope to clear", slope );
+                    text += String.format( Locale.US, ", %d:1 slope to clear", slope );
                 }
             } else {
                 text = object;
@@ -623,20 +635,21 @@ public final class RunwaysFragment extends FragmentBase {
                 int slope = rwy.getInt( rwy.getColumnIndex(
                         Runways.RECIPROCAL_END_CONTROLLING_OBJECT_SLOPE ) );
 
-                text = String.format( "%s %s, ",
+                text = String.format( Locale.US, "%s %s, ",
                         FormatUtils.formatFeet( height ), object.toLowerCase( Locale.US ) );
                 if ( lighted.length() > 0 ) {
                     text += DataUtils.decodeControllingObjectLighted( lighted )+", ";
                 }
-                text += String.format( "%s from runway end", FormatUtils.formatFeet( distance ) );
+                text += String.format( Locale.US, "%s from runway end",
+                        FormatUtils.formatFeet( distance ) );
                 if ( offset.length() > 0 ) {
                     int value = DataUtils.decodeControllingObjectOffset( offset );
                     String dir = DataUtils.decodeControllingObjectOffsetDirection( offset );
-                    text += String.format( ", %s %s of centerline",
+                    text += String.format( Locale.US, ", %s %s of centerline",
                             FormatUtils.formatFeet( value ), dir );
                 }
                 if ( slope > 0 ) {
-                    text += String.format( ", %d:1 slope to clear", slope );
+                    text += String.format( Locale.US, ", %d:1 slope to clear", slope );
                 }
             } else {
                 text = object;

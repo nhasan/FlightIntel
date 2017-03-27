@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,6 +144,7 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
 
     private void requestWxMap( String code ) {
         setProgressBarVisible( true );
+
         Intent service = getServiceIntent();
         service.setAction( mAction );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_IMAGE );
@@ -152,10 +153,10 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
             int pos = mSpinner.getSelectedItemPosition();
             service.putExtra( NoaaService.IMAGE_TYPE, mWxTypeCodes[ pos ] );
         }
-
         setServiceParams( service );
-
         getActivity().startService( service );
+
+        getActivityBase().faLogViewItem( getProduct(), code );
     }
 
     protected void setServiceParams( Intent intent ) {

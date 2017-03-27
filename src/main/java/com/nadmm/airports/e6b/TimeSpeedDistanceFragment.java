@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,23 +19,19 @@
 
 package com.nadmm.airports.e6b;
 
-import java.util.Locale;
-
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
-public class TimeSpeedDistanceFragment extends FragmentBase {
+import java.util.Locale;
+
+public class TimeSpeedDistanceFragment extends E6bFragmentBase {
 
     private EditText mTimeEdit;
     private EditText mTime2Edit;
@@ -43,22 +39,6 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
     private EditText mGsEdit;
 
     private long mMode;
-
-    private TextWatcher mTextWatcher = new TextWatcher() {
-
-        @Override
-        public void onTextChanged( CharSequence s, int start, int before, int count ) {
-        }
-
-        @Override
-        public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
-        }
-
-        @Override
-        public void afterTextChanged( Editable s ) {
-            processInput();
-        }
-    };
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -71,23 +51,18 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mTimeEdit = (EditText) findViewById( R.id.e6b_edit_time );
-        mTime2Edit = (EditText) findViewById( R.id.e6b_edit_time2 );
-        mDistanceEdit = (EditText) findViewById( R.id.e6b_edit_distance );
-        mGsEdit = (EditText) findViewById( R.id.e6b_edit_gs );
-
-        Bundle args = getArguments();
-        mMode = args.getLong( ListMenuFragment.MENU_ID );
-        String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
-        TextView label = (TextView) findViewById( R.id.e6b_label );
-        label.setText( title );
-
+        mMode = getArguments().getLong( ListMenuFragment.MENU_ID );
         setupUi();
-
         setFragmentContentShown( true );
     }
 
-    private void processInput() {
+    @Override
+    protected String getMessage() {
+        return null;
+    }
+
+    @Override
+    protected void processInput() {
         double time = Double.MAX_VALUE;
         double speed = Double.MAX_VALUE;
         double distance = Double.MAX_VALUE;
@@ -141,6 +116,11 @@ public class TimeSpeedDistanceFragment extends FragmentBase {
     }
 
     private void setupUi() {
+        mTimeEdit = (EditText) findViewById( R.id.e6b_edit_time );
+        mTime2Edit = (EditText) findViewById( R.id.e6b_edit_time2 );
+        mDistanceEdit = (EditText) findViewById( R.id.e6b_edit_distance );
+        mGsEdit = (EditText) findViewById( R.id.e6b_edit_gs );
+
         if ( mMode == R.id.E6B_TSD_TIME ) {
             mTimeEdit.setFocusable( false );
             mTimeEdit.setTypeface( null, Typeface.BOLD );

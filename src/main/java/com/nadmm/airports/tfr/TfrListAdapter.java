@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.tfr.TfrList.Tfr;
 
@@ -33,12 +34,12 @@ public class TfrListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
     private final TfrList mTfrList;
-    private Context mContext;
+    private ActivityBase mContext;
     private int mActiveColor;
     private int mInactiveColor;
 
-    public TfrListAdapter( Context context, TfrList tfrList ) {
-        mContext = context;
+    public TfrListAdapter( ActivityBase activity, TfrList tfrList ) {
+        mContext = activity;
         mInflater = LayoutInflater.from( mContext );
         mTfrList = tfrList;
         mActiveColor = mContext.getResources().getColor( R.color.lightred );

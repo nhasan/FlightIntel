@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.DataUtils;
@@ -37,7 +38,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class NotamFragmentBase extends FragmentBase {
 
@@ -86,11 +91,13 @@ public class NotamFragmentBase extends FragmentBase {
         }
     }
 
-    protected void getNotams( String icaoCode ) {
+    protected void getNotams( String icaoCode, String type ) {
         Intent service = new Intent( getActivity(), NotamService.class );
         service.setAction( NotamService.ACTION_GET_NOTAM );
         service.putExtra( NotamService.ICAO_CODE, icaoCode );
         getActivity().startService( service );
+
+        getActivityBase().faLogViewItem( "notam", icaoCode, type );
     }
 
     protected void showNotams( File notamFile ) {

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,41 +20,20 @@
 package com.nadmm.airports.e6b;
 
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
-public class TrueAirspeedFragment extends FragmentBase {
+public class TrueAirspeedFragment extends E6bFragmentBase {
 
     private EditText mIndicatedAirSpeedEdit;
     private EditText mIndicatedAltitudeEdit;
     private EditText mAltimeterEdit;
     private EditText mTemperatureEdit;
     private EditText mTrueAirSpeedEdit;
-
-    private TextWatcher mTextWatcher = new TextWatcher() {
-
-        @Override
-        public void onTextChanged( CharSequence s, int start, int before, int count ) {
-        }
-
-        @Override
-        public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
-        }
-
-        @Override
-        public void afterTextChanged( Editable s ) {
-            processInput();
-        }
-    };
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -66,14 +45,6 @@ public class TrueAirspeedFragment extends FragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
-
-        String title = getArguments().getString( ListMenuFragment.SUBTITLE_TEXT );
-        TextView label = (TextView) findViewById( R.id.e6b_label );
-        label.setText( title );
-
-        TextView msg = (TextView) findViewById( R.id.e6b_msg );
-        msg.setText( "True airspeed is affected by density altitude. True airspeed" +
-                " exceeds indicated airspeed as density altitude increases." );
 
         mIndicatedAirSpeedEdit = (EditText) findViewById( R.id.e6b_edit_ias );
         mIndicatedAltitudeEdit = (EditText) findViewById( R.id.e6b_edit_ia );
@@ -89,11 +60,18 @@ public class TrueAirspeedFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    void processInput() {
-        double ias = -1;
-        double ia = -1;
-        double altimeter = -1;
-        double temperatureC = -1;
+    @Override
+    protected String getMessage() {
+        return "True airspeed is affected by density altitude. True airspeed" +
+                " exceeds indicated airspeed as density altitude increases.";
+    }
+
+    @Override
+    protected void processInput() {
+        double ias = Double.MAX_VALUE;
+        double ia = Double.MAX_VALUE;
+        double altimeter = Double.MAX_VALUE;
+        double temperatureC = Double.MAX_VALUE;
 
         try {
             ias = Double.parseDouble( mIndicatedAirSpeedEdit.getText().toString() );
@@ -103,7 +81,8 @@ public class TrueAirspeedFragment extends FragmentBase {
         } catch ( NumberFormatException ignored ) {
         }
 
-        if ( ias != -1 && ia != -1 && altimeter != -1 && temperatureC != -1 ) {
+        if ( ias != Double.MAX_VALUE && ia != Double.MAX_VALUE
+                && altimeter != Double.MAX_VALUE && temperatureC != Double.MAX_VALUE ) {
             double delta = 145442.2*( 1-Math.pow( altimeter/29.92126, 0.190261 ) );
             double pa = ia+delta;
             double stdTempK = 15.0-( 0.0019812*ia )+273.15;

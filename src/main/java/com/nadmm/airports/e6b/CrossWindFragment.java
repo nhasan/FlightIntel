@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,21 +20,17 @@
 package com.nadmm.airports.e6b;
 
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.wx.WxUtils;
 
-public class CrossWindFragment extends FragmentBase {
+public class CrossWindFragment extends E6bFragmentBase {
 
     private EditText mWsEdit;
     private EditText mWdirEdit;
@@ -43,22 +39,6 @@ public class CrossWindFragment extends FragmentBase {
     private EditText mHwndEdit;
     private EditText mXwndEdit;
     private TextView mWindMsg;
-
-    private TextWatcher mTextWatcher = new TextWatcher() {
-
-        @Override
-        public void onTextChanged( CharSequence s, int start, int before, int count ) {
-        }
-
-        @Override
-        public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
-        }
-
-        @Override
-        public void afterTextChanged( Editable s ) {
-            processInput();
-        }
-    };
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -70,10 +50,6 @@ public class CrossWindFragment extends FragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
-
-        String title = getArguments().getString( ListMenuFragment.SUBTITLE_TEXT );
-        TextView label = (TextView) findViewById( R.id.e6b_label );
-        label.setText( title );
 
         mWsEdit = (EditText) findViewById( R.id.e6b_edit_wind_speed );
         mWdirEdit = (EditText) findViewById( R.id.e6b_edit_wind_dir );
@@ -90,6 +66,11 @@ public class CrossWindFragment extends FragmentBase {
         mRwyEdit.addTextChangedListener( mTextWatcher );
 
         setFragmentContentShown( true );
+    }
+
+    @Override
+    protected String getMessage() {
+        return null;
     }
 
     protected void processInput() {

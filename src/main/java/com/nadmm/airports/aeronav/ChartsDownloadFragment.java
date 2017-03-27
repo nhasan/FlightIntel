@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,6 +137,7 @@ public class ChartsDownloadFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        getActivityBase().faLogViewItem( "chartsdownload", "" );
         setBackgroundTask( new ChartsDownloadTask() ).execute();
     }
 
@@ -163,7 +164,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         String tppVolume = (String) v.getTag( R.id.DTPP_VOLUME_NAME );
         AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
         builder.setTitle( "Start Download" );
-        builder.setMessage( String.format(
+        builder.setMessage( String.format( Locale.US,
                 "Do you want to download %d charts for %s volume?",
                 total-avail, tppVolume ) );
         builder.setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
@@ -189,7 +190,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         String tppVolume = (String) v.getTag( R.id.DTPP_VOLUME_NAME );
         AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
         builder.setTitle( "Confirm Delete" );
-        builder.setMessage( String.format(
+        builder.setMessage( String.format( Locale.US,
                 "Are you sure you want to delete all %d charts for %s volume?",
                 avail, tppVolume ) );
         builder.setPositiveButton( android.R.string.yes,
@@ -285,6 +286,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         try {
             endDate = df.parse( expiry );
         } catch ( ParseException ignored ) {
+            endDate = new Date();
         }
 
         // Determine if chart cycle has expired
@@ -295,11 +297,11 @@ public class ChartsDownloadFragment extends FragmentBase {
 
         TextView tv = (TextView) findViewById( R.id.charts_cycle_expiry );
         if ( mExpired ) {
-            tv.setText( "This chart cycle has expired on "
-                    +TimeUtils.formatDateTime( getActivity(), endDate.getTime() ) );
+            tv.setText( String.format( Locale.US, "This chart cycle has expired on %s",
+                    TimeUtils.formatDateTime( getActivityBase(), endDate.getTime() ) ) );
         } else {
-            tv.setText( "This chart cycle expires on "
-                    +TimeUtils.formatDateTime( getActivity(), endDate.getTime() ) );
+            tv.setText( String.format( Locale.US, "This chart cycle expires on %s",
+                    TimeUtils.formatDateTime( getActivityBase(), endDate.getTime() ) ) );
         }
 
         tv = (TextView) findViewById( R.id.charts_download_msg );
@@ -319,7 +321,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         } else if ( !NetworkUtils.isNetworkAvailable( getActivity() ) ) {
             msg = "Not connected to the internet";
             mIsOk = false;
-        } else if ( NetworkUtils.canDownloadData( getActivity() ) ) {
+        } else if ( NetworkUtils.canDownloadData( getActivityBase() ) ) {
             msg = "Connected to an unmetered network";
             mIsOk = true;
         } else {
@@ -499,7 +501,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         TextView tv = (TextView) row.findViewById( R.id.item_label );
         tv.setText( tppVolume );
         tv = (TextView) row.findViewById( R.id.item_value );
-        tv.setText( String.format( "%d charts", total ) );
+        tv.setText( String.format( Locale.US, "%d charts", total ) );
 
         row.setTag( R.id.DTPP_VOLUME_NAME, tppVolume );
         row.setTag( R.id.DTPP_CHART_TOTAL, total );

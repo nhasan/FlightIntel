@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,41 +20,20 @@
 package com.nadmm.airports.e6b;
 
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
-public class TrueAltitudeFragment extends FragmentBase {
+public class TrueAltitudeFragment extends E6bFragmentBase {
 
     private EditText mIaEdit;
     private EditText mOatEdit;
     private EditText mAltimeterEdit;
     private EditText mStationAltitudeEdit;
     private EditText mTrueAltitudeEdit;
-
-    private TextWatcher mTextWatcher = new TextWatcher() {
-
-        @Override
-        public void onTextChanged( CharSequence s, int start, int before, int count ) {
-        }
-
-        @Override
-        public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
-        }
-
-        @Override
-        public void afterTextChanged( Editable s ) {
-            processInput();
-        }
-    };
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -66,13 +45,6 @@ public class TrueAltitudeFragment extends FragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
-
-        String title = getArguments().getString( ListMenuFragment.SUBTITLE_TEXT );
-        TextView label = (TextView) findViewById( R.id.e6b_label );
-        label.setText( title );
-
-        TextView msg = (TextView) findViewById( R.id.e6b_msg );
-        msg.setText( "Use altitude of the wx station whose altimeter setting is being used" );
 
         mIaEdit = (EditText) findViewById( R.id.e6b_edit_ia );
         mOatEdit = (EditText) findViewById( R.id.e6b_edit_oat );
@@ -88,7 +60,13 @@ public class TrueAltitudeFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    private void processInput() {
+    @Override
+    protected String getMessage() {
+        return "Use altitude of the wx station whose altimeter setting is being used";
+    }
+
+    @Override
+    protected void processInput() {
         double ia = Double.MAX_VALUE;
         double oat = Double.MAX_VALUE;
         double altimeter = Double.MAX_VALUE;

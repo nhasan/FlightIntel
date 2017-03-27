@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.UiUtils;
 
+import java.util.Locale;
+
 public final class NavaidDetailsFragment extends FragmentBase {
 
     @Override
@@ -70,12 +72,13 @@ public final class NavaidDetailsFragment extends FragmentBase {
         }
 
         Cursor nav1 = result[ 0 ];
-
-        String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
         showNavaidTitle( nav1 );
         showNavaidDetails( result );
         showNavaidNotams( result );
         showNavaidRemarks( result );
+
+        String id = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
+        getActivityBase().faLogViewItem( "navaid", id );
 
         setFragmentContentShown( true );
     }
@@ -93,9 +96,9 @@ public final class NavaidDetailsFragment extends FragmentBase {
         }
         if ( freq > 0 ) {
             if ( !DataUtils.isDirectionalNavaid( navaidType ) && ( freq%1.0 ) == 0 ) {
-                addRow( layout, "Frequency", String.format( "%.0f", freq ) );
+                addRow( layout, "Frequency", String.format( Locale.US, "%.0f", freq ) );
             } else {
-                addRow( layout, "Frequency", String.format( "%.2f", freq ) );
+                addRow( layout, "Frequency", String.format( Locale.US, "%.2f", freq ) );
             }
         }
         String power = nav1.getString( nav1.getColumnIndex( Nav1.POWER_OUTPUT ) );
@@ -111,7 +114,7 @@ public final class NavaidDetailsFragment extends FragmentBase {
                     Nav1.MAGNETIC_VARIATION_DIRECTION ) );
             String magYear = nav1.getString( nav1.getColumnIndex(
                     Nav1.MAGNETIC_VARIATION_YEAR ) );
-            addRow( layout, "Magnetic variation", String.format( "%d\u00B0%s (%s)",
+            addRow( layout, "Magnetic variation", String.format( Locale.US, "%d\u00B0%s (%s)",
                     Integer.valueOf( magVar ), magDir, magYear ) );
         }
         String alt = nav1.getString( nav1.getColumnIndex( Nav1.PROTECTED_FREQUENCY_ALTITUDE ) );

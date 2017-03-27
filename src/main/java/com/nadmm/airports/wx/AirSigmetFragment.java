@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,8 @@ import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.wx.AirSigmet.AirSigmetEntry;
+
+import java.util.Locale;
 
 public class AirSigmetFragment extends WxFragmentBase {
 
@@ -102,6 +104,11 @@ public class AirSigmetFragment extends WxFragmentBase {
     }
 
     @Override
+    protected String getProduct() {
+        return "airsigmet";
+    }
+
+    @Override
     public boolean isRefreshable() {
         return true;
     }
@@ -158,6 +165,8 @@ public class AirSigmetFragment extends WxFragmentBase {
         service.putExtra( NoaaService.HOURS_BEFORE, AIRSIGMET_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
+
+        getActivityBase().faLogViewItem( getProduct(), mStationId );
     }
 
     protected void showAirSigmetText( Intent intent ) {
@@ -176,20 +185,21 @@ public class AirSigmetFragment extends WxFragmentBase {
 
         TextView tv = (TextView) findViewById( R.id.airsigmet_title_msg );
         if ( !airSigmet.entries.isEmpty() ) {
-            tv.setText( String.format( "%d AIR/SIGMETs reported within %d NM of %s in"
+            tv.setText( String.format( Locale.US, "%d AIR/SIGMETs reported within %d NM of %s in"
                     +" last %d hours", airSigmet.entries.size(), AIRSIGMET_RADIUS_NM,
                     mStationId, AIRSIGMET_HOURS_BEFORE ) );
             for ( AirSigmetEntry entry : airSigmet.entries ) {
                 showAirSigmetEntry( layout, entry );
             }
         } else {
-            tv.setText( String.format( "No AIR/SIGMETs reported within %d NM of %s in"
+            tv.setText( String.format( Locale.US, "No AIR/SIGMETs reported within %d NM of %s in"
                     +" last %d hours",
                     AIRSIGMET_RADIUS_NM, mStationId, AIRSIGMET_HOURS_BEFORE ) );
         }
 
         tv = (TextView) findViewById( R.id.wx_fetch_time );
-        tv.setText( "Fetched on " + TimeUtils.formatDateTime( getActivity(), airSigmet.fetchTime ) );
+        tv.setText( String.format( Locale.US, "Fetched on %s",
+                TimeUtils.formatDateTime( getActivityBase(), airSigmet.fetchTime ) ) );
         tv.setVisibility( View.VISIBLE );
 
         setFragmentContentShown( true );
@@ -202,7 +212,7 @@ public class AirSigmetFragment extends WxFragmentBase {
         tv = (TextView) item.findViewById( R.id.wx_raw_airsigmet );
         tv.setText( entry.rawText );
         tv = (TextView) item.findViewById( R.id.airsigmet_time );
-        tv.setText( TimeUtils.formatDateRange( getActivity(), entry.fromTime, entry.toTime ) );
+        tv.setText( TimeUtils.formatDateRange( getActivityBase(), entry.fromTime, entry.toTime ) );
 
         LinearLayout details = (LinearLayout) item.findViewById( R.id.airsigmet_details );
 
@@ -226,7 +236,7 @@ public class AirSigmetFragment extends WxFragmentBase {
                     FormatUtils.formatDegrees( entry.movementDirDegrees ),
                     GeoUtils.getCardinalDirection( entry.movementDirDegrees ) ) );
             if ( entry.movementSpeedKnots < Integer.MAX_VALUE ) {
-                sb.append( String.format( " at %d knots", entry.movementSpeedKnots ) );
+                sb.append( String.format( Locale.US, " at %d knots", entry.movementSpeedKnots ) );
             }
             addRow( details, "Movement", sb.toString() );
         }

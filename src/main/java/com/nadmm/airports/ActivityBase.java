@@ -24,6 +24,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -45,6 +46,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -64,6 +66,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.afd.AfdMainActivity;
 import com.nadmm.airports.clocks.ClocksActivity;
@@ -72,7 +75,6 @@ import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Nav1;
 import com.nadmm.airports.data.DatabaseManager.States;
 import com.nadmm.airports.data.DownloadActivity;
-import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.donate.DonateDatabase;
 import com.nadmm.airports.e6b.E6bActivity;
 import com.nadmm.airports.library.LibraryActivity;
@@ -92,6 +94,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class ActivityBase extends AppCompatActivity implements
         MultiSwipeRefreshLayout.CanChildScrollUpCallback  {
@@ -112,6 +115,9 @@ public class ActivityBase extends AppCompatActivity implements
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private NavigationView mNavigationView;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
+    private SharedPreferences mPreferences;
 
     private static final int NAVDRAWER_LAUNCH_DELAY = 250;
     protected static final int NAVDRAWER_ITEM_INVALID = -1;
@@ -164,8 +170,8 @@ public class ActivityBase extends AppCompatActivity implements
             Toast.makeText( this, msg, Toast.LENGTH_LONG ).show();
         }
 
-        // Enable Google Analytics
-        ( (Application) getApplication() ).getAnalyticsTracker();
+        mPreferences = PreferenceManager.getDefaultSharedPreferences( this );
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance( this );
     }
 
     @Override
@@ -280,6 +286,7 @@ public class ActivityBase extends AppCompatActivity implements
                 onBackPressed();
             }
         } );
+        mDrawerToggle.setDrawerSlideAnimationEnabled( false );
         mDrawerLayout.addDrawerListener( mDrawerToggle );
         updateDrawerToggle();
 
@@ -890,14 +897,99 @@ public class ActivityBase extends AppCompatActivity implements
             Date date = TimeUtils.parseFaaDate( s );
             if ( date != null ) {
                 Calendar start = Calendar.getInstance();
+                start.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
                 start.setTime( date );
                 start.add( Calendar.MINUTE, 9 * 60 + 1 );
-                Calendar end = (Calendar) start.clone();
-                end.add( Calendar.DATE, 56 );
+                Calendar end = Calendar.getInstance();
+                end.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+                end.setTime( date );
+                end.add( Calendar.DATE, 28 );
+                end.add( Calendar.MINUTE, 9 * 60 + 1 );
                 s = TimeUtils.formatDateRange( this, start, end );
                 tv.setText( s );
             }
         }
+    }
+
+    public String getPrefHomeAirport() {
+        return mPreferences.getString( PreferencesActivity.KEY_HOME_AIRPORT, "" );
+    }
+
+    public boolean getPrefUseGps() {
+        return mPreferences.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
+    }
+
+    public int getPrefNearbyRadius()
+    {
+        return Integer.valueOf(
+                mPreferences.getString( PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
+    }
+
+    public boolean getPrefShowExtraRunwayData(){
+        return mPreferences.getBoolean( PreferencesActivity.KEY_SHOW_EXTRA_RUNWAY_DATA, false );
+    }
+
+    public boolean getPrefShowGpsNotam(){
+        return mPreferences.getBoolean( PreferencesActivity.KEY_SHOW_GPS_NOTAMS, false );
+    }
+
+    public boolean getPrefAutoDownoadOnMeteredNetwork() {
+        return mPreferences.getBoolean( PreferencesActivity.KEY_AUTO_DOWNLOAD_ON_3G, false );
+    }
+
+    public boolean getPrefDisclaimerAgreed() {
+        return mPreferences.getBoolean( PreferencesActivity.KEY_DISCLAIMER_AGREED, false );
+    }
+
+    public boolean getPrefShowLocalTime() {
+        return mPreferences.getBoolean( PreferencesActivity.KEY_SHOW_LOCAL_TIME, false );
+    }
+
+    public String getPrefHomeScreen() {
+        return mPreferences.getString( PreferencesActivity.KEY_HOME_SCREEN, "A/FD" );
+    }
+
+    public boolean getPrefAlwaysShowNearby() {
+        return mPreferences.getBoolean( PreferencesActivity.KEY_ALWAYS_SHOW_NEARBY, false );
+    }
+
+    public boolean getPrefAnalyticsOptout() {
+        return  mPreferences.getBoolean( PreferencesActivity.KEY_ANALYTICS_OPTOUT, false );
+    }
+
+    public void logAnalyticsEvent( String event, Bundle parameters ) {
+        if ( !getPrefAnalyticsOptout() ) {
+            mFirebaseAnalytics.logEvent( event, parameters );
+        }
+    }
+
+    public void faLogSelectContent( String type, String id ) {
+        Bundle bundle = new Bundle();
+        bundle.putString( FirebaseAnalytics.Param.CONTENT_TYPE, type );
+        bundle.putString( FirebaseAnalytics.Param.ITEM_ID, id );
+        logAnalyticsEvent( FirebaseAnalytics.Event.SELECT_CONTENT, bundle );
+    }
+
+    public void faLogViewItemList( String categ ) {
+        Bundle bundle = new Bundle();
+        bundle.putString( FirebaseAnalytics.Param.ITEM_CATEGORY, categ );
+        logAnalyticsEvent( FirebaseAnalytics.Event.VIEW_ITEM_LIST, bundle );
+    }
+
+    public void faLogViewItem( String categ, String id ) {
+        faLogViewItem( categ, id, null );
+    }
+
+    public void faLogViewItem( String categ, String id, String name ) {
+        Bundle bundle = new Bundle();
+        bundle.putString( FirebaseAnalytics.Param.ITEM_CATEGORY, categ );
+        bundle.putString( FirebaseAnalytics.Param.ITEM_ID, id );
+        if ( name != null ) {
+            bundle.putString( FirebaseAnalytics.Param.ITEM_NAME, name );
+        }
+        logAnalyticsEvent( FirebaseAnalytics.Event.VIEW_ITEM, bundle );
+
+        faLogSelectContent( categ, id );
     }
 
 }

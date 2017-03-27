@@ -25,7 +25,9 @@ import android.support.v7.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.PreferencesActivity;
+import com.nadmm.airports.data.DatabaseManager;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -56,37 +58,31 @@ public class TimeUtils {
         FAA_FORMAT.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
     }
 
-    public static String formatDateTime( Context context, long millis ) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( context );
-        boolean local = prefs.getBoolean( PreferencesActivity.KEY_SHOW_LOCAL_TIME, false );
-        if ( local ) {
-            return formatDateTimeLocal( context, millis );
+    public static String formatDateTime( ActivityBase activity, long millis ) {
+        if ( activity.getPrefShowLocalTime() ) {
+            return formatDateTimeLocal( activity, millis );
         } else {
-            return formatDateTimeUTC( context, millis );
+            return formatDateTimeUTC( activity, millis );
         }
     }
 
-    public static String formatDateTimeYear( Context context, long millis ) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( context );
-        boolean local = prefs.getBoolean( PreferencesActivity.KEY_SHOW_LOCAL_TIME, false );
-        if ( local ) {
-            return formatDateTimeYearLocal( context, millis );
+    public static String formatDateTimeYear( ActivityBase activity, long millis ) {
+        if ( activity.getPrefShowLocalTime() ) {
+            return formatDateTimeYearLocal( activity, millis );
         } else {
-            return formatDateTimeYearUTC( context, millis );
+            return formatDateTimeYearUTC( activity, millis );
         }
     }
 
-    public static String formatDateRange( Context context, Calendar start, Calendar end ) {
-        return formatDateRange( context, start.getTimeInMillis(), end.getTimeInMillis() );
+    public static String formatDateRange( ActivityBase activity, Calendar start, Calendar end ) {
+        return formatDateRange( activity, start.getTimeInMillis(), end.getTimeInMillis() );
     }
 
-    public static String formatDateRange( Context context, long startMillis, long endMillis ) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( context );
-        boolean local = prefs.getBoolean( PreferencesActivity.KEY_SHOW_LOCAL_TIME, false );
-        if ( local ) {
-            return formatDateRangeLocal( context, startMillis, endMillis );
+    public static String formatDateRange( ActivityBase activity, long startMillis, long endMillis ) {
+        if ( activity.getPrefShowLocalTime() ) {
+            return formatDateRangeLocal( activity, startMillis, endMillis );
         } else {
-            return formatDateRangeUTC( context, startMillis, endMillis );
+            return formatDateRangeUTC( activity, startMillis, endMillis );
         }
     }
 

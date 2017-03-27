@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2015-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2015-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
     private LocationManager mLocationManager;
     private int mRadius;
     private boolean mPermissionDenied = false;
-    private boolean mLocationUpdatesEnabled = true;
+    private boolean mLocationUpdatesEnabled;
     private Location mLastLocation;
 
     private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
@@ -54,20 +54,14 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( getActivity() );
-        mRadius = Integer.valueOf(
-                prefs.getString( PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
+        mRadius = getActivityBase().getPrefNearbyRadius();
 
         Bundle args = getArguments();
-        if ( ( args != null ) && args.containsKey( DatabaseManager.LocationColumns.LOCATION ) ) {
+        if ( args != null && args.containsKey( DatabaseManager.LocationColumns.LOCATION ) ) {
             mLastLocation = args.getParcelable( DatabaseManager.LocationColumns.LOCATION );
-            if ( mLastLocation != null ) {
-                // A location is passed so current location is not needed
-                mLocationUpdatesEnabled = false;
-            }
-        } else {
-            mLastLocation = null;
         }
+
+        mLocationUpdatesEnabled = ( mLastLocation == null );
 
         if ( mLocationUpdatesEnabled ) {
             mLocationManager = (LocationManager) getActivity().getSystemService(
@@ -169,9 +163,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
                 providerOk = true;
             }
 
-            SharedPreferences prefs =
-                    PreferenceManager.getDefaultSharedPreferences( getActivity() );
-            boolean useGps = prefs.getBoolean( PreferencesActivity.KEY_LOCATION_USE_GPS, false );
+            boolean useGps = getActivityBase().getPrefUseGps();
             if ( useGps && mLocationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
                 mLocationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
                         30 * DateUtils.SECOND_IN_MILLIS, 0.5f * GeoUtils.METERS_PER_STATUTE_MILE,

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,19 +21,15 @@ package com.nadmm.airports.e6b;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
-public class WindTriangleFragment extends FragmentBase {
+public class WindTriangleFragment extends E6bFragmentBase {
 
     private static final double TWO_PI = 2*Math.PI;
 
@@ -46,22 +42,6 @@ public class WindTriangleFragment extends FragmentBase {
 
     private long mMode;
 
-    private TextWatcher mTextWatcher = new TextWatcher() {
-
-        @Override
-        public void onTextChanged( CharSequence s, int start, int before, int count ) {
-        }
-
-        @Override
-        public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
-        }
-
-        @Override
-        public void afterTextChanged( Editable s ) {
-            processInput();
-        }
-    };
-
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
@@ -73,25 +53,21 @@ public class WindTriangleFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mTasEdit = (EditText) findViewById( R.id.e6b_tas_edit );
-        mGsEdit = (EditText) findViewById( R.id.e6b_gs_edit );
-        mHdgEdit = (EditText) findViewById( R.id.e6b_hdg_edit );
-        mCrsEdit = (EditText) findViewById( R.id.e6b_crs_edit );
-        mWsEdit = (EditText) findViewById( R.id.e6b_ws_edit );
-        mWdirEdit = (EditText) findViewById( R.id.e6b_wdir_edit );
-
         Bundle args = getArguments();
         mMode = args.getLong( ListMenuFragment.MENU_ID );
-        String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
-        TextView label = (TextView) findViewById( R.id.e6b_label );
-        label.setText( title );
 
         setupUi();
 
         setFragmentContentShown( true );
     }
 
-    private void processInput() {
+    @Override
+    protected String getMessage() {
+        return null;
+    }
+
+    @Override
+    protected void processInput() {
         double tas = -1;
         double gs = -1;
         double hdg = -1;
@@ -232,6 +208,13 @@ public class WindTriangleFragment extends FragmentBase {
     }
 
     public void setupUi() {
+        mTasEdit = (EditText) findViewById( R.id.e6b_tas_edit );
+        mGsEdit = (EditText) findViewById( R.id.e6b_gs_edit );
+        mHdgEdit = (EditText) findViewById( R.id.e6b_hdg_edit );
+        mCrsEdit = (EditText) findViewById( R.id.e6b_crs_edit );
+        mWsEdit = (EditText) findViewById( R.id.e6b_ws_edit );
+        mWdirEdit = (EditText) findViewById( R.id.e6b_wdir_edit );
+
         if ( mMode == R.id.E6B_WIND_TRIANGLE_WIND ) {
             // Find wind speed and direction
             mTasEdit.addTextChangedListener( mTextWatcher );

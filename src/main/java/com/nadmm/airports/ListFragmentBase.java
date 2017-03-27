@@ -35,6 +35,8 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 public abstract class ListFragmentBase extends FragmentBase {
 
     private static final String LISTVIEW_STATE = "LISTVIEW_STATE";

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nadmm.airports.Application;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
@@ -120,6 +121,8 @@ public class LibraryPageFragment extends FragmentBase {
                 }
             }
         };
+
+        getActivityBase().faLogViewItem( "library", mCategory );
 
         super.onCreate( savedInstanceState );
     }
@@ -223,7 +226,7 @@ public class LibraryPageFragment extends FragmentBase {
         } else if ( !NetworkUtils.isNetworkAvailable( getActivity() ) ) {
             msg = "Not connected to the internet";
             mIsOk = false;
-        } else if ( NetworkUtils.canDownloadData( getActivity() ) ) {
+        } else if ( NetworkUtils.canDownloadData( getActivityBase() ) ) {
             msg = "Connected to an unmetered network";
             mIsOk = true;
         } else {
@@ -337,6 +340,12 @@ public class LibraryPageFragment extends FragmentBase {
         Intent service = makeServiceIntent( LibraryService.ACTION_GET_BOOK );
         service.putExtra( LibraryService.BOOK_NAME, name );
         getActivity().startService( service );
+
+        Bundle bundle = new Bundle();
+        bundle.putString( FirebaseAnalytics.Param.ITEM_CATEGORY, mCategory );
+        bundle.putString( FirebaseAnalytics.Param.ITEM_NAME, name );
+        bundle.putString( FirebaseAnalytics.Param.ITEM_ID, "pdf" );
+        getActivityBase().logAnalyticsEvent( FirebaseAnalytics.Event.VIEW_ITEM, bundle );
     }
 
     protected void deleteBook( String name ) {

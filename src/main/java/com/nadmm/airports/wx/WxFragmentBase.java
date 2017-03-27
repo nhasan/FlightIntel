@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,11 +30,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.UiUtils;
 
-public class WxFragmentBase extends FragmentBase {
+public abstract class WxFragmentBase extends FragmentBase {
     private IntentFilter mFilter;
     private BroadcastReceiver mReceiver;
 
@@ -86,5 +87,7 @@ public class WxFragmentBase extends FragmentBase {
 
     protected void handleBroadcast( Intent intent ) {
     }
+
+    protected abstract String getProduct();
 
 }

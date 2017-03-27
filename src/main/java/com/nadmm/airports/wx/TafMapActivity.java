@@ -56,6 +56,10 @@ public class TafMapActivity extends ActivityBase {
             return new Intent( getActivity(), TafService.class );
         }
 
+        @Override
+        protected String getProduct() {
+            return "tafmap";
+        }
     }
 
 }

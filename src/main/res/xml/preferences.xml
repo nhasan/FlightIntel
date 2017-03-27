@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,5 +84,10 @@
                 android:summaryOn="Time displayed using local timezone"
                 android:summaryOff="Time displayed using UTC timezone"
                 android:defaultValue="false" />
+        <SwitchPreferenceCompat
+                android:key="analytics_optout"
+                android:title="Opt out of analytics data"
+                android:summaryOn="Do not send anonymous analytics data"
+                android:summaryOff="Send anonymous analytics data" />
     </PreferenceCategory>
 </PreferenceScreen>

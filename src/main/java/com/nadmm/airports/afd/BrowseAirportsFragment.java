@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,8 @@ public class BrowseAirportsFragment extends ListFragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().faLogViewItemList( "airport (browse)" );
 
         if ( savedInstanceState != null && savedInstanceState.containsKey( BROWSE_MODE ) ) {
             mMode = savedInstanceState.getInt( BROWSE_MODE );

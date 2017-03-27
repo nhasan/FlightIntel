@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,15 +29,16 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Ils1;
 import com.nadmm.airports.data.DatabaseManager.Ils2;
 import com.nadmm.airports.data.DatabaseManager.Ils3;
 import com.nadmm.airports.data.DatabaseManager.Ils4;
 import com.nadmm.airports.data.DatabaseManager.Ils5;
 import com.nadmm.airports.data.DatabaseManager.Ils6;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
 
@@ -60,6 +61,10 @@ public final class IlsFragment extends FragmentBase {
         String siteNumber = args.getString( Ils1.SITE_NUMBER );
         String runwayId = args.getString( Ils1.RUNWAY_ID );
         String ilsType = args.getString( Ils1.ILS_TYPE );
+        String icaoCode = args.getString( Airports.ICAO_CODE );
+
+        getActivityBase().faLogViewItem( "ils", icaoCode, runwayId );
+
         setBackgroundTask( new IlsTask() ).execute( siteNumber, runwayId, ilsType );
     }
 

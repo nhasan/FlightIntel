@@ -22,6 +22,7 @@ package com.nadmm.airports.tfr;
 import android.content.Context;
 import android.location.Location;
 
+import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.TimeUtils;
 
@@ -120,7 +121,7 @@ public class TfrList implements Serializable {
             }
         }
 
-        public String formatTimeRange( Context context ) {
+        public String formatTimeRange( ActivityBase context ) {
             StringBuilder sb = new StringBuilder();
             if ( activeTime < Long.MAX_VALUE && expireTime < Long.MAX_VALUE ) {
                 sb.append( TimeUtils.formatDateRange( context, activeTime, expireTime ) );

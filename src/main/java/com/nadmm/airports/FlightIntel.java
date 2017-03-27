@@ -53,9 +53,7 @@ public class FlightIntel extends ActivityBase {
         String msg = null;
 
         PreferenceManager.setDefaultValues( this, R.xml.preferences, false );
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences( this );
-        // Check if user has agreed with the disclaimer
-        boolean agreed = prefs.getBoolean( PreferencesActivity.KEY_DISCLAIMER_AGREED, false );
+        boolean agreed = getPrefDisclaimerAgreed();
         Intent intent = !agreed? new Intent( this, DisclaimerActivity.class ) : null;
         if ( intent == null ) {
             if ( !SystemUtils.isExternalStorageAvailable() ) {
@@ -82,7 +80,7 @@ public class FlightIntel extends ActivityBase {
 
             Resources res = getResources();
             String afd = res.getString( R.string.afd );
-            String home = prefs.getString( PreferencesActivity.KEY_HOME_SCREEN, afd );
+            String home = getPrefHomeScreen();
             if ( home.equals( afd ) ) {
                 intent = new Intent( this, AfdMainActivity.class );
             } else {

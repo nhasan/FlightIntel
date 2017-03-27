@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,8 +60,9 @@ public class DtppFragment extends FragmentBase {
     protected HashMap<String, View> mDtppRowMap = new HashMap<>();
     protected ArrayList<String> mPendingCharts = new ArrayList<>();
     protected String mTppCycle;
-    protected String mFaaCode;
     protected String mTppVolume;
+    protected String mFaaCode;
+    protected String mIcaoCode;
     protected boolean mExpired = false;
     protected View.OnClickListener mOnClickListener;
     protected IntentFilter mFilter;
@@ -172,7 +173,8 @@ public class DtppFragment extends FragmentBase {
         }
 
         if ( toDate != null ) {
-            addRow( layout, "Valid", TimeUtils.formatDateTime( getActivity(), toDate.getTime() ) );
+            addRow( layout, "Valid", TimeUtils.formatDateTime( getActivityBase(),
+                    toDate.getTime() ) );
 
             Cursor dtpp = result[ 2 ];
             dtpp.moveToFirst();
@@ -308,8 +310,8 @@ public class DtppFragment extends FragmentBase {
                 pdfNames.add( pdfName );
             }
         }
-        UiUtils.showToast( getActivity(),
-                String.format( "Downloading %d charts in the background", pdfNames.size() ) );
+        UiUtils.showToast( getActivity(), String.format( Locale.US,
+                "Downloading %d charts in the background", pdfNames.size() ) );
         checkTppCharts( pdfNames, true );
     }
 
@@ -432,6 +434,7 @@ public class DtppFragment extends FragmentBase {
             result[ index++ ] = apt;
 
             mFaaCode = apt.getString( apt.getColumnIndex( DatabaseManager.Airports.FAA_CODE ) );
+            mIcaoCode = apt.getString( apt.getColumnIndex( DatabaseManager.Airports.ICAO_CODE ) );
 
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_DTPP );
 
@@ -470,6 +473,9 @@ public class DtppFragment extends FragmentBase {
             showAirportTitle( apt );
             showDtppSummary( result );
             showDtppCharts( result );
+
+            getActivityBase().faLogViewItem( "dtpp", mIcaoCode );
+
             setFragmentContentShown( true );
             return true;
         }

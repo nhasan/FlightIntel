@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
 
 package com.nadmm.airports.e6b;
 
-import java.util.Locale;
-
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,13 +26,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
-public class TopOfDescentFragment extends FragmentBase {
+import java.util.Locale;
+
+public class TopOfDescentFragment extends E6bFragmentBase {
 
     EditText mInitAltEdit;
     EditText mDesiredAltEdit;
@@ -69,15 +66,6 @@ public class TopOfDescentFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        Bundle args = getArguments();
-        String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
-        TextView label = (TextView) findViewById( R.id.e6b_label );
-        label.setText( title );
-
-        TextView msg = (TextView) findViewById( R.id.e6b_msg );
-        msg.setText( "Find the distance at which to start the descent to arrive at the" +
-                " destination at the desired altitude." );
-
         mInitAltEdit = (EditText) findViewById( R.id.e6b_edit_initial_alt );
         mDesiredAltEdit = (EditText) findViewById( R.id.e6b_edit_desired_alt );
         mGsEdit = (EditText) findViewById( R.id.e6b_edit_gs );
@@ -92,7 +80,14 @@ public class TopOfDescentFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    private void processInput() {
+    @Override
+    protected String getMessage() {
+        return "Find the distance at which to start the descent to arrive at the" +
+                " destination at the desired altitude.";
+    }
+
+    @Override
+    protected void processInput() {
         double initAlt = Double.MAX_VALUE;
         double desiredAlt = Double.MAX_VALUE;
         double gs = Double.MAX_VALUE;

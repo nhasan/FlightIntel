@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,9 @@ public final class RemarksFragment extends FragmentBase {
 
     protected void showDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
+
+        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        getActivityBase().faLogViewItem( "remarks", icaoCode );
 
         showAirportTitle( apt );
         showRemarksDetails( result );

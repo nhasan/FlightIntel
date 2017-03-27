@@ -73,6 +73,10 @@ public class AirSigmetMapActivity extends ActivityBase {
             return new Intent( getActivity(), AirSigmetService.class );
         }
 
+        @Override
+        protected String getProduct() {
+            return "airsigmetmap";
+        }
     }
 
 }

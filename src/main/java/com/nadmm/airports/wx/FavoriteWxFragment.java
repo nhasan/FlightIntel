@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +34,11 @@ public class FavoriteWxFragment extends WxListFragmentBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
-        setEmptyText( "No favorite wx stations selected." );
         super.onCreate( savedInstanceState );
+
+        getActivityBase().faLogViewItemList( "wx (favorite)" );
+
+        setEmptyText( "No favorite wx stations selected." );
     }
 
     @Override

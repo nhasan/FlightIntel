@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -122,11 +122,8 @@ public final class AirportDetailsFragment extends FragmentBase {
 
         };
 
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences( getActivity() );
-        mRadius = Integer.valueOf( prefs.getString(
-                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
-        mHome = prefs.getString( PreferencesActivity.KEY_HOME_AIRPORT, "" );
+        mRadius = getActivityBase().getPrefNearbyRadius();
+        mHome = getActivityBase().getPrefHomeAirport();
     }
 
     @Override
@@ -189,11 +186,13 @@ public final class AirportDetailsFragment extends FragmentBase {
             String path = intent.getStringExtra( DafdService.PDF_PATH );
             if ( path != null ) {
                 SystemUtils.startPDFViewer( getActivity(), path );
+                getActivityBase().faLogViewItem( "dafd", mIcaoCode );
             }
         } else if ( action.equals( ClassBService.ACTION_GET_CLASSB_GRAPHIC ) ) {
             String path = intent.getStringExtra( ClassBService.PDF_PATH );
             if ( path != null ) {
                 SystemUtils.startPDFViewer( getActivity(), path );
+                getActivityBase().faLogViewItem( "classb", mIcaoCode );
             }
         }
     }
@@ -203,17 +202,19 @@ public final class AirportDetailsFragment extends FragmentBase {
         service.setAction( DafdService.ACTION_GET_AFD );
         service.putExtra( DafdService.CYCLE_NAME, afdCycle );
         service.putExtra( DafdService.PDF_NAME, pdfName );
-        getActivity().startService( service );
+        getActivityBase().startService( service );
     }
 
     protected void getClassBGraphic( String faaCode ) {
         Intent service = new Intent( getActivity(), ClassBService.class );
         service.setAction( ClassBService.ACTION_GET_CLASSB_GRAPHIC );
         service.putExtra( Airports.FAA_CODE, faaCode );
-        getActivity().startService( service );
+        getActivityBase().startService( service );
     }
 
     protected void showDetails( Cursor[] result ) {
+        getActivityBase().faLogViewItem( "airport", mIcaoCode );
+
         Cursor apt = result[ 0 ];
 
         showAirportTitle( apt );
@@ -859,7 +860,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     protected void requestMetars( boolean force ) {
-        boolean cacheOnly = !NetworkUtils.canDownloadData( getActivity() );
+        boolean cacheOnly = !NetworkUtils.canDownloadData( getActivityBase() );
         requestMetars( NoaaService.ACTION_GET_METAR, force, cacheOnly );
     }
 

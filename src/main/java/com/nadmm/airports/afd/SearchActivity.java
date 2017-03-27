@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nadmm.airports.FragmentActivityBase;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.data.DatabaseManager.Airports;
@@ -63,8 +64,8 @@ public class SearchActivity extends FragmentActivityBase {
             // User clicked on a suggestion
             Bundle extra = intent.getExtras();
             String siteNumber = extra.getString( SearchManager.EXTRA_DATA_KEY );
-            Intent apt = new Intent( this, AirportActivity.class );
-            apt.putExtra( Airports.SITE_NUMBER, siteNumber );
+            Intent apt = new Intent( this, AirportActivity.class )
+                .putExtra( Airports.SITE_NUMBER, siteNumber );
             startActivity( apt );
             finish();
         }
@@ -72,6 +73,7 @@ public class SearchActivity extends FragmentActivityBase {
 
     @SuppressWarnings("deprecation")
     private void showResults( String query ) {
+        logAnalyticsEvent( query );
         Cursor c = managedQuery( AirportsProvider.CONTENT_URI, null, null,
                 new String[]{ query }, null );
         if ( c.getCount() == 1 ) {
@@ -80,14 +82,19 @@ public class SearchActivity extends FragmentActivityBase {
             c.moveToFirst();
             String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
             c.close();
-            Intent apt = new Intent( this, AirportActivity.class );
-            apt.putExtra( Airports.SITE_NUMBER, siteNumber );
-            startActivity( apt );
-            finish();
+            Intent intent = new Intent( Intent.ACTION_VIEW )
+                .putExtra( SearchManager.EXTRA_DATA_KEY, siteNumber );
+            onNewIntent( intent );
+        } else {
+            startManagingCursor( c );
+            mFragment.setSearchCursor( c );
         }
+    }
 
-        startManagingCursor( c );
-        mFragment.setSearchCursor( c );
+    protected void logAnalyticsEvent( String query ) {
+        Bundle bundle = new Bundle();
+        bundle.putString( FirebaseAnalytics.Param.SEARCH_TERM, query );
+        logAnalyticsEvent( FirebaseAnalytics.Event.SEARCH, bundle );
     }
 
     public static class SearchFragment extends ListFragmentBase {

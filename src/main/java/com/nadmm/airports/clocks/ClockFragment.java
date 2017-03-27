@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,13 +65,11 @@ public class ClockFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences( getActivity() );
-        mHome = prefs.getString( PreferencesActivity.KEY_HOME_AIRPORT, "" );
+        mHome = getActivityBase().getPrefHomeAirport();
+        getActivityBase().faLogViewItem( "clocks", "clock" );
+        setBackgroundTask( new ClockTask() ).execute();
 
         setFragmentContentShown( true );
-
-        setBackgroundTask( new ClockTask() ).execute();
     }
 
     @Override

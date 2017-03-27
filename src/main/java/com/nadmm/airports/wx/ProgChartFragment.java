@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,4 +63,8 @@ public class ProgChartFragment extends WxMapFragmentBase {
         return new Intent( getActivity(), ProgChartService.class );
     }
 
+    @Override
+    protected String getProduct() {
+        return "progchart";
+    }
 }

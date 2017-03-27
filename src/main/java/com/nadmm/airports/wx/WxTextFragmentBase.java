@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,11 +116,13 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
 
     private void requestWxText( String code ) {
         setProgressBarVisible( true );
+
         Intent service = getServiceIntent();
         service.setAction( mAction );
         service.putExtra( NoaaService.STATION_ID, code );
-
         getActivity().startService( service );
+
+        getActivityBase().faLogViewItem( getProduct(), code );
     }
 
     private void setProgressBarVisible( boolean visible ) {

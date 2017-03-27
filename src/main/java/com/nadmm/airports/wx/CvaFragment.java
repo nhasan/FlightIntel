@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,11 @@ public class CvaFragment extends WxMapFragmentBase {
         setHelpText( "By FAA policy, CVA is a Supplementary Weather Product for "
                 + "enhanced situational awareness only. CVA must only be used with primary "
                 + "products such as METARs, TAFs and AIRMETs." );
+    }
+
+    @Override
+    protected String getProduct() {
+        return "cva";
     }
 
     @Override

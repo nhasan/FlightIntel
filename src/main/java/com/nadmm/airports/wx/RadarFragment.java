@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,4 +68,8 @@ public class RadarFragment extends WxMapFragmentBase {
         return new Intent( getActivity(), RadarService.class );
     }
 
+    @Override
+    protected String getProduct() {
+        return "radar";
+    }
 }

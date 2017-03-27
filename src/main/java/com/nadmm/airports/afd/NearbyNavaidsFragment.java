@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,15 +61,15 @@ public final class NearbyNavaidsFragment extends FragmentBase {
     int mRadius;
 
     private final class NavaidData implements Comparable<NavaidData> {
-        public String NAVAID_ID;
-        public String NAVAID_TYPE;
-        public String NAVAID_NAME;
-        public String NAVAID_FREQ;
-        public String TACAN_CHANNEL;
-        public int RADIAL;
-        public float DISTANCE;
+        private String NAVAID_ID;
+        private String NAVAID_TYPE;
+        private String NAVAID_NAME;
+        private String NAVAID_FREQ;
+        private String TACAN_CHANNEL;
+        private int RADIAL;
+        private float DISTANCE;
 
-        public void setFromCursor( Cursor c, Location location ) {
+        private void setFromCursor( Cursor c, Location location ) {
             // Calculate the distance and bearing to this navaid from this airport
             NAVAID_ID = c.getString( c.getColumnIndex( Nav1.NAVAID_ID ) );
             NAVAID_TYPE= c.getString( c.getColumnIndex( Nav1.NAVAID_TYPE ) );
@@ -124,10 +124,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
 
         setActionBarTitle( "Nearby Navaids", "" );
 
-        SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences( getActivity() );
-        mRadius = Integer.valueOf( prefs.getString(
-                PreferencesActivity.KEY_LOCATION_NEARBY_RADIUS, "30" ) );
+        mRadius = getActivityBase().getPrefNearbyRadius();
 
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
@@ -136,6 +133,9 @@ public final class NearbyNavaidsFragment extends FragmentBase {
 
     protected void showDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
+
+        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        getActivityBase().faLogViewItem( "navaids", icaoCode );
 
         Cursor vor = result[ 1 ];
         Cursor ndb = result[ 2 ];
@@ -146,6 +146,8 @@ public final class NearbyNavaidsFragment extends FragmentBase {
             setContentMsg( String.format( Locale.US, "No navaids found within %d NM radius",
                     mRadius ) );
         }
+
+        getActivityBase().faLogViewItemList( "navaid" );
 
         setFragmentContentShown( true );
     }
@@ -178,7 +180,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
         if ( ndb != null && ndb.moveToFirst() ) {
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_ndb_layout );
             do {
-                String navaidId = ndb.getString( vor.getColumnIndex( Nav1.NAVAID_ID ) );
+                String navaidId = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_ID ) );
                 String freq = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
                 String name = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_NAME ) );
                 String type = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_TYPE ) );

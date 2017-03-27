@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,8 @@ import com.nadmm.airports.wx.Pirep.IcingCondition;
 import com.nadmm.airports.wx.Pirep.PirepEntry;
 import com.nadmm.airports.wx.Pirep.SkyCondition;
 import com.nadmm.airports.wx.Pirep.TurbulenceCondition;
+
+import java.util.Locale;
 
 public class PirepFragment extends WxFragmentBase {
 
@@ -98,6 +100,11 @@ public class PirepFragment extends WxFragmentBase {
             showPirep( intent );
             setRefreshing( false );
         }
+    }
+
+    @Override
+    protected String getProduct() {
+        return "pirep";
     }
 
     @Override
@@ -181,6 +188,8 @@ public class PirepFragment extends WxFragmentBase {
         service.putExtra( PirepService.LOCATION, mLocation );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
+
+        getActivityBase().faLogViewItem( getProduct(), mStationId );
     }
 
     protected void showPirep( Intent intent ) {
@@ -191,19 +200,22 @@ public class PirepFragment extends WxFragmentBase {
 
         if ( !pirep.entries.isEmpty() ) {
             TextView tv = (TextView) findViewById( R.id.pirep_title_msg );
-            tv.setText( String.format( "%d PIREPs reported within %d NM of %s during last %d hours",
+            tv.setText( String.format( Locale.US,
+                    "%d PIREPs reported within %d NM of %s during last %d hours",
                     pirep.entries.size(), PIREP_RADIUS_NM, mStationId, PIREP_HOURS_BEFORE ) );
             for ( PirepEntry entry : pirep.entries ) {
                 showPirepEntry( layout, entry );
             }
         } else {
             TextView tv = (TextView) findViewById( R.id.pirep_title_msg );
-            tv.setText( String.format( "No PIREPs reported within %d NM of %s in last %d hours",
+            tv.setText( String.format( Locale.US,
+                    "No PIREPs reported within %d NM of %s in last %d hours",
                     PIREP_RADIUS_NM, mStationId, PIREP_HOURS_BEFORE ) );
         }
 
         TextView tv = (TextView) findViewById( R.id.wx_fetch_time );
-        tv.setText( "Fetched on "+TimeUtils.formatDateTime( getActivity(), pirep.fetchTime )  );
+        tv.setText( String.format( Locale.US, "Fetched on %s",
+                TimeUtils.formatDateTime( getActivityBase(), pirep.fetchTime ) ) );
         tv.setVisibility( View.VISIBLE );
 
         setFragmentContentShown( true );
@@ -215,10 +227,10 @@ public class PirepFragment extends WxFragmentBase {
         TextView tv = (TextView) item.findViewById( R.id.pirep_title );
         if ( entry.flags.contains( Flags.BadLocation ) ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
-            tv.setText( String.format( "%.0f NM %s approx.", entry.distanceNM, dir ) );
+            tv.setText( String.format( Locale.US, "%.0f NM %s approx.", entry.distanceNM, dir ) );
         } else if ( entry.distanceNM > 0 ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
-            tv.setText( String.format( "%.0f NM %s", entry.distanceNM, dir ) );
+            tv.setText( String.format( Locale.US, "%.0f NM %s", entry.distanceNM, dir ) );
         } else {
             tv.setText( "On Site" );
         }
@@ -234,7 +246,7 @@ public class PirepFragment extends WxFragmentBase {
         addRow( details, "Type", entry.reportType );
         addRow( details, "Aircraft", entry.aircraftRef );
 
-        String time = TimeUtils.formatDateTime( getActivity(), entry.observationTime );
+        String time = TimeUtils.formatDateTime( getActivityBase(), entry.observationTime );
         addRow( details, "Time", time );
 
         if ( entry.altitudeFeetMSL < Integer.MAX_VALUE ) {
@@ -256,7 +268,7 @@ public class PirepFragment extends WxFragmentBase {
         }
 
         if ( entry.windSpeedKnots < Integer.MAX_VALUE ) {
-            addRow( details, "Winds", String.format( "%s (true) at %d knots",
+            addRow( details, "Winds", String.format( Locale.US, "%s (true) at %d knots",
                     FormatUtils.formatDegrees( entry.windDirDegrees ), entry.windSpeedKnots ) );
         }
 

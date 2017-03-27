@@ -56,6 +56,10 @@ public class MetarMapActivity extends ActivityBase {
             return new Intent( getActivity(), MetarService.class );
         }
 
+        @Override
+        protected String getProduct() {
+            return "metarmap";
+        }
     }
 
 }

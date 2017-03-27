@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,43 +19,22 @@
 
 package com.nadmm.airports.e6b;
 
-import java.util.Locale;
-
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
-public class ClimbRateFragment extends FragmentBase {
+import java.util.Locale;
+
+public class ClimbRateFragment extends E6bFragmentBase {
 
     private EditText mClimbGradEdit;
     private EditText mGsEdit;
     private EditText mClimbRateEdit;
     private EditText mClimbGradPctEdit;
-
-    private TextWatcher mTextWatcher = new TextWatcher() {
-
-        @Override
-        public void onTextChanged( CharSequence s, int start, int before, int count ) {
-        }
-
-        @Override
-        public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
-        }
-
-        @Override
-        public void afterTextChanged( Editable s ) {
-            processInput();
-        }
-    };
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -68,14 +47,6 @@ public class ClimbRateFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        Bundle args = getArguments();
-        String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
-        TextView label = (TextView) findViewById( R.id.e6b_label );
-        label.setText( title );
-
-        TextView msg = (TextView) findViewById( R.id.e6b_msg );
-        msg.setText( "Find the minimum required climb rate for a departure procedure" );
-
         mClimbGradEdit = (EditText) findViewById( R.id.e6b_edit_climb_grad );
         mGsEdit = (EditText) findViewById( R.id.e6b_edit_gs );
         mClimbRateEdit = (EditText) findViewById( R.id.e6b_edit_climb_rate );
@@ -87,7 +58,13 @@ public class ClimbRateFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    private void processInput() {
+    @Override
+    protected String getMessage() {
+        return "Find the minimum required climb rate for a departure procedure";
+    }
+
+    @Override
+    protected void processInput() {
         double climbGrad = Double.MAX_VALUE;
         double gs = Double.MAX_VALUE;
 

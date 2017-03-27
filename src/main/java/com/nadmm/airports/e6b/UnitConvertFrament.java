@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,16 +20,19 @@
 package com.nadmm.airports.e6b;
 
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import com.nadmm.airports.FragmentBase;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
@@ -37,7 +40,7 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Set;
 
-public class UnitConvertFrament extends FragmentBase implements OnItemSelectedListener {
+public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelectedListener {
 
     private static final Unit[] mTemperatureUnits = new Unit[] {
         new Celsius(),
@@ -142,21 +145,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         mToUnitValue = (EditText) findViewById( R.id.unit_to_value );
         mToUnitValue.setFocusable( false );
         mFromUnitValue = (EditText) findViewById( R.id.unit_from_value );
-        mFromUnitValue.addTextChangedListener( new TextWatcher() {
-
-            @Override
-            public void onTextChanged( CharSequence s, int start, int before, int count ) {
-            }
-
-            @Override
-            public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
-            }
-
-            @Override
-            public void afterTextChanged( Editable s ) {
-                doConversion();
-            }
-        } );
+        mFromUnitValue.addTextChangedListener( mTextWatcher );
 
         Button btn = (Button) findViewById( R.id.btnReset );
         btn.setOnClickListener( new OnClickListener() {
@@ -172,6 +161,11 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
     }
 
     @Override
+    protected String getMessage() {
+        return null;
+    }
+
+    @Override
     public void onItemSelected( AdapterView<?> parent, View view, int pos, long id ) {
         int spinnerId = parent.getId();
         if ( spinnerId == R.id.unit_type_spinner ) {
@@ -184,7 +178,7 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
         } else {
             Unit fromUnit = (Unit) mFromUnitSpinner.getSelectedItem();
             mFromUnitValue.setInputType( fromUnit.getInputType() );
-            doConversion();
+            processInput();
         }
     }
 
@@ -192,7 +186,8 @@ public class UnitConvertFrament extends FragmentBase implements OnItemSelectedLi
     public void onNothingSelected( AdapterView<?> parent ) {
     }
 
-    protected void doConversion() {
+    @Override
+    protected void processInput() {
         if ( mFromUnitSpinner.getSelectedItemPosition() >= 0
              && mToUnitSpinner.getSelectedItemPosition() >= 0 ) {
             try {

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,6 +105,11 @@ public class MetarFragment extends WxFragmentBase {
             showMetar( intent );
             setRefreshing( false );
         }
+    }
+
+    @Override
+    protected String getProduct() {
+        return "metar";
     }
 
     @Override
@@ -215,6 +220,8 @@ public class MetarFragment extends WxFragmentBase {
         service.putExtra( NoaaService.HOURS_BEFORE, METAR_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
+
+        getActivityBase().faLogViewItem( "metar", stationId );
     }
 
     protected void showMetar( Intent intent ) {
@@ -437,7 +444,8 @@ public class MetarFragment extends WxFragmentBase {
 
         // Fetch time
         tv = (TextView) findViewById( R.id.wx_fetch_time );
-        tv.setText( "Fetched on " + TimeUtils.formatDateTime( getActivity(), metar.fetchTime ) );
+        tv.setText( String.format( Locale.US, "Fetched on %s",
+                TimeUtils.formatDateTime( getActivityBase(), metar.fetchTime ) ) );
         tv.setVisibility( View.VISIBLE );
 
         setFragmentContentShown( true );

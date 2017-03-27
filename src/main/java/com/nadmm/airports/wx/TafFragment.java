@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,6 +101,11 @@ public class TafFragment extends WxFragmentBase {
             showTaf( intent );
             setRefreshing( false );
         }
+    }
+
+    @Override
+    protected String getProduct() {
+        return "taf";
     }
 
     @Override
@@ -257,6 +262,8 @@ public class TafFragment extends WxFragmentBase {
         service.putExtra( NoaaService.HOURS_BEFORE, TAF_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
+
+        getActivityBase().faLogViewItem( "taf", stationId );
     }
 
     protected void showTaf( Intent intent ) {
@@ -310,9 +317,12 @@ public class TafFragment extends WxFragmentBase {
             fcstType = "Normal";
         }
         addRow( layout, "Forecast type", fcstType );
-        addRow( layout, "Issued at", TimeUtils.formatDateTime( getActivity(), taf.issueTime ) );
-        addRow( layout, "Valid from", TimeUtils.formatDateTime( getActivity(), taf.validTimeFrom ) );
-        addRow( layout, "Valid to", TimeUtils.formatDateTime( getActivity(), taf.validTimeTo ) );
+        addRow( layout, "Issued at",
+                TimeUtils.formatDateTime( getActivityBase(), taf.issueTime ) );
+        addRow( layout, "Valid from",
+                TimeUtils.formatDateTime( getActivityBase(), taf.validTimeFrom ) );
+        addRow( layout, "Valid to",
+                TimeUtils.formatDateTime( getActivityBase(), taf.validTimeTo ) );
         if ( taf.remarks != null && taf.remarks.length() > 0 && !taf.remarks.equals( "AMD" ) ) {
             addRow( layout, "\u2022 "+taf.remarks );
         }
@@ -342,8 +352,8 @@ public class TafFragment extends WxFragmentBase {
                 sb.append( forecast.changeIndicator );
                 sb.append( " " );
             }
-            sb.append( TimeUtils.formatDateRange(
-                    getActivity(), forecast.timeFrom, forecast.timeTo ) );
+            sb.append( TimeUtils.formatDateRange( getActivityBase(),
+                    forecast.timeFrom, forecast.timeTo ) );
             tv = (TextView) grp_layout.findViewById( R.id.group_extra );
             tv.setVisibility( View.GONE );
             tv = (TextView) grp_layout.findViewById( R.id.group_name );
@@ -355,13 +365,14 @@ public class TafFragment extends WxFragmentBase {
             LinearLayout fcst_layout = (LinearLayout) grp_layout.findViewById( R.id.group_details );
 
             if ( forecast.probability < Integer.MAX_VALUE ) {
-                addRow( fcst_layout, "Probability", String.format( "%d%%", forecast.probability ) );
+                addRow( fcst_layout, "Probability", String.format( Locale.US,
+                        "%d%%", forecast.probability ) );
             }
 
             if ( forecast.changeIndicator != null
                     && forecast.changeIndicator.equals( "BECMG" ) ) {
                 addRow( fcst_layout, "Becoming at", TimeUtils.formatDateTime(
-                        getActivity(), forecast.timeBecoming ) );
+                        getActivityBase(), forecast.timeBecoming ) );
             }
 
             if ( forecast.windSpeedKnots < Integer.MAX_VALUE ) {
@@ -436,7 +447,8 @@ public class TafFragment extends WxFragmentBase {
         }
 
         tv = (TextView) findViewById( R.id.wx_fetch_time );
-        tv.setText( "Fetched on "+TimeUtils.formatDateTime( getActivity(), taf.fetchTime )  );
+        tv.setText( String.format( Locale.US, "Fetched on %s",
+                TimeUtils.formatDateTime( getActivityBase(), taf.fetchTime )  ) );
         tv.setVisibility( View.VISIBLE );
 
         setFragmentContentShown( true );

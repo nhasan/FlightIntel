@@ -90,6 +90,10 @@ public class PirepMapActivity extends ActivityBase {
             return new Intent( getActivity(), PirepService.class );
         }
 
+        @Override
+        protected String getProduct() {
+            return "pirepmap";
+        }
     }
 
 }

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,19 +50,14 @@ public class TfrDetailFragment extends FragmentBase {
     public void onViewCreated( View view, Bundle savedInstanceState ) {
         super.onViewCreated( view, savedInstanceState );
 
-        Context context = getActivity();
-
         Button btnGraphic = (Button) view.findViewById( R.id.btnViewGraphic );
         btnGraphic.setOnClickListener( new OnClickListener() {
 
             @Override
             public void onClick( View v ) {
-                //Bundle args = new Bundle();
-                //args.putSerializable( TfrImageService.TFR_ENTRY, mTfr );
                 Intent intent = new Intent( getActivity(), TfrImageActivity.class );
                 intent.putExtra( TfrListActivity.EXTRA_TFR, mTfr );
                 startActivity( intent );
-                //getActivityBase().replaceFragment( TfrImageFragment.class, args );
             }
         } );
 
@@ -75,15 +70,17 @@ public class TfrDetailFragment extends FragmentBase {
         addRow( layout, "Type", mTfr.type );
         addRow( layout, "Status", mTfr.isExpired()? "Expired"
                 : mTfr.isActive()? "Active" : "Inactive" );
-        addRow( layout, "Time", mTfr.formatTimeRange( context ) );
+        addRow( layout, "Time", mTfr.formatTimeRange( getActivityBase() ) );
         addRow( layout, "Altitudes", mTfr.formatAltitudeRange() );
 
         layout = (LinearLayout) view.findViewById( R.id.tfr_time_layout );
         if ( mTfr.createTime < Long.MAX_VALUE ) {
-            addRow( layout, "Created", TimeUtils.formatDateTimeYear( context, mTfr.createTime ) );
+            addRow( layout, "Created",
+                    TimeUtils.formatDateTimeYear( getActivityBase(), mTfr.createTime ) );
         }
         if ( mTfr.modifyTime < Long.MAX_VALUE && mTfr.modifyTime > mTfr.createTime ) {
-            addRow( layout, "Modified", TimeUtils.formatDateTimeYear( context, mTfr.modifyTime ) );
+            addRow( layout, "Modified",
+                    TimeUtils.formatDateTimeYear( getActivityBase(), mTfr.modifyTime ) );
         }
 
         layout = (LinearLayout) view.findViewById( R.id.tfr_text_layout );
@@ -93,8 +90,6 @@ public class TfrDetailFragment extends FragmentBase {
         tv.setText( "Depicted TFR data may not be a complete listing. Pilots should not use "
                 + "the information for flight planning purposes. For the latest information, "
                 + "call your local Flight Service Station at 1-800-WX-BRIEF." );
-
-        setFragmentContentShown( true );
     }
 
     @Override
@@ -103,6 +98,10 @@ public class TfrDetailFragment extends FragmentBase {
 
         setActionBarTitle( mTfr.name );
         setActionBarSubtitle( "TFR Details" );
+
+        getActivityBase().faLogViewItem( "tfr", mTfr.notamId, mTfr.name );
+
+        setFragmentContentShown( true );
     }
 
 }
