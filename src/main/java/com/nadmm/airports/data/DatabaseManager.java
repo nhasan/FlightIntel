@@ -668,6 +668,12 @@ public class DatabaseManager {
         private Favorites() {}
     }
 
+    public static final class Recents implements BaseColumns {
+        public static final String TABLE_NAME = "recents";
+        public static final String SITE_NUMBER = "SITE_NUMBER";
+        public static final String LAST_USED = "LAST_USED";
+    }
+
     public static DatabaseManager instance( Context context ) {
         synchronized ( sLock ) {
             if ( sInstance == null ) {
@@ -728,6 +734,10 @@ public class DatabaseManager {
         return getFavorites( "APT" );
     }
 
+    public ArrayList<String> getAptRecents() {
+        return getFavorites( "RECENTS" );
+    }
+
     public ArrayList<String> getWxFavorites() {
         return getFavorites( "WX" );
     }
@@ -770,6 +780,20 @@ public class DatabaseManager {
         values.put( Favorites.TYPE, "APT" );
         values.put( Favorites.LOCATION_ID, siteNumber );
         return userDataDb.insert( Favorites.TABLE_NAME, null, values );
+    }
+
+    public void addToRecentAirports( String siteNumber ) {
+        SQLiteDatabase userDataDb = getUserDataDb();
+
+        ContentValues values = new ContentValues();
+        values.put( Recents.SITE_NUMBER, siteNumber );
+        values.put( Recents.LAST_USED, "DATETIME('now')" );
+        userDataDb.replace( Favorites.TABLE_NAME, null, values );
+
+        userDataDb.execSQL( "DELETE FROM "+Recents.TABLE_NAME
+                +" WHERE "+Recents.SITE_NUMBER+" NOT IN ("
+                +" SELECT "+Recents.SITE_NUMBER+" FROM "+Recents.TABLE_NAME
+                +" ORDER BY "+Recents.LAST_USED+" DESC LIMIT 10)");
     }
 
     public int removeFromFavoriteAirports( String siteNumber ) {
@@ -905,19 +929,15 @@ public class DatabaseManager {
                     +Favorites.TYPE+" TEXT, "
                     +Favorites.LOCATION_ID+" TEXT"
                     +" )" );
+            Log.i( TAG, "Creating 'recents' table" );
+            db.execSQL( "CREATE TABLE "+Recents.TABLE_NAME +" ( "
+                    +Recents.SITE_NUMBER+" TEXT, "
+                    +Recents.LAST_USED+" TEXT"
+                    +" )" );
         }
 
         @Override
         public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
-            if ( oldVersion == 1 && newVersion == 2 ) {
-                Log.i( TAG, "Ugrading "+Favorites.TABLE_NAME+" db "+oldVersion+" -> "+newVersion );
-                String oldTable = Favorites.TABLE_NAME+"_old";
-                db.execSQL( "ALTER TABLE "+Favorites.TABLE_NAME+" RENAME TO "+oldTable );
-                onCreate( db );
-                db.execSQL( "INSERT INTO "+Favorites.TABLE_NAME
-                        +" SELECT 'APT', SITE_NUMBER FROM "+oldTable );
-                db.execSQL( "DROP TABLE "+oldTable );
-            }
         }
 
     }
