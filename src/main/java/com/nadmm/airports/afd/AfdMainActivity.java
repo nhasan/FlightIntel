@@ -34,14 +34,12 @@ public final class AfdMainActivity extends TabPagerActivityBase {
     private final String[] mTabTitles = new String[] {
             "Favorites",
             "Nearby",
-            "Recents",
             "Browse"
     };
 
     private final Class<?>[] mClasses = new Class<?>[] {
             FavoriteAirportsFragment.class,
             NearbyAirportsFragment.class,
-            RecentAirportsFragment.class,
             BrowseAirportsFragment.class
     };
 
