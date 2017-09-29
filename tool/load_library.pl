@@ -85,7 +85,7 @@ insert_category( "safety", "SAFETY" );
 insert_category( "regs", "REGULATIONS" );
 insert_category( "risk", "RISK MANAGEMENT" );
 insert_category( "circular", "ADVISORY CIRCULARS" );
-insert_category( "testguide", "TEST GUIDE" );
+insert_category( "testguide", "TRAINING" );
 insert_category( "pts", "PTS" );
 insert_category( "misc", "MISCELLANEOUS" );
 insert_category( "canada", "CANADA" );
@@ -133,30 +133,30 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
-insert_book( "periodicals", "cb_446.pdf", "Callback",
-        "Issue 446 (Mar 2017)", "NASA", 142200, "" );
-insert_book( "periodicals", "cb_445.pdf", "Callback",
-        "Issue 445 (Feb 2017)", "NASA", 353563, "" );
-insert_book( "periodicals", "cb_444.pdf", "Callback",
-        "Issue 444 (Jan 2017)", "NASA", 157013, "" );
-insert_book( "periodicals", "cb_443.pdf", "Callback",
-        "Issue 443 (Dec 2016)", "NASA", 209282, "" );
+insert_book( "periodicals", "cb_451.pdf", "Callback",
+        "Issue 451 (Aug 2017)", "NASA", 356289, "" );
+insert_book( "periodicals", "cb_450.pdf", "Callback",
+        "Issue 450 (Jul 2017)", "NASA", 180982, "" );
+insert_book( "periodicals", "cb_449.pdf", "Callback",
+        "Issue 449 (Jun 2017)", "NASA", 168854, "" );
+insert_book( "periodicals", "cb_448.pdf", "Callback",
+        "Issue 448 (May 2017)", "NASA", 151894, "" );
+insert_book( "periodicals", "SepOct2017.pdf", "FAA Safety Briefing",
+        "Sep/Oct 2017", "FAA", 3053321, "" );
+insert_book( "periodicals", "JulAug2017.pdf", "FAA Safety Briefing",
+        "Jul/Aug 2017", "FAA", 4470537, "" );
+insert_book( "periodicals", "MayJun2017.pdf", "FAA Safety Briefing",
+        "May/Jun 2017", "FAA", 16881394, "" );
 insert_book( "periodicals", "MarApr2017.pdf", "FAA Safety Briefing",
         "Mar/Apr 2017", "FAA", 19676542, "" );
-insert_book( "periodicals", "JanFeb2017.pdf", "FAA Safety Briefing",
-        "Jan/Feb 2017", "FAA", 4341053, "" );
-insert_book( "periodicals", "NovDec2016.pdf", "FAA Safety Briefing",
-        "Nov/Dec 2016", "FAA", 4761832, "" );
-insert_book( "periodicals", "SepOct2016.pdf", "FAA Safety Briefing",
-        "Sep/Oct 2016", "FAA", 4746647, "" );
-insert_book( "periodicals", "SE_Topic_17_03.pdf", "Safety Fact Sheets",
-        "Mar 2017", "FAA", 1032987, "" );
-insert_book( "periodicals", "SE_Topic_17_02.pdf", "Safety Fact Sheets",
-        "Feb 2017", "FAA", 802425, "" );
-insert_book( "periodicals", "SE_Topic_17_01.pdf", "Safety Fact Sheets",
-        "Jan 2017", "FAA", 567211, "" );
-insert_book( "periodicals", "SE_Topic_16-12.pdf", "Safety Fact Sheets",
-        "Dec 2016", "FAA", 552520, "" );
+insert_book( "periodicals", "SE_Topic_17_09.pdf", "Safety Fact Sheets",
+        "Sep 2017", "FAA", 950115, "" );
+insert_book( "periodicals", "SE_Topic_17_08.pdf", "Safety Fact Sheets",
+        "Aug 2017", "FAA", 942619, "" );
+insert_book( "periodicals", "SE_Topic_17_07.pdf", "Safety Fact Sheets",
+        "Jul 2017", "FAA", 733168, "" );
+insert_book( "periodicals", "SE_Topic_17_06.pdf", "Safety Fact Sheets",
+        "Jun 2017", "FAA", 640636, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -183,18 +183,18 @@ insert_book( "safety", "AP_UpsetRecovery_Book.pdf", "Upset Recovery Training Aid
 insert_book( "safety", "tfrweb_2003.pdf.gz", "Pilot's Guide to TFR",
         "2003", "FAA", 1794432, "" );
 
-insert_book( "regs", "aim_161110.pdf", "AIM",
-        "Nov 2016", "FAA", 13735250, "" );
-insert_book( "regs", "CFR-2016-title14-vol1.pdf", "FAR",
-        "Parts 1-59", "US GPO 2016", 12799362, "" );
-insert_book( "regs", "CFR-2016-title14-vol2.pdf", "FAR",
-        "Parts 60-109", "US GPO 2016", 15195044, "" );
-insert_book( "regs", "CFR-2016-title14-vol3.pdf", "FAR",
-        "Parts 110-199", "US GPO 2016", 5447388, "" );
-insert_book( "regs", "CFR-2016-title14-vol4.pdf", "FAR",
-        "Parts 200-1199", "US GPO 2016", 16794385, "" );
-insert_book( "regs", "CFR-2016-title14-vol5.pdf", "FAR",
-        "Parts 1200-1399", "US GPO 2016", 2061019, "" );
+insert_book( "regs", "aim_170427.pdf", "AIM",
+        "Apr 2017", "FAA", 14236643, "" );
+insert_book( "regs", "CFR-2017-title14-vol1.pdf", "FAR Volume 1",
+        "Parts 1-59", "US GPO 2017", 12865511, "" );
+insert_book( "regs", "CFR-2017-title14-vol2.pdf", "FAR Volume 2",
+        "Parts 60-109", "US GPO 2017", 27616856, "" );
+insert_book( "regs", "CFR-2017-title14-vol3.pdf", "FAR Volume 3",
+        "Parts 110-199", "US GPO 2017", 5447827, "" );
+insert_book( "regs", "CFR-2017-title14-vol4.pdf", "FAR Volume 4",
+        "Parts 200-1199", "US GPO 2017", 16825588, "" );
+insert_book( "regs", "CFR-2017-title14-vol5.pdf", "FAR Volume 5",
+        "Parts 1200-1399", "US GPO 2017", 1969057, "" );
 
 insert_book( "risk", "wx_decision.pdf", "Weather Decision Making", "2009", "FAA", 659230, "" );
 insert_book( "risk", "local_vfr.pdf", "Local VFR Flying", "2012", "FAA", 300310, "" );
@@ -221,30 +221,24 @@ insert_book( "circular", "ac-120-76c-2014.pdf", "Use of Electronics Flight Bags"
 insert_book( "circular", "ac-120-12a-1986.pdf", "Private Carriage vs Common Carriage",
         "1986", "AC-120-12A", 57908, "" );
 
-insert_book( "testguide", "FAA-G-8082-17I_151001.pdf", "Private Pilot Knowledge Test Guide",
-        "Oct 2015", "FAA-G-8082-17I", 684970, "" );
-insert_book( "testguide", "FAA-G-8082-13I_151001.pdf", "Instrument Rating Knowledge Test Guide",
-        "Oct 2015", "FAA-G-8082-13I", 576844, "" );
-insert_book( "testguide", "FAA-G-8082-5H_151001.pdf", "Commercial Pilot Knowledge Test Guide",
-        "Oct 2015", "FAA-G-8082-5H", 612045, "" );
-insert_book( "testguide", "FAA-G-8082-7I_151001.pdf", "Flight & Ground Instructor Knowledge Test Guide",
-        "Oct 2015", "FAA-G-8082-7I", 1405228, "" );
-insert_book( "testguide", "FAA-G-8082-4D_151001.pdf", "Sport Pilot Knowledge Test Guide",
-        "Oct 2015", "FAA-G-8082-4D", 294360, "" );
+insert_book( "testguide", "FAA-G-8082-17I_1702.pdf", "Private Pilot Knowledge Test Guide",
+        "Feb 2017", "FAA-G-8082-17I", 89464, "" );
+insert_book( "testguide", "FAA-G-8082-13I_1702.pdf", "Instrument Rating Knowledge Test Guide",
+        "Feb 2017", "FAA-G-8082-13I", 171874, "" );
+insert_book( "testguide", "FAA-G-8082-5H_1702.pdf", "Commercial Pilot Knowledge Test Guide",
+        "Feb 2017", "FAA-G-8082-5H", 115759, "" );
+insert_book( "testguide", "FAA-G-8082-7I_1702.pdf", "Flight Instructor Knowledge Test Guide",
+        "Feb 2017", "FAA-G-8082-7I", 101717, "" );
+insert_book( "testguide", "FAA-G-8082-4D_1702.pdf", "Sport Pilot Knowledge Test Guide",
+        "Feb 2017", "FAA-G-8082-4D", 123443, "" );
 insert_book( "testguide", "IPC_Guidance_150909.pdf", "Instrument Proficiency Check Guidance",
         "Sep 2015", "", 544288, "" );
-insert_book( "testguide", "PARSampleExam_160613.pdf", "Airmen Knowledge Test Question Bank",
-        "Jun 2016", "Private", 166283, "" );
-insert_book( "testguide", "IRASampleExam_160613.pdf", "Airmen Knowledge Test Question Bank",
-        "Jun 2016", "Instrument", 42473, "" );
-insert_book( "testguide", "IRASampleExam_160613.pdf", "Airmen Knowledge Test Question Bank",
-        "Jun 2016", "Instrument", 42473, "" );
-insert_book( "testguide", "com.pdf", "Airmen Knowledge Test Question Bank",
-        "Jan 2014", "Commercial", 36750, "" );
-insert_book( "testguide", "atp.pdf", "Airmen Knowledge Test Question Bank",
-        "Feb 2014", "ATP", 394250, "" );
-insert_book( "testguide", "LSPSampleExam_160613.pdf", "Airmen Knowledge Test Question Bank",
-        "Jun 2016", "Light Sport", 86359, "" );
+insert_book( "testguide", "PARSampleExam_170612.pdf", "Airmen Knowledge Test Question Bank",
+        "Jun 2017", "Private", 135578, "" );
+insert_book( "testguide", "IRASampleExam_170612.pdf", "Airmen Knowledge Test Question Bank",
+        "Jun 2017", "Instrument", 111867, "" );
+insert_book( "testguide", "LSPSampleExam_170612.pdf", "Airmen Knowledge Test Question Bank",
+        "Jun 2017", "Light Sport", 116475, "" );
 
 insert_book( "pts", "faa-s-8081-12c.pdf", "Commercial Pilot PTS",
         "Jun 2012", "FAA-S-8081-12C", 472242, "" );
