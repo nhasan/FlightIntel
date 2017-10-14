@@ -257,16 +257,16 @@ insert_book( "pts", "faa-s-8081-6d.pdf", "Flight Instructor PTS",
 insert_book( "pts", "faa-s-8081-9d.pdf", "Flight Instructor Instrument PTS",
         "Jul 2010", "FAA-S-8081-9D", 169064, "" );
 
-insert_book( "misc", "aip_161110.pdf.gz", "Aeronautical Information Publication",
-        "Nov 2016", "FAA", 17065371, "" );
+insert_book( "misc", "aip_170427.pdf.gz", "Aeronautical Information Publication",
+        "Apr 2017", "FAA", 17228691, "" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
-insert_book( "misc", "pcg_161110.pdf", "Pilot/Controller Glossary",
-        "Nov 2016", "FAA", 523076, "" );
+insert_book( "misc", "pcg_170427.pdf", "Pilot/Controller Glossary",
+        "Apr 2017", "FAA", 526333, "" );
 insert_book( "misc", "RNProadmap.pdf", "Roadmap for Performance-Based Navigation",
-        "2006", "FAA", 1513616, "" );
-insert_book( "misc", "atc_161110.pdf", "ATC Order 7110.65W",
-        "Nov 2016", "FAA", 2352398, "" );
+        "July 2006", "FAA", 1513616, "" );
+insert_book( "misc", "atc_170427.pdf", "ATC Order 7110.65X",
+        "Oct 2017", "FAA", 4319083, "" );
 
 insert_book( "canada", "AWS-Guide-EN_1602.pdf", "Aviation Weather Service Guide",
         "Feb 2016", "Nav Canada", 5043235, "" );
