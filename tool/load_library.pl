@@ -122,8 +122,8 @@ insert_book( "handbooks", "fcm-h1-2005.pdf", "Federal Meteorological Handbook No
 insert_book( "handbooks", "fcm-h2-1988.pdf", "Federal Meteorological Handbook No. 2",
         "1988", "NOAA", 16091462, "" );
 
-insert_book( "manuals", "Chart_Users_Guide_12thEd.pdf", "Aeronautical Chart User's Guide",
-        "12th Edition", "FAA", 17216722, "" );
+insert_book( "manuals", "cug_171012.pdf", "Aeronautical Chart User's Guide",
+        "Oct 2017", "FAA", 15664349, "" );
 insert_book( "manuals", "faa-h-8083-19a-2008.pdf", "Plane Sense - General Aviation Information",
         "2008", "FAA-H-8083-19A", 13246143, "" );
 insert_book( "manuals", "ac-00-6a-1975.pdf", "Aviation Weather",
@@ -133,14 +133,14 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_453.pdf", "Callback",
+        "Issue 453 (Oct 2017)", "NASA", 184895, "" );
+insert_book( "periodicals", "cb_452.pdf", "Callback",
+        "Issue 452 (Sep 2017)", "NASA", 203138, "" );
 insert_book( "periodicals", "cb_451.pdf", "Callback",
         "Issue 451 (Aug 2017)", "NASA", 356289, "" );
 insert_book( "periodicals", "cb_450.pdf", "Callback",
         "Issue 450 (Jul 2017)", "NASA", 180982, "" );
-insert_book( "periodicals", "cb_449.pdf", "Callback",
-        "Issue 449 (Jun 2017)", "NASA", 168854, "" );
-insert_book( "periodicals", "cb_448.pdf", "Callback",
-        "Issue 448 (May 2017)", "NASA", 151894, "" );
 insert_book( "periodicals", "SepOct2017.pdf", "FAA Safety Briefing",
         "Sep/Oct 2017", "FAA", 3053321, "" );
 insert_book( "periodicals", "JulAug2017.pdf", "FAA Safety Briefing",
@@ -149,14 +149,14 @@ insert_book( "periodicals", "MayJun2017.pdf", "FAA Safety Briefing",
         "May/Jun 2017", "FAA", 16881394, "" );
 insert_book( "periodicals", "MarApr2017.pdf", "FAA Safety Briefing",
         "Mar/Apr 2017", "FAA", 19676542, "" );
+insert_book( "periodicals", "SE_Topic_17_10.pdf", "Safety Fact Sheets",
+        "Oct 2017", "FAA", 779321, "" );
 insert_book( "periodicals", "SE_Topic_17_09.pdf", "Safety Fact Sheets",
         "Sep 2017", "FAA", 950115, "" );
 insert_book( "periodicals", "SE_Topic_17_08.pdf", "Safety Fact Sheets",
         "Aug 2017", "FAA", 942619, "" );
 insert_book( "periodicals", "SE_Topic_17_07.pdf", "Safety Fact Sheets",
         "Jul 2017", "FAA", 733168, "" );
-insert_book( "periodicals", "SE_Topic_17_06.pdf", "Safety Fact Sheets",
-        "Jun 2017", "FAA", 640636, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -183,8 +183,8 @@ insert_book( "safety", "AP_UpsetRecovery_Book.pdf", "Upset Recovery Training Aid
 insert_book( "safety", "tfrweb_2003.pdf.gz", "Pilot's Guide to TFR",
         "2003", "FAA", 1794432, "" );
 
-insert_book( "regs", "aim_170427.pdf", "AIM",
-        "Apr 2017", "FAA", 14236643, "" );
+insert_book( "regs", "aim_171012.pdf", "AIM",
+        "Oct 2017", "FAA", 15012842, "" );
 insert_book( "regs", "CFR-2017-title14-vol1.pdf", "FAR Volume 1",
         "Parts 1-59", "US GPO 2017", 12865511, "" );
 insert_book( "regs", "CFR-2017-title14-vol2.pdf", "FAR Volume 2",
@@ -235,10 +235,12 @@ insert_book( "testguide", "IPC_Guidance_150909.pdf", "Instrument Proficiency Che
         "Sep 2015", "", 544288, "" );
 insert_book( "testguide", "PARSampleExam_170612.pdf", "Airmen Knowledge Test Question Bank",
         "Jun 2017", "Private", 135578, "" );
-insert_book( "testguide", "IRASampleExam_170612.pdf", "Airmen Knowledge Test Question Bank",
-        "Jun 2017", "Instrument", 111867, "" );
-insert_book( "testguide", "LSPSampleExam_170612.pdf", "Airmen Knowledge Test Question Bank",
-        "Jun 2017", "Light Sport", 116475, "" );
+insert_book( "testguide", "IRASampleExam_171016.pdf", "Airmen Knowledge Test Question Bank",
+        "Oct 2017", "Instrument", 111272, "" );
+insert_book( "testguide", "LSPSampleExam_171016.pdf", "Airmen Knowledge Test Question Bank",
+        "Oct 2017", "Light Sport", 87390, "" );
+insert_book( "testguide", "cax_sample_exam_171016.pdf", "Airmen Knowledge Test Question Bank",
+        "Oct 2017", "Commercial", 114146, "" );
 
 insert_book( "pts", "faa-s-8081-12c.pdf", "Commercial Pilot PTS",
         "Jun 2012", "FAA-S-8081-12C", 472242, "" );
@@ -257,15 +259,15 @@ insert_book( "pts", "faa-s-8081-6d.pdf", "Flight Instructor PTS",
 insert_book( "pts", "faa-s-8081-9d.pdf", "Flight Instructor Instrument PTS",
         "Jul 2010", "FAA-S-8081-9D", 169064, "" );
 
-insert_book( "misc", "aip_170427.pdf.gz", "Aeronautical Information Publication",
-        "Apr 2017", "FAA", 17228691, "" );
+insert_book( "misc", "aip_171012.pdf.gz", "Aeronautical Information Publication",
+        "Oct 2017", "FAA", 17602297, "" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
-insert_book( "misc", "pcg_170427.pdf", "Pilot/Controller Glossary",
-        "Apr 2017", "FAA", 526333, "" );
+insert_book( "misc", "pcg_171027.pdf", "Pilot/Controller Glossary",
+        "Oct 2017", "FAA", 520701, "" );
 insert_book( "misc", "RNProadmap.pdf", "Roadmap for Performance-Based Navigation",
         "July 2006", "FAA", 1513616, "" );
-insert_book( "misc", "atc_170427.pdf", "ATC Order 7110.65X",
+insert_book( "misc", "atc_171027.pdf", "ATC Order 7110.65X",
         "Oct 2017", "FAA", 4319083, "" );
 
 insert_book( "canada", "AWS-Guide-EN_1602.pdf", "Aviation Weather Service Guide",
