@@ -51,7 +51,7 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.UiUtils;
 
-public class FragmentBase extends Fragment implements IRefreshable {
+public abstract class FragmentBase extends Fragment implements IRefreshable {
 
     private ActivityBase mActivity;
     private CursorAsyncTask mTask;

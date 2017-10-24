@@ -96,7 +96,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class ActivityBase extends AppCompatActivity implements
+public abstract class ActivityBase extends AppCompatActivity implements
         MultiSwipeRefreshLayout.CanChildScrollUpCallback  {
 
     private DatabaseManager mDbManager;

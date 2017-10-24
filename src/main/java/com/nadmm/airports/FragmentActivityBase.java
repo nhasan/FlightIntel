@@ -21,7 +21,7 @@ package com.nadmm.airports;
 
 import android.os.Bundle;
 
-public class FragmentActivityBase extends ActivityBase {
+public abstract class FragmentActivityBase extends ActivityBase {
 
     private FragmentBase mCurFragment;
 

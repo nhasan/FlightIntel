@@ -25,7 +25,7 @@ import android.support.v4.view.ViewPager;
 
 import com.nadmm.airports.utils.PagerAdapter;
 
-public class TabPagerActivityBase extends ActivityBase {
+public abstract class TabPagerActivityBase extends ActivityBase {
 
     private int mCurrentFragmentIndex = -1;
     private ViewPager mViewPager;
