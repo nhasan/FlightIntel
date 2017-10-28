@@ -28,10 +28,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -132,7 +129,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
         return mTopScrollView != null
-                && ViewCompat.canScrollVertically( mTopScrollView, -1 );
+                && mTopScrollView.canScrollVertically( -1 );
     }
 
     protected boolean isRefreshing() {

@@ -24,7 +24,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,8 +33,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 public abstract class ListFragmentBase extends FragmentBase {
 
@@ -102,7 +99,7 @@ public abstract class ListFragmentBase extends FragmentBase {
 
     @Override
     public boolean canSwipeRefreshChildScrollUp() {
-        return ViewCompat.canScrollVertically( mListView, -1 );
+        return mListView.canScrollVertically( -1 );
     }
 
     protected void setCursor( Cursor c ) {
