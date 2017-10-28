@@ -73,6 +73,7 @@ public abstract class NoaaService extends IntentService {
     public static final String ACTION_GET_FA = "flightintel.intent.action.wx.GET_FA";
     public static final String ACTION_GET_FB = "flightintel.intent.action.wx.GET_FB";
     public static final String ACTION_GET_SATELLITE = "flightintel.intent.action.wx.GET_SATELLITE";
+    public static final String ACTION_GET_GFA = "flightintel.intent.action.wx.GET_GFA";
 
     private final String mName;
     private final long mAge;
