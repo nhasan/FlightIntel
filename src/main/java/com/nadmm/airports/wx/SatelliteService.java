@@ -58,7 +58,8 @@ public class SatelliteService extends NoaaService {
                         String path = SAT_IMAGE_PATH+imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch satellite image: " + e.getMessage() );
+                        UiUtils.showToast( this, "Unable to fetch satellite image: "
+                                + e.getMessage() );
                     }
                 }
 

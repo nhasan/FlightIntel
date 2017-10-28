@@ -37,7 +37,7 @@ public class SatelliteFragment extends WxMapFragmentBase {
             "Infrared (B/W)"
     };
 
-    public SatelliteFragment(  ) {
+    public SatelliteFragment() {
         super( NoaaService.ACTION_GET_SATELLITE,
                 WxRegions.sWxRegionCodes, WxRegions.sWxRegionNames,
                 sSatTypeCodes, sSatTypeNames );
