@@ -31,15 +31,9 @@ public class AreaForecastFragment extends WxTextFragmentBase {
             "alaska_se1_fa",
             "alaska_se2_fa",
             "alaska_bswa_fa",
-            "boston_fa",
             "carib_fa",
-            "chicago_fa",
-            "ftworth_fa",
             "gulf_fa",
             "hawaii_fa",
-            "miami_fa",
-            "saltlakecity_fa",
-            "sanfrancisco_fa"
     };
 
     private final static String[] mAreaNames = {
@@ -50,17 +44,10 @@ public class AreaForecastFragment extends WxTextFragmentBase {
             "Alaska Southeast Part 1",
             "Alaska Southeast Part 2",
             "Alaska Southwest",
-            "Boston",
             "Carribean",
-            "Chicago",
-            "Fort Worth",
             "Gulf of Mexico",
             "Hawaii",
-            "Miami",
-            "Salt Lake City",
-            "San Francisco"
     };
-
 
     public AreaForecastFragment() {
         super( NoaaService.ACTION_GET_FA, mAreaCodes, mAreaNames );
