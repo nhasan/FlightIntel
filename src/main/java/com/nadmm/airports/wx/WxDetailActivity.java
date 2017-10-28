@@ -29,32 +29,34 @@ public class WxDetailActivity extends TabPagerActivityBase {
             "METAR",
             "TAF",
             "PIREP",
-            "AIRMET/SIGMET",
             "RADAR",
             "SATELLITE",
-            "PROGNOSIS CHARTS",
+            "SFC FORECAST",
+            "AREA FORECAST",
+            "AIRMET/SIGMET",
+            "PROG CHARTS",
             "WINDS/TEMPERATURE",
             "WINDS ALOFT",
             "SIG WX",
-            "CEILING/VISIBILITY",
-            "ICING",
-            "AREA FORECAST"
+            "CIG/VIS",
+            "ICING"
     };
 
     private final Class<?>[] mClasses = new Class<?>[] {
             MetarFragment.class,
             TafFragment.class,
             PirepFragment.class,
-            AirSigmetFragment.class,
             RadarFragment.class,
             SatelliteFragment.class,
+            SurfaceForecatFragment.class,
+            AreaForecastFragment.class,
+            AirSigmetFragment.class,
             ProgChartFragment.class,
             WindFragment.class,
             WindsAloftFragment.class,
             SigWxFragment.class,
             CvaFragment.class,
-            IcingFragment.class,
-            AreaForecastFragment.class
+            IcingFragment.class
     };
 
     @Override
