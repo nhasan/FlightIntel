@@ -52,7 +52,9 @@ abstract class E6bFragmentBase extends FragmentBase {
 
         String title = getArguments().getString( ListMenuFragment.SUBTITLE_TEXT );
         TextView label = (TextView) findViewById( R.id.e6b_label );
-        label.setText( title );
+        if ( label != null ) {
+            label.setText( title );
+        }
 
         String text = getMessage();
         if ( text != null ) {
