@@ -121,9 +121,6 @@ public final class AirportDetailsFragment extends FragmentBase {
             }
 
         };
-
-        mRadius = getActivityBase().getPrefNearbyRadius();
-        mHome = getActivityBase().getPrefHomeAirport();
     }
 
     @Override
@@ -139,6 +136,9 @@ public final class AirportDetailsFragment extends FragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         setActionBarTitle( "Airport Details", "" );
+
+        mRadius = getActivityBase().getPrefNearbyRadius();
+        mHome = getActivityBase().getPrefHomeAirport();
 
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );

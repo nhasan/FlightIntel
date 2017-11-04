@@ -36,8 +36,6 @@ public class FavoriteWxFragment extends WxListFragmentBase {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        getActivityBase().faLogViewItemList( "wx (favorite)" );
-
         setEmptyText( "No favorite wx stations selected." );
     }
 
@@ -46,6 +44,13 @@ public class FavoriteWxFragment extends WxListFragmentBase {
         super.onResume();
 
         new FavoriteWxTask().execute();
+    }
+
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().faLogViewItemList( "wx (favorite)" );
     }
 
     @Override

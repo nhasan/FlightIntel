@@ -52,8 +52,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mRadius = getActivityBase().getPrefNearbyRadius();
-
         Bundle args = getArguments();
         if ( args != null && args.containsKey( DatabaseManager.LocationColumns.LOCATION ) ) {
             mLastLocation = args.getParcelable( DatabaseManager.LocationColumns.LOCATION );
@@ -96,6 +94,8 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
+
+        mRadius = getActivityBase().getPrefNearbyRadius();
 
         if ( mLastLocation != null ) {
             // If we are passed a location use that

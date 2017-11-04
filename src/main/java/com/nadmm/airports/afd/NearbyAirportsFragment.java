@@ -37,9 +37,14 @@ public class NearbyAirportsFragment extends LocationListFragmentBase {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        getActivityBase().faLogViewItemList( "Airport (nearby)" );
-
         setEmptyText( "No airports found nearby." );
+    }
+
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().faLogViewItemList( "Airport (nearby)" );
     }
 
     @Override

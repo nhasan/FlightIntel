@@ -45,8 +45,6 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        getActivityBase().faLogViewItemList( "airport (favorite)" );
-
         setEmptyText( "No favorite airports selected." );
     }
 
@@ -55,6 +53,13 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
         super.onResume();
 
         setBackgroundTask( new FavoriteAirportsTask() ).execute( (String[]) null );
+    }
+
+    @Override
+    public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
+        getActivityBase().faLogViewItemList( "airport (favorite)" );
     }
 
     @Override
