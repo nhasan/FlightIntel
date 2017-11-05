@@ -122,8 +122,6 @@ public class LibraryPageFragment extends FragmentBase {
             }
         };
 
-        getActivityBase().faLogViewItem( "library", mCategory );
-
         super.onCreate( savedInstanceState );
     }
 
@@ -154,6 +152,8 @@ public class LibraryPageFragment extends FragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         mActivity = (LibraryActivity) getActivity();
+
+        mActivity.faLogViewItem( "library", mCategory );
 
         LibraryTask task = new LibraryTask();
         task.execute( mCategory );
