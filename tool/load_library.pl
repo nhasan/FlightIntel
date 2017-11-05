@@ -141,22 +141,22 @@ insert_book( "periodicals", "cb_451.pdf", "Callback",
         "Issue 451 (Aug 2017)", "NASA", 356289, "" );
 insert_book( "periodicals", "cb_450.pdf", "Callback",
         "Issue 450 (Jul 2017)", "NASA", 180982, "" );
+insert_book( "periodicals", "NovDec2017.pdf", "FAA Safety Briefing",
+        "Nov/Dec 2017", "FAA", 5895349, "" );
 insert_book( "periodicals", "SepOct2017.pdf", "FAA Safety Briefing",
         "Sep/Oct 2017", "FAA", 3053321, "" );
 insert_book( "periodicals", "JulAug2017.pdf", "FAA Safety Briefing",
         "Jul/Aug 2017", "FAA", 4470537, "" );
 insert_book( "periodicals", "MayJun2017.pdf", "FAA Safety Briefing",
         "May/Jun 2017", "FAA", 16881394, "" );
-insert_book( "periodicals", "MarApr2017.pdf", "FAA Safety Briefing",
-        "Mar/Apr 2017", "FAA", 19676542, "" );
+insert_book( "periodicals", "SE_Topic_17_11.pdf", "Safety Fact Sheets",
+        "Nov 2017", "FAA", 824331, "" );
 insert_book( "periodicals", "SE_Topic_17_10.pdf", "Safety Fact Sheets",
         "Oct 2017", "FAA", 779321, "" );
 insert_book( "periodicals", "SE_Topic_17_09.pdf", "Safety Fact Sheets",
         "Sep 2017", "FAA", 950115, "" );
 insert_book( "periodicals", "SE_Topic_17_08.pdf", "Safety Fact Sheets",
         "Aug 2017", "FAA", 942619, "" );
-insert_book( "periodicals", "SE_Topic_17_07.pdf", "Safety Fact Sheets",
-        "Jul 2017", "FAA", 733168, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
