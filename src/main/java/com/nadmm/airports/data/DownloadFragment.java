@@ -180,6 +180,8 @@ public class DownloadFragment extends FragmentBase {
     public void onActivityCreated( @Nullable Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        getActivityBase().faLogViewItem( "database", "" );
+
         checkData( false );
     }
 
