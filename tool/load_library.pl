@@ -133,14 +133,14 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_454.pdf", "Callback",
+        "Issue 454 (Nov 2017)", "NASA", 179120, "" );
 insert_book( "periodicals", "cb_453.pdf", "Callback",
         "Issue 453 (Oct 2017)", "NASA", 184895, "" );
 insert_book( "periodicals", "cb_452.pdf", "Callback",
         "Issue 452 (Sep 2017)", "NASA", 203138, "" );
 insert_book( "periodicals", "cb_451.pdf", "Callback",
         "Issue 451 (Aug 2017)", "NASA", 356289, "" );
-insert_book( "periodicals", "cb_450.pdf", "Callback",
-        "Issue 450 (Jul 2017)", "NASA", 180982, "" );
 insert_book( "periodicals", "NovDec2017.pdf", "FAA Safety Briefing",
         "Nov/Dec 2017", "FAA", 5895349, "" );
 insert_book( "periodicals", "SepOct2017.pdf", "FAA Safety Briefing",
@@ -149,14 +149,14 @@ insert_book( "periodicals", "JulAug2017.pdf", "FAA Safety Briefing",
         "Jul/Aug 2017", "FAA", 4470537, "" );
 insert_book( "periodicals", "MayJun2017.pdf", "FAA Safety Briefing",
         "May/Jun 2017", "FAA", 16881394, "" );
+insert_book( "periodicals", "SE_Topic_17_12.pdf", "Safety Fact Sheets",
+        "Dec 2017", "FAA", 765247, "" );
 insert_book( "periodicals", "SE_Topic_17_11.pdf", "Safety Fact Sheets",
         "Nov 2017", "FAA", 824331, "" );
 insert_book( "periodicals", "SE_Topic_17_10.pdf", "Safety Fact Sheets",
         "Oct 2017", "FAA", 779321, "" );
 insert_book( "periodicals", "SE_Topic_17_09.pdf", "Safety Fact Sheets",
         "Sep 2017", "FAA", 950115, "" );
-insert_book( "periodicals", "SE_Topic_17_08.pdf", "Safety Fact Sheets",
-        "Aug 2017", "FAA", 942619, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
