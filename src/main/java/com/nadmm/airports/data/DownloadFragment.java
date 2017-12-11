@@ -31,6 +31,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
 import android.provider.BaseColumns;
 import android.sax.Element;
@@ -492,7 +493,12 @@ public class DownloadFragment extends FragmentBase {
             }
 
             // Refresh the download list view
-            checkData( false );
+            mHandler.postDelayed( new Runnable() {
+                @Override
+                public void run() {
+                    checkData( false );
+                }
+            }, 100 );
         }
     }
 
