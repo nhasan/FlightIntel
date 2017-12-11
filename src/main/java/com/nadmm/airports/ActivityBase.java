@@ -717,14 +717,15 @@ public abstract class ActivityBase extends AppCompatActivity implements
                 FormatUtils.formatFeet( elev_msl + tpa_agl ), est ) );
 
         String s = c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) );
-        GregorianCalendar endDate = new GregorianCalendar(
-                        Integer.valueOf( s.substring( 6 ) ),
-                        Integer.valueOf( s.substring( 3, 5 ) ),
-                        Integer.valueOf( s.substring( 0, 2 ) ) );
-        // Calculate end date of the 56-day cycle
-        endDate.add( GregorianCalendar.DAY_OF_MONTH, 56 );
+        GregorianCalendar endDate = new GregorianCalendar( TimeZone.getTimeZone( "UTC" ) );
+        int year = Integer.valueOf( s.substring( 6 ) );
+        int month = Integer.valueOf( s.substring( 0, 2 ) ) - 1;
+        int day = Integer.valueOf( s.substring( 3, 5 ) );
+        endDate.set( year, month, day, 9, 1, 0 );
+        // Calculate end date of the 28-day cycle
+        endDate.add( GregorianCalendar.DAY_OF_MONTH, 28 );
         Calendar now = Calendar.getInstance();
-        if ( now.after( endDate ) ) {
+        if ( !now.before( endDate ) ) {
             // Show the expired warning
             tv = (TextView) root.findViewById( R.id.expired_label );
             tv.setVisibility( View.VISIBLE );
