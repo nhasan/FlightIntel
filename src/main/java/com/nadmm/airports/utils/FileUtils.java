@@ -46,19 +46,22 @@ public class FileUtils {
     }
 
     public static String readFile( String path ) throws IOException {
-        FileInputStream is = new FileInputStream( path );
+        StringBuilder sb = new StringBuilder();
+        FileInputStream is = null;
         try {
-            StringBuilder sb = new StringBuilder();
+            is = new FileInputStream( path );
             Reader reader = new BufferedReader( new InputStreamReader( is ) );
             char[] buffer = new char[8192];
             int read;
             while ( ( read = reader.read( buffer ) ) > 0 ) {
                 sb.append( buffer, 0, read );
             }
-            return sb.toString();
         } finally {
-            is.close();
+            if ( is != null ) {
+                is.close();
+            }
         }
+        return sb.toString();
     }
 
 }
