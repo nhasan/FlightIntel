@@ -150,6 +150,10 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
     }
 
     protected void startLocationUpdates() {
+        if ( getActivity() == null ) {
+            return;
+        }
+        
         boolean providerOk = false;
         if ( ContextCompat.checkSelfPermission(
                 getActivity(), Manifest.permission.ACCESS_FINE_LOCATION )
@@ -176,29 +180,22 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
                 setFragmentContentShown( true );
             }
         } else if ( !mPermissionDenied ) {
-            if ( shouldShowRequestPermissionRationale(
-                    Manifest.permission.ACCESS_FINE_LOCATION ) )
-            {
-                Snackbar.make( getActivityBase().getAppBar(),
-                        "FlightIntel needs access to device's location.",
-                        Snackbar.LENGTH_INDEFINITE )
-                        .setAction( android.R.string.ok, new View.OnClickListener() {
-                    @Override
-                    public void onClick( View v ) {
-                        requestPermissions(
-                                new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
-                                PERMISSION_REQUEST_FINE_LOCATION );
-                    }
-                } ).show();
-            } else {
-                requestPermissions( new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
-                        PERMISSION_REQUEST_FINE_LOCATION );
-            }
+            Snackbar.make( getActivityBase().getAppBar(),
+                    "FlightIntel needs access to device's location to show nearby facilities.",
+                    Snackbar.LENGTH_INDEFINITE )
+                    .setAction( android.R.string.ok, new View.OnClickListener() {
+                @Override
+                public void onClick( View v ) {
+                    requestPermissions(
+                            new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
+                            PERMISSION_REQUEST_FINE_LOCATION );
+                }
+            } ).show();
         }
     }
 
     protected void stopLocationUpdates() {
-        if ( ContextCompat.checkSelfPermission(
+        if ( getActivity() != null && ContextCompat.checkSelfPermission(
                 getActivity(), Manifest.permission.ACCESS_FINE_LOCATION )
                 == PackageManager.PERMISSION_GRANTED ) {
             mLocationManager.removeUpdates( this );
