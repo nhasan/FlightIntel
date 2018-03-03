@@ -200,10 +200,10 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                 if ( metar.windSpeedKnots == 0 ) {
                     info.append( "winds calm" );
                 } else if ( metar.windGustKnots < Integer.MAX_VALUE ) {
-                    info.append( String.format( "%dG%dKT",
+                    info.append( String.format( Locale.US, "%dG%dKT",
                             metar.windSpeedKnots, metar.windGustKnots ) );
                 } else {
-                    info.append( String.format( "%dKT", metar.windSpeedKnots ) );
+                    info.append( String.format( Locale.US, "%dKT", metar.windSpeedKnots ) );
                 }
                 if ( metar.windSpeedKnots > 0
                         && metar.windDirDegrees >= 0
