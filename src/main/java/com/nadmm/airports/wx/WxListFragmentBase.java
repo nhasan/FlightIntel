@@ -170,7 +170,9 @@ public abstract class WxListFragmentBase extends LocationListFragmentBase {
                     if ( icaoCode.equals( metar.stationId ) ) {
                         WxCursorAdapter adapter = (WxCursorAdapter) getListAdapter();
                         Cursor c = (Cursor) adapter.getItem( pos+first );
-                        adapter.showMetarInfo( view, c, metar );
+                        if ( c.getPosition() >= 0 ) {
+                            adapter.showMetarInfo( view, c, metar );
+                        }
                         break;
                     }
                 }
