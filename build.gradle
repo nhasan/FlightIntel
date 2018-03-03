@@ -27,7 +27,7 @@ dependencies {
     implementation 'com.android.support:preference-v7:27.0.2'
     implementation 'com.android.support:preference-v14:27.0.2'
 
-    implementation 'com.google.firebase:firebase-core:11.6.2'
+    implementation 'com.google.firebase:firebase-core:11.8.0'
 }
 
 android {
@@ -38,8 +38,8 @@ android {
         applicationId "com.nadmm.airports"
         minSdkVersion 15
         targetSdkVersion 27
-        versionName "6.7.5"
-        versionCode 60705
+        versionName "6.7.6"
+        versionCode 60706
     }
 
     signingConfigs {
