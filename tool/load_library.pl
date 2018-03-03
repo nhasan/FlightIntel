@@ -101,8 +101,8 @@ insert_book( "handbooks", "faa-h-8083-25b-2016.pdf", "Pilot's Handbook of Aerona
         "2016", "FAA-H-8083-25B", 56400327, "" );
 insert_book( "handbooks", "faa-h-8083-15b-2012.pdf", "Instrument Flying Handbook",
         "2012", "FAA-H-8083-15B", 53239138, "" );
-insert_book( "handbooks", "faa-h-8083-16a-2015.pdf", "Instrument Procedures Handbook",
-        "2015", "FAA-H-8083-16a", 181748609, "" );
+insert_book( "handbooks", "faa-h-8083-16b-2017.pdf", "Instrument Procedures Handbook",
+        "2017", "FAA-H-8083-16b", 35027015, "" );
 insert_book( "handbooks", "faa-h-8083-6-2009.pdf", "Advanced Avionics Handbook",
         "2009", "FAA-H-8083-6", 20664164, "" );
 insert_book( "handbooks", "faa-h-8083-27a-2006.pdf", "Student Pilot Guide",
@@ -133,30 +133,30 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_457.pdf", "Callback",
+        "Issue 457 (Feb 2018)", "NASA", 187538, "" );
+insert_book( "periodicals", "cb_456.pdf", "Callback",
+        "Issue 456 (Jan 2018)", "NASA", 233893, "" );
+insert_book( "periodicals", "cb_455.pdf", "Callback",
+        "Issue 455 (Dec 2017)", "NASA", 343541, "" );
 insert_book( "periodicals", "cb_454.pdf", "Callback",
         "Issue 454 (Nov 2017)", "NASA", 179120, "" );
-insert_book( "periodicals", "cb_453.pdf", "Callback",
-        "Issue 453 (Oct 2017)", "NASA", 184895, "" );
-insert_book( "periodicals", "cb_452.pdf", "Callback",
-        "Issue 452 (Sep 2017)", "NASA", 203138, "" );
-insert_book( "periodicals", "cb_451.pdf", "Callback",
-        "Issue 451 (Aug 2017)", "NASA", 356289, "" );
+insert_book( "periodicals", "JanFeb2018.pdf", "FAA Safety Briefing",
+        "Jan/Feb 2018", "FAA", 6004555, "" );
 insert_book( "periodicals", "NovDec2017.pdf", "FAA Safety Briefing",
         "Nov/Dec 2017", "FAA", 5895349, "" );
 insert_book( "periodicals", "SepOct2017.pdf", "FAA Safety Briefing",
         "Sep/Oct 2017", "FAA", 3053321, "" );
 insert_book( "periodicals", "JulAug2017.pdf", "FAA Safety Briefing",
         "Jul/Aug 2017", "FAA", 4470537, "" );
-insert_book( "periodicals", "MayJun2017.pdf", "FAA Safety Briefing",
-        "May/Jun 2017", "FAA", 16881394, "" );
+insert_book( "periodicals", "SE_Topic_18_02.pdf", "Safety Fact Sheets",
+        "Feb 2018", "FAA", 574310, "" );
+insert_book( "periodicals", "SE_Topic_18_01.pdf", "Safety Fact Sheets",
+        "Jan 2018", "FAA", 698834, "" );
 insert_book( "periodicals", "SE_Topic_17_12.pdf", "Safety Fact Sheets",
         "Dec 2017", "FAA", 765247, "" );
 insert_book( "periodicals", "SE_Topic_17_11.pdf", "Safety Fact Sheets",
         "Nov 2017", "FAA", 824331, "" );
-insert_book( "periodicals", "SE_Topic_17_10.pdf", "Safety Fact Sheets",
-        "Oct 2017", "FAA", 779321, "" );
-insert_book( "periodicals", "SE_Topic_17_09.pdf", "Safety Fact Sheets",
-        "Sep 2017", "FAA", 950115, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -187,10 +187,10 @@ insert_book( "regs", "aim_171012.pdf", "AIM",
         "Oct 2017", "FAA", 15012842, "" );
 insert_book( "regs", "CFR-2017-title14-vol1.pdf", "FAR Volume 1",
         "Parts 1-59", "US GPO 2017", 12865511, "" );
-insert_book( "regs", "CFR-2017-title14-vol2.pdf", "FAR Volume 2",
-        "Parts 60-109", "US GPO 2017", 27616856, "" );
-insert_book( "regs", "CFR-2017-title14-vol3.pdf", "FAR Volume 3",
-        "Parts 110-199", "US GPO 2017", 5447827, "" );
+insert_book( "regs", "CFR-2018-title14-vol2.pdf", "FAR Volume 2",
+        "Parts 60-109", "US GPO 2018", 20370363, "" );
+insert_book( "regs", "CFR-2018-title14-vol3.pdf", "FAR Volume 3",
+        "Parts 110-199", "US GPO 2018", 5432865432869, "" );
 insert_book( "regs", "CFR-2017-title14-vol4.pdf", "FAR Volume 4",
         "Parts 200-1199", "US GPO 2017", 16825588, "" );
 insert_book( "regs", "CFR-2017-title14-vol5.pdf", "FAR Volume 5",
