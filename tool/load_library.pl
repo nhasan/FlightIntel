@@ -133,30 +133,30 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_458.pdf", "Callback",
+        "Issue 458 (Mar 2018)", "NASA", 271039, "" );
 insert_book( "periodicals", "cb_457.pdf", "Callback",
         "Issue 457 (Feb 2018)", "NASA", 187538, "" );
 insert_book( "periodicals", "cb_456.pdf", "Callback",
         "Issue 456 (Jan 2018)", "NASA", 233893, "" );
 insert_book( "periodicals", "cb_455.pdf", "Callback",
         "Issue 455 (Dec 2017)", "NASA", 343541, "" );
-insert_book( "periodicals", "cb_454.pdf", "Callback",
-        "Issue 454 (Nov 2017)", "NASA", 179120, "" );
+insert_book( "periodicals", "MarApr2018.pdf", "FAA Safety Briefing",
+        "Mar/Apr 2018", "FAA", 4593305, "" );
 insert_book( "periodicals", "JanFeb2018.pdf", "FAA Safety Briefing",
         "Jan/Feb 2018", "FAA", 6004555, "" );
 insert_book( "periodicals", "NovDec2017.pdf", "FAA Safety Briefing",
         "Nov/Dec 2017", "FAA", 5895349, "" );
 insert_book( "periodicals", "SepOct2017.pdf", "FAA Safety Briefing",
         "Sep/Oct 2017", "FAA", 3053321, "" );
-insert_book( "periodicals", "JulAug2017.pdf", "FAA Safety Briefing",
-        "Jul/Aug 2017", "FAA", 4470537, "" );
+insert_book( "periodicals", "SE_Topic_18_03.pdf", "Safety Fact Sheets",
+        "Mar 2018", "FAA", 546369, "" );
 insert_book( "periodicals", "SE_Topic_18_02.pdf", "Safety Fact Sheets",
         "Feb 2018", "FAA", 574310, "" );
 insert_book( "periodicals", "SE_Topic_18_01.pdf", "Safety Fact Sheets",
         "Jan 2018", "FAA", 698834, "" );
 insert_book( "periodicals", "SE_Topic_17_12.pdf", "Safety Fact Sheets",
         "Dec 2017", "FAA", 765247, "" );
-insert_book( "periodicals", "SE_Topic_17_11.pdf", "Safety Fact Sheets",
-        "Nov 2017", "FAA", 824331, "" );
 
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
@@ -185,16 +185,18 @@ insert_book( "safety", "tfrweb_2003.pdf.gz", "Pilot's Guide to TFR",
 
 insert_book( "regs", "aim_171012.pdf", "AIM",
         "Oct 2017", "FAA", 15012842, "" );
+insert_book( "regs", "aim_180329.pdf", "AIM Change 1",
+        "Mar 2018", "FAA", 3430199, "" );
 insert_book( "regs", "CFR-2017-title14-vol1.pdf", "FAR Volume 1",
         "Parts 1-59", "US GPO 2017", 12865511, "" );
 insert_book( "regs", "CFR-2018-title14-vol2.pdf", "FAR Volume 2",
         "Parts 60-109", "US GPO 2018", 20370363, "" );
 insert_book( "regs", "CFR-2018-title14-vol3.pdf", "FAR Volume 3",
         "Parts 110-199", "US GPO 2018", 5432865432869, "" );
-insert_book( "regs", "CFR-2017-title14-vol4.pdf", "FAR Volume 4",
-        "Parts 200-1199", "US GPO 2017", 16825588, "" );
-insert_book( "regs", "CFR-2017-title14-vol5.pdf", "FAR Volume 5",
-        "Parts 1200-1399", "US GPO 2017", 1969057, "" );
+insert_book( "regs", "CFR-2018-title14-vol4.pdf", "FAR Volume 4",
+        "Parts 200-1199", "US GPO 2018", 16820917, "" );
+insert_book( "regs", "CFR-2018-title14-vol5.pdf", "FAR Volume 5",
+        "Parts 1200-1399", "US GPO 2018", 2014602, "" );
 
 insert_book( "risk", "wx_decision.pdf", "Weather Decision Making", "2009", "FAA", 659230, "" );
 insert_book( "risk", "local_vfr.pdf", "Local VFR Flying", "2012", "FAA", 300310, "" );
@@ -263,12 +265,14 @@ insert_book( "misc", "aip_171012.pdf.gz", "Aeronautical Information Publication"
         "Oct 2017", "FAA", 17602297, "" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
-insert_book( "misc", "pcg_171027.pdf", "Pilot/Controller Glossary",
-        "Oct 2017", "FAA", 520701, "" );
+insert_book( "misc", "pcg_180329.pdf", "Pilot/Controller Glossary",
+        "Mar 2018", "FAA", 528972, "" );
 insert_book( "misc", "RNProadmap.pdf", "Roadmap for Performance-Based Navigation",
         "July 2006", "FAA", 1513616, "" );
-insert_book( "misc", "atc_171027.pdf", "ATC Order 7110.65X",
-        "Oct 2017", "FAA", 4319083, "" );
+insert_book( "misc", "atc_180329.pdf", "Air Trafffic Control",
+        "Mar 2018", "FAA", 3066735, "" );
+insert_book( "misc", "fss_180329.pdf", "Flight Services",
+        "Mar 2018", "FAA", 1725291, "" );
 
 insert_book( "canada", "AWS-Guide-EN_1602.pdf", "Aviation Weather Service Guide",
         "Feb 2016", "Nav Canada", 5043235, "" );
