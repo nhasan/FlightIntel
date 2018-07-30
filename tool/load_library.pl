@@ -122,8 +122,8 @@ insert_book( "handbooks", "fcm-h1-2005.pdf", "Federal Meteorological Handbook No
 insert_book( "handbooks", "fcm-h2-1988.pdf", "Federal Meteorological Handbook No. 2",
         "1988", "NOAA", 16091462, "" );
 
-insert_book( "manuals", "cug_171012.pdf", "Aeronautical Chart User's Guide",
-        "Oct 2017", "FAA", 15664349, "" );
+insert_book( "manuals", "cug_180329.pdf", "Aeronautical Chart User's Guide",
+        "March 2018", "FAA", 12015108, "" );
 insert_book( "manuals", "faa-h-8083-19a-2008.pdf", "Plane Sense - General Aviation Information",
         "2008", "FAA-H-8083-19A", 13246143, "" );
 insert_book( "manuals", "ac-00-6a-1975.pdf", "Aviation Weather",
@@ -133,31 +133,37 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
-insert_book( "periodicals", "cb_458.pdf", "Callback",
-        "Issue 458 (Mar 2018)", "NASA", 271039, "" );
-insert_book( "periodicals", "cb_457.pdf", "Callback",
-        "Issue 457 (Feb 2018)", "NASA", 187538, "" );
-insert_book( "periodicals", "cb_456.pdf", "Callback",
-        "Issue 456 (Jan 2018)", "NASA", 233893, "" );
-insert_book( "periodicals", "cb_455.pdf", "Callback",
-        "Issue 455 (Dec 2017)", "NASA", 343541, "" );
+insert_book( "periodicals", "cb_462.pdf", "Callback",
+        "Issue 462 (Jul 2018)", "NASA", 171485, "" );
+insert_book( "periodicals", "cb_461.pdf", "Callback",
+        "Issue 461 (Jun 2018)", "NASA", 153918, "" );
+insert_book( "periodicals", "cb_460.pdf", "Callback",
+        "Issue 460 (May 2018)", "NASA", 121303, "" );
+insert_book( "periodicals", "cb_459.pdf", "Callback",
+        "Issue 459 (Apr 2018)", "NASA", 310237, "" );
+insert_book( "periodicals", "JulAug2018.pdf", "FAA Safety Briefing",
+        "Jul/Aug 2018", "FAA", 8635427, "" );
+insert_book( "periodicals", "MayJune2018.pdf", "FAA Safety Briefing",
+        "May/Jun 2018", "FAA", 4172836, "" );
 insert_book( "periodicals", "MarApr2018.pdf", "FAA Safety Briefing",
         "Mar/Apr 2018", "FAA", 4593305, "" );
 insert_book( "periodicals", "JanFeb2018.pdf", "FAA Safety Briefing",
         "Jan/Feb 2018", "FAA", 6004555, "" );
 insert_book( "periodicals", "NovDec2017.pdf", "FAA Safety Briefing",
         "Nov/Dec 2017", "FAA", 5895349, "" );
-insert_book( "periodicals", "SepOct2017.pdf", "FAA Safety Briefing",
-        "Sep/Oct 2017", "FAA", 3053321, "" );
-insert_book( "periodicals", "SE_Topic_18_03.pdf", "Safety Fact Sheets",
-        "Mar 2018", "FAA", 546369, "" );
-insert_book( "periodicals", "SE_Topic_18_02.pdf", "Safety Fact Sheets",
-        "Feb 2018", "FAA", 574310, "" );
-insert_book( "periodicals", "SE_Topic_18_01.pdf", "Safety Fact Sheets",
-        "Jan 2018", "FAA", 698834, "" );
-insert_book( "periodicals", "SE_Topic_17_12.pdf", "Safety Fact Sheets",
-        "Dec 2017", "FAA", 765247, "" );
+insert_book( "periodicals", "SE_Topic_18_07.pdf", "Safety Fact Sheets",
+        "Jul 2018", "FAA", 833646, "" );
+insert_book( "periodicals", "SE_Topic_18_06.pdf", "Safety Fact Sheets",
+        "Jun 2018", "FAA", 729778, "" );
+insert_book( "periodicals", "SE_Topic_18_05.pdf", "Safety Fact Sheets",
+        "May 2018", "FAA", 1027633, "" );
+insert_book( "periodicals", "SE_Topic_18_04.pdf", "Safety Fact Sheets",
+        "Apr 2018", "FAA", 845448, "" );
 
+insert_book( "safety", "ac_90-48d-chg_1.pdf", "Pilots’ Role in Collision Avoidance",
+        "2016", "FAA", 159341, "" );
+insert_book( "safety", "safety_advisor_non-towered_airports.pdf", "Operations at Nontowered Airports",
+        "2007", "FAA", 707797, "" );
 insert_book( "safety", "faa-p-8740-02-2008.pdf", "Density Altitude",
         "2008", "FAA", 829656, "" );
 insert_book( "safety", "faa-p-8740-12-2008.pdf", "Thunderstorms",
@@ -183,12 +189,10 @@ insert_book( "safety", "AP_UpsetRecovery_Book.pdf", "Upset Recovery Training Aid
 insert_book( "safety", "tfrweb_2003.pdf.gz", "Pilot's Guide to TFR",
         "2003", "FAA", 1794432, "" );
 
-insert_book( "regs", "aim_171012.pdf", "AIM",
-        "Oct 2017", "FAA", 15012842, "" );
 insert_book( "regs", "aim_180329.pdf", "AIM Change 1",
-        "Mar 2018", "FAA", 3430199, "" );
-insert_book( "regs", "CFR-2017-title14-vol1.pdf", "FAR Volume 1",
-        "Parts 1-59", "US GPO 2017", 12865511, "" );
+        "Mar 2018", "FAA", 14731663, "" );
+insert_book( "regs", "CFR-2018-title14-vol1.pdf", "FAR Volume 1",
+        "Parts 1-59", "US GPO 2018", 10860978, "" );
 insert_book( "regs", "CFR-2018-title14-vol2.pdf", "FAR Volume 2",
         "Parts 60-109", "US GPO 2018", 20370363, "" );
 insert_book( "regs", "CFR-2018-title14-vol3.pdf", "FAR Volume 3",
@@ -261,8 +265,8 @@ insert_book( "pts", "faa-s-8081-6d.pdf", "Flight Instructor PTS",
 insert_book( "pts", "faa-s-8081-9d.pdf", "Flight Instructor Instrument PTS",
         "Jul 2010", "FAA-S-8081-9D", 169064, "" );
 
-insert_book( "misc", "aip_171012.pdf.gz", "Aeronautical Information Publication",
-        "Oct 2017", "FAA", 17602297, "" );
+insert_book( "misc", "aip_180329.pdf.gz", "Aeronautical Information Publication",
+        "Mar 2018", "FAA", 19415976, "" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
 insert_book( "misc", "pcg_180329.pdf", "Pilot/Controller Glossary",
