@@ -248,14 +248,14 @@ public abstract class ActivityBase extends AppCompatActivity implements
     private void setupNavDrawer() {
         int selfItem = getSelfNavDrawerItem();
 
-        mDrawerLayout = (DrawerLayout) findViewById( R.id.drawer_layout );
+        mDrawerLayout = findViewById( R.id.drawer_layout );
         if ( mDrawerLayout == null ) {
             return;
         }
         mDrawerLayout.setStatusBarBackgroundColor(
                 ContextCompat.getColor( this, R.color.color_primary_dark ) );
 
-        mNavigationView = (NavigationView) mDrawerLayout.findViewById( R.id.navdrawer );
+        mNavigationView = mDrawerLayout.findViewById( R.id.navdrawer );
         if ( selfItem == NAVDRAWER_ITEM_INVALID ) {
             // do not show a nav drawer
             if ( mNavigationView != null ) {
@@ -400,8 +400,8 @@ public abstract class ActivityBase extends AppCompatActivity implements
 
     protected Toolbar getActionBarToolbar() {
         if ( mActionBarToolbar == null ) {
-            mAppBar = (AppBarLayout) findViewById( R.id.appbar );
-            mActionBarToolbar = (Toolbar) findViewById( R.id.toolbar_actionbar );
+            mAppBar = findViewById( R.id.appbar );
+            mActionBarToolbar = findViewById( R.id.toolbar_actionbar );
             if ( mActionBarToolbar != null ) {
                 setSupportActionBar( mActionBarToolbar );
                 ActionBar actionBar = getSupportActionBar();
@@ -419,7 +419,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
     }
 
     private void trySetupSwipeRefresh() {
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById( R.id.swipe_refresh_layout );
+        mSwipeRefreshLayout = findViewById( R.id.swipe_refresh_layout );
         if ( mSwipeRefreshLayout != null ) {
             mSwipeRefreshLayout.setColorSchemeResources(
                     R.color.refresh_progress_1,
@@ -676,7 +676,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
 
     public void showAirportTitle( Cursor c ) {
         View root = findViewById( R.id.airport_title_layout );
-        TextView tv = (TextView) root.findViewById( R.id.facility_name );
+        TextView tv = root.findViewById( R.id.facility_name );
         String code = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
         if ( code == null || code.length() == 0 ) {
             code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
@@ -688,23 +688,23 @@ public abstract class ActivityBase extends AppCompatActivity implements
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
         String type = DataUtils.decodeLandingFaclityType( siteNumber );
         tv.setText( String.format( Locale.US, "%s %s", name, type ) );
-        tv = (TextView) root.findViewById( R.id.facility_id );
+        tv = root.findViewById( R.id.facility_id );
         tv.setTextColor( color );
         tv.setText( code );
-        tv = (TextView) root.findViewById( R.id.facility_info );
+        tv = root.findViewById( R.id.facility_info );
         String city = c.getString( c.getColumnIndex( Airports.ASSOC_CITY ) );
         String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );
         if ( state == null ) {
             state = c.getString( c.getColumnIndex( Airports.ASSOC_COUNTY ) );
         }
         tv.setText( String.format( Locale.US, "%s, %s", city, state ) );
-        tv = (TextView) root.findViewById( R.id.facility_info2 );
+        tv = root.findViewById( R.id.facility_info2 );
         int distance = c.getInt( c.getColumnIndex( Airports.DISTANCE_FROM_CITY_NM ) );
         String dir = c.getString( c.getColumnIndex( Airports.DIRECTION_FROM_CITY ) );
         String status = c.getString( c.getColumnIndex( Airports.STATUS_CODE ) );
         tv.setText( String.format( Locale.US, "%s, %d miles %s of city center",
                 DataUtils.decodeStatus( status ), distance, dir ) );
-        tv = (TextView) root.findViewById( R.id.facility_info3 );
+        tv = root.findViewById( R.id.facility_info3 );
         float elev_msl = c.getFloat( c.getColumnIndex( Airports.ELEVATION_MSL ) );
         int tpa_agl = c.getInt( c.getColumnIndex( Airports.PATTERN_ALTITUDE_AGL ) );
         String est = "";
@@ -727,11 +727,11 @@ public abstract class ActivityBase extends AppCompatActivity implements
         Calendar now = Calendar.getInstance();
         if ( !now.before( endDate ) ) {
             // Show the expired warning
-            tv = (TextView) root.findViewById( R.id.expired_label );
+            tv = root.findViewById( R.id.expired_label );
             tv.setVisibility( View.VISIBLE );
         }
 
-        CheckBox cb = (CheckBox) root.findViewById( R.id.airport_star );
+        CheckBox cb = root.findViewById( R.id.airport_star );
         cb.setChecked( mDbManager.isFavoriteAirport( siteNumber ) );
         cb.setTag( siteNumber );
         cb.setOnClickListener( new OnClickListener() {
@@ -753,7 +753,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
 
         } );
 
-        ImageView iv = (ImageView) root.findViewById( R.id.airport_map );
+        ImageView iv = root.findViewById( R.id.airport_map );
         String lat = c.getString( c.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
         String lon = c.getString( c.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
         if ( lat.length() > 0 && lon.length() > 0 ) {
@@ -778,32 +778,32 @@ public abstract class ActivityBase extends AppCompatActivity implements
         String id = c.getString( c.getColumnIndex( Nav1.NAVAID_ID ) );
         String name = c.getString( c.getColumnIndex( Nav1.NAVAID_NAME ) );
         String type = c.getString( c.getColumnIndex( Nav1.NAVAID_TYPE ) );
-        TextView tv = (TextView) root.findViewById( R.id.navaid_name );
+        TextView tv = root.findViewById( R.id.navaid_name );
         tv.setText( String.format( Locale.US, "%s - %s %s", id, name, type ) );
         String city = c.getString( c.getColumnIndex( Nav1.ASSOC_CITY ) );
         String state = c.getString( c.getColumnIndex( States.STATE_NAME ) );
-        tv = (TextView) root.findViewById( R.id.navaid_info );
+        tv = root.findViewById( R.id.navaid_info );
         tv.setText( String.format( Locale.US, "%s, %s", city, state ) );
         String use = c.getString( c.getColumnIndex( Nav1.PUBLIC_USE ) );
         Float elev_msl = c.getFloat( c.getColumnIndex( Nav1.ELEVATION_MSL ) );
-        tv = (TextView) root.findViewById( R.id.navaid_info2 );
+        tv = root.findViewById( R.id.navaid_info2 );
         tv.setText( String.format( Locale.US, "%s, %s elevation",
                 use.equals( "Y" )? "Public use" : "Private use",
                 FormatUtils.formatFeetMsl( elev_msl ) ) );
-        tv = (TextView) root.findViewById( R.id.navaid_morse1 );
+        tv = root.findViewById( R.id.navaid_morse1 );
         tv.setText( DataUtils.getMorseCode( id.substring( 0, 1 ) ) );
         if ( id.length() > 1 ) {
-            tv = (TextView) root.findViewById( R.id.navaid_morse2 );
+            tv = root.findViewById( R.id.navaid_morse2 );
             tv.setText( DataUtils.getMorseCode( id.substring( 1, 2 ) ) );
         }
         if ( id.length() > 2 ) {
-            tv = (TextView) root.findViewById( R.id.navaid_morse3 );
+            tv = root.findViewById( R.id.navaid_morse3 );
             tv.setText( DataUtils.getMorseCode( id.substring( 2, 3 ) ) );
         }
     }
 
-    public boolean postRunnable( Runnable r, long delayMillis ) {
-        return mHandler.postDelayed( r, delayMillis );
+    public void postRunnable( Runnable r, long delayMillis ) {
+        mHandler.postDelayed( r, delayMillis );
     }
 
     @Override
@@ -812,7 +812,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
         inflater.inflate( R.menu.mainmenu, menu );
 
         MenuItem searchItem = menu.findItem( R.id.menu_search );
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView( searchItem );
+        SearchView searchView = (SearchView) searchItem.getActionView();
         SearchManager searchManager = (SearchManager) getSystemService( Context.SEARCH_SERVICE );
         searchView.setSearchableInfo( searchManager.getSearchableInfo( getComponentName() ) );
         searchView.setIconifiedByDefault( false );
@@ -892,7 +892,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
     }
 
     protected void showFaddsEffectiveDate( Cursor c ) {
-        TextView tv = (TextView) findViewById( R.id.effective_date );
+        TextView tv = findViewById( R.id.effective_date );
         if ( tv != null ) {
             String s = c.getString( c.getColumnIndex( Airports.EFFECTIVE_DATE ) );
             Date date = TimeUtils.parseFaaDate( s );
