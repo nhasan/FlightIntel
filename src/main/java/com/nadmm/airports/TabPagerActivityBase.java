@@ -40,7 +40,7 @@ public abstract class TabPagerActivityBase extends ActivityBase {
 
         setContentView( R.layout.activity_tab_pager );
 
-        mViewPager = (ViewPager) findViewById( R.id.view_pager );
+        mViewPager = findViewById( R.id.view_pager );
         mPagerAdapter = new PagerAdapter( this, getSupportFragmentManager(), mViewPager );
 
         mViewPager.addOnPageChangeListener( new ViewPager.SimpleOnPageChangeListener() {
@@ -53,7 +53,7 @@ public abstract class TabPagerActivityBase extends ActivityBase {
             }
         } );
 
-        mTabLayout = (TabLayout) findViewById( R.id.sliding_tabs );
+        mTabLayout = findViewById( R.id.sliding_tabs );
     }
 
     @Override
@@ -61,7 +61,7 @@ public abstract class TabPagerActivityBase extends ActivityBase {
         super.onPostCreate( savedInstanceState );
 
         mTabLayout.setupWithViewPager( mViewPager );
-        mTabLayout.setOnTabSelectedListener( new TabLayout.OnTabSelectedListener() {
+        mTabLayout.addOnTabSelectedListener( new TabLayout.OnTabSelectedListener() {
 
             @Override
             public void onTabSelected( TabLayout.Tab tab ) {
