@@ -51,7 +51,7 @@ public class PreferencesActivity extends FragmentActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        Toolbar toolbar = (Toolbar) findViewById( R.id.toolbar_actionbar );
+        Toolbar toolbar = findViewById( R.id.toolbar_actionbar );
 
         setSupportActionBar( toolbar );
         ActionBar actionBar = getSupportActionBar();
