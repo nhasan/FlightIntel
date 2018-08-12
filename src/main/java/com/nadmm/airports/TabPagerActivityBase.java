@@ -89,12 +89,9 @@ public abstract class TabPagerActivityBase extends ActivityBase {
             mCurrentFragmentIndex = getInitialTabIndex();
         }
 
-        postRunnable( new Runnable() {
-            @Override
-            public void run() {
-                mTabLayout.getTabAt( mCurrentFragmentIndex ).select();
-                enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
-            }
+        postRunnable( () -> {
+            mTabLayout.getTabAt( mCurrentFragmentIndex ).select();
+            enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
         }, 0 );
     }
 
