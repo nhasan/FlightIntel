@@ -73,12 +73,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
         super.onResume();
 
         if ( mLocationUpdatesEnabled ) {
-            getActivityBase().postRunnable( new Runnable() {
-                @Override
-                public void run() {
-                    startLocationUpdates();
-                }
-            }, 0 );
+            getActivityBase().postRunnable( () -> startLocationUpdates(), 0 );
         }
     }
 
@@ -153,7 +148,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
         if ( getActivity() == null ) {
             return;
         }
-        
+
         boolean providerOk = false;
         if ( ContextCompat.checkSelfPermission(
                 getActivity(), Manifest.permission.ACCESS_FINE_LOCATION )
@@ -183,14 +178,9 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
             Snackbar.make( getActivityBase().getAppBar(),
                     "FlightIntel needs access to device's location to show nearby facilities.",
                     Snackbar.LENGTH_INDEFINITE )
-                    .setAction( android.R.string.ok, new View.OnClickListener() {
-                @Override
-                public void onClick( View v ) {
-                    requestPermissions(
+                    .setAction( android.R.string.ok, v -> requestPermissions(
                             new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
-                            PERMISSION_REQUEST_FINE_LOCATION );
-                }
-            } ).show();
+                            PERMISSION_REQUEST_FINE_LOCATION ) ).show();
         }
     }
 
