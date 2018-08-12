@@ -279,40 +279,26 @@ public abstract class ActivityBase extends AppCompatActivity implements
                 supportInvalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
-        mDrawerToggle.setToolbarNavigationClickListener( new View.OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                onBackPressed();
-            }
-        } );
+        mDrawerToggle.setToolbarNavigationClickListener( v -> onBackPressed() );
         mDrawerToggle.setDrawerSlideAnimationEnabled( false );
         mDrawerLayout.addDrawerListener( mDrawerToggle );
         updateDrawerToggle();
 
         // Initialize navigation drawer
         mNavigationView.setNavigationItemSelectedListener(
-            new NavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected( MenuItem item ) {
+                item -> {
                     item.setChecked( true );
                     final int id = item.getItemId();
 
                     if ( id != getSelfNavDrawerItem() ) {
                         // Launch the target Activity after a short delay to allow the drawer close
                         // animation to finish without stutter
-                        mHandler.postDelayed( new Runnable() {
-                            @Override
-                            public void run() {
-                                goToNavDrawerItem( id );
-                            }
-                        }, NAVDRAWER_LAUNCH_DELAY );
+                        mHandler.postDelayed( () -> goToNavDrawerItem( id ), NAVDRAWER_LAUNCH_DELAY );
                     }
 
                     mDrawerLayout.closeDrawer( GravityCompat.START );
                     return false;
-                }
-            } );
+                } );
     }
 
     protected void updateDrawerToggle() {
@@ -425,12 +411,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
                     R.color.refresh_progress_1,
                     R.color.refresh_progress_2,
                     R.color.refresh_progress_3 );
-            mSwipeRefreshLayout.setOnRefreshListener( new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    requestDataRefresh();
-                }
-            } );
+            mSwipeRefreshLayout.setOnRefreshListener( () -> requestDataRefresh() );
 
             if ( mSwipeRefreshLayout instanceof MultiSwipeRefreshLayout ) {
                 MultiSwipeRefreshLayout mswrl = (MultiSwipeRefreshLayout) mSwipeRefreshLayout;
@@ -734,23 +715,18 @@ public abstract class ActivityBase extends AppCompatActivity implements
         CheckBox cb = root.findViewById( R.id.airport_star );
         cb.setChecked( mDbManager.isFavoriteAirport( siteNumber ) );
         cb.setTag( siteNumber );
-        cb.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                CheckBox cb = (CheckBox) v;
-                String siteNumber = (String) cb.getTag();
-                if ( cb.isChecked() ) {
-                    mDbManager.addToFavoriteAirports( siteNumber );
-                    Toast.makeText( ActivityBase.this, "Added to favorites list",
-                            Toast.LENGTH_LONG ).show();
-                } else {
-                    mDbManager.removeFromFavoriteAirports( siteNumber );
-                    Toast.makeText( ActivityBase.this, "Removed from favorites list",
-                            Toast.LENGTH_LONG ).show();
-                }
+        cb.setOnClickListener( v -> {
+            CheckBox cb1 = (CheckBox) v;
+            String siteNumber1 = (String) cb1.getTag();
+            if ( cb1.isChecked() ) {
+                mDbManager.addToFavoriteAirports( siteNumber1 );
+                Toast.makeText( ActivityBase.this, "Added to favorites list",
+                        Toast.LENGTH_LONG ).show();
+            } else {
+                mDbManager.removeFromFavoriteAirports( siteNumber1 );
+                Toast.makeText( ActivityBase.this, "Removed from favorites list",
+                        Toast.LENGTH_LONG ).show();
             }
-
         } );
 
         ImageView iv = root.findViewById( R.id.airport_map );
@@ -758,15 +734,10 @@ public abstract class ActivityBase extends AppCompatActivity implements
         String lon = c.getString( c.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
         if ( lat.length() > 0 && lon.length() > 0 ) {
             iv.setTag( "geo:"+lat+","+lon+"?z=16" );
-            iv.setOnClickListener( new OnClickListener() {
-
-                @Override
-                public void onClick( View v ) {
-                    String tag = (String) v.getTag();
-                    Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( tag ) );
-                    startActivity( intent );
-                }
-
+            iv.setOnClickListener( v -> {
+                String tag = (String) v.getTag();
+                Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( tag ) );
+                startActivity( intent );
             } );
         } else {
             iv.setVisibility( View.GONE );
