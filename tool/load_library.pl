@@ -151,14 +151,14 @@ insert_book( "periodicals", "JanFeb2018.pdf", "FAA Safety Briefing",
         "Jan/Feb 2018", "FAA", 6004555, "" );
 insert_book( "periodicals", "NovDec2017.pdf", "FAA Safety Briefing",
         "Nov/Dec 2017", "FAA", 5895349, "" );
+insert_book( "periodicals", "SE_Topic_18_08.pdf", "Safety Fact Sheets",
+        "Aug 2018", "FAA", 1036542, "" );
 insert_book( "periodicals", "SE_Topic_18_07.pdf", "Safety Fact Sheets",
         "Jul 2018", "FAA", 833646, "" );
 insert_book( "periodicals", "SE_Topic_18_06.pdf", "Safety Fact Sheets",
         "Jun 2018", "FAA", 729778, "" );
 insert_book( "periodicals", "SE_Topic_18_05.pdf", "Safety Fact Sheets",
         "May 2018", "FAA", 1027633, "" );
-insert_book( "periodicals", "SE_Topic_18_04.pdf", "Safety Fact Sheets",
-        "Apr 2018", "FAA", 845448, "" );
 
 insert_book( "safety", "ac_90-48d-chg_1.pdf", "Pilots’ Role in Collision Avoidance",
         "2016", "FAA", 159341, "" );
