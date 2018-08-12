@@ -20,6 +20,7 @@
 package com.nadmm.airports;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -89,9 +90,9 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
     }
 
     @Override
-    public void onAttach( Activity activity ) {
-        super.onAttach( activity );
-        mActivity = (ActivityBase) activity;
+    public void onAttach( Context context ) {
+        super.onAttach( context );
+        mActivity = (ActivityBase) getActivity();
     }
 
     @Override
@@ -164,10 +165,6 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         mActivity.setContentShown( shown );
     }
 
-    protected void setContentShownNoAnimation( boolean shown ) {
-        mActivity.setContentShownNoAnimation( shown );
-    }
-
     protected void setContentMsg( String msg ) {
         mActivity.setContentMsg( msg );
     }
@@ -227,12 +224,12 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
             return;
         }
 
-        TextView tv = (TextView) root.findViewById( R.id.wx_station_name );
+        TextView tv = root.findViewById( R.id.wx_station_name );
         String icaoCode = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
         String stationName = wxs.getString( wxs.getColumnIndex( Wxs.STATION_NAME ) );
         tv.setText( String.format( "%s - %s", icaoCode, stationName ) );
         if ( awos.moveToFirst() ) {
-            tv = (TextView) root.findViewById( R.id.wx_station_info );
+            tv = root.findViewById( R.id.wx_station_info );
             String type = awos.getString( awos.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
             if ( type == null || type.length() == 0 ) {
                 type = "ASOS/AWOS";
@@ -243,7 +240,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
 
             String phone = awos.getString( awos.getColumnIndex( Awos1.STATION_PHONE_NUMBER ) );
             if ( phone != null && phone.length() > 0 ) {
-                tv = (TextView) root.findViewById( R.id.wx_station_phone );
+                tv = root.findViewById( R.id.wx_station_phone );
                 tv.setText( phone );
                 makeClickToCall( tv );
                 tv.setVisibility( View.VISIBLE );
@@ -251,27 +248,27 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
 
             String freq = awos.getString( awos.getColumnIndex( Awos1.STATION_FREQUENCY ) );
             if ( freq != null && freq.length() > 0 ) {
-                tv = (TextView) root.findViewById( R.id.wx_station_freq );
+                tv = root.findViewById( R.id.wx_station_freq );
                 tv.setText( freq );
                 tv.setVisibility( View.VISIBLE );
             }
 
             freq = awos.getString( awos.getColumnIndex( Awos1.SECOND_STATION_FREQUENCY ) );
             if ( freq != null && freq.length() > 0 ) {
-                tv = (TextView) root.findViewById( R.id.wx_station_freq2 );
+                tv = root.findViewById( R.id.wx_station_freq2 );
                 tv.setText( freq );
                 tv.setVisibility( View.VISIBLE );
             }
         } else {
-            tv = (TextView) root.findViewById( R.id.wx_station_info );
+            tv = root.findViewById( R.id.wx_station_info );
             tv.setText( "ASOS/AWOS" );
         }
         int elev = wxs.getInt( wxs.getColumnIndex( Wxs.STATION_ELEVATOIN_METER ) );
-        tv = (TextView) root.findViewById( R.id.wx_station_info2 );
+        tv = root.findViewById( R.id.wx_station_info2 );
         tv.setText( String.format( "Located at %s MSL elevation",
                 FormatUtils.formatFeet( DataUtils.metersToFeet( elev ) ) ) );
 
-        CheckBox cb = (CheckBox) root.findViewById( R.id.airport_star );
+        CheckBox cb = root.findViewById( R.id.airport_star );
         cb.setChecked( getDbManager().isFavoriteWx( icaoCode ) );
         cb.setTag( icaoCode );
         cb.setOnClickListener( new OnClickListener() {
@@ -295,7 +292,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
     }
 
     protected void makeClickToCall( View row, int resid ) {
-        TextView tv = (TextView) row.findViewById( resid );
+        TextView tv = row.findViewById( resid );
         makeClickToCall( tv );
         if ( tv.isClickable() ) {
             row.setBackgroundResource( R.drawable.row_selector_middle );
@@ -345,12 +342,6 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         return addClickableRow( layout, label, null, clss, args );
     }
 
-    protected View addClickableRow( LinearLayout layout, View row, Object tag ) {
-        addRow( layout, row );
-        makeRowClickable( row, tag );
-        return row;
-    }
-
     protected View addClickableRow( LinearLayout layout, View row, Class<?> clss, Bundle args ) {
         addRow( layout, row );
         makeRowClickable( row, clss, args );
@@ -387,13 +378,6 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         return row;
     }
 
-    protected View addPhoneRow( LinearLayout layout, String label, String phone,
-            String label2, String value2 ) {
-        View row = addRow( layout, label, phone, label2, value2 );
-        makeClickToCall( row, R.id.item_value );
-        return row;
-    }
-
     protected View addPhoneRow( LinearLayout layout, String phone ) {
         View row = addRow( layout, phone );
         makeClickToCall( row, R.id.item_label );
@@ -405,7 +389,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
             addSeparator( layout );
         }
         LinearLayout row = (LinearLayout) inflate( R.layout.list_item_text1 );
-        TextView tv = (TextView) row.findViewById( R.id.text );
+        TextView tv = row.findViewById( R.id.text );
         tv.setText( label );
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
@@ -430,9 +414,9 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         }
 
         LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item2 );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        TextView tv = row.findViewById( R.id.item_label );
         tv.setText( label );
-        tv = (TextView) row.findViewById( R.id.item_value );
+        tv = row.findViewById( R.id.item_value );
         if ( value != null && value.length() > 0 ) {
             tv.setText( value );
         } else {
@@ -449,15 +433,15 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         }
 
         LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item3 );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        TextView tv = row.findViewById( R.id.item_label );
         tv.setText( label );
-        tv = (TextView) row.findViewById( R.id.item_value );
+        tv = row.findViewById( R.id.item_value );
         if ( value1 != null && value1.length() > 0 ) {
             tv.setText( value1 );
         } else {
             tv.setVisibility( View.GONE );
         }
-        tv = (TextView) row.findViewById( R.id.item_extra_value );
+        tv = row.findViewById( R.id.item_extra_value );
         if ( value2 != null && value2.length() > 0 ) {
             tv.setText( value2 );
         } else {
@@ -475,21 +459,21 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         }
 
         LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item4 );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        TextView tv = row.findViewById( R.id.item_label );
         tv.setText( label1 );
-        tv = (TextView) row.findViewById( R.id.item_value );
+        tv = row.findViewById( R.id.item_value );
         if ( value1 != null && value1.length() > 0 ) {
             tv.setText( value1 );
         } else {
             tv.setVisibility( View.GONE );
         }
-        tv = (TextView) row.findViewById( R.id.item_extra_label );
+        tv = row.findViewById( R.id.item_extra_label );
         if ( label2 != null && label2.length() > 0 ) {
             tv.setText( label2 );
         } else {
             tv.setVisibility( View.GONE );
         }
-        tv = (TextView) row.findViewById( R.id.item_extra_value );
+        tv = row.findViewById( R.id.item_extra_value );
         if ( value2 != null && value2.length() > 0 ) {
             tv.setText( value2 );
         } else {
@@ -502,7 +486,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
 
     protected void addBulletedRow( LinearLayout layout, String text ) {
         LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_bullet );
-        TextView tv = (TextView) row.findViewById( R.id.item_value );
+        TextView tv = row.findViewById( R.id.item_value );
         tv.setText( text );
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
