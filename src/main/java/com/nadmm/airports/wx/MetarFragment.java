@@ -72,14 +72,10 @@ public class MetarFragment extends WxFragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.metar_detail_view, container, false );
-        Button btnGraphic = (Button) view.findViewById( R.id.btnViewGraphic );
-        btnGraphic.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                Intent intent = new Intent( getActivity(), MetarMapActivity.class );
-                startActivity( intent );
-            }
+        Button btnGraphic = view.findViewById( R.id.btnViewGraphic );
+        btnGraphic.setOnClickListener( v -> {
+            Intent intent = new Intent( getActivity(), MetarMapActivity.class );
+            startActivity( intent );
         } );
         return createContentView( view );
     }
@@ -475,7 +471,7 @@ public class MetarFragment extends WxFragmentBase {
 
     protected void showWindInfo( LinearLayout layout, Metar metar ) {
         View row = addRow( layout, getWindsDescription( metar ) );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        TextView tv = row.findViewById( R.id.item_label );
         if ( metar.windDirDegrees > 0 ) {
             float declination = GeoUtils.getMagneticDeclination( mLocation );
             Drawable wind= WxUtils.getWindBarbDrawable( tv.getContext(), metar, declination );
@@ -499,14 +495,14 @@ public class MetarFragment extends WxFragmentBase {
     protected void addSkyConditionRow( LinearLayout layout, SkyCondition sky,
             String flightCategory ) {
         View row = addRow( layout, sky.toString() );
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        TextView tv = row.findViewById( R.id.item_label );
         WxUtils.showColorizedDrawable( tv, flightCategory, sky.getDrawable() );
     }
 
     protected void addWeatherRow( LinearLayout layout, WxSymbol wx, String flightCategory ) {
         View row = addRow( layout, wx.toString() );
         if ( wx.getDrawable() != 0 ) {
-            TextView tv = (TextView) row.findViewById( R.id.item_label );
+            TextView tv = row.findViewById( R.id.item_label );
             WxUtils.showColorizedDrawable( tv, flightCategory, wx.getDrawable() );
         }
     }

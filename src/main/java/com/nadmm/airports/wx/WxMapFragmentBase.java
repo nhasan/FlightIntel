@@ -83,41 +83,37 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
         super.onViewCreated( view, savedInstanceState );
 
         if ( mLabel != null && mLabel.length() > 0 ) {
-            TextView tv = (TextView) view.findViewById( R.id.wx_map_label );
+            TextView tv = view.findViewById( R.id.wx_map_label );
             tv.setText( mLabel );
             tv.setVisibility( View.VISIBLE );
         }
 
         if ( mHelpText != null && mHelpText.length() > 0 ) {
-            TextView tv = (TextView) view.findViewById( R.id.help_text );
+            TextView tv = view.findViewById( R.id.help_text );
             tv.setText( mHelpText );
             tv.setVisibility( View.VISIBLE );
         }
 
-        OnClickListener listener = new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                if ( mPendingRow == null ) {
-                    mPendingRow = v;
-                    String code = getMapCode( v );
-                    requestWxMap( code );
-                }
+        OnClickListener listener = v -> {
+            if ( mPendingRow == null ) {
+                mPendingRow = v;
+                String code = getMapCode( v );
+                requestWxMap( code );
             }
         };
 
-        LinearLayout layout = (LinearLayout) view.findViewById( R.id.wx_map_layout );
+        LinearLayout layout = view.findViewById( R.id.wx_map_layout );
         for ( int i = 0; i < mWxMapCodes.length; ++i ) {
             View row = addWxRow( layout, mWxMapNames[ i ], mWxMapCodes[ i ] );
             row.setOnClickListener( listener );
         }
 
         if ( mWxTypeCodes != null ) {
-            TextView tv = (TextView) view.findViewById( R.id.wx_map_type_label );
+            TextView tv = view.findViewById( R.id.wx_map_type_label );
             tv.setVisibility( View.VISIBLE );
-            layout = (LinearLayout) view.findViewById( R.id.wx_map_type_layout );
+            layout = view.findViewById( R.id.wx_map_type_layout );
             layout.setVisibility( View.VISIBLE );
-            mSpinner = (Spinner) view.findViewById( R.id.map_type );
+            mSpinner = view.findViewById( R.id.map_type );
             ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
                     android.R.layout.simple_spinner_item, mWxTypeNames );
             adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
