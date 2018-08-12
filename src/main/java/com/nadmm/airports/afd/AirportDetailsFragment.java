@@ -406,15 +406,11 @@ public final class AirportDetailsFragment extends FragmentBase {
                 extras.putString( NoaaService.STATION_ID, icaoCode );
                 extras.putString( Awos1.WX_SENSOR_IDENT, sensorId );
 
-                Runnable runnable = new Runnable() {
-
-                    @Override
-                    public void run() {
-                        cacheMetars();
-                        Intent intent = new Intent( getActivity(), WxDetailActivity.class );
-                        intent.putExtras( extras );
-                        startActivity( intent );
-                    }
+                Runnable runnable = () -> {
+                    cacheMetars();
+                    Intent intent = new Intent( getActivity(), WxDetailActivity.class );
+                    intent.putExtras( extras );
+                    startActivity( intent );
                 };
                 addAwosRow( layout, icaoCode, name, type, freq, phone, distance,
                         bearing, runnable );
@@ -435,14 +431,10 @@ public final class AirportDetailsFragment extends FragmentBase {
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_home_layout );
         Cursor home = result[ 14 ];
         if ( home == null ) {
-            Runnable runnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    Intent prefs = new Intent( getActivity(), PreferencesActivity.class );
-                    startActivity( prefs );
-                    getActivity().finish();
-                }
+            Runnable runnable = () -> {
+                Intent prefs = new Intent( getActivity(), PreferencesActivity.class );
+                startActivity( prefs );
+                getActivity().finish();
             };
             addClickableRow( layout, "Tap here to set home airport", runnable );
         } else if ( home.moveToFirst() ) {
@@ -536,13 +528,9 @@ public final class AirportDetailsFragment extends FragmentBase {
                 if ( !seen.contains( classBName ) ) {
                     View row = addClickableRow( layout, classBName + " Class B airspace", null );
                     row.setTag( faaCode );
-                    row.setOnClickListener( new OnClickListener() {
-
-                        @Override
-                        public void onClick( View v ) {
-                            String faaCode = (String) v.getTag();
-                            getClassBGraphic( faaCode );
-                        }
+                    row.setOnClickListener( v -> {
+                        String faaCode1 = (String) v.getTag();
+                        getClassBGraphic( faaCode1 );
                     } );
                     seen.add( classBName );
                 }
@@ -683,14 +671,10 @@ public final class AirportDetailsFragment extends FragmentBase {
                     View row = addClickableRow( layout, "A/FD page", null );
                     row.setTag( R.id.DAFD_CYCLE, afdCycle );
                     row.setTag( R.id.DAFD_PDF_NAME, pdfName );
-                    row.setOnClickListener( new OnClickListener() {
-
-                        @Override
-                        public void onClick( View v ) {
-                            String afdCycle = (String) v.getTag( R.id.DAFD_CYCLE );
-                            String pdfName = (String) v.getTag( R.id.DAFD_PDF_NAME );
-                            getAfdPage( afdCycle, pdfName );
-                        }
+                    row.setOnClickListener( v -> {
+                        String afdCycle1 = (String) v.getTag( R.id.DAFD_CYCLE );
+                        String pdfName1 = (String) v.getTag( R.id.DAFD_PDF_NAME );
+                        getAfdPage( afdCycle1, pdfName1 );
                     } );
                 } else {
                     addRow( layout, "A/FD page is not available for this airport" );
@@ -780,11 +764,11 @@ public final class AirportDetailsFragment extends FragmentBase {
 
         View row = addClickableRow( layout, label1, value1, label2, phone, runnable );
 
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        TextView tv = row.findViewById( R.id.item_label );
         tv.setTag( id );
         mAwosViews.add( tv );
         // Make phone number clickable
-        tv = (TextView) row.findViewById( R.id.item_extra_value );
+        tv = row.findViewById( R.id.item_extra_value );
         if ( tv.getText().length() > 0 ) {
             makeClickToCall( tv );
         }
@@ -821,26 +805,26 @@ public final class AirportDetailsFragment extends FragmentBase {
 
         RelativeLayout row = (RelativeLayout) inflate( R.layout.runway_detail_item );
 
-        TextView tv = (TextView) row.findViewById( R.id.runway_id );
+        TextView tv = row.findViewById( R.id.runway_id );
         tv.setText( runwayId );
         UiUtils.setRunwayDrawable( getActivity(), tv, runwayId, length, heading );
 
         if ( rp != null ) {
-            tv = (TextView) row.findViewById( R.id.runway_rp );
+            tv = row.findViewById( R.id.runway_rp );
             tv.setText( rp );
             tv.setVisibility( View.VISIBLE );
         }
 
-        tv = (TextView) row.findViewById( R.id.runway_size );
+        tv = row.findViewById( R.id.runway_size );
         tv.setText( String.format( Locale.US, "%s x %s",
                 FormatUtils.formatFeet( length ), FormatUtils.formatFeet( width ) ) );
 
-        tv = (TextView) row.findViewById( R.id.runway_surface );
+        tv = row.findViewById( R.id.runway_surface );
         tv.setText( DataUtils.decodeSurfaceType( surfaceType ) );
 
         if ( !runwayId.startsWith( "H" ) ) {
             // Save the textview and runway info for later use
-            tv = (TextView) row.findViewById( R.id.runway_wind_info );
+            tv = row.findViewById( R.id.runway_wind_info );
             Bundle tag = new Bundle();
             tag.putString( Runways.BASE_END_ID, baseId );
             tag.putString( Runways.RECIPROCAL_END_ID, reciprocalId );
