@@ -70,19 +70,15 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
         tv.setText( "Select Area" );
         tv.setVisibility( View.VISIBLE );
 
-        OnClickListener listener = new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                if ( mPendingRow == null ) {
-                    mPendingRow = v;
-                    String code = (String) v.getTag();
-                    requestWxText( code );
-                }
+        OnClickListener listener = v -> {
+            if ( mPendingRow == null ) {
+                mPendingRow = v;
+                String code = (String) v.getTag();
+                requestWxText( code );
             }
         };
 
-        LinearLayout layout = (LinearLayout) view.findViewById( R.id.wx_map_layout );
+        LinearLayout layout = view.findViewById( R.id.wx_map_layout );
         for ( int i = 0; i < mWxAreaNames.length; ++i ) {
             View row = addWxRow( layout, mWxAreaNames[ i ], mWxAreaCodes[ i ] );
             row.setOnClickListener( listener );
@@ -101,7 +97,7 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
     @Override
     protected void handleBroadcast( Intent intent ) {
         if ( mPendingRow != null ) {
-            TextView tv = (TextView) mPendingRow.findViewById( R.id.text );
+            TextView tv = mPendingRow.findViewById( R.id.text );
             String label = tv.getText().toString();
             String path = intent.getStringExtra( NoaaService.RESULT );
             Intent viewer = new Intent( getActivity(), TextFileViewActivity.class );
