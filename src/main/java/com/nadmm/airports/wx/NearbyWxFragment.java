@@ -21,7 +21,6 @@ package com.nadmm.airports.wx;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.location.Location;
 import android.os.Bundle;
 
 import com.nadmm.airports.data.DatabaseManager;
@@ -38,8 +37,6 @@ public class NearbyWxFragment extends WxListFragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
-
-        getActivityBase().faLogViewItemList( "wx (nearby)" );
     }
 
     @Override

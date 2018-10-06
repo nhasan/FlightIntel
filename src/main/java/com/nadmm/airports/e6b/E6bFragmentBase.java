@@ -61,8 +61,6 @@ abstract class E6bFragmentBase extends FragmentBase {
             TextView msg = (TextView) findViewById( R.id.e6b_msg );
             msg.setText( text );
         }
-
-        getActivityBase().faLogViewItem( "e6b", title );
     }
 
     protected abstract String getMessage();

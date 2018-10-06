@@ -97,8 +97,6 @@ public class TfrListFragment extends ListFragmentBase {
         setActionBarTitle( "TFR List" );
         setActionBarSubtitle( "Loading..." );
 
-        getActivityBase().faLogViewItemList( "tfr" );
-
         requestTfrList( false );
     }
 
@@ -148,8 +146,6 @@ public class TfrListFragment extends ListFragmentBase {
 
             TfrListAdapter adapter = new TfrListAdapter( getActivityBase(), tfrList );
             setAdapter( adapter );
-
-            getActivityBase().faLogViewItemList( "tfr" );
 
             if ( isRefreshing() ) {
                 setRefreshing( false );

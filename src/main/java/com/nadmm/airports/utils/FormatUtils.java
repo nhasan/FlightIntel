@@ -19,11 +19,11 @@
 
 package com.nadmm.airports.utils;
 
+import com.nadmm.airports.wx.WxUtils;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
-
-import com.nadmm.airports.wx.WxUtils;
 
 public class FormatUtils {
 

@@ -19,14 +19,12 @@
 
 package com.nadmm.airports.afd;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +32,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Airports;
@@ -91,7 +88,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
                     c.getDouble( c.getColumnIndex( Nav1.REF_LONGITUDE_DEGREES ) ),
                     results );
             DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
-            RADIAL = calculateRadial( results[ 1 ], var );
+            RADIAL = DataUtils.calculateRadial( results[ 1 ], var );
         }
 
         @Override
@@ -102,12 +99,6 @@ public final class NearbyNavaidsFragment extends FragmentBase {
                 return -1;
             }
             return 0;
-        }
-
-        private int calculateRadial( float dir, int var ) {
-            int heading = Math.round( dir+360 )%360;
-            heading = DataUtils.calculateMagneticHeading( heading, var );
-            return DataUtils.calculateReciprocalHeading( heading );
         }
     }
 
@@ -134,9 +125,6 @@ public final class NearbyNavaidsFragment extends FragmentBase {
     protected void showDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
 
-        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-        getActivityBase().faLogViewItem( "navaids", icaoCode );
-
         Cursor vor = result[ 1 ];
         Cursor ndb = result[ 2 ];
         if ( vor != null || ndb != null ) {
@@ -146,8 +134,6 @@ public final class NearbyNavaidsFragment extends FragmentBase {
             setContentMsg( String.format( Locale.US, "No navaids found within %d NM radius",
                     mRadius ) );
         }
-
-        getActivityBase().faLogViewItemList( "navaid" );
 
         setFragmentContentShown( true );
     }

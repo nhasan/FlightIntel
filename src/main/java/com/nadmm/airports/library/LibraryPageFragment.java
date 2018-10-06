@@ -44,7 +44,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nadmm.airports.Application;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
@@ -152,8 +151,6 @@ public class LibraryPageFragment extends FragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         mActivity = (LibraryActivity) getActivity();
-
-        mActivity.faLogViewItem( "library", mCategory );
 
         LibraryTask task = new LibraryTask();
         task.execute( mCategory );
@@ -340,12 +337,6 @@ public class LibraryPageFragment extends FragmentBase {
         Intent service = makeServiceIntent( LibraryService.ACTION_GET_BOOK );
         service.putExtra( LibraryService.BOOK_NAME, name );
         getActivity().startService( service );
-
-        Bundle bundle = new Bundle();
-        bundle.putString( FirebaseAnalytics.Param.ITEM_CATEGORY, mCategory );
-        bundle.putString( FirebaseAnalytics.Param.ITEM_NAME, name );
-        bundle.putString( FirebaseAnalytics.Param.ITEM_ID, "pdf" );
-        getActivityBase().logAnalyticsEvent( FirebaseAnalytics.Event.VIEW_ITEM, bundle );
     }
 
     protected void deleteBook( String name ) {

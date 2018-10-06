@@ -19,13 +19,11 @@
 
 package com.nadmm.airports.afd;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +31,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Airports;
@@ -96,10 +93,7 @@ public final class RunwaysFragment extends FragmentBase {
         Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
 
-        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
-
-        getActivityBase().faLogViewItem( "runway", icaoCode, runwayId );
 
         int length = rwy.getInt( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
         int heading = rwy.getInt( rwy.getColumnIndex( Runways.BASE_END_HEADING ) );
@@ -436,10 +430,7 @@ public final class RunwaysFragment extends FragmentBase {
         Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
 
-        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
         String helipadId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
-
-        getActivityBase().faLogViewItem( "helipad", icaoCode, helipadId );
 
         tv = (TextView) findViewById( R.id.rwy_common_label );
         tv.setText( "Helipad "+helipadId );

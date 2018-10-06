@@ -118,8 +118,6 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
                 startActivity( Intent.createChooser( intent, "Share Scratchpad" ) );
             }
         } );
-
-        getActivityBase().faLogViewItem( "scratchpad", "" );
     }
 
     @Override

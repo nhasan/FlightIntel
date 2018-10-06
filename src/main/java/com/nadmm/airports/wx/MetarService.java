@@ -19,19 +19,19 @@
 
 package com.nadmm.airports.wx;
 
+import android.content.Intent;
+import android.text.format.DateUtils;
+
+import com.nadmm.airports.utils.UiUtils;
+
+import org.xml.sax.SAXException;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
-
-import android.content.Intent;
-import android.text.format.DateUtils;
-
-import com.nadmm.airports.utils.UiUtils;
 
 public class MetarService extends NoaaService {
 

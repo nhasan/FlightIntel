@@ -19,13 +19,11 @@
 
 package com.nadmm.airports.wx;
 
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Date;
+import android.text.format.Time;
+import android.util.TimeFormatException;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+import com.nadmm.airports.wx.AirSigmet.AirSigmetEntry;
+import com.nadmm.airports.wx.AirSigmet.AirSigmetPoint;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -33,11 +31,13 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import android.text.format.Time;
-import android.util.TimeFormatException;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Date;
 
-import com.nadmm.airports.wx.AirSigmet.AirSigmetEntry;
-import com.nadmm.airports.wx.AirSigmet.AirSigmetPoint;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 public class AirSigmetParser {
 

@@ -22,16 +22,13 @@ package com.nadmm.airports.utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.support.v4.net.ConnectivityManagerCompat;
-import android.support.v7.preference.PreferenceManager;
 
 import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.PreferencesActivity;
 
 import java.io.BufferedInputStream;
 import java.io.File;

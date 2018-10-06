@@ -20,11 +20,8 @@
 package com.nadmm.airports.afd;
 
 import android.os.Bundle;
-import android.widget.ListView;
 
 import com.nadmm.airports.FragmentActivityBase;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.wx.NearbyWxFragment;
 
 public class NearbyWxActivity extends FragmentActivityBase {

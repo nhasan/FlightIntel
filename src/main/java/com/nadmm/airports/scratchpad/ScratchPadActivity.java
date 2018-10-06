@@ -32,8 +32,6 @@ public class ScratchPadActivity extends FragmentActivityBase {
 
         Bundle args = getIntent().getExtras();
         addFragment( ScratchPadFragment.class, args );
-
-        faLogViewItem( "scratchpad", "" );
     }
 
     @Override

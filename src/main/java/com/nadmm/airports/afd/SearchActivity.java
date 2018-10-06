@@ -28,7 +28,6 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nadmm.airports.FragmentActivityBase;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.data.DatabaseManager.Airports;
@@ -73,7 +72,6 @@ public class SearchActivity extends FragmentActivityBase {
 
     @SuppressWarnings("deprecation")
     private void showResults( String query ) {
-        logAnalyticsEvent( query );
         Cursor c = managedQuery( AirportsProvider.CONTENT_URI, null, null,
                 new String[]{ query }, null );
         if ( c.getCount() == 1 ) {
@@ -89,12 +87,6 @@ public class SearchActivity extends FragmentActivityBase {
             startManagingCursor( c );
             mFragment.setSearchCursor( c );
         }
-    }
-
-    protected void logAnalyticsEvent( String query ) {
-        Bundle bundle = new Bundle();
-        bundle.putString( FirebaseAnalytics.Param.SEARCH_TERM, query );
-        logAnalyticsEvent( FirebaseAnalytics.Event.SEARCH, bundle );
     }
 
     public static class SearchFragment extends ListFragmentBase {

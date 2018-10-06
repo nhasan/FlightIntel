@@ -19,12 +19,9 @@
 
 package com.nadmm.airports.wx;
 
-import android.content.BroadcastReceiver;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -117,8 +114,6 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
         service.setAction( mAction );
         service.putExtra( NoaaService.STATION_ID, code );
         getActivity().startService( service );
-
-        getActivityBase().faLogViewItem( getProduct(), code );
     }
 
     private void setProgressBarVisible( boolean visible ) {

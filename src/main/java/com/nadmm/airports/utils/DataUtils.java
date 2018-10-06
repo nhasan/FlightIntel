@@ -123,7 +123,9 @@ public final class DataUtils {
         return magneticHeading;
     }
 
-    public static int calculateReciprocalHeading( int heading ) {
+    public static int calculateRadial( float dir, int var ) {
+        int heading = Math.round( dir+360 )%360;
+        heading = calculateMagneticHeading( heading, var );
         return ( heading+180 )%360;
     }
 

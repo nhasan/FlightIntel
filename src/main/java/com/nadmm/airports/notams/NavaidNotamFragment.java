@@ -27,8 +27,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.R;
+import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 public class NavaidNotamFragment extends NotamFragmentBase {

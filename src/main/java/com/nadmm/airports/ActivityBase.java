@@ -40,7 +40,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -55,7 +54,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
@@ -66,7 +64,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.afd.AfdMainActivity;
 import com.nadmm.airports.clocks.ClocksActivity;
@@ -116,7 +113,6 @@ public abstract class ActivityBase extends AppCompatActivity implements
     private ActionBarDrawerToggle mDrawerToggle;
     private NavigationView mNavigationView;
 
-    private FirebaseAnalytics mFirebaseAnalytics;
     private SharedPreferences mPreferences;
 
     private static final int NAVDRAWER_LAUNCH_DELAY = 250;
@@ -124,12 +120,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
     protected static final String EXTRA_MSG = "MSG";
 
     private FragmentManager.OnBackStackChangedListener mBackStackChangedListener =
-            new FragmentManager.OnBackStackChangedListener() {
-                @Override
-                public void onBackStackChanged() {
-                    updateDrawerToggle();
-                }
-            };
+            () -> updateDrawerToggle();
 
     public static final String FRAGMENT_TAG_EXTRA = "FRAGMENT_TAG_EXTRA";
 
@@ -171,7 +162,6 @@ public abstract class ActivityBase extends AppCompatActivity implements
         }
 
         mPreferences = PreferenceManager.getDefaultSharedPreferences( this );
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance( this );
     }
 
     @Override
@@ -923,49 +913,6 @@ public abstract class ActivityBase extends AppCompatActivity implements
 
     public boolean getPrefAlwaysShowNearby() {
         return mPreferences.getBoolean( PreferencesActivity.KEY_ALWAYS_SHOW_NEARBY, false );
-    }
-
-    public boolean getPrefAnalyticsOptout() {
-        return  mPreferences.getBoolean( PreferencesActivity.KEY_ANALYTICS_OPTOUT, false );
-    }
-
-    public void logAnalyticsEvent( String event, Bundle parameters ) {
-        if ( !getPrefAnalyticsOptout() ) {
-            mFirebaseAnalytics.logEvent( event, parameters );
-        }
-    }
-
-    public void faLogSelectContent( String type, String id ) {
-        Bundle bundle = new Bundle();
-        bundle.putString( FirebaseAnalytics.Param.CONTENT_TYPE, type );
-        bundle.putString( FirebaseAnalytics.Param.ITEM_ID, id );
-        logAnalyticsEvent( FirebaseAnalytics.Event.SELECT_CONTENT, bundle );
-    }
-
-    public void faLogViewItemList( String categ ) {
-        Bundle bundle = new Bundle();
-        bundle.putString( FirebaseAnalytics.Param.ITEM_CATEGORY, categ );
-        logAnalyticsEvent( FirebaseAnalytics.Event.VIEW_ITEM_LIST, bundle );
-
-        faLogSelectContent( categ, "list" );
-    }
-
-    public void faLogViewItem( String categ, String id ) {
-        faLogViewItem( categ, id, null );
-    }
-
-    public void faLogViewItem( String categ, String id, String name ) {
-        Bundle bundle = new Bundle();
-        bundle.putString( FirebaseAnalytics.Param.ITEM_CATEGORY, categ );
-        bundle.putString( FirebaseAnalytics.Param.ITEM_ID, id );
-        if ( name != null ) {
-            bundle.putString( FirebaseAnalytics.Param.ITEM_NAME, name );
-        }
-        logAnalyticsEvent( FirebaseAnalytics.Event.VIEW_ITEM, bundle );
-
-        // Firebase dashboard currently does not show details or VIEW_ITEM, so use
-        // SELECT_CONTENT as well to view reports on parameter data.
-        faLogSelectContent( categ, id );
     }
 
 }

@@ -33,10 +33,10 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nadmm.airports.data.DatabaseManager;
-import com.nadmm.airports.data.DownloadActivity;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DownloadActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SectionedCursorAdapter;
 
@@ -72,8 +72,6 @@ public class BrowseAirportsFragment extends ListFragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
-
-        getActivityBase().faLogViewItemList( "airport (browse)" );
 
         if ( savedInstanceState != null && savedInstanceState.containsKey( BROWSE_MODE ) ) {
             mMode = savedInstanceState.getInt( BROWSE_MODE );

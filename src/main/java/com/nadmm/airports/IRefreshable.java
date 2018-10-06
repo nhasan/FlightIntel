@@ -19,8 +19,6 @@
 
 package com.nadmm.airports;
 
-import com.nadmm.airports.ListFragmentBase;
-
 public interface IRefreshable {
 
     // Is this instance refreshable?

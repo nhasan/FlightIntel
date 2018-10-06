@@ -19,18 +19,6 @@
 
 package com.nadmm.airports.wx;
 
-import java.io.File;
-import java.io.FileReader;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-
 import android.location.Location;
 import android.text.format.Time;
 import android.util.TimeFormatException;
@@ -41,6 +29,18 @@ import com.nadmm.airports.wx.Pirep.IcingCondition;
 import com.nadmm.airports.wx.Pirep.PirepEntry;
 import com.nadmm.airports.wx.Pirep.SkyCondition;
 import com.nadmm.airports.wx.Pirep.TurbulenceCondition;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+
+import java.io.File;
+import java.io.FileReader;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 public class PirepParser {
 

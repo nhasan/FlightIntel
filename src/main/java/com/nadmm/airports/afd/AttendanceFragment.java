@@ -28,12 +28,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Attendance;
 import com.nadmm.airports.data.DatabaseManager.Remarks;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 public final class AttendanceFragment extends FragmentBase {
@@ -58,9 +58,6 @@ public final class AttendanceFragment extends FragmentBase {
 
     protected void showDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-
-        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-        getActivityBase().faLogViewItem( "attendance", icaoCode );
 
         showAirportTitle( apt );
         showAttendanceDetails( result );

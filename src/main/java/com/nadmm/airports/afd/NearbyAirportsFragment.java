@@ -43,8 +43,6 @@ public class NearbyAirportsFragment extends LocationListFragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
-
-        getActivityBase().faLogViewItemList( "Airport (nearby)" );
     }
 
     @Override

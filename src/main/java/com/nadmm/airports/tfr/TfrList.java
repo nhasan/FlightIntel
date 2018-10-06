@@ -19,7 +19,6 @@
 
 package com.nadmm.airports.tfr;
 
-import android.content.Context;
 import android.location.Location;
 
 import com.nadmm.airports.ActivityBase;

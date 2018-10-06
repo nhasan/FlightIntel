@@ -35,11 +35,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Awos1;
 import com.nadmm.airports.data.DatabaseManager.Wxs;
-import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
@@ -188,8 +188,6 @@ public class PirepFragment extends WxFragmentBase {
         service.putExtra( PirepService.LOCATION, mLocation );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
-
-        getActivityBase().faLogViewItem( getProduct(), mStationId );
     }
 
     protected void showPirep( Intent intent ) {

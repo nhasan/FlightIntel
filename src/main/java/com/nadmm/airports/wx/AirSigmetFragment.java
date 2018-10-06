@@ -165,8 +165,6 @@ public class AirSigmetFragment extends WxFragmentBase {
         service.putExtra( NoaaService.HOURS_BEFORE, AIRSIGMET_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
-
-        getActivityBase().faLogViewItem( getProduct(), mStationId );
     }
 
     protected void showAirSigmetText( Intent intent ) {

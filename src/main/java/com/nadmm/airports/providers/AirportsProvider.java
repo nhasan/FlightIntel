@@ -19,9 +19,6 @@
 
 package com.nadmm.airports.providers;
 
-import java.util.HashMap;
-import java.util.Locale;
-
 import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
@@ -33,9 +30,12 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import com.nadmm.airports.afd.AirportsCursorHelper;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Airports;
-import com.nadmm.airports.afd.AirportsCursorHelper;
+
+import java.util.HashMap;
+import java.util.Locale;
 
 public class AirportsProvider extends ContentProvider {
 

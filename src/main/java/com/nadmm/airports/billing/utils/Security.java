@@ -18,7 +18,6 @@ package com.nadmm.airports.billing.utils;
 import android.text.TextUtils;
 import android.util.Log;
 
-
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;

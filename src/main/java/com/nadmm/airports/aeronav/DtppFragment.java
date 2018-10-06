@@ -474,8 +474,6 @@ public class DtppFragment extends FragmentBase {
             showDtppSummary( result );
             showDtppCharts( result );
 
-            getActivityBase().faLogViewItem( "dtpp", mIcaoCode );
-
             setFragmentContentShown( true );
             return true;
         }

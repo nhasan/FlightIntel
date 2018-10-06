@@ -19,14 +19,14 @@
 
 package com.nadmm.airports.clocks;
 
-import java.util.ArrayList;
-
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
+
+import java.util.ArrayList;
 
 public class StopWatchService extends Service {
 

@@ -19,8 +19,6 @@
 
 package com.nadmm.airports.afd;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -30,12 +28,14 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.notams.AirportNotamActivity;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
+
+import java.util.ArrayList;
 
 public final class ServicesFragment extends FragmentBase {
 

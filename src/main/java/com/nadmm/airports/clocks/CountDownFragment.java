@@ -212,8 +212,6 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
             }
         } );
 
-        getActivityBase().faLogViewItem( "clocks", "countdown" );
-
         setFragmentContentShown( true );
     }
 

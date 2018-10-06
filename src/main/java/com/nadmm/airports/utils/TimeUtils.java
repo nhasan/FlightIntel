@@ -20,14 +20,10 @@
 package com.nadmm.airports.utils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.support.v7.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
 
 import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.PreferencesActivity;
-import com.nadmm.airports.data.DatabaseManager;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

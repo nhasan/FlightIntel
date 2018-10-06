@@ -32,7 +32,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.text.format.DateUtils;
-import android.view.View;
 
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.utils.GeoUtils;

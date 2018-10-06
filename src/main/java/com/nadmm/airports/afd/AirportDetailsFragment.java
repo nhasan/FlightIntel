@@ -23,7 +23,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -31,10 +30,8 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -186,13 +183,11 @@ public final class AirportDetailsFragment extends FragmentBase {
             String path = intent.getStringExtra( DafdService.PDF_PATH );
             if ( path != null ) {
                 SystemUtils.startPDFViewer( getActivity(), path );
-                getActivityBase().faLogViewItem( "dafd", mIcaoCode );
             }
         } else if ( action.equals( ClassBService.ACTION_GET_CLASSB_GRAPHIC ) ) {
             String path = intent.getStringExtra( ClassBService.PDF_PATH );
             if ( path != null ) {
                 SystemUtils.startPDFViewer( getActivity(), path );
-                getActivityBase().faLogViewItem( "classb", mIcaoCode );
             }
         }
     }
@@ -213,8 +208,6 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     protected void showDetails( Cursor[] result ) {
-        getActivityBase().faLogViewItem( "airport", mIcaoCode );
-
         Cursor apt = result[ 0 ];
 
         showAirportTitle( apt );

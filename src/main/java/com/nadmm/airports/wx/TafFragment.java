@@ -35,11 +35,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Awos1;
 import com.nadmm.airports.data.DatabaseManager.Wxs;
-import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
@@ -262,8 +262,6 @@ public class TafFragment extends WxFragmentBase {
         service.putExtra( NoaaService.HOURS_BEFORE, TAF_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
-
-        getActivityBase().faLogViewItem( "taf", stationId );
     }
 
     protected void showTaf( Intent intent ) {

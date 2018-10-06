@@ -96,8 +96,6 @@ public class NotamFragmentBase extends FragmentBase {
         service.setAction( NotamService.ACTION_GET_NOTAM );
         service.putExtra( NotamService.ICAO_CODE, icaoCode );
         getActivity().startService( service );
-
-        getActivityBase().faLogViewItem( "notam", icaoCode, type );
     }
 
     protected void showNotams( File notamFile ) {

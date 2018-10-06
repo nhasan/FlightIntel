@@ -30,7 +30,6 @@ import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
 

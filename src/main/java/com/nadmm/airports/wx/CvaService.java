@@ -19,14 +19,13 @@
 
 package com.nadmm.airports.wx;
 
-import java.io.File;
-import java.util.Locale;
-
 import android.content.Intent;
 import android.text.format.DateUtils;
-import android.util.Log;
 
 import com.nadmm.airports.utils.UiUtils;
+
+import java.io.File;
+import java.util.Locale;
 
 public class CvaService extends NoaaService {
 

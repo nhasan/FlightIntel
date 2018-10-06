@@ -27,8 +27,6 @@ import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.widget.Button;
 
-import com.nadmm.airports.donate.DonateActivity;
-
 public class AboutActivity extends ActivityBase {
 
     @Override

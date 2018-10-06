@@ -14,15 +14,15 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.utils;
 
+import android.location.Location;
+
 import java.util.Calendar;
 import java.util.TimeZone;
-
-import android.location.Location;
 
 public class SolarCalculator {
 
@@ -179,7 +179,7 @@ public class SolarCalculator {
         double utcTime = getUtcTime( localMeanTime );
         double utcOffset = date.get( Calendar.ZONE_OFFSET )/MSEC_PER_HOUR;
         double localTime = utcTime+utcOffset;
-        return adjustForDST( localTime, date );        
+        return adjustForDST( localTime, date );
     }
 
     private Calendar getTimeAsCalendar( double time, Calendar date ) {

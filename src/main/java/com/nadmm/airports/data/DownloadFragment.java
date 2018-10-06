@@ -31,7 +31,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.ResultReceiver;
 import android.provider.BaseColumns;
 import android.sax.Element;
@@ -72,7 +71,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.UUID;
 import java.util.zip.GZIPInputStream;
 
 public class DownloadFragment extends FragmentBase {
@@ -180,8 +178,6 @@ public class DownloadFragment extends FragmentBase {
     @Override
     public void onActivityCreated( @Nullable Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
-
-        getActivityBase().faLogViewItem( "database", "" );
 
         checkData( false );
     }

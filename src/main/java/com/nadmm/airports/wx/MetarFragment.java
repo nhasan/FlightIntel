@@ -28,7 +28,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -216,8 +215,6 @@ public class MetarFragment extends WxFragmentBase {
         service.putExtra( NoaaService.HOURS_BEFORE, METAR_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
-
-        getActivityBase().faLogViewItem( "metar", stationId );
     }
 
     protected void showMetar( Intent intent ) {

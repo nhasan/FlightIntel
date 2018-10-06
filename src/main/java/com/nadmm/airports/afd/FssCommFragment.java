@@ -19,14 +19,12 @@
 
 package com.nadmm.airports.afd;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +34,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.PreferencesActivity;
 import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Airports;
@@ -111,7 +108,6 @@ public final class FssCommFragment extends FragmentBase {
         setActionBarTitle( "Nearby FSS", "" );
 
         mRadius = getActivityBase().getPrefNearbyRadius();
-        getActivityBase().faLogViewItemList( "fss" );
 
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );

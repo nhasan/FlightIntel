@@ -19,12 +19,6 @@
 
 package com.nadmm.airports.afd;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
-
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
@@ -34,12 +28,18 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
+import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SolarCalculator;
 import com.nadmm.airports.utils.TimeUtils;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public final class AlmanacFragment extends FragmentBase {
 
@@ -63,9 +63,6 @@ public final class AlmanacFragment extends FragmentBase {
 
     protected void showDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-
-        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-        getActivityBase().faLogViewItem( "almanac", icaoCode );
 
         showAirportTitle( apt );
         showSolarInfo( result );

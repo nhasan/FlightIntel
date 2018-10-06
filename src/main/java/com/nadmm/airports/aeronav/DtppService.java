@@ -14,16 +14,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.aeronav;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.os.Bundle;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class DtppService extends AeroNavService {
 

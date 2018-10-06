@@ -22,7 +22,6 @@ package com.nadmm.airports.wx;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -151,8 +150,6 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
         }
         setServiceParams( service );
         getActivity().startService( service );
-
-        getActivityBase().faLogViewItem( getProduct(), code );
     }
 
     protected void setServiceParams( Intent intent ) {

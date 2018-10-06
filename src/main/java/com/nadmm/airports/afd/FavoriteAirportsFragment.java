@@ -25,16 +25,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.widget.CursorAdapter;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Airports;
-import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 import java.util.ArrayList;
@@ -58,8 +55,6 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
-
-        getActivityBase().faLogViewItemList( "airport (favorite)" );
     }
 
     @Override

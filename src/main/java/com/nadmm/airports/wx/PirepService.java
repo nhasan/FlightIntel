@@ -19,15 +19,15 @@
 
 package com.nadmm.airports.wx;
 
-import java.io.File;
-import java.util.Locale;
-
 import android.content.Intent;
 import android.location.Location;
 import android.text.format.DateUtils;
 
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.UiUtils;
+
+import java.io.File;
+import java.util.Locale;
 
 public class PirepService extends NoaaService {
 

@@ -1,12 +1,12 @@
 package com.nadmm.airports.wx;
 
-import java.io.File;
-
-import com.nadmm.airports.utils.UiUtils;
-
 import android.content.Intent;
 import android.text.format.DateUtils;
 import android.util.Log;
+
+import com.nadmm.airports.utils.UiUtils;
+
+import java.io.File;
 
 
 public class WindsAloftService extends NoaaService {

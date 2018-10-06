@@ -1,11 +1,11 @@
 package com.nadmm.airports.wx;
 
-import java.io.File;
+import android.content.Intent;
+import android.text.format.DateUtils;
 
 import com.nadmm.airports.utils.UiUtils;
 
-import android.content.Intent;
-import android.text.format.DateUtils;
+import java.io.File;
 
 public class SigWxService extends NoaaService {
 

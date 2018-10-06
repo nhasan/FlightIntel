@@ -42,11 +42,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.nadmm.airports.Application;
+import com.nadmm.airports.FragmentBase;
+import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Dtpp;
 import com.nadmm.airports.data.DatabaseManager.DtppCycle;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.R;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.TimeUtils;
@@ -137,7 +137,6 @@ public class ChartsDownloadFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        getActivityBase().faLogViewItem( "chartsdownload", "" );
         setBackgroundTask( new ChartsDownloadTask() ).execute();
     }
 

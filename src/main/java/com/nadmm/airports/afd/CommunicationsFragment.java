@@ -48,7 +48,6 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -74,9 +73,6 @@ public final class CommunicationsFragment extends FragmentBase {
 
     protected void showDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-
-        String icaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-        getActivityBase().faLogViewItem( "comms", icaoCode );
 
         showAirportTitle( apt );
         showAirportFrequencies( result );

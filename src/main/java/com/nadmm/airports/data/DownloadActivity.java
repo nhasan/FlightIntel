@@ -22,7 +22,6 @@ package com.nadmm.airports.data;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.nadmm.airports.FragmentActivityBase;
 import com.nadmm.airports.afd.AfdMainActivity;

@@ -19,7 +19,6 @@
 
 package com.nadmm.airports.tfr;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -98,8 +97,6 @@ public class TfrDetailFragment extends FragmentBase {
 
         setActionBarTitle( mTfr.name );
         setActionBarSubtitle( "TFR Details" );
-
-        getActivityBase().faLogViewItem( "tfr", mTfr.notamId, mTfr.name );
 
         setFragmentContentShown( true );
     }

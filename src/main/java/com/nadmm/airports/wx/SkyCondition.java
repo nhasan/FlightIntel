@@ -19,10 +19,10 @@
 
 package com.nadmm.airports.wx;
 
-import java.io.Serializable;
-
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.FormatUtils;
+
+import java.io.Serializable;
 
 public abstract class SkyCondition implements Serializable {
 
