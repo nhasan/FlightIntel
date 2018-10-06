@@ -70,6 +70,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
@@ -148,28 +149,18 @@ public class DownloadFragment extends FragmentBase {
 
         // Add the footer view
         View footer = inflate( R.layout.download_footer );
-        mListView = (ListView) view.findViewById( android.R.id.list );
+        mListView = view.findViewById( android.R.id.list );
         mListView.addFooterView( footer );
         mListView.setFooterDividersEnabled( true );
 
-        Button btnDownload = (Button) view.findViewById( R.id.btnDownload );
+        Button btnDownload = view.findViewById( R.id.btnDownload );
         btnDownload.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick( View v ) {
-                        checkNetworkAndDownload();
-                    }
-                }
+                v -> checkNetworkAndDownload()
         );
 
         Button btnDelete = (Button) view.findViewById( R.id.btnDelete );
         btnDelete.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick( View v ) {
-                        checkDelete();
-                    }
-                }
+                v -> checkDelete()
         );
 
         return createContentView( view );
@@ -193,24 +184,14 @@ public class DownloadFragment extends FragmentBase {
     }
 
     private void checkNetworkAndDownload() {
-        NetworkUtils.checkNetworkAndDownload( getActivity(), new Runnable() {
-
-            @Override
-            public void run() {
-                download();
-            }
-        } );
+        NetworkUtils.checkNetworkAndDownload( getActivity(), () -> download() );
     }
 
     private void download() {
         if ( SystemUtils.isExternalStorageAvailable() ) {
-            mHandler.post( new Runnable() {
-
-                @Override
-                public void run() {
-                    mDownloadTask = new DownloadTask( (DownloadActivity) getActivity() );
-                    mDownloadTask.execute();
-                }
+            mHandler.post( () -> {
+                mDownloadTask = new DownloadTask( (DownloadActivity) getActivity() );
+                mDownloadTask.execute();
             } );
         } else {
             Intent intent = new Intent( getActivity(), ExternalStorageActivity.class );
@@ -383,12 +364,7 @@ public class DownloadFragment extends FragmentBase {
         }
 
         protected int downloadData( final DataInfo data ) {
-            mHandler.post( new Runnable() {
-                @Override
-                public void run() {
-                    mTracker.initProgress( R.string.installing, data.size );
-                }
-            } );
+            mHandler.post( () -> mTracker.initProgress( data.size ) );
 
             try {
                 File dbFile = mDbManager.getDatabaseFile( data.fileName );
@@ -489,12 +465,7 @@ public class DownloadFragment extends FragmentBase {
             }
 
             // Refresh the download list view
-            mHandler.postDelayed( new Runnable() {
-                @Override
-                public void run() {
-                    checkData( false );
-                }
-            }, 100 );
+            mHandler.postDelayed( () -> checkData( false ), 100 );
         }
     }
 
@@ -622,67 +593,27 @@ public class DownloadFragment extends FragmentBase {
                 final DataInfo info = new DataInfo();
                 RootElement root = new RootElement( "manifest" );
                 Element datafile = root.getChild( "datafile" );
-                datafile.setEndElementListener( new EndElementListener() {
-                    @Override
-                    public void end() {
-                        mAvailableData.add( new DataInfo( info ) );
-                    }
-                } );
+                datafile.setEndElementListener( () -> mAvailableData.add( new DataInfo( info ) ) );
                 datafile.getChild( "type" ).setEndTextElementListener(
-                        new EndTextElementListener() {
-                            @Override
-                            public void end( String body ) {
-                                info.type = body;
-                            }
-                        }
+                        body -> info.type = body
                 );
                 datafile.getChild( "desc" ).setEndTextElementListener(
-                        new EndTextElementListener() {
-                            @Override
-                            public void end( String body ) {
-                                info.desc = body;
-                            }
-                        }
+                        body -> info.desc = body
                 );
                 datafile.getChild( "version" ).setEndTextElementListener(
-                        new EndTextElementListener() {
-                            @Override
-                            public void end( String body ) {
-                                info.version = Integer.parseInt( body );
-                            }
-                        }
+                        body -> info.version = Integer.parseInt( body )
                 );
                 datafile.getChild( "filename" ).setEndTextElementListener(
-                        new EndTextElementListener() {
-                            @Override
-                            public void end( String body ) {
-                                info.fileName = body;
-                            }
-                        }
+                        body -> info.fileName = body
                 );
                 datafile.getChild( "size" ).setEndTextElementListener(
-                        new EndTextElementListener() {
-                            @Override
-                            public void end( String body ) {
-                                info.size = Integer.parseInt( body );
-                            }
-                        }
+                        body -> info.size = Integer.parseInt( body )
                 );
                 datafile.getChild( "start" ).setEndTextElementListener(
-                        new EndTextElementListener() {
-                            @Override
-                            public void end( String body ) {
-                                info.start = TimeUtils.parse3339( body );
-                            }
-                        }
+                        body -> info.start = TimeUtils.parse3339( body )
                 );
                 datafile.getChild( "end" ).setEndTextElementListener(
-                        new EndTextElementListener() {
-                            @Override
-                            public void end( String body ) {
-                                info.end = TimeUtils.parse3339( body );
-                            }
-                        }
+                        body -> info.end = TimeUtils.parse3339( body )
                 );
 
                 Xml.parse( in, Xml.Encoding.UTF_8, root.getContentHandler() );
@@ -754,7 +685,7 @@ public class DownloadFragment extends FragmentBase {
                     .add( "Effective " + DateUtils.formatDateRange( getActivity(),
                             info.start.getTime(), info.end.getTime() + 1000,
                             DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_ALL ) )
-                    .add( String.format( "%s (%s @ %dkbps)",
+                    .add( String.format( Locale.US, "%s (%s @ %dkbps)",
                             Formatter.formatShortFileSize( getActivity(), info.size ),
                             DateUtils.formatElapsedTime( info.size/( mSpeed*1024/8 ) ), mSpeed ) )
                     .add( !mNow.before( info.end )? "Y" : "N" );
@@ -764,7 +695,7 @@ public class DownloadFragment extends FragmentBase {
 
     private final class DownloadListAdapter extends SectionedCursorAdapter {
 
-        public DownloadListAdapter( Context context, Cursor c ) {
+        private DownloadListAdapter( Context context, Cursor c ) {
             super( context, R.layout.download_list_item, c, R.layout.list_item_header );
         }
 
@@ -804,9 +735,9 @@ public class DownloadFragment extends FragmentBase {
         @Override
         public void bindView( View view, Context context, Cursor cursor ) {
             TextView tv;
-            tv = (TextView) view.findViewById( R.id.download_desc );
+            tv = view.findViewById( R.id.download_desc );
             tv.setText( cursor.getString( cursor.getColumnIndex( DownloadCursor.DESC ) ) );
-            tv = (TextView) view.findViewById( R.id.download_dates );
+            tv = view.findViewById( R.id.download_dates );
             String expired = cursor.getString( cursor.getColumnIndex( DownloadCursor.EXPIRED ) );
             tv.setText( cursor.getString( cursor.getColumnIndex( DownloadCursor.DATES ) ) );
             if ( expired.equals( "Y" ) ) {
@@ -820,30 +751,30 @@ public class DownloadFragment extends FragmentBase {
     }
 
     private final class ProgressTracker {
-        public TextView msgText;
-        public TextView statusText;
-        public ProgressBar progressBar;
+        private TextView msgText;
+        private TextView statusText;
+        private ProgressBar progressBar;
 
-        public ProgressTracker( View v ) {
-            msgText = (TextView) v.findViewById( R.id.download_msg );
-            statusText = (TextView) v.findViewById( R.id.download_status );
-            progressBar = (ProgressBar) v.findViewById( R.id.download_progress );
+        private ProgressTracker( View v ) {
+            msgText = v.findViewById( R.id.download_msg );
+            statusText = v.findViewById( R.id.download_status );
+            progressBar = v.findViewById( R.id.download_progress );
         }
 
-        public void initProgress( int resid, int max ) {
+        private void initProgress( int max ) {
             progressBar.setMax( max );
-            msgText.setText( resid );
+            msgText.setText( R.string.installing );
             setProgress( 0 );
             showProgress();
         }
 
-        public void showProgress() {
+        private void showProgress() {
             progressBar.setVisibility( View.VISIBLE );
             statusText.setVisibility( View.VISIBLE );
             msgText.setVisibility( View.VISIBLE );
         }
 
-        public void hideProgress() {
+        private void hideProgress() {
             progressBar.setVisibility( View.GONE );
             statusText.setVisibility( View.GONE );
             msgText.setVisibility( View.GONE );

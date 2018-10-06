@@ -144,7 +144,7 @@ public class NearbyAirportsCursor extends MatrixCursor {
         public float DISTANCE;
         public float BEARING;
 
-        public void setFromCursor( Cursor c, Location location, float declination ) {
+        private void setFromCursor( Cursor c, Location location, float declination ) {
             SITE_NUMBER = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
             FACILITY_NAME = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
             ICAO_CODE = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );

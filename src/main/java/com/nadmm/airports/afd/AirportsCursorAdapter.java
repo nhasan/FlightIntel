@@ -32,6 +32,8 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 
+import java.util.Locale;
+
 public class AirportsCursorAdapter extends ResourceCursorAdapter {
 
     private final StringBuilder mStringBuilder = new StringBuilder();
@@ -53,11 +55,11 @@ public class AirportsCursorAdapter extends ResourceCursorAdapter {
         ViewHolder holder = (ViewHolder) view.getTag();
         if ( holder == null ) {
             holder = new ViewHolder();
-            holder.name = (TextView) view.findViewById( R.id.facility_name );
-            holder.id = (TextView) view.findViewById( R.id.facility_id );
-            holder.location = (TextView) view.findViewById( R.id.location );
-            holder.distance = (TextView) view.findViewById( R.id.distance );
-            holder.other = (TextView) view.findViewById( R.id.other_info );
+            holder.name = view.findViewById( R.id.facility_name );
+            holder.id = view.findViewById( R.id.facility_id );
+            holder.location = view.findViewById( R.id.location );
+            holder.distance = view.findViewById( R.id.distance );
+            holder.other = view.findViewById( R.id.other_info );
             view.setTag( holder );
         }
 
@@ -81,7 +83,7 @@ public class AirportsCursorAdapter extends ResourceCursorAdapter {
             // Check if we have distance information
             float distance = c.getFloat( c.getColumnIndex( LocationColumns.DISTANCE ) );
             float bearing = c.getFloat( c.getColumnIndex( LocationColumns.BEARING ) );
-            holder.distance.setText( String.format( "%.1f NM %s, initial course %.0f\u00B0 M",
+            holder.distance.setText( String.format( Locale.US, "%.1f NM %s, initial course %.0f\u00B0 M",
                     distance, GeoUtils.getCardinalDirection( bearing ), bearing ) );
         } else {
             holder.distance.setVisibility( View.GONE );
