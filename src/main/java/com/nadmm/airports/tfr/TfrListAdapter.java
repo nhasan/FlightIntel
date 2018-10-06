@@ -76,19 +76,19 @@ public class TfrListAdapter extends BaseAdapter {
         TextView tv;
         int index = tfr.notamId.indexOf( ' ' );
         if ( index > 0 ) {
-            tv = (TextView) convertView.findViewById( R.id.tfr_agency );
+            tv = convertView.findViewById( R.id.tfr_agency );
             tv.setText( tfr.notamId.substring( 0, index ) );
         }
-        tv = (TextView) convertView.findViewById( R.id.tfr_name );
+        tv = convertView.findViewById( R.id.tfr_name );
         tv.setText( tfr.name );
-        tv = (TextView) convertView.findViewById( R.id.tfr_time );
+        tv = convertView.findViewById( R.id.tfr_time );
         tv.setText( tfr.formatTimeRange( mContext ) );
-        tv = (TextView) convertView.findViewById( R.id.tfr_active );
+        tv = convertView.findViewById( R.id.tfr_active );
         tv.setText( tfr.isExpired()? "Expired" : tfr.isActive()? "Active" : "Inactive" );
         tv.setTextColor( tfr.isActive()? mActiveColor : mInactiveColor );
-        tv = (TextView) convertView.findViewById( R.id.tfr_type );
+        tv = convertView.findViewById( R.id.tfr_type );
         tv.setText( tfr.type );
-        tv = (TextView) convertView.findViewById( R.id.tfr_altitudes );
+        tv = convertView.findViewById( R.id.tfr_altitudes );
         tv.setText( tfr.formatAltitudeRange() );
 
         return convertView;

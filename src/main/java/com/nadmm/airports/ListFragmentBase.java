@@ -55,14 +55,9 @@ public abstract class ListFragmentBase extends FragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.list_view_layout, container, false );
-        mListView = (ListView) view.findViewById( android.R.id.list );
-        mListView.setOnItemClickListener( new OnItemClickListener() {
-
-            @Override
-            public void onItemClick( AdapterView<?> parent, View view, int position, long id ) {
-                onListItemClick( mListView, view, position );
-            }
-        } );
+        mListView = view.findViewById( android.R.id.list );
+        mListView.setOnItemClickListener( ( parent, view1, position, id )
+                -> onListItemClick( mListView, view1, position ) );
         mListView.setCacheColorHint( ContextCompat.getColor(
                 getActivity(), android.R.color.white ) );
 
@@ -73,7 +68,7 @@ public abstract class ListFragmentBase extends FragmentBase {
     public void onDestroy() {
         if ( mListView != null ) {
             ListAdapter adapter = mListView.getAdapter();
-            if ( adapter != null && adapter instanceof CursorAdapter ) {
+            if ( adapter instanceof CursorAdapter ) {
                 Cursor c = ( (CursorAdapter)adapter ).getCursor();
                 c.close();
             }
