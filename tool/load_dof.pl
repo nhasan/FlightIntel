@@ -89,6 +89,8 @@ my $insert_dof_record = "INSERT INTO dof ("
 
 $dbh->do( "DROP TABLE IF EXISTS dof" );
 $dbh->do( $create_dof_table );
+#$dbh->do( "CREATE INDEX idx_lat on dof ( LATITUDE_DEGREES );" );
+#$dbh->do( "CREATE INDEX idx_lon on dof ( LONGITUDE_DEGREES );" );
 
 my $sth_dof = $dbh->prepare( $insert_dof_record );
 
@@ -113,6 +115,9 @@ while ( $i < 4 )
 $i = 0;
 while ( my $line = <DOF_FILE> )
 {
+    my $action_code = substrim( $line, 118, 1 );
+    next if ( $action_code eq "D" );
+
     ++$i;
 
     if ( ($i % 1000) == 0 )
