@@ -30,7 +30,7 @@ public class AreaForecastService extends NoaaService {
 
     private final String FA_TEXT_PATH = "/data/products/fa/";
 
-    private static final long FA_CACHE_MAX_AGE = DateUtils.HOUR_IN_MILLIS;
+    private static final long FA_CACHE_MAX_AGE = DateUtils.HOUR_IN_MILLIS/2;
 
     public AreaForecastService() {
         super( "fa", FA_CACHE_MAX_AGE );
@@ -40,7 +40,7 @@ public class AreaForecastService extends NoaaService {
     protected void onHandleIntent( Intent intent ) {
         String action = intent.getAction();
         if ( action.equals( ACTION_GET_FA ) ) {
-            String code = intent.getStringExtra( STATION_ID );
+            String code = intent.getStringExtra( TEXT_CODE );
             File file = getDataFile( code );
             if ( !file.exists() ) {
                 try {

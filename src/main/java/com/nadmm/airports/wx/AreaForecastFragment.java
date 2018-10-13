@@ -24,16 +24,16 @@ import android.content.Intent;
 public class AreaForecastFragment extends WxTextFragmentBase {
 
     private final static String[] mAreaCodes = {
-            "alaska_n1_fa",
-            "alaska_n2_fa",
-            "alaska_sc1_fa",
-            "alaska_sc2_fa",
-            "alaska_se1_fa",
-            "alaska_se2_fa",
-            "alaska_bswa_fa",
-            "carib_fa",
-            "gulf_fa",
-            "hawaii_fa",
+            "fa_alaska_n1.txt",
+            "fa_alaska_n2.txt",
+            "fa_alaska_sc1.txt",
+            "fa_alaska_sc2.txt",
+            "fa_alaska_se1.txt",
+            "fa_alaska_se2.txt",
+            "fa_alaska_bswa.txt",
+            "fa_carib.txt",
+            "fa_gulf.txt",
+            "fa_hawaii.txt",
     };
 
     private final static String[] mAreaNames = {
