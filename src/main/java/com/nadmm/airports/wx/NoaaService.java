@@ -53,6 +53,8 @@ public abstract class NoaaService extends IntentService {
     public static final String COORDS_BOX = "COORDS_BOX";
     public static final String IMAGE_TYPE = "IMAGE_TYPE";
     public static final String IMAGE_CODE = "IMAGE_CODE";
+    public static final String TEXT_TYPE = "TEXT_TYPE";
+    public static final String TEXT_CODE = "TEXT_CODE";
     public static final String RESULT = "RESULT";
 
     public static final String TYPE = "TYPE";
