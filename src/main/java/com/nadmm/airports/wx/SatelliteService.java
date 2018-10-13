@@ -29,8 +29,8 @@ import java.util.Locale;
 
 public class SatelliteService extends NoaaService {
 
-    private final String SAT_IMAGE_NAME = "latest_%s_%s.jpg";
-    private final String SAT_IMAGE_PATH = "/adds/data/satellite/";
+    private final String SAT_IMAGE_NAME = "sat_%s_%s.jpg";
+    private final String SAT_IMAGE_PATH = "/data/obs/sat/us/";
 
     private static final long SAT_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
@@ -51,7 +51,7 @@ public class SatelliteService extends NoaaService {
                     code = "US";
                 }
 
-                String imageName = String.format( Locale.US, SAT_IMAGE_NAME, code, imgType );
+                String imageName = String.format( Locale.US, SAT_IMAGE_NAME, imgType, code.toLowerCase() );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {

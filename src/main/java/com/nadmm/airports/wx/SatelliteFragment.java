@@ -26,7 +26,7 @@ public class SatelliteFragment extends WxMapFragmentBase {
     private static final String[] sSatTypeCodes = new String[]{
             "vis",
             "wv",
-            "ir",
+            "ircol",
             "irbw"
     };
 
