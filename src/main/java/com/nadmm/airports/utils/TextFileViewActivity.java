@@ -20,14 +20,18 @@
 package com.nadmm.airports.utils;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.FragmentActivityBase;
+import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 
 import java.io.IOException;
 
-public class TextFileViewActivity extends ActivityBase {
+public class TextFileViewActivity extends FragmentActivityBase {
 
     public static final String FILE_PATH = "FILE_PATH";
     public static final String LABEL_TEXT = "LABEL_TEXT";
@@ -37,23 +41,39 @@ public class TextFileViewActivity extends ActivityBase {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        setContentView( R.layout.text_view );
-
         Bundle args = getIntent().getExtras();
-        String title = args.getString( TITLE_TEXT );
-        String label = args.getString( LABEL_TEXT );
-        String path = args.getString( FILE_PATH );
+        if ( args != null ) {
+            String title = args.getString( TITLE_TEXT );
+            setActionBarTitle( title );
+        }
 
-        setTitle( title );
+        addFragment( TextViewFragment.class, args );
+    }
 
-        TextView tv = (TextView) findViewById( R.id.text_label );
-        tv.setText( label );
-        tv = (TextView) findViewById( R.id.text_content );
-        try {
-            String text = FileUtils.readFile( path );
-            tv.setText( text );
-        } catch ( IOException e ) {
-            tv.setText( "Unable to read FA file: "+e.getMessage() );
+    public static class TextViewFragment extends FragmentBase {
+
+        @Override
+        public View onCreateView( LayoutInflater inflater, ViewGroup container,
+                                  Bundle savedInstanceState ) {
+            View view = null;
+            Bundle args = getArguments();
+            if ( args != null ) {
+                String label = args.getString( LABEL_TEXT );
+                String path = args.getString( FILE_PATH );
+
+                view = inflate( R.layout.text_view );
+                TextView tv = view.findViewById( R.id.text_label );
+                tv.setText( label );
+                tv = view.findViewById( R.id.text_content );
+                try {
+                    String text = FileUtils.readFile( path );
+                    tv.setText( text );
+                } catch ( IOException e ) {
+                    tv.setText( "Unable to read FA file: " + e.getMessage() );
+                }
+            }
+
+            return view;
         }
     }
 
