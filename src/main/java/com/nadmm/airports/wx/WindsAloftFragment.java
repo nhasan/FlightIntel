@@ -23,68 +23,48 @@ import android.content.Intent;
 
 public class WindsAloftFragment extends WxTextFragmentBase {
 
+    private static final String[] mTypeCodes = {
+            "06",
+            "12",
+            "24"
+    };
+
+    private static final String[] mTypeNames = {
+            "6 Hour",
+            "12 Hour",
+            "24 Hour"
+    };
+
     private static final String[] mAreaCodes = {
-        "/alaska/l_06hr.alaska",
-        "/alaska/l_12hr.alaska",
-        "/alaska/l_24hr.alaska",
-        "/bos/l_06hr.bos_fa",
-        "/bos/l_12hr.bos_fa",
-        "/bos/l_24hr.bos_fa",
-        "/chi/l_06hr.chi_fa",
-        "/chi/l_12hr.chi_fa",
-        "/chi/l_24hr.chi_fa",
-        "/dfw/l_06hr.dfw_fa",
-        "/dfw/l_12hr.dfw_fa",
-        "/dfw/l_24hr.dfw_fa",
-        "/hawaii/l_06hr.hawaii",
-        "/hawaii/l_12hr.hawaii",
-        "/hawaii/l_24hr.hawaii",
-        "/mia/l_06hr.mia_fa",
-        "/mia/l_12hr.mia_fa",
-        "/mia/l_24hr.mia_fa",
-        "/other_pac/l_06hr.other_pacific",
-        "/other_pac/l_12hr.other_pacific",
-        "/other_pac/l_24hr.other_pacific",
-        "/sfo/l_06hr.sfo_fa",
-        "/sfo/l_12hr.sfo_fa",
-        "/sfo/l_24hr.sfo_fa",
-        "/slc/l_06hr.slc_fa",
-        "/slc/l_12hr.slc_fa",
-        "/slc/l_24hr.slc_fa",
+            "us",
+            "alaska",
+            "bos",
+            "canada",
+            "chi",
+            "dfw",
+            "hawaii",
+            "mia",
+            "pacific",
+            "sfo",
+            "slc",
     };
 
     private static final String[] mAreaNames = {
-        "Alaska 6 hr Forecast",
-        "Alaska 12 hr Forecast",
-        "Alaska 24 hr Forecast",
-        "Boston 6 hr Forecast",
-        "Boston 12 hr Forecast",
-        "Boston 24 hr Forecast",
-        "Chicago 6 hr Forecast",
-        "Chicago 12 hr Forecast",
-        "Chicago 24 hr Forecast",
-        "Dallas/Fort Worth 6 hr Forecast",
-        "Dallas/Fort Worth 12 hr Forecast",
-        "Dallas/Fort Worth 24 hr Forecast",
-        "Hawaii 6 hr Forecast",
-        "Hawaii 12 hr Forecast",
-        "Hawaii 24 hr Forecast",
-        "Miami 6 hr Forecast",
-        "Miami 12 hr Forecast",
-        "Miami 24 hr Forecast",
-        "Pacific 6 hr Forecast",
-        "Pacific 12 hr Forecast",
-        "Pacific 24 hr Forecast",
-        "San Francisco 6 hr Forecast",
-        "San Francisco 12 hr Forecast",
-        "San Francisco 24 hr Forecast",
-        "Salt Lake City 6 hr Forecast",
-        "Salt Lake City 12 hr Forecast",
-        "Salt Lake City 24 hr Forecast",
+            "Continental US",
+            "Alaska",
+            "Boston",
+            "Canada",
+            "Chicago",
+            "Dallas/Fort Worth",
+            "Hawaii",
+            "Miami",
+            "Pacific",
+            "San Francisco",
+            "Salt Lake City",
     };
 
     public WindsAloftFragment() {
-        super( NoaaService.ACTION_GET_FB, mAreaCodes, mAreaNames );
+        super( NoaaService.ACTION_GET_FB, mAreaCodes, mAreaNames, mTypeCodes, mTypeNames );
     }
 
     @Override
