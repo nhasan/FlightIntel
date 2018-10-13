@@ -33,7 +33,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.text.format.DateUtils;
 
-import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.LocationColumns;
 import com.nadmm.airports.utils.GeoUtils;
 
 public abstract class LocationListFragmentBase extends ListFragmentBase
@@ -52,8 +52,8 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
         super.onCreate( savedInstanceState );
 
         Bundle args = getArguments();
-        if ( args != null && args.containsKey( DatabaseManager.LocationColumns.LOCATION ) ) {
-            mLastLocation = args.getParcelable( DatabaseManager.LocationColumns.LOCATION );
+        if ( args != null && args.containsKey( LocationColumns.LOCATION ) ) {
+            mLastLocation = args.getParcelable( LocationColumns.LOCATION );
         }
 
         mLocationUpdatesEnabled = ( mLastLocation == null );
@@ -91,8 +91,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
 
         mRadius = getActivityBase().getPrefNearbyRadius();
 
-        if ( mLastLocation != null ) {
-            // If we are passed a location use that
+        if ( !mLocationUpdatesEnabled ) {
             newLocationTask().execute();
         } else if ( mLocationManager == null ) {
             setEmptyText( "Location is not available on this device." );
