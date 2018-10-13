@@ -25,7 +25,7 @@ import android.content.Intent;
 public class CvaFragment extends WxMapFragmentBase {
 
     private static final String[] sTypeCodes = {
-        "fcat",
+        "fltcat",
         "ceil",
         "vis"
     };

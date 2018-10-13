@@ -29,8 +29,8 @@ import java.util.Locale;
 
 public class CvaService extends NoaaService {
 
-    private final String CVA_IMAGE_NAME = "NCVA%s.gif";
-    private final String CVA_IMAGE_PATH = "/adds/data/ceil_vis/";
+    private final String CVA_IMAGE_NAME = "cva_sfc_%s_%s.gif";
+    private final String CVA_IMAGE_PATH = "/data/obs/cva/";
 
     private static final long CVA_CACHE_MAX_AGE = 10*DateUtils.MINUTE_IN_MILLIS;
 
@@ -46,12 +46,10 @@ public class CvaService extends NoaaService {
             if ( type.equals( TYPE_IMAGE ) ) {
                 String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );
-                String suffix = imgType;
-                if ( !code.equals( "INA" ) ) {
-                    suffix += "_";
-                    suffix += code;
+                if ( code.equals( "INA" ) ) {
+                    code = "us";
                 }
-                String imageName = String.format( Locale.US, CVA_IMAGE_NAME, suffix );
+                String imageName = String.format( Locale.US, CVA_IMAGE_NAME, imgType, code.toLowerCase() );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
