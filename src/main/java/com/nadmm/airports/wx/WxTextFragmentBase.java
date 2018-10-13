@@ -25,7 +25,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.nadmm.airports.R;
@@ -34,8 +36,11 @@ import com.nadmm.airports.utils.TextFileViewActivity;
 public abstract class WxTextFragmentBase extends WxFragmentBase {
 
     private final String mAction;
+    private String[] mWxTypeCodes;
+    private String[] mWxTypeNames;
     private final String[] mWxAreaCodes;
     private final String[] mWxAreaNames;
+    private Spinner mSpinner;
 
     private View mPendingRow;
 
@@ -43,6 +48,17 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
         mAction = action;
         mWxAreaCodes = areaCodes;
         mWxAreaNames = areaNames;
+        mWxTypeCodes = null;
+        mWxTypeNames = null;
+    }
+
+    public WxTextFragmentBase( String action, String[] areaCodes, String[] areaNames,
+                               String[] typeCodes, String[] typeNames) {
+        mAction = action;
+        mWxAreaCodes = areaCodes;
+        mWxAreaNames = areaNames;
+        mWxTypeCodes = typeCodes;
+        mWxTypeNames = typeNames;
     }
 
     @Override
@@ -63,7 +79,7 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
     public void onViewCreated( View view, Bundle savedInstanceState ) {
         super.onViewCreated( view, savedInstanceState );
 
-        TextView tv = (TextView) view.findViewById( R.id.wx_map_label );
+        TextView tv = view.findViewById( R.id.wx_map_label );
         tv.setText( "Select Area" );
         tv.setVisibility( View.VISIBLE );
 
@@ -79,6 +95,18 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
         for ( int i = 0; i < mWxAreaNames.length; ++i ) {
             View row = addWxRow( layout, mWxAreaNames[ i ], mWxAreaCodes[ i ] );
             row.setOnClickListener( listener );
+        }
+
+        if ( mWxTypeCodes != null ) {
+            tv = view.findViewById( R.id.wx_map_type_label );
+            tv.setVisibility( View.VISIBLE );
+            layout = view.findViewById( R.id.wx_map_type_layout );
+            layout.setVisibility( View.VISIBLE );
+            mSpinner = view.findViewById( R.id.map_type );
+            ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
+                    android.R.layout.simple_spinner_item, mWxTypeNames );
+            adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
+            mSpinner.setAdapter( adapter );
         }
 
         setFragmentContentShown( true );
@@ -101,7 +129,9 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
             viewer.putExtra( TextFileViewActivity.FILE_PATH, path );
             viewer.putExtra( TextFileViewActivity.TITLE_TEXT, getTitle() );
             viewer.putExtra( TextFileViewActivity.LABEL_TEXT, label );
-            getActivity().startActivity( viewer );
+            if ( getActivity() != null ) {
+                getActivity().startActivity( viewer );
+            }
             setProgressBarVisible( false );
             mPendingRow = null;
         }
@@ -112,8 +142,14 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
 
         Intent service = getServiceIntent();
         service.setAction( mAction );
-        service.putExtra( NoaaService.STATION_ID, code );
-        getActivity().startService( service );
+        service.putExtra( NoaaService.TEXT_CODE, code );
+        if ( mSpinner != null ) {
+            int pos = mSpinner.getSelectedItemPosition();
+            service.putExtra( NoaaService.TEXT_TYPE, mWxTypeCodes[ pos ] );
+        }
+        if ( getActivity() != null ) {
+            getActivity().startService( service );
+        }
     }
 
     private void setProgressBarVisible( boolean visible ) {
