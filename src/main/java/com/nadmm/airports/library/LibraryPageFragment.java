@@ -94,30 +94,26 @@ public class LibraryPageFragment extends FragmentBase {
             }
         };
 
-        mOnClickListener = new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                if ( !mActivity.isPending() ) {
-                    String path = (String) v.getTag( R.id.LIBRARY_PDF_PATH );
-                    if ( path == null ) {
-                        if ( mIsOk ) {
-                            mActivity.setPending( true );
-                            ProgressBar progressBar = (ProgressBar) v.findViewById( R.id.progress );
-                            progressBar.setIndeterminate( true );
-                            progressBar.setVisibility( View.VISIBLE );
-                            String name = (String) v.getTag( R.id.LIBRARY_PDF_NAME );
-                            getBook( name );
-                        } else {
-                            UiUtils.showToast( getActivity(), "Cannot start download" );
-                        }
+        mOnClickListener = v -> {
+            if ( !mActivity.isPending() ) {
+                String path = (String) v.getTag( R.id.LIBRARY_PDF_PATH );
+                if ( path == null ) {
+                    if ( mIsOk ) {
+                        mActivity.setPending( true );
+                        ProgressBar progressBar = v.findViewById( R.id.progress );
+                        progressBar.setIndeterminate( true );
+                        progressBar.setVisibility( View.VISIBLE );
+                        String name = (String) v.getTag( R.id.LIBRARY_PDF_NAME );
+                        getBook( name );
                     } else {
-                        SystemUtils.startPDFViewer( getActivity(), path );
+                        UiUtils.showToast( getActivity(), "Cannot start download" );
                     }
                 } else {
-                    UiUtils.showToast( mActivity, "Please wait, another download is in progress",
-                            Toast.LENGTH_SHORT );
+                    SystemUtils.startPDFViewer( getActivity(), path );
                 }
+            } else {
+                UiUtils.showToast( mActivity, "Please wait, another download is in progress",
+                        Toast.LENGTH_SHORT );
             }
         };
 
@@ -266,16 +262,16 @@ public class LibraryPageFragment extends FragmentBase {
             addSeparator( layout );
         }
         RelativeLayout row = (RelativeLayout) inflate( R.layout.library_row_item );
-        TextView tv = (TextView) row.findViewById( R.id.book_desc );
+        TextView tv = row.findViewById( R.id.book_desc );
         tv.setText( desc );
-        tv = (TextView) row.findViewById( R.id.book_edition );
+        tv = row.findViewById( R.id.book_edition );
         tv.setText( edition );
-        if ( flag.equals( "N" ) ) {
+        if ( flag != null && flag.equals( "N" ) ) {
             UiUtils.setTextViewDrawable( tv, R.drawable.star );
         }
-        tv = (TextView) row.findViewById( R.id.book_author );
+        tv = row.findViewById( R.id.book_author );
         tv.setText( author );
-        tv = (TextView) row.findViewById( R.id.book_size );
+        tv = row.findViewById( R.id.book_size );
         tv.setText( Formatter.formatShortFileSize( getActivity(), size ) );
         row.setTag( R.id.LIBRARY_PDF_NAME, name );
         row.setOnClickListener( mOnClickListener );
@@ -310,7 +306,7 @@ public class LibraryPageFragment extends FragmentBase {
         String name = intent.getStringExtra( NetworkUtils.CONTENT_NAME );
         View row = mBookRowMap.get( name );
         if ( row != null ) {
-            ProgressBar progressBar = (ProgressBar) row.findViewById( R.id.progress );
+            ProgressBar progressBar = row.findViewById( R.id.progress );
             long length = intent.getLongExtra( NetworkUtils.CONTENT_LENGTH, 0 );
             if ( !progressBar.isShown() ) {
                 progressBar.setVisibility( View.VISIBLE );
@@ -325,7 +321,7 @@ public class LibraryPageFragment extends FragmentBase {
     }
 
     protected void showStatus( View row, boolean isAvailable ) {
-        TextView tv = (TextView) row.findViewById( R.id.book_desc );
+        TextView tv = row.findViewById( R.id.book_desc );
         if ( isAvailable ) {
             UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box );
         } else {
