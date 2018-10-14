@@ -108,6 +108,11 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
         }
     }
 
+    protected boolean isLocationUpdateEnabled()
+    {
+        return mLocationUpdatesEnabled;
+    }
+
     @Override
     public void onProviderDisabled( String provider ) {
     }
