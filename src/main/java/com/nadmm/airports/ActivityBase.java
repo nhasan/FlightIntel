@@ -72,6 +72,8 @@ import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Nav1;
 import com.nadmm.airports.data.DatabaseManager.States;
 import com.nadmm.airports.data.DownloadActivity;
+import com.nadmm.airports.dof.NearbyObstaclesActivity;
+import com.nadmm.airports.dof.NearbyObstaclesFragment;
 import com.nadmm.airports.donate.DonateDatabase;
 import com.nadmm.airports.e6b.E6bActivity;
 import com.nadmm.airports.library.LibraryActivity;
@@ -324,6 +326,8 @@ public abstract class ActivityBase extends AppCompatActivity implements
                 finish();
                 break;
             case R.id.navdrawer_dof:
+                intent = new Intent( this, NearbyObstaclesActivity.class );
+                startActivity( intent );
                 finish();
                 break;
             case R.id.navdrawer_tfr:

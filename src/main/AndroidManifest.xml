@@ -151,6 +151,14 @@
         </activity>
 
         <activity
+            android:label="@string/title_navdrawer_dof"
+            android:name=".dof.NearbyObstaclesActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightIntel" />
+        </activity>
+
+        <activity
             android:label=""
             android:name=".tfr.TfrListActivity"
             android:parentActivityName=".FlightIntel">
