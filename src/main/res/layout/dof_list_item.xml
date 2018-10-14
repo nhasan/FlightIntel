@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * FlightIntel for Pilots
+ *
+ * Copyright 2018 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:paddingLeft="@dimen/padding_left"
+              android:paddingTop="@dimen/padding_top"
+              android:paddingRight="@dimen/padding_right"
+              android:paddingBottom="@dimen/padding_bottom"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView android:id="@+id/obstacle_type"
+                  style="@style/TextMedium.Bold"
+                  android:singleLine="true"
+                  android:ellipsize="end"
+                  android:layout_weight="1"
+                  android:layout_width="0dp"
+                  android:layout_height="wrap_content" />
+        <TextView android:id="@+id/height_msl"
+                  style="@style/TextSmall.Bold"
+                  android:gravity="right"
+                  android:layout_marginLeft="@dimen/item_spacing"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView android:id="@+id/marking_type"
+                  style="@style/TextSmall.Light"
+                  android:layout_weight="1"
+                  android:layout_width="0dp"
+                  android:layout_height="wrap_content" />
+        <TextView android:id="@+id/height_agl"
+                  style="@style/TextSmall.Light"
+                  android:gravity="right"
+                  android:layout_marginLeft="@dimen/item_spacing"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content" />
+    </LinearLayout>
+    <TextView android:id="@+id/lighting_type"
+              style="@style/TextSmall.Light"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content" />
+    <TextView android:id="@+id/location"
+              style="@style/TextSmall.Light"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content" />
+</LinearLayout>

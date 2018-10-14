@@ -49,6 +49,7 @@ public class DatabaseManager {
     public static final String DB_DTPP = "DTPP";
     public static final String DB_DAFD = "DAFD";
     public static final String DB_LIBRARY = "LIBRARY";
+    public static final String DB_DOF = "DOF";
 
     private static final Object sLock = new Object();
     private static DatabaseManager sInstance = null;
@@ -576,6 +577,24 @@ public class DatabaseManager {
         private AtcPhones() {}
     }
 
+    public static final class DOF implements BaseColumns {
+        public static final String TABLE_NAME = "dof";
+        public static final String OAS_CODE = "OAS_CODE";
+        public static final String VERIFICATION_STATUS = "VERIFICATION_STATUS";
+        public static final String LATITUDE_DEGREES = "LATITUDE_DEGREES";
+        public static final String LONGITUDE_DEGREES = "LONGITUDE_DEGREES";
+        public static final String OBSTACLE_TYPE = "OBSTACLE_TYPE";
+        public static final String COUNT = "COUNT";
+        public static final String HEIGHT_AGL = "HEIGHT_AGL";
+        public static final String HEIGHT_MSL = "HEIGHT_MSL";
+        public static final String LIGHTING_TYPE = "LIGHTING_TYPE";
+        public static final String ACCURACY_HOR = "ACCURACY_HOR";
+        public static final String ACCURACY_VER = "ACCURACY_VER";
+        public static final String MARKING_TYPE = "MARKING_TYPE";
+        public static final String ACTION_CODE = "ACTION_CODE";
+        public static final String ACTION_DATE = "ACTION_DATE";
+    }
+
     public static final class DtppCycle implements BaseColumns {
         public static final String TABLE_NAME = "cycle";
         public static final String TPP_CYCLE = "TPP_CYCLE";
@@ -706,11 +725,13 @@ public class DatabaseManager {
             String query = "SELECT *"
                 +" FROM "+Catalog.TABLE_NAME+" c1"
                 +" WHERE "
+                    +Catalog.TYPE+"='DOF' OR "
                     +Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
                     +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
                     +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE
                     +" AND strftime('%s', c2."+Catalog.START_DATE
                     +") <= strftime('%s', 'now') )";
+            Log.d( TAG, query );
             return db.rawQuery( query, null );
         } catch ( Exception e ) {
             Log.d( e.getClass().getSimpleName(), e.getMessage() );

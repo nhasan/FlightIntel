@@ -28,6 +28,9 @@
         <item android:id="@+id/navdrawer_wx"
               android:icon="@drawable/ic_navdrawer_wx"
               android:title="@string/title_navdrawer_wx" />
+        <item android:id="@+id/navdrawer_dof"
+              android:icon="@drawable/ic_navdrawer_dof"
+              android:title="@string/title_navdrawer_dof" />
         <item android:id="@+id/navdrawer_tfr"
               android:icon="@drawable/ic_navdrawer_tfr"
               android:title="@string/title_navdrawer_tfr" />

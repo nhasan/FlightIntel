@@ -62,6 +62,7 @@ import com.nadmm.airports.data.DatabaseManager.Tower6;
 import com.nadmm.airports.data.DatabaseManager.Tower7;
 import com.nadmm.airports.data.DatabaseManager.Tower8;
 import com.nadmm.airports.data.DatabaseManager.Wxs;
+import com.nadmm.airports.dof.NearbyObstaclesFragment;
 import com.nadmm.airports.donate.DonateActivity;
 import com.nadmm.airports.notams.AirportNotamActivity;
 import com.nadmm.airports.tfr.TfrListActivity;
@@ -472,8 +473,9 @@ public final class AirportDetailsFragment extends FragmentBase {
         args.putInt( LocationColumns.RADIUS, mRadius );
         args.putString( Airports.ICAO_CODE, mIcaoCode );
         addClickableRow( layout, "Airports", NearbyAirportsFragment.class, args );
-        addClickableRow( layout, "FSS outlets", FssCommFragment.class, getArguments() );
+        addClickableRow( layout, "FSS outlets", NearbyFssFragment.class, getArguments() );
         addClickableRow( layout, "Navaids", NearbyNavaidsFragment.class, getArguments() );
+        addClickableRow( layout, "Obstacles", NearbyObstaclesFragment.class, args );
     }
 
     private void showNotamAndTfr() {

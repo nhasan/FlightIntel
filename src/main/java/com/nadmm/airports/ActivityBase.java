@@ -323,6 +323,9 @@ public abstract class ActivityBase extends AppCompatActivity implements
                 startActivity( intent );
                 finish();
                 break;
+            case R.id.navdrawer_dof:
+                finish();
+                break;
             case R.id.navdrawer_tfr:
                 intent = new Intent( this, TfrListActivity.class );
                 startActivity( intent );

@@ -209,6 +209,7 @@
     <string name="airports">Airports</string>
     <string name="title_navdrawer_afd">A/FD</string>
     <string name="title_navdrawer_wx">Weather</string>
+    <string name="title_navdrawer_dof">Obstacles</string>
     <string name="title_navdrawer_tfr">TFR</string>
     <string name="title_navdrawer_library">Library</string>
     <string name="title_navdrawer_scratchpad">Scratch Pad</string>
