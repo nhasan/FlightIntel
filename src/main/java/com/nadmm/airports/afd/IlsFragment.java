@@ -61,7 +61,6 @@ public final class IlsFragment extends FragmentBase {
         String siteNumber = args.getString( Ils1.SITE_NUMBER );
         String runwayId = args.getString( Ils1.RUNWAY_ID );
         String ilsType = args.getString( Ils1.ILS_TYPE );
-        String icaoCode = args.getString( Airports.ICAO_CODE );
 
         setBackgroundTask( new IlsTask() ).execute( siteNumber, runwayId, ilsType );
     }
