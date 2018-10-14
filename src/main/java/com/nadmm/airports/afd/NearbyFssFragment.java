@@ -40,6 +40,7 @@ import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Com;
 import com.nadmm.airports.data.DatabaseManager.Nav1;
 import com.nadmm.airports.utils.CursorAsyncTask;
+import com.nadmm.airports.utils.DbUtils;
 import com.nadmm.airports.utils.GeoUtils;
 
 import java.util.Arrays;
@@ -200,35 +201,15 @@ public final class NearbyFssFragment extends FragmentBase {
             location.setLatitude( lat );
             location.setLongitude( lon );
 
-            // Get the bounding box first to do a quick query as a first cut
-            double[] box = GeoUtils.getBoundingBoxRadians( location, mRadius );
-
-            double radLatMin = box[ 0 ];
-            double radLatMax = box[ 1 ];
-            double radLonMin = box[ 2 ];
-            double radLonMax = box[ 3 ];
-
-            // Check if 180th Meridian lies within the bounding Box
-            boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
-            String selection = "("
-                +Com.COMM_OUTLET_LATITUDE_DEGREES+">=? AND "+Com.COMM_OUTLET_LATITUDE_DEGREES+"<=?"
-                +") AND ("+Com.COMM_OUTLET_LONGITUDE_DEGREES+">=? "
-                +(isCrossingMeridian180? "OR " : "AND ")+Com.COMM_OUTLET_LONGITUDE_DEGREES+"<=?)";
-            String[] selectionArgs = {
-                    String.valueOf( Math.toDegrees( radLatMin ) ),
-                    String.valueOf( Math.toDegrees( radLatMax ) ),
-                    String.valueOf( Math.toDegrees( radLonMin ) ),
-                    String.valueOf( Math.toDegrees( radLonMax ) )
-            };
-
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Com.TABLE_NAME+" c LEFT OUTER JOIN "+Nav1.TABLE_NAME+" n"
+            String tableName = Com.TABLE_NAME+" c LEFT OUTER JOIN "+Nav1.TABLE_NAME+" n"
                     +" ON c."+Com.ASSOC_NAVAID_ID+" = n."+Nav1.NAVAID_ID
-                    +" AND n."+Nav1.NAVAID_TYPE+" <> 'VOT'");
-            Cursor c = builder.query( db,
-                    new String[] { "c.*", "n."+Nav1.NAVAID_NAME,
-                    "n."+Nav1.NAVAID_TYPE, "n."+Nav1.NAVAID_FREQUENCY },
-                    selection, selectionArgs, null, null, null, null );
+                    +" AND n."+Nav1.NAVAID_TYPE+" <> 'VOT'";
+            String[] columns = new String[] { "c.*", "n."+Nav1.NAVAID_NAME,
+                    "n."+Nav1.NAVAID_TYPE, "n."+Nav1.NAVAID_FREQUENCY };
+
+            Cursor c = DbUtils.getBoundingBoxCursor( db, tableName, columns,
+                    Com.COMM_OUTLET_LATITUDE_DEGREES, Com.COMM_OUTLET_LONGITUDE_DEGREES,
+                    location, mRadius );
 
             String[] columnNames = new String[ c.getColumnCount()+2 ];
             int i = 0;

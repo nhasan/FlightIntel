@@ -31,7 +31,11 @@ import android.widget.ListView;
 import com.nadmm.airports.LocationListFragmentBase;
 import com.nadmm.airports.data.DatabaseManager;
 
+import java.util.Locale;
+
 public class NearbyAirportsFragment extends LocationListFragmentBase {
+
+    int mRadius;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -43,6 +47,13 @@ public class NearbyAirportsFragment extends LocationListFragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
+
+        mRadius = getNearbyRadius();
+
+        if ( !isLocationUpdateEnabled() ) {
+            setActionBarTitle( "Nearby Airports" );
+            setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
+        }
     }
 
     @Override
@@ -70,7 +81,7 @@ public class NearbyAirportsFragment extends LocationListFragmentBase {
         protected Cursor doInBackground( Void... params ) {
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
-            return new NearbyAirportsCursor( db, getLastLocation(), getNearbyRadius(), null );
+            return new NearbyAirportsCursor( db, getLastLocation(), mRadius, null );
         }
 
         @Override

@@ -22,7 +22,6 @@ package com.nadmm.airports.afd;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -39,6 +38,7 @@ import com.nadmm.airports.data.DatabaseManager.LocationColumns;
 import com.nadmm.airports.data.DatabaseManager.Nav1;
 import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
+import com.nadmm.airports.utils.DbUtils;
 import com.nadmm.airports.utils.GeoUtils;
 
 import java.util.Arrays;
@@ -113,13 +113,16 @@ public final class NearbyNavaidsFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        setActionBarTitle( "Nearby Navaids", "" );
-
         mRadius = getActivityBase().getPrefNearbyRadius();
 
+        setActionBarTitle( "Nearby Navaids", "" );
+        setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
+
         Bundle args = getArguments();
-        String siteNumber = args.getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new NavaidDetailsTask() ).execute( siteNumber );
+        if ( args != null ) {
+            String siteNumber = args.getString( Airports.SITE_NUMBER );
+            setBackgroundTask( new NavaidDetailsTask() ).execute( siteNumber );
+        }
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -225,31 +228,10 @@ public final class NearbyNavaidsFragment extends FragmentBase {
             location.setLatitude( lat );
             location.setLongitude( lon );
 
-            // Get the bounding box first to do a quick query as a first cut
-            double[] box = GeoUtils.getBoundingBoxRadians( location, mRadius );
+            Cursor c = DbUtils.getBoundingBoxCursor( db, Nav1.TABLE_NAME,
+                    Nav1.REF_LATTITUDE_DEGREES, Nav1.REF_LONGITUDE_DEGREES,
+                    location, mRadius );
 
-            double radLatMin = box[ 0 ];
-            double radLatMax = box[ 1 ];
-            double radLonMin = box[ 2 ];
-            double radLonMax = box[ 3 ];
-
-            // Check if 180th Meridian lies within the bounding Box
-            boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
-
-            String selection = "("
-                +Nav1.REF_LATTITUDE_DEGREES+">=? AND "+Nav1.REF_LATTITUDE_DEGREES+"<=?"
-                +") AND ("+Nav1.REF_LONGITUDE_DEGREES+">=? "
-                +(isCrossingMeridian180? "OR " : "AND ")+Nav1.REF_LONGITUDE_DEGREES+"<=?)";
-            String[] selectionArgs = {
-                    String.valueOf( Math.toDegrees( radLatMin ) ),
-                    String.valueOf( Math.toDegrees( radLatMax ) ),
-                    String.valueOf( Math.toDegrees( radLonMin ) ),
-                    String.valueOf( Math.toDegrees( radLonMax ) )
-                    };
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Nav1.TABLE_NAME );
-            Cursor c = builder.query( db, new String[] { "*" }, selection, selectionArgs,
-                    null, null, null, null );
             if ( c.moveToFirst() ) {
                 NavaidData[] navaids = new NavaidData[ c.getCount() ];
                 do {

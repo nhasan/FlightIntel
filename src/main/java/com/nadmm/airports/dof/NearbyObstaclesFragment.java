@@ -24,14 +24,17 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
 import com.nadmm.airports.LocationListFragmentBase;
 import com.nadmm.airports.data.DatabaseManager;
 
+import java.util.Locale;
+
 public class NearbyObstaclesFragment extends LocationListFragmentBase {
+
+    int mRadius = 5;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -43,6 +46,9 @@ public class NearbyObstaclesFragment extends LocationListFragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
+
+        setActionBarTitle( "Nearby Obstacles", "" );
+        setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
     }
 
     @Override
@@ -64,15 +70,13 @@ public class NearbyObstaclesFragment extends LocationListFragmentBase {
 
         @Override
         protected Cursor doInBackground( Void... params ) {
-            Log.d( "DDOF", "Starting query" );
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_DOF );
 
-            return new NearbyDofCursor( db, getLastLocation() );
+            return new NearbyDofCursor( db, getLastLocation(), mRadius );
         }
 
         @Override
         protected void onPostExecute( final Cursor c ) {
-            Log.d( "DDOF", "Finished query" );
             setCursor( c );
         }
 

@@ -24,10 +24,12 @@ import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.provider.BaseColumns;
+import android.support.v4.util.Pair;
 
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.LocationColumns;
 import com.nadmm.airports.data.DatabaseManager.States;
+import com.nadmm.airports.utils.DbUtils;
 import com.nadmm.airports.utils.GeoUtils;
 
 import java.util.Arrays;
@@ -59,31 +61,14 @@ public class NearbyAirportsCursor extends MatrixCursor {
 
         float declination = GeoUtils.getMagneticDeclination( location );
 
-        // Get the bounding box first to do a quick query as a first cut
-        double[] box = GeoUtils.getBoundingBoxRadians( location, radius );
-        double radLatMin = box[ 0 ];
-        double radLatMax = box[ 1 ];
-        double radLonMin = box[ 2 ];
-        double radLonMax = box[ 3 ];
-
-        // Check if 180th Meridian lies within the bounding Box
-        boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
-
-        String selection = "("
-            +Airports.REF_LATTITUDE_DEGREES+">=? AND "+Airports.REF_LATTITUDE_DEGREES+"<=?"
-            +") AND ("+Airports.REF_LONGITUDE_DEGREES+">=? "
-            +(isCrossingMeridian180? "OR " : "AND ")+Airports.REF_LONGITUDE_DEGREES+"<=?)";
+        Pair<String, String[]> selection = DbUtils.getBoundingBoxSelection(
+                Airports.REF_LATTITUDE_DEGREES, Airports.REF_LONGITUDE_DEGREES, location, radius );
+        String select = selection.first;
         if ( extraSelection != null ) {
-            selection = selection.concat( extraSelection );
+            select = select.concat( extraSelection );
         }
-        String[] selectionArgs = {
-                String.valueOf( Math.toDegrees( radLatMin ) ),
-                String.valueOf( Math.toDegrees( radLatMax ) ),
-                String.valueOf( Math.toDegrees( radLonMin ) ),
-                String.valueOf( Math.toDegrees( radLonMax ) )
-                };
 
-        Cursor c = AirportsCursorHelper.query( db, selection, selectionArgs,
+        Cursor c = AirportsCursorHelper.query( db, select, selection.second,
                 null, null, null, null );
 
         if ( c.moveToFirst() ) {

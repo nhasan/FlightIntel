@@ -22,11 +22,12 @@ package com.nadmm.airports.dof;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.provider.BaseColumns;
 
-import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.DOF;
+import com.nadmm.airports.data.DatabaseManager.LocationColumns;
+import com.nadmm.airports.utils.DbUtils;
 import com.nadmm.airports.utils.GeoUtils;
 
 import java.util.Arrays;
@@ -35,48 +36,25 @@ public class NearbyDofCursor extends MatrixCursor {
 
     private static final String[] sColumns = new String[] {
             BaseColumns._ID,
-            DatabaseManager.DOF.OAS_CODE,
-            DatabaseManager.DOF.VERIFICATION_STATUS,
-            DatabaseManager.DOF.OBSTACLE_TYPE,
-            DatabaseManager.DOF.COUNT,
-            DatabaseManager.DOF.HEIGHT_AGL,
-            DatabaseManager.DOF.HEIGHT_MSL,
-            DatabaseManager.DOF.LIGHTING_TYPE,
-            DatabaseManager.DOF.MARKING_TYPE,
-            DatabaseManager.LocationColumns.BEARING,
-            DatabaseManager.LocationColumns.DISTANCE
+            DOF.OAS_CODE,
+            DOF.VERIFICATION_STATUS,
+            DOF.OBSTACLE_TYPE,
+            DOF.COUNT,
+            DOF.HEIGHT_AGL,
+            DOF.HEIGHT_MSL,
+            DOF.LIGHTING_TYPE,
+            DOF.MARKING_TYPE,
+            LocationColumns.BEARING,
+            LocationColumns.DISTANCE
     };
 
 
     public NearbyDofCursor( SQLiteDatabase db, Location location, int radius ) {
         super( sColumns );
 
-        // Get the bounding box first to do a quick query as a first cut
-        double[] box = GeoUtils.getBoundingBoxRadians( location, radius );
-        double radLatMin = box[ 0 ];
-        double radLatMax = box[ 1 ];
-        double radLonMin = box[ 2 ];
-        double radLonMax = box[ 3 ];
+        Cursor c = DbUtils.getBoundingBoxCursor( db, DOF.TABLE_NAME,
+                DOF.LATITUDE_DEGREES, DOF.LONGITUDE_DEGREES, location, radius );
 
-        // Check if 180th Meridian lies within the bounding Box
-        boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
-
-        String selection = "("
-                +DatabaseManager.DOF.LATITUDE_DEGREES+">=? AND "+DatabaseManager.DOF.LATITUDE_DEGREES+"<=?"
-                +") AND ("+DatabaseManager.DOF.LONGITUDE_DEGREES+">=? "
-                +(isCrossingMeridian180? "OR " : "AND ")+DatabaseManager.DOF.LONGITUDE_DEGREES+"<=?)";
-        String[] selectionArgs = {
-                String.valueOf( Math.toDegrees( radLatMin ) ),
-                String.valueOf( Math.toDegrees( radLatMax ) ),
-                String.valueOf( Math.toDegrees( radLonMin ) ),
-                String.valueOf( Math.toDegrees( radLonMax ) )
-        };
-
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( DatabaseManager.DOF.TABLE_NAME );
-
-        Cursor c = builder.query( db, new String[] { "*" }, selection, selectionArgs,
-                null, null, null, null );
         if ( c.moveToFirst() ) {
             float declination = GeoUtils.getMagneticDeclination( location );
             DOFData[] dofList = new DOFData[ c.getCount() ];
@@ -125,21 +103,21 @@ public class NearbyDofCursor extends MatrixCursor {
         private float DISTANCE;
 
         private void setFromCursor( Cursor c, Location location, float declination ) {
-            OAS_CODE = c.getString( c.getColumnIndex( DatabaseManager.DOF.OAS_CODE ) );
-            VERIFICATION_STATUS = c.getString( c.getColumnIndex( DatabaseManager.DOF.VERIFICATION_STATUS ) );
-            OBSTACLE_TYPE = c.getString( c.getColumnIndex( DatabaseManager.DOF.OBSTACLE_TYPE ) );
-            COUNT = c.getInt( c.getColumnIndex( DatabaseManager.DOF.COUNT ) );
-            HEIGHT_AGL = c.getInt( c.getColumnIndex( DatabaseManager.DOF.HEIGHT_AGL ) );
-            HEIGHT_MSL = c.getInt( c.getColumnIndex( DatabaseManager.DOF.HEIGHT_MSL ) );
-            LIGHTING_TYPE = c.getString( c.getColumnIndex( DatabaseManager.DOF.LIGHTING_TYPE ) );
-            MARKING_TYPE = c.getString( c.getColumnIndex( DatabaseManager.DOF.MARKING_TYPE ) );
+            OAS_CODE = c.getString( c.getColumnIndex( DOF.OAS_CODE ) );
+            VERIFICATION_STATUS = c.getString( c.getColumnIndex( DOF.VERIFICATION_STATUS ) );
+            OBSTACLE_TYPE = c.getString( c.getColumnIndex( DOF.OBSTACLE_TYPE ) );
+            COUNT = c.getInt( c.getColumnIndex( DOF.COUNT ) );
+            HEIGHT_AGL = c.getInt( c.getColumnIndex( DOF.HEIGHT_AGL ) );
+            HEIGHT_MSL = c.getInt( c.getColumnIndex( DOF.HEIGHT_MSL ) );
+            LIGHTING_TYPE = c.getString( c.getColumnIndex( DOF.LIGHTING_TYPE ) );
+            MARKING_TYPE = c.getString( c.getColumnIndex( DOF.MARKING_TYPE ) );
 
             float[] results = new float[ 2 ];
             Location.distanceBetween(
                     location.getLatitude(),
                     location.getLongitude(),
-                    c.getDouble( c.getColumnIndex( DatabaseManager.DOF.LATITUDE_DEGREES ) ),
-                    c.getDouble( c.getColumnIndex( DatabaseManager.DOF.LONGITUDE_DEGREES ) ),
+                    c.getDouble( c.getColumnIndex( DOF.LATITUDE_DEGREES ) ),
+                    c.getDouble( c.getColumnIndex( DOF.LONGITUDE_DEGREES ) ),
                     results );
             DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
             BEARING = ( results[ 1 ]+declination+360 )%360;
