@@ -188,7 +188,7 @@ insert_book( "safety", "tfrweb_2003.pdf.gz", "Pilot's Guide to TFR",
         "2003", "FAA", 1794432, "" );
 
 insert_book( "regs", "aim_180913.pdf", "AIM Change 1 & 2",
-        "Sep 2018", "FAA", , "14717067" );
+        "Sep 2018", "FAA", "14717067", "" );
 insert_book( "regs", "CFR-2018-title14-vol1.pdf", "FAR Volume 1",
         "Parts 1-59", "US GPO 2018", 10860978, "" );
 insert_book( "regs", "CFR-2018-title14-vol2.pdf", "FAR Volume 2",
