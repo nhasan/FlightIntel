@@ -25,11 +25,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Awos1;
 import com.nadmm.airports.data.DatabaseManager.LocationColumns;
 import com.nadmm.airports.data.DatabaseManager.Wxs;
+import com.nadmm.airports.utils.DbUtils;
 import com.nadmm.airports.utils.GeoUtils;
 
 import java.util.Arrays;
@@ -60,30 +62,10 @@ public class NearbyWxCursor extends MatrixCursor {
 
         double declination = GeoUtils.getMagneticDeclination( location );
 
-        // Get the bounding box first to do a quick query as a first cut
-        double[] box = GeoUtils.getBoundingBoxRadians( location, radius );
-        double radLatMin = box[ 0 ];
-        double radLatMax = box[ 1 ];
-        double radLonMin = box[ 2 ];
-        double radLonMax = box[ 3 ];
+        Pair<String, String[]> selection = DbUtils.getBoundingBoxSelection(
+                "x."+Wxs.STATION_LATITUDE_DEGREES, "x."+Wxs.STATION_LONGITUDE_DEGREES, location, radius );
 
-        // Check if 180th Meridian lies within the bounding Box
-        boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
-
-        String selection = "("
-                +"x."+Wxs.STATION_LATITUDE_DEGREES+">=? AND "
-                +"x."+Wxs.STATION_LATITUDE_DEGREES+"<=?"
-                +") AND (x."+Wxs.STATION_LONGITUDE_DEGREES+">=? "
-                +(isCrossingMeridian180? "OR " : "AND ")
-                +"x."+Wxs.STATION_LONGITUDE_DEGREES+"<=?)";
-        String[] selectionArgs = {
-                String.valueOf( Math.toDegrees( radLatMin ) ),
-                String.valueOf( Math.toDegrees( radLatMax ) ),
-                String.valueOf( Math.toDegrees( radLonMin ) ),
-                String.valueOf( Math.toDegrees( radLonMax ) )
-                };
-
-        Cursor c = WxCursorHelper.query( db, selection, selectionArgs, null, null, null, null );
+        Cursor c = WxCursorHelper.query( db, selection.first, selection.second, null, null, null, null );
 
         if ( c.moveToFirst() ) {
             AwosData[] awosList = new AwosData[ c.getCount() ];
