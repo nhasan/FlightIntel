@@ -41,6 +41,7 @@ import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Awos1;
 import com.nadmm.airports.data.DatabaseManager.Wxs;
 import com.nadmm.airports.utils.CursorAsyncTask;
+import com.nadmm.airports.utils.DbUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
@@ -70,17 +71,13 @@ public class TafFragment extends WxFragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.taf_detail_view, container, false );
-        Button btnGraphic = (Button) view.findViewById( R.id.btnViewGraphic );
+        Button btnGraphic = view.findViewById( R.id.btnViewGraphic );
         // Latest TAF images are not available using simple naming convention.
         // Will need more work to support the timestamped file names.
         btnGraphic.setVisibility( View.GONE );
-        btnGraphic.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                Intent intent = new Intent( getActivity(), TafMapActivity.class );
-                startActivity( intent );
-            }
+        btnGraphic.setOnClickListener( v -> {
+            Intent intent = new Intent( getActivity(), TafMapActivity.class );
+            startActivity( intent );
         } );
         return createContentView( view );
     }
@@ -90,8 +87,10 @@ public class TafFragment extends WxFragmentBase {
         super.onResume();
 
         Bundle args = getArguments();
-        String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new TafFragment.TafTask() ).execute( stationId );
+        if ( args != null ) {
+            String stationId = args.getString( NoaaService.STATION_ID );
+            setBackgroundTask( new TafFragment.TafTask() ).execute( stationId );
+        }
     }
 
     @Override
@@ -143,27 +142,10 @@ public class TafFragment extends WxFragmentBase {
                 location.setLongitude( lon );
                 c.close();
 
-                // Get the bounding box first to do a quick query as a first cut
-                double[] box = GeoUtils.getBoundingBoxRadians( location, TAF_RADIUS );
-                double radLatMin = box[ 0 ];
-                double radLatMax = box[ 1 ];
-                double radLonMin = box[ 2 ];
-                double radLonMax = box[ 3 ];
-                // Check if 180th Meridian lies within the bounding Box
-                boolean isCrossingMeridian180 = ( radLonMin > radLonMax );
+                c = DbUtils.getBoundingBoxCursor( db, Wxs.TABLE_NAME,
+                        Wxs.STATION_LATITUDE_DEGREES, Wxs.STATION_LONGITUDE_DEGREES,
+                        location, TAF_RADIUS );
 
-                selection = "("
-                    +Wxs.STATION_LATITUDE_DEGREES+">=? AND "+Wxs.STATION_LATITUDE_DEGREES+"<=?"
-                    +") AND ("+Wxs.STATION_LONGITUDE_DEGREES+">=? "
-                    +(isCrossingMeridian180? "OR " : "AND ")+Wxs.STATION_LONGITUDE_DEGREES+"<=?)";
-                String[] selectionArgs = {
-                        String.valueOf( Math.toDegrees( radLatMin ) ),
-                        String.valueOf( Math.toDegrees( radLatMax ) ),
-                        String.valueOf( Math.toDegrees( radLonMin ) ),
-                        String.valueOf( Math.toDegrees( radLonMax ) )
-                        };
-                c = builder.query( db, new String[] { "*" }, selection, selectionArgs,
-                        null, null, null, null );
                 stationId = "";
                 if ( c.moveToFirst() ) {
                     float distance = Float.MAX_VALUE;
@@ -236,7 +218,7 @@ public class TafFragment extends WxFragmentBase {
                 layout.setVisibility( View.GONE );
                 TextView tv =(TextView) findViewById( R.id.status_msg );
                 tv.setVisibility( View.VISIBLE );
-                tv.setText( String.format( "No wx station with TAF was found near %s"
+                tv.setText( String.format( Locale.US, "No wx station with TAF was found near %s"
                         +" within %dNM radius", stationId, TAF_RADIUS ) );
                 View title = findViewById( R.id.wx_title_layout );
                 title.setVisibility( View.GONE );
@@ -352,9 +334,9 @@ public class TafFragment extends WxFragmentBase {
             }
             sb.append( TimeUtils.formatDateRange( getActivityBase(),
                     forecast.timeFrom, forecast.timeTo ) );
-            tv = (TextView) grp_layout.findViewById( R.id.group_extra );
+            tv = grp_layout.findViewById( R.id.group_extra );
             tv.setVisibility( View.GONE );
-            tv = (TextView) grp_layout.findViewById( R.id.group_name );
+            tv = grp_layout.findViewById( R.id.group_name );
             tv.setText( sb.toString() );
             String flightCategory = WxUtils.computeFlightCategory(
                     mLastForecast.skyConditions, mLastForecast.visibilitySM );
