@@ -84,10 +84,5 @@
                 android:summaryOn="Time displayed using local timezone"
                 android:summaryOff="Time displayed using UTC timezone"
                 android:defaultValue="false" />
-        <SwitchPreferenceCompat
-                android:key="analytics_optout"
-                android:title="Opt out of analytics data"
-                android:summaryOn="Do not send anonymous analytics data"
-                android:summaryOff="Send anonymous analytics data" />
     </PreferenceCategory>
 </PreferenceScreen>

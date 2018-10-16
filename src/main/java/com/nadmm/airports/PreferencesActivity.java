@@ -43,7 +43,6 @@ public class PreferencesActivity extends FragmentActivityBase {
     public static final String KEY_SHOW_LOCAL_TIME = "show_local_time";
     public static final String KEY_HOME_SCREEN = "home_screen";
     public static final String KEY_ALWAYS_SHOW_NEARBY = "always_show_nearby";
-    public static final String KEY_ANALYTICS_OPTOUT = "analytics_optout";
 
     @SuppressWarnings("deprecation")
     @Override
