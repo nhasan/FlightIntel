@@ -31,8 +31,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -54,10 +54,10 @@ import static android.app.Activity.RESULT_OK;
 
 public abstract class LocationListFragmentBase extends ListFragmentBase {
 
-    private boolean mPermissionDenied = false;
     private boolean mLocationUpdatesEnabled = false;
     private boolean mRequestingLocationUpdates = false;
     private boolean mSettingsRequested = false;
+    private boolean mPermissionDenied = false;
     private Location mLastLocation;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest mLocationRequest;
@@ -83,7 +83,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d( "LOCATION", "onResume" );
 
         if ( mLocationUpdatesEnabled ) {
             if ( checkPermission() ) {
@@ -97,11 +96,9 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d( "LOCATION", "onPause" );
 
         if ( mRequestingLocationUpdates ) {
             stopLocationUpdates();
-            mRequestingLocationUpdates = false;
         }
     }
 
@@ -117,24 +114,49 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
         }
     }
 
+    protected boolean checkPermission() {
+        return ContextCompat.checkSelfPermission( getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION ) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    protected void requestPermission() {
+        boolean shouldProvideRationale =
+                ActivityCompat.shouldShowRequestPermissionRationale( getActivity(),
+                        Manifest.permission.ACCESS_FINE_LOCATION );
+        if ( shouldProvideRationale ) {
+            showSnackbar( "FlightIntel needs access to device's location to show nearby facilities.",
+                    view -> requestPermissions( new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
+                            PERMISSION_REQUEST_FINE_LOCATION ) );
+        } else if ( !mPermissionDenied ) {
+            requestPermissions( new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
+                    PERMISSION_REQUEST_FINE_LOCATION );
+        } else {
+            // Set the flag so we do not ask for permission repeatedly during the
+            // fragment lifetime
+            showSnackbar( "Please enable location permission in the application details settings.",
+                    v -> showApplicationSettings() );
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult( int requestCode, @NonNull String[] permissions,
                                             @NonNull int[] grantResults ) {
         if ( requestCode == PERMISSION_REQUEST_FINE_LOCATION ) {
-            Log.d( "LOCATION", "onRequestPermissionsResult" );
             if ( grantResults.length <= 0 ) {
                 // If user interaction gets interrupted, permission request is cancelled and
                 // we get an empty array.
-                Log.d( "LOCATION", "onRequestPermissionsResult EMPTY" );
             }
             else if ( grantResults[ 0 ] == PackageManager.PERMISSION_GRANTED ) {
-                Log.d( "LOCATION", "onRequestPermissionsResult result=GRANTED" );
                 startLocationUpdates();
             } else {
                 // Set the flag so we do not ask for permission repeatedly during the
                 // fragment lifetime
                 mPermissionDenied = true;
-                Log.d( "LOCATION", "onRequestPermissionsResult result=DENIED" );
+                
+                setEmptyText( "Unable to show nearby facilities.\n"
+                        + "FlightIntel needs location permission." );
+                setListShown( false );
+                setFragmentContentShown( true );
             }
         } else {
             super.onRequestPermissionsResult( requestCode, permissions, grantResults );
@@ -144,40 +166,15 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
     @Override
     public void onActivityResult( int requestCode, int resultCode, Intent data ) {
         // This is not getting called but it should.
-        Log.d( "onActivityResult()", "Called with: "+requestCode+"-"+resultCode );
         if ( requestCode ==PERMISSION_REQUEST_FINE_LOCATION ) {
             if ( resultCode == RESULT_OK)  {
 
-                Log.d( "LOCATION", "onActivityResult settings=OK" );
                 // Nothing to do. startLocationupdates() gets called in onResume again.
             } else if ( resultCode == RESULT_CANCELED ) {
-                Log.d( "LOCATION", "onActivityResult settings=CANCELLED" );
                 mLocationUpdatesEnabled = false;
             }
         } else {
             super.onActivityResult( requestCode, resultCode, data );
-        }
-    }
-
-    protected boolean checkPermission() {
-        return ContextCompat.checkSelfPermission( getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION ) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    protected void requestPermission() {
-        if ( !mPermissionDenied ) {
-            Log.d( "LOCATION", "requestPermission" );
-            showSnackbar( "FlightIntel needs access to device's location to show nearby facilities.",
-                    view -> requestPermissions(
-                            new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
-                            PERMISSION_REQUEST_FINE_LOCATION ) );
-        } else {
-            setEmptyText( "Unable to show nearby facilities.\n"
-                    + "FlightIntel needs location permission." );
-            showSnackbar( "Please enable location permission in the application details",
-                    v -> showApplicationSettings() );
-            setListShown( false );
-            setFragmentContentShown( true );
         }
     }
 
@@ -206,7 +203,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
                 if ( locationResult != null ) {
                     List<Location> locations = locationResult.getLocations();
                     if ( locations.size() >= 1 ) {
-                        Log.d( "LOCATION_RESULT", "Got location. Count="+locations.size() );
                         // Use the latest location
                         updateLocation( locations.get( locations.size() - 1 ) );
                     }
@@ -222,8 +218,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
     }
 
     protected void startLocationUpdates() {
-        Log.d( "LOCATION", "startLocationUpdates" );
-
         // First check if location is enabled in the settings
         mSettingsClient.checkLocationSettings( mLocationSettingsRequest )
 
@@ -235,7 +229,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
 
         // If location is not enabled then prompt the user to enable by showing system dialog
         .addOnFailureListener( getActivity(), e -> {
-            Log.d( "LOCATION", "addOnFailureListener" );
             if ( e instanceof ResolvableApiException ) {
                 ResolvableApiException resolvable = (ResolvableApiException) e;
                 int statusCode = resolvable.getStatusCode();
@@ -269,12 +262,11 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
     }
 
     protected void stopLocationUpdates() {
-        Log.d( "LOCATION", "stopLocationUpdates" );
-        mFusedLocationClient.removeLocationUpdates( mLocationCallback );
+        mFusedLocationClient.removeLocationUpdates( mLocationCallback )
+            .addOnCompleteListener( getActivity(), task -> mRequestingLocationUpdates = false );
     }
 
     protected void requestLocationUpdates() {
-        Log.d( "LOCATION", "requestLocationUpdates" );
         if ( checkPermission() ) {
             // Get the last location as the starting point
             mFusedLocationClient.getLastLocation()
@@ -283,7 +275,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
             mFusedLocationClient.requestLocationUpdates( mLocationRequest, mLocationCallback, null );
             mRequestingLocationUpdates = true;
         } else {
-            Log.d( "LOCATION", "requestLocationUpdates no permission" );
             // Should never come here as requestLocationUpdates() is only called
             // if location permission has been granted.
         }
@@ -296,13 +287,8 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
 
     protected void updateLocation( Location location ) {
         if ( location != null ) {
-            if ( mLastLocation != null ) {
-                Log.d( "LOCATION", "Distance=" + location.distanceTo( mLastLocation ) );
-            }
-            Log.d( "LOCATION", "Accuracy="+location.getAccuracy() );
             if ( mLastLocation == null || location.distanceTo( mLastLocation ) > 50 ) {
                 // Preserve battery. Only update the list of we have moved more than 50 meters.
-                Log.d( "LOCATION", "updateLocation" );
                 mLastLocation = location;
                 newLocationTask().execute();
             }
