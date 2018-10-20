@@ -7,7 +7,7 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
-        classpath 'com.google.gms:google-services:3.1.2'
+        classpath 'com.google.gms:google-services:4.1.0'
     }
 }
 
@@ -27,6 +27,7 @@ dependencies {
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support:preference-v7:28.0.0'
     implementation 'com.android.support:preference-v14:28.0.0'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
 }
 
 android {
@@ -37,8 +38,8 @@ android {
         applicationId "com.nadmm.airports"
         minSdkVersion 15
         targetSdkVersion 28
-        versionName "6.8.0"
-        versionCode 60800
+        versionName "6.9.0"
+        versionCode 60900
     }
 
     signingConfigs {
