@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2015-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2015-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,7 +152,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
                 // Set the flag so we do not ask for permission repeatedly during the
                 // fragment lifetime
                 mPermissionDenied = true;
-                
+
                 setEmptyText( "Unable to show nearby facilities.\n"
                         + "FlightIntel needs location permission." );
                 setListShown( false );
