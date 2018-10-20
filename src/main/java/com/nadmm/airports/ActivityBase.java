@@ -73,7 +73,6 @@ import com.nadmm.airports.data.DatabaseManager.Nav1;
 import com.nadmm.airports.data.DatabaseManager.States;
 import com.nadmm.airports.data.DownloadActivity;
 import com.nadmm.airports.dof.NearbyObstaclesActivity;
-import com.nadmm.airports.dof.NearbyObstaclesFragment;
 import com.nadmm.airports.donate.DonateDatabase;
 import com.nadmm.airports.e6b.E6bActivity;
 import com.nadmm.airports.library.LibraryActivity;

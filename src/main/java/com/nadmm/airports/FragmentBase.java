@@ -54,32 +54,25 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
     private CursorAsyncTask mTask;
     private ScrollView mTopScrollView;
 
-    private final OnClickListener mOnRowClickListener = new OnClickListener() {
-        @Override
-        public void onClick( View v ) {
-            Object tag = v.getTag();
-            if ( tag != null ) {
-                if ( tag instanceof Intent ) {
-                    Intent intent = (Intent) tag;
-                    startActivity( intent );
-                } else if ( tag instanceof Runnable ) {
-                    Runnable runnable = (Runnable) tag;
-                    runnable.run();
-                }
+    private final OnClickListener mOnRowClickListener = v -> {
+        Object tag = v.getTag();
+        if ( tag != null ) {
+            if ( tag instanceof Intent ) {
+                Intent intent = (Intent) tag;
+                startActivity( intent );
+            } else if ( tag instanceof Runnable ) {
+                Runnable runnable = (Runnable) tag;
+                runnable.run();
             }
         }
     };
 
-    private final OnClickListener mOnPhoneClickListener = new OnClickListener() {
-        @Override
-        public void onClick( View v ) {
-            TextView tv = (TextView) v;
-            String action = (String) tv.getTag();
-            String phone = DataUtils.decodePhoneNumber( tv.getText().toString() );
-            Intent intent = new Intent( action, Uri.parse( "tel:"+phone ) );
-            startActivity( intent );
-        }
-
+    private final OnClickListener mOnPhoneClickListener = v -> {
+        TextView tv = (TextView) v;
+        String action = (String) tv.getTag();
+        String phone = DataUtils.decodePhoneNumber( tv.getText().toString() );
+        Intent intent = new Intent( action, Uri.parse( "tel:"+phone ) );
+        startActivity( intent );
     };
 
     @Override
