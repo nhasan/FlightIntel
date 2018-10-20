@@ -20,32 +20,53 @@
 package com.nadmm.airports;
 
 import android.Manifest;
-import android.content.Context;
+import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
-import android.text.format.DateUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
 import com.nadmm.airports.data.DatabaseManager.LocationColumns;
-import com.nadmm.airports.utils.GeoUtils;
 
-public abstract class LocationListFragmentBase extends ListFragmentBase
-        implements LocationListener {
+import java.util.List;
 
-    private LocationManager mLocationManager;
-    private int mRadius;
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+
+public abstract class LocationListFragmentBase extends ListFragmentBase {
+
     private boolean mPermissionDenied = false;
-    private boolean mLocationUpdatesEnabled;
+    private boolean mLocationUpdatesEnabled = false;
+    private boolean mRequestingLocationUpdates = false;
+    private boolean mSettingsRequested = false;
     private Location mLastLocation;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LocationRequest mLocationRequest;
+    private LocationCallback mLocationCallback;
+    private SettingsClient mSettingsClient;
+    private LocationSettingsRequest mLocationSettingsRequest;
 
     private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
+    private static final int REQUEST_CHECK_SETTINGS = 2;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -57,31 +78,30 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
         }
 
         mLocationUpdatesEnabled = ( mLastLocation == null );
-
-        if ( mLocationUpdatesEnabled ) {
-            mLocationManager = (LocationManager) getActivity().getSystemService(
-                    Context.LOCATION_SERVICE );
-            if ( mLocationManager == null ) {
-                mLocationUpdatesEnabled = false;
-            }
-        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.d( "LOCATION", "onResume" );
 
         if ( mLocationUpdatesEnabled ) {
-            getActivityBase().postRunnable( () -> startLocationUpdates(), 0 );
+            if ( checkPermission() ) {
+                getActivityBase().postRunnable( () -> startLocationUpdates(), 0 );
+            } else {
+                requestPermission();
+            }
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        Log.d( "LOCATION", "onPause" );
 
-        if ( mLocationUpdatesEnabled ) {
+        if ( mRequestingLocationUpdates ) {
             stopLocationUpdates();
+            mRequestingLocationUpdates = false;
         }
     }
 
@@ -89,22 +109,183 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mRadius = getActivityBase().getPrefNearbyRadius();
-
-        if ( !mLocationUpdatesEnabled ) {
+        if ( mLocationUpdatesEnabled ) {
+            setupFusedLocationProvider();
+        } else {
+            // Location was passed to us, so just run the task
             newLocationTask().execute();
-        } else if ( mLocationManager == null ) {
-            setEmptyText( "Location is not available on this device." );
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult( int requestCode, @NonNull String[] permissions,
+                                            @NonNull int[] grantResults ) {
+        if ( requestCode == PERMISSION_REQUEST_FINE_LOCATION ) {
+            Log.d( "LOCATION", "onRequestPermissionsResult" );
+            if ( grantResults.length <= 0 ) {
+                // If user interaction gets interrupted, permission request is cancelled and
+                // we get an empty array.
+                Log.d( "LOCATION", "onRequestPermissionsResult EMPTY" );
+            }
+            else if ( grantResults[ 0 ] == PackageManager.PERMISSION_GRANTED ) {
+                Log.d( "LOCATION", "onRequestPermissionsResult result=GRANTED" );
+                startLocationUpdates();
+            } else {
+                // Set the flag so we do not ask for permission repeatedly during the
+                // fragment lifetime
+                mPermissionDenied = true;
+                Log.d( "LOCATION", "onRequestPermissionsResult result=DENIED" );
+            }
+        } else {
+            super.onRequestPermissionsResult( requestCode, permissions, grantResults );
+        }
+    }
+
+    @Override
+    public void onActivityResult( int requestCode, int resultCode, Intent data ) {
+        // This is not getting called but it should.
+        Log.d( "onActivityResult()", "Called with: "+requestCode+"-"+resultCode );
+        if ( requestCode ==PERMISSION_REQUEST_FINE_LOCATION ) {
+            if ( resultCode == RESULT_OK)  {
+
+                Log.d( "LOCATION", "onActivityResult settings=OK" );
+                // Nothing to do. startLocationupdates() gets called in onResume again.
+            } else if ( resultCode == RESULT_CANCELED ) {
+                Log.d( "LOCATION", "onActivityResult settings=CANCELLED" );
+                mLocationUpdatesEnabled = false;
+            }
+        } else {
+            super.onActivityResult( requestCode, resultCode, data );
+        }
+    }
+
+    protected boolean checkPermission() {
+        return ContextCompat.checkSelfPermission( getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION ) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    protected void requestPermission() {
+        if ( !mPermissionDenied ) {
+            Log.d( "LOCATION", "requestPermission" );
+            showSnackbar( "FlightIntel needs access to device's location to show nearby facilities.",
+                    view -> requestPermissions(
+                            new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
+                            PERMISSION_REQUEST_FINE_LOCATION ) );
+        } else {
+            setEmptyText( "Unable to show nearby facilities.\n"
+                    + "FlightIntel needs location permission." );
+            showSnackbar( "Please enable location permission in the application details",
+                    v -> showApplicationSettings() );
             setListShown( false );
             setFragmentContentShown( true );
         }
     }
 
-    @Override
-    public void onLocationChanged( Location location ) {
-        if ( getActivity() != null ) {
-            mLastLocation = location;
-            newLocationTask().execute();
+    protected void setupFusedLocationProvider() {
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient( getActivity() );
+        mSettingsClient = LocationServices.getSettingsClient( getActivity() );
+
+        makeLocationRequest( getActivityBase().getPrefUseGps() );
+        makeLocationCallback();
+        buildLocationSettingsRequest();
+    }
+
+    protected void makeLocationRequest( boolean useGps ) {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval( 7000 );
+        mLocationRequest.setFastestInterval( 3000 );
+        mLocationRequest.setPriority( useGps?
+                LocationRequest.PRIORITY_HIGH_ACCURACY :
+                LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY );
+    }
+
+    protected void makeLocationCallback() {
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult( LocationResult locationResult ) {
+                if ( locationResult != null ) {
+                    List<Location> locations = locationResult.getLocations();
+                    if ( locations.size() >= 1 ) {
+                        Log.d( "LOCATION_RESULT", "Got location. Count="+locations.size() );
+                        // Use the latest location
+                        updateLocation( locations.get( locations.size() - 1 ) );
+                    }
+                }
+            }
+        };
+    }
+
+    private void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest( mLocationRequest );
+        mLocationSettingsRequest = builder.build();
+    }
+
+    protected void startLocationUpdates() {
+        Log.d( "LOCATION", "startLocationUpdates" );
+
+        // First check if location is enabled in the settings
+        mSettingsClient.checkLocationSettings( mLocationSettingsRequest )
+
+        // If location is enabled then register for location updates
+        .addOnSuccessListener( getActivity(), locationSettingsResponse -> {
+            requestLocationUpdates();
+            mSettingsRequested = false;
+        } )
+
+        // If location is not enabled then prompt the user to enable by showing system dialog
+        .addOnFailureListener( getActivity(), e -> {
+            Log.d( "LOCATION", "addOnFailureListener" );
+            if ( e instanceof ResolvableApiException ) {
+                ResolvableApiException resolvable = (ResolvableApiException) e;
+                int statusCode = resolvable.getStatusCode();
+                switch ( statusCode ) {
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        if ( !mSettingsRequested ) {
+                            try {
+                                // Show the dialog by calling startResolutionForResult(),
+                                // and check the result in onActivityResult().
+                                mSettingsRequested = true;
+                                startIntentSenderForResult( resolvable.getResolution().getIntentSender(),
+                                        REQUEST_CHECK_SETTINGS,
+                                        null, 0, 0, 0, null );
+                            } catch ( IntentSender.SendIntentException sendEx ) {
+                            }
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        Toast.makeText( getActivityBase(),
+                                "Please enable location in settings to see nearby facilities.",
+                                Toast.LENGTH_LONG ).show();
+                        break;
+                }
+            }
+
+            setEmptyText( "Unable to show nearby facilities.\n"
+                    + "Location is not enabled on this device." );
+            setListShown( false );
+            setFragmentContentShown( true );
+        } );
+    }
+
+    protected void stopLocationUpdates() {
+        Log.d( "LOCATION", "stopLocationUpdates" );
+        mFusedLocationClient.removeLocationUpdates( mLocationCallback );
+    }
+
+    protected void requestLocationUpdates() {
+        Log.d( "LOCATION", "requestLocationUpdates" );
+        if ( checkPermission() ) {
+            // Get the last location as the starting point
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener( getActivity(), location -> updateLocation( location ) );
+
+            mFusedLocationClient.requestLocationUpdates( mLocationRequest, mLocationCallback, null );
+            mRequestingLocationUpdates = true;
+        } else {
+            Log.d( "LOCATION", "requestLocationUpdates no permission" );
+            // Should never come here as requestLocationUpdates() is only called
+            // if location permission has been granted.
         }
     }
 
@@ -113,90 +294,38 @@ public abstract class LocationListFragmentBase extends ListFragmentBase
         return mLocationUpdatesEnabled;
     }
 
-    @Override
-    public void onProviderDisabled( String provider ) {
-    }
-
-    @Override
-    public void onProviderEnabled( String provider ) {
-    }
-
-    @Override
-    public void onStatusChanged( String provider, int status, Bundle extras ) {
-    }
-
-    @Override
-    public void onRequestPermissionsResult( int requestCode, @NonNull String[] permissions,
-                                            @NonNull int[] grantResults ) {
-        if ( requestCode == PERMISSION_REQUEST_FINE_LOCATION ) {
-            if ( grantResults.length == 1
-                    && grantResults[ 0 ] == PackageManager.PERMISSION_GRANTED ) {
-                startLocationUpdates();
-            } else {
-                // Set the flag so we do not ask for permission repeatedly during the
-                // fragment lifetime
-                mPermissionDenied = true;
-                setEmptyText( "Unable to show nearby facilities.\n"
-                        + "FlightIntel needs location permission.\n"
-                        + "Settings -> Apps -> FlightIntel -> Permission" );
-                setListShown( false );
-                setFragmentContentShown( true );
+    protected void updateLocation( Location location ) {
+        if ( location != null ) {
+            if ( mLastLocation != null ) {
+                Log.d( "LOCATION", "Distance=" + location.distanceTo( mLastLocation ) );
             }
-        } else {
-            super.onRequestPermissionsResult( requestCode, permissions, grantResults );
+            Log.d( "LOCATION", "Accuracy="+location.getAccuracy() );
+            if ( mLastLocation == null || location.distanceTo( mLastLocation ) > 50 ) {
+                // Preserve battery. Only update the list of we have moved more than 50 meters.
+                Log.d( "LOCATION", "updateLocation" );
+                mLastLocation = location;
+                newLocationTask().execute();
+            }
         }
     }
 
-    protected void startLocationUpdates() {
-        if ( getActivity() == null ) {
-            return;
-        }
-
-        boolean providerOk = false;
-        if ( ContextCompat.checkSelfPermission(
-                getActivity(), Manifest.permission.ACCESS_FINE_LOCATION )
-                == PackageManager.PERMISSION_GRANTED ) {
-            if ( mLocationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER ) ) {
-                mLocationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
-                        30 * DateUtils.SECOND_IN_MILLIS, 0.5f * GeoUtils.METERS_PER_STATUTE_MILE,
-                        this );
-                providerOk = true;
-            }
-
-            boolean useGps = getActivityBase().getPrefUseGps();
-            if ( useGps && mLocationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-                mLocationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
-                        30 * DateUtils.SECOND_IN_MILLIS, 0.5f * GeoUtils.METERS_PER_STATUTE_MILE,
-                        this );
-                providerOk = true;
-            }
-
-            if ( !providerOk ) {
-                setEmptyText( "Unable to show nearby facilities.\n"
-                        + "Location is not available on this device." );
-                setListShown( false );
-                setFragmentContentShown( true );
-            }
-        } else if ( !mPermissionDenied ) {
-            Snackbar.make( getActivityBase().getAppBar(),
-                    "FlightIntel needs access to device's location to show nearby facilities.",
-                    Snackbar.LENGTH_INDEFINITE )
-                    .setAction( android.R.string.ok, v -> requestPermissions(
-                            new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
-                            PERMISSION_REQUEST_FINE_LOCATION ) ).show();
-        }
+    private void showSnackbar( String text, View.OnClickListener listener) {
+        Snackbar.make( getActivityBase().getAppBar(), text, Snackbar.LENGTH_INDEFINITE )
+                .setAction( android.R.string.ok, listener )
+                .show();
     }
 
-    protected void stopLocationUpdates() {
-        if ( getActivity() != null && ContextCompat.checkSelfPermission(
-                getActivity(), Manifest.permission.ACCESS_FINE_LOCATION )
-                == PackageManager.PERMISSION_GRANTED ) {
-            mLocationManager.removeUpdates( this );
-        }
+    private void showApplicationSettings() {
+        Intent intent = new Intent();
+        intent.setAction( Settings.ACTION_APPLICATION_DETAILS_SETTINGS );
+        Uri uri = Uri.fromParts( "package", BuildConfig.APPLICATION_ID, null );
+        intent.setData( uri );
+        intent.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
+        startActivity( intent );
     }
 
     protected int getNearbyRadius() {
-        return mRadius;
+        return getActivityBase().getPrefNearbyRadius();
     }
 
     protected Location getLastLocation() {
