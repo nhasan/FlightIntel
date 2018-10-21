@@ -244,12 +244,14 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
                                         null, 0, 0, 0, null );
                             } catch ( IntentSender.SendIntentException sendEx ) {
                             }
+                        } else {
+                            showSnackbar( "Please enable location in settings to see nearby facilities.",
+                                    v -> showLocationSettings() );
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        Toast.makeText( getActivityBase(),
-                                "Please enable location in settings to see nearby facilities.",
-                                Toast.LENGTH_LONG ).show();
+                        showSnackbar( "Please enable location in settings to see nearby facilities.",
+                                v -> showLocationSettings() );
                         break;
                 }
             }
@@ -296,9 +298,15 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
     }
 
     private void showSnackbar( String text, View.OnClickListener listener) {
-        Snackbar.make( getActivityBase().getAppBar(), text, Snackbar.LENGTH_INDEFINITE )
+        Snackbar.make( getListView(), text, Snackbar.LENGTH_INDEFINITE )
                 .setAction( android.R.string.ok, listener )
                 .show();
+    }
+
+    private void showLocationSettings() {
+        Intent intent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS );
+        intent.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
+        startActivity( intent );
     }
 
     private void showApplicationSettings() {
