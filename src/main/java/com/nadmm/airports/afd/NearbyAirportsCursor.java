@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ import com.nadmm.airports.utils.DbUtils;
 import com.nadmm.airports.utils.GeoUtils;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 public class NearbyAirportsCursor extends MatrixCursor {
 
@@ -64,13 +65,13 @@ public class NearbyAirportsCursor extends MatrixCursor {
         Pair<String, String[]> selection = DbUtils.getBoundingBoxSelection(
                 Airports.REF_LATTITUDE_DEGREES, Airports.REF_LONGITUDE_DEGREES, location, radius );
         String select = selection.first;
+        String[] selectionArgs = selection.second;
+
         if ( extraSelection != null ) {
-            select = select.concat( extraSelection );
+            select = String.format( Locale.US, "(%s) %s", select,  extraSelection );
         }
 
-        Cursor c = AirportsCursorHelper.query( db, select, selection.second,
-                null, null, null, null );
-
+        Cursor c = AirportsCursorHelper.query( db, select, selectionArgs );
         if ( c.moveToFirst() ) {
             AirportData[] airports = new AirportData[ c.getCount() ];
             do {
