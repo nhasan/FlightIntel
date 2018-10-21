@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,9 @@ import com.nadmm.airports.data.DatabaseManager;
 
 import java.util.Locale;
 
-public class NearbyAirportsFragment extends LocationListFragmentBase {
+import static com.nadmm.airports.data.DatabaseManager.Airports;
 
-    int mRadius;
+public class NearbyAirportsFragment extends LocationListFragmentBase {
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -48,11 +48,9 @@ public class NearbyAirportsFragment extends LocationListFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mRadius = getNearbyRadius();
-
         if ( !isLocationUpdateEnabled() ) {
             setActionBarTitle( "Nearby Airports" );
-            setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
+            setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", getNearbyRadius() ) );
         }
     }
 
@@ -81,7 +79,16 @@ public class NearbyAirportsFragment extends LocationListFragmentBase {
         protected Cursor doInBackground( Void... params ) {
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
-            return new NearbyAirportsCursor( db, getLastLocation(), mRadius, null );
+            String extraSelection= null;
+            Bundle args = getArguments();
+            if ( args.containsKey( Airports.ICAO_CODE ) ) {
+                String icaoCode = args.getString( Airports.ICAO_CODE );
+                if ( !icaoCode.isEmpty() ) {
+                    extraSelection = "AND "+Airports.ICAO_CODE+" <> '"+icaoCode+"'";
+                }
+            }
+
+            return new NearbyAirportsCursor( db, getLastLocation(), getNearbyRadius(), extraSelection );
         }
 
         @Override
