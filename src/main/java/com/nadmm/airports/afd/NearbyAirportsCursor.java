@@ -67,7 +67,7 @@ public class NearbyAirportsCursor extends MatrixCursor {
         String select = selection.first;
         String[] selectionArgs = selection.second;
 
-        if ( extraSelection != null ) {
+        if ( extraSelection != null && !extraSelection.isEmpty() ) {
             select = String.format( Locale.US, "(%s) %s", select,  extraSelection );
         }
 

@@ -99,6 +99,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     private Location mLocation;
     private float mDeclination;
     private String mIcaoCode;
+    private String mFAACode;
     private int mRadius;
     private String mHome;
     private String mSiteNumber;
@@ -472,6 +473,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         args.putParcelable( LocationColumns.LOCATION, mLocation );
         args.putInt( LocationColumns.RADIUS, mRadius );
         args.putString( Airports.ICAO_CODE, mIcaoCode );
+        args.putString( Airports.FAA_CODE, mFAACode );
         addClickableRow( layout, "Airports", NearbyAirportsFragment.class, args );
         addClickableRow( layout, "FSS outlets", NearbyFssFragment.class, getArguments() );
         addClickableRow( layout, "Navaids", NearbyNavaidsFragment.class, getArguments() );
@@ -937,6 +939,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
             double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
             int elev_msl = apt.getInt( apt.getColumnIndex( Airports.ELEVATION_MSL ) );
+            mFAACode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
             mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
             if ( mIcaoCode == null || mIcaoCode.isEmpty() ) {
                 mIcaoCode = "K"+apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );

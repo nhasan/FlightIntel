@@ -81,10 +81,10 @@ public class NearbyAirportsFragment extends LocationListFragmentBase {
 
             String extraSelection= null;
             Bundle args = getArguments();
-            if ( args.containsKey( Airports.ICAO_CODE ) ) {
-                String icaoCode = args.getString( Airports.ICAO_CODE );
-                if ( !icaoCode.isEmpty() ) {
-                    extraSelection = "AND "+Airports.ICAO_CODE+" <> '"+icaoCode+"'";
+            if ( args != null ) {
+                String faaCode = args.getString( Airports.FAA_CODE );
+                if ( faaCode != null && !faaCode.isEmpty() ) {
+                    extraSelection = "AND "+Airports.FAA_CODE+" <> '"+faaCode+"'";
                 }
             }
 
