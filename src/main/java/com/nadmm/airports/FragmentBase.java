@@ -305,13 +305,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
     }
 
     protected void makeRowClickable( View row, final Class<?> clss, final Bundle args ) {
-        Runnable r = new Runnable() {
-
-            @Override
-            public void run() {
-                getActivityBase().replaceFragment( clss, args, true );
-            }
-        };
+        Runnable r = () -> getActivityBase().replaceFragment( clss, args, true );
         makeRowClickable( row, r );
     }
 
