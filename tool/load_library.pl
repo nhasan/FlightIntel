@@ -237,29 +237,31 @@ insert_book( "testguide", "FAA-G-8082-4D_1702.pdf", "Sport Pilot Knowledge Test 
         "Feb 2017", "FAA-G-8082-4D", 123443, "" );
 insert_book( "testguide", "IPC_Guidance_150909.pdf", "Instrument Proficiency Check Guidance",
         "Sep 2015", "", 544288, "" );
-insert_book( "testguide", "PARSampleExam_170612.pdf", "Airmen Knowledge Test Question Bank",
-        "Jun 2017", "Private", 135578, "" );
-insert_book( "testguide", "IRASampleExam_171016.pdf", "Airmen Knowledge Test Question Bank",
-        "Oct 2017", "Instrument", 111272, "" );
-insert_book( "testguide", "LSPSampleExam_171016.pdf", "Airmen Knowledge Test Question Bank",
-        "Oct 2017", "Light Sport", 87390, "" );
-insert_book( "testguide", "cax_sample_exam_171016.pdf", "Airmen Knowledge Test Question Bank",
-        "Oct 2017", "Commercial", 114146, "" );
+insert_book( "testguide", "PARSampleExam_181015.pdf", "Airmen Knowledge Test Question Bank",
+        "Oct 2018", "Private Airplane", 121746, "" );
+insert_book( "testguide", "PRHSampleExam_181015.pdf", "Airmen Knowledge Test Question Bank",
+        "Oct 2018", "Private Helicopter", 130592, "" );
+insert_book( "testguide", "IRASampleExam_181015.pdf", "Airmen Knowledge Test Question Bank",
+        "Oct 2018", "Instrument", 113003, "" );
+insert_book( "testguide", "LSPSampleExam_181015.pdf", "Airmen Knowledge Test Question Bank",
+        "Oct 2018", "Light Sport", 89670, "" );
+insert_book( "testguide", "cax_sample_exam_181015.pdf", "Airmen Knowledge Test Question Bank",
+        "Oct 2018", "Commercial", 120564, "" );
 
-insert_book( "pts", "faa-s-8081-12c.pdf", "Commercial Pilot PTS",
-        "Jun 2012", "FAA-S-8081-12C", 472242, "" );
-insert_book( "pts", "faa-s-8081-14b.pdf", "Private Pilot PTS",
-        "Jun 2012", "FAA-S-8081-14B", 490370, "" );
+insert_book( "pts", "FAA-S-ACS-7A_180611.pdf", "Commercial Pilot ACS",
+        "Jun 2018", "FAA-S-ACS-7A", 862269, "" );
+insert_book( "pts", "FAA-S-ACS-6B_180611.pdf", "Private Pilot ACS",
+        "Jun 2018", "FAA-S-ACS-6B", 899923, "" );
 insert_book( "pts", "faa-s-8081-29.pdf", "Sport Pilot PTS",
-        "Dec 2004", "FAA-S-8081-29", 583474, "" );
+        "May 2014", "FAA-S-8081-29", 583474, "" );
 insert_book( "pts", "faa-s-8081-3a.pdf", "Recreational Pilot PTS",
         "Aug 2006", "FAA-S-8081-3A", 439253, "" );
-insert_book( "pts", "faa-s-8081-4e.pdf", "Instrument Rating PTS",
-        "Jan 2010", "FAA-S-8081-4E", 283337, "" );
+insert_book( "pts", "FAA-S-ACS-8B_180611.pdf", "Instrument Rating ACS",
+        "Jun 2018", "FAA-S-ACS-8B", 441462, "" );
 insert_book( "pts", "faa-s-8081-5f.pdf", "Airline Transport Pilot PTS",
-        "Jul 2008", "FAA-S-8081-5F", 391519, "" );
-insert_book( "pts", "faa-s-8081-6d.pdf", "Flight Instructor PTS",
-        "Dec 2012", "FAA-S-8081-6D", 645207, "" );
+        "Jul 2014", "FAA-S-8081-5F", 391519, "" );
+insert_book( "pts", "FAA-S-8081-6D_180419.pdf", "Flight Instructor PTS",
+        "Apr 2018", "FAA-S-8081-6D", 731230, "" );
 insert_book( "pts", "faa-s-8081-9d.pdf", "Flight Instructor Instrument PTS",
         "Jul 2010", "FAA-S-8081-9D", 169064, "" );
 
@@ -274,10 +276,12 @@ insert_book( "misc", "atc_180913.pdf", "Air Trafffic Control",
 insert_book( "misc", "fss_180913.pdf", "Flight Services",
         "Sep 2018", "FAA", 3087677, "" );
 
-insert_book( "canada", "AWS-Guide-EN_1602.pdf", "Aviation Weather Service Guide",
-        "Feb 2016", "Nav Canada", 5043235, "" );
-insert_book( "canada", "Customer-Guide-Charges-EN_1311.pdf", "Customer Guide to Charges",
-        "Mov 2013", "Nav Canada", 2272225, "" );
+insert_book( "canada", "AIM_2018-2_EN_181011.pdf.gz", "Aeronautical Information Manual (TC AIM)",
+        "Oct 2018", "Nav Canada", 37316128, "" );
+insert_book( "canada", "AWS-Guide-EN_1705.pdf", "Aviation Weather Service Guide",
+        "May 2017", "Nav Canada", 5115318, "" );
+insert_book( "canada", "Customer-Guide-Charges-EN_1809.pdf", "Customer Guide to Charges",
+        "Sep 2018", "Nav Canada", 1043605, "" );
 insert_book( "canada", "VFR_Phraseology_1505.pdf", "VFR Phraseology",
         "May 2015", "Nav Canada", 3662663, "" );
 insert_book( "canada", "NOTAM-Manual-EN_1603.pdf", "Canadian NOTAM Procedures Manual",
