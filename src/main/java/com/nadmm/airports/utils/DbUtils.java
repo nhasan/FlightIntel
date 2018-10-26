@@ -23,7 +23,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
-import android.support.v4.util.Pair;
+import androidx.core.util.Pair;
 
 public class DbUtils {
     public static Pair<String, String[]> getBoundingBoxSelection( String latField, String lonField,

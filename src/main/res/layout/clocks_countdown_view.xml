@@ -20,7 +20,7 @@
  */
  -->
 
-<android.support.v4.widget.NestedScrollView
+<androidx.core.widget.NestedScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:paddingTop="?actionBarSize"
@@ -144,4 +144,4 @@
                     android:layout_height="wrap_content" />
         </LinearLayout>
     </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
+</androidx.core.widget.NestedScrollView>

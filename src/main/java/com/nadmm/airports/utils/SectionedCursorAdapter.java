@@ -22,7 +22,7 @@ package com.nadmm.airports.utils;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.ResourceCursorAdapter;
+import androidx.cursoradapter.widget.ResourceCursorAdapter;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;

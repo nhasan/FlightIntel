@@ -21,7 +21,7 @@ package com.nadmm.airports.e6b;
 
 import android.database.Cursor;
 import android.provider.BaseColumns;
-import android.support.v4.util.LongSparseArray;
+import androidx.collection.LongSparseArray;
 import android.view.View;
 import android.widget.ListView;
 

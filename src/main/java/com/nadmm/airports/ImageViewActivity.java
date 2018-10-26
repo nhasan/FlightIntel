@@ -22,7 +22,7 @@ package com.nadmm.airports;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar.LayoutParams;
+import androidx.appcompat.app.ActionBar.LayoutParams;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

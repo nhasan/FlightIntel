@@ -15,6 +15,5 @@ build/
 ant.properties
 local.properties
 project.properties
-gradle.properties
 proguard.cfg
 .directory

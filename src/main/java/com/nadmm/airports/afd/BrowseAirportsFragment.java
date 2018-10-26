@@ -27,7 +27,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
-import android.support.v4.widget.CursorAdapter;
+import androidx.cursoradapter.widget.CursorAdapter;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
