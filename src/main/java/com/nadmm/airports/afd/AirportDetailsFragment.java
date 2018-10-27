@@ -29,7 +29,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,6 +86,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public final class AirportDetailsFragment extends FragmentBase {
 
@@ -171,7 +172,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         requestMetars( true );
     }
 
-    protected void handleBroadcast( Intent intent ) {
+    private void handleBroadcast( Intent intent ) {
         String action = intent.getAction();
         if ( action.equals( MetarService.ACTION_GET_METAR ) ) {
             Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
@@ -194,7 +195,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
     }
 
-    protected void getAfdPage( String afdCycle, String pdfName ) {
+    private void getAfdPage( String afdCycle, String pdfName ) {
         Intent service = new Intent( getActivity(), DafdService.class );
         service.setAction( DafdService.ACTION_GET_AFD );
         service.putExtra( DafdService.CYCLE_NAME, afdCycle );
@@ -202,7 +203,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         getActivityBase().startService( service );
     }
 
-    protected void getClassBGraphic( String faaCode ) {
+    private void getClassBGraphic( String faaCode ) {
         Intent service = new Intent( getActivity(), ClassBService.class );
         service.setAction( ClassBService.ACTION_GET_CLASSB_GRAPHIC );
         service.putExtra( Airports.FAA_CODE, faaCode );
@@ -232,7 +233,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    protected void showCommunicationsDetails( Cursor[] result ) {
+    private void showCommunicationsDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
 
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_comm_layout );
@@ -275,7 +276,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, "More...", CommunicationsFragment.class, getArguments() );
     }
 
-    protected void addFrequencyToMap( HashMap<String, ArrayList<Float>> freqMap,
+    private void addFrequencyToMap( HashMap<String, ArrayList<Float>> freqMap,
             String key, String value ) {
         ArrayList<Float> freqs = freqMap.get( key );
         if ( freqs == null ) {
@@ -299,7 +300,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         freqMap.put( key, freqs );
     }
 
-    protected void showRunwayDetails( Cursor[] result ) {
+    private void showRunwayDetails( Cursor[] result ) {
         LinearLayout rwyLayout = (LinearLayout) findViewById( R.id.detail_rwy_layout );
         LinearLayout heliLayout = (LinearLayout) findViewById( R.id.detail_heli_layout );
         TextView tv;
@@ -336,7 +337,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
     }
 
-    protected void showRemarks( Cursor[] result ) {
+    private void showRemarks( Cursor[] result ) {
         int row = 0;
         TextView label = (TextView) findViewById( R.id.detail_remarks_label );
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
@@ -372,7 +373,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
     }
 
-    protected void showAwosDetails( Cursor[] result ) {
+    private void showAwosDetails( Cursor[] result ) {
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_awos_layout );
         Cursor awos1 = result[ 7 ];
         if ( awos1.moveToFirst() ) {
@@ -422,7 +423,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
     }
 
-    protected void showHomeDistance( Cursor[] result ) {
+    private void showHomeDistance( Cursor[] result ) {
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_home_layout );
         Cursor home = result[ 14 ];
         if ( home == null ) {
@@ -466,7 +467,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
     }
 
-    protected void showNearbyFacilities( Cursor[] result ) {
+    private void showNearbyFacilities( Cursor[] result ) {
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_nearby_layout );
 
         Bundle args = new Bundle();
@@ -535,7 +536,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
     }
 
-    protected void showOperationsDetails( Cursor[] result ) {
+    private void showOperationsDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_operations_layout );
         String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
@@ -565,19 +566,19 @@ public final class AirportDetailsFragment extends FragmentBase {
         if ( twr5 != null && twr5.moveToFirst() ) {
             HashSet<String> radarList = new HashSet<>();
             String towerRadar = twr5.getString( twr5.getColumnIndex( Tower5.TOWER_RADAR_TYPE_1 ) );
-            if ( !towerRadar.isEmpty() && !radarList.contains( towerRadar ) ) {
+            if ( !towerRadar.isEmpty() ) {
                 radarList.add( towerRadar );
             }
             towerRadar = twr5.getString( twr5.getColumnIndex( Tower5.TOWER_RADAR_TYPE_2 ) );
-            if ( !towerRadar.isEmpty() && !radarList.contains( towerRadar ) ) {
+            if ( !towerRadar.isEmpty() ) {
                 radarList.add( towerRadar );
             }
             towerRadar = twr5.getString( twr5.getColumnIndex( Tower5.TOWER_RADAR_TYPE_3 ) );
-            if ( !towerRadar.isEmpty() && !radarList.contains( towerRadar ) ) {
+            if ( !towerRadar.isEmpty() ) {
                 radarList.add( towerRadar );
             }
             towerRadar = twr5.getString( twr5.getColumnIndex( Tower5.TOWER_RADAR_TYPE_4 ) );
-            if ( !towerRadar.isEmpty() && !radarList.contains( towerRadar ) ) {
+            if ( !towerRadar.isEmpty() ) {
                 radarList.add( towerRadar );
             }
             String radars = "";
@@ -654,7 +655,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
     }
 
-    protected void showAeroNavDetails( Cursor[] result ) {
+    private void showAeroNavDetails( Cursor[] result ) {
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_aeronav_layout );
         if ( Application.sDonationDone ) {
             Cursor apt = result[ 0 ];
@@ -697,7 +698,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
     }
 
-    protected void showServicesDetails( Cursor[] result ) {
+    private void showServicesDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_services_layout );
         String fuelTypes = DataUtils.decodeFuelTypes(
@@ -719,7 +720,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, "Other services", ServicesFragment.class, getArguments() );
     }
 
-    protected void showOtherDetails() {
+    private void showOtherDetails() {
         Bundle args = getArguments();
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_other_layout );
         addClickableRow( layout, "Ownership and contact", OwnershipFragment.class, args );
@@ -729,7 +730,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, "Sunrise and sunset", AlmanacFragment.class, args );
     }
 
-    protected void addAwosRow( LinearLayout layout, String id, String name, String type,
+    private void addAwosRow( LinearLayout layout, String id, String name, String type,
             String freq, String phone, float distance, float bearing,
             final Runnable runnable ) {
         StringBuilder sb = new StringBuilder();
@@ -771,7 +772,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
     }
 
-    protected void addRunwayRow( LinearLayout layout, Cursor c ) {
+    private void addRunwayRow( LinearLayout layout, Cursor c ) {
         String siteNumber = c.getString( c.getColumnIndex( Runways.SITE_NUMBER ) );
         String runwayId = c.getString( c.getColumnIndex( Runways.RUNWAY_ID ) );
         int length = c.getInt( c.getColumnIndex( Runways.RUNWAY_LENGTH ) );
@@ -836,16 +837,16 @@ public final class AirportDetailsFragment extends FragmentBase {
         addClickableRow( layout, row, RunwaysFragment.class, args );
     }
 
-    protected void cacheMetars() {
+    private void cacheMetars() {
         requestMetars( NoaaService.ACTION_CACHE_METAR, false, false );
     }
 
-    protected void requestMetars( boolean force ) {
+    private void requestMetars( boolean force ) {
         boolean cacheOnly = !NetworkUtils.canDownloadData( getActivityBase() );
         requestMetars( NoaaService.ACTION_GET_METAR, force, cacheOnly );
     }
 
-    protected void requestMetars( String action, boolean force, boolean cacheOnly ) {
+    private void requestMetars( String action, boolean force, boolean cacheOnly ) {
         if ( mAwosViews.isEmpty() ) {
             return;
         }
@@ -867,7 +868,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         getActivity().startService( service );
     }
 
-    protected void showWxInfo( Metar metar ) {
+    private void showWxInfo( Metar metar ) {
         if ( metar.stationId == null ) {
             return;
         }
@@ -888,7 +889,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
     }
 
-    protected void showRunwayWindInfo( Metar metar ) {
+    private void showRunwayWindInfo( Metar metar ) {
         for ( TextView tv : mRunwayViews ) {
             Bundle tag = (Bundle) tv.getTag();
             String id = tag.getString( Runways.BASE_END_ID );
@@ -1075,6 +1076,7 @@ public final class AirportDetailsFragment extends FragmentBase {
                         new String[]{ faaCode }, null, null, null, null );
                 cursors[ 16 ] = c;
             } catch ( Exception e ) {
+                e.printStackTrace();
             }
 
             return cursors;

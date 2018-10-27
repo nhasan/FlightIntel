@@ -62,7 +62,7 @@ public final class AircraftOpsFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    protected void showBasedAircraft( Cursor apt ) {
+    private void showBasedAircraft( Cursor apt ) {
         LinearLayout layout = (LinearLayout) findViewById( R.id.based_aircraft_layout );
         int count = apt.getInt( apt.getColumnIndex( Airports.SINGLE_ENGINE_COUNT ) );
         addRow( layout, "Single engine", FormatUtils.formatNumber( count ) );
@@ -80,7 +80,7 @@ public final class AircraftOpsFragment extends FragmentBase {
         addRow( layout, "Military", FormatUtils.formatNumber( count ) );
     }
 
-    protected void showAnnualOps( Cursor apt ) {
+    private void showAnnualOps( Cursor apt ) {
         LinearLayout layout = (LinearLayout) findViewById( R.id.aircraft_ops_layout );
         int count = apt.getInt( apt.getColumnIndex( Airports.ANNUAL_COMMERCIAL_OPS ) );
         addRow( layout, "Commercial", FormatUtils.formatNumber( count ) );

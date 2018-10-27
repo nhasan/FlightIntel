@@ -22,7 +22,6 @@ package com.nadmm.airports.afd;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;

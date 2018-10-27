@@ -89,7 +89,7 @@ public final class RunwaysFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    protected void showCommonInformation( Cursor[] result ) {
+    private void showCommonInformation( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
 
@@ -119,7 +119,7 @@ public final class RunwaysFragment extends FragmentBase {
         addRow( layout, "Edge lights", DataUtils.decodeRunwayEdgeLights( edgeLights ) );
     }
 
-    protected void showBaseEndInformation( Cursor[] result ) {
+    private void showBaseEndInformation( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
 
@@ -268,7 +268,7 @@ public final class RunwaysFragment extends FragmentBase {
         showBaseEndRemarks( result );
     }
 
-    protected void showReciprocalEndInformation( Cursor[] result ) {
+    private void showReciprocalEndInformation( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
 
@@ -416,7 +416,7 @@ public final class RunwaysFragment extends FragmentBase {
         showReciprocalEndRemarks( result );
     }
 
-    protected void showHelipadInformation( Cursor[] result ) {
+    private void showHelipadInformation( Cursor[] result ) {
         // Hide the runway sections
         TextView tv = (TextView) findViewById( R.id.rwy_base_end_label );
         tv.setVisibility( View.GONE );
@@ -427,7 +427,6 @@ public final class RunwaysFragment extends FragmentBase {
         layout = (LinearLayout) findViewById( R.id.rwy_reciprocal_end_details );
         layout.setVisibility( View.GONE );
 
-        Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
 
         String helipadId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
@@ -461,7 +460,7 @@ public final class RunwaysFragment extends FragmentBase {
         showRemarks( rmkLayout, result, helipadId );
     }
 
-    protected void showCommonRemarks( Cursor[] result, String runwayId ) {
+    private void showCommonRemarks( Cursor[] result, String runwayId ) {
         LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_common_remarks );
         int count = 0;
         Cursor rmk = result[ 4 ];
@@ -481,7 +480,7 @@ public final class RunwaysFragment extends FragmentBase {
         }
     }
 
-    protected void showBaseEndRemarks( Cursor[] result ) {
+    private void showBaseEndRemarks( Cursor[] result ) {
         int count = 0;
         Cursor rwy = result[ 1 ];
         LinearLayout layout = (LinearLayout) findViewById(R.id.rwy_base_end_remarks );
@@ -513,7 +512,7 @@ public final class RunwaysFragment extends FragmentBase {
         }
     }
 
-    protected void showReciprocalEndRemarks( Cursor[] result ) {
+    private void showReciprocalEndRemarks( Cursor[] result ) {
         int count = 0;
         Cursor rwy = result[ 1 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_reciprocal_end_remarks );
@@ -546,7 +545,7 @@ public final class RunwaysFragment extends FragmentBase {
         }
     }
 
-    protected int showRemarks( LinearLayout layout, Cursor[] result, String runwayId ) {
+    private int showRemarks( LinearLayout layout, Cursor[] result, String runwayId ) {
         int count = 0;
         Cursor rmk = result[ 4 ];
         if ( rmk.moveToFirst() ) {
@@ -562,7 +561,7 @@ public final class RunwaysFragment extends FragmentBase {
         return count;
     }
 
-    protected int showBaseEndObstructions( LinearLayout layout, Cursor[] result ) {
+    private int showBaseEndObstructions( LinearLayout layout, Cursor[] result ) {
         int count = 0;
         Cursor rwy = result[ 1 ];
         String text;
@@ -607,7 +606,7 @@ public final class RunwaysFragment extends FragmentBase {
         return count;
     }
 
-    protected int showReciprocalEndObstructions( LinearLayout layout, Cursor[] result ) {
+    private int showReciprocalEndObstructions( LinearLayout layout, Cursor[] result ) {
         int count = 0;
         Cursor rwy = result[ 1 ];
         String text;

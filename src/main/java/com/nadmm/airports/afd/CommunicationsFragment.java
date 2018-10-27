@@ -83,7 +83,7 @@ public final class CommunicationsFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    protected void showAirportFrequencies( Cursor[] result ) {
+    private void showAirportFrequencies( Cursor[] result ) {
         String towerRadioCall = "";
         String apchRadioCall = "";
         String depRadioCall = "";
@@ -169,7 +169,7 @@ public final class CommunicationsFragment extends FragmentBase {
         }
     }
 
-    protected void processFrequency( Map<String, ArrayList<Pair<String, String>>> map,
+    private void processFrequency( Map<String, ArrayList<Pair<String, String>>> map,
                                      String towerRadioCall, String apchRadioCall,
                                      String depRadioCall, String freqUse, String freq ) {
         boolean found = false;
@@ -277,7 +277,7 @@ public final class CommunicationsFragment extends FragmentBase {
         }
     }
 
-    protected void showAtcHours( Cursor[] result ) {
+    private void showAtcHours( Cursor[] result ) {
         TreeMap<String, String> hoursMap = new TreeMap<>();
 
         Cursor twr2 = result[ 13 ];
@@ -330,7 +330,7 @@ public final class CommunicationsFragment extends FragmentBase {
         }
     }
 
-    protected void showAtcPhones( Cursor[] result ) {
+    private void showAtcPhones( Cursor[] result ) {
         LinearLayout layout = (LinearLayout) findViewById( R.id.atc_phones_details );
 
         Cursor main = result[ 6 ];
@@ -408,7 +408,7 @@ public final class CommunicationsFragment extends FragmentBase {
         }
     }
 
-    protected void showRemarks( Cursor[] result ) {
+    private void showRemarks( Cursor[] result ) {
         LinearLayout layout = (LinearLayout) findViewById( R.id.comm_remarks_layout );
 
         Cursor twr6 = result[ 3 ];
@@ -446,11 +446,11 @@ public final class CommunicationsFragment extends FragmentBase {
                 +" regional duty officer during non-business hours." );
     }
 
-    protected String formatHours( String hours ) {
+    private String formatHours( String hours ) {
         return hours.equals( "24" )? "24 Hr" : hours;
     }
 
-    protected void addFrequencyToMap( Map<String, ArrayList<Pair<String, String>>> map,
+    private void addFrequencyToMap( Map<String, ArrayList<Pair<String, String>>> map,
             String key, String freq, String extra ) {
         ArrayList<Pair<String, String>> list = map.get( key );
         if ( list == null ) {

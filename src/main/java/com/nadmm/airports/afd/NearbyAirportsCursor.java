@@ -24,7 +24,6 @@ import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.provider.BaseColumns;
-import androidx.core.util.Pair;
 
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.LocationColumns;
@@ -34,6 +33,8 @@ import com.nadmm.airports.utils.GeoUtils;
 
 import java.util.Arrays;
 import java.util.Locale;
+
+import androidx.core.util.Pair;
 
 public class NearbyAirportsCursor extends MatrixCursor {
 

@@ -66,7 +66,7 @@ public final class AttendanceFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    protected void showAttendanceDetails( Cursor[] result ) {
+    private void showAttendanceDetails( Cursor[] result ) {
         Cursor att = result[ 1 ];
         if ( att.moveToFirst() ) {
             LinearLayout layout = (LinearLayout) findViewById( R.id.attendance_content_layout );
@@ -88,7 +88,7 @@ public final class AttendanceFragment extends FragmentBase {
         }
     }
 
-    protected void showAttendanceRemarks( Cursor[] result ) {
+    private void showAttendanceRemarks( Cursor[] result ) {
         Cursor rmk = result[ 2 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.attendance_remark_layout );
         if ( rmk.moveToFirst() ) {

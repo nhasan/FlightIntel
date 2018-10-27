@@ -68,7 +68,7 @@ public final class ServicesFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    protected void showAirportServices( Cursor[] result ) {
+    private void showAirportServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         ArrayList<String> services = new ArrayList<>();
 
@@ -101,7 +101,7 @@ public final class ServicesFragment extends FragmentBase {
         }
     }
 
-    protected void showFaaServices( Cursor[] result ) {
+    private void showFaaServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.faa_services_layout );
         String faaRegion = apt.getString( apt.getColumnIndex( Airports.REGION_CODE ) );
@@ -120,7 +120,7 @@ public final class ServicesFragment extends FragmentBase {
         addRow( layout, "NOTAM D available", notamD.equals( "Y" )? "Yes" : "No" );
     }
 
-    protected void showFssServices( Cursor[] result ) {
+    private void showFssServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.fss_services_layout );
         String fssId = apt.getString( apt.getColumnIndex( Airports.FSS_ID ) );

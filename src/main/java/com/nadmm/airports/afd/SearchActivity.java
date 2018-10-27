@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import androidx.cursoradapter.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
 
@@ -32,6 +31,8 @@ import com.nadmm.airports.FragmentActivityBase;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.providers.AirportsProvider;
+
+import androidx.cursoradapter.widget.CursorAdapter;
 
 public class SearchActivity extends FragmentActivityBase {
 
@@ -115,7 +116,7 @@ public class SearchActivity extends FragmentActivityBase {
             }
         }
 
-        public void setSearchCursor( Cursor c ) {
+        private void setSearchCursor( Cursor c ) {
             mCursor = c;
             if ( getActivity() != null && getView() != null ) {
                 setCursor( mCursor );

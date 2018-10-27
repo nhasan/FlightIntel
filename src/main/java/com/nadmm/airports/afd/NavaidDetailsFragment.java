@@ -80,7 +80,7 @@ public final class NavaidDetailsFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    protected void showNavaidDetails( Cursor[] result ) {
+    private void showNavaidDetails( Cursor[] result ) {
         Cursor nav1 = result[ 0 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_details );
         String navaidClass = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_CLASS ) );
@@ -146,7 +146,7 @@ public final class NavaidDetailsFragment extends FragmentBase {
         }
     }
 
-    protected void showNavaidNotams( Cursor[] result ) {
+    private void showNavaidNotams( Cursor[] result ) {
         Cursor nav1 = result[ 0 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_notams );
         String navaidId = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
@@ -157,7 +157,7 @@ public final class NavaidDetailsFragment extends FragmentBase {
         addClickableRow( layout, "View NOTAMs", intent );
     }
 
-    protected void showNavaidRemarks( Cursor[] result ) {
+    private void showNavaidRemarks( Cursor[] result ) {
         Cursor nav2 = result[ 1 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_remarks );
 

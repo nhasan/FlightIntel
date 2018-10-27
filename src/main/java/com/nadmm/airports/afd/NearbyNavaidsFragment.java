@@ -55,7 +55,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
             LocationColumns.RADIAL,
             LocationColumns.DISTANCE
     };
-    int mRadius;
+    private int mRadius;
 
     private final class NavaidData implements Comparable<NavaidData> {
         private String NAVAID_ID;
@@ -141,7 +141,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    protected void showNavaidDetails( Cursor[] result ) {
+    private void showNavaidDetails( Cursor[] result ) {
         Cursor vor = result[ 1 ];
         if ( vor != null && vor.moveToFirst() ) {
             LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_vor_layout );
@@ -186,7 +186,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
         }
     }
 
-    protected void addDirectionalNavaidRow( LinearLayout table, String navaidId,
+    private void addDirectionalNavaidRow( LinearLayout table, String navaidId,
             String name, String type, String freq, int radial, float distance ) {
         String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
         String label2 = name+" "+type;
@@ -198,7 +198,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
         addClickableRow( table, label1, freq, label2, value2, NavaidDetailsFragment.class, args );
     }
 
-    protected void addNonDirectionalNavaidRow( LinearLayout table, String navaidId,
+    private void addNonDirectionalNavaidRow( LinearLayout table, String navaidId,
             String name, String type, String freq, int heading, float distance ) {
         String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
         String label2 = name+" "+type;

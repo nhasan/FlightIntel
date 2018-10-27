@@ -69,7 +69,7 @@ public final class OwnershipFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    protected void showOwnershipType( Cursor[] result ) {
+    private void showOwnershipType( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_ownership_type_layout );
         String ownership = DataUtils.decodeOwnershipType(
@@ -79,7 +79,7 @@ public final class OwnershipFragment extends FragmentBase {
         addSimpleRow( layout, ownership+" / "+use );
     }
 
-    protected void showOwnerInfo( Cursor[] result ) {
+    private void showOwnerInfo( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         String text;
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_owner_layout );
@@ -99,7 +99,7 @@ public final class OwnershipFragment extends FragmentBase {
         }
     }
 
-    protected void showManagerInfo( Cursor[] result ) {
+    private void showManagerInfo( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         String text;
         LinearLayout layout = (LinearLayout) findViewById( R.id.detail_manager_layout );
@@ -120,7 +120,7 @@ public final class OwnershipFragment extends FragmentBase {
         }
     }
 
-    protected void showRemarks( Cursor[] result ) {
+    private void showRemarks( Cursor[] result ) {
         Cursor rmk = result[ 1 ];
         if ( !rmk.moveToFirst() ) {
             return;
