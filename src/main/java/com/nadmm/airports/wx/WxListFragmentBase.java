@@ -100,7 +100,7 @@ public abstract class WxListFragmentBase extends LocationListFragmentBase {
         requestMetars( NoaaService.ACTION_GET_METAR, false, true );
     }
 
-    protected void requestMetars( String action, boolean force, boolean showAnim ) {
+    private void requestMetars( String action, boolean force, boolean showAnim ) {
         ActivityBase activity = getActivityBase();
 
         if ( mStationWx.isEmpty() ) {

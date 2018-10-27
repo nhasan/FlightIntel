@@ -177,11 +177,11 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
         setProgressBarVisible( false );
     }
 
-    protected String getMapCode( View v ) {
+    private String getMapCode( View v ) {
         return (String) v.getTag();
     }
 
-    protected String getDisplayText( String code ) {
+    private String getDisplayText( String code ) {
         for ( int i = 0; i < mWxMapCodes.length; ++i ) {
             if ( code.equals( mWxMapCodes[ i ] ) ) {
                 return mWxMapNames[ i ];

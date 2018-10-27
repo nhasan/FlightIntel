@@ -64,20 +64,19 @@ public class AirSigmetParser {
 
         private StringBuilder text = new StringBuilder();
 
-        public AirSigmetHandler( AirSigmet airSigmet ) {
+        private AirSigmetHandler( AirSigmet airSigmet ) {
             this.airSigmet = airSigmet;
             now = new Date();
         }
 
         @Override
-        public void characters( char[] ch, int start, int length )
-                throws SAXException {
+        public void characters( char[] ch, int start, int length ) {
             text.append( ch, start, length );
         }
 
         @Override
         public void startElement( String uri, String localName, String qName,
-                Attributes attributes ) throws SAXException {
+                Attributes attributes ) {
             String attr;
             if ( qName.equalsIgnoreCase( "AIRSIGMET" ) ) {
                 entry = new AirSigmetEntry();
@@ -94,7 +93,7 @@ public class AirSigmetParser {
                 entry.hazardType = attributes.getValue( "type" );
                 entry.hazardSeverity = attributes.getValue( "severity" );
             } else if ( qName.equalsIgnoreCase( "area" ) ) {
-                entry.points = new ArrayList<AirSigmetPoint>();
+                entry.points = new ArrayList<>();
             } else if ( qName.equalsIgnoreCase( "point" ) ) {
                 point = new AirSigmetPoint();
             } else {
@@ -103,8 +102,7 @@ public class AirSigmetParser {
         }
 
         @Override
-        public void endElement( String uri, String localName, String qName )
-                throws SAXException {
+        public void endElement( String uri, String localName, String qName ) {
             if ( qName.equalsIgnoreCase( "raw_text" ) ) {
                 entry.rawText = text.toString();
             } else if ( qName.equalsIgnoreCase( "valid_time_from" ) ) {

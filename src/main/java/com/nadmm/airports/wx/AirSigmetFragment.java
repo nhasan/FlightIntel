@@ -67,14 +67,10 @@ public class AirSigmetFragment extends WxFragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.airsigmet_detail_view, container, false );
-        Button btnGraphic = (Button) view.findViewById( R.id.btnViewGraphic );
-        btnGraphic.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                Intent intent = new Intent( getActivity(), AirSigmetMapActivity.class );
-                startActivity( intent );
-            }
+        Button btnGraphic = view.findViewById( R.id.btnViewGraphic );
+        btnGraphic.setOnClickListener( v -> {
+            Intent intent = new Intent( getActivity(), AirSigmetMapActivity.class );
+            startActivity( intent );
         } );
 
         return createContentView( view );
@@ -155,7 +151,7 @@ public class AirSigmetFragment extends WxFragmentBase {
 
     }
 
-    protected void requestAirSigmetText( boolean refresh ) {
+    private void requestAirSigmetText( boolean refresh ) {
         double[] box = GeoUtils.getBoundingBoxDegrees( mLocation, AIRSIGMET_RADIUS_NM );
         Intent service = new Intent( getActivity(), AirSigmetService.class );
         service.setAction( mAction );
@@ -167,19 +163,18 @@ public class AirSigmetFragment extends WxFragmentBase {
         getActivity().startService( service );
     }
 
-    protected void showAirSigmetText( Intent intent ) {
+    private void showAirSigmetText( Intent intent ) {
         if ( getActivity() == null ) {
             return;
         }
-
-        AirSigmet airSigmet = (AirSigmet) intent.getSerializableExtra(NoaaService.RESULT );
 
         LinearLayout layout = (LinearLayout) findViewById( R.id.airsigmet_entries_layout );
         if ( layout == null ) {
             return;
         }
-
         layout.removeAllViews();
+
+        AirSigmet airSigmet = (AirSigmet) intent.getSerializableExtra(NoaaService.RESULT );
 
         TextView tv = (TextView) findViewById( R.id.airsigmet_title_msg );
         if ( !airSigmet.entries.isEmpty() ) {
@@ -203,16 +198,16 @@ public class AirSigmetFragment extends WxFragmentBase {
         setFragmentContentShown( true );
     }
 
-    protected void showAirSigmetEntry( LinearLayout layout, AirSigmetEntry entry ) {
+    private void showAirSigmetEntry( LinearLayout layout, AirSigmetEntry entry ) {
         RelativeLayout item = (RelativeLayout) inflate( R.layout.airsigmet_detail_item );
-        TextView tv = (TextView) item.findViewById( R.id.airsigmet_type );
+        TextView tv = item.findViewById( R.id.airsigmet_type );
         tv.setText( entry.type );
-        tv = (TextView) item.findViewById( R.id.wx_raw_airsigmet );
+        tv = item.findViewById( R.id.wx_raw_airsigmet );
         tv.setText( entry.rawText );
-        tv = (TextView) item.findViewById( R.id.airsigmet_time );
+        tv = item.findViewById( R.id.airsigmet_time );
         tv.setText( TimeUtils.formatDateRange( getActivityBase(), entry.fromTime, entry.toTime ) );
 
-        LinearLayout details = (LinearLayout) item.findViewById( R.id.airsigmet_details );
+        LinearLayout details = item.findViewById( R.id.airsigmet_details );
 
         if ( entry.hazardType != null && entry.hazardType.length() > 0 ) {
             addRow( details, "Type", entry.hazardType );

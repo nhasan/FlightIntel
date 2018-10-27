@@ -66,16 +66,16 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
 
     private void setViewHolder( View view ) {
         ViewHolder holder = new ViewHolder();
-        holder.stationName = (TextView) view.findViewById( R.id.wx_station_name );
-        holder.stationId = (TextView) view.findViewById( R.id.wx_station_id );
-        holder.stationInfo = (TextView) view.findViewById( R.id.wx_station_info );
-        holder.stationInfo2 = (TextView) view.findViewById( R.id.wx_station_info2 );
-        holder.stationFreq = (TextView) view.findViewById( R.id.wx_station_freq );
-        holder.stationPhone = (TextView) view.findViewById( R.id.wx_station_phone );
-        holder.stationDistance = (TextView) view.findViewById( R.id.wx_station_distance );
-        holder.stationWx = (TextView) view.findViewById( R.id.wx_station_wx );
-        holder.stationWx2 = (TextView) view.findViewById( R.id.wx_station_wx2 );
-        holder.reportAge = (TextView) view.findViewById( R.id.wx_report_age );
+        holder.stationName = view.findViewById( R.id.wx_station_name );
+        holder.stationId = view.findViewById( R.id.wx_station_id );
+        holder.stationInfo = view.findViewById( R.id.wx_station_info );
+        holder.stationInfo2 = view.findViewById( R.id.wx_station_info2 );
+        holder.stationFreq = view.findViewById( R.id.wx_station_freq );
+        holder.stationPhone = view.findViewById( R.id.wx_station_phone );
+        holder.stationDistance = view.findViewById( R.id.wx_station_distance );
+        holder.stationWx = view.findViewById( R.id.wx_station_wx );
+        holder.stationWx2 = view.findViewById( R.id.wx_station_wx2 );
+        holder.reportAge = view.findViewById( R.id.wx_report_age );
         view.setTag( R.id.TAG_VIEW_HOLDER, holder );
     }
 
