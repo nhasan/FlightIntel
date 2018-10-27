@@ -22,7 +22,6 @@ package com.nadmm.airports.utils;
 
 import android.content.Context;
 import android.database.Cursor;
-import androidx.cursoradapter.widget.ResourceCursorAdapter;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,8 +29,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import androidx.cursoradapter.widget.ResourceCursorAdapter;
 
 
 public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
@@ -55,15 +53,6 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
         }
     }
 
-    /**
-     * Id of the view that represents the section header in list item layout
-     */
-    private int mSectionId;
-    /**
-     * Map to cache the section names for each row in the cursor
-     */
-    private HashMap<Integer, String> mSectionNames;
-
     public SectionedCursorAdapter( Context context, int layout, Cursor c, int sectionResourceId ) {
         super( context, layout, c, 0 );
         mSectionResourceId = sectionResourceId;
@@ -74,7 +63,6 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
     private void setSections() {
         Cursor c = getCursor();
         if ( c.moveToFirst() ) {
-            ArrayList<Section> sections = new ArrayList<Section>();
             String last = "";
             int offset = 0; // offset positions for the headers we're adding
             do {
@@ -118,7 +106,7 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
         return sectionedPosition + offset;
     }
 
-    public boolean isSectionHeaderPosition( int position ) {
+    private boolean isSectionHeaderPosition( int position ) {
         return mSections.get( position ) != null;
     }
 
@@ -185,7 +173,6 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
     @Override
     protected void onContentChanged() {
         super.onContentChanged();
-        Cursor c = getCursor();
         setSections();
     }
 
