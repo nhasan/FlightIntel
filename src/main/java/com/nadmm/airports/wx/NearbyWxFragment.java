@@ -30,13 +30,13 @@ public class NearbyWxFragment extends WxListFragmentBase {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setEmptyText( "No wx stations found nearby." );
     }
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
+
+        setEmptyText( "No wx stations found nearby." );
     }
 
     @Override

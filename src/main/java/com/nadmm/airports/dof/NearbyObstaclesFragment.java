@@ -39,14 +39,13 @@ public class NearbyObstaclesFragment extends LocationListFragmentBase {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setEmptyText( "No obstacles found nearby." );
     }
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        setEmptyText( "No obstacles found nearby." );
         setActionBarTitle( "Nearby Obstacles", "" );
         setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
     }

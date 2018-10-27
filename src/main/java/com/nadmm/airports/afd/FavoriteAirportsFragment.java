@@ -41,8 +41,6 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setEmptyText( "No favorite airports selected." );
     }
 
     @Override
@@ -55,6 +53,8 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
+
+        setEmptyText( "No favorite airports selected." );
     }
 
     @Override

@@ -34,8 +34,6 @@ public class FavoriteWxFragment extends WxListFragmentBase {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setEmptyText( "No favorite wx stations selected." );
     }
 
     @Override
@@ -48,6 +46,8 @@ public class FavoriteWxFragment extends WxListFragmentBase {
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
+
+        setEmptyText( "No favorite wx stations selected." );
     }
 
     @Override

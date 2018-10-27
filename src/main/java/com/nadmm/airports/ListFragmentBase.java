@@ -37,7 +37,6 @@ public abstract class ListFragmentBase extends FragmentBase {
     private static final String LISTVIEW_STATE = "LISTVIEW_STATE";
 
     private ListView mListView;
-    private String mEmptyText;
     private Parcelable mListViewState;
 
     @Override
@@ -115,28 +114,31 @@ public abstract class ListFragmentBase extends FragmentBase {
     public void setAdapter( ListAdapter adapter ) {
         mListView.setAdapter( adapter );
 
-        int count = adapter == null? 0 : adapter.getCount();
-        setListShown( count > 0 );
+        if ( adapter != null ) {
+            setListShown( adapter.getCount() > 0 );
 
-        if ( mListViewState != null ) {
-            mListView.onRestoreInstanceState( mListViewState );
-            mListViewState = null;
+            if ( mListViewState != null ) {
+                mListView.onRestoreInstanceState( mListViewState );
+                mListViewState = null;
+            }
+        } else {
+            setListShown( false );
         }
 
         setFragmentContentShown( true );
     }
 
     public void setEmptyText( String text ) {
-        mEmptyText = text;
+        TextView tv = (TextView) findViewById( android.R.id.empty );
+        tv.setText( text );
     }
 
-    public void setListShown( boolean show ) {
+    protected void setListShown( boolean show ) {
         TextView tv = (TextView) findViewById( android.R.id.empty );
         if ( show ) {
             tv.setVisibility( View.GONE );
             mListView.setVisibility( View.VISIBLE );
         } else {
-            tv.setText( mEmptyText );
             tv.setVisibility( View.VISIBLE );
             mListView.setVisibility( View.GONE );
         }

@@ -93,21 +93,17 @@ public class BrowseAirportsFragment extends ListFragmentBase {
         if ( view != null ) {
             view.setFocusableInTouchMode( true );
             view.requestFocus();
-            view.setOnKeyListener( new View.OnKeyListener() {
-                @Override
-                public boolean onKey( View v, int keyCode, KeyEvent event ) {
-                    if ( mMode == BROWSE_AIRPORTS_MODE
-                            && keyCode == KeyEvent.KEYCODE_BACK
-                            && event.getAction() == KeyEvent.ACTION_UP ) {
-                        // Intercept back key to go back to state mode
-                        mMode = BROWSE_STATE_MODE;
-                        setListShown( false );
-                        getListView().setAdapter( null );
-                        setBackgroundTask( new BrowseStateTask() ).execute();
-                        return true;
-                    }
-                    return false;
+            view.setOnKeyListener( ( v, keyCode, event ) -> {
+                if ( mMode == BROWSE_AIRPORTS_MODE
+                        && keyCode == KeyEvent.KEYCODE_BACK
+                        && event.getAction() == KeyEvent.ACTION_UP ) {
+                    // Intercept back key to go back to state mode
+                    mMode = BROWSE_STATE_MODE;
+                    setAdapter( null );
+                    setBackgroundTask( new BrowseStateTask() ).execute();
+                    return true;
                 }
+                return false;
             } );
         }
     }
@@ -126,7 +122,7 @@ public class BrowseAirportsFragment extends ListFragmentBase {
     @Override
     protected CursorAdapter newListAdapter( Context context, Cursor c ) {
         if ( mMode == BROWSE_STATE_MODE ) {
-            mAdapter = new StateCursorAdapter( getActivity(), R.layout.browse_all_item, c );
+            mAdapter = new StateCursorAdapter( context, R.layout.browse_all_item, c );
         } else {
             mAdapter = new CityCursorAdapter( getActivity(), c );
         }
@@ -142,8 +138,7 @@ public class BrowseAirportsFragment extends ListFragmentBase {
         if ( mMode == BROWSE_STATE_MODE ) {
             mMode = BROWSE_AIRPORTS_MODE;
             mListState = getListView().onSaveInstanceState();
-            setListShown( false );
-            getListView().setAdapter( null );
+            setAdapter( null );
             mStateCode = c.getString( c.getColumnIndex( DatabaseManager.Airports.ASSOC_STATE ) );
             mStateName = c.getString( c.getColumnIndex( DatabaseManager.States.STATE_NAME ) );
             setBackgroundTask( new BrowseAirportsTask() ).execute( mStateCode, mStateName );
@@ -166,7 +161,7 @@ public class BrowseAirportsFragment extends ListFragmentBase {
             // Browsing all states
             String state_name = c.getString( c.getColumnIndex( DatabaseManager.States.STATE_NAME ) );
             int count = c.getInt( c.getColumnIndex( BaseColumns._COUNT ) );
-            TextView tv = (TextView) view.findViewById( R.id.browse_state_name );
+            TextView tv = view.findViewById( R.id.browse_state_name );
             tv.setText( String.format( Locale.US, "%s (%d)", state_name, count ) );
         }
 

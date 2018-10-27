@@ -40,13 +40,13 @@ public class NearbyAirportsFragment extends LocationListFragmentBase {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        setEmptyText( "No airports found nearby." );
     }
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
+
+        setEmptyText( "No airports found nearby." );
 
         if ( !isLocationUpdateEnabled() ) {
             setActionBarTitle( "Nearby Airports" );
