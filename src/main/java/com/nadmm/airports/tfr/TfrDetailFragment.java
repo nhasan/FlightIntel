@@ -34,6 +34,8 @@ import com.nadmm.airports.R;
 import com.nadmm.airports.tfr.TfrList.Tfr;
 import com.nadmm.airports.utils.TimeUtils;
 
+import java.util.Locale;
+
 public class TfrDetailFragment extends FragmentBase {
 
     private Tfr mTfr;
@@ -49,15 +51,11 @@ public class TfrDetailFragment extends FragmentBase {
     public void onViewCreated( View view, Bundle savedInstanceState ) {
         super.onViewCreated( view, savedInstanceState );
 
-        Button btnGraphic = (Button) view.findViewById( R.id.btnViewGraphic );
-        btnGraphic.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                Intent intent = new Intent( getActivity(), TfrImageActivity.class );
-                intent.putExtra( TfrListActivity.EXTRA_TFR, mTfr );
-                startActivity( intent );
-            }
+        Button btnGraphic = view.findViewById( R.id.btnViewGraphic );
+        btnGraphic.setOnClickListener( v -> {
+            Intent intent = new Intent( getActivity(), TfrImageActivity.class );
+            intent.putExtra( TfrListActivity.EXTRA_TFR, mTfr );
+            startActivity( intent );
         } );
 
         Bundle args = getArguments();
@@ -72,7 +70,7 @@ public class TfrDetailFragment extends FragmentBase {
         addRow( layout, "Time", mTfr.formatTimeRange( getActivityBase() ) );
         addRow( layout, "Altitudes", mTfr.formatAltitudeRange() );
 
-        layout = (LinearLayout) view.findViewById( R.id.tfr_time_layout );
+        layout = view.findViewById( R.id.tfr_time_layout );
         if ( mTfr.createTime < Long.MAX_VALUE ) {
             addRow( layout, "Created",
                     TimeUtils.formatDateTimeYear( getActivityBase(), mTfr.createTime ) );
@@ -82,13 +80,14 @@ public class TfrDetailFragment extends FragmentBase {
                     TimeUtils.formatDateTimeYear( getActivityBase(), mTfr.modifyTime ) );
         }
 
-        layout = (LinearLayout) view.findViewById( R.id.tfr_text_layout );
+        layout = view.findViewById( R.id.tfr_text_layout );
         addRow( layout, mTfr.text.replace( "\\n", "\n" ) );
 
-        TextView tv = (TextView) view.findViewById( R.id.tfr_warning_text );
-        tv.setText( "Depicted TFR data may not be a complete listing. Pilots should not use "
+        TextView tv = view.findViewById( R.id.tfr_warning_text );
+        tv.setText( String.format( Locale.US,
+                "Depicted TFR data may not be a complete listing. Pilots should not use "
                 + "the information for flight planning purposes. For the latest information, "
-                + "call your local Flight Service Station at 1-800-WX-BRIEF." );
+                + "call your local Flight Service Station at 1-800-WX-BRIEF." ) );
     }
 
     @Override
