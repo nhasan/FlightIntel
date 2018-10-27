@@ -19,9 +19,8 @@
 
 package com.nadmm.airports;
 
-import android.Manifest;
+import android.Manifest.permission;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
@@ -29,24 +28,23 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import android.view.View;
 
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.material.snackbar.Snackbar;
 import com.nadmm.airports.data.DatabaseManager.LocationColumns;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -55,7 +53,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
 
     private boolean mLocationUpdatesEnabled = false;
     private boolean mRequestingLocationUpdates = false;
-    private boolean mSettingsRequested = false;
     private boolean mPermissionDenied = false;
     private Location mLastLocation;
     private FusedLocationProviderClient mFusedLocationClient;
@@ -65,7 +62,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
     private LocationSettingsRequest mLocationSettingsRequest;
 
     private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
-    private static final int REQUEST_CHECK_SETTINGS = 2;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -113,30 +109,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
         }
     }
 
-    protected boolean checkPermission() {
-        return ContextCompat.checkSelfPermission( getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION ) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    protected void requestPermission() {
-        boolean shouldProvideRationale =
-                ActivityCompat.shouldShowRequestPermissionRationale( getActivity(),
-                        Manifest.permission.ACCESS_FINE_LOCATION );
-        if ( shouldProvideRationale ) {
-            showSnackbar( "FlightIntel needs access to device's location to show nearby facilities.",
-                    view -> requestPermissions( new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
-                            PERMISSION_REQUEST_FINE_LOCATION ) );
-        } else if ( !mPermissionDenied ) {
-            requestPermissions( new String[]{ Manifest.permission.ACCESS_FINE_LOCATION },
-                    PERMISSION_REQUEST_FINE_LOCATION );
-        } else {
-            // Set the flag so we do not ask for permission repeatedly during the
-            // fragment lifetime
-            showSnackbar( "Please enable location permission in the application details settings.",
-                    v -> showApplicationSettings() );
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult( int requestCode, @NonNull String[] permissions,
                                             @NonNull int[] grantResults ) {
@@ -144,8 +116,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
             if ( grantResults.length <= 0 ) {
                 // If user interaction gets interrupted, permission request is cancelled and
                 // we get an empty array.
-            }
-            else if ( grantResults[ 0 ] == PackageManager.PERMISSION_GRANTED ) {
+            } else if ( grantResults[ 0 ] == PackageManager.PERMISSION_GRANTED ) {
                 startLocationUpdates();
             } else {
                 // Set the flag so we do not ask for permission repeatedly during the
@@ -167,7 +138,6 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
         // This is not getting called but it should.
         if ( requestCode ==PERMISSION_REQUEST_FINE_LOCATION ) {
             if ( resultCode == RESULT_OK)  {
-
                 // Nothing to do. startLocationupdates() gets called in onResume again.
             } else if ( resultCode == RESULT_CANCELED ) {
                 mLocationUpdatesEnabled = false;
@@ -177,7 +147,31 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
         }
     }
 
-    protected void setupFusedLocationProvider() {
+    private boolean checkPermission() {
+        return ContextCompat.checkSelfPermission( getActivity(),
+                permission.ACCESS_FINE_LOCATION ) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestPermission() {
+        boolean shouldProvideRationale =
+                ActivityCompat.shouldShowRequestPermissionRationale( getActivity(),
+                        permission.ACCESS_FINE_LOCATION );
+        if ( shouldProvideRationale ) {
+            showSnackbar( "FlightIntel needs access to device's location to show nearby facilities.",
+                    view -> requestPermissions( new String[]{ permission.ACCESS_FINE_LOCATION },
+                            PERMISSION_REQUEST_FINE_LOCATION ) );
+        } else if ( !mPermissionDenied ) {
+            requestPermissions( new String[]{ permission.ACCESS_FINE_LOCATION },
+                    PERMISSION_REQUEST_FINE_LOCATION );
+        } else {
+            // Set the flag so we do not ask for permission repeatedly during the
+            // fragment lifetime
+            showSnackbar( "Please enable location permission in the application details settings.",
+                    v -> showApplicationSettings() );
+        }
+    }
+
+    private void setupFusedLocationProvider() {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient( getActivity() );
         mSettingsClient = LocationServices.getSettingsClient( getActivity() );
 
@@ -186,7 +180,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
         buildLocationSettingsRequest();
     }
 
-    protected void makeLocationRequest( boolean useGps ) {
+    private void makeLocationRequest( boolean useGps ) {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval( 7000 );
         mLocationRequest.setFastestInterval( 3000 );
@@ -195,7 +189,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
                 LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY );
     }
 
-    protected void makeLocationCallback() {
+    private void makeLocationCallback() {
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult( LocationResult locationResult ) {
@@ -216,44 +210,19 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
         mLocationSettingsRequest = builder.build();
     }
 
-    protected void startLocationUpdates() {
+    private void startLocationUpdates() {
         // First check if location is enabled in the settings
         mSettingsClient.checkLocationSettings( mLocationSettingsRequest )
 
         // If location is enabled then register for location updates
         .addOnSuccessListener( getActivity(), locationSettingsResponse -> {
             requestLocationUpdates();
-            mSettingsRequested = false;
         } )
 
         // If location is not enabled then prompt the user to enable by showing system dialog
         .addOnFailureListener( getActivity(), e -> {
-            if ( e instanceof ResolvableApiException ) {
-                ResolvableApiException resolvable = (ResolvableApiException) e;
-                int statusCode = resolvable.getStatusCode();
-                switch ( statusCode ) {
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        if ( !mSettingsRequested ) {
-                            try {
-                                // Show the dialog by calling startResolutionForResult(),
-                                // and check the result in onActivityResult().
-                                mSettingsRequested = true;
-                                startIntentSenderForResult( resolvable.getResolution().getIntentSender(),
-                                        REQUEST_CHECK_SETTINGS,
-                                        null, 0, 0, 0, null );
-                            } catch ( IntentSender.SendIntentException sendEx ) {
-                            }
-                        } else {
-                            showSnackbar( "Please enable location in settings to see nearby facilities.",
-                                    v -> showLocationSettings() );
-                        }
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        showSnackbar( "Please enable location in settings to see nearby facilities.",
-                                v -> showLocationSettings() );
-                        break;
-                }
-            }
+            showSnackbar( "Please enable location in settings to see nearby facilities.",
+                    v -> showLocationSettings() );
 
             setEmptyText( "Unable to show nearby facilities.\n"
                     + "Location is not enabled on this device." );
@@ -262,12 +231,12 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
         } );
     }
 
-    protected void stopLocationUpdates() {
+    private void stopLocationUpdates() {
         mFusedLocationClient.removeLocationUpdates( mLocationCallback )
             .addOnCompleteListener( getActivity(), task -> mRequestingLocationUpdates = false );
     }
 
-    protected void requestLocationUpdates() {
+    private void requestLocationUpdates() {
         if ( checkPermission() ) {
             // Get the last location as the starting point
             mFusedLocationClient.getLastLocation()
@@ -275,18 +244,10 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
 
             mFusedLocationClient.requestLocationUpdates( mLocationRequest, mLocationCallback, null );
             mRequestingLocationUpdates = true;
-        } else {
-            // Should never come here as requestLocationUpdates() is only called
-            // if location permission has been granted.
         }
     }
 
-    protected boolean isLocationUpdateEnabled()
-    {
-        return mLocationUpdatesEnabled;
-    }
-
-    protected void updateLocation( Location location ) {
+    private void updateLocation( Location location ) {
         if ( location != null ) {
             if ( mLastLocation == null || location.distanceTo( mLastLocation ) > 50 ) {
                 // Preserve battery. Only update the list of we have moved more than 50 meters.
@@ -323,6 +284,11 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
 
     protected Location getLastLocation() {
         return mLastLocation;
+    }
+
+    protected boolean isLocationUpdateEnabled()
+    {
+        return mLocationUpdatesEnabled;
     }
 
     protected abstract LocationTask newLocationTask();
