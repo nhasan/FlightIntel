@@ -23,7 +23,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import androidx.cursoradapter.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
 
@@ -31,6 +30,8 @@ import com.nadmm.airports.LocationListFragmentBase;
 import com.nadmm.airports.data.DatabaseManager;
 
 import java.util.Locale;
+
+import androidx.cursoradapter.widget.CursorAdapter;
 
 public class NearbyObstaclesFragment extends LocationListFragmentBase {
 

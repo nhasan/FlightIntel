@@ -21,7 +21,6 @@ package com.nadmm.airports.dof;
 
 import android.content.Context;
 import android.database.Cursor;
-import androidx.cursoradapter.widget.ResourceCursorAdapter;
 import android.view.View;
 import android.widget.TextView;
 
@@ -32,6 +31,8 @@ import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 
 import java.util.Locale;
+
+import androidx.cursoradapter.widget.ResourceCursorAdapter;
 
 public class DofCursorAdapter extends ResourceCursorAdapter {
 
@@ -92,20 +93,28 @@ public class DofCursorAdapter extends ResourceCursorAdapter {
     private String decodeMarking( String type ) {
         String marking;
 
-        if ( type.equals( "P" ) ) {
-            marking = "Orange/White paint marker";
-        } else if ( type.equals( "W" ) ) {
-            marking = "White paint marker";
-        } else if ( type.equals( "M" ) ) {
-            marking = "Marked";
-        } else if ( type.equals( "F" ) ) {
-            marking = "Flag marker";
-        } else if ( type.equals( "S" ) ) {
-            marking = "Spherical marker";
-        } else if ( type.equals( "N" ) ) {
-            marking = "Not marked";
-        } else {
-            marking = "Unknown marking";
+        switch ( type ) {
+            case "P":
+                marking = "Orange/White paint marker";
+                break;
+            case "W":
+                marking = "White paint marker";
+                break;
+            case "M":
+                marking = "Marked";
+                break;
+            case "F":
+                marking = "Flag marker";
+                break;
+            case "S":
+                marking = "Spherical marker";
+                break;
+            case "N":
+                marking = "Not marked";
+                break;
+            default:
+                marking = "Unknown marking";
+                break;
         }
 
         return marking;
@@ -114,28 +123,40 @@ public class DofCursorAdapter extends ResourceCursorAdapter {
     private String decodeLighting( String type ) {
         String lighting;
 
-        if ( type.equals( "R" ) ) {
-            lighting = "Red lighting";
-        } else if ( type.equals( "D" ) ) {
-            lighting = "Medium intensity White Strobe & Red lighting";
-        } else if ( type.equals( "H" ) ) {
-            lighting = "High intensity White Strobe & Red lighting";
-        } else if ( type.equals( "M" ) ) {
-            lighting = "Medium intensity White Strobe lighting";
-        } else if ( type.equals( "S" ) ) {
-            lighting = "High intensity White Strobe lighting";
-        } else if ( type.equals( "F" ) ) {
-            lighting = "Flood lighting";
-        } else if ( type.equals( "C" ) ) {
-            lighting = "Dual medium catenary lighting";
-        } else if ( type.equals( "W" ) ) {
-            lighting = "Synchronized Red lighting";
-        } else if ( type.equals( "L" ) ) {
-            lighting = "Lighted";
-        } else if ( type.equals( "N" ) ) {
-            lighting = "Not lighted";
-        } else {
-            lighting = "Unknown lighting";
+        switch ( type ) {
+            case "R":
+                lighting = "Red lighting";
+                break;
+            case "D":
+                lighting = "Medium intensity White Strobe & Red lighting";
+                break;
+            case "H":
+                lighting = "High intensity White Strobe & Red lighting";
+                break;
+            case "M":
+                lighting = "Medium intensity White Strobe lighting";
+                break;
+            case "S":
+                lighting = "High intensity White Strobe lighting";
+                break;
+            case "F":
+                lighting = "Flood lighting";
+                break;
+            case "C":
+                lighting = "Dual medium catenary lighting";
+                break;
+            case "W":
+                lighting = "Synchronized Red lighting";
+                break;
+            case "L":
+                lighting = "Lighted";
+                break;
+            case "N":
+                lighting = "Not lighted";
+                break;
+            default:
+                lighting = "Unknown lighting";
+                break;
         }
 
         return lighting;
