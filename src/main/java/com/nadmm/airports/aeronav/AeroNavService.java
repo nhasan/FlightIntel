@@ -22,7 +22,6 @@ package com.nadmm.airports.aeronav;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.nadmm.airports.utils.FileUtils;
 import com.nadmm.airports.utils.NetworkUtils;
@@ -30,6 +29,8 @@ import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 import java.io.File;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public abstract class AeroNavService extends IntentService {
 

@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -43,6 +42,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class NotamFragmentBase extends FragmentBase {
 
@@ -80,7 +81,7 @@ public class NotamFragmentBase extends FragmentBase {
         super.onPause();
     }
 
-    protected void handleNotamBroadcast( Intent intent ) {
+    private void handleNotamBroadcast( Intent intent ) {
         String action = intent.getAction();
         if ( action.equals( NotamService.ACTION_GET_NOTAM ) ) {
             String path = intent.getStringExtra( NotamService.NOTAM_PATH );
@@ -98,7 +99,7 @@ public class NotamFragmentBase extends FragmentBase {
         getActivity().startService( service );
     }
 
-    protected void showNotams( File notamFile ) {
+    private void showNotams( File notamFile ) {
         LinearLayout content = (LinearLayout) findViewById( R.id.notam_content_layout );
 
         HashMap<String, ArrayList<String>> notams = parseNotams( notamFile );
@@ -166,7 +167,8 @@ public class NotamFragmentBase extends FragmentBase {
                     notamIDs.add( notamID );
                 }
             }
-        } catch ( IOException ignored ) {
+        } catch ( IOException e ) {
+            e.printStackTrace();
         } finally {
             try {
                 if ( in != null ) {

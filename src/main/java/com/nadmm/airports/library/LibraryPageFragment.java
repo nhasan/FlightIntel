@@ -284,7 +284,7 @@ public class LibraryPageFragment extends FragmentBase {
         return row;
     }
 
-    protected void handleBook( Intent intent ) {
+    private void handleBook( Intent intent ) {
         String pdfName = intent.getStringExtra( LibraryService.BOOK_NAME );
         View row = mBookRowMap.get( pdfName );
         if ( row != null ) {
@@ -297,12 +297,12 @@ public class LibraryPageFragment extends FragmentBase {
                 unregisterForContextMenu( row );
             }
             // Hide the progressbar
-            ProgressBar progressBar = (ProgressBar) row.findViewById( R.id.progress );
+            ProgressBar progressBar = row.findViewById( R.id.progress );
             progressBar.setVisibility( View.GONE );
         }
     }
 
-    protected void handleProgress( Intent intent ) {
+    private void handleProgress( Intent intent ) {
         String name = intent.getStringExtra( NetworkUtils.CONTENT_NAME );
         View row = mBookRowMap.get( name );
         if ( row != null ) {
@@ -320,7 +320,7 @@ public class LibraryPageFragment extends FragmentBase {
         }
     }
 
-    protected void showStatus( View row, boolean isAvailable ) {
+    private void showStatus( View row, boolean isAvailable ) {
         TextView tv = row.findViewById( R.id.book_desc );
         if ( isAvailable ) {
             UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box );
@@ -329,26 +329,26 @@ public class LibraryPageFragment extends FragmentBase {
         }
     }
 
-    protected void getBook( String name ) {
+    private void getBook( String name ) {
         Intent service = makeServiceIntent( LibraryService.ACTION_GET_BOOK );
         service.putExtra( LibraryService.BOOK_NAME, name );
         getActivity().startService( service );
     }
 
-    protected void deleteBook( String name ) {
+    private void deleteBook( String name ) {
         Intent service = makeServiceIntent( LibraryService.ACTION_DELETE_BOOK );
         service.putExtra( LibraryService.BOOK_NAME, name );
         getActivity().startService( service );
     }
 
-    protected void checkBooks() {
+    private void checkBooks() {
         Intent service = makeServiceIntent( LibraryService.ACTION_CHECK_BOOKS );
         ArrayList<String> books = new ArrayList<>( mBookRowMap.keySet() );
         service.putExtra( LibraryService.BOOK_NAMES, books );
         getActivity().startService( service );
     }
 
-    protected Intent makeServiceIntent( String action ) {
+    private Intent makeServiceIntent( String action ) {
         Intent service = new Intent( getActivity(), LibraryService.class );
         service.setAction( action );
         service.putExtra( LibraryService.CATEGORY, mCategory );

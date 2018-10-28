@@ -27,7 +27,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.nadmm.airports.R;
 import com.nadmm.airports.TabPagerActivityBase;
@@ -36,6 +35,8 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SystemUtils;
 
 import java.util.HashMap;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class LibraryActivity extends TabPagerActivityBase {
 

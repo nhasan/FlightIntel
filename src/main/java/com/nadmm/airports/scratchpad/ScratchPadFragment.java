@@ -77,46 +77,26 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
         mDrawView.setEventListener( this );
 
         ImageButton draw = (ImageButton) findViewById( R.id.action_draw );
-        draw.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                mDrawView.setDrawMode();
-            }
-        } );
+        draw.setOnClickListener( v -> mDrawView.setDrawMode() );
 
         ImageButton erase = (ImageButton) findViewById( R.id.action_erase );
-        erase.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                mDrawView.setEraseMode();
-            }
-        } );
+        erase.setOnClickListener( v -> mDrawView.setEraseMode() );
 
         ImageButton discard = (ImageButton) findViewById( R.id.action_discard );
-        discard.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                mDrawView.discardBitmap();
-                mImgFile.delete();
-            }
+        discard.setOnClickListener( v -> {
+            mDrawView.discardBitmap();
+            mImgFile.delete();
         } );
 
         ImageButton share = (ImageButton) findViewById( R.id.action_share );
-        share.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                saveBitmap();
-                Intent intent = new Intent( Intent.ACTION_SEND );
-                intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
-                intent.setType( "image/*" );
-                Uri uri = Uri.fromFile( mImgFile );
-                intent.putExtra( Intent.EXTRA_STREAM, uri );
-                startActivity( Intent.createChooser( intent, "Share Scratchpad" ) );
-            }
+        share.setOnClickListener( v -> {
+            saveBitmap();
+            Intent intent = new Intent( Intent.ACTION_SEND );
+            intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
+            intent.setType( "image/*" );
+            Uri uri = Uri.fromFile( mImgFile );
+            intent.putExtra( Intent.EXTRA_STREAM, uri );
+            startActivity( Intent.createChooser( intent, "Share Scratchpad" ) );
         } );
     }
 

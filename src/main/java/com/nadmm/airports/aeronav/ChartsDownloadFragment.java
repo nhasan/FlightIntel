@@ -29,8 +29,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -58,6 +56,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class ChartsDownloadFragment extends FragmentBase {
 
@@ -102,26 +103,22 @@ public class ChartsDownloadFragment extends FragmentBase {
             }
         };
 
-        mOnClickListener = new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                if ( mSelectedRow == null ) {
-                    mStop = false;
-                    int total = (Integer) v.getTag( R.id.DTPP_CHART_TOTAL );
-                    int avail = (Integer) v.getTag( R.id.DTPP_CHART_AVAIL );
-                    if ( avail < total ) {
-                        if ( mIsOk && !mExpired ) {
-                            confirmStartDownload( v );
-                        } else {
-                            UiUtils.showToast( getActivity(), "Cannot start download" );
-                        }
+        mOnClickListener = v -> {
+            if ( mSelectedRow == null ) {
+                mStop = false;
+                int total = (Integer) v.getTag( R.id.DTPP_CHART_TOTAL );
+                int avail = (Integer) v.getTag( R.id.DTPP_CHART_AVAIL );
+                if ( avail < total ) {
+                    if ( mIsOk && !mExpired ) {
+                        confirmStartDownload( v );
                     } else {
-                        confirmChartDelete( v );
+                        UiUtils.showToast( getActivity(), "Cannot start download" );
                     }
-                } else if ( v == mSelectedRow ) {
-                    confirmStopDownload();
+                } else {
+                    confirmChartDelete( v );
                 }
+            } else if ( v == mSelectedRow ) {
+                confirmStopDownload();
             }
         };
     }
@@ -166,13 +163,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         builder.setMessage( String.format( Locale.US,
                 "Do you want to download %d charts for %s volume?",
                 total-avail, tppVolume ) );
-        builder.setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick( DialogInterface dialog, int which ) {
-                startChartDownload( v );
-            }
-        } );
+        builder.setPositiveButton( "Yes", ( dialog, which ) -> startChartDownload( v ) );
         builder.setNegativeButton( "No", null );
         builder.show();
     }
@@ -193,13 +184,7 @@ public class ChartsDownloadFragment extends FragmentBase {
                 "Are you sure you want to delete all %d charts for %s volume?",
                 avail, tppVolume ) );
         builder.setPositiveButton( android.R.string.yes,
-                new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick( DialogInterface dialog, int which ) {
-                        startChartDelete( v );
-                    }
-                } );
+                ( dialog, which ) -> startChartDelete( v ) );
         builder.setNegativeButton( android.R.string.no, null );
         builder.show();
     }
@@ -215,13 +200,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
         builder.setTitle( "Stop Download" );
         builder.setMessage( "Do you want to stop the chart download?" );
-        builder.setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick( DialogInterface dialog, int which ) {
-                mStop = true;
-            }
-        } );
+        builder.setPositiveButton( "Yes", ( dialog, which ) -> mStop = true );
         builder.setNegativeButton( "No", null );
         builder.show();
     }
@@ -253,13 +232,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         @Override
         protected boolean onResult( final Cursor[] result ) {
             // Add delay to allow navigation drawer to close without stutter
-            new Handler().postDelayed( new Runnable() {
-
-                @Override
-                public void run() {
-                    showChartInfo( result );
-                }
-            }, 250 );
+            new Handler().postDelayed( () -> showChartInfo( result ), 250 );
 
             // Do not close cursors now
             return false;
@@ -281,7 +254,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         String expiry = c.getString( c.getColumnIndex( DtppCycle.TO_DATE ) );
         SimpleDateFormat df = new SimpleDateFormat( "HHmm'Z' MM/dd/yy", Locale.US );
         df.setTimeZone( java.util.TimeZone.getTimeZone( "UTC" ) );
-        Date endDate = null;
+        Date endDate;
         try {
             endDate = df.parse( expiry );
         } catch ( ParseException ignored ) {
@@ -377,7 +350,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         protected boolean onResult( Cursor[] result ) {
             mCursor = result[ 0 ];
             mCursor.moveToFirst();
-            mProgressBar = (ProgressBar) mSelectedRow.findViewById( R.id.progress );
+            mProgressBar = mSelectedRow.findViewById( R.id.progress );
             mProgressBar.setMax( mCursor.getCount() );
             mProgressBar.setProgress( 0 );
             mProgressBar.setVisibility( View.VISIBLE );
@@ -386,7 +359,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         }
     }
 
-    protected void onChartDownload( Context context, Intent intent ) {
+    private void onChartDownload( Context context, Intent intent ) {
         if ( mCursor != null ) {
             mProgressBar.setProgress( mCursor.getPosition() );
             if ( !mStop && mCursor.moveToNext() ) {
@@ -398,7 +371,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         }
     }
 
-    protected void getNextChart() {
+    private void getNextChart() {
         String pdfName = mCursor.getString( mCursor.getColumnIndex( Dtpp.PDF_NAME ) );
         ArrayList<String> pdfNames = new ArrayList<>();
         pdfNames.add( pdfName );
@@ -436,7 +409,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         protected boolean onResult( Cursor[] result ) {
             mCursor = result[ 0 ];
             mCursor.moveToFirst();
-            mProgressBar = (ProgressBar) mSelectedRow.findViewById( R.id.progress );
+            mProgressBar = mSelectedRow.findViewById( R.id.progress );
             mProgressBar.setMax( mCursor.getCount() );
             mProgressBar.setProgress( 0 );
             mProgressBar.setVisibility( View.VISIBLE );
@@ -445,7 +418,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         }
     }
 
-    protected void onChartDelete( Context context, Intent intent ) {
+    private void onChartDelete( Context context, Intent intent ) {
         if ( mCursor != null ) {
             mProgressBar.setProgress( mCursor.getPosition() );
             if ( !mStop && mCursor.moveToNext() ) {
@@ -457,7 +430,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         }
     }
 
-    protected void deleteNextChart() {
+    private void deleteNextChart() {
         String pdfName = mCursor.getString( mCursor.getColumnIndex( Dtpp.PDF_NAME ) );
         ArrayList<String> pdfNames = new ArrayList<>();
         pdfNames.add( pdfName );
@@ -469,7 +442,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         getActivity().startService( service );
     }
 
-    protected void finishOperation() {
+    private void finishOperation() {
         mTppVolume = null;
         mSelectedRow = null;
         if ( mProgressBar != null ) {
@@ -482,7 +455,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         }
     }
 
-    protected void getChartCount( String tppCycle, String tppVolume ) {
+    private void getChartCount( String tppCycle, String tppVolume ) {
         Intent service = new Intent( getActivity(), DtppService.class );
         service.setAction( AeroNavService.ACTION_COUNT_CHARTS );
         service.putExtra( AeroNavService.CYCLE_NAME, tppCycle );
@@ -490,16 +463,16 @@ public class ChartsDownloadFragment extends FragmentBase {
         getActivity().startService( service );
     }
 
-    protected View addTppVolumeRow( LinearLayout layout, String tppVolume, int total ) {
+    private View addTppVolumeRow( LinearLayout layout, String tppVolume, int total ) {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
         }
 
         RelativeLayout row = (RelativeLayout) inflate( R.layout.list_item_with_progressbar );
 
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
+        TextView tv = row.findViewById( R.id.item_label );
         tv.setText( tppVolume );
-        tv = (TextView) row.findViewById( R.id.item_value );
+        tv = row.findViewById( R.id.item_value );
         tv.setText( String.format( Locale.US, "%d charts", total ) );
 
         row.setTag( R.id.DTPP_VOLUME_NAME, tppVolume );
@@ -516,7 +489,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         return row;
     }
 
-    protected void onChartCount( Context context, Intent intent ) {
+    private void onChartCount( Context context, Intent intent ) {
         String tppVolume = intent.getStringExtra( AeroNavService.TPP_VOLUME );
         int avail = intent.getIntExtra( AeroNavService.PDF_COUNT, 0 );
         View row = mVolumeRowMap.get( tppVolume );
@@ -530,8 +503,8 @@ public class ChartsDownloadFragment extends FragmentBase {
         }
     }
 
-    protected void showStatus( View row, int avail, int total ) {
-        TextView tv = (TextView) row.findViewById( R.id.item_label );
+    private void showStatus( View row, int avail, int total ) {
+        TextView tv = row.findViewById( R.id.item_label );
         if ( avail == total ) {
             UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box );
         } else {

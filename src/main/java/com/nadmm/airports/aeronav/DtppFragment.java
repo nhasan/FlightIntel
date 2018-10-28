@@ -21,15 +21,12 @@ package com.nadmm.airports.aeronav;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,18 +52,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 public class DtppFragment extends FragmentBase {
 
-    protected HashMap<String, View> mDtppRowMap = new HashMap<>();
-    protected ArrayList<String> mPendingCharts = new ArrayList<>();
-    protected String mTppCycle;
-    protected String mTppVolume;
-    protected String mFaaCode;
-    protected String mIcaoCode;
-    protected boolean mExpired = false;
-    protected View.OnClickListener mOnClickListener;
-    protected IntentFilter mFilter;
-    protected BroadcastReceiver mReceiver;
+    private HashMap<String, View> mDtppRowMap = new HashMap<>();
+    private ArrayList<String> mPendingCharts = new ArrayList<>();
+    private String mTppCycle;
+    private String mTppVolume;
+    private String mFaaCode;
+    private String mIcaoCode;
+    private boolean mExpired = false;
+    private View.OnClickListener mOnClickListener;
+    private IntentFilter mFilter;
+    private BroadcastReceiver mReceiver;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -83,16 +83,13 @@ public class DtppFragment extends FragmentBase {
             }
         };
 
-        mOnClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick( View v ) {
-                String path = (String) v.getTag( R.id.DTPP_PDF_PATH );
-                if ( path == null ) {
-                    String pdfName = (String) v.getTag( R.id.DTPP_PDF_NAME );
-                    getTppChart( pdfName );
-                } else {
-                    startPdfViewer( path );
-                }
+        mOnClickListener = v -> {
+            String path = (String) v.getTag( R.id.DTPP_PDF_PATH );
+            if ( path == null ) {
+                String pdfName = (String) v.getTag( R.id.DTPP_PDF_NAME );
+                getTppChart( pdfName );
+            } else {
+                startPdfViewer( path );
             }
         };
     }
@@ -118,23 +115,11 @@ public class DtppFragment extends FragmentBase {
                               Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.dtpp_detail_view, container, false );
 
-        Button btnDownload = (Button) view.findViewById( R.id.btnDownload );
-        btnDownload.setOnClickListener( new View.OnClickListener() {
+        Button btnDownload = view.findViewById( R.id.btnDownload );
+        btnDownload.setOnClickListener( v -> getAptCharts() );
 
-            @Override
-            public void onClick( View v ) {
-                getAptCharts();
-            }
-        } );
-
-        Button btnDelete = (Button) view.findViewById( R.id.btnDelete );
-        btnDelete.setOnClickListener( new View.OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                checkDelete();
-            }
-        } );
+        Button btnDelete = view.findViewById( R.id.btnDelete );
+        btnDelete.setOnClickListener( v -> checkDelete() );
 
         return createContentView( view );
     }
@@ -148,19 +133,18 @@ public class DtppFragment extends FragmentBase {
         setBackgroundTask( new DtppTask() ).execute( siteNumber );
     }
 
-    protected void showDtppSummary( Cursor[] result ) {
+    private void showDtppSummary( Cursor[] result ) {
         LinearLayout topLayout = (LinearLayout) findViewById( R.id.dtpp_detail_layout );
 
         Cursor cycle = result[ 1 ];
         cycle.moveToFirst();
         mTppCycle = cycle.getString( cycle.getColumnIndex( DatabaseManager.DtppCycle.TPP_CYCLE ) );
-        String from = cycle.getString( cycle.getColumnIndex( DatabaseManager.DtppCycle.FROM_DATE ) );
         String to = cycle.getString( cycle.getColumnIndex( DatabaseManager.DtppCycle.TO_DATE ) );
 
         RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
-        TextView tv = (TextView) item.findViewById( R.id.group_name );
+        TextView tv = item.findViewById( R.id.group_name );
         tv.setVisibility( View.GONE );
-        LinearLayout layout = (LinearLayout) item.findViewById( R.id.group_details );
+        LinearLayout layout = item.findViewById( R.id.group_details );
         addRow( layout, "Cycle", mTppCycle );
 
         // Parse chart cycle effective dates
@@ -193,7 +177,7 @@ public class DtppFragment extends FragmentBase {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected void showDtppCharts( Cursor[] result ) {
+    private void showDtppCharts( Cursor[] result ) {
         LinearLayout topLayout = (LinearLayout) findViewById( R.id.dtpp_detail_layout );
 
         int index = 3;
@@ -211,13 +195,13 @@ public class DtppFragment extends FragmentBase {
         checkTppCharts( pdfNames, false );
     }
 
-    protected void showChartGroup( LinearLayout layout, Cursor c ) {
+    private void showChartGroup( LinearLayout layout, Cursor c ) {
         if ( c.moveToFirst() ) {
             String chartCode = c.getString( c.getColumnIndex( DatabaseManager.Dtpp.CHART_CODE ) );
             RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
-            TextView tv = (TextView) item.findViewById( R.id.group_name );
+            TextView tv = item.findViewById( R.id.group_name );
             tv.setText( DataUtils.decodeChartCode( chartCode ) );
-            LinearLayout group = (LinearLayout) item.findViewById( R.id.group_details );
+            LinearLayout group = item.findViewById( R.id.group_details );
             do {
                 String chartName = c.getString( c.getColumnIndex( DatabaseManager.Dtpp.CHART_NAME ) );
                 String pdfName = c.getString( c.getColumnIndex( DatabaseManager.Dtpp.PDF_NAME ) );
@@ -230,10 +214,10 @@ public class DtppFragment extends FragmentBase {
         }
     }
 
-    protected void showOtherCharts( LinearLayout layout ) {
+    private void showOtherCharts( LinearLayout layout ) {
         RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
-        TextView tv = (TextView) item.findViewById( R.id.group_name );
-        LinearLayout group = (LinearLayout) item.findViewById( R.id.group_details );
+        TextView tv = item.findViewById( R.id.group_name );
+        LinearLayout group = item.findViewById( R.id.group_details );
         tv.setText( "Other" );
         addChartRow( group, "", "Airport Diagram Legend", "legendAD.pdf", "", "" );
         addChartRow( group, "", "Legends & General Information", "frntmatter.pdf", "", "" );
@@ -241,7 +225,7 @@ public class DtppFragment extends FragmentBase {
                 ViewGroup.LayoutParams.WRAP_CONTENT ) );
     }
 
-    protected View addChartRow( LinearLayout layout, String chartCode, String chartName,
+    private View addChartRow( LinearLayout layout, String chartCode, String chartName,
                                 String pdfName, String userAction, String faanfd18 ) {
         View row;
         if ( userAction.length() > 0 ) {
@@ -262,20 +246,20 @@ public class DtppFragment extends FragmentBase {
         return row;
     }
 
-    protected void checkTppCharts( ArrayList<String> pdfNames, boolean download ) {
+    private void checkTppCharts( ArrayList<String> pdfNames, boolean download ) {
         mPendingCharts = pdfNames;
         Intent service = makeServiceIntent( DtppService.ACTION_CHECK_CHARTS );
         service.putExtra( DtppService.DOWNLOAD_IF_MISSING, download );
         getActivity().startService( service );
     }
 
-    protected void getTppChart( String pdfName ) {
+    private void getTppChart( String pdfName ) {
         mPendingCharts.add( pdfName );
         Intent service = makeServiceIntent( DtppService.ACTION_GET_CHARTS );
         getActivity().startService( service );
     }
 
-    protected void deleteCharts() {
+    private void deleteCharts() {
         for ( String pdfName : mDtppRowMap.keySet() ) {
             View v = mDtppRowMap.get( pdfName );
             String userAction = (String) v.getTag( R.id.DTPP_USER_ACTION );
@@ -289,7 +273,7 @@ public class DtppFragment extends FragmentBase {
         getActivity().startService( service );
     }
 
-    protected Intent makeServiceIntent( String action ) {
+    private Intent makeServiceIntent( String action ) {
         Intent service = new Intent( getActivity(), DtppService.class );
         service.setAction( action );
         service.putExtra( DtppService.CYCLE_NAME, mTppCycle );
@@ -298,7 +282,7 @@ public class DtppFragment extends FragmentBase {
         return service;
     }
 
-    protected void getMissingCharts() {
+    private void getMissingCharts() {
         ArrayList<String> pdfNames = new ArrayList<>();
         for ( String pdfName : mDtppRowMap.keySet() ) {
             View v = mDtppRowMap.get( pdfName );
@@ -315,7 +299,7 @@ public class DtppFragment extends FragmentBase {
         checkTppCharts( pdfNames, true );
     }
 
-    protected void handleDtppBroadcast( Intent intent ) {
+    private void handleDtppBroadcast( Intent intent ) {
         String action = intent.getAction();
         String pdfName = intent.getStringExtra( DtppService.PDF_NAME );
         String path = intent.getStringExtra( DtppService.PDF_PATH );
@@ -343,8 +327,8 @@ public class DtppFragment extends FragmentBase {
         }
     }
 
-    protected void showChartAvailability( View view, boolean available ) {
-        TextView tv = (TextView) view.findViewById( R.id.item_label );
+    private void showChartAvailability( View view, boolean available ) {
+        TextView tv = view.findViewById( R.id.item_label );
         if ( available ) {
             UiUtils.setDefaultTintedTextViewDrawable(
                     tv, R.drawable.ic_check_box );
@@ -354,7 +338,7 @@ public class DtppFragment extends FragmentBase {
         }
     }
 
-    protected void updateButtonState() {
+    private void updateButtonState() {
         // Check if we have all the charts for this airport
         boolean all = true;
         boolean none = true;
@@ -386,37 +370,22 @@ public class DtppFragment extends FragmentBase {
         }
     }
 
-    protected void getAptCharts() {
-        NetworkUtils.checkNetworkAndDownload( getActivity(), new Runnable() {
-
-            @Override
-            public void run() {
-                getMissingCharts();
-            }
-        } );
+    private void getAptCharts() {
+        NetworkUtils.checkNetworkAndDownload( getActivity(), () -> getMissingCharts() );
     }
 
-    protected void startPdfViewer( String path ) {
+    private void startPdfViewer( String path ) {
         if ( mExpired ) {
             UiUtils.showToast( getActivity(), "WARNING: This chart has expired!" );
         }
         SystemUtils.startPDFViewer( getActivity(), path );
     }
 
-    protected void checkDelete() {
+    private void checkDelete() {
         AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
         builder.setMessage( "Delete all downloaded charts for this airport?" )
-                .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick( DialogInterface dialog, int id ) {
-                        deleteCharts();
-                    }
-                } )
-                .setNegativeButton( "No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick( DialogInterface dialog, int id ) {
-                    }
-                } );
+                .setPositiveButton( "Yes", ( dialog, id ) -> deleteCharts() )
+                .setNegativeButton( "No", ( dialog, id ) -> {} );
         AlertDialog alert = builder.create();
         alert.show();
     }
