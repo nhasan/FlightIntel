@@ -36,8 +36,8 @@ android {
         applicationId "com.nadmm.airports"
         minSdkVersion 15
         targetSdkVersion 28
-        versionName "6.9.0"
-        versionCode 60900
+        versionName "6.9.1"
+        versionCode 60901
     }
 
     signingConfigs {
