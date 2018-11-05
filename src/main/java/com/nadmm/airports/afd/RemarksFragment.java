@@ -66,7 +66,7 @@ public final class RemarksFragment extends FragmentBase {
     }
 
     private void showRemarksDetails( Cursor[] result ) {
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
+        LinearLayout layout = findViewById( R.id.detail_remarks_layout );
         Cursor rmk = result[ 1 ];
         if ( rmk.moveToFirst() ) {
             do {

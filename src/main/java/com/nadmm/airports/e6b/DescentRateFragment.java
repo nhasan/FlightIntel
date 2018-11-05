@@ -31,11 +31,11 @@ import java.util.Locale;
 
 public class DescentRateFragment extends E6bFragmentBase {
 
-    EditText mInitAltEdit;
-    EditText mCrossAltEdit;
-    EditText mGsEdit;
-    EditText mFixDistEdit;
-    EditText mDscntRateEdit;
+    private EditText mInitAltEdit;
+    private EditText mCrossAltEdit;
+    private EditText mGsEdit;
+    private EditText mFixDistEdit;
+    private EditText mDscntRateEdit;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -48,11 +48,11 @@ public class DescentRateFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mInitAltEdit = (EditText) findViewById( R.id.e6b_edit_initial_alt );
-        mCrossAltEdit = (EditText) findViewById( R.id.e6b_edit_crossing_alt );
-        mGsEdit = (EditText) findViewById( R.id.e6b_edit_gs );
-        mFixDistEdit = (EditText) findViewById( R.id.e6b_edit_fix_distance );
-        mDscntRateEdit = (EditText) findViewById( R.id.e6b_edit_descent_rate );
+        mInitAltEdit = findViewById( R.id.e6b_edit_initial_alt );
+        mCrossAltEdit = findViewById( R.id.e6b_edit_crossing_alt );
+        mGsEdit = findViewById( R.id.e6b_edit_gs );
+        mFixDistEdit = findViewById( R.id.e6b_edit_fix_distance );
+        mDscntRateEdit = findViewById( R.id.e6b_edit_descent_rate );
 
         mInitAltEdit.addTextChangedListener( mTextWatcher );
         mCrossAltEdit.addTextChangedListener( mTextWatcher );

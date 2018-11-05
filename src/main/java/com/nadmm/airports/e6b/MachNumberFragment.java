@@ -46,9 +46,9 @@ public class MachNumberFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mTasEdit = (EditText) findViewById( R.id.e6b_edit_tas );
-        mOatEdit = (EditText) findViewById( R.id.e6b_edit_oat );
-        mMachEdit = (EditText) findViewById( R.id.e6b_edit_mach );
+        mTasEdit = findViewById( R.id.e6b_edit_tas );
+        mOatEdit = findViewById( R.id.e6b_edit_oat );
+        mMachEdit = findViewById( R.id.e6b_edit_mach );
 
         mTasEdit.addTextChangedListener( mTextWatcher );
         mOatEdit.addTextChangedListener( mTextWatcher );

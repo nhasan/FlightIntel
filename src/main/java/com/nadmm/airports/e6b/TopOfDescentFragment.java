@@ -33,11 +33,11 @@ import java.util.Locale;
 
 public class TopOfDescentFragment extends E6bFragmentBase {
 
-    EditText mInitAltEdit;
-    EditText mDesiredAltEdit;
-    EditText mGsEdit;
-    EditText mDscntRateEdit;
-    EditText mDistanceEdit;
+    private EditText mInitAltEdit;
+    private EditText mDesiredAltEdit;
+    private EditText mGsEdit;
+    private EditText mDscntRateEdit;
+    private EditText mDistanceEdit;
 
     private TextWatcher mTextWatcher = new TextWatcher() {
 
@@ -66,11 +66,11 @@ public class TopOfDescentFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mInitAltEdit = (EditText) findViewById( R.id.e6b_edit_initial_alt );
-        mDesiredAltEdit = (EditText) findViewById( R.id.e6b_edit_desired_alt );
-        mGsEdit = (EditText) findViewById( R.id.e6b_edit_gs );
-        mDscntRateEdit = (EditText) findViewById( R.id.e6b_edit_descent_rate );
-        mDistanceEdit = (EditText) findViewById( R.id.e6b_edit_distance );
+        mInitAltEdit = findViewById( R.id.e6b_edit_initial_alt );
+        mDesiredAltEdit = findViewById( R.id.e6b_edit_desired_alt );
+        mGsEdit = findViewById( R.id.e6b_edit_gs );
+        mDscntRateEdit = findViewById( R.id.e6b_edit_descent_rate );
+        mDistanceEdit = findViewById( R.id.e6b_edit_distance );
 
         mInitAltEdit.addTextChangedListener( mTextWatcher );
         mDesiredAltEdit.addTextChangedListener( mTextWatcher );

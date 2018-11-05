@@ -198,7 +198,7 @@ public class MetarFragment extends WxFragmentBase {
 
     }
 
-    protected void requestMetar( boolean refresh ) {
+    private void requestMetar( boolean refresh ) {
         if ( getActivity() == null ) {
             // Not ready to do this yet
             return;
@@ -217,7 +217,7 @@ public class MetarFragment extends WxFragmentBase {
         getActivity().startService( service );
     }
 
-    protected void showMetar( Intent intent ) {
+    private void showMetar( Intent intent ) {
         if ( getActivity() == null ) {
             // Not ready to do this yet
             return;
@@ -229,9 +229,9 @@ public class MetarFragment extends WxFragmentBase {
         }
 
         View detail = findViewById( R.id.wx_detail_layout );
-        LinearLayout layout = (LinearLayout) findViewById( R.id.wx_status_layout );
+        LinearLayout layout = findViewById( R.id.wx_status_layout );
         layout.removeAllViews();
-        TextView tv =(TextView) findViewById( R.id.status_msg );
+        TextView tv = findViewById( R.id.status_msg );
         if ( !metar.isValid ) {
             tv.setVisibility( View.VISIBLE );
             layout.setVisibility( View.VISIBLE );
@@ -251,19 +251,19 @@ public class MetarFragment extends WxFragmentBase {
             detail.setVisibility( View.VISIBLE );
         }
 
-        tv = (TextView) findViewById( R.id.wx_station_info2 );
+        tv = findViewById( R.id.wx_station_info2 );
         WxUtils.setFlightCategoryDrawable( tv, metar.flightCategory );
 
-        tv = (TextView) findViewById( R.id.wx_age );
+        tv = findViewById( R.id.wx_age );
         tv.setText( TimeUtils.formatElapsedTime( metar.observationTime ) );
 
         // Raw Text
-        tv = (TextView) findViewById( R.id.wx_raw_metar );
+        tv = findViewById( R.id.wx_raw_metar );
         tv.setText( metar.rawText );
 
         // Winds
-        tv = (TextView) findViewById( R.id.wx_wind_label );
-        layout = (LinearLayout) findViewById( R.id.wx_wind_layout );
+        tv = findViewById( R.id.wx_wind_label );
+        layout = findViewById( R.id.wx_wind_layout );
         layout.removeAllViews();
         int visibility = View.GONE;
         if ( metar.windSpeedKnots < Integer.MAX_VALUE ) {
@@ -274,8 +274,8 @@ public class MetarFragment extends WxFragmentBase {
         layout.setVisibility( visibility );
 
         // Visibility
-        tv = (TextView) findViewById( R.id.wx_vis_label );
-        layout = (LinearLayout) findViewById( R.id.wx_vis_layout );
+        tv = findViewById( R.id.wx_vis_label );
+        layout = findViewById( R.id.wx_vis_layout );
         layout.removeAllViews();
         visibility = View.GONE;
         if ( metar.visibilitySM < Float.MAX_VALUE ) {
@@ -298,15 +298,15 @@ public class MetarFragment extends WxFragmentBase {
         layout.setVisibility( visibility );
 
         // Weather
-        layout = (LinearLayout) findViewById( R.id.wx_weather_layout );
+        layout = findViewById( R.id.wx_weather_layout );
         layout.removeAllViews();
         for ( WxSymbol wx : metar.wxList ) {
             addWeatherRow( layout, wx, metar.flightCategory );
         }
 
         // Sky Conditions
-        tv = (TextView) findViewById( R.id.wx_sky_cond_label );
-        layout = (LinearLayout) findViewById( R.id.wx_sky_cond_layout );
+        tv = findViewById( R.id.wx_sky_cond_label );
+        layout = findViewById( R.id.wx_sky_cond_layout );
         layout.removeAllViews();
         visibility = View.GONE;
         if ( !metar.skyConditions.isEmpty() ) {
@@ -323,8 +323,8 @@ public class MetarFragment extends WxFragmentBase {
         layout.setVisibility( visibility );
 
         // Temperature
-        tv = (TextView) findViewById( R.id.wx_temp_label );
-        layout = (LinearLayout) findViewById( R.id.wx_temp_layout );
+        tv = findViewById( R.id.wx_temp_label );
+        layout = findViewById( R.id.wx_temp_layout );
         layout.removeAllViews();
         visibility = View.GONE;
         if ( metar.tempCelsius < Float.MAX_VALUE && metar.dewpointCelsius < Float.MAX_VALUE ) {
@@ -364,8 +364,8 @@ public class MetarFragment extends WxFragmentBase {
         layout.setVisibility( visibility );
 
         // Pressure
-        tv = (TextView) findViewById( R.id.wx_pressure_label );
-        layout = (LinearLayout) findViewById( R.id.wx_pressure_layout );
+        tv = findViewById( R.id.wx_pressure_label );
+        layout = findViewById( R.id.wx_pressure_layout );
         layout.removeAllViews();
         visibility = View.GONE;
         if ( metar.altimeterHg < Float.MAX_VALUE ) {
@@ -392,8 +392,8 @@ public class MetarFragment extends WxFragmentBase {
         layout.setVisibility( visibility );
 
         // Precipitation
-        tv = (TextView) findViewById( R.id.wx_precip_label );
-        layout = (LinearLayout) findViewById( R.id.wx_precip_layout );
+        tv = findViewById( R.id.wx_precip_label );
+        layout = findViewById( R.id.wx_precip_layout );
         layout.removeAllViews();
         if ( metar.precipInches < Float.MAX_VALUE ) {
             addRow( layout, "1-hour precipitation",
@@ -422,8 +422,8 @@ public class MetarFragment extends WxFragmentBase {
         layout.setVisibility( visibility );
 
         // Remarks
-        tv = (TextView) findViewById( R.id.wx_remarks_label );
-        layout = (LinearLayout) findViewById( R.id.wx_remarks_layout );
+        tv = findViewById( R.id.wx_remarks_label );
+        layout = findViewById( R.id.wx_remarks_layout );
         layout.removeAllViews();
         for ( Flags flag : metar.flags ) {
             addBulletedRow( layout, flag.toString() );
@@ -436,7 +436,7 @@ public class MetarFragment extends WxFragmentBase {
         layout.setVisibility( visibility );
 
         // Fetch time
-        tv = (TextView) findViewById( R.id.wx_fetch_time );
+        tv = findViewById( R.id.wx_fetch_time );
         tv.setText( String.format( Locale.US, "Fetched on %s",
                 TimeUtils.formatDateTime( getActivityBase(), metar.fetchTime ) ) );
         tv.setVisibility( View.VISIBLE );
@@ -444,7 +444,7 @@ public class MetarFragment extends WxFragmentBase {
         setFragmentContentShown( true );
     }
 
-    protected String getWindsDescription( Metar metar ) {
+    private String getWindsDescription( Metar metar ) {
         StringBuilder s = new StringBuilder();
         if ( metar.windDirDegrees == 0 && metar.windSpeedKnots == 0 ) {
             s.append( "Winds are calm" );
@@ -466,7 +466,7 @@ public class MetarFragment extends WxFragmentBase {
         return s.toString();
     }
 
-    protected void showWindInfo( LinearLayout layout, Metar metar ) {
+    private void showWindInfo( LinearLayout layout, Metar metar ) {
         View row = addRow( layout, getWindsDescription( metar ) );
         TextView tv = row.findViewById( R.id.item_label );
         if ( metar.windDirDegrees > 0 ) {
@@ -489,14 +489,14 @@ public class MetarFragment extends WxFragmentBase {
         }
     }
 
-    protected void addSkyConditionRow( LinearLayout layout, SkyCondition sky,
+    private void addSkyConditionRow( LinearLayout layout, SkyCondition sky,
             String flightCategory ) {
         View row = addRow( layout, sky.toString() );
         TextView tv = row.findViewById( R.id.item_label );
         WxUtils.showColorizedDrawable( tv, flightCategory, sky.getDrawable() );
     }
 
-    protected void addWeatherRow( LinearLayout layout, WxSymbol wx, String flightCategory ) {
+    private void addWeatherRow( LinearLayout layout, WxSymbol wx, String flightCategory ) {
         View row = addRow( layout, wx.toString() );
         if ( wx.getDrawable() != 0 ) {
             TextView tv = row.findViewById( R.id.item_label );

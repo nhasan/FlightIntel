@@ -62,7 +62,6 @@ public class DtppFragment extends FragmentBase {
     private String mTppCycle;
     private String mTppVolume;
     private String mFaaCode;
-    private String mIcaoCode;
     private boolean mExpired = false;
     private View.OnClickListener mOnClickListener;
     private IntentFilter mFilter;
@@ -134,7 +133,7 @@ public class DtppFragment extends FragmentBase {
     }
 
     private void showDtppSummary( Cursor[] result ) {
-        LinearLayout topLayout = (LinearLayout) findViewById( R.id.dtpp_detail_layout );
+        LinearLayout topLayout = findViewById( R.id.dtpp_detail_layout );
 
         Cursor cycle = result[ 1 ];
         cycle.moveToFirst();
@@ -178,7 +177,7 @@ public class DtppFragment extends FragmentBase {
     }
 
     private void showDtppCharts( Cursor[] result ) {
-        LinearLayout topLayout = (LinearLayout) findViewById( R.id.dtpp_detail_layout );
+        LinearLayout topLayout = findViewById( R.id.dtpp_detail_layout );
 
         int index = 3;
         while ( index < result.length ) {
@@ -355,14 +354,14 @@ public class DtppFragment extends FragmentBase {
             }
         }
 
-        Button btnDownload = (Button) findViewById( R.id.btnDownload );
+        Button btnDownload = findViewById( R.id.btnDownload );
         if ( all ) {
             btnDownload.setVisibility( View.GONE );
         } else {
             btnDownload.setVisibility( View.VISIBLE );
         }
 
-        Button btnDelete = (Button) findViewById( R.id.btnDelete );
+        Button btnDelete = findViewById( R.id.btnDelete );
         if ( none ) {
             btnDelete.setVisibility( View.GONE );
         } else {
@@ -403,7 +402,6 @@ public class DtppFragment extends FragmentBase {
             result[ index++ ] = apt;
 
             mFaaCode = apt.getString( apt.getColumnIndex( DatabaseManager.Airports.FAA_CODE ) );
-            mIcaoCode = apt.getString( apt.getColumnIndex( DatabaseManager.Airports.ICAO_CODE ) );
 
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_DTPP );
 

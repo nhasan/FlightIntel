@@ -236,7 +236,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     private void showCommunicationsDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
 
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_comm_layout );
+        LinearLayout layout = findViewById( R.id.detail_comm_layout );
 
         String ctaf = apt.getString( apt.getColumnIndex( Airports.CTAF_FREQ ) );
         addRow( layout, "CTAF", !ctaf.isEmpty() ? ctaf : "None" );
@@ -301,8 +301,8 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     private void showRunwayDetails( Cursor[] result ) {
-        LinearLayout rwyLayout = (LinearLayout) findViewById( R.id.detail_rwy_layout );
-        LinearLayout heliLayout = (LinearLayout) findViewById( R.id.detail_heli_layout );
+        LinearLayout rwyLayout = findViewById( R.id.detail_rwy_layout );
+        LinearLayout heliLayout = findViewById( R.id.detail_heli_layout );
         TextView tv;
         int rwyNum = 0;
         int heliNum = 0;
@@ -325,13 +325,13 @@ public final class AirportDetailsFragment extends FragmentBase {
 
         if ( rwyNum == 0 ) {
             // No runways so remove the section
-            tv = (TextView) findViewById( R.id.detail_rwy_label );
+            tv = findViewById( R.id.detail_rwy_label );
             tv.setVisibility( View.GONE );
             rwyLayout.setVisibility( View.GONE );
         }
         if ( heliNum == 0 ) {
             // No helipads so remove the section
-            tv = (TextView) findViewById( R.id.detail_heli_label );
+            tv = findViewById( R.id.detail_heli_label );
             tv.setVisibility( View.GONE );
             heliLayout.setVisibility( View.GONE );
         }
@@ -339,8 +339,8 @@ public final class AirportDetailsFragment extends FragmentBase {
 
     private void showRemarks( Cursor[] result ) {
         int row = 0;
-        TextView label = (TextView) findViewById( R.id.detail_remarks_label );
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
+        TextView label = findViewById( R.id.detail_remarks_label );
+        LinearLayout layout = findViewById( R.id.detail_remarks_layout );
         Cursor rmk = result[ 2 ];
         if ( rmk.moveToFirst() ) {
             do {
@@ -374,7 +374,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     private void showAwosDetails( Cursor[] result ) {
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_awos_layout );
+        LinearLayout layout = findViewById( R.id.detail_awos_layout );
         Cursor awos1 = result[ 7 ];
         if ( awos1.moveToFirst() ) {
             do {
@@ -424,7 +424,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     private void showHomeDistance( Cursor[] result ) {
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_home_layout );
+        LinearLayout layout = findViewById( R.id.detail_home_layout );
         Cursor home = result[ 14 ];
         if ( home == null ) {
             Runnable runnable = () -> {
@@ -468,7 +468,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     private void showNearbyFacilities( Cursor[] result ) {
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_nearby_layout );
+        LinearLayout layout = findViewById( R.id.detail_nearby_layout );
 
         Bundle args = new Bundle();
         args.putParcelable( LocationColumns.LOCATION, mLocation );
@@ -482,7 +482,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     private void showNotamAndTfr() {
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_notam_faa_layout );
+        LinearLayout layout = findViewById( R.id.detail_notam_faa_layout );
         Intent intent = new Intent( getActivity(), AirportNotamActivity.class );
         intent.putExtra( Airports.SITE_NUMBER, mSiteNumber );
         addClickableRow( layout, "View NOTAMs", intent );
@@ -492,7 +492,7 @@ public final class AirportDetailsFragment extends FragmentBase {
 
     private void showCharts( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_charts_layout );
+        LinearLayout layout = findViewById( R.id.detail_charts_layout );
         String sectional = apt.getString( apt.getColumnIndex( Airports.SECTIONAL_CHART ) );
         if ( sectional == null || sectional.isEmpty() ) {
             sectional = "N/A";
@@ -538,7 +538,7 @@ public final class AirportDetailsFragment extends FragmentBase {
 
     private void showOperationsDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_operations_layout );
+        LinearLayout layout = findViewById( R.id.detail_operations_layout );
         String use = apt.getString( apt.getColumnIndex( Airports.FACILITY_USE ) );
         addRow( layout, "Operation", DataUtils.decodeFacilityUse( use ) );
         String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
@@ -656,7 +656,7 @@ public final class AirportDetailsFragment extends FragmentBase {
     }
 
     private void showAeroNavDetails( Cursor[] result ) {
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_aeronav_layout );
+        LinearLayout layout = findViewById( R.id.detail_aeronav_layout );
         if ( Application.sDonationDone ) {
             Cursor apt = result[ 0 ];
             String siteNumber = apt.getString( apt.getColumnIndex( Airports.SITE_NUMBER ) );
@@ -700,7 +700,7 @@ public final class AirportDetailsFragment extends FragmentBase {
 
     private void showServicesDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_services_layout );
+        LinearLayout layout = findViewById( R.id.detail_services_layout );
         String fuelTypes = DataUtils.decodeFuelTypes(
                 apt.getString( apt.getColumnIndex( Airports.FUEL_TYPES ) ) );
         if ( fuelTypes.isEmpty() ) {
@@ -722,7 +722,7 @@ public final class AirportDetailsFragment extends FragmentBase {
 
     private void showOtherDetails() {
         Bundle args = getArguments();
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_other_layout );
+        LinearLayout layout = findViewById( R.id.detail_other_layout );
         addClickableRow( layout, "Ownership and contact", OwnershipFragment.class, args );
         addClickableRow( layout, "Aircraft operations", AircraftOpsFragment.class, args );
         addClickableRow( layout, "Additional remarks", RemarksFragment.class, args );

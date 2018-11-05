@@ -27,7 +27,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -73,22 +72,22 @@ public class ScratchPadFragment extends FragmentBase implements FreeHandDrawView
         super.onActivityCreated( savedInstanceState );
 
         mToolbar = findViewById( R.id.toolbar );
-        mDrawView = (FreeHandDrawView) findViewById( R.id.drawing );
+        mDrawView = findViewById( R.id.drawing );
         mDrawView.setEventListener( this );
 
-        ImageButton draw = (ImageButton) findViewById( R.id.action_draw );
+        ImageButton draw = findViewById( R.id.action_draw );
         draw.setOnClickListener( v -> mDrawView.setDrawMode() );
 
-        ImageButton erase = (ImageButton) findViewById( R.id.action_erase );
+        ImageButton erase = findViewById( R.id.action_erase );
         erase.setOnClickListener( v -> mDrawView.setEraseMode() );
 
-        ImageButton discard = (ImageButton) findViewById( R.id.action_discard );
+        ImageButton discard = findViewById( R.id.action_discard );
         discard.setOnClickListener( v -> {
             mDrawView.discardBitmap();
             mImgFile.delete();
         } );
 
-        ImageButton share = (ImageButton) findViewById( R.id.action_share );
+        ImageButton share = findViewById( R.id.action_share );
         share.setOnClickListener( v -> {
             saveBitmap();
             Intent intent = new Intent( Intent.ACTION_SEND );

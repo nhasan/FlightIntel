@@ -151,9 +151,9 @@ public final class CommunicationsFragment extends FragmentBase {
         }
 
         if ( !map.isEmpty() ) {
-            TextView tv = (TextView) findViewById( R.id.airport_comm_label );
+            TextView tv = findViewById( R.id.airport_comm_label );
             tv.setVisibility( View.VISIBLE );
-            LinearLayout layout = (LinearLayout) findViewById( R.id.airport_comm_details );
+            LinearLayout layout = findViewById( R.id.airport_comm_details );
             layout.setVisibility( View.VISIBLE );
             String lastKey = null;
             for ( String key : map.keySet() ) {
@@ -320,9 +320,9 @@ public final class CommunicationsFragment extends FragmentBase {
         }
 
         if ( !hoursMap.isEmpty() ) {
-            TextView tv = (TextView) findViewById( R.id.atc_hours_label );
+            TextView tv = findViewById( R.id.atc_hours_label );
             tv.setVisibility( View.VISIBLE );
-            LinearLayout layout = (LinearLayout) findViewById( R.id.atc_hours_details );
+            LinearLayout layout = findViewById( R.id.atc_hours_details );
             layout.setVisibility( View.VISIBLE );
             for ( String key : hoursMap.keySet() ) {
                 addRow( layout, key, formatHours( hoursMap.get( key ) ) );
@@ -331,7 +331,7 @@ public final class CommunicationsFragment extends FragmentBase {
     }
 
     private void showAtcPhones( Cursor[] result ) {
-        LinearLayout layout = (LinearLayout) findViewById( R.id.atc_phones_details );
+        LinearLayout layout = findViewById( R.id.atc_phones_details );
 
         Cursor main = result[ 6 ];
         if ( main.moveToFirst() ) {
@@ -409,7 +409,7 @@ public final class CommunicationsFragment extends FragmentBase {
     }
 
     private void showRemarks( Cursor[] result ) {
-        LinearLayout layout = (LinearLayout) findViewById( R.id.comm_remarks_layout );
+        LinearLayout layout = findViewById( R.id.comm_remarks_layout );
 
         Cursor twr6 = result[ 3 ];
         if ( twr6.moveToFirst() ) {

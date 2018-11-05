@@ -25,8 +25,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.cursoradapter.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
 
@@ -38,6 +36,9 @@ import com.nadmm.airports.utils.NetworkUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import androidx.cursoradapter.widget.CursorAdapter;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public abstract class WxListFragmentBase extends LocationListFragmentBase {
 
@@ -154,7 +155,7 @@ public abstract class WxListFragmentBase extends LocationListFragmentBase {
             Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
             mStationWx.put( metar.stationId, metar );
 
-            ListView l = (ListView) findViewById( android.R.id.list );
+            ListView l = findViewById( android.R.id.list );
             if ( l == null ) {
                 // Seen some crashes here
                 return;

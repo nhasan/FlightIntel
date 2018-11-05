@@ -89,21 +89,21 @@ public final class ServicesFragment extends FragmentBase {
             services.add( "Bulk Oxygen" );
         }
         if ( !services.isEmpty() ) {
-            LinearLayout layout = (LinearLayout) findViewById( R.id.airport_services_layout );
+            LinearLayout layout = findViewById( R.id.airport_services_layout );
             for ( String service : services ) {
                 addBulletedRow( layout, service );
             }
         } else {
-            TextView tv = (TextView) findViewById( R.id.airport_services_label );
+            TextView tv = findViewById( R.id.airport_services_label );
             tv.setVisibility( View.GONE );
-            LinearLayout layout = (LinearLayout) findViewById( R.id.airport_services_layout );
+            LinearLayout layout = findViewById( R.id.airport_services_layout );
             layout.setVisibility( View.GONE );
         }
     }
 
     private void showFaaServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.faa_services_layout );
+        LinearLayout layout = findViewById( R.id.faa_services_layout );
         String faaRegion = apt.getString( apt.getColumnIndex( Airports.REGION_CODE ) );
         if ( faaRegion.length() > 0 ) {
             addRow( layout, "FAA region", DataUtils.decodeFaaRegion( faaRegion ) );
@@ -122,7 +122,7 @@ public final class ServicesFragment extends FragmentBase {
 
     private void showFssServices( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.fss_services_layout );
+        LinearLayout layout = findViewById( R.id.fss_services_layout );
         String fssId = apt.getString( apt.getColumnIndex( Airports.FSS_ID ) );
         String fssName = apt.getString( apt.getColumnIndex( Airports.FSS_NAME ) );
         addRow( layout, "Flight service", fssId+" ("+fssName+")" );

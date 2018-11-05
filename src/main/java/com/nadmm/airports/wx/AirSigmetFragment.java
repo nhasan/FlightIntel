@@ -27,7 +27,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
@@ -168,7 +167,7 @@ public class AirSigmetFragment extends WxFragmentBase {
             return;
         }
 
-        LinearLayout layout = (LinearLayout) findViewById( R.id.airsigmet_entries_layout );
+        LinearLayout layout = findViewById( R.id.airsigmet_entries_layout );
         if ( layout == null ) {
             return;
         }
@@ -176,7 +175,7 @@ public class AirSigmetFragment extends WxFragmentBase {
 
         AirSigmet airSigmet = (AirSigmet) intent.getSerializableExtra(NoaaService.RESULT );
 
-        TextView tv = (TextView) findViewById( R.id.airsigmet_title_msg );
+        TextView tv = findViewById( R.id.airsigmet_title_msg );
         if ( !airSigmet.entries.isEmpty() ) {
             tv.setText( String.format( Locale.US, "%d AIR/SIGMETs reported within %d NM of %s in"
                     +" last %d hours", airSigmet.entries.size(), AIRSIGMET_RADIUS_NM,
@@ -190,7 +189,7 @@ public class AirSigmetFragment extends WxFragmentBase {
                     AIRSIGMET_RADIUS_NM, mStationId, AIRSIGMET_HOURS_BEFORE ) );
         }
 
-        tv = (TextView) findViewById( R.id.wx_fetch_time );
+        tv = findViewById( R.id.wx_fetch_time );
         tv.setText( String.format( Locale.US, "Fetched on %s",
                 TimeUtils.formatDateTime( getActivityBase(), airSigmet.fetchTime ) ) );
         tv.setVisibility( View.VISIBLE );

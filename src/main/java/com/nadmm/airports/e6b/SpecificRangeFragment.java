@@ -45,10 +45,10 @@ public class SpecificRangeFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mFuelTotalEdit = (EditText) findViewById( R.id.e6b_edit_total_fuel );
-        mFuelRateEdit = (EditText) findViewById( R.id.e6b_edit_burn_rate );
-        mGsEdit = (EditText) findViewById( R.id.e6b_edit_gs );
-        mRangeEdit = (EditText) findViewById( R.id.e6b_edit_range );
+        mFuelTotalEdit = findViewById( R.id.e6b_edit_total_fuel );
+        mFuelRateEdit = findViewById( R.id.e6b_edit_burn_rate );
+        mGsEdit = findViewById( R.id.e6b_edit_gs );
+        mRangeEdit = findViewById( R.id.e6b_edit_range );
 
         mFuelTotalEdit.addTextChangedListener( mTextWatcher );
         mFuelRateEdit.addTextChangedListener( mTextWatcher );

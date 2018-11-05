@@ -48,11 +48,11 @@ public class IsaFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mAltitudeEdit = (EditText) findViewById( R.id.e6b_edit_altitude );
-        mTemperatureCEdit = (EditText) findViewById( R.id.e6b_edit_temperature_c );
-        mTemperatureFEdit = (EditText) findViewById( R.id.e6b_edit_temperature_f );
-        mPressureInEdit = (EditText) findViewById( R.id.e6b_edit_pressure_inHg );
-        mPressureMbEdit = (EditText) findViewById( R.id.e6b_edit_pressure_mb );
+        mAltitudeEdit = findViewById( R.id.e6b_edit_altitude );
+        mTemperatureCEdit = findViewById( R.id.e6b_edit_temperature_c );
+        mTemperatureFEdit = findViewById( R.id.e6b_edit_temperature_f );
+        mPressureInEdit = findViewById( R.id.e6b_edit_pressure_inHg );
+        mPressureMbEdit = findViewById( R.id.e6b_edit_pressure_mb );
 
         mAltitudeEdit.addTextChangedListener( mTextWatcher );
 

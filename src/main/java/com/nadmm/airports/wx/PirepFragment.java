@@ -27,7 +27,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
@@ -72,14 +71,10 @@ public class PirepFragment extends WxFragmentBase {
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.pirep_detail_view, container, false );
-        Button btnGraphic = (Button) view.findViewById( R.id.btnViewGraphic );
-        btnGraphic.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                Intent intent = new Intent( getActivity(), PirepMapActivity.class );
-                startActivity( intent );
-            }
+        Button btnGraphic = view.findViewById( R.id.btnViewGraphic );
+        btnGraphic.setOnClickListener( v -> {
+            Intent intent = new Intent( getActivity(), PirepMapActivity.class );
+            startActivity( intent );
         } );
         return createContentView( view );
     }
@@ -178,7 +173,7 @@ public class PirepFragment extends WxFragmentBase {
 
     }
 
-    protected void requestPirep( boolean refresh ) {
+    private void requestPirep( boolean refresh ) {
         Intent service = new Intent( getActivity(), PirepService.class );
         service.setAction( mAction );
         service.putExtra( NoaaService.STATION_ID, mStationId );
@@ -190,14 +185,14 @@ public class PirepFragment extends WxFragmentBase {
         getActivity().startService( service );
     }
 
-    protected void showPirep( Intent intent ) {
+    private void showPirep( Intent intent ) {
         Pirep pirep = (Pirep) intent.getSerializableExtra( NoaaService.RESULT );
 
-        LinearLayout layout = (LinearLayout) findViewById( R.id.pirep_entries_layout );
+        LinearLayout layout = findViewById( R.id.pirep_entries_layout );
         layout.removeAllViews();
 
         if ( !pirep.entries.isEmpty() ) {
-            TextView tv = (TextView) findViewById( R.id.pirep_title_msg );
+            TextView tv = findViewById( R.id.pirep_title_msg );
             tv.setText( String.format( Locale.US,
                     "%d PIREPs reported within %d NM of %s during last %d hours",
                     pirep.entries.size(), PIREP_RADIUS_NM, mStationId, PIREP_HOURS_BEFORE ) );
@@ -205,13 +200,13 @@ public class PirepFragment extends WxFragmentBase {
                 showPirepEntry( layout, entry );
             }
         } else {
-            TextView tv = (TextView) findViewById( R.id.pirep_title_msg );
+            TextView tv = findViewById( R.id.pirep_title_msg );
             tv.setText( String.format( Locale.US,
                     "No PIREPs reported within %d NM of %s in last %d hours",
                     PIREP_RADIUS_NM, mStationId, PIREP_HOURS_BEFORE ) );
         }
 
-        TextView tv = (TextView) findViewById( R.id.wx_fetch_time );
+        TextView tv = findViewById( R.id.wx_fetch_time );
         tv.setText( String.format( Locale.US, "Fetched on %s",
                 TimeUtils.formatDateTime( getActivityBase(), pirep.fetchTime ) ) );
         tv.setVisibility( View.VISIBLE );
@@ -219,10 +214,10 @@ public class PirepFragment extends WxFragmentBase {
         setFragmentContentShown( true );
     }
 
-    protected void showPirepEntry( LinearLayout layout, PirepEntry entry ) {
+    private void showPirepEntry( LinearLayout layout, PirepEntry entry ) {
         RelativeLayout item = (RelativeLayout) inflate( R.layout.pirep_detail_item );
 
-        TextView tv = (TextView) item.findViewById( R.id.pirep_title );
+        TextView tv = item.findViewById( R.id.pirep_title );
         if ( entry.flags.contains( Flags.BadLocation ) ) {
             String dir = GeoUtils.getCardinalDirection( entry.bearing );
             tv.setText( String.format( Locale.US, "%.0f NM %s approx.", entry.distanceNM, dir ) );
@@ -233,13 +228,13 @@ public class PirepFragment extends WxFragmentBase {
             tv.setText( "On Site" );
         }
 
-        tv = (TextView) item.findViewById( R.id.pirep_title_extra );
+        tv = item.findViewById( R.id.pirep_title_extra );
         tv.setText( TimeUtils.formatElapsedTime( entry.observationTime ) );
 
-        tv = (TextView) item.findViewById( R.id.wx_raw_pirep );
+        tv = item.findViewById( R.id.wx_raw_pirep );
         tv.setText( entry.rawText );
 
-        LinearLayout details = (LinearLayout) item.findViewById( R.id.pirep_details );
+        LinearLayout details = item.findViewById( R.id.pirep_details );
 
         addRow( details, "Type", entry.reportType );
         addRow( details, "Aircraft", entry.aircraftRef );
@@ -296,12 +291,12 @@ public class PirepFragment extends WxFragmentBase {
         layout.addView( item, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
     }
 
-    protected void addSkyConditionRow( LinearLayout details, SkyCondition sky ) {
+    private void addSkyConditionRow( LinearLayout details, SkyCondition sky ) {
         String extra = FormatUtils.formatFeetRangeMsl( sky.baseFeetMSL, sky.topFeetMSL );
         addRow( details, "Sky cover", sky.skyCover, extra );
     }
 
-    protected void addTurbulenceRow( LinearLayout details, TurbulenceCondition turbulence ) {
+    private void addTurbulenceRow( LinearLayout details, TurbulenceCondition turbulence ) {
         StringBuilder sb = new StringBuilder();
         if ( turbulence.frequency != null ) {
             sb.append( turbulence.frequency );
@@ -320,13 +315,12 @@ public class PirepFragment extends WxFragmentBase {
         }
         String value = sb.toString();
         sb.setLength( 0 );
-        sb.append( FormatUtils.formatFeetRangeMsl(
-                turbulence.baseFeetMSL, turbulence.topFeetMSL ) );
+        sb.append( FormatUtils.formatFeetRangeMsl( turbulence.baseFeetMSL, turbulence.topFeetMSL ) );
         String extra = sb.toString();
         addRow( details, "Turbulence", value, extra );
     }
 
-    protected void addIcingRow( LinearLayout details, IcingCondition icing ) {
+    private void addIcingRow( LinearLayout details, IcingCondition icing ) {
         StringBuilder sb = new StringBuilder();
         if ( icing.intensity != null ) {
             sb.append( icing.intensity );
@@ -344,13 +338,13 @@ public class PirepFragment extends WxFragmentBase {
         addRow( details, "Icing", value, extra );
     }
 
-    protected void showError( String error ) {
+    private void showError( String error ) {
         View detail = findViewById( R.id.wx_detail_layout );
         detail.setVisibility( View.GONE );
-        LinearLayout layout = (LinearLayout) findViewById( R.id.wx_status_layout );
+        LinearLayout layout = findViewById( R.id.wx_status_layout );
         layout.removeAllViews();
         layout.setVisibility( View.GONE );
-        TextView tv =(TextView) findViewById( R.id.status_msg );
+        TextView tv =findViewById( R.id.status_msg );
         tv.setVisibility( View.VISIBLE );
         tv.setText( error );
         View title = findViewById( R.id.wx_title_layout );

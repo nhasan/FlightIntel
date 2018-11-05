@@ -51,13 +51,13 @@ public class CrossWindFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mWsEdit = (EditText) findViewById( R.id.e6b_edit_wind_speed );
-        mWdirEdit = (EditText) findViewById( R.id.e6b_edit_wind_dir );
-        mMagVar = (EditText) findViewById( R.id.e6b_edit_mag_var );
-        mRwyEdit = (EditText) findViewById( R.id.e6b_edit_runway_id );
-        mHwndEdit = (EditText) findViewById( R.id.e6b_edit_head_wind );
-        mXwndEdit = (EditText) findViewById( R.id.e6b_edit_cross_wind );
-        mWindMsg = (TextView) findViewById( R.id.e6b_msg );
+        mWsEdit = findViewById( R.id.e6b_edit_wind_speed );
+        mWdirEdit = findViewById( R.id.e6b_edit_wind_dir );
+        mMagVar = findViewById( R.id.e6b_edit_mag_var );
+        mRwyEdit = findViewById( R.id.e6b_edit_runway_id );
+        mHwndEdit = findViewById( R.id.e6b_edit_head_wind );
+        mXwndEdit = findViewById( R.id.e6b_edit_cross_wind );
+        mWindMsg = findViewById( R.id.e6b_msg );
 
         mMagVar.setText( "0" );
 

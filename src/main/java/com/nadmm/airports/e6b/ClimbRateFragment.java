@@ -47,10 +47,10 @@ public class ClimbRateFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mClimbGradEdit = (EditText) findViewById( R.id.e6b_edit_climb_grad );
-        mGsEdit = (EditText) findViewById( R.id.e6b_edit_gs );
-        mClimbRateEdit = (EditText) findViewById( R.id.e6b_edit_climb_rate );
-        mClimbGradPctEdit = (EditText) findViewById( R.id.e6b_edit_climb_grad_pct );
+        mClimbGradEdit = findViewById( R.id.e6b_edit_climb_grad );
+        mGsEdit = findViewById( R.id.e6b_edit_gs );
+        mClimbRateEdit = findViewById( R.id.e6b_edit_climb_rate );
+        mClimbGradPctEdit = findViewById( R.id.e6b_edit_climb_grad_pct );
 
         mClimbGradEdit.addTextChangedListener( mTextWatcher );
         mGsEdit.addTextChangedListener( mTextWatcher );

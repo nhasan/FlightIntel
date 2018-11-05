@@ -27,8 +27,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.ActionBar;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -47,6 +45,9 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.UiUtils;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.fragment.app.Fragment;
 
 public abstract class FragmentBase extends Fragment implements IRefreshable {
 
@@ -494,7 +495,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         layout.addView( separator, new LayoutParams( LayoutParams.MATCH_PARENT, 1 ) );
     }
 
-    protected View findViewById( int id ) {
+    protected <T extends View> T findViewById( int id ) {
         View view = getView();
         return view!=null? view.findViewById( id ) : null;
     }

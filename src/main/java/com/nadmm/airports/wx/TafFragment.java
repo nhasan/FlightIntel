@@ -27,7 +27,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
@@ -52,7 +51,7 @@ import com.nadmm.airports.wx.Taf.TurbulenceCondition;
 import java.util.Locale;
 
 public class TafFragment extends WxFragmentBase {
-    protected final String mAction = NoaaService.ACTION_GET_TAF;
+    private final String mAction = NoaaService.ACTION_GET_TAF;
 
     private final int TAF_RADIUS = 25;
     private final int TAF_HOURS_BEFORE = 3;
@@ -213,10 +212,10 @@ public class TafFragment extends WxFragmentBase {
 
                 View detail = findViewById( R.id.wx_detail_layout );
                 detail.setVisibility( View.GONE );
-                LinearLayout layout = (LinearLayout) findViewById( R.id.wx_status_layout );
+                LinearLayout layout = findViewById( R.id.wx_status_layout );
                 layout.removeAllViews();
                 layout.setVisibility( View.GONE );
-                TextView tv =(TextView) findViewById( R.id.status_msg );
+                TextView tv = findViewById( R.id.status_msg );
                 tv.setVisibility( View.VISIBLE );
                 tv.setText( String.format( Locale.US, "No wx station with TAF was found near %s"
                         +" within %dNM radius", stationId, TAF_RADIUS ) );
@@ -236,7 +235,7 @@ public class TafFragment extends WxFragmentBase {
 
     }
 
-    protected void requestTaf( String stationId, boolean refresh ) {
+    private void requestTaf( String stationId, boolean refresh ) {
         Intent service = new Intent( getActivity(), TafService.class );
         service.setAction( mAction );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
@@ -246,7 +245,7 @@ public class TafFragment extends WxFragmentBase {
         getActivity().startService( service );
     }
 
-    protected void showTaf( Intent intent ) {
+    private void showTaf( Intent intent ) {
         if ( getActivity() == null ) {
             return;
         }
@@ -257,8 +256,8 @@ public class TafFragment extends WxFragmentBase {
         }
 
         View detail = findViewById( R.id.wx_detail_layout );
-        LinearLayout layout = (LinearLayout) findViewById( R.id.wx_status_layout );
-        TextView tv =(TextView) findViewById( R.id.status_msg );
+        LinearLayout layout = findViewById( R.id.wx_status_layout );
+        TextView tv = findViewById( R.id.status_msg );
         layout.removeAllViews();
         if ( !taf.isValid ) {
             tv.setVisibility( View.VISIBLE );
@@ -279,14 +278,14 @@ public class TafFragment extends WxFragmentBase {
             detail.setVisibility( View.VISIBLE );
         }
 
-        tv = (TextView) findViewById( R.id.wx_age );
+        tv = findViewById( R.id.wx_age );
         tv.setText( TimeUtils.formatElapsedTime( taf.issueTime ) );
 
         // Raw Text
-        tv = (TextView) findViewById( R.id.wx_raw_taf );
+        tv = findViewById( R.id.wx_raw_taf );
         tv.setText( taf.rawText.replaceAll( "(FM|BECMG|TEMPO)", "\n    $1" ) );
 
-        layout = (LinearLayout) findViewById( R.id.taf_summary_layout );
+        layout = findViewById( R.id.taf_summary_layout );
         layout.removeAllViews();
         String fcstType;
         if ( taf.rawText.startsWith( "TAF AMD " ) ) {
@@ -307,7 +306,7 @@ public class TafFragment extends WxFragmentBase {
             addRow( layout, "\u2022 "+taf.remarks );
         }
 
-        LinearLayout topLayout = (LinearLayout) findViewById( R.id.taf_forecasts_layout );
+        LinearLayout topLayout = findViewById( R.id.taf_forecasts_layout );
         topLayout.removeAllViews();
 
         StringBuilder sb = new StringBuilder();
@@ -342,7 +341,7 @@ public class TafFragment extends WxFragmentBase {
                     mLastForecast.skyConditions, mLastForecast.visibilitySM );
             WxUtils.setFlightCategoryDrawable( tv, flightCategory );
 
-            LinearLayout fcst_layout = (LinearLayout) grp_layout.findViewById( R.id.group_details );
+            LinearLayout fcst_layout = grp_layout.findViewById( R.id.group_details );
 
             if ( forecast.probability < Integer.MAX_VALUE ) {
                 addRow( fcst_layout, "Probability", String.format( Locale.US,
@@ -426,7 +425,7 @@ public class TafFragment extends WxFragmentBase {
             topLayout.addView( grp_layout, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
         }
 
-        tv = (TextView) findViewById( R.id.wx_fetch_time );
+        tv = findViewById( R.id.wx_fetch_time );
         tv.setText( String.format( Locale.US, "Fetched on %s",
                 TimeUtils.formatDateTime( getActivityBase(), taf.fetchTime )  ) );
         tv.setVisibility( View.VISIBLE );

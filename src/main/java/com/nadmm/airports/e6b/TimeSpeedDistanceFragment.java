@@ -116,10 +116,10 @@ public class TimeSpeedDistanceFragment extends E6bFragmentBase {
     }
 
     private void setupUi() {
-        mTimeEdit = (EditText) findViewById( R.id.e6b_edit_time );
-        mTime2Edit = (EditText) findViewById( R.id.e6b_edit_time2 );
-        mDistanceEdit = (EditText) findViewById( R.id.e6b_edit_distance );
-        mGsEdit = (EditText) findViewById( R.id.e6b_edit_gs );
+        mTimeEdit = findViewById( R.id.e6b_edit_time );
+        mTime2Edit = findViewById( R.id.e6b_edit_time2 );
+        mDistanceEdit = findViewById( R.id.e6b_edit_distance );
+        mGsEdit = findViewById( R.id.e6b_edit_gs );
 
         if ( mMode == R.id.E6B_TSD_TIME ) {
             mTimeEdit.setFocusable( false );

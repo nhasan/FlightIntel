@@ -46,11 +46,11 @@ public class AltitudesFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mElevationEdit = (EditText) findViewById( R.id.e6b_edit_elevation );
-        mAltimeterEdit = (EditText) findViewById( R.id.e6b_edit_altimeter_inhg );
-        mTemperatureEdit = (EditText) findViewById( R.id.e6b_edit_temperature_c );
-        mPressureAltitudeEdit = (EditText) findViewById( R.id.e6b_edit_pa );
-        mDensityAltitudeEdit = (EditText) findViewById( R.id.e6b_edit_da );
+        mElevationEdit = findViewById( R.id.e6b_edit_elevation );
+        mAltimeterEdit = findViewById( R.id.e6b_edit_altimeter_inhg );
+        mTemperatureEdit = findViewById( R.id.e6b_edit_temperature_c );
+        mPressureAltitudeEdit = findViewById( R.id.e6b_edit_pa );
+        mDensityAltitudeEdit = findViewById( R.id.e6b_edit_da );
 
         mElevationEdit.addTextChangedListener( mTextWatcher );
         mAltimeterEdit.addTextChangedListener( mTextWatcher );

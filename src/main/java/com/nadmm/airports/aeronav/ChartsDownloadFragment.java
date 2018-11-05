@@ -267,7 +267,7 @@ public class ChartsDownloadFragment extends FragmentBase {
             mExpired = true;
         }
 
-        TextView tv = (TextView) findViewById( R.id.charts_cycle_expiry );
+        TextView tv = findViewById( R.id.charts_cycle_expiry );
         if ( mExpired ) {
             tv.setText( String.format( Locale.US, "This chart cycle has expired on %s",
                     TimeUtils.formatDateTime( getActivityBase(), endDate.getTime() ) ) );
@@ -276,7 +276,7 @@ public class ChartsDownloadFragment extends FragmentBase {
                     TimeUtils.formatDateTime( getActivityBase(), endDate.getTime() ) ) );
         }
 
-        tv = (TextView) findViewById( R.id.charts_download_msg );
+        tv = findViewById( R.id.charts_download_msg );
         tv.setText( "Each TPP volume is about 150-250MB in size and may take 15-30 mins"
                 +" to download. The Instrument Procedure charts are in PDF format and"
                 +" stored on the external SD card storage. These are not the sectional charts."
@@ -301,12 +301,12 @@ public class ChartsDownloadFragment extends FragmentBase {
             mIsOk = false;
         }
 
-        tv = (TextView) findViewById( R.id.charts_download_warning );
+        tv = findViewById( R.id.charts_download_warning );
         tv.setText( msg );
         UiUtils.setTextViewDrawable( tv, mIsOk?
                 R.drawable.ic_check : R.drawable.ic_highlight_remove );
 
-        LinearLayout layout = (LinearLayout) findViewById( R.id.vol_chart_details );
+        LinearLayout layout = findViewById( R.id.vol_chart_details );
         c = result[ 1 ];
         if ( c.moveToFirst() ) {
             do {

@@ -86,10 +86,10 @@ public final class IlsFragment extends FragmentBase {
 
     private void showIlsDetails( Cursor[] result ) {
         Cursor ils1 = result[ 1 ];
-        TextView tv = (TextView) findViewById( R.id.rwy_ils_label );
+        TextView tv = findViewById( R.id.rwy_ils_label );
         String rwyId = ils1.getString( ils1.getColumnIndex( Ils1.RUNWAY_ID ) );
         tv.setText( "Runway "+rwyId );
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_ils_details );
+        LinearLayout layout = findViewById( R.id.rwy_ils_details );
         String ilsType = ils1.getString( ils1.getColumnIndex( Ils1.ILS_TYPE ) );
         addRow( layout, "Type", ilsType );
         String locId = ils1.getString( ils1.getColumnIndex( Ils1.ILS_ID ) );
@@ -105,7 +105,7 @@ public final class IlsFragment extends FragmentBase {
     private void showLocalizerDetails( Cursor[] result ) {
         Cursor ils2 = result[ 2 ];
         if ( ils2.moveToFirst() ) {
-            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_loc_details );
+            LinearLayout layout = findViewById( R.id.rwy_loc_details );
             String locFreq = ils2.getString( ils2.getColumnIndex( Ils2.LOCALIZER_FREQUENCY ) );
             addRow( layout, "Frequency", locFreq );
             float locWidth = ils2.getFloat( ils2.getColumnIndex( Ils2.LOCALIZER_COURSE_WIDTH ) );
@@ -118,9 +118,9 @@ public final class IlsFragment extends FragmentBase {
             String date = ils2.getString( ils2.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
             addRow( layout, "Status", status, date );
         } else {
-            TextView tv = (TextView) findViewById( R.id.rwy_loc_label );
+            TextView tv = findViewById( R.id.rwy_loc_label );
             tv.setVisibility( View.GONE );
-            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_loc_details );
+            LinearLayout layout = findViewById( R.id.rwy_loc_details );
             layout.setVisibility( View.GONE );
         }
     }
@@ -128,7 +128,7 @@ public final class IlsFragment extends FragmentBase {
     private void showGlideslopeDetails( Cursor[] result ) {
         Cursor ils3 = result[ 3 ];
         if ( ils3.moveToFirst() ) {
-            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_gs_details );
+            LinearLayout layout = findViewById( R.id.rwy_gs_details );
             String gsType = ils3.getString( ils3.getColumnIndex( Ils3.GLIDE_SLOPE_TYPE ) );
             addRow( layout, "Type", gsType );
             float gsAngle = ils3.getFloat( ils3.getColumnIndex( Ils3.GLIDE_SLOPE_ANGLE ) );
@@ -139,9 +139,9 @@ public final class IlsFragment extends FragmentBase {
             String date = ils3.getString( ils3.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
             addRow( layout, "Status", status, date );
         } else {
-            TextView tv = (TextView) findViewById( R.id.rwy_gs_label );
+            TextView tv = findViewById( R.id.rwy_gs_label );
             tv.setVisibility( View.GONE );
-            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_gs_details );
+            LinearLayout layout = findViewById( R.id.rwy_gs_details );
             layout.setVisibility( View.GONE );
         }
     }
@@ -149,7 +149,7 @@ public final class IlsFragment extends FragmentBase {
     private void showInnerMarkerDetails( Cursor[] result ) {
         Cursor ils5 = result[ 5 ];
         if ( ils5.moveToFirst() ) {
-            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_im_details );
+            LinearLayout layout = findViewById( R.id.rwy_im_details );
             String imType = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_TYPE ) );
             addRow( layout, "Type", imType );
             int distance = ils5.getInt( ils5.getColumnIndex( Ils5.MARKER_DISTANCE ) );
@@ -158,9 +158,9 @@ public final class IlsFragment extends FragmentBase {
             String date = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
             addRow( layout, "Status", status, date );
         } else {
-            TextView tv = (TextView) findViewById( R.id.rwy_im_label );
+            TextView tv = findViewById( R.id.rwy_im_label );
             tv.setVisibility( View.GONE );
-            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_im_details );
+            LinearLayout layout = findViewById( R.id.rwy_im_details );
             layout.setVisibility( View.GONE );
         }
     }
@@ -168,7 +168,7 @@ public final class IlsFragment extends FragmentBase {
     private void showMiddleMarkerDetails( Cursor[] result ) {
         Cursor ils5 = result[ 6 ];
         if ( ils5.moveToFirst() ) {
-            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_mm_details );
+            LinearLayout layout = findViewById( R.id.rwy_mm_details );
             String mmType = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_TYPE ) );
             addRow( layout, "Type", mmType );
             String mmId = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_ID ) );
@@ -189,9 +189,9 @@ public final class IlsFragment extends FragmentBase {
             String date = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
             addRow( layout, "Status", status, date );
         } else {
-            TextView tv = (TextView) findViewById( R.id.rwy_mm_label );
+            TextView tv = findViewById( R.id.rwy_mm_label );
             tv.setVisibility( View.GONE );
-            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_mm_details );
+            LinearLayout layout = findViewById( R.id.rwy_mm_details );
             layout.setVisibility( View.GONE );
         }
     }
@@ -199,7 +199,7 @@ public final class IlsFragment extends FragmentBase {
     private void showOuterMarkerDetails( Cursor[] result ) {
         Cursor ils5 = result[ 7 ];
         if ( ils5.moveToFirst() ) {
-            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_om_details );
+            LinearLayout layout = findViewById( R.id.rwy_om_details );
             String omType = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_TYPE ) );
             addRow( layout, "Type", omType );
             String omId = ils5.getString( ils5.getColumnIndex( Ils5.MARKER_BEACON_ID ) );
@@ -220,16 +220,16 @@ public final class IlsFragment extends FragmentBase {
             String date = ils5.getString( ils5.getColumnIndex( Ils2.OPERATIONAL_EFFECTIVE_DATE ) );
             addRow( layout, "Status", status, date );
         } else {
-            TextView tv = (TextView) findViewById( R.id.rwy_om_label );
+            TextView tv = findViewById( R.id.rwy_om_label );
             tv.setVisibility( View.GONE );
-            LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_om_details );
+            LinearLayout layout = findViewById( R.id.rwy_om_details );
             layout.setVisibility( View.GONE );
         }
     }
 
     private void showIlsRemarks( Cursor[] result ) {
         Cursor ils6 = result[ 8 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_ils_remarks );
+        LinearLayout layout = findViewById( R.id.rwy_ils_remarks );
         if ( ils6.moveToFirst() ) {
             do {
                 String remark = ils6.getString( ils6.getColumnIndex( Ils6.ILS_REMARKS ) );

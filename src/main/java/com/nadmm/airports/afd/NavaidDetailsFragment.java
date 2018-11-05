@@ -82,7 +82,7 @@ public final class NavaidDetailsFragment extends FragmentBase {
 
     private void showNavaidDetails( Cursor[] result ) {
         Cursor nav1 = result[ 0 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_details );
+        LinearLayout layout = findViewById( R.id.navaid_details );
         String navaidClass = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_CLASS ) );
         String navaidType = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_TYPE ) );
         addRow( layout, "Class", navaidClass );
@@ -148,7 +148,7 @@ public final class NavaidDetailsFragment extends FragmentBase {
 
     private void showNavaidNotams( Cursor[] result ) {
         Cursor nav1 = result[ 0 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_notams );
+        LinearLayout layout = findViewById( R.id.navaid_notams );
         String navaidId = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_ID ) );
         String navaidType = nav1.getString( nav1.getColumnIndex( Nav1.NAVAID_TYPE ) );
         Intent intent = new Intent( getActivity(), NavaidNotamActivity.class );
@@ -159,7 +159,7 @@ public final class NavaidDetailsFragment extends FragmentBase {
 
     private void showNavaidRemarks( Cursor[] result ) {
         Cursor nav2 = result[ 1 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.navaid_remarks );
+        LinearLayout layout = findViewById( R.id.navaid_remarks );
 
         if ( nav2.moveToFirst() ) {
             do {

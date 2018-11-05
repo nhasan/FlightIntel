@@ -132,29 +132,25 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
 
         mFormat = new DecimalFormat( "#,##0.###" );
 
-        mUnitTypeSpinner = (Spinner) findViewById( R.id.unit_type_spinner );
+        mUnitTypeSpinner = findViewById( R.id.unit_type_spinner );
         ArrayAdapter<String> adapter = getArrayAdapter( mUnitAdapters.keySet() );
         mUnitTypeSpinner.setAdapter( adapter );
         mUnitTypeSpinner.setOnItemSelectedListener( this );
 
-        mFromUnitSpinner = (Spinner) findViewById( R.id.unit_from_spinner );
+        mFromUnitSpinner = findViewById( R.id.unit_from_spinner );
         mFromUnitSpinner.setOnItemSelectedListener( this );
-        mToUnitSpinner = (Spinner) findViewById( R.id.unit_to_spinner );
+        mToUnitSpinner = findViewById( R.id.unit_to_spinner );
         mToUnitSpinner.setOnItemSelectedListener( this );
 
-        mToUnitValue = (EditText) findViewById( R.id.unit_to_value );
+        mToUnitValue = findViewById( R.id.unit_to_value );
         mToUnitValue.setFocusable( false );
-        mFromUnitValue = (EditText) findViewById( R.id.unit_from_value );
+        mFromUnitValue = findViewById( R.id.unit_from_value );
         mFromUnitValue.addTextChangedListener( mTextWatcher );
 
-        Button btn = (Button) findViewById( R.id.btnReset );
-        btn.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                mFromUnitValue.setText( "" );
-                mToUnitValue.setText( "" );
-            }
+        Button btn = findViewById( R.id.btnReset );
+        btn.setOnClickListener( v -> {
+            mFromUnitValue.setText( "" );
+            mToUnitValue.setText( "" );
         } );
 
         setFragmentContentShown( true );
@@ -202,14 +198,14 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
         }
     }
 
-    protected ArrayAdapter<Unit> getArrayAdapter( Unit[] units ) {
+    private ArrayAdapter<Unit> getArrayAdapter( Unit[] units ) {
         ArrayAdapter<Unit> adapter = new ArrayAdapter<>( getActivity(),
                 android.R.layout.simple_spinner_item, units );
         adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
         return adapter;
     }
 
-    protected ArrayAdapter<String> getArrayAdapter( Set<String> list ) {
+    private ArrayAdapter<String> getArrayAdapter( Set<String> list ) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
                 android.R.layout.simple_spinner_item, list.toArray( new String[ list.size() ] ) );
         adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );

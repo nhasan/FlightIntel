@@ -46,7 +46,7 @@ public class DonateFragment extends FragmentBase implements View.OnClickListener
     private final int RC_REQUEST = 10001;
     private IabHelper mHelper;
     private DonateDatabase mDonateDb;
-    ArrayList<String> mSkuList = new ArrayList<>();
+    private ArrayList<String> mSkuList = new ArrayList<>();
 
     // Listener that's called when we finish querying the items and subscriptions we own
     private IabHelper.QueryInventoryFinishedListener mGotInventoryListener =
@@ -68,7 +68,7 @@ public class DonateFragment extends FragmentBase implements View.OnClickListener
             };
 
     // Callback for when a purchase is finished
-    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
+    private IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener
             = new IabHelper.OnIabPurchaseFinishedListener() {
         public void onIabPurchaseFinished( IabResult result, Purchase purchase ) {
             Log.d( DonateActivity.TAG, "Purchase finished: " + result + ", purchase: " + purchase );
@@ -123,21 +123,19 @@ public class DonateFragment extends FragmentBase implements View.OnClickListener
         // Start setup. This is asynchronous and the specified listener
         // will be called once setup completes.
         Log.d( DonateActivity.TAG, "Starting setup." );
-        mHelper.startSetup( new IabHelper.OnIabSetupFinishedListener() {
-            public void onIabSetupFinished( IabResult result ) {
-                if ( !result.isSuccess() ) {
-                    Log.d( DonateActivity.TAG, "Setup failed." );
-                    showDonationView( null );
-                    return;
-                }
-
-                // Have we been disposed of in the meantime? If so, quit.
-                if ( mHelper == null ) return;
-
-                // IAB is fully set up. Now, let's get an inventory of stuff we own.
-                Log.d( DonateActivity.TAG, "Setup successful. Querying inventory." );
-                mHelper.queryInventoryAsync( true, mSkuList, mGotInventoryListener );
+        mHelper.startSetup( result -> {
+            if ( !result.isSuccess() ) {
+                Log.d( DonateActivity.TAG, "Setup failed." );
+                showDonationView( null );
+                return;
             }
+
+            // Have we been disposed of in the meantime? If so, quit.
+            if ( mHelper == null ) return;
+
+            // IAB is fully set up. Now, let's get an inventory of stuff we own.
+            Log.d( DonateActivity.TAG, "Setup successful. Querying inventory." );
+            mHelper.queryInventoryAsync( true, mSkuList, mGotInventoryListener );
         } );
     }
 
@@ -178,8 +176,8 @@ public class DonateFragment extends FragmentBase implements View.OnClickListener
         }
     }
 
-    protected void showDonationView( Inventory inventory ) {
-        TextView tv = (TextView) findViewById( R.id.donate_text );
+    private void showDonationView( Inventory inventory ) {
+        TextView tv = findViewById( R.id.donate_text );
 
         if ( inventory != null ) {
             tv.setText( "Please consider making a donation to help me recover the costs to"
@@ -188,8 +186,8 @@ public class DonateFragment extends FragmentBase implements View.OnClickListener
                     + "\n\n"
                     + "Thank you for your support." );
 
-            tv = (TextView) findViewById( R.id.donate_level_label );
-            LinearLayout layout = (LinearLayout) findViewById( R.id.donate_level_layout );
+            tv = findViewById( R.id.donate_level_label );
+            LinearLayout layout = findViewById( R.id.donate_level_layout );
             layout.removeAllViews();
 
             List<String> skus = inventory.getAllSkus();
@@ -215,8 +213,8 @@ public class DonateFragment extends FragmentBase implements View.OnClickListener
                 layout.setVisibility( View.GONE );
             }
 
-            tv = (TextView) findViewById( R.id.donate_text2 );
-            layout = (LinearLayout) findViewById( R.id.past_donations_layout );
+            tv = findViewById( R.id.donate_text2 );
+            layout = findViewById( R.id.past_donations_layout );
             layout.removeAllViews();
             mDonateDb.deleteAllDonations();
             if ( purchases.isEmpty() ) {

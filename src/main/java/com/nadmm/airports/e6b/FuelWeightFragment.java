@@ -136,7 +136,7 @@ public class FuelWeightFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mFuelTypes = (Spinner) findViewById( R.id.e6b_fuel_types );
+        mFuelTypes = findViewById( R.id.e6b_fuel_types );
         ArrayAdapter<FuelWeight> adapter = new ArrayAdapter<>( getActivity(),
                 android.R.layout.simple_spinner_item, mFuels );
         adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
@@ -154,8 +154,8 @@ public class FuelWeightFragment extends E6bFragmentBase {
             }
         } );
 
-        mFuelTotal = (EditText) findViewById( R.id.e6b_edit_total_fuel );
-        mFuelWeight = (EditText) findViewById( R.id.e6b_edit_total_weight );
+        mFuelTotal = findViewById( R.id.e6b_edit_total_fuel );
+        mFuelWeight = findViewById( R.id.e6b_edit_total_weight );
 
         mFuelTotal.addTextChangedListener( mTextWatcher );
 

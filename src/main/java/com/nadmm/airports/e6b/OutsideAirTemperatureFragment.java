@@ -45,10 +45,10 @@ public class OutsideAirTemperatureFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mIatEdit = (EditText) findViewById( R.id.e6b_edit_iat );
-        mRecoveryFactorEdit = (EditText) findViewById( R.id.e6b_edit_recovery_factor );
-        mTasEdit = (EditText) findViewById( R.id.e6b_edit_tas );
-        mOatEdit = (EditText) findViewById( R.id.e6b_edit_oat );
+        mIatEdit = findViewById( R.id.e6b_edit_iat );
+        mRecoveryFactorEdit = findViewById( R.id.e6b_edit_recovery_factor );
+        mTasEdit = findViewById( R.id.e6b_edit_tas );
+        mOatEdit = findViewById( R.id.e6b_edit_oat );
 
         // Use a comon case default
         mRecoveryFactorEdit.setText( "0.95" );

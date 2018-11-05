@@ -46,11 +46,11 @@ public class TrueAltitudeFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mIaEdit = (EditText) findViewById( R.id.e6b_edit_ia );
-        mOatEdit = (EditText) findViewById( R.id.e6b_edit_oat );
-        mAltimeterEdit = (EditText) findViewById( R.id.e6b_edit_altimeter );
-        mStationAltitudeEdit = (EditText) findViewById( R.id.e6b_edit_station_altitude );
-        mTrueAltitudeEdit = (EditText) findViewById( R.id.e6b_edit_ta );
+        mIaEdit = findViewById( R.id.e6b_edit_ia );
+        mOatEdit = findViewById( R.id.e6b_edit_oat );
+        mAltimeterEdit = findViewById( R.id.e6b_edit_altimeter );
+        mStationAltitudeEdit = findViewById( R.id.e6b_edit_station_altitude );
+        mTrueAltitudeEdit = findViewById( R.id.e6b_edit_ta );
 
         mIaEdit.addTextChangedListener( mTextWatcher );
         mOatEdit.addTextChangedListener( mTextWatcher );

@@ -90,49 +90,43 @@ public class ClockFragment extends FragmentBase {
         }
     }
 
-    protected void updateTime() {
+    private void updateTime() {
         Date now = new Date();
 
         TimeZone utcTz = TimeZone.getTimeZone( "GMT" );
         mTimeFormat.setTimeZone( utcTz );
         mDateFormat.setTimeZone( utcTz );
-        TextView tv = (TextView) findViewById( R.id.utc_time_value );
+        TextView tv = findViewById( R.id.utc_time_value );
         tv.setText( mTimeFormat.format( now )+" UTC" );
-        tv = (TextView) findViewById( R.id.utc_date_value );
+        tv = findViewById( R.id.utc_date_value );
         tv.setText( mDateFormat.format( now ) );
 
         TimeZone localTz = TimeZone.getDefault();
         mTimeFormat.setTimeZone( localTz );
         mDateFormat.setTimeZone( localTz );
-        tv = (TextView) findViewById( R.id.local_time_value );
+        tv = findViewById( R.id.local_time_value );
         tv.setText( mTimeFormat.format( now )
                 +" "+localTz.getDisplayName( localTz.inDaylightTime( now ), TimeZone.SHORT ) );
-        tv = (TextView) findViewById( R.id.local_date_value );
+        tv = findViewById( R.id.local_date_value );
         tv.setText( mDateFormat.format( now ) );
 
         if ( mHomeTzId != null && mHomeTzId.length() > 0 ) {
             TimeZone homeTz = TimeZone.getTimeZone( mHomeTzId );
             mTimeFormat.setTimeZone( homeTz );
             mDateFormat.setTimeZone( homeTz );
-            tv = (TextView) findViewById( R.id.home_time_value );
+            tv = findViewById( R.id.home_time_value );
             tv.setText( mTimeFormat.format( now )
                     +" "+homeTz.getDisplayName( homeTz.inDaylightTime( now ), TimeZone.SHORT ) );
-            tv = (TextView) findViewById( R.id.home_date_value );
+            tv = findViewById( R.id.home_date_value );
             tv.setText( mDateFormat.format( now ) );
         }
 
         scheduleUpdate();
     }
 
-    protected void scheduleUpdate() {
+    private void scheduleUpdate() {
         if ( mRunnable == null ) {
-            mRunnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    updateTime();
-                }
-            };
+            mRunnable = () -> updateTime();
         }
         // Reschedule at the next second boundary
         long now = new Date().getTime();

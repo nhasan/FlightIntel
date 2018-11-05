@@ -100,12 +100,12 @@ public class NotamFragmentBase extends FragmentBase {
     }
 
     private void showNotams( File notamFile ) {
-        LinearLayout content = (LinearLayout) findViewById( R.id.notam_content_layout );
+        LinearLayout content = findViewById( R.id.notam_content_layout );
 
         HashMap<String, ArrayList<String>> notams = parseNotams( notamFile );
         if ( notams == null ) {
             // NOTAM cache file is missing. Must be an issue with fetching from FAA
-            TextView title1 = (TextView) findViewById( R.id.notam_title1 );
+            TextView title1 = findViewById( R.id.notam_title1 );
             title1.setText( "Unable to show NOTAMs at this moment" );
             return;
         }
@@ -119,10 +119,10 @@ public class NotamFragmentBase extends FragmentBase {
             }
 
             LinearLayout item = (LinearLayout) inflate( R.layout.notam_detail_item );
-            TextView tv = (TextView) item.findViewById( R.id.notam_subject );
+            TextView tv = item.findViewById( R.id.notam_subject );
             tv.setText( subject );
 
-            LinearLayout details = (LinearLayout) item.findViewById( R.id.notam_details );
+            LinearLayout details = item.findViewById( R.id.notam_details );
             ArrayList<String> list = notams.get( subject );
             count += list.size();
             for ( String notam : list ) {
@@ -133,9 +133,9 @@ public class NotamFragmentBase extends FragmentBase {
                     LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
         }
 
-        TextView title1 = (TextView) findViewById( R.id.notam_title1 );
+        TextView title1 = findViewById( R.id.notam_title1 );
         title1.setText( getResources().getQuantityString( R.plurals.notams_found, count, count ) );
-        TextView title2 = (TextView) findViewById( R.id.notam_title2 );
+        TextView title2 = findViewById( R.id.notam_title2 );
         Date lastModified = new Date( notamFile.lastModified() );
         title2.setText( "Updated "+ TimeUtils.formatElapsedTime( lastModified.getTime() ) );
 
@@ -143,7 +143,7 @@ public class NotamFragmentBase extends FragmentBase {
     }
 
     private HashMap<String, ArrayList<String>> parseNotams( File notamFile ) {
-        // Remeber the ids we have seen to remove duplicates
+        // Remember the ids we have seen to remove duplicates
         HashMap<String, ArrayList<String>> notams = new HashMap<>();
         BufferedReader in = null;
 

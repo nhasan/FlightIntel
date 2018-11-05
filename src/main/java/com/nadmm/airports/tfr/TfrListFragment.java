@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +37,8 @@ import com.nadmm.airports.tfr.TfrList.Tfr;
 import com.nadmm.airports.utils.TimeUtils;
 
 import java.util.Locale;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class TfrListFragment extends ListFragmentBase {
 
@@ -136,7 +137,7 @@ public class TfrListFragment extends ListFragmentBase {
 
             int count = tfrList.entries.size();
             if ( count > 0 ) {
-                TextView tv = (TextView) findViewById( R.id.tfr_fetch_time );
+                TextView tv = findViewById( R.id.tfr_fetch_time );
                 tv.setText( "Fetched "+TimeUtils.formatElapsedTime( tfrList.fetchTime )  );
                 setActionBarSubtitle( String.format( Locale.US, "%d TFRs found", count) );
             } else {

@@ -128,7 +128,7 @@ public final class NearbyFssFragment extends FragmentBase {
 
     private void showFssDetails( Cursor[] result ) {
         Cursor com = result[ 1 ];
-        LinearLayout detailLayout = (LinearLayout) findViewById( R.id.fss_detail_layout );
+        LinearLayout detailLayout = findViewById( R.id.fss_detail_layout );
         if ( com.moveToFirst() ) {
             do {
                 String outletId = com.getString( com.getColumnIndex( Com.COMM_OUTLET_ID ) );

@@ -207,13 +207,13 @@ public class WindTriangleFragment extends E6bFragmentBase {
         return radians;
     }
 
-    public void setupUi() {
-        mTasEdit = (EditText) findViewById( R.id.e6b_tas_edit );
-        mGsEdit = (EditText) findViewById( R.id.e6b_gs_edit );
-        mHdgEdit = (EditText) findViewById( R.id.e6b_hdg_edit );
-        mCrsEdit = (EditText) findViewById( R.id.e6b_crs_edit );
-        mWsEdit = (EditText) findViewById( R.id.e6b_ws_edit );
-        mWdirEdit = (EditText) findViewById( R.id.e6b_wdir_edit );
+    private void setupUi() {
+        mTasEdit = findViewById( R.id.e6b_tas_edit );
+        mGsEdit = findViewById( R.id.e6b_gs_edit );
+        mHdgEdit = findViewById( R.id.e6b_hdg_edit );
+        mCrsEdit = findViewById( R.id.e6b_crs_edit );
+        mWsEdit = findViewById( R.id.e6b_ws_edit );
+        mWdirEdit = findViewById( R.id.e6b_wdir_edit );
 
         if ( mMode == R.id.E6B_WIND_TRIANGLE_WIND ) {
             // Find wind speed and direction

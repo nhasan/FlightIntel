@@ -227,12 +227,12 @@ public class LibraryPageFragment extends FragmentBase {
             mIsOk = false;
         }
 
-        TextView tv = (TextView) findViewById( R.id.msg_txt );
+        TextView tv = findViewById( R.id.msg_txt );
         tv.setText( msg );
         UiUtils.setTextViewDrawable( tv, mIsOk?
                 R.drawable.ic_check : R.drawable.ic_highlight_remove );
 
-        LinearLayout topLayout = (LinearLayout) findViewById( R.id.main_content );
+        LinearLayout topLayout = findViewById( R.id.main_content );
         for ( Cursor c : result ) {
             if ( c.moveToFirst() ) {
                 LinearLayout layout = (LinearLayout) inflate( R.layout.library_detail_section,

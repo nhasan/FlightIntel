@@ -91,11 +91,11 @@ public final class AlmanacFragment extends FragmentBase {
         TimeZone local = now.getTimeZone();
         TimeZone utc = TimeZone.getTimeZone( "GMT" );
 
-        TextView tv = (TextView) findViewById( R.id.sunrise_sunset_label );
+        TextView tv = findViewById( R.id.sunrise_sunset_label );
         DateFormat date = DateFormat.getDateInstance();
         tv.setText( "Sunrise and Sunset ("+date.format( now.getTime() )+")" );
 
-        LinearLayout layout = (LinearLayout) findViewById( R.id.morning_info_layout );
+        LinearLayout layout = findViewById( R.id.morning_info_layout );
         format.setTimeZone( local );
         addRow( layout, "Morning civil twilight (Local)",
                 format.format( morningTwilight.getTime() ) );
@@ -103,7 +103,7 @@ public final class AlmanacFragment extends FragmentBase {
         addRow( layout, "Morning civil twilight (UTC)",
                 format.format( morningTwilight.getTime() ) );
 
-        layout = (LinearLayout) findViewById( R.id.sunrise_info_layout );
+        layout = findViewById( R.id.sunrise_info_layout );
         if ( sunrise != null ) {
             format.setTimeZone( local );
             addRow( layout, "Sunrise (Local)", format.format( sunrise.getTime() ) );
@@ -114,7 +114,7 @@ public final class AlmanacFragment extends FragmentBase {
             addRow( layout, "Sunrise (UTC)", "Sun does not rise" );
         }
 
-        layout = (LinearLayout) findViewById( R.id.sunset_info_layout );
+        layout = findViewById( R.id.sunset_info_layout );
         if ( sunset != null ) {
             format.setTimeZone( local );
             addRow( layout, "Sunset (Local)", format.format( sunset.getTime() ) );
@@ -125,7 +125,7 @@ public final class AlmanacFragment extends FragmentBase {
             addRow( layout, "Sunset (UTC)", "Sun does not set" );
         }
 
-        layout = (LinearLayout) findViewById( R.id.evening_info_layout );
+        layout = findViewById( R.id.evening_info_layout );
         format.setTimeZone( local );
         addRow( layout, "Evening civil twilight (Local)",
                 format.format( eveningTwilight.getTime() ) );
@@ -133,7 +133,7 @@ public final class AlmanacFragment extends FragmentBase {
         addRow( layout, "Evening civil twilight (UTC)",
                 format.format( eveningTwilight.getTime() ) );
 
-        layout = (LinearLayout) findViewById( R.id.current_time_layout );
+        layout = findViewById( R.id.current_time_layout );
         format.setTimeZone( local );
         addRow( layout, "Local time zone", TimeUtils.getTimeZoneAsString( local ) );
         addRow( layout, "Current time (Local)", format.format( now.getTime() ) );

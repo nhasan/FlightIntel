@@ -61,8 +61,13 @@ public class NavaidNotamFragment extends NotamFragmentBase {
             SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( DatabaseManager.Nav1.TABLE_NAME + " a LEFT OUTER JOIN " + DatabaseManager.States.TABLE_NAME + " s"
-                    + " ON a." + DatabaseManager.Nav1.ASSOC_STATE + "=s." + DatabaseManager.States.STATE_CODE );
+            builder.setTables( DatabaseManager.Nav1.TABLE_NAME
+                    + " a LEFT OUTER JOIN "
+                    + DatabaseManager.States.TABLE_NAME
+                    + " s ON a."
+                    + DatabaseManager.Nav1.ASSOC_STATE
+                    + "=s."
+                    + DatabaseManager.States.STATE_CODE );
             Cursor c = builder.query( db, new String[]{ "*" },
                     DatabaseManager.Nav1.NAVAID_ID + "=? AND " + DatabaseManager.Nav1.NAVAID_TYPE + "=?",
                     new String[]{ navaidId, navaidType }, null, null, null, null );

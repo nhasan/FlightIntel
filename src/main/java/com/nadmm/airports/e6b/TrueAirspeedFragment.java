@@ -46,11 +46,11 @@ public class TrueAirspeedFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mIndicatedAirSpeedEdit = (EditText) findViewById( R.id.e6b_edit_ias );
-        mIndicatedAltitudeEdit = (EditText) findViewById( R.id.e6b_edit_ia );
-        mAltimeterEdit = (EditText) findViewById( R.id.e6b_edit_altimeter );
-        mTemperatureEdit = (EditText) findViewById( R.id.e6b_edit_temperature_c );
-        mTrueAirSpeedEdit = (EditText) findViewById( R.id.e6b_edit_tas );
+        mIndicatedAirSpeedEdit = findViewById( R.id.e6b_edit_ias );
+        mIndicatedAltitudeEdit = findViewById( R.id.e6b_edit_ia );
+        mAltimeterEdit = findViewById( R.id.e6b_edit_altimeter );
+        mTemperatureEdit = findViewById( R.id.e6b_edit_temperature_c );
+        mTrueAirSpeedEdit = findViewById( R.id.e6b_edit_tas );
 
         mIndicatedAirSpeedEdit.addTextChangedListener( mTextWatcher );
         mIndicatedAltitudeEdit.addTextChangedListener( mTextWatcher );

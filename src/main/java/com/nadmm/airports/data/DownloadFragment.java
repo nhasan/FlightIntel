@@ -22,7 +22,6 @@ package com.nadmm.airports.data;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -35,8 +34,6 @@ import android.os.ResultReceiver;
 import android.provider.BaseColumns;
 import android.sax.Element;
 import android.sax.RootElement;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -71,6 +68,9 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 public class DownloadFragment extends FragmentBase {
 
@@ -156,7 +156,7 @@ public class DownloadFragment extends FragmentBase {
                 v -> checkNetworkAndDownload()
         );
 
-        Button btnDelete = (Button) view.findViewById( R.id.btnDelete );
+        Button btnDelete = view.findViewById( R.id.btnDelete );
         btnDelete.setOnClickListener(
                 v -> checkDelete()
         );
@@ -182,7 +182,7 @@ public class DownloadFragment extends FragmentBase {
     }
 
     private void checkNetworkAndDownload() {
-        NetworkUtils.checkNetworkAndDownload( getActivity(), () -> download() );
+        NetworkUtils.checkNetworkAndDownload( getActivity(), this::download );
     }
 
     private void download() {
@@ -201,19 +201,11 @@ public class DownloadFragment extends FragmentBase {
     private void checkDelete() {
         AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
         builder.setMessage( "Are you sure you want to delete all installed data?" )
-                .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick( DialogInterface dialog, int id ) {
-                        DeleteDataTask deleteTask = new DeleteDataTask();
-                        deleteTask.execute( (Void) null );
-                    }
+                .setPositiveButton( "Yes", ( dialog, id ) -> {
+                    DeleteDataTask deleteTask = new DeleteDataTask();
+                    deleteTask.execute( (Void) null );
                 } )
-                .setNegativeButton( "No", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick( DialogInterface dialog, int id ) {
-                    }
+                .setNegativeButton( "No", ( dialog, id ) -> {
                 } );
         AlertDialog alert = builder.create();
         alert.show();
@@ -224,7 +216,7 @@ public class DownloadFragment extends FragmentBase {
         task.execute( startDownload );
     }
 
-    protected void cleanupExpiredData() {
+    private void cleanupExpiredData() {
         SQLiteDatabase catalogDb = mDbManager.getCatalogDb();
 
         Cursor c = mDbManager.getAllFromCatalog();
@@ -263,19 +255,19 @@ public class DownloadFragment extends FragmentBase {
         return c;
     }
 
-    protected void updateDownloadList() {
+    private void updateDownloadList() {
         Cursor c = createCursor();
         DownloadListAdapter adapter = new DownloadListAdapter( getActivity(), c );
         mListView.setAdapter( adapter );
         setContentShown( true );
 
         if ( c.getCount() == 0 ) {
-            TextView empty = (TextView) findViewById( android.R.id.empty );
+            TextView empty = findViewById( android.R.id.empty );
             empty.setText( R.string.download_error );
             return;
         }
 
-        Button btnDelete = (Button) findViewById( R.id.btnDelete );
+        Button btnDelete = findViewById( R.id.btnDelete );
         if ( !mInstalledData.isEmpty() ) {
             btnDelete.setVisibility( View.VISIBLE );
             btnDelete.setEnabled( true );
@@ -283,7 +275,7 @@ public class DownloadFragment extends FragmentBase {
             btnDelete.setVisibility( View.GONE );
         }
 
-        Button btnDownload = (Button) findViewById( R.id.btnDownload );
+        Button btnDownload = findViewById( R.id.btnDownload );
         if ( !mAvailableData.isEmpty() ) {
             btnDownload.setVisibility( View.VISIBLE );
             btnDownload.setEnabled( true );
@@ -357,11 +349,11 @@ public class DownloadFragment extends FragmentBase {
             }
         }
 
-        protected ProgressTracker getTrackerForType( String type ) {
+        private ProgressTracker getTrackerForType( String type ) {
             return mTrackers.get( type );
         }
 
-        protected int downloadData( final DataInfo data ) {
+        private int downloadData( final DataInfo data ) {
             mHandler.post( () -> mTracker.initProgress( data.size ) );
 
             try {
@@ -386,7 +378,7 @@ public class DownloadFragment extends FragmentBase {
             return 0;
         }
 
-        protected int updateCatalog( DataInfo data ) {
+        private int updateCatalog( DataInfo data ) {
             Date now = new Date();
             ContentValues values = new ContentValues();
             values.put( DatabaseManager.Catalog.TYPE, data.type );
@@ -476,7 +468,7 @@ public class DownloadFragment extends FragmentBase {
 
         @Override
         protected void onPreExecute() {
-            Button btnDownload = (Button) findViewById( R.id.btnDownload );
+            Button btnDownload = findViewById( R.id.btnDownload );
             btnDownload.setEnabled( false );
             mInstalledData.clear();
             mAvailableData.clear();
@@ -514,7 +506,7 @@ public class DownloadFragment extends FragmentBase {
         @Override
         protected void onPostExecute( Integer result ) {
             if ( result != 0 ) {
-                TextView empty = (TextView) findViewById( android.R.id.empty );
+                TextView empty = findViewById( android.R.id.empty );
                 empty.setText( R.string.download_error );
                 return;
             }
@@ -670,7 +662,7 @@ public class DownloadFragment extends FragmentBase {
         private final Date mNow = new Date();
         private final long mSpeed = 500;
 
-        public DownloadCursor() {
+        private DownloadCursor() {
             super( new String[]{ BaseColumns._ID, SECTION, TYPE, DESC, DATES, MSG, EXPIRED } );
         }
 
@@ -742,7 +734,7 @@ public class DownloadFragment extends FragmentBase {
                 tv.setText( tv.getText() + " (Expired)" );
                 tv.setTextColor( Color.RED );
             }
-            tv = (TextView) view.findViewById( R.id.download_msg );
+            tv = view.findViewById( R.id.download_msg );
             tv.setText( cursor.getString( cursor.getColumnIndex( DownloadCursor.MSG ) ) );
         }
 

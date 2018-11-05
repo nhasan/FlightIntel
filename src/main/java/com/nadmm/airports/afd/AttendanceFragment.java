@@ -69,7 +69,7 @@ public final class AttendanceFragment extends FragmentBase {
     private void showAttendanceDetails( Cursor[] result ) {
         Cursor att = result[ 1 ];
         if ( att.moveToFirst() ) {
-            LinearLayout layout = (LinearLayout) findViewById( R.id.attendance_content_layout );
+            LinearLayout layout = findViewById( R.id.attendance_content_layout );
             do {
                 String schedule = att.getString(
                         att.getColumnIndex( Attendance.ATTENDANCE_SCHEDULE ) );
@@ -90,7 +90,7 @@ public final class AttendanceFragment extends FragmentBase {
 
     private void showAttendanceRemarks( Cursor[] result ) {
         Cursor rmk = result[ 2 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.attendance_remark_layout );
+        LinearLayout layout = findViewById( R.id.attendance_remark_layout );
         if ( rmk.moveToFirst() ) {
             layout.setVisibility( View.VISIBLE );
             do {

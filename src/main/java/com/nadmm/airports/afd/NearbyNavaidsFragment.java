@@ -144,7 +144,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
     private void showNavaidDetails( Cursor[] result ) {
         Cursor vor = result[ 1 ];
         if ( vor != null && vor.moveToFirst() ) {
-            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_vor_layout );
+            LinearLayout layout = findViewById( R.id.detail_navaids_vor_layout );
             do {
                 String navaidId = vor.getString( vor.getColumnIndex( Nav1.NAVAID_ID ) );
                 String freq = vor.getString( vor.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
@@ -159,15 +159,15 @@ public final class NearbyNavaidsFragment extends FragmentBase {
                         distance );
             } while ( vor.moveToNext() );
         } else {
-            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_vor_layout );
+            LinearLayout layout = findViewById( R.id.detail_navaids_vor_layout );
             layout.setVisibility( View.GONE );
-            TextView tv = (TextView) findViewById( R.id.detail_navaids_vor_label );
+            TextView tv = findViewById( R.id.detail_navaids_vor_label );
             tv.setVisibility( View.GONE );
         }
 
         Cursor ndb = result[ 2 ];
         if ( ndb != null && ndb.moveToFirst() ) {
-            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_ndb_layout );
+            LinearLayout layout = findViewById( R.id.detail_navaids_ndb_layout );
             do {
                 String navaidId = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_ID ) );
                 String freq = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
@@ -179,9 +179,9 @@ public final class NearbyNavaidsFragment extends FragmentBase {
                         distance );
             } while ( ndb.moveToNext() );
         } else {
-            LinearLayout layout = (LinearLayout) findViewById( R.id.detail_navaids_ndb_layout );
+            LinearLayout layout = findViewById( R.id.detail_navaids_ndb_layout );
             layout.setVisibility( View.GONE );
-            TextView tv = (TextView) findViewById( R.id.detail_navaids_ndb_label );
+            TextView tv = findViewById( R.id.detail_navaids_ndb_label );
             tv.setVisibility( View.GONE );
         }
     }

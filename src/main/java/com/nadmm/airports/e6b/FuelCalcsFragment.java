@@ -124,10 +124,10 @@ public class FuelCalcsFragment extends E6bFragmentBase {
     }
 
     private void setupUi() {
-        mFuelTotalEdit = (EditText) findViewById( R.id.e6b_edit_total_fuel );
-        mFuelRateEdit = (EditText) findViewById( R.id.e6b_edit_burn_rate );
-        mTimeEdit = (EditText) findViewById( R.id.e6b_edit_time );
-        mTime2Edit = (EditText) findViewById( R.id.e6b_edit_time2 );
+        mFuelTotalEdit = findViewById( R.id.e6b_edit_total_fuel );
+        mFuelRateEdit = findViewById( R.id.e6b_edit_burn_rate );
+        mTimeEdit = findViewById( R.id.e6b_edit_time );
+        mTime2Edit = findViewById( R.id.e6b_edit_time2 );
 
         if ( mMenuId == R.id.E6B_FUEL_ENDURANCE ) {
             mFuelTotalEdit.addTextChangedListener( mTextWatcher );

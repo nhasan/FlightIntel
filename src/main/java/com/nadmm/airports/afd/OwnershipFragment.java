@@ -71,7 +71,7 @@ public final class OwnershipFragment extends FragmentBase {
 
     private void showOwnershipType( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_ownership_type_layout );
+        LinearLayout layout = findViewById( R.id.detail_ownership_type_layout );
         String ownership = DataUtils.decodeOwnershipType(
                 apt.getString( apt.getColumnIndex( Airports.OWNERSHIP_TYPE ) ) );
         String use = DataUtils.decodeFacilityUse(
@@ -82,14 +82,14 @@ public final class OwnershipFragment extends FragmentBase {
     private void showOwnerInfo( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         String text;
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_owner_layout );
+        LinearLayout layout = findViewById( R.id.detail_owner_layout );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_NAME ) );
         addSimpleRow( layout, text );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_ADDRESS ) );
         addSimpleRow( layout, text );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_CITY_STATE_ZIP ) );
         addSimpleRow( layout, text );
-        layout = (LinearLayout) findViewById( R.id.detail_owner_phone_layout );
+        layout = findViewById( R.id.detail_owner_phone_layout );
         text = apt.getString( apt.getColumnIndex( Airports.OWNER_PHONE ) );
         if ( text.length() > 0 ) {
             addPhoneRow( layout, text );
@@ -102,7 +102,7 @@ public final class OwnershipFragment extends FragmentBase {
     private void showManagerInfo( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         String text;
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_manager_layout );
+        LinearLayout layout = findViewById( R.id.detail_manager_layout );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_NAME ) );
         addSimpleRow( layout, text );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_ADDRESS ) );
@@ -110,7 +110,7 @@ public final class OwnershipFragment extends FragmentBase {
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_CITY_STATE_ZIP ) );
         addSimpleRow( layout, text );
 
-        layout = (LinearLayout) findViewById( R.id.detail_manager_phone_layout );
+        layout = findViewById( R.id.detail_manager_phone_layout );
         text = apt.getString( apt.getColumnIndex( Airports.MANAGER_PHONE ) );
         if ( text.length() > 0 ) {
             addPhoneRow( layout, text );
@@ -125,7 +125,7 @@ public final class OwnershipFragment extends FragmentBase {
         if ( !rmk.moveToFirst() ) {
             return;
         }
-        LinearLayout layout = (LinearLayout) findViewById( R.id.detail_remarks_layout );
+        LinearLayout layout = findViewById( R.id.detail_remarks_layout );
         layout.setVisibility( View.VISIBLE );
         do {
             String remark = rmk.getString( rmk.getColumnIndex( Remarks.REMARK_TEXT ) );

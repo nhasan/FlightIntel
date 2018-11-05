@@ -103,11 +103,11 @@ public final class RunwaysFragment extends FragmentBase {
             // Actual heading is not available, try to deduce it from runway id
             heading = DataUtils.getRunwayHeading( runwayId );
         }
-        TextView tv = (TextView) findViewById( R.id.rwy_common_label );
+        TextView tv = findViewById( R.id.rwy_common_label );
         tv.setText( "Runway "+runwayId );
         UiUtils.setRunwayDrawable( getActivity(), tv, runwayId, length, heading );
 
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_common_details );
+        LinearLayout layout = findViewById( R.id.rwy_common_details );
         int width = rwy.getInt( rwy.getColumnIndex( Runways.RUNWAY_WIDTH ) );
         addRow( layout, "Dimensions", String.format( "%s x %s",
                 FormatUtils.formatFeet( length ), FormatUtils.formatFeet( width ) ) );
@@ -135,10 +135,10 @@ public final class RunwaysFragment extends FragmentBase {
             // Actual heading is not available, try to deduce it from runway id
             heading = DataUtils.getRunwayHeading( baseEndID );
         }
-        TextView tv = (TextView) findViewById( R.id.rwy_base_end_label );
+        TextView tv = findViewById( R.id.rwy_base_end_label );
         tv.setText( "Runway "+baseEndID );
 
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_base_end_details );
+        LinearLayout layout = findViewById( R.id.rwy_base_end_details );
         addRow( layout, "Magnetic heading", FormatUtils.formatDegrees( heading ) );
 
         String ilsType = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_ILS_TYPE ) );
@@ -284,10 +284,10 @@ public final class RunwaysFragment extends FragmentBase {
             // Actual heading is not available, try to deduce it from runway id
             heading = DataUtils.getRunwayHeading( reciprocalId );
         }
-        TextView tv = (TextView) findViewById( R.id.rwy_reciprocal_end_label );
+        TextView tv = findViewById( R.id.rwy_reciprocal_end_label );
         tv.setText( "Runway "+reciprocalId );
 
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_reciprocal_end_details );
+        LinearLayout layout = findViewById( R.id.rwy_reciprocal_end_details );
         addRow( layout, "Magnetic heading", FormatUtils.formatDegrees( heading ) );
 
         String ilsType = rwy.getString( rwy.getColumnIndex( Runways.RECIPROCAL_END_ILS_TYPE ) );
@@ -418,23 +418,23 @@ public final class RunwaysFragment extends FragmentBase {
 
     private void showHelipadInformation( Cursor[] result ) {
         // Hide the runway sections
-        TextView tv = (TextView) findViewById( R.id.rwy_base_end_label );
+        TextView tv = findViewById( R.id.rwy_base_end_label );
         tv.setVisibility( View.GONE );
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_base_end_details );
+        LinearLayout layout = findViewById( R.id.rwy_base_end_details );
         layout.setVisibility( View.GONE );
-        tv = (TextView) findViewById( R.id.rwy_reciprocal_end_label );
+        tv = findViewById( R.id.rwy_reciprocal_end_label );
         tv.setVisibility( View.GONE );
-        layout = (LinearLayout) findViewById( R.id.rwy_reciprocal_end_details );
+        layout = findViewById( R.id.rwy_reciprocal_end_details );
         layout.setVisibility( View.GONE );
 
         Cursor rwy = result[ 1 ];
 
         String helipadId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
 
-        tv = (TextView) findViewById( R.id.rwy_common_label );
+        tv = findViewById( R.id.rwy_common_label );
         tv.setText( "Helipad "+helipadId );
 
-        layout = (LinearLayout) findViewById( R.id.rwy_common_details );
+        layout = findViewById( R.id.rwy_common_details );
         int length = rwy.getInt( rwy.getColumnIndex( Runways.RUNWAY_LENGTH ) );
         int width = rwy.getInt( rwy.getColumnIndex( Runways.RUNWAY_WIDTH ) );
         addRow( layout, "Dimensions", String.format( "%s x %s",
@@ -456,12 +456,12 @@ public final class RunwaysFragment extends FragmentBase {
         addRow( layout, "Traffic pattern", rhPattern.equals( "Y" )? "Right" : "Left" );
 
         // Show remarks
-        LinearLayout rmkLayout = (LinearLayout) findViewById( R.id.rwy_base_end_remarks );
+        LinearLayout rmkLayout = findViewById( R.id.rwy_base_end_remarks );
         showRemarks( rmkLayout, result, helipadId );
     }
 
     private void showCommonRemarks( Cursor[] result, String runwayId ) {
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_common_remarks );
+        LinearLayout layout = findViewById( R.id.rwy_common_remarks );
         int count = 0;
         Cursor rmk = result[ 4 ];
         if ( rmk.moveToFirst() ) {
@@ -483,7 +483,7 @@ public final class RunwaysFragment extends FragmentBase {
     private void showBaseEndRemarks( Cursor[] result ) {
         int count = 0;
         Cursor rwy = result[ 1 ];
-        LinearLayout layout = (LinearLayout) findViewById(R.id.rwy_base_end_remarks );
+        LinearLayout layout = findViewById( R.id.rwy_base_end_remarks );
         String als = rwy.getString( rwy.getColumnIndex( Runways.BASE_END_APCH_LIGHT_SYSTEM ) );
         if ( als.length() > 0 ) {
             String apchLights = DataUtils.getApproachLightSystemDescription( als );
@@ -515,7 +515,7 @@ public final class RunwaysFragment extends FragmentBase {
     private void showReciprocalEndRemarks( Cursor[] result ) {
         int count = 0;
         Cursor rwy = result[ 1 ];
-        LinearLayout layout = (LinearLayout) findViewById( R.id.rwy_reciprocal_end_remarks );
+        LinearLayout layout = findViewById( R.id.rwy_reciprocal_end_remarks );
         String als = rwy.getString( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_APCH_LIGHT_SYSTEM ) );
         if ( als.length() > 0 ) {
