@@ -37,7 +37,7 @@ public class NestedScrollingListView extends ListView implements NestedScrolling
         this( context, attrs, 0 );
     }
 
-    public NestedScrollingListView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public NestedScrollingListView( Context context, AttributeSet attrs, int defStyleAttr ) {
         super( context, attrs, defStyleAttr );
 
         mChildHelper = new NestedScrollingChildHelper( this );
