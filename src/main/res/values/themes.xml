@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Platform.Theme.FlightIntel" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="listview_margin_bottom">?actionBarSize</item>
@@ -30,8 +30,9 @@
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>
         <item name="android:windowBackground">@color/color_background</item>
+        <item name="android:navigationBarColor" tools:targetApi="21">@color/color_primary_dark</item>
 
-        <item name="popupItemBackground">?android:selectableItemBackground</item>
+        <item name="popupItemBackground">?android:attr/selectableItemBackground</item>
 
         <item name="android:popupMenuStyle">@style/Widget.FlightIntel.PopupMenu</item>
         <item name="android:listPopupWindowStyle">@style/Widget.FlightIntel.PopupMenu</item>
