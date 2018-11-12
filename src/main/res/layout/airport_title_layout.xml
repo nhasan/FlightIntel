@@ -90,27 +90,29 @@
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content" />
 	    </LinearLayout>
-	    <LinearLayout android:id="@+id/header_inner2_layout"
+	    <LinearLayout
+                android:id="@+id/header_inner2_layout"
 	            android:orientation="vertical"
-	            android:paddingLeft="8dp"
-	            android:layout_gravity="center_vertical"
+	            android:layout_gravity="end"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content">
-	        <CheckBox android:id="@+id/airport_star"
+	        <CheckBox
+                    android:id="@+id/airport_star"
 	                style="?android:attr/starStyle"
 	                android:paddingBottom="4dp"
-					android:layout_gravity="center"
+					android:layout_gravity="end"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content" />
-	        <ImageView android:id="@+id/airport_map"
+	        <ImageView
+                    android:id="@+id/airport_map"
 	                android:src="@drawable/ic_map_black_36dp"
 					android:tint="?android:attr/textColorSecondary"
-					style="?android:attr/actionButtonStyle"
-					android:layout_gravity="center"
-					android:paddingTop="4dp"
+                    style="?android:attr/starStyle"
+                    android:layout_gravity="end"
+					android:paddingTop="8dp"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
-					tools:ignore="ContentDescription"/>
+					tools:ignore="ContentDescription" />
 	    </LinearLayout>
 	</LinearLayout>
 </LinearLayout>
