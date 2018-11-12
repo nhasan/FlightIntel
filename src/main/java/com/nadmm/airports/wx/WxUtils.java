@@ -22,6 +22,7 @@ package com.nadmm.airports.wx;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.widget.TextView;
 
@@ -30,6 +31,7 @@ import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class WxUtils {
 
@@ -105,32 +107,40 @@ public class WxUtils {
     static public Drawable getWindBarbDrawable( Context context, Metar metar, float declination ) {
         Drawable d = null;
         if ( isWindAvailable( metar ) ) {
-            int resid;
-            if ( metar.windSpeedKnots >= 48 ) {
-                resid = R.drawable.windbarb50;
-            } else if ( metar.windSpeedKnots >= 43 ) {
-                resid = R.drawable.windbarb45;
-            } else if ( metar.windSpeedKnots >= 38 ) {
-                resid = R.drawable.windbarb40;
-            } else if ( metar.windSpeedKnots >= 33 ) {
-                resid = R.drawable.windbarb35;
-            } else if ( metar.windSpeedKnots >= 28 ) {
-                resid = R.drawable.windbarb30;
-            } else if ( metar.windSpeedKnots >= 23 ) {
-                resid = R.drawable.windbarb25;
-            } else if ( metar.windSpeedKnots >= 18 ) {
-                resid = R.drawable.windbarb20;
-            } else if ( metar.windSpeedKnots >= 13 ) {
-                resid = R.drawable.windbarb15;
-            } else if ( metar.windSpeedKnots >= 8 ) {
-                resid = R.drawable.windbarb10;
-            } else if ( metar.windSpeedKnots >= 3 ) {
-                resid = R.drawable.windbarb5;
-            } else {
-                resid = R.drawable.windbarb0;
+            long dir = GeoUtils.applyDeclination( metar.windDirDegrees, declination );
+            String key = String.format( Locale.US, "Wind-%s-%d-%d",
+                    metar.flightCategory, metar.windSpeedKnots, dir );
+            d = UiUtils.getDrawableFromCache( key );
+            if ( d == null ) {
+                int resid;
+                if ( metar.windSpeedKnots >= 48 ) {
+                    resid = R.drawable.windbarb50;
+                } else if ( metar.windSpeedKnots >= 43 ) {
+                    resid = R.drawable.windbarb45;
+                } else if ( metar.windSpeedKnots >= 38 ) {
+                    resid = R.drawable.windbarb40;
+                } else if ( metar.windSpeedKnots >= 33 ) {
+                    resid = R.drawable.windbarb35;
+                } else if ( metar.windSpeedKnots >= 28 ) {
+                    resid = R.drawable.windbarb30;
+                } else if ( metar.windSpeedKnots >= 23 ) {
+                    resid = R.drawable.windbarb25;
+                } else if ( metar.windSpeedKnots >= 18 ) {
+                    resid = R.drawable.windbarb20;
+                } else if ( metar.windSpeedKnots >= 13 ) {
+                    resid = R.drawable.windbarb15;
+                } else if ( metar.windSpeedKnots >= 8 ) {
+                    resid = R.drawable.windbarb10;
+                } else if ( metar.windSpeedKnots >= 3 ) {
+                    resid = R.drawable.windbarb5;
+                } else {
+                    resid = R.drawable.windbarb0;
+                }
+                d = UiUtils.getRotatedDrawable( context, resid, dir );
+                int color = getFlightCategoryColor( metar.flightCategory );
+                d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
+                UiUtils.putDrawableIntoCache( key, d );
             }
-            d = UiUtils.getRotatedDrawable( context, resid,
-                    GeoUtils.applyDeclination( metar.windDirDegrees, declination ) );
         }
         return d;
     }

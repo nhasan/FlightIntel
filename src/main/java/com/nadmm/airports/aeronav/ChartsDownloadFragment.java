@@ -27,6 +27,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -303,8 +304,9 @@ public class ChartsDownloadFragment extends FragmentBase {
 
         tv = findViewById( R.id.charts_download_warning );
         tv.setText( msg );
-        UiUtils.setTextViewDrawable( tv, mIsOk?
-                R.drawable.ic_check : R.drawable.ic_highlight_remove );
+        Drawable d = UiUtils.getDefaultTintedDrawable( getActivity(),
+                mIsOk? R.drawable.ic_check : R.drawable.ic_highlight_remove );
+        UiUtils.setTextViewDrawable( tv, d );
 
         LinearLayout layout = findViewById( R.id.vol_chart_details );
         c = result[ 1 ];

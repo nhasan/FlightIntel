@@ -21,7 +21,7 @@
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/navaid_title_layout"
-        android:background="@drawable/ab_stacked_transparent_light_holo"
+        android:background="@drawable/title_background"
         android:paddingTop="@dimen/padding_top"
         android:paddingLeft="@dimen/padding_left"
         android:paddingRight="@dimen/padding_right"

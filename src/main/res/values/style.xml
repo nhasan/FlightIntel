@@ -89,7 +89,7 @@
     </style>
 
     <style name="TextClock">
-        <item name="android:textColor">@color/gray</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:textSize">@dimen/clock_text_size</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -99,7 +99,6 @@
     </style>
 
     <style name="TextClock.Light.Tenths" parent="@style/TextClock.Light">
-        <item name="android:textColor">@color/lightgray</item>
         <item name="android:textSize">@dimen/clock_tenths_text_size</item>
     </style>
 

@@ -20,7 +20,6 @@
  */
  -->
 <resources>
-
     <attr name="listview_margin_bottom" format="dimension" />
 
     <declare-styleable name="BaseTheme">

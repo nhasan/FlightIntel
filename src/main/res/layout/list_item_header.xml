@@ -24,7 +24,6 @@
     android:textSize="17sp"
     android:clickable="true"
     android:focusable="false"
-    android:background="@drawable/accent_bottom_border"
     android:layout_width="match_parent"
     android:layout_height="48dp" />
 <!-- clickable set to true to prevent orange background on click in app widget -->

@@ -21,6 +21,7 @@ package com.nadmm.airports.scratchpad;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
@@ -32,6 +33,7 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.nadmm.airports.R;
 import com.nadmm.airports.utils.UiUtils;
 
 public class FreeHandDrawView extends View {
@@ -41,8 +43,8 @@ public class FreeHandDrawView extends View {
         void actionUp();
     }
 
-    private static final int PAPER_COLOR = 0xffffffff;
-    private static final int PEN_COLOR = 0xde000000;
+    private int mPaperColor;
+    private int mPenColor;
 
     private Bitmap mBitmap;
     private Canvas mCanvas;
@@ -59,6 +61,11 @@ public class FreeHandDrawView extends View {
 
     public FreeHandDrawView( Context context, AttributeSet attrs ) {
         super( context, attrs );
+
+        TypedArray ta =  context.obtainStyledAttributes( attrs,
+                new int[] { android.R.attr.textColorPrimary, android.R.attr.colorBackground} );
+        mPenColor = ta.getColor( 0, 0 );
+        mPaperColor = ta.getColor( 1, 0  );
 
         mPath = new Path();
         mBitmapPaint = new Paint( Paint.DITHER_FLAG );
@@ -82,7 +89,7 @@ public class FreeHandDrawView extends View {
         int h = dm.heightPixels;
         int size = Math.max( w, h );
         mBitmap = Bitmap.createBitmap( size, size, Bitmap.Config.ARGB_8888 );
-        mBitmap.eraseColor( PAPER_COLOR );
+        mBitmap.eraseColor( mPaperColor );
         mCanvas = new Canvas( mBitmap );
     }
 
@@ -160,18 +167,18 @@ public class FreeHandDrawView extends View {
     }
 
     public void discardBitmap() {
-        mBitmap.eraseColor( PAPER_COLOR );
+        mBitmap.eraseColor( mPaperColor );
         invalidate();
     }
 
     public void setDrawMode() {
-        mFingerPaint.setColor( PEN_COLOR );
+        mFingerPaint.setColor( mPenColor );
         mFingerPaint.setMaskFilter( null );
         mFingerPaint.setStrokeWidth( mStrokeWidth );
     }
 
     public void setEraseMode() {
-        mFingerPaint.setColor( PAPER_COLOR );
+        mFingerPaint.setColor( mPaperColor );
         mFingerPaint.setMaskFilter( mBlurFilter );
         mFingerPaint.setStrokeWidth( mEraseWidth );
     }

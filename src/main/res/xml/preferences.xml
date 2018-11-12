@@ -21,6 +21,12 @@
  -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Display">
+        <SwitchPreferenceCompat
+            android:key="dark_mode"
+            android:title="Use dark mode"
+            android:defaultValue="false" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="Startup settings">
         <ListPreference
             android:key="home_screen"

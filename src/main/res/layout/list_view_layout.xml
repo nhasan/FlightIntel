@@ -32,6 +32,7 @@
             android:layout_height="match_parent" />
     <com.nadmm.airports.views.NestedScrollingListView
             android:id="@android:id/list"
+			android:listSelector="?attr/selectableItemBackground"
             android:footerDividersEnabled="false"
             android:clipToPadding="false"
             android:scrollbarStyle="outsideOverlay"

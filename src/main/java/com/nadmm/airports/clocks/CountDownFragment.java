@@ -261,8 +261,6 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
 
     private void setCountdownMode() {
         mMode = COUNTDOWN_MODE;
-        mTimeMinutes.setTextColor( 0xff000000 );
-        mTimeSeconds.setTextColor( 0xff000000 );
         mBtnMinsPlus.setVisibility( View.INVISIBLE );
         mBtnMinsMinus.setVisibility( View.INVISIBLE );
         mBtnSecsPlus.setVisibility( View.INVISIBLE );
@@ -271,8 +269,6 @@ public class CountDownFragment extends FragmentBase implements OnTickHandler {
 
     private void setEditMode() {
         mMode = EDIT_MODE;
-        mTimeMinutes.setTextColor( 0xffe84242 );
-        mTimeSeconds.setTextColor( 0xffe84242 );
         mBtnMinsPlus.setVisibility( View.VISIBLE );
         mBtnMinsMinus.setVisibility( View.VISIBLE );
         mBtnSecsPlus.setVisibility( View.VISIBLE );

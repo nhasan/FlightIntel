@@ -22,6 +22,8 @@ package com.nadmm.airports;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -30,6 +32,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
+
+import com.nadmm.airports.utils.UiUtils;
 
 public class PreferencesActivity extends FragmentActivityBase {
 
@@ -43,6 +47,7 @@ public class PreferencesActivity extends FragmentActivityBase {
     public static final String KEY_SHOW_LOCAL_TIME = "show_local_time";
     public static final String KEY_HOME_SCREEN = "home_screen";
     public static final String KEY_ALWAYS_SHOW_NEARBY = "always_show_nearby";
+    public static final String KEY_DARK_MODE = "dark_mode";
 
     @SuppressWarnings("deprecation")
     @Override
@@ -144,6 +149,12 @@ public class PreferencesActivity extends FragmentActivityBase {
             } else if ( key.equals( KEY_HOME_SCREEN ) ) {
                 String code = mSharedPrefs.getString( KEY_HOME_SCREEN, "" );
                 pref.setSummary( "Show "+code+" screen on startup" );
+            } else if ( key.equals( KEY_DARK_MODE ) ) {
+                boolean darkMode = mSharedPrefs.getBoolean( KEY_DARK_MODE, false );
+                AppCompatDelegate.setDefaultNightMode( darkMode?
+                        AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO );
+                getActivity().recreate();
+                UiUtils.clearDrawableCache();
             }
         }
 

@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
     <TextView android:id="@+id/wx_station_freq"
             style="@style/TextSmall"
             android:singleLine="true"
-            android:drawableLeft="@drawable/ic_antenna"
             android:drawablePadding="2dp"
             android:paddingRight="@dimen/padding_right"
             android:paddingTop="@dimen/label_padding"
@@ -48,7 +47,6 @@
     <TextView android:id="@+id/wx_station_freq2"
             style="@style/TextSmall"
             android:singleLine="true"
-            android:drawableLeft="@drawable/ic_antenna"
             android:drawablePadding="2dp"
             android:paddingRight="@dimen/padding_right"
             android:paddingTop="@dimen/label_padding"

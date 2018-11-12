@@ -46,7 +46,6 @@
     </LinearLayout>
     <com.nadmm.airports.views.NestedScrollingListView
             android:id="@android:id/list"
-            android:divider="@drawable/list_divider"
             android:footerDividersEnabled="false"
             android:layout_marginBottom="?listview_margin_bottom"
             android:layout_width="fill_parent"

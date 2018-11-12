@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -47,6 +46,7 @@ import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 public abstract class FragmentBase extends Fragment implements IRefreshable {
@@ -242,6 +242,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
             String freq = awos.getString( awos.getColumnIndex( Awos1.STATION_FREQUENCY ) );
             if ( freq != null && freq.length() > 0 ) {
                 tv = root.findViewById( R.id.wx_station_freq );
+                UiUtils.setTextViewDrawable( tv, R.drawable.ic_antenna );
                 tv.setText( freq );
                 tv.setVisibility( View.VISIBLE );
             }
@@ -249,6 +250,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
             freq = awos.getString( awos.getColumnIndex( Awos1.SECOND_STATION_FREQUENCY ) );
             if ( freq != null && freq.length() > 0 ) {
                 tv = root.findViewById( R.id.wx_station_freq2 );
+                UiUtils.setTextViewDrawable( tv, R.drawable.ic_antenna );
                 tv.setText( freq );
                 tv.setVisibility( View.VISIBLE );
             }
@@ -284,11 +286,12 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         } );
     }
 
-    protected void makeClickToCall( View row, int resid ) {
+    private void makeClickToCall( View row, int resid ) {
         TextView tv = row.findViewById( resid );
         makeClickToCall( tv );
         if ( tv.isClickable() ) {
-            row.setBackgroundResource( R.drawable.row_selector_middle );
+            int backgroundResource = UiUtils.getSelectableItemBackgroundResource( getActivity() );
+            row.setBackgroundResource( backgroundResource );
         }
     }
 
@@ -305,12 +308,12 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         }
     }
 
-    protected void makeRowClickable( View row, final Class<?> clss, final Bundle args ) {
+    private void makeRowClickable( View row, final Class<?> clss, final Bundle args ) {
         Runnable r = () -> getActivityBase().replaceFragment( clss, args, true );
         makeRowClickable( row, r );
     }
 
-    protected void makeRowClickable( View row, Object tag ) {
+    private void makeRowClickable( View row, Object tag ) {
         row.setTag( tag );
         row.setOnClickListener( mOnRowClickListener );
         int backgroundResource = UiUtils.getSelectableItemBackgroundResource( getActivity() );
@@ -491,7 +494,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
 
     protected void addSeparator( LinearLayout layout ) {
         View separator = new View( mActivity );
-        separator.setBackgroundColor( Color.LTGRAY );
+        separator.setBackgroundColor( ContextCompat.getColor( getActivity(), R.color.color_background ) );
         layout.addView( separator, new LayoutParams( LayoutParams.MATCH_PARENT, 1 ) );
     }
 

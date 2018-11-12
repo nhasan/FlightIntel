@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,13 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
-<androidx.appcompat.widget.Toolbar
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/toolbar_actionbar"
-            app:layout_scrollFlags="scroll|enterAlways"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+<resources>
+    <color name="color_primary">#202124</color>
+    <color name="color_primary_dark">#202124</color>
+    <color name="color_primary_light">#303134</color>
+    <color name="color_accent">#6ab7ff</color>
+    <color name="color_background">#202124</color>
+</resources>

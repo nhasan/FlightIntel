@@ -55,8 +55,7 @@ public abstract class ListFragmentBase extends FragmentBase {
         mListView = view.findViewById( android.R.id.list );
         mListView.setOnItemClickListener( ( parent, view1, position, id )
                 -> onListItemClick( mListView, view1, position ) );
-        mListView.setCacheColorHint( ContextCompat.getColor(
-                getActivity(), android.R.color.white ) );
+        mListView.setCacheColorHint( ContextCompat.getColor( getActivity(), R.color.color_background ) );
 
         return createContentView( view );
     }
@@ -129,12 +128,12 @@ public abstract class ListFragmentBase extends FragmentBase {
     }
 
     public void setEmptyText( String text ) {
-        TextView tv = (TextView) findViewById( android.R.id.empty );
+        TextView tv = findViewById( android.R.id.empty );
         tv.setText( text );
     }
 
     protected void setListShown( boolean show ) {
-        TextView tv = (TextView) findViewById( android.R.id.empty );
+        TextView tv = findViewById( android.R.id.empty );
         if ( show ) {
             tv.setVisibility( View.GONE );
             mListView.setVisibility( View.VISIBLE );

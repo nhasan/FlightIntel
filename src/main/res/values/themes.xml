@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Platform.Theme.FlightIntel" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="Platform.Theme.FlightIntel" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="listview_margin_bottom">?actionBarSize</item>
     </style>
 
@@ -29,6 +29,7 @@
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>
+        <item name="android:windowBackground">@color/color_background</item>
 
         <item name="popupItemBackground">?android:selectableItemBackground</item>
 
@@ -37,15 +38,13 @@
         <item name="android:dropDownListViewStyle">@style/Widget.FlightIntel.ListView.DropDown</item>
 
         <item name="searchViewStyle">@style/Widget.FlightIntel.SearchView</item>
-
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="Theme.FlightIntel.Launcher">
         <item name="android:windowBackground">@drawable/launch_screen</item>
     </style>
 
-    <style name="Theme.Light.Dialog" parent="Theme.AppCompat.Light.Dialog">
+    <style name="Theme.Light.Dialog" parent="Theme.AppCompat.DayNight.Dialog">
     </style>
 
     <style name="Widget.FlightIntel.PopupMenu" parent="Widget.AppCompat.Light.PopupMenu">

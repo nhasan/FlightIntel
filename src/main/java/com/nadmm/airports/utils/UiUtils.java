@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
+
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.collection.LruCache;
@@ -63,6 +65,10 @@ public class UiUtils {
         return sDrawableCache.get( key );
     }
 
+    public static void clearDrawableCache() {
+        sDrawableCache.evictAll();
+    }
+
     public static void putDrawableIntoCache( String key, Drawable d ) {
         if ( sDrawableCache.get( key ) == null ) {
             sDrawableCache.put( key, d );
@@ -82,12 +88,7 @@ public class UiUtils {
         if ( msg == null ) {
             return;
         }
-        sHandler.post( new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText( context.getApplicationContext(), msg, duration ).show();
-            }
-        } );
+        sHandler.post( () -> Toast.makeText( context.getApplicationContext(), msg, duration ).show() );
     }
 
     public static Drawable combineDrawables( Context context, Drawable d1, Drawable d2,
@@ -116,15 +117,15 @@ public class UiUtils {
         String key = String.format( Locale.US, "%d:%d", resid, (int) rotation );
         Drawable d = getDrawableFromCache( key );
         if ( d == null ) {
-            Resources res = context.getResources();
-            Bitmap bmp = BitmapFactory.decodeResource( res, resid );
+            BitmapDrawable d1 = (BitmapDrawable) getDefaultTintedDrawable( context, resid );
+            Bitmap bmp = d1.getBitmap();
             Bitmap rotated = Bitmap.createBitmap( bmp.getWidth(), bmp.getHeight(),
                     Bitmap.Config.ARGB_8888 );
             Canvas canvas = new Canvas( rotated );
             canvas.setDensity( Bitmap.DENSITY_NONE );
             canvas.rotate( rotation, bmp.getWidth()/2, bmp.getHeight()/2 );
             canvas.drawBitmap( bmp, 0, 0, sPaint );
-            d = new BitmapDrawable( res, rotated );
+            d = new BitmapDrawable( context.getResources(), rotated );
             putDrawableIntoCache( key, d );
         }
         return d;
@@ -134,8 +135,7 @@ public class UiUtils {
         String key = String.format( Locale.US, "%d", resid );
         Drawable d = getDrawableFromCache( key );
         if ( d == null ) {
-            Resources res = tv.getResources();
-            d = ResourcesCompat.getDrawable( res, resid, null );
+            d = getDefaultTintedDrawable( tv.getContext(), resid );
             putDrawableIntoCache( key, d );
         }
         setTextViewDrawable( tv, d.mutate() );
@@ -155,22 +155,24 @@ public class UiUtils {
         String key = String.format( Locale.US, "%d:%d", resid, color );
         Drawable d = getDrawableFromCache( key );
         if ( d == null ) {
-            d = ResourcesCompat.getDrawable( context.getResources(), resid, null ).mutate();
+            d = AppCompatResources.getDrawable( context, resid ).mutate();
             d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
             putDrawableIntoCache( key, d );
         }
         return d;
     }
 
-    static public Drawable getDefaultTintedDrawable( Context context, int resid ) {
+    static public ColorStateList getColorStateList( Context context, int resid ) {
         TypedValue value = new TypedValue();
         ColorStateList tintList = null;
-        if ( context.getTheme().resolveAttribute(
-                android.R.attr.textColorSecondary, value, true ) ) {
-            tintList = context.getResources().getColorStateList( value.resourceId );
+        if ( context.getTheme().resolveAttribute( resid, value, true ) ) {
+            tintList = AppCompatResources.getColorStateList( context, value.resourceId );
         }
+        return tintList;
+    }
 
-        return getTintedDrawable( context, resid, tintList );
+    static public Drawable getDefaultTintedDrawable( Context context, int resid ) {
+        return getTintedDrawable( context, resid, getColorStateList( context, android.R.attr.textColorSecondary ) );
     }
 
     static public Drawable getTintedDrawable( Context context, int resid, ColorStateList tintList ) {
@@ -178,7 +180,7 @@ public class UiUtils {
         String key = String.format( Locale.US, "%d:%d", resid, tintList.getDefaultColor() );
         Drawable d = getDrawableFromCache( key );
         if ( d == null ) {
-            d = ResourcesCompat.getDrawable( context.getResources(), resid, null ).mutate();
+            d = AppCompatResources.getDrawable( context, resid ).mutate();
             DrawableCompat.setTintList( d, tintList );
             putDrawableIntoCache( key, d );
         }

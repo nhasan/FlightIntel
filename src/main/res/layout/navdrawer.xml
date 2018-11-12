@@ -27,5 +27,7 @@
         android:layout_width="@dimen/navdrawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        app:itemTextColor="@color/drawer_item_text_color"
+        app:itemIconTint="@color/drawer_item_text_color"
         app:headerLayout="@layout/navigationview_header"
         app:menu="@menu/navigation_menu" />

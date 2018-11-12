@@ -19,13 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
-<androidx.appcompat.widget.Toolbar
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/toolbar_actionbar"
-            app:layout_scrollFlags="scroll|enterAlways"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/colorPrimary" />
+        </shape>
+    </item>
+</layer-list>

@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <TextView android:id="@+id/obstacle_type"
-                  style="@style/TextMedium.Bold"
+                  style="@style/TextSmall.Bold"
                   android:singleLine="true"
                   android:ellipsize="end"
                   android:layout_weight="1"

@@ -33,21 +33,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.navigation.NavigationView;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -64,6 +49,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.navigation.NavigationView;
 import com.nadmm.airports.aeronav.ChartsDownloadActivity;
 import com.nadmm.airports.afd.AfdMainActivity;
 import com.nadmm.airports.clocks.ClocksActivity;
@@ -94,6 +81,21 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 public abstract class ActivityBase extends AppCompatActivity implements
         MultiSwipeRefreshLayout.CanChildScrollUpCallback  {
 
@@ -102,7 +104,12 @@ public abstract class ActivityBase extends AppCompatActivity implements
     private CursorAsyncTask mTask;
 
     private IntentFilter mFilter;
-    private BroadcastReceiver mExternalStorageReceiver;
+    private BroadcastReceiver mExternalStorageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive( Context context, Intent intent ) {
+            externalStorageStatusChanged();
+        }
+    };
 
     private Toolbar mActionBarToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -127,6 +134,12 @@ public abstract class ActivityBase extends AppCompatActivity implements
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
+        mPreferences = PreferenceManager.getDefaultSharedPreferences( this );
+
+        int nightMode = mPreferences.getBoolean( PreferencesActivity.KEY_DARK_MODE, false )?
+                AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
+        AppCompatDelegate.setDefaultNightMode( nightMode );
+
         super.onCreate(savedInstanceState);
 
         mDbManager = DatabaseManager.instance( this );
@@ -142,13 +155,6 @@ public abstract class ActivityBase extends AppCompatActivity implements
         mFilter.addAction( Intent.ACTION_MEDIA_REMOVED );
         mFilter.addDataScheme( "file" );
 
-        mExternalStorageReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                externalStorageStatusChanged();
-            }
-        };
-
         if ( Application.sDonationDone == null ) {
             DonateDatabase db = new DonateDatabase( this );
             Cursor c = db.queryAllDonations();
@@ -161,8 +167,6 @@ public abstract class ActivityBase extends AppCompatActivity implements
             String msg = intent.getStringExtra( EXTRA_MSG );
             Toast.makeText( this, msg, Toast.LENGTH_LONG ).show();
         }
-
-        mPreferences = PreferenceManager.getDefaultSharedPreferences( this );
     }
 
     @Override
@@ -481,9 +485,6 @@ public abstract class ActivityBase extends AppCompatActivity implements
 
     public View createContentView( View view ) {
         FrameLayout root = new FrameLayout( this );
-        int white = ContextCompat.getColor( this, android.R.color.white );
-        root.setBackgroundColor( white );
-        root.setDrawingCacheBackgroundColor( white );
         root.setLayoutParams( new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT ) );
 
@@ -516,11 +517,6 @@ public abstract class ActivityBase extends AppCompatActivity implements
 
     public void setContentShown( View view, boolean shown ) {
         setContentShown( view, shown, true );
-    }
-
-    public void setContentShownNoAnimation( boolean shown ) {
-        View root = findViewById( android.R.id.content );
-        setContentShown( root, shown, false );
     }
 
     public void setContentShownNoAnimation( View view, boolean shown ) {
@@ -659,7 +655,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
             code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
         }
         String tower = c.getString( c.getColumnIndex( Airports.TOWER_ON_SITE ) );
-        int color = tower.equals( "Y" )? Color.rgb( 48, 96, 144 ) : Color.rgb( 128, 72, 92 );
+        int color = tower.equals( "Y" )? Color.rgb( 64, 128, 192 ) : Color.rgb( 160, 48, 92 );
         tv.setTextColor( color );
         String name = c.getString( c.getColumnIndex( Airports.FACILITY_NAME ) );
         String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
