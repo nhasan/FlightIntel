@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2015-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2015-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,11 @@
 package com.nadmm.airports;
 
 import android.os.Bundle;
-import com.google.android.material.tabs.TabLayout;
-import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.material.tabs.TabLayout;
 import com.nadmm.airports.utils.PagerAdapter;
+
+import androidx.viewpager.widget.ViewPager;
 
 public abstract class TabPagerActivityBase extends ActivityBase {
 
@@ -108,11 +109,6 @@ public abstract class TabPagerActivityBase extends ActivityBase {
         if ( fragment.isRefreshable() ) {
             fragment.requestDataRefresh();
         }
-    }
-
-    @Override
-    public boolean canSwipeRefreshChildScrollUp() {
-        return getCurrentFragment().canSwipeRefreshChildScrollUp();
     }
 
     public void addTab( String label, Class<?> clss, Bundle args ) {

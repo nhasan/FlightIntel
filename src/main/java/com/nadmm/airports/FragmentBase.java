@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +52,6 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
 
     private ActivityBase mActivity;
     private CursorAsyncTask mTask;
-    private ScrollView mTopScrollView;
 
     private final OnClickListener mOnRowClickListener = v -> {
         Object tag = v.getTag();
@@ -107,8 +105,6 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
     @Override
     public void onViewCreated( View view, Bundle savedInstanceState ) {
         super.onViewCreated( view, savedInstanceState );
-
-        //mTopScrollView = (ScrollView) findViewById( R.id.scroll_content );
     }
 
     @Override
@@ -118,12 +114,6 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
 
     @Override
     public void requestDataRefresh() {
-    }
-
-    @Override
-    public boolean canSwipeRefreshChildScrollUp() {
-        return mTopScrollView != null
-                && mTopScrollView.canScrollVertically( -1 );
     }
 
     protected boolean isRefreshing() {

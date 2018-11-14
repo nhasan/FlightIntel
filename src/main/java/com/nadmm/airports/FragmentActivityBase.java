@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,11 +38,6 @@ public abstract class FragmentActivityBase extends ActivityBase {
 
         mCurFragment = fragment;
         enableDisableSwipeRefresh( mCurFragment.isRefreshable() );
-    }
-
-    @Override
-    public boolean canSwipeRefreshChildScrollUp() {
-        return mCurFragment.canSwipeRefreshChildScrollUp();
     }
 
     @Override

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.core.content.ContextCompat;
-import androidx.cursoradapter.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
+import androidx.cursoradapter.widget.CursorAdapter;
 
 public abstract class ListFragmentBase extends FragmentBase {
 
@@ -86,11 +87,6 @@ public abstract class ListFragmentBase extends FragmentBase {
             mListViewState = mListView.onSaveInstanceState();
             outState.putParcelable( LISTVIEW_STATE, mListViewState );
         }
-    }
-
-    @Override
-    public boolean canSwipeRefreshChildScrollUp() {
-        return mListView.canScrollVertically( -1 );
     }
 
     protected void setCursor( Cursor c ) {
