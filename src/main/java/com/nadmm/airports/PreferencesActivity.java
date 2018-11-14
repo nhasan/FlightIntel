@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,18 +22,18 @@ package com.nadmm.airports;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.app.ActionBar;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
-import androidx.appcompat.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.nadmm.airports.utils.UiUtils;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 
 public class PreferencesActivity extends FragmentActivityBase {
 
@@ -82,7 +82,7 @@ public class PreferencesActivity extends FragmentActivityBase {
         return R.id.navdrawer_settings;
     }
 
-    protected Fragment addPreferencesFragment() {
+    protected void addPreferencesFragment() {
         Class clss = PreferencesFragment.class;
         String tag = clss.getSimpleName();
         FragmentManager fm = getSupportFragmentManager();
