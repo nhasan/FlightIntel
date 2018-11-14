@@ -93,7 +93,6 @@ public class PreferencesActivity extends FragmentActivityBase {
             ft.add( R.id.fragment_container, f, tag );
             ft.commit();
         }
-        return f;
     }
 
     public static class PreferencesFragment extends PreferenceFragmentCompat
