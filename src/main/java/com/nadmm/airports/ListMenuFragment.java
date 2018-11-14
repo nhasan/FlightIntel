@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +24,13 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import androidx.cursoradapter.widget.CursorAdapter;
-import androidx.cursoradapter.widget.ResourceCursorAdapter;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.cursoradapter.widget.CursorAdapter;
+import androidx.cursoradapter.widget.ResourceCursorAdapter;
 
 public abstract class ListMenuFragment extends ListFragmentBase {
 
@@ -72,7 +73,7 @@ public abstract class ListMenuFragment extends ListFragmentBase {
 
     private class ListMenuAdapter extends ResourceCursorAdapter {
 
-        public ListMenuAdapter( Context context, Cursor c ) {
+        private ListMenuAdapter( Context context, Cursor c ) {
             super( context, R.layout.list_menu_item, c, 0 );
         }
 
@@ -82,15 +83,15 @@ public abstract class ListMenuFragment extends ListFragmentBase {
             String title = c.getString( c.getColumnIndex( ListMenuCursor.ITEM_TITLE ) );
             String summary = c.getString( c.getColumnIndex( ListMenuCursor.ITEM_SUMMARY ) );
 
-            ImageView iv = (ImageView) view.findViewById( R.id.item_icon );
+            ImageView iv = view.findViewById( R.id.item_icon );
             if ( icon != 0 ) {
                 iv.setImageResource( icon );
             } else {
                 iv.setVisibility( View.GONE );
             }
-            TextView tv = (TextView) view.findViewById( R.id.item_title );
+            TextView tv = view.findViewById( R.id.item_title );
             tv.setText( title );
-            tv = (TextView) view.findViewById( R.id.item_summary );
+            tv = view.findViewById( R.id.item_summary );
             tv.setText( summary );
         }
 
@@ -98,9 +99,9 @@ public abstract class ListMenuFragment extends ListFragmentBase {
 
     public abstract static class ListMenuCursor extends MatrixCursor {
 
-        public static final String ITEM_ICON = "ITEM_ICON";
-        public static final String ITEM_TITLE = "ITEM_TITLE";
-        public static final String ITEM_SUMMARY = "ITEM_SUMMARY";
+        private static final String ITEM_ICON = "ITEM_ICON";
+        private static final String ITEM_TITLE = "ITEM_TITLE";
+        private static final String ITEM_SUMMARY = "ITEM_SUMMARY";
 
         private final static String[] sColumnNames = new String[]
                 { BaseColumns._ID, ITEM_ICON, ITEM_TITLE, ITEM_SUMMARY };
