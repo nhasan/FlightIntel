@@ -61,7 +61,7 @@ public class TfrDetailFragment extends FragmentBase {
         Bundle args = getArguments();
         mTfr = (Tfr) args.getSerializable( TfrListActivity.EXTRA_TFR );
 
-        LinearLayout layout = (LinearLayout) view.findViewById( R.id.tfr_header_layout );
+        LinearLayout layout = view.findViewById( R.id.tfr_header_layout );
         addRow( layout, "Name", mTfr.name );
         addRow( layout, "NOTAM", mTfr.notamId );
         addRow( layout, "Type", mTfr.type );
