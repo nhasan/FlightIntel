@@ -76,14 +76,13 @@ public class PirepParser {
         }
 
         @Override
-        public void characters( char[] ch, int start, int length )
-                throws SAXException {
+        public void characters( char[] ch, int start, int length ) {
             text.append( ch, start, length );
         }
 
         @Override
         public void startElement( String uri, String localName, String qName,
-                Attributes attributes ) throws SAXException {
+                Attributes attributes ) {
             if ( qName.equalsIgnoreCase( "AircraftReport" ) ) {
                 entry = new PirepEntry();
             } else if ( qName.equalsIgnoreCase( "sky_condition" ) ) {
@@ -137,8 +136,7 @@ public class PirepParser {
         }
 
         @Override
-        public void endElement( String uri, String localName, String qName )
-                throws SAXException {
+        public void endElement( String uri, String localName, String qName ) {
             if ( qName.equalsIgnoreCase( "raw_text" ) ) {
                 entry.rawText = text.toString();
             } else if ( qName.equalsIgnoreCase( "report_type" ) ) {

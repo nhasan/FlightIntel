@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.utils;
@@ -189,10 +189,7 @@ public class GeoUtils {
             return true;
         } else if ( isNewer && !isLessAccurate ) {
             return true;
-        } else if ( isNewer && !isSignificantlyLessAccurate && isFromSameProvider ) {
-            return true;
-        }
-        return false;
+        } else return isNewer && !isSignificantlyLessAccurate && isFromSameProvider;
     }
 
     private static boolean isSameProvider( String provider1, String provider2 ) {

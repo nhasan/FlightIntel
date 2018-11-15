@@ -74,14 +74,13 @@ public final class MetarParser {
         private StringBuilder text = new StringBuilder();
 
         @Override
-        public void characters( char[] ch, int start, int length )
-                throws SAXException {
+        public void characters( char[] ch, int start, int length ) {
             text.append( ch, start, length );
         }
 
         @Override
         public void startElement( String uri, String localName, String qName,
-                Attributes attributes ) throws SAXException {
+                Attributes attributes ) {
             if ( qName.equalsIgnoreCase( "metar" ) ) {
                 metar = new Metar();
                 metar.fetchTime = mFetchTime;
@@ -100,8 +99,7 @@ public final class MetarParser {
         }
 
         @Override
-        public void endElement( String uri, String localName, String qName )
-                throws SAXException {
+        public void endElement( String uri, String localName, String qName ) {
             if ( qName.equalsIgnoreCase( "metar" ) ) {
                 metar.isValid = true;
                 parseRemarks( metar );

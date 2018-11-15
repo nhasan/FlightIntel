@@ -70,14 +70,13 @@ public class TfrParser {
         }
 
         @Override
-        public void characters( char[] ch, int start, int length )
-                throws SAXException {
+        public void characters( char[] ch, int start, int length ) {
             text.append( ch, start, length );
         }
 
         @Override
         public void startElement( String uri, String localName, String qName,
-                Attributes attributes ) throws SAXException {
+                Attributes attributes ) {
             if ( qName.toUpperCase( Locale.US ).matches( "TFR\\d+" ) ) {
                 tfr = new Tfr();
             } else if ( qName.equalsIgnoreCase( "CREATED" )
@@ -89,8 +88,7 @@ public class TfrParser {
         }
 
         @Override
-        public void endElement( String uri, String localName, String qName )
-                throws SAXException {
+        public void endElement( String uri, String localName, String qName ) {
             if ( qName.equalsIgnoreCase( "NID" ) ) {
                 tfr.notamId = text.toString().trim();
             } else if ( qName.equalsIgnoreCase( "NAME" ) ) {

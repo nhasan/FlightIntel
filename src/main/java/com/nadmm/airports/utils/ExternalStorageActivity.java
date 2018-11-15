@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.utils;
@@ -40,15 +40,15 @@ public class ExternalStorageActivity extends ActivityBase {
 
         setContentView( R.layout.external_storage_view );
 
-        TextView tv = (TextView) findViewById( R.id.storage_desc_text );
+        TextView tv = findViewById( R.id.storage_desc_text );
         tv.setText( "This application uses external SD card for storing it's databases. " +
                 "As a result, it will not function if the external SD card is not available." +
                 "\n\n" +
                 "The SD card is normally unavailable if the device is connected via USB to a " +
                 "computer and mounted as a storage device." );
-        Button btnTryNow = (Button) findViewById( R.id.btn_trynow );
+        Button btnTryNow = findViewById( R.id.btn_trynow );
         btnTryNow.setOnClickListener( new OnClickListener() {
-            
+
             @Override
             public void onClick( View v ) {
                 tryAgain();
@@ -65,20 +65,20 @@ public class ExternalStorageActivity extends ActivityBase {
     @Override
     protected void externalStorageStatusChanged() {
         if ( SystemUtils.isExternalStorageAvailable() ) {
-            TextView tv = (TextView) findViewById( R.id.storage_status_text );
+            TextView tv = findViewById( R.id.storage_status_text );
             tv.setText( "External SD card is available for use" );
-            tv = (TextView) findViewById( R.id.storage_desc_text2 );
+            tv = findViewById( R.id.storage_desc_text2 );
             tv.setText( "You should be able to use the application at this time." );
             tv.setTextColor( Color.GREEN );
-            Button btnTryNow = (Button) findViewById( R.id.btn_trynow );
+            Button btnTryNow = findViewById( R.id.btn_trynow );
             btnTryNow.setVisibility( View.VISIBLE );
         } else {
-            TextView tv = (TextView) findViewById( R.id.storage_status_text );
+            TextView tv = findViewById( R.id.storage_status_text );
             tv.setText( "External SD card is not available for use" );
-            tv = (TextView) findViewById( R.id.storage_desc_text2 );
+            tv = findViewById( R.id.storage_desc_text2 );
             tv.setText( "Please disconnect or unmount the device from the computer." );
             tv.setTextColor( Color.RED );
-            Button btnTryNow = (Button) findViewById( R.id.btn_trynow );
+            Button btnTryNow = findViewById( R.id.btn_trynow );
             btnTryNow.setVisibility( View.GONE );
         }
     }

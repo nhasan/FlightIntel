@@ -62,7 +62,7 @@ public class ArrayAdapterBase extends BaseAdapter {
         if ( convertView == null ) {
             convertView = mInflater.inflate( R.layout.list_item_text1, parent );
         }
-        TextView tv = (TextView) convertView.findViewById( R.id.text );
+        TextView tv = convertView.findViewById( R.id.text );
         tv.setText( mNames[ position ] );
         View view = convertView.findViewById( R.id.progress );
         view.setVisibility( position == mPendingPos? View.VISIBLE : View.INVISIBLE );

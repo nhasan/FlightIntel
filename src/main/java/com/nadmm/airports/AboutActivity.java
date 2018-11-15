@@ -22,8 +22,6 @@ package com.nadmm.airports;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.widget.Button;
 
@@ -34,27 +32,17 @@ public class AboutActivity extends ActivityBase {
         super.onCreate( savedInstanceState );
 
         setContentView( R.layout.about_view );
-        WebView webView = (WebView) findViewById( R.id.about_content );
+        WebView webView = findViewById( R.id.about_content );
         webView.loadUrl( "file:///android_asset/about.html" );
 
-        Button btnOk = (Button) findViewById( R.id.btn_close );
-        btnOk.setOnClickListener( new OnClickListener() {
+        Button btnClose = findViewById( R.id.btn_close );
+        btnClose.setOnClickListener( v -> finish() );
 
-            @Override
-            public void onClick( View v ) {
-                finish();
-            }
-        } );
-
-        Button btnRate = (Button) findViewById( R.id.btn_rate );
-        btnRate.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                Intent urlIntent = new Intent( Intent.ACTION_VIEW,
-                        Uri.parse( "market://details?id=" + getPackageName() ) );
-                startActivity( urlIntent );
-            }
+        Button btnRate = findViewById( R.id.btn_rate );
+        btnRate.setOnClickListener( v -> {
+            Intent urlIntent = new Intent( Intent.ACTION_VIEW,
+                    Uri.parse( "market://details?id=" + getPackageName() ) );
+            startActivity( urlIntent );
         } );
     }
 

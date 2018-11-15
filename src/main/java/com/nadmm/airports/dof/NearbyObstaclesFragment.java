@@ -35,7 +35,7 @@ import androidx.cursoradapter.widget.CursorAdapter;
 
 public class NearbyObstaclesFragment extends LocationListFragmentBase {
 
-    int mRadius = 5;
+    private int mRadius = 5;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
