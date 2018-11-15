@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@
     <LinearLayout
             android:id="@+id/button_bar"
             android:orientation="horizontal"
-            android:background="#ffcccccc"
             android:layout_alignParentBottom="true"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
@@ -38,10 +37,6 @@
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        <View
-                android:layout_width="1dip"
-                android:layout_height="fill_parent"
-                android:background="#ffaaaaaa" />
         <Button
                 android:id="@+id/btn_close"
                 style="@style/Widget.AppCompat.ActionButton"
@@ -51,16 +46,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
     </LinearLayout>
-    <View
-            android:id="@+id/separator"
-            android:layout_above="@id/button_bar"
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:background="#ffaaaaaa" />
     <WebView
             android:id="@+id/about_content"
             android:layout_alignParentTop="true"
-            android:layout_above="@id/separator"
+            android:layout_above="@id/button_bar"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
 </RelativeLayout>
