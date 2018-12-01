@@ -37,17 +37,19 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".afd.AfdMainActivity" />
         </activity>
+
         <activity
             android:label="@string/settings"
-            android:name=".PreferencesActivity" />
-        <activity
-            android:label="@string/app_name"
-            android:name=".afd.AfdMainActivity"
+            android:name=".PreferencesActivity"
             android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".afd.AfdMainActivity" />
         </activity>
+
+        <activity
+            android:label="@string/app_name"
+            android:name=".afd.AfdMainActivity" />
 
         <activity
             android:label="@string/app_name"
@@ -61,28 +63,28 @@
         <activity
             android:label="@string/navaid_notams"
             android:name=".notams.NavaidNotamActivity"
-            android:parentActivityName=".afd.AirportActivity">
+            android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FlightIntel" />
+                android:value=".afd.AfdMainActivity" />
         </activity>
 
         <activity
             android:label="@string/airport_notams"
             android:name=".notams.AirportNotamActivity"
-            android:parentActivityName=".afd.AirportActivity">
+            android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FlightIntel" />
+                android:value=".afd.AfdMainActivity" />
         </activity>
 
         <activity
             android:label=""
             android:name=".wx.WxDetailActivity"
-            android:parentActivityName=".FlightIntel">
+            android:parentActivityName=".wx.WxMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FlightIntel" />
+                android:value=".wx.WxMainActivity" />
         </activity>
 
         <activity
@@ -135,36 +137,37 @@
         <activity
             android:label="@string/charts_download"
             android:name=".aeronav.ChartsDownloadActivity"
-            android:parentActivityName=".FlightIntel">
+            android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FlightIntel" />
+                android:value=".afd.AfdMainActivity" />
         </activity>
 
         <activity
             android:label="@string/weather"
             android:name=".wx.WxMainActivity"
-            android:parentActivityName=".FlightIntel">
+            android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FlightIntel" />
+                android:value=".afd.AfdMainActivity" />
         </activity>
 
         <activity
             android:label="@string/title_navdrawer_dof"
-            android:name=".dof.NearbyObstaclesActivity">
+            android:name=".dof.NearbyObstaclesActivity"
+            android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FlightIntel" />
+                android:value=".afd.AfdMainActivity" />
         </activity>
 
         <activity
             android:label=""
             android:name=".tfr.TfrListActivity"
-            android:parentActivityName=".FlightIntel">
+            android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FlightIntel" />
+                android:value=".afd.AfdMainActivity" />
         </activity>
 
         <activity
@@ -187,29 +190,24 @@
 
         <activity
             android:label="@string/app_name"
-            android:name=".utils.ExternalStorageActivity"
-            android:parentActivityName=".FlightIntel">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FlightIntel" />
-        </activity>
+            android:name=".utils.ExternalStorageActivity" />
 
         <activity
             android:label="@string/clocks"
             android:name=".clocks.ClocksActivity"
-            android:parentActivityName=".clocks.ClocksActivity">
+            android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".clocks.ClocksActivity" />
+                android:value=".afd.AfdMainActivity" />
         </activity>
 
         <activity
             android:label="@string/e6b"
             android:name=".e6b.E6bActivity"
-            android:parentActivityName=".e6b.E6bActivity">
+            android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".e6b.E6bActivity" />
+                android:value=".afd.AfdMainActivity" />
         </activity>
 
         <activity
@@ -232,19 +230,19 @@
         <activity
             android:label=""
             android:name=".library.LibraryActivity"
-            android:parentActivityName=".FlightIntel">
+            android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FlightIntel" />
+                android:value=".afd.AfdMainActivity" />
         </activity>
 
         <activity
             android:label="@string/scratch_pad"
             android:name=".scratchpad.ScratchPadActivity"
-            android:parentActivityName=".FlightIntel">
+            android:parentActivityName=".afd.AfdMainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FlightIntel" />
+                android:value=".afd.AfdMainActivity" />
         </activity>
 
         <activity
