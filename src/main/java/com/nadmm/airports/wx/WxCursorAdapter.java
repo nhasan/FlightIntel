@@ -186,6 +186,15 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             StringBuilder info = new StringBuilder();
             info.append( metar.flightCategory );
 
+            if ( metar.wxList.size() > 0 ) {
+                for ( WxSymbol wx : metar.wxList ) {
+                    if ( !wx.getSymbol().equals( "NSW" ) ) {
+                        info.append( ", " );
+                        info.append( wx.toString().toLowerCase( Locale.US ) );
+                    }
+                }
+            }
+
             if ( metar.visibilitySM < Float.MAX_VALUE ) {
                 info.append( ", " );
                 info.append( FormatUtils.formatStatuteMiles( metar.visibilitySM ) );
@@ -194,7 +203,7 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             if ( metar.windSpeedKnots < Integer.MAX_VALUE ) {
                 info.append( ", " );
                 if ( metar.windSpeedKnots == 0 ) {
-                    info.append( "winds calm" );
+                    info.append( "calm" );
                 } else if ( metar.windGustKnots < Integer.MAX_VALUE ) {
                     info.append( String.format( Locale.US, "%dG%dKT",
                             metar.windSpeedKnots, metar.windGustKnots ) );
@@ -206,15 +215,6 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
                         && metar.windDirDegrees < Integer.MAX_VALUE ) {
                     info.append( "/" );
                     info.append( FormatUtils.formatDegrees( metar.windDirDegrees ) );
-                }
-            }
-
-            if ( metar.wxList.size() > 0 ) {
-                for ( WxSymbol wx : metar.wxList ) {
-                    if ( !wx.getSymbol().equals( "NSW" ) ) {
-                        info.append( ", " );
-                        info.append( wx.toString().toLowerCase( Locale.US ) );
-                    }
                 }
             }
 
