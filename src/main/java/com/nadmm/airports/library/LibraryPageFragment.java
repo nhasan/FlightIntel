@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ public class LibraryPageFragment extends FragmentBase {
             @Override
             public void onReceive( Context context, Intent intent ) {
                 String action = intent.getAction();
-                if ( action.equals( LibraryService.ACTION_DOWNLOAD_PROGRESS ) ) {
+                if ( action != null && action.equals( LibraryService.ACTION_DOWNLOAD_PROGRESS ) ) {
                     handleProgress( intent );
                 } else {
                     handleBook( intent );
@@ -148,61 +148,68 @@ public class LibraryPageFragment extends FragmentBase {
 
         mActivity = (LibraryActivity) getActivity();
 
-        LibraryTask task = new LibraryTask();
-        task.execute( mCategory );
+        setBackgroundTask( new LibraryTask( this ) ).execute( mCategory );
     }
 
-    private class LibraryTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String category ) {
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_LIBRARY );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Library.TABLE_NAME );
+        Cursor c = builder.query( db, new String[] { "DISTINCT "+Library.BOOK_DESC },
+                Library.CATEGORY_CODE+"=?", new String[] { category },
+                null, null, null );
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String category = params[ 0 ];
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_LIBRARY );
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        Cursor[] result = new Cursor[ c.getCount() ];
+
+        if ( c.getCount() > 0 ) {
+            builder = new SQLiteQueryBuilder();
             builder.setTables( Library.TABLE_NAME );
-            Cursor c = builder.query( db, new String[] { "DISTINCT "+Library.BOOK_DESC },
+            c = builder.query( db, mColumns,
                     Library.CATEGORY_CODE+"=?", new String[] { category },
-                    null, null, null );
+                    null, null, Library._ID );
+            c.moveToFirst();
+            int i = 0;
+            String prevDesc = "";
+            MatrixCursor matrix = null;
+            do {
+                String name = c.getString( c.getColumnIndex( Library.BOOK_NAME ) );
+                String desc = c.getString( c.getColumnIndex( Library.BOOK_DESC ) );
+                String edition = c.getString( c.getColumnIndex( Library.EDITION ) );
+                String author = c.getString( c.getColumnIndex( Library.AUTHOR ) );
+                long size = c.getLong( c.getColumnIndex( Library.DOWNLOAD_SIZE ) );
+                String flag = c.getString( c.getColumnIndex( Library.FLAG ) );
 
-            Cursor[] result = new Cursor[ c.getCount() ];
+                if ( !desc.equals( prevDesc ) ) {
+                    matrix = new MatrixCursor( mColumns );
+                    result[ i++ ] = matrix;
+                    prevDesc = desc;
+                }
 
-            if ( c.getCount() > 0 ) {
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Library.TABLE_NAME );
-                c = builder.query( db, mColumns,
-                        Library.CATEGORY_CODE+"=?", new String[] { category },
-                        null, null, Library._ID );
-                c.moveToFirst();
-                int i = 0;
-                String prevDesc = "";
-                MatrixCursor matrix = null;
-                do {
-                    String name = c.getString( c.getColumnIndex( Library.BOOK_NAME ) );
-                    String desc = c.getString( c.getColumnIndex( Library.BOOK_DESC ) );
-                    String edition = c.getString( c.getColumnIndex( Library.EDITION ) );
-                    String author = c.getString( c.getColumnIndex( Library.AUTHOR ) );
-                    long size = c.getLong( c.getColumnIndex( Library.DOWNLOAD_SIZE ) );
-                    String flag = c.getString( c.getColumnIndex( Library.FLAG ) );
+                if ( matrix != null ) {
+                    Object[] values = new Object[]{ name, desc, edition, author, size, flag };
+                    matrix.addRow( values );
+                }
+            } while ( c.moveToNext() );
+        }
 
-                    if ( !desc.equals( prevDesc ) ) {
-                        matrix = new MatrixCursor( mColumns );
-                        result[ i++ ] = matrix;
-                        prevDesc = desc;
-                    }
+        return result;
+    }
 
-                    if ( matrix != null ) {
-                        Object[] values = new Object[]{ name, desc, edition, author, size, flag };
-                        matrix.addRow( values );
-                    }
-                } while ( c.moveToNext() );
-            }
+    private static class LibraryTask extends CursorAsyncTask<LibraryPageFragment> {
 
-            return result;
+        private LibraryTask( LibraryPageFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showBooks( result );
+        protected Cursor[] onExecute( LibraryPageFragment fragment, String... params ) {
+            String category = params[ 0 ];
+            return fragment.doQuery( category );
+        }
+
+        @Override
+        protected boolean onResult( LibraryPageFragment fragment, Cursor[] result ) {
+            fragment.showBooks( result );
             return true;
         }
     }
@@ -256,7 +263,7 @@ public class LibraryPageFragment extends FragmentBase {
     }
 
     @SuppressLint("InlinedApi")
-    private View addLibraryRow( LinearLayout layout, String name, String desc, String edition,
+    private void addLibraryRow( LinearLayout layout, String name, String desc, String edition,
             String author, String flag, long size ) {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
@@ -281,7 +288,6 @@ public class LibraryPageFragment extends FragmentBase {
         mBookRowMap.put( name, row );
         layout.addView( row, new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
-        return row;
     }
 
     private void handleBook( Intent intent ) {

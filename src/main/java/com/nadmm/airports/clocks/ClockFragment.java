@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.clocks;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -63,7 +64,7 @@ public class ClockFragment extends FragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         mHome = getActivityBase().getPrefHomeAirport();
-        setBackgroundTask( new ClockTask() ).execute();
+        setBackgroundTask( new ClockTask( this ) ).execute();
 
         setFragmentContentShown( true );
     }
@@ -90,6 +91,7 @@ public class ClockFragment extends FragmentBase {
         }
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void updateTime() {
         Date now = new Date();
 
@@ -134,43 +136,53 @@ public class ClockFragment extends FragmentBase {
         mHandler.postDelayed( mRunnable, delay );
     }
 
-    private final class ClockTask extends CursorAsyncTask {
-
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            Cursor[] cursors = new Cursor[ 1 ];
-
-            if ( mHome != null ) {
-                SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-                SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-                builder.setTables( Airports.TABLE_NAME );
-                Cursor c = builder.query( db,
-                        new String[] {
+    private Cursor[] doQuery() {
+        if ( mHome != null ) {
+            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+            builder.setTables( Airports.TABLE_NAME );
+            Cursor c = builder.query( db,
+                    new String[] {
                             Airports.SITE_NUMBER,
                             Airports.TIMEZONE_ID
-                        },
-                        Airports.FAA_CODE+"=? OR "+Airports.ICAO_CODE+"=?",
-                        new String[] { mHome, mHome }, null, null, null, null );
+                    },
+                    Airports.FAA_CODE+"=? OR "+Airports.ICAO_CODE+"=?",
+                    new String[] { mHome, mHome }, null, null, null, null );
+            return new Cursor[] { c };
+        }
 
-                cursors[ 0 ] = c;
-            }
+        return null;
+    }
 
-            return cursors;
+    private void setCursor( Cursor c ) {
+        if ( c != null && c.moveToFirst() ) {
+            mHomeTzId = c.getString( c.getColumnIndex( Airports.TIMEZONE_ID ) );
+        }
+        if ( mHomeTzId == null || mHomeTzId.length() == 0 ) {
+            View v = findViewById( R.id.home_time_label );
+            v.setVisibility( View.GONE );
+            v = findViewById( R.id.home_time_layout );
+            v.setVisibility( View.GONE );
+        }
+        updateTime();
+    }
+
+    private static class ClockTask extends CursorAsyncTask<ClockFragment> {
+
+        private ClockTask( ClockFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            Cursor c = result[ 0 ];
-            if ( c != null && c.moveToFirst() ) {
-                mHomeTzId = c.getString( c.getColumnIndex( Airports.TIMEZONE_ID ) );
+        protected Cursor[] onExecute( ClockFragment fragment, String... params ) {
+            return fragment.doQuery();
+        }
+
+        @Override
+        protected boolean onResult( ClockFragment fragment, Cursor[] result ) {
+            if ( result != null ) {
+                fragment.setCursor( result[ 0 ] );
             }
-            if ( mHomeTzId == null || mHomeTzId.length() == 0 ) {
-                View v = findViewById( R.id.home_time_label );
-                v.setVisibility( View.GONE );
-                v = findViewById( R.id.home_time_layout );
-                v.setVisibility( View.GONE );
-            }
-            updateTime();
             return true;
         }
 

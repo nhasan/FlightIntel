@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@ import com.nadmm.airports.utils.UiUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -84,25 +85,25 @@ public class DownloadFragment extends FragmentBase {
     private Handler mHandler;
     private ListView mListView;
 
-    private final Map<String, ProgressTracker> mTrackers = new HashMap<>();
+    private Map<String, ProgressTracker> mTrackers = new HashMap<>();
 
-    private final ArrayList<DataInfo> mInstalledData = new ArrayList<>();
-    private final ArrayList<DataInfo> mAvailableData = new ArrayList<>();
+    private ArrayList<DataInfo> mInstalledData = new ArrayList<>();
+    private ArrayList<DataInfo> mAvailableData = new ArrayList<>();
 
-    final class DataInfo implements Comparable<DataInfo> {
+    private final class DataInfo implements Comparable<DataInfo> {
 
-        public String type;
-        public String desc;
-        public int version;
-        public String fileName;
-        public int size;
-        public Date start;
-        public Date end;
+        private String type;
+        private String desc;
+        private int version;
+        private String fileName;
+        private int size;
+        private Date start;
+        private Date end;
 
-        public DataInfo() {
+        private DataInfo() {
         }
 
-        public DataInfo( DataInfo info ) {
+        private DataInfo( DataInfo info ) {
             type = info.type;
             desc = info.desc;
             version = info.version;
@@ -168,7 +169,7 @@ public class DownloadFragment extends FragmentBase {
     public void onActivityCreated( @Nullable Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        checkData( false );
+        checkData();
     }
 
     @Override
@@ -185,10 +186,10 @@ public class DownloadFragment extends FragmentBase {
         NetworkUtils.checkNetworkAndDownload( getActivity(), this::download );
     }
 
-    private void download() {
+    public void download() {
         if ( SystemUtils.isExternalStorageAvailable() ) {
             mHandler.post( () -> {
-                mDownloadTask = new DownloadTask( (DownloadActivity) getActivity() );
+                mDownloadTask = new DownloadTask( this );
                 mDownloadTask.execute();
             } );
         } else {
@@ -202,7 +203,7 @@ public class DownloadFragment extends FragmentBase {
         AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
         builder.setMessage( "Are you sure you want to delete all installed data?" )
                 .setPositiveButton( "Yes", ( dialog, id ) -> {
-                    DeleteDataTask deleteTask = new DeleteDataTask();
+                    DeleteDataTask deleteTask = new DeleteDataTask( this );
                     deleteTask.execute( (Void) null );
                 } )
                 .setNegativeButton( "No", ( dialog, id ) -> {
@@ -211,9 +212,9 @@ public class DownloadFragment extends FragmentBase {
         alert.show();
     }
 
-    private void checkData( boolean startDownload ) {
-        CheckDataTask task = new CheckDataTask();
-        task.execute( startDownload );
+    private void checkData() {
+        CheckDataTask task = new CheckDataTask( this );
+        task.execute();
     }
 
     private void cleanupExpiredData() {
@@ -284,12 +285,177 @@ public class DownloadFragment extends FragmentBase {
         }
     }
 
-    private final class DownloadTask extends AsyncTask<Void, Integer, Integer> {
-        private DownloadActivity mActivity;
+    private int getInstalled() {
+        mInstalledData.clear();
+        Date now = new Date();
+
+        Cursor c = mDbManager.getAllFromCatalog();
+        if ( c.moveToFirst() ) {
+            do {
+                DataInfo info = new DataInfo();
+                info.type = c.getString( c.getColumnIndex( DatabaseManager.Catalog.TYPE ) );
+                info.desc = c.getString( c.getColumnIndex( DatabaseManager.Catalog.DESCRIPTION ) );
+                info.version = c.getInt( c.getColumnIndex( DatabaseManager.Catalog.VERSION ) );
+                String start = c.getString( c.getColumnIndex( DatabaseManager.Catalog.START_DATE ) );
+                String end = c.getString( c.getColumnIndex( DatabaseManager.Catalog.END_DATE ) );
+                Log.i( TAG, info.type + "," + start + "," + end );
+                try {
+                    info.start = TimeUtils.parse3339( start );
+                    info.end = TimeUtils.parse3339( end );
+                    if ( info.end != null && now.before( info.end ) ) {
+                        mInstalledData.add( info );
+                    }
+                } catch ( TimeFormatException e ) {
+                    UiUtils.showToast( getContext(), e.getMessage() );
+                    return -1;
+                }
+            } while ( c.moveToNext() );
+        }
+        c.close();
+
+        return 0;
+    }
+
+    private int downloadManifest() {
+        try {
+            if ( !NetworkUtils.isNetworkAvailable( getContext() ) ) {
+                UiUtils.showToast( getContext(), "Please check your network connection" );
+                return -1;
+            }
+
+            File manifest = new File( getActivity().getCacheDir(), MANIFEST );
+
+            boolean fetch = true;
+            if ( manifest.exists() ) {
+                Date now = new Date();
+                long age = now.getTime() - manifest.lastModified();
+                if ( age < 10 * DateUtils.MINUTE_IN_MILLIS ) {
+                    fetch = false;
+                }
+            }
+
+            if ( fetch ) {
+                NetworkUtils.doHttpsGet( getContext(), HOST, PATH + "/" + MANIFEST, manifest );
+            }
+        } catch ( Exception e ) {
+            UiUtils.showToast( getContext(), e.getMessage() );
+            return -1;
+        }
+
+        return 0;
+    }
+
+    private int parseManifest() {
+        FileInputStream in;
+        try {
+            File manifest = new File( getActivity().getCacheDir(), MANIFEST );
+            in = new FileInputStream( manifest );
+
+            final DataInfo info = new DataInfo();
+            RootElement root = new RootElement( "manifest" );
+            Element datafile = root.getChild( "datafile" );
+            datafile.setEndElementListener( () -> mAvailableData.add( new DataInfo( info ) ) );
+            datafile.getChild( "type" ).setEndTextElementListener(
+                    body -> info.type = body
+            );
+            datafile.getChild( "desc" ).setEndTextElementListener(
+                    body -> info.desc = body
+            );
+            datafile.getChild( "version" ).setEndTextElementListener(
+                    body -> info.version = Integer.parseInt( body )
+            );
+            datafile.getChild( "filename" ).setEndTextElementListener(
+                    body -> info.fileName = body
+            );
+            datafile.getChild( "size" ).setEndTextElementListener(
+                    body -> info.size = Integer.parseInt( body )
+            );
+            datafile.getChild( "start" ).setEndTextElementListener(
+                    body -> info.start = TimeUtils.parse3339( body )
+            );
+            datafile.getChild( "end" ).setEndTextElementListener(
+                    body -> info.end = TimeUtils.parse3339( body )
+            );
+
+            Xml.parse( in, Xml.Encoding.UTF_8, root.getContentHandler() );
+
+            Collections.sort( mAvailableData );
+
+            in.close();
+        } catch ( Exception e ) {
+            UiUtils.showToast( getContext(), e.getMessage() );
+            return -1;
+        }
+
+        return 0;
+    }
+
+    private void processManifest() {
+        Date now = new Date();
+        Iterator<DataInfo> it = mAvailableData.iterator();
+        while ( it.hasNext() ) {
+            DataInfo available = it.next();
+            if ( now.after( available.end ) ) {
+                // Expired
+                Log.i( TAG, "Removing expired " + available.type + ":" + available.version );
+                it.remove();
+                continue;
+            }
+            if ( isInstalled( available ) ) {
+                // Already installed
+                Log.i( TAG, "Removing installed " + available.type + ":" + available.version );
+                it.remove();
+            }
+        }
+    }
+
+    private boolean isInstalled( DataInfo available ) {
+        for( DataInfo installed : mInstalledData ) {
+            if ( available.equals( installed ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private ArrayList<DataInfo> getAvailableData() {
+        return mAvailableData;
+    }
+
+    private void clearData() {
+        mInstalledData.clear();
+        mAvailableData.clear();
+    }
+
+    private void addInstalledData( DataInfo data ) {
+        mInstalledData.add( data );
+        mAvailableData.remove( data );
+
+    }
+
+    private void reopenDatabases() {
+        mDbManager.closeDatabases();
+        mDbManager.openDatabases();
+    }
+
+    private ProgressTracker getTrackerForType( String type ) {
+        return mTrackers.get( type );
+    }
+
+    public DatabaseManager getDbManager() {
+        return mDbManager;
+    }
+
+    public Handler getHandler() {
+        return mHandler;
+    }
+
+    private static class DownloadTask extends AsyncTask<Void, Integer, Integer> {
+        private WeakReference<DownloadFragment> mFragment;
         private ProgressTracker mTracker;
 
-        public DownloadTask( DownloadActivity activity ) {
-            mActivity = activity;
+        private DownloadTask( DownloadFragment fragment ) {
+            mFragment = new WeakReference<>( fragment );
         }
 
         @Override
@@ -298,11 +464,16 @@ public class DownloadFragment extends FragmentBase {
 
         @Override
         protected Integer doInBackground( Void... params ) {
-            Iterator<DataInfo> it = mAvailableData.iterator();
+            DownloadFragment fragment = mFragment.get();
+            if ( fragment == null ) {
+                return 1;
+            }
+
+            Iterator<DataInfo> it = fragment.getAvailableData().iterator();
             if ( it.hasNext() ) {
                 final DataInfo data = it.next();
 
-                mTracker = getTrackerForType( data.type );
+                mTracker = fragment.getTrackerForType( data.type );
 
                 int result = downloadData( data );
                 if ( result < 0 ) {
@@ -315,14 +486,12 @@ public class DownloadFragment extends FragmentBase {
                 }
 
                 // Update the displayed list to reflect the installed data
-                mInstalledData.add( data );
-                mAvailableData.remove( data );
+                fragment.addInstalledData( data );
             } else {
                 // No more downloads left, cleanup any expired data
-                cleanupExpiredData();
-                UiUtils.showToast( mActivity, "Data installation completed successfully" );
-                mDbManager.closeDatabases();
-                mDbManager.openDatabases();
+                fragment.cleanupExpiredData();
+                fragment.reopenDatabases();
+                UiUtils.showToast( fragment.getContext(), "Data installation completed successfully" );
                 return 1;
             }
 
@@ -336,30 +505,36 @@ public class DownloadFragment extends FragmentBase {
 
         @Override
         protected void onPostExecute( Integer result ) {
+            DownloadFragment fragment = mFragment.get();
+            if ( fragment == null ) {
+                return;
+            }
+
             if ( mTracker != null ) {
                 mTracker.hideProgress();
             }
 
             // Update the displayed list to reflect the recently installed data
-            updateDownloadList();
+            fragment.updateDownloadList();
 
             if ( result == 0 ) {
                 // Start the download of the next data file
-                download();
+                fragment.download();
             }
         }
 
-        private ProgressTracker getTrackerForType( String type ) {
-            return mTrackers.get( type );
-        }
-
         private int downloadData( final DataInfo data ) {
-            mHandler.post( () -> mTracker.initProgress( data.size ) );
+            DownloadFragment fragment = mFragment.get();
+            if ( fragment == null ) {
+                return 1;
+            }
+
+            fragment.getHandler().post( () -> mTracker.initProgress( data.size ) );
 
             try {
-                File dbFile = mDbManager.getDatabaseFile( data.fileName );
+                File dbFile = fragment.getDbManager().getDatabaseFile( data.fileName );
 
-                ResultReceiver receiver = new ResultReceiver( mHandler ) {
+                ResultReceiver receiver = new ResultReceiver( fragment.getHandler() ) {
                     protected void onReceiveResult( int resultCode, Bundle resultData ) {
                         long progress = resultData.getLong( NetworkUtils.CONTENT_PROGRESS );
                         publishProgress( (int) progress );
@@ -367,11 +542,11 @@ public class DownloadFragment extends FragmentBase {
                 };
 
                 Bundle result = new Bundle();
-                NetworkUtils.doHttpsGet( mActivity, HOST,
+                NetworkUtils.doHttpsGet( fragment.getContext(), HOST,
                         PATH + "/" +     data.fileName + ".gz", null,
                         dbFile, receiver, result, GZIPInputStream.class );
             } catch ( Exception e ) {
-                UiUtils.showToast( mActivity, e.getMessage() );
+                UiUtils.showToast( fragment.getContext(), e.getMessage() );
                 return -1;
             }
 
@@ -379,6 +554,11 @@ public class DownloadFragment extends FragmentBase {
         }
 
         private int updateCatalog( DataInfo data ) {
+            DownloadFragment fragment = mFragment.get();
+            if ( fragment == null ) {
+                return 1;
+            }
+
             Date now = new Date();
             ContentValues values = new ContentValues();
             values.put( DatabaseManager.Catalog.TYPE, data.type );
@@ -391,33 +571,49 @@ public class DownloadFragment extends FragmentBase {
 
             Log.i( TAG, "Inserting catalog: type=" + data.type
                     + ", version=" + data.version + ", db=" + data.fileName );
-            int rc = mDbManager.insertCatalogEntry( values );
+            int rc = fragment.getDbManager().insertCatalogEntry( values );
             if ( rc < 0 ) {
-                UiUtils.showToast( mActivity, "Failed to update catalog database" );
+                UiUtils.showToast( fragment.getContext(), "Failed to update catalog database" );
             }
 
             return rc;
         }
     }
 
-    private final class DeleteDataTask extends AsyncTask<Void, Void, Integer> {
+    private static class DeleteDataTask extends AsyncTask<Void, Void, Integer> {
         private ProgressDialog mProgressDialog;
+        private WeakReference<DownloadFragment> mFragment;
+
+        private DeleteDataTask( DownloadFragment fragment ) {
+            mFragment = new WeakReference<>( fragment );
+        }
 
         @Override
         protected void onPreExecute() {
-            mProgressDialog = ProgressDialog.show( getActivity(),
+            DownloadFragment fragment = mFragment.get();
+            if ( fragment == null ) {
+                return;
+            }
+
+            mProgressDialog = ProgressDialog.show( fragment.getContext(),
                     "", "Deleting installed data. Please wait...", true );
         }
 
         @Override
         protected Integer doInBackground( Void... params ) {
+            DownloadFragment fragment = mFragment.get();
+            if ( fragment == null ) {
+                return 1;
+            }
+
             int result = 0;
+            DatabaseManager dbManager = fragment.getDbManager();
 
             // Make sure all the databases we want to delete are closed
-            mDbManager.closeDatabases();
+            dbManager.closeDatabases();
 
             // Get all the catalog entries
-            SQLiteDatabase catalogDb = mDbManager.getCatalogDb();
+            SQLiteDatabase catalogDb = dbManager.getCatalogDb();
             Cursor cursor = catalogDb.query( DatabaseManager.Catalog.TABLE_NAME, null, null, null,
                     null, null, null );
             if ( cursor.moveToFirst() ) {
@@ -426,7 +622,7 @@ public class DownloadFragment extends FragmentBase {
                     String dbName = cursor.getString( cursor.getColumnIndex( DatabaseManager.Catalog.DB_NAME ) );
 
                     // Delete the db file on the external device
-                    File file = mDbManager.getDatabaseFile( dbName );
+                    File file = dbManager.getDatabaseFile( dbName );
                     // Now delete the catalog entry for the file
                     int rows = catalogDb.delete( DatabaseManager.Catalog.TABLE_NAME, "_id=?",
                             new String[]{ Integer.toString( _id ) } );
@@ -446,207 +642,87 @@ public class DownloadFragment extends FragmentBase {
 
         @Override
         protected void onPostExecute( Integer result ) {
+            DownloadFragment fragment = mFragment.get();
+            if ( fragment == null ) {
+                return;
+            }
+
             mProgressDialog.dismiss();
             if ( result != 0 ) {
                 // Some or all data files were not deleted
-                Toast.makeText( getActivity().getApplicationContext(),
-                        "There was an error while deleting installed data",
+                Toast.makeText( fragment.getContext(), "There was an error while deleting installed data",
                         Toast.LENGTH_LONG ).show();
             }
 
             // Refresh the download list view
-            mHandler.postDelayed( () -> checkData( false ), 100 );
+            fragment.getHandler().postDelayed( fragment::checkData, 100 );
         }
     }
 
-    private final class CheckDataTask extends AsyncTask<Boolean, Void, Integer> {
-        private DownloadActivity mActivity;
+    private static class CheckDataTask extends AsyncTask<Boolean, Void, Integer> {
+        private WeakReference<DownloadFragment> mFragment;
 
-        public CheckDataTask() {
-            mActivity = (DownloadActivity) getActivity();
+        private CheckDataTask( DownloadFragment fragment ) {
+            mFragment = new WeakReference<>( fragment );
         }
 
         @Override
         protected void onPreExecute() {
-            Button btnDownload = findViewById( R.id.btnDownload );
+            DownloadFragment fragment = mFragment.get();
+            if ( fragment == null ) {
+                return;
+            }
+
+            Button btnDownload = fragment.findViewById( R.id.btnDownload );
             btnDownload.setEnabled( false );
-            mInstalledData.clear();
-            mAvailableData.clear();
+            fragment.clearData();
         }
 
         @Override
         protected Integer doInBackground( Boolean... params ) {
-            boolean startDownload = params[ 0 ];
-            int result;
+            int result = 1;
 
-            result = getInstalled();
+            DownloadFragment fragment = mFragment.get();
+            if ( fragment == null ) {
+                return result;
+            }
+
+            result = fragment.getInstalled();
             if ( result != 0 ) {
                 return result;
             }
 
-            result = downloadManifest();
+            result = fragment.downloadManifest();
             if ( result != 0 ) {
                 return result;
             }
 
-            result = parseManifest();
+            result = fragment.parseManifest();
             if ( result != 0 ) {
                 return result;
             }
 
-            processManifest();
-
-            if ( startDownload ) {
-                download();
-            }
+            fragment.processManifest();
 
             return 0;
         }
 
         @Override
         protected void onPostExecute( Integer result ) {
+            DownloadFragment fragment = mFragment.get();
+            if ( fragment == null ) {
+                return;
+            }
+
             if ( result != 0 ) {
-                TextView empty = findViewById( android.R.id.empty );
+                TextView empty = fragment.findViewById( android.R.id.empty );
                 empty.setText( R.string.download_error );
                 return;
             }
 
-            updateDownloadList();
+            fragment.updateDownloadList();
         }
 
-        private int getInstalled() {
-            mInstalledData.clear();
-            Date now = new Date();
-
-            Cursor c = mDbManager.getAllFromCatalog();
-            if ( c.moveToFirst() ) {
-                do {
-                    DataInfo info = new DataInfo();
-                    info.type = c.getString( c.getColumnIndex( DatabaseManager.Catalog.TYPE ) );
-                    info.desc = c.getString( c.getColumnIndex( DatabaseManager.Catalog.DESCRIPTION ) );
-                    info.version = c.getInt( c.getColumnIndex( DatabaseManager.Catalog.VERSION ) );
-                    String start = c.getString( c.getColumnIndex( DatabaseManager.Catalog.START_DATE ) );
-                    String end = c.getString( c.getColumnIndex( DatabaseManager.Catalog.END_DATE ) );
-                    Log.i( TAG, info.type + "," + start + "," + end );
-                    try {
-                        info.start = TimeUtils.parse3339( start );
-                        info.end = TimeUtils.parse3339( end );
-                        if ( info.end != null && now.before( info.end ) ) {
-                            mInstalledData.add( info );
-                        }
-                    } catch ( TimeFormatException e ) {
-                        UiUtils.showToast( mActivity, e.getMessage() );
-                        return -1;
-                    }
-                } while ( c.moveToNext() );
-            }
-            c.close();
-
-            return 0;
-        }
-
-        private int downloadManifest() {
-            try {
-                if ( !NetworkUtils.isNetworkAvailable( mActivity ) ) {
-                    UiUtils.showToast( mActivity, "Please check your network connection" );
-                    return -1;
-                }
-
-                File manifest = new File( getActivity().getCacheDir(), MANIFEST );
-
-                boolean fetch = true;
-                if ( manifest.exists() ) {
-                    Date now = new Date();
-                    long age = now.getTime() - manifest.lastModified();
-                    if ( age < 10 * DateUtils.MINUTE_IN_MILLIS ) {
-                        fetch = false;
-                    }
-                }
-
-                if ( fetch ) {
-                    NetworkUtils.doHttpsGet( mActivity, HOST, PATH + "/" + MANIFEST, manifest );
-                }
-            } catch ( Exception e ) {
-                UiUtils.showToast( mActivity, e.getMessage() );
-                return -1;
-            }
-
-            return 0;
-        }
-
-        private int parseManifest() {
-            FileInputStream in;
-            try {
-                File manifest = new File( getActivity().getCacheDir(), MANIFEST );
-                in = new FileInputStream( manifest );
-
-                final DataInfo info = new DataInfo();
-                RootElement root = new RootElement( "manifest" );
-                Element datafile = root.getChild( "datafile" );
-                datafile.setEndElementListener( () -> mAvailableData.add( new DataInfo( info ) ) );
-                datafile.getChild( "type" ).setEndTextElementListener(
-                        body -> info.type = body
-                );
-                datafile.getChild( "desc" ).setEndTextElementListener(
-                        body -> info.desc = body
-                );
-                datafile.getChild( "version" ).setEndTextElementListener(
-                        body -> info.version = Integer.parseInt( body )
-                );
-                datafile.getChild( "filename" ).setEndTextElementListener(
-                        body -> info.fileName = body
-                );
-                datafile.getChild( "size" ).setEndTextElementListener(
-                        body -> info.size = Integer.parseInt( body )
-                );
-                datafile.getChild( "start" ).setEndTextElementListener(
-                        body -> info.start = TimeUtils.parse3339( body )
-                );
-                datafile.getChild( "end" ).setEndTextElementListener(
-                        body -> info.end = TimeUtils.parse3339( body )
-                );
-
-                Xml.parse( in, Xml.Encoding.UTF_8, root.getContentHandler() );
-
-                Collections.sort( mAvailableData );
-
-                in.close();
-            } catch ( Exception e ) {
-                UiUtils.showToast( mActivity, e.getMessage() );
-                return -1;
-            }
-
-            return 0;
-        }
-
-        private void processManifest() {
-            Date now = new Date();
-            Iterator<DataInfo> it = mAvailableData.iterator();
-            while ( it.hasNext() ) {
-                DataInfo available = it.next();
-                if ( now.after( available.end ) ) {
-                    // Expired
-                    Log.i( TAG, "Removing expired " + available.type + ":" + available.version );
-                    it.remove();
-                    continue;
-                }
-                if ( isInstalled( available ) ) {
-                    // Already installed
-                    Log.i( TAG, "Removing installed " + available.type + ":" + available.version );
-                    it.remove();
-                    continue;
-                }
-            }
-        }
-
-        private boolean isInstalled( DataInfo available ) {
-            for( DataInfo installed : mInstalledData ) {
-                if ( available.equals( installed ) ) {
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 
     private final class DownloadCursor extends MatrixCursor {

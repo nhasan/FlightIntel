@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ public final class CommunicationsFragment extends FragmentBase {
 
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new CommunicationsTask() ).execute( siteNumber );
+        setBackgroundTask( new CommunicationsTask( this ) ).execute( siteNumber );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -460,148 +460,156 @@ public final class CommunicationsFragment extends FragmentBase {
         map.put( key, list );
     }
 
-    private final class CommunicationsTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String siteNumber ) {
+        Cursor[] cursors = new Cursor[ 15 ];
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 15 ];
+        Cursor apt = getAirportDetails( siteNumber );
+        cursors[ 0 ] = apt;
 
-            Cursor apt = getAirportDetails( siteNumber );
-            cursors[ 0 ] = apt;
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Tower1.TABLE_NAME );
+        Cursor c = builder.query( db, new String[] { "*" },
+                Tower1.SITE_NUMBER+"=?",
+                new String[] { siteNumber }, null, null, null, null );
+        cursors[ 1 ] = c;
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower1.TABLE_NAME );
-            Cursor c = builder.query( db, new String[] { "*" },
-                    Tower1.SITE_NUMBER+"=?",
-                    new String[] { siteNumber }, null, null, null, null );
-            cursors[ 1 ] = c;
+        String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Tower3.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                Tower3.FACILITY_ID+"=?",
+                new String[] { faaCode }, null, null, Tower3.MASTER_AIRPORT_FREQ_USE, null );
+        cursors[ 2 ] = c;
 
-            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower3.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    Tower3.FACILITY_ID+"=?",
-                    new String[] { faaCode }, null, null, Tower3.MASTER_AIRPORT_FREQ_USE, null );
-            cursors[ 2 ] = c;
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Tower6.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                Tower3.FACILITY_ID+"=?",
+                new String[] { faaCode }, null, null, null, null );
+        cursors[ 3 ] = c;
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower6.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    Tower3.FACILITY_ID+"=?",
-                    new String[] { faaCode }, null, null, null, null );
-            cursors[ 3 ] = c;
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Tower7.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                Tower7.SATELLITE_AIRPORT_SITE_NUMBER+"=?",
+                new String[] { siteNumber }, null, null, null, null );
+        cursors[ 4 ] = c;
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower7.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    Tower7.SATELLITE_AIRPORT_SITE_NUMBER+"=?",
-                    new String[] { siteNumber }, null, null, null, null );
-            cursors[ 4 ] = c;
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Aff3.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                Aff3.IFR_FACILITY_ID+"=?",
+                new String[] { faaCode }, null, null, null, null );
+        cursors[ 5 ] = c;
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Aff3.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    Aff3.IFR_FACILITY_ID+"=?",
-                    new String[] { faaCode }, null, null, null, null );
-            cursors[ 5 ] = c;
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( AtcPhones.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
+                new String[] { "MAIN", "MAIN" }, null, null, null, null );
+        cursors[ 6 ] = c;
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( AtcPhones.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
-                    new String[] { "MAIN", "MAIN" }, null, null, null, null );
-            cursors[ 6 ] = c;
+        String faaRegion = apt.getString( apt.getColumnIndex( Airports.REGION_CODE ) );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( AtcPhones.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
+                new String[] { "REGION", faaRegion }, null, null, null, null );
+        cursors[ 7 ] = c;
 
-            String faaRegion = apt.getString( apt.getColumnIndex( Airports.REGION_CODE ) );
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( AtcPhones.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
-                    new String[] { "REGION", faaRegion }, null, null, null, null );
-            cursors[ 7 ] = c;
+        String artccId = apt.getString( apt.getColumnIndex( Airports.BOUNDARY_ARTCC_ID ) );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( AtcPhones.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
+                new String[] { "ARTCC", artccId }, null, null, null, null );
+        cursors[ 8 ] = c;
 
-            String artccId = apt.getString( apt.getColumnIndex( Airports.BOUNDARY_ARTCC_ID ) );
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( AtcPhones.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
-                    new String[] { "ARTCC", artccId }, null, null, null, null );
-            cursors[ 8 ] = c;
-
-            Cursor twr1 = cursors[ 1 ];
-            if ( twr1.moveToFirst() ) {
-                String apchName = twr1.getString( twr1.getColumnIndex(
-                        Tower1.RADIO_CALL_APCH_PRIMARY ) );
-                String[] apchId = DataUtils.getAtcFacilityId( apchName );
-                if ( apchId == null ) {
-                    apchName = twr1.getString( twr1.getColumnIndex(
-                            Tower1.RADIO_CALL_APCH_SECONDARY ) );
-                    apchId = DataUtils.getAtcFacilityId( apchName );
-                }
-                if ( apchId != null ) {
-                    builder = new SQLiteQueryBuilder();
-                    builder.setTables( AtcPhones.TABLE_NAME );
-                    c = builder.query( db, new String[] { "*" },
-                            "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
-                            new String[] { apchId[ 1 ], apchId[ 0 ] }, null, null, null, null );
-                    cursors[ 9 ] = c;
-                }
-
-                String depName = twr1.getString( twr1.getColumnIndex(
-                        Tower1.RADIO_CALL_DEP_PRIMARY ) );
-                String[] depId = DataUtils.getAtcFacilityId( depName );
-                if ( depId == null ) {
-                    depName = twr1.getString( twr1.getColumnIndex(
-                            Tower1.RADIO_CALL_DEP_SECONDARY ) );
-                    depId = DataUtils.getAtcFacilityId( depName );
-                }
-                if ( depId != null ) {
-                    builder = new SQLiteQueryBuilder();
-                    builder.setTables( AtcPhones.TABLE_NAME );
-                    c = builder.query( db, new String[] { "*" },
-                            "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
-                            new String[] { depId[ 0 ], depId[ 1 ] }, null, null, null, null );
-                    cursors[ 10 ] = c;
-                }
+        Cursor twr1 = cursors[ 1 ];
+        if ( twr1.moveToFirst() ) {
+            String apchName = twr1.getString( twr1.getColumnIndex(
+                    Tower1.RADIO_CALL_APCH_PRIMARY ) );
+            String[] apchId = DataUtils.getAtcFacilityId( apchName );
+            if ( apchId == null ) {
+                apchName = twr1.getString( twr1.getColumnIndex(
+                        Tower1.RADIO_CALL_APCH_SECONDARY ) );
+                apchId = DataUtils.getAtcFacilityId( apchName );
+            }
+            if ( apchId != null ) {
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( AtcPhones.TABLE_NAME );
+                c = builder.query( db, new String[] { "*" },
+                        "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
+                        new String[] { apchId[ 1 ], apchId[ 0 ] }, null, null, null, null );
+                cursors[ 9 ] = c;
             }
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( AtcPhones.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
-                    new String[] { "ATCT", faaCode }, null, null, null, null );
-            cursors[ 11 ] = c;
+            String depName = twr1.getString( twr1.getColumnIndex(
+                    Tower1.RADIO_CALL_DEP_PRIMARY ) );
+            String[] depId = DataUtils.getAtcFacilityId( depName );
+            if ( depId == null ) {
+                depName = twr1.getString( twr1.getColumnIndex(
+                        Tower1.RADIO_CALL_DEP_SECONDARY ) );
+                depId = DataUtils.getAtcFacilityId( depName );
+            }
+            if ( depId != null ) {
+                builder = new SQLiteQueryBuilder();
+                builder.setTables( AtcPhones.TABLE_NAME );
+                c = builder.query( db, new String[] { "*" },
+                        "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
+                        new String[] { depId[ 0 ], depId[ 1 ] }, null, null, null, null );
+                cursors[ 10 ] = c;
+            }
+        }
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower9.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    Tower9.FACILITY_ID+"=?",
-                    new String[] { faaCode }, null, null, Tower9.ATIS_SERIAL_NO, null );
-            cursors[ 12 ] = c;
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( AtcPhones.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                "("+AtcPhones.FACILITY_TYPE+"=? AND "+AtcPhones.FACILITY_ID+"=?)",
+                new String[] { "ATCT", faaCode }, null, null, null, null );
+        cursors[ 11 ] = c;
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower2.TABLE_NAME );
-            c = builder.query( db, new String[]{ "*" },
-                    Tower2.FACILITY_ID + "=?",
-                    new String[]{ faaCode }, null, null, null, null );
-            cursors[ 13 ] = c;
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Tower9.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                Tower9.FACILITY_ID+"=?",
+                new String[] { faaCode }, null, null, Tower9.ATIS_SERIAL_NO, null );
+        cursors[ 12 ] = c;
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower4.TABLE_NAME );
-            c = builder.query( db, new String[]{ "*" },
-                    Tower4.FACILITY_ID + "=?",
-                    new String[]{ faaCode }, null, null, null, null );
-            cursors[ 14 ] = c;
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Tower2.TABLE_NAME );
+        c = builder.query( db, new String[]{ "*" },
+                Tower2.FACILITY_ID + "=?",
+                new String[]{ faaCode }, null, null, null, null );
+        cursors[ 13 ] = c;
 
-            return cursors;
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Tower4.TABLE_NAME );
+        c = builder.query( db, new String[]{ "*" },
+                Tower4.FACILITY_ID + "=?",
+                new String[]{ faaCode }, null, null, null, null );
+        cursors[ 14 ] = c;
+
+        return cursors;
+    }
+
+    private static class CommunicationsTask extends CursorAsyncTask<CommunicationsFragment> {
+
+        private CommunicationsTask( CommunicationsFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
+        protected Cursor[] onExecute( CommunicationsFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            return fragment.doQuery( siteNumber );
+        }
+
+        @Override
+        protected boolean onResult( CommunicationsFragment fragment, Cursor[] result ) {
+            fragment.showDetails( result );
             return true;
         }
 

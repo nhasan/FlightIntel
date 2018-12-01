@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.afd;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -53,7 +54,7 @@ public final class NearbyFssFragment extends FragmentBase {
 
     private int mRadius;
 
-    private final class ComData implements Comparable<ComData> {
+    private static  class ComData implements Comparable<ComData> {
 
         private String[] mColumnValues;
 
@@ -110,11 +111,8 @@ public final class NearbyFssFragment extends FragmentBase {
         setActionBarTitle( "Nearby FSS", "" );
         setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
 
-        Bundle args = getArguments();
-        if ( args != null ) {
-            String siteNumber = args.getString( Airports.SITE_NUMBER );
-            setBackgroundTask( new FssCommTask() ).execute( siteNumber );
-        }
+        String siteNumber = getArguments().getString( Airports.SITE_NUMBER );
+        setBackgroundTask( new FssCommTask( this ) ).execute( siteNumber );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -126,6 +124,7 @@ public final class NearbyFssFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showFssDetails( Cursor[] result ) {
         Cursor com = result[ 1 ];
         LinearLayout detailLayout = findViewById( R.id.fss_detail_layout );
@@ -182,78 +181,86 @@ public final class NearbyFssFragment extends FragmentBase {
         }
     }
 
-    private final class FssCommTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String siteNumber ) {
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        Cursor[] result = new Cursor[ 2 ];
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] result = new Cursor[ 2 ];
+        Cursor apt = getAirportDetails( siteNumber );
+        result[ 0 ] = apt;
 
-            Cursor apt = getAirportDetails( siteNumber );
-            result[ 0 ] = apt;
+        double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+        double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+        Location location = new Location( "" );
+        location.setLatitude( lat );
+        location.setLongitude( lon );
 
-            double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
-            double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-            Location location = new Location( "" );
-            location.setLatitude( lat );
-            location.setLongitude( lon );
+        String tableName = Com.TABLE_NAME+" c LEFT OUTER JOIN "+Nav1.TABLE_NAME+" n"
+                +" ON c."+Com.ASSOC_NAVAID_ID+" = n."+Nav1.NAVAID_ID
+                +" AND n."+Nav1.NAVAID_TYPE+" <> 'VOT'";
+        String[] columns = new String[] { "c.*", "n."+Nav1.NAVAID_NAME,
+                "n."+Nav1.NAVAID_TYPE, "n."+Nav1.NAVAID_FREQUENCY };
 
-            String tableName = Com.TABLE_NAME+" c LEFT OUTER JOIN "+Nav1.TABLE_NAME+" n"
-                    +" ON c."+Com.ASSOC_NAVAID_ID+" = n."+Nav1.NAVAID_ID
-                    +" AND n."+Nav1.NAVAID_TYPE+" <> 'VOT'";
-            String[] columns = new String[] { "c.*", "n."+Nav1.NAVAID_NAME,
-                    "n."+Nav1.NAVAID_TYPE, "n."+Nav1.NAVAID_FREQUENCY };
+        Cursor c = DbUtils.getBoundingBoxCursor( db, tableName, columns,
+                Com.COMM_OUTLET_LATITUDE_DEGREES, Com.COMM_OUTLET_LONGITUDE_DEGREES,
+                location, mRadius );
 
-            Cursor c = DbUtils.getBoundingBoxCursor( db, tableName, columns,
-                    Com.COMM_OUTLET_LATITUDE_DEGREES, Com.COMM_OUTLET_LONGITUDE_DEGREES,
-                    location, mRadius );
+        String[] columnNames = new String[ c.getColumnCount()+2 ];
+        int i = 0;
+        for ( String col : c.getColumnNames() ) {
+            columnNames[ i++ ] = col;
+        }
+        columnNames[ i++ ] = BEARING;
+        columnNames[ i ] = DISTANCE;
+        @SuppressWarnings("resource")
+        MatrixCursor matrix = new MatrixCursor( columnNames );
 
-            String[] columnNames = new String[ c.getColumnCount()+2 ];
-            int i = 0;
-            for ( String col : c.getColumnNames() ) {
-                columnNames[ i++ ] = col;
-            }
-            columnNames[ i++ ] = BEARING;
-            columnNames[ i ] = DISTANCE;
-            @SuppressWarnings("resource")
-            MatrixCursor matrix = new MatrixCursor( columnNames );
+        if ( c.moveToFirst() ) {
+            // Now find the magnetic declination at this location
+            float declination = GeoUtils.getMagneticDeclination( location );
 
-            if ( c.moveToFirst() ) {
-                // Now find the magnetic declination at this location
-                float declination = GeoUtils.getMagneticDeclination( location );
+            ComData[] comDataList = new ComData[ c.getCount() ];
+            int row = 0;
+            do {
+                ComData com = new ComData( c, declination, location );
+                comDataList[ row++ ] = com;
+            } while ( c.moveToNext() );
 
-                ComData[] comDataList = new ComData[ c.getCount() ];
-                int row = 0;
-                do {
-                    ComData com = new ComData( c, declination, location );
-                    comDataList[ row++ ] = com;
-                } while ( c.moveToNext() );
+            // Sort the FSS Com list by distance
+            Arrays.sort( comDataList );
 
-                // Sort the FSS Com list by distance
-                Arrays.sort( comDataList );
-
-                // Build a cursor out of the sorted FSS station list
-                for ( ComData com : comDataList ) {
-                    float distance = Float.valueOf(
-                            com.mColumnValues[ matrix.getColumnIndex( DISTANCE ) ] );
-                    if ( distance <= mRadius ) {
-                        matrix.addRow( com.mColumnValues );
-                    }
+            // Build a cursor out of the sorted FSS station list
+            for ( ComData com : comDataList ) {
+                float distance = Float.valueOf(
+                        com.mColumnValues[ matrix.getColumnIndex( DISTANCE ) ] );
+                if ( distance <= mRadius ) {
+                    matrix.addRow( com.mColumnValues );
                 }
             }
+        }
 
-            c.close();
+        c.close();
 
-            result[ 1 ] = matrix;
+        result[ 1 ] = matrix;
 
-            return result;
+        return result;
+    }
+
+    private static class FssCommTask extends CursorAsyncTask<NearbyFssFragment> {
+
+        private FssCommTask( NearbyFssFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
+        protected Cursor[] onExecute( NearbyFssFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            return fragment.doQuery( siteNumber );
+        }
+
+        @Override
+        protected boolean onResult( NearbyFssFragment fragment, Cursor[] result ) {
+            fragment.showDetails( result );
             return true;
         }
 

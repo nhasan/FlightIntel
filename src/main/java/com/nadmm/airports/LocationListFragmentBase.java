@@ -22,10 +22,8 @@ package com.nadmm.airports;
 import android.Manifest.permission;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
@@ -81,7 +79,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
 
         if ( mLocationUpdatesEnabled ) {
             if ( checkPermission() ) {
-                getActivityBase().postRunnable( () -> startLocationUpdates(), 0 );
+                getActivityBase().postRunnable( this::startLocationUpdates, 0 );
             } else {
                 requestPermission();
             }
@@ -105,10 +103,11 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
             setupFusedLocationProvider();
         } else {
             // Location was passed to us, so just run the task
-            newLocationTask().execute();
+            startLocationTask();
         }
     }
 
+    @SuppressWarnings( "StatementWithEmptyBody" )
     @Override
     public void onRequestPermissionsResult( int requestCode, @NonNull String[] permissions,
                                             @NonNull int[] grantResults ) {
@@ -133,6 +132,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
         }
     }
 
+    @SuppressWarnings( "StatementWithEmptyBody" )
     @Override
     public void onActivityResult( int requestCode, int resultCode, Intent data ) {
         // This is not getting called but it should.
@@ -213,12 +213,8 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
     private void startLocationUpdates() {
         // First check if location is enabled in the settings
         mSettingsClient.checkLocationSettings( mLocationSettingsRequest )
-
         // If location is enabled then register for location updates
-        .addOnSuccessListener( getActivity(), locationSettingsResponse -> {
-            requestLocationUpdates();
-        } )
-
+        .addOnSuccessListener( getActivity(), locationSettingsResponse -> requestLocationUpdates() )
         // If location is not enabled then prompt the user to enable by showing system dialog
         .addOnFailureListener( getActivity(), e -> {
             showSnackbar( "Please enable location in settings to see nearby facilities.",
@@ -240,7 +236,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
         if ( checkPermission() ) {
             // Get the last location as the starting point
             mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener( getActivity(), location -> updateLocation( location ) );
+                    .addOnSuccessListener( getActivity(), this::updateLocation );
 
             mFusedLocationClient.requestLocationUpdates( mLocationRequest, mLocationCallback, null );
             mRequestingLocationUpdates = true;
@@ -252,7 +248,7 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
             if ( mLastLocation == null || location.distanceTo( mLastLocation ) > 50 ) {
                 // Preserve battery. Only update the list of we have moved more than 50 meters.
                 mLastLocation = location;
-                newLocationTask().execute();
+                startLocationTask();
             }
         }
     }
@@ -291,9 +287,5 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
         return mLocationUpdatesEnabled;
     }
 
-    protected abstract LocationTask newLocationTask();
-
-    protected abstract class LocationTask extends AsyncTask<Void, Void, Cursor> {
-    }
-
+    protected abstract void startLocationTask();
 }

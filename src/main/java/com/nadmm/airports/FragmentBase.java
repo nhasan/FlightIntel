@@ -116,11 +116,11 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
     public void requestDataRefresh() {
     }
 
-    protected boolean isRefreshing() {
+    public boolean isRefreshing() {
         return getActivityBase().isRefreshing();
     }
 
-    protected void setRefreshing( boolean refreshing ) {
+    public void setRefreshing( boolean refreshing ) {
         getActivityBase().setRefreshing( refreshing );
     }
 
@@ -160,9 +160,9 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         mActivity.setContentShownNoAnimation( getView(), shown );
     }
 
-    protected CursorAsyncTask setBackgroundTask( CursorAsyncTask task ) {
+    protected <T extends FragmentBase> CursorAsyncTask<T> setBackgroundTask( CursorAsyncTask<T> task ) {
         mTask = task;
-        return mTask;
+        return task;
     }
 
     protected ActionBar getSupportActionBar() {
@@ -488,7 +488,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         layout.addView( separator, new LayoutParams( LayoutParams.MATCH_PARENT, 1 ) );
     }
 
-    protected <T extends View> T findViewById( int id ) {
+    public <T extends View> T findViewById( int id ) {
         View view = getView();
         return view!=null? view.findViewById( id ) : null;
     }

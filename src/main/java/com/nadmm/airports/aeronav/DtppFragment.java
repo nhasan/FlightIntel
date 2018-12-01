@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.aeronav;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -61,7 +62,6 @@ public class DtppFragment extends FragmentBase {
     private ArrayList<String> mPendingCharts = new ArrayList<>();
     private String mTppCycle;
     private String mTppVolume;
-    private String mFaaCode;
     private boolean mExpired = false;
     private View.OnClickListener mOnClickListener;
     private IntentFilter mFilter;
@@ -129,7 +129,7 @@ public class DtppFragment extends FragmentBase {
 
         Bundle args = getArguments();
         String siteNumber = args.getString( DatabaseManager.Airports.SITE_NUMBER );
-        setBackgroundTask( new DtppTask() ).execute( siteNumber );
+        setBackgroundTask( new DtppTask( this ) ).execute( siteNumber );
     }
 
     private void showDtppSummary( Cursor[] result ) {
@@ -187,10 +187,7 @@ public class DtppFragment extends FragmentBase {
         showOtherCharts( topLayout );
 
         // Check the chart availability
-        ArrayList<String> pdfNames = new ArrayList<>();
-        for ( String pdfName : mDtppRowMap.keySet() ) {
-            pdfNames.add( pdfName );
-        }
+        ArrayList<String> pdfNames = new ArrayList<>( mDtppRowMap.keySet() );
         checkTppCharts( pdfNames, false );
     }
 
@@ -213,6 +210,7 @@ public class DtppFragment extends FragmentBase {
         }
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showOtherCharts( LinearLayout layout ) {
         RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
         TextView tv = item.findViewById( R.id.group_name );
@@ -224,8 +222,8 @@ public class DtppFragment extends FragmentBase {
                 ViewGroup.LayoutParams.WRAP_CONTENT ) );
     }
 
-    private View addChartRow( LinearLayout layout, String chartCode, String chartName,
-                                String pdfName, String userAction, String faanfd18 ) {
+    private void addChartRow( LinearLayout layout, String chartCode, String chartName,
+                              String pdfName, String userAction, String faanfd18 ) {
         View row;
         if ( userAction.length() > 0 ) {
             row = addRow( layout, chartName, DataUtils.decodeUserAction( userAction ) );
@@ -242,7 +240,6 @@ public class DtppFragment extends FragmentBase {
         }
 
         row.setTag( R.id.DTPP_USER_ACTION, userAction );
-        return row;
     }
 
     private void checkTppCharts( ArrayList<String> pdfNames, boolean download ) {
@@ -312,7 +309,7 @@ public class DtppFragment extends FragmentBase {
         if ( path != null ) {
             showChartAvailability( view, true );
             view.setTag( R.id.DTPP_PDF_PATH, path );
-            if ( action.equals( DtppService.ACTION_GET_CHARTS ) ) {
+            if ( action != null && action.equals( DtppService.ACTION_GET_CHARTS ) ) {
                 startPdfViewer( path );
             }
         } else {
@@ -370,7 +367,7 @@ public class DtppFragment extends FragmentBase {
     }
 
     private void getAptCharts() {
-        NetworkUtils.checkNetworkAndDownload( getActivity(), () -> getMissingCharts() );
+        NetworkUtils.checkNetworkAndDownload( getActivity(), this::getMissingCharts );
     }
 
     private void startPdfViewer( String path ) {
@@ -389,59 +386,70 @@ public class DtppFragment extends FragmentBase {
         alert.show();
     }
 
-    private final class DtppTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String siteNumber ) {
+        Cursor[] result = new Cursor[ 11 ];
+        int index = 0;
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
-            int index = 0;
+        Cursor apt = getAirportDetails( siteNumber );
+        result[ index++ ] = apt;
 
-            Cursor[] result = new Cursor[ 11 ];
+        String faaCode = apt.getString( apt.getColumnIndex( DatabaseManager.Airports.FAA_CODE ) );
 
-            Cursor apt = getAirportDetails( siteNumber );
-            result[ index++ ] = apt;
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_DTPP );
 
-            mFaaCode = apt.getString( apt.getColumnIndex( DatabaseManager.Airports.FAA_CODE ) );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( DatabaseManager.DtppCycle.TABLE_NAME );
+        Cursor c = builder.query( db, new String[]{ "*" },
+                null, null, null, null, null, null );
+        result[ index++ ] = c;
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_DTPP );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( DatabaseManager.Dtpp.TABLE_NAME );
+        c = builder.query( db, new String[]{ DatabaseManager.Dtpp.TPP_VOLUME },
+                DatabaseManager.Dtpp.FAA_CODE + "=?",
+                new String[]{ faaCode }, DatabaseManager.Dtpp.TPP_VOLUME, null, null, null );
+        result[ index++ ] = c;
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( DatabaseManager.DtppCycle.TABLE_NAME );
-            Cursor c = builder.query( db, new String[]{ "*" },
-                    null, null, null, null, null, null );
-            result[ index++ ] = c;
+        c.moveToFirst();
+        mTppVolume = c.getString( c.getColumnIndex( DatabaseManager.Dtpp.TPP_VOLUME ) );
 
+        for ( String chartCode : new String[]{ "APD", "MIN", "STAR", "IAP",
+                "DP", "DPO", "LAH", "HOT" } ) {
             builder = new SQLiteQueryBuilder();
             builder.setTables( DatabaseManager.Dtpp.TABLE_NAME );
-            c = builder.query( db, new String[]{ DatabaseManager.Dtpp.TPP_VOLUME },
-                    DatabaseManager.Dtpp.FAA_CODE + "=?",
-                    new String[]{ mFaaCode }, DatabaseManager.Dtpp.TPP_VOLUME, null, null, null );
+            c = builder.query( db, new String[]{ "*" },
+                    DatabaseManager.Dtpp.FAA_CODE + "=? AND " + DatabaseManager.Dtpp.CHART_CODE + "=?",
+                    new String[]{ faaCode, chartCode }, null, null, null, null );
             result[ index++ ] = c;
+        }
 
-            c.moveToFirst();
-            mTppVolume = c.getString( c.getColumnIndex( DatabaseManager.Dtpp.TPP_VOLUME ) );
+        return result;
+    }
 
-            for ( String chartCode : new String[]{ "APD", "MIN", "STAR", "IAP",
-                    "DP", "DPO", "LAH", "HOT" } ) {
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( DatabaseManager.Dtpp.TABLE_NAME );
-                c = builder.query( db, new String[]{ "*" },
-                        DatabaseManager.Dtpp.FAA_CODE + "=? AND " + DatabaseManager.Dtpp.CHART_CODE + "=?",
-                        new String[]{ mFaaCode, chartCode }, null, null, null, null );
-                result[ index++ ] = c;
-            }
+    private void setCursor( Cursor[] result ) {
+        Cursor apt = result[ 0 ];
+        showAirportTitle( apt );
+        showDtppSummary( result );
+        showDtppCharts( result );
 
-            return result;
+        setFragmentContentShown( true );
+    }
+
+    private static class DtppTask extends CursorAsyncTask<DtppFragment> {
+
+        private DtppTask( DtppFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            Cursor apt = result[ 0 ];
-            showAirportTitle( apt );
-            showDtppSummary( result );
-            showDtppCharts( result );
+        protected Cursor[] onExecute( DtppFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            return fragment.doQuery( siteNumber );
+        }
 
-            setFragmentContentShown( true );
+        @Override
+        protected boolean onResult( DtppFragment fragment, Cursor[] result ) {
+            fragment.setCursor( result );
             return true;
         }
 

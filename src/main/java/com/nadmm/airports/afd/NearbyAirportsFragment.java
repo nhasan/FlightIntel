@@ -29,6 +29,7 @@ import android.widget.ListView;
 
 import com.nadmm.airports.LocationListFragmentBase;
 import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.utils.CursorAsyncTask;
 
 import java.util.Locale;
 
@@ -56,8 +57,8 @@ public class NearbyAirportsFragment extends LocationListFragmentBase {
     }
 
     @Override
-    protected LocationTask newLocationTask() {
-        return new NearbyAirportsTask();
+    protected void startLocationTask() {
+        setBackgroundTask( new NearbyAirportsTask( this ) ).execute();
     }
 
     @Override
@@ -74,27 +75,37 @@ public class NearbyAirportsFragment extends LocationListFragmentBase {
         startActivity( intent );
     }
 
-    private final class NearbyAirportsTask extends LocationTask {
+    private Cursor[] doQuery() {
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
-        @Override
-        protected Cursor doInBackground( Void... params ) {
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-
-            String extraSelection= null;
-            Bundle args = getArguments();
-            if ( args != null ) {
-                String faaCode = args.getString( Airports.FAA_CODE );
-                if ( faaCode != null && !faaCode.isEmpty() ) {
-                    extraSelection = "AND "+Airports.FAA_CODE+" <> '"+faaCode+"'";
-                }
+        String extraSelection= null;
+        Bundle args = getArguments();
+        if ( args != null ) {
+            String faaCode = args.getString( Airports.FAA_CODE );
+            if ( faaCode != null && !faaCode.isEmpty() ) {
+                extraSelection = "AND "+Airports.FAA_CODE+" <> '"+faaCode+"'";
             }
+        }
 
-            return new NearbyAirportsCursor( db, getLastLocation(), getNearbyRadius(), extraSelection );
+        Cursor c = new NearbyAirportsCursor( db, getLastLocation(), getNearbyRadius(), extraSelection );
+        return new Cursor[] { c };
+    }
+
+    private static class NearbyAirportsTask extends CursorAsyncTask<NearbyAirportsFragment> {
+
+        private NearbyAirportsTask( NearbyAirportsFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected void onPostExecute( final Cursor c ) {
-            setCursor( c );
+        protected Cursor[] onExecute( NearbyAirportsFragment fragment, String... params ) {
+            return fragment.doQuery();
+        }
+
+        @Override
+        protected boolean onResult( NearbyAirportsFragment fragment, Cursor[] result ) {
+            fragment.setCursor( result[ 0 ] );
+            return false;
         }
 
     }

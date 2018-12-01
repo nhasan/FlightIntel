@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ public final class ServicesFragment extends FragmentBase {
 
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new ServicesTask() ).execute( siteNumber );
+        setBackgroundTask( new ServicesTask( this ) ).execute( siteNumber );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -143,19 +143,22 @@ public final class ServicesFragment extends FragmentBase {
         }
     }
 
-    private final class ServicesTask extends CursorAsyncTask {
+    private static class ServicesTask extends CursorAsyncTask<ServicesFragment> {
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 1 ];
-            cursors[ 0 ] = getAirportDetails( siteNumber );
-            return cursors;
+        private ServicesTask( ServicesFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
+        protected Cursor[] onExecute( ServicesFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            Cursor c = fragment.getAirportDetails( siteNumber );
+            return new Cursor[] { c };
+        }
+
+        @Override
+        protected boolean onResult( ServicesFragment fragment, Cursor[] result ) {
+            fragment.showDetails( result );
             return true;
         }
 

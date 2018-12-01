@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,53 +42,59 @@ public class NavaidNotamFragment extends NotamFragmentBase {
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
+        super.onActivityCreated( savedInstanceState );
+
         Bundle args = getArguments();
         String navaidId = args.getString( DatabaseManager.Nav1.NAVAID_ID );
         String navaidType = args.getString( DatabaseManager.Nav1.NAVAID_TYPE );
-        setBackgroundTask( new NavaidNotamTask() ).execute( navaidId, navaidType );
-
-        super.onActivityCreated( savedInstanceState );
+        setBackgroundTask( new NavaidNotamTask( this ) ).execute( navaidId, navaidType );
     }
 
-    private final class NavaidNotamTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String navaidId, String navaidType ) {
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            Cursor[] result = new Cursor[ 1 ];
-            String navaidId = params[ 0 ];
-            String navaidType = params[ 1 ];
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( DatabaseManager.Nav1.TABLE_NAME
+                + " a LEFT OUTER JOIN "
+                + DatabaseManager.States.TABLE_NAME
+                + " s ON a."
+                + DatabaseManager.Nav1.ASSOC_STATE
+                + "=s."
+                + DatabaseManager.States.STATE_CODE );
+        Cursor c = builder.query( db, new String[]{ "*" },
+                DatabaseManager.Nav1.NAVAID_ID + "=? AND " + DatabaseManager.Nav1.NAVAID_TYPE + "=?",
+                new String[]{ navaidId, navaidType }, null, null, null, null );
+        if ( !c.moveToFirst() ) {
+            return null;
+        }
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        return new Cursor[] { c };
+    }
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( DatabaseManager.Nav1.TABLE_NAME
-                    + " a LEFT OUTER JOIN "
-                    + DatabaseManager.States.TABLE_NAME
-                    + " s ON a."
-                    + DatabaseManager.Nav1.ASSOC_STATE
-                    + "=s."
-                    + DatabaseManager.States.STATE_CODE );
-            Cursor c = builder.query( db, new String[]{ "*" },
-                    DatabaseManager.Nav1.NAVAID_ID + "=? AND " + DatabaseManager.Nav1.NAVAID_TYPE + "=?",
-                    new String[]{ navaidId, navaidType }, null, null, null, null );
-            result[ 0 ] = c;
-            if ( !c.moveToFirst() ) {
-                return null;
-            }
+    private void showNotam( Cursor c ) {
+        String id = c.getString( c.getColumnIndex( DatabaseManager.Nav1.NAVAID_ID ) );
+        String icaoCode = "K" + id;
+        setActionBarTitle( icaoCode );
+        showNavaidTitle( c );
+        getNotams( icaoCode, "navaid" );
+    }
 
-            return result;
+    private static class NavaidNotamTask extends CursorAsyncTask<NavaidNotamFragment> {
+
+        private NavaidNotamTask( NavaidNotamFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            Cursor nav1 = result[ 0 ];
+        protected Cursor[] onExecute( NavaidNotamFragment fragment, String... params ) {
+            String navaidId = params[ 0 ];
+            String navaidType = params[ 1 ];
+            return fragment.doQuery( navaidId, navaidType );
+        }
 
-            String id = nav1.getString( nav1.getColumnIndex( DatabaseManager.Nav1.NAVAID_ID ) );
-            String icaoCode = "K" + id;
-            setActionBarTitle( icaoCode );
-            showNavaidTitle( nav1 );
-            getNotams( icaoCode, "navaid" );
-
+        @Override
+        protected boolean onResult( NavaidNotamFragment fragment, Cursor[] result ) {
+            fragment.showNotam( result[ 0 ] );
             return true;
         }
 

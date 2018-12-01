@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
     };
     private int mRadius;
 
-    private final class NavaidData implements Comparable<NavaidData> {
+    private static class NavaidData implements Comparable<NavaidData> {
         private String NAVAID_ID;
         private String NAVAID_TYPE;
         private String NAVAID_NAME;
@@ -121,7 +121,7 @@ public final class NearbyNavaidsFragment extends FragmentBase {
         Bundle args = getArguments();
         if ( args != null ) {
             String siteNumber = args.getString( Airports.SITE_NUMBER );
-            setBackgroundTask( new NavaidDetailsTask() ).execute( siteNumber );
+            setBackgroundTask( new NavaidDetailsTask( this ) ).execute( siteNumber );
         }
     }
 
@@ -210,77 +210,84 @@ public final class NearbyNavaidsFragment extends FragmentBase {
         addClickableRow( table, label1, freq, label2, value2, NavaidDetailsFragment.class, args );
     }
 
-    private final class NavaidDetailsTask extends CursorAsyncTask {
+    private Cursor[] queryData( String siteNumber ) {
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        Cursor[] cursors = new Cursor[ 3 ];
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
+        Cursor apt = getAirportDetails( siteNumber );
+        cursors[ 0 ] = apt;
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 3 ];
+        double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+        double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+        Location location = new Location( "" );
+        location.setLatitude( lat );
+        location.setLongitude( lon );
 
-            Cursor apt = getAirportDetails( siteNumber );
-            cursors[ 0 ] = apt;
+        Cursor c = DbUtils.getBoundingBoxCursor( db, Nav1.TABLE_NAME,
+                Nav1.REF_LATTITUDE_DEGREES, Nav1.REF_LONGITUDE_DEGREES,
+                location, mRadius );
 
-            double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
-            double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-            Location location = new Location( "" );
-            location.setLatitude( lat );
-            location.setLongitude( lon );
+        if ( c.moveToFirst() ) {
+            NavaidData[] navaids = new NavaidData[ c.getCount() ];
+            do {
+                NavaidData navaid = new NavaidData();
+                navaid.setFromCursor( c, location );
+                navaids[ c.getPosition() ] = navaid;
+            } while ( c.moveToNext() );
 
-            Cursor c = DbUtils.getBoundingBoxCursor( db, Nav1.TABLE_NAME,
-                    Nav1.REF_LATTITUDE_DEGREES, Nav1.REF_LONGITUDE_DEGREES,
-                    location, mRadius );
+            // Sort the navaids list by distance from current location
+            Arrays.sort( navaids );
 
-            if ( c.moveToFirst() ) {
-                NavaidData[] navaids = new NavaidData[ c.getCount() ];
-                do {
-                    NavaidData navaid = new NavaidData();
-                    navaid.setFromCursor( c, location );
-                    navaids[ c.getPosition() ] = navaid;
-                } while ( c.moveToNext() );
-
-                // Sort the navaids list by distance from current location
-                Arrays.sort( navaids );
-
-                @SuppressWarnings("resource")
-                MatrixCursor vor = new MatrixCursor( mNavColumns );
-                @SuppressWarnings("resource")
-                MatrixCursor ndb = new MatrixCursor( mNavColumns );
-                for ( NavaidData navaid : navaids ) {
-                    if ( navaid.DISTANCE <= mRadius ) {
-                        if ( DataUtils.isDirectionalNavaid( navaid.NAVAID_TYPE ) ) {
-                            MatrixCursor.RowBuilder row = vor.newRow();
-                            row.add( navaid.NAVAID_ID )
-                                    .add( navaid.NAVAID_TYPE )
-                                    .add( navaid.NAVAID_NAME )
-                                    .add( navaid.NAVAID_FREQ )
-                                    .add( navaid.TACAN_CHANNEL )
-                                    .add( navaid.RADIAL )
-                                    .add( navaid.DISTANCE );
-                        } else {
-                            MatrixCursor.RowBuilder row = ndb.newRow();
-                            row.add( navaid.NAVAID_ID )
-                                    .add( navaid.NAVAID_TYPE )
-                                    .add( navaid.NAVAID_NAME )
-                                    .add( navaid.NAVAID_FREQ )
-                                    .add( navaid.TACAN_CHANNEL )
-                                    .add( navaid.RADIAL )
-                                    .add( navaid.DISTANCE );
-                        }
+            @SuppressWarnings("resource")
+            MatrixCursor vor = new MatrixCursor( mNavColumns );
+            @SuppressWarnings("resource")
+            MatrixCursor ndb = new MatrixCursor( mNavColumns );
+            for ( NavaidData navaid : navaids ) {
+                if ( navaid.DISTANCE <= mRadius ) {
+                    if ( DataUtils.isDirectionalNavaid( navaid.NAVAID_TYPE ) ) {
+                        MatrixCursor.RowBuilder row = vor.newRow();
+                        row.add( navaid.NAVAID_ID )
+                                .add( navaid.NAVAID_TYPE )
+                                .add( navaid.NAVAID_NAME )
+                                .add( navaid.NAVAID_FREQ )
+                                .add( navaid.TACAN_CHANNEL )
+                                .add( navaid.RADIAL )
+                                .add( navaid.DISTANCE );
+                    } else {
+                        MatrixCursor.RowBuilder row = ndb.newRow();
+                        row.add( navaid.NAVAID_ID )
+                                .add( navaid.NAVAID_TYPE )
+                                .add( navaid.NAVAID_NAME )
+                                .add( navaid.NAVAID_FREQ )
+                                .add( navaid.TACAN_CHANNEL )
+                                .add( navaid.RADIAL )
+                                .add( navaid.DISTANCE );
                     }
                 }
-                cursors[ 1 ] = vor;
-                cursors[ 2 ] = ndb;
             }
+            cursors[ 1 ] = vor;
+            cursors[ 2 ] = ndb;
+        }
 
-            c.close();
-            return cursors;
+        c.close();
+        return cursors;
+    }
+
+    private static class NavaidDetailsTask extends CursorAsyncTask<NearbyNavaidsFragment> {
+
+        private NavaidDetailsTask( NearbyNavaidsFragment fragment ) {
+            super( fragment );
+        }
+
+        @Override
+        protected Cursor[] onExecute( NearbyNavaidsFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            return fragment.queryData( siteNumber );
        }
 
        @Override
-       protected boolean onResult( Cursor[] result ) {
-           showDetails( result );
+       protected boolean onResult( NearbyNavaidsFragment fragment, Cursor[] result ) {
+           fragment.showDetails( result );
            return true;
        }
 

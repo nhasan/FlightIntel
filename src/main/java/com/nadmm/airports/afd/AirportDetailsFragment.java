@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,7 +93,6 @@ public final class AirportDetailsFragment extends FragmentBase {
 
     private final HashSet<TextView> mAwosViews = new HashSet<>();
     private final HashSet<TextView> mRunwayViews = new HashSet<>();
-    private final int MAX_WX_STATIONS = 5;
 
     private BroadcastReceiver mBcastReceiver;
     private IntentFilter mBcastFilter;
@@ -140,9 +139,8 @@ public final class AirportDetailsFragment extends FragmentBase {
         mRadius = getActivityBase().getPrefNearbyRadius();
         mHome = getActivityBase().getPrefHomeAirport();
 
-        Bundle args = getArguments();
-        String siteNumber = args.getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new AirportDetailsTask() ).execute( siteNumber );
+        String siteNumber = getArguments().getString( Airports.SITE_NUMBER );
+        setBackgroundTask( new AirportDetailsTask( this ) ).execute( siteNumber );
     }
 
     @Override
@@ -174,23 +172,31 @@ public final class AirportDetailsFragment extends FragmentBase {
 
     private void handleBroadcast( Intent intent ) {
         String action = intent.getAction();
-        if ( action.equals( MetarService.ACTION_GET_METAR ) ) {
-            Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
-            if ( metar != null && metar.rawText != null ) {
-                showWxInfo( metar );
-                if ( isRefreshing() ) {
-                    setRefreshing( false );
+        if ( action != null ) {
+            switch ( action ) {
+                case MetarService.ACTION_GET_METAR:
+                    Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
+                    if ( metar != null && metar.rawText != null ) {
+                        showWxInfo( metar );
+                        if ( isRefreshing() ) {
+                            setRefreshing( false );
+                        }
+                    }
+                    break;
+                case DafdService.ACTION_GET_AFD: {
+                    String path = intent.getStringExtra( DafdService.PDF_PATH );
+                    if ( path != null ) {
+                        SystemUtils.startPDFViewer( getActivity(), path );
+                    }
+                    break;
                 }
-            }
-        } else if ( action.equals( DafdService.ACTION_GET_AFD ) ) {
-            String path = intent.getStringExtra( DafdService.PDF_PATH );
-            if ( path != null ) {
-                SystemUtils.startPDFViewer( getActivity(), path );
-            }
-        } else if ( action.equals( ClassBService.ACTION_GET_CLASSB_GRAPHIC ) ) {
-            String path = intent.getStringExtra( ClassBService.PDF_PATH );
-            if ( path != null ) {
-                SystemUtils.startPDFViewer( getActivity(), path );
+                case ClassBService.ACTION_GET_CLASSB_GRAPHIC: {
+                    String path = intent.getStringExtra( ClassBService.PDF_PATH );
+                    if ( path != null ) {
+                        SystemUtils.startPDFViewer( getActivity(), path );
+                    }
+                    break;
+                }
             }
         }
     }
@@ -220,7 +226,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         showRemarks( result );
         showAwosDetails( result );
         showHomeDistance( result );
-        showNearbyFacilities( result );
+        showNearbyFacilities();
         showNotamAndTfr();
         showCharts( result );
         showOperationsDetails( result );
@@ -378,6 +384,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         Cursor awos1 = result[ 7 ];
         if ( awos1.moveToFirst() ) {
             do {
+                int MAX_WX_STATIONS = 5;
                 if ( awos1.getPosition() == MAX_WX_STATIONS ) {
                     break;
                 }
@@ -467,7 +474,7 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
     }
 
-    private void showNearbyFacilities( Cursor[] result ) {
+    private void showNearbyFacilities() {
         LinearLayout layout = findViewById( R.id.detail_nearby_layout );
 
         Bundle args = new Bundle();
@@ -924,167 +931,176 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
     }
 
-    private final class AirportDetailsTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String siteNumber ) {
+        mSiteNumber = siteNumber;
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        Cursor[] cursors = new Cursor[ 17 ];
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            mSiteNumber = params[ 0 ];
+        Cursor apt = getAirportDetails( mSiteNumber );
+        cursors[ 0 ] = apt;
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 17 ];
+        String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+        double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+        int elev_msl = apt.getInt( apt.getColumnIndex( Airports.ELEVATION_MSL ) );
+        mFAACode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
+        if ( mIcaoCode == null || mIcaoCode.isEmpty() ) {
+            mIcaoCode = "K"+apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        }
 
-            Cursor apt = getAirportDetails( mSiteNumber );
-            cursors[ 0 ] = apt;
+        Location location = new Location( "" );
+        location.setLatitude( lat );
+        location.setLongitude( lon );
+        location.setAltitude( elev_msl );
 
-            String faaCode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
-            double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-            int elev_msl = apt.getInt( apt.getColumnIndex( Airports.ELEVATION_MSL ) );
-            mFAACode = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            mIcaoCode = apt.getString( apt.getColumnIndex( Airports.ICAO_CODE ) );
-            if ( mIcaoCode == null || mIcaoCode.isEmpty() ) {
-                mIcaoCode = "K"+apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            }
+        mDeclination = GeoUtils.getMagneticDeclination( location );
+        mLocation = location;
 
-            mLocation = new Location( "" );
-            mLocation.setLatitude( lat );
-            mLocation.setLongitude( lon );
-            mLocation.setAltitude( elev_msl );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Runways.TABLE_NAME );
+        Cursor c = builder.query( db, new String[] { Runways.SITE_NUMBER, Runways.RUNWAY_ID,
+                        Runways.RUNWAY_LENGTH, Runways.RUNWAY_WIDTH, Runways.SURFACE_TYPE,
+                        Runways.BASE_END_HEADING, Runways.BASE_END_ID, Runways.RECIPROCAL_END_ID,
+                        Runways.BASE_END_RIGHT_TRAFFIC, Runways.RECIPROCAL_END_RIGHT_TRAFFIC },
+                Runways.SITE_NUMBER+"=? AND "+Runways.RUNWAY_LENGTH+" > 0",
+                new String[] { mSiteNumber }, null, null, null, null );
+        cursors[ 1 ] = c;
 
-            mDeclination = GeoUtils.getMagneticDeclination( mLocation );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Remarks.TABLE_NAME );
+        c = builder.query( db, new String[] { Remarks.REMARK_TEXT },
+                Runways.SITE_NUMBER+"=?"
+                        +"AND "+Remarks.REMARK_NAME+" in ('E147', 'A3', 'A24', 'A70', 'A75', 'A82')",
+                new String[] { mSiteNumber }, null, null, null, null );
+        cursors[ 2 ] = c;
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Runways.TABLE_NAME );
-            Cursor c = builder.query( db, new String[] { Runways.SITE_NUMBER, Runways.RUNWAY_ID,
-                    Runways.RUNWAY_LENGTH, Runways.RUNWAY_WIDTH, Runways.SURFACE_TYPE,
-                    Runways.BASE_END_HEADING, Runways.BASE_END_ID, Runways.RECIPROCAL_END_ID,
-                    Runways.BASE_END_RIGHT_TRAFFIC, Runways.RECIPROCAL_END_RIGHT_TRAFFIC },
-                    Runways.SITE_NUMBER+"=? AND "+Runways.RUNWAY_LENGTH+" > 0",
-                    new String[] { mSiteNumber }, null, null, null, null );
-            cursors[ 1 ] = c;
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Tower1.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                Tower1.SITE_NUMBER+"=?",
+                new String[] { mSiteNumber }, null, null, null, null );
+        cursors[ 3 ] = c;
 
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Tower3.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                Tower3.FACILITY_ID+"=?",
+                new String[] { faaCode }, null, null, null, null );
+        cursors[ 4 ] = c;
+
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Tower7.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                Tower7.SATELLITE_AIRPORT_SITE_NUMBER+"=?",
+                new String[] { mSiteNumber }, null, null, null, null );
+        cursors[ 5 ] = c;
+
+        if ( !c.moveToFirst() ) {
             builder = new SQLiteQueryBuilder();
-            builder.setTables( Remarks.TABLE_NAME );
-            c = builder.query( db, new String[] { Remarks.REMARK_TEXT },
-                    Runways.SITE_NUMBER+"=?"
-                    +"AND "+Remarks.REMARK_NAME+" in ('E147', 'A3', 'A24', 'A70', 'A75', 'A82')",
-                    new String[] { mSiteNumber }, null, null, null, null );
-            cursors[ 2 ] = c;
-
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower1.TABLE_NAME );
+            builder.setTables( Tower6.TABLE_NAME );
             c = builder.query( db, new String[] { "*" },
-                    Tower1.SITE_NUMBER+"=?",
-                    new String[] { mSiteNumber }, null, null, null, null );
-            cursors[ 3 ] = c;
+                    Tower6.FACILITY_ID+"=?",
+                    new String[] { faaCode }, null, null, Tower6.ELEMENT_NUMBER, null );
+            cursors[ 6 ] = c;
+        }
 
+        cursors[ 7 ] = new NearbyWxCursor( db, mLocation, mRadius );
+
+        String faa_code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Aff3.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" }, Aff3.IFR_FACILITY_ID+"=?",
+                new String[] { faa_code }, null, null, null, null );
+        cursors[ 8 ] = c;
+
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Tower8.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" }, Tower8.FACILITY_ID+"=? ",
+                new String[] { faaCode }, null, null, null, null );
+        cursors[ 9 ] = c;
+
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Attendance.TABLE_NAME );
+        c = builder.query( db,
+                new String[] { Attendance.ATTENDANCE_SCHEDULE },
+                Attendance.SITE_NUMBER+"=?", new String[] { mSiteNumber },
+                null, null, Attendance.SEQUENCE_NUMBER, null );
+        cursors[ 10 ] = c;
+
+        db = getDatabase( DatabaseManager.DB_DTPP );
+        if ( db != null ) {
             builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower3.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" },
-                    Tower3.FACILITY_ID+"=?",
+            builder.setTables( Dtpp.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" }, Dtpp.FAA_CODE+"=? ",
                     new String[] { faaCode }, null, null, null, null );
-            cursors[ 4 ] = c;
+            cursors[ 11 ] = c;
+        }
 
+        db = getDatabase( DatabaseManager.DB_DAFD );
+        if ( db != null ) {
             builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower7.TABLE_NAME );
+            builder.setTables( DafdCycle.TABLE_NAME );
             c = builder.query( db, new String[] { "*" },
-                    Tower7.SATELLITE_AIRPORT_SITE_NUMBER+"=?",
-                    new String[] { mSiteNumber }, null, null, null, null );
-            cursors[ 5 ] = c;
-
-            if ( !c.moveToFirst() ) {
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Tower6.TABLE_NAME );
-                c = builder.query( db, new String[] { "*" },
-                        Tower6.FACILITY_ID+"=?",
-                        new String[] { faaCode }, null, null, Tower6.ELEMENT_NUMBER, null );
-                cursors[ 6 ] = c;
-            }
-
-            cursors[ 7 ] = new NearbyWxCursor( db, mLocation, mRadius );
-
-            String faa_code = apt.getString( apt.getColumnIndex( Airports.FAA_CODE ) );
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Aff3.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" }, Aff3.IFR_FACILITY_ID+"=?",
-                    new String[] { faa_code }, null, null, null, null );
-            cursors[ 8 ] = c;
+                    null, null, null, null, null, null );
+            cursors[ 12 ] = c;
 
             builder = new SQLiteQueryBuilder();
-            builder.setTables( Tower8.TABLE_NAME );
-            c = builder.query( db, new String[] { "*" }, Tower8.FACILITY_ID+"=? ",
+            builder.setTables( Dafd.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" }, Dafd.FAA_CODE+"=? ",
                     new String[] { faaCode }, null, null, null, null );
-            cursors[ 9 ] = c;
+            cursors[ 13 ] = c;
+        }
 
+        db = getDatabase( DatabaseManager.DB_FADDS );
+
+        if ( !mHome.isEmpty() ) {
             builder = new SQLiteQueryBuilder();
-            builder.setTables( Attendance.TABLE_NAME );
+            builder.setTables( Airports.TABLE_NAME );
             c = builder.query( db,
-                    new String[] { Attendance.ATTENDANCE_SCHEDULE },
-                    Attendance.SITE_NUMBER+"=?", new String[] { mSiteNumber },
-                    null, null, Attendance.SEQUENCE_NUMBER, null );
-            cursors[ 10 ] = c;
-
-            db = getDatabase( DatabaseManager.DB_DTPP );
-            if ( db != null ) {
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Dtpp.TABLE_NAME );
-                c = builder.query( db, new String[] { "*" }, Dtpp.FAA_CODE+"=? ",
-                        new String[] { faaCode }, null, null, null, null );
-                cursors[ 11 ] = c;
-            }
-
-            db = getDatabase( DatabaseManager.DB_DAFD );
-            if ( db != null ) {
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( DafdCycle.TABLE_NAME );
-                c = builder.query( db, new String[] { "*" },
-                        null, null, null, null, null, null );
-                cursors[ 12 ] = c;
-
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Dafd.TABLE_NAME );
-                c = builder.query( db, new String[] { "*" }, Dafd.FAA_CODE+"=? ",
-                        new String[] { faaCode }, null, null, null, null );
-                cursors[ 13 ] = c;
-            }
-
-            db = getDatabase( DatabaseManager.DB_FADDS );
-
-            if ( !mHome.isEmpty() ) {
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Airports.TABLE_NAME );
-                c = builder.query( db,
-                        new String[] {
+                    new String[] {
                             Airports.SITE_NUMBER,
                             Airports.REF_LATTITUDE_DEGREES,
                             Airports.REF_LONGITUDE_DEGREES
-                        },
-                        Airports.FAA_CODE+"=? OR "+Airports.ICAO_CODE+"=?",
-                        new String[] { mHome, mHome }, null, null, null, null );
-                cursors[ 14 ] = c;
-            }
+                    },
+                    Airports.FAA_CODE+"=? OR "+Airports.ICAO_CODE+"=?",
+                    new String[] { mHome, mHome }, null, null, null, null );
+            cursors[ 14 ] = c;
+        }
 
-            // Get nearby Class B airports
-            String selection =
-                    " AND "+Airports.FAA_CODE+" IN ("+ ClassBUtils.getClassBFacilityList()+")";
-            cursors[ 15 ] = new NearbyAirportsCursor( db, mLocation, 50, selection );
+        // Get nearby Class B airports
+        String selection =
+                " AND "+Airports.FAA_CODE+" IN ("+ ClassBUtils.getClassBFacilityList()+")";
+        cursors[ 15 ] = new NearbyAirportsCursor( db, mLocation, 50, selection );
 
-            try {
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Tower5.TABLE_NAME );
-                c = builder.query( db, new String[]{ "*" }, Tower5.FACILITY_ID + "=? ",
-                        new String[]{ faaCode }, null, null, null, null );
-                cursors[ 16 ] = c;
-            } catch ( Exception e ) {
-                e.printStackTrace();
-            }
+        try {
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Tower5.TABLE_NAME );
+            c = builder.query( db, new String[]{ "*" }, Tower5.FACILITY_ID + "=? ",
+                    new String[]{ faaCode }, null, null, null, null );
+            cursors[ 16 ] = c;
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
 
-            return cursors;
+        return cursors;
+    }
+
+    private static class AirportDetailsTask extends CursorAsyncTask<AirportDetailsFragment> {
+
+        private AirportDetailsTask( AirportDetailsFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
+        protected Cursor[] onExecute( AirportDetailsFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            return fragment.doQuery( siteNumber );
+        }
+
+        @Override
+        protected boolean onResult( AirportDetailsFragment fragment, Cursor[] result ) {
+            fragment.showDetails( result );
             return true;
         }
 

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ public final class NavaidDetailsFragment extends FragmentBase {
         Bundle args = getArguments();
         String navaidId = args.getString( Nav1.NAVAID_ID );
         String navaidType = args.getString( Nav1.NAVAID_TYPE );
-        setBackgroundTask( new NavaidDetailsTask() ).execute( navaidId, navaidType );
+        setBackgroundTask( new NavaidDetailsTask( this ) ).execute( navaidId, navaidType );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -171,52 +171,59 @@ public final class NavaidDetailsFragment extends FragmentBase {
         }
     }
 
-    private final class NavaidDetailsTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String navaidId, String navaidType ) {
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        Cursor[] cursors = new Cursor[ 3 ];
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String navaidId = params[ 0 ];
-            String navaidType = params[ 1 ];
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Nav1.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
+                +" ON a."+Nav1.ASSOC_STATE+"=s."+States.STATE_CODE );
+        Cursor c = builder.query( db, new String[] { "*" },
+                Nav1.NAVAID_ID+"=? AND "+Nav1.NAVAID_TYPE+"=?",
+                new String[] { navaidId, navaidType }, null, null, null, null );
+        if ( !c.moveToFirst() ) {
+            return null;
+        }
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 3 ];
+        cursors[ 0 ] = c;
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Nav1.TABLE_NAME+" a LEFT OUTER JOIN "+States.TABLE_NAME+" s"
-                    +" ON a."+Nav1.ASSOC_STATE+"=s."+States.STATE_CODE );
-            Cursor c = builder.query( db, new String[] { "*" },
-                    Nav1.NAVAID_ID+"=? AND "+Nav1.NAVAID_TYPE+"=?",
-                    new String[] { navaidId, navaidType }, null, null, null, null );
-            if ( !c.moveToFirst() ) {
-                return null;
-            }
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Nav2.TABLE_NAME );
+        c = builder.query( db, new String[] { "*" },
+                Nav1.NAVAID_ID+"=? AND "+Nav1.NAVAID_TYPE+"=?",
+                new String[] { navaidId, navaidType }, null, null, null, null );
+        cursors[ 1 ] = c;
 
-            cursors[ 0 ] = c;
-
+        if ( !navaidType.equals( "VOT" ) ) {
             builder = new SQLiteQueryBuilder();
-            builder.setTables( Nav2.TABLE_NAME );
+            builder.setTables( Com.TABLE_NAME );
             c = builder.query( db, new String[] { "*" },
-                    Nav1.NAVAID_ID+"=? AND "+Nav1.NAVAID_TYPE+"=?",
-                    new String[] { navaidId, navaidType }, null, null, null, null );
-            cursors[ 1 ] = c;
+                    Com.ASSOC_NAVAID_ID+"=?", new String[] { navaidId },
+                    null, null, null, null );
+            cursors[ 2 ] = c;
+        } else {
+            cursors[ 2 ] = null;
+        }
 
-            if ( !navaidType.equals( "VOT" ) ) {
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Com.TABLE_NAME );
-                c = builder.query( db, new String[] { "*" },
-                        Com.ASSOC_NAVAID_ID+"=?", new String[] { navaidId },
-                        null, null, null, null );
-                cursors[ 2 ] = c;
-            } else {
-                cursors[ 2 ] = null;
-            }
+        return cursors;
+    }
 
-            return cursors;
+    private static class NavaidDetailsTask extends CursorAsyncTask<NavaidDetailsFragment> {
+
+        private NavaidDetailsTask( NavaidDetailsFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
+        protected Cursor[] onExecute( NavaidDetailsFragment fragment, String... params ) {
+            String navaidId = params[ 0 ];
+            String navaidType = params[ 1 ];
+            return fragment.doQuery( navaidId, navaidType );
+        }
+
+        @Override
+        protected boolean onResult( NavaidDetailsFragment fragment, Cursor[] result ) {
+            fragment.showDetails( result );
             return true;
         }
 

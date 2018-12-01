@@ -51,9 +51,8 @@ public final class RemarksFragment extends FragmentBase {
 
         setActionBarTitle( "Remarks", "" );
 
-        Bundle args = getArguments();
-        String siteNumber = args.getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new RemarksTask() ).execute( siteNumber );
+        String siteNumber = getArguments().getString( Airports.SITE_NUMBER );
+        setBackgroundTask( new RemarksTask( this ) ).execute( siteNumber );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -78,35 +77,43 @@ public final class RemarksFragment extends FragmentBase {
         }
     }
 
-    private final class RemarksTask extends CursorAsyncTask {
+    private Cursor[] queryData( String siteNumber ) {
+        Cursor[] cursors = new Cursor[ 2 ];
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 2 ];
+        Cursor apt = getAirportDetails( siteNumber );
+        cursors[ 0 ] = apt;
 
-            Cursor apt = getAirportDetails( siteNumber );
-            cursors[ 0 ] = apt;
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Remarks.TABLE_NAME );
+        cursors[ 1 ] = builder.query( db,
+                new String[] { Remarks.REMARK_TEXT },
+                Runways.SITE_NUMBER+"=? "
+                        +"AND substr("+Remarks.REMARK_NAME+", 1, 2) not in ('A3', 'A4', 'A5', 'A6') "
+                        +"AND substr("+Remarks.REMARK_NAME+", 1, 3) not in ('A23', 'A17', 'A81')"
+                        +"AND "+Remarks.REMARK_NAME
+                        +" not in ('E147', 'A3', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', "
+                        +"'A24', 'A70', 'A75', 'A82')",
+                new String[] { siteNumber }, null, null, Remarks.REMARK_NAME, null );
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Remarks.TABLE_NAME );
-            cursors[ 1 ] = builder.query( db,
-                    new String[] { Remarks.REMARK_TEXT },
-                    Runways.SITE_NUMBER+"=? "
-                    +"AND substr("+Remarks.REMARK_NAME+", 1, 2) not in ('A3', 'A4', 'A5', 'A6') "
-                    +"AND substr("+Remarks.REMARK_NAME+", 1, 3) not in ('A23', 'A17', 'A81')"
-                    +"AND "+Remarks.REMARK_NAME
-                    +" not in ('E147', 'A3', 'A11', 'A12', 'A13', 'A14', 'A15', 'A16', 'A17', "
-                    +"'A24', 'A70', 'A75', 'A82')",
-                    new String[] { siteNumber }, null, null, Remarks.REMARK_NAME, null );
+        return cursors;
+    }
 
-            return cursors;
+    private static class RemarksTask extends CursorAsyncTask<RemarksFragment> {
+
+        private RemarksTask( RemarksFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
+        protected Cursor[] onExecute( RemarksFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            return fragment.queryData( siteNumber );
+        }
+
+        @Override
+        protected boolean onResult( RemarksFragment fragment, Cursor[] result ) {
+            fragment.showDetails( result );
             return true;
         }
 

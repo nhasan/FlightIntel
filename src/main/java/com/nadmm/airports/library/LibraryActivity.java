@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.nadmm.airports.library;
@@ -26,12 +26,12 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.nadmm.airports.R;
 import com.nadmm.airports.TabPagerActivityBase;
 import com.nadmm.airports.data.DatabaseManager;
-import com.nadmm.airports.utils.CursorAsyncTask;
 import com.nadmm.airports.utils.SystemUtils;
 
 import java.util.HashMap;
@@ -66,7 +66,7 @@ public class LibraryActivity extends TabPagerActivityBase {
                 // Show the PDF here as the Fragment requesting it may be paused
                 String action = intent.getAction();
 
-                if ( action.equals( LibraryService.ACTION_GET_BOOK ) ) {
+                if ( action != null && action.equals( LibraryService.ACTION_GET_BOOK ) ) {
                     String path = intent.getStringExtra( LibraryService.PDF_PATH );
                     mPending = false;
                     if ( path != null ) {
@@ -81,14 +81,16 @@ public class LibraryActivity extends TabPagerActivityBase {
         mFilter.addAction( LibraryService.ACTION_GET_BOOK );
         mFilter.addAction( LibraryService.ACTION_DOWNLOAD_PROGRESS );
 
+/*
         SQLiteDatabase db = getDatabase( DatabaseManager.DB_LIBRARY );
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
         builder.setTables( DatabaseManager.BookCategories.TABLE_NAME );
         Cursor c = builder.query( db, new String[] { "*" }, null, null, null, null,
                 DatabaseManager.BookCategories._ID );
         populateTabs( c );
+*/
 
-        //setBackgroundTask( new LibraryCategoryTask() ).execute( "" );
+        new LibraryCategoryTask().execute();
     }
 
     @Override
@@ -122,6 +124,7 @@ public class LibraryActivity extends TabPagerActivityBase {
                 addTab( name, LibraryPageFragment.class, args );
             } while ( c.moveToNext() );
         }
+        c.close();
     }
 
     public void setPending( boolean pending ) {
@@ -144,7 +147,7 @@ public class LibraryActivity extends TabPagerActivityBase {
         mReceivers.remove( category );
     }
 
-    private final class LibraryCategoryTask extends CursorAsyncTask {
+    private final class LibraryCategoryTask extends AsyncTask<String, Void, Cursor[]> {
 
         @Override
         protected Cursor[] doInBackground( String... params ) {
@@ -161,9 +164,8 @@ public class LibraryActivity extends TabPagerActivityBase {
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
+        protected void onPostExecute( Cursor[] result ) {
             populateTabs( result[ 0 ] );
-            return true;
         }
 
     }

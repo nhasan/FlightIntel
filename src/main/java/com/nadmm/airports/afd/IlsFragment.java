@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.afd;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -61,7 +62,7 @@ public final class IlsFragment extends FragmentBase {
         String runwayId = args.getString( Ils1.RUNWAY_ID );
         String ilsType = args.getString( Ils1.ILS_TYPE );
 
-        setBackgroundTask( new IlsTask() ).execute( siteNumber, runwayId, ilsType );
+        setBackgroundTask( new IlsTask( this ) ).execute( siteNumber, runwayId, ilsType );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -84,6 +85,7 @@ public final class IlsFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showIlsDetails( Cursor[] result ) {
         Cursor ils1 = result[ 1 ];
         TextView tv = findViewById( R.id.rwy_ils_label );
@@ -240,77 +242,84 @@ public final class IlsFragment extends FragmentBase {
         }
     }
 
-    private final class IlsTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String siteNumber, String runwayId, String ilsType ) {
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        Cursor[] cursors = new Cursor[ 9 ];
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
-            String runwayId = params[ 1 ];
-            String ilsType = params[ 2 ];
+        Cursor apt = getAirportDetails( siteNumber );
+        cursors[ 0 ] = apt;
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 9 ];
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Ils1.TABLE_NAME );
+        cursors[ 1 ] = builder.query( db, new String[] { "*" },
+                Ils1.SITE_NUMBER+"=? AND "+Ils1.RUNWAY_ID+"=? AND "+Ils1.ILS_TYPE+"=?",
+                new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
 
-            Cursor apt = getAirportDetails( siteNumber );
-            cursors[ 0 ] = apt;
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Ils2.TABLE_NAME );
+        cursors[ 2 ] = builder.query( db, new String[] { "*" },
+                Ils2.SITE_NUMBER+"=? AND "+Ils2.RUNWAY_ID+"=? AND "+Ils2.ILS_TYPE+"=?",
+                new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Ils1.TABLE_NAME );
-            cursors[ 1 ] = builder.query( db, new String[] { "*" },
-                    Ils1.SITE_NUMBER+"=? AND "+Ils1.RUNWAY_ID+"=? AND "+Ils1.ILS_TYPE+"=?",
-                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Ils3.TABLE_NAME );
+        cursors[ 3 ] = builder.query( db, new String[] { "*" },
+                Ils3.SITE_NUMBER+"=? AND "+Ils3.RUNWAY_ID+"=? AND "+Ils3.ILS_TYPE+"=?",
+                new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Ils2.TABLE_NAME );
-            cursors[ 2 ] = builder.query( db, new String[] { "*" },
-                    Ils2.SITE_NUMBER+"=? AND "+Ils2.RUNWAY_ID+"=? AND "+Ils2.ILS_TYPE+"=?",
-                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Ils4.TABLE_NAME );
+        cursors[ 4 ] = builder.query( db, new String[] { "*" },
+                Ils4.SITE_NUMBER+"=? AND "+Ils4.RUNWAY_ID+"=? AND "+Ils4.ILS_TYPE+"=?",
+                new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Ils3.TABLE_NAME );
-            cursors[ 3 ] = builder.query( db, new String[] { "*" },
-                    Ils3.SITE_NUMBER+"=? AND "+Ils3.RUNWAY_ID+"=? AND "+Ils3.ILS_TYPE+"=?",
-                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Ils5.TABLE_NAME );
+        cursors[ 5 ] = builder.query( db, new String[] { "*" },
+                Ils5.SITE_NUMBER+"=? AND "+Ils5.RUNWAY_ID+"=? AND "+Ils5.ILS_TYPE+"=?"
+                        +" AND "+Ils5.MARKER_TYPE+"='IM'",
+                new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Ils4.TABLE_NAME );
-            cursors[ 4 ] = builder.query( db, new String[] { "*" },
-                    Ils4.SITE_NUMBER+"=? AND "+Ils4.RUNWAY_ID+"=? AND "+Ils4.ILS_TYPE+"=?",
-                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Ils5.TABLE_NAME );
+        cursors[ 6 ] = builder.query( db, new String[] { "*" },
+                Ils5.SITE_NUMBER+"=? AND "+Ils5.RUNWAY_ID+"=? AND "+Ils5.ILS_TYPE+"=?"
+                        +" AND "+Ils5.MARKER_TYPE+"='MM'",
+                new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Ils5.TABLE_NAME );
-            cursors[ 5 ] = builder.query( db, new String[] { "*" },
-                    Ils5.SITE_NUMBER+"=? AND "+Ils5.RUNWAY_ID+"=? AND "+Ils5.ILS_TYPE+"=?"
-                    +" AND "+Ils5.MARKER_TYPE+"='IM'",
-                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Ils5.TABLE_NAME );
+        cursors[ 7 ] = builder.query( db, new String[] { "*" },
+                Ils5.SITE_NUMBER+"=? AND "+Ils5.RUNWAY_ID+"=? AND "+Ils5.ILS_TYPE+"=?"
+                        +" AND "+Ils5.MARKER_TYPE+"='OM'",
+                new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Ils5.TABLE_NAME );
-            cursors[ 6 ] = builder.query( db, new String[] { "*" },
-                    Ils5.SITE_NUMBER+"=? AND "+Ils5.RUNWAY_ID+"=? AND "+Ils5.ILS_TYPE+"=?"
-                    +" AND "+Ils5.MARKER_TYPE+"='MM'",
-                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Ils6.TABLE_NAME );
+        cursors[ 8 ] = builder.query( db, new String[] { "*" },
+                Ils6.SITE_NUMBER+"=? AND "+Ils6.RUNWAY_ID+"=? AND "+Ils6.ILS_TYPE+"=?",
+                new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Ils5.TABLE_NAME );
-            cursors[ 7 ] = builder.query( db, new String[] { "*" },
-                    Ils5.SITE_NUMBER+"=? AND "+Ils5.RUNWAY_ID+"=? AND "+Ils5.ILS_TYPE+"=?"
-                    +" AND "+Ils5.MARKER_TYPE+"='OM'",
-                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+        return cursors;
+    }
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Ils6.TABLE_NAME );
-            cursors[ 8 ] = builder.query( db, new String[] { "*" },
-                    Ils6.SITE_NUMBER+"=? AND "+Ils6.RUNWAY_ID+"=? AND "+Ils6.ILS_TYPE+"=?",
-                    new String[] { siteNumber, runwayId, ilsType }, null, null, null, null );
+    private static class IlsTask extends CursorAsyncTask<IlsFragment> {
 
-            return cursors;
+        private IlsTask( IlsFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
+        protected Cursor[] onExecute( IlsFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            String runwayId = params[ 1 ];
+            String ilsType = params[ 2 ];
+            return fragment.doQuery( siteNumber, runwayId, ilsType );
+        }
+
+        @Override
+        protected boolean onResult( IlsFragment fragment, Cursor[] result ) {
+            fragment.showDetails( result );
             return true;
         }
 

@@ -43,6 +43,10 @@ public abstract class NoaaService extends IntentService {
 
     protected final String ADDS_DATASERVER_PATH = "/adds/dataserver_current/httpparam";
 
+    public static final int METAR_HOURS_BEFORE = 3;
+    public static final int TAF_HOURS_BEFORE = 3;
+    public static final int TAF_RADIUS = 25;
+
     public static final String STATION_ID = "STATION_ID";
     public static final String STATION_IDS = "STATION_IDS";
     public static final String CACHE_ONLY = "CACHE_ONLY";

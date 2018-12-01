@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,9 +58,12 @@ public final class AfdMainActivity extends TabPagerActivityBase {
 
     @Override
     protected int getInitialTabIndex() {
-        boolean showNearby = getPrefAlwaysShowNearby();
+        if ( getPrefAlwaysShowNearby() ) {
+            return ID_NEARBY;
+        }
+
         ArrayList<String> fav = getDbManager().getAptFavorites();
-        if ( !showNearby && !fav.isEmpty() ) {
+        if ( !fav.isEmpty() ) {
             return ID_FAVORITES;
         } else {
             return ID_NEARBY;

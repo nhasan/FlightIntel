@@ -28,6 +28,7 @@ import android.widget.ListView;
 
 import com.nadmm.airports.LocationListFragmentBase;
 import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.utils.CursorAsyncTask;
 
 import java.util.Locale;
 
@@ -52,8 +53,8 @@ public class NearbyObstaclesFragment extends LocationListFragmentBase {
     }
 
     @Override
-    protected LocationTask newLocationTask() {
-        return new NearbyObstaclesTask();
+    protected void startLocationTask() {
+        setBackgroundTask( new NearbyObstaclesTask( this ) ).execute();
     }
 
     @Override
@@ -66,18 +67,27 @@ public class NearbyObstaclesFragment extends LocationListFragmentBase {
 
     }
 
-    private final class NearbyObstaclesTask extends LocationTask {
+    private Cursor[] doQuery() {
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_DOF );
+        Cursor c = new NearbyDofCursor( db, getLastLocation(), mRadius );
+        return new Cursor[] { c };
+    }
 
-        @Override
-        protected Cursor doInBackground( Void... params ) {
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_DOF );
+    private static class NearbyObstaclesTask extends CursorAsyncTask<NearbyObstaclesFragment> {
 
-            return new NearbyDofCursor( db, getLastLocation(), mRadius );
+        private NearbyObstaclesTask( NearbyObstaclesFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected void onPostExecute( final Cursor c ) {
-            setCursor( c );
+        protected Cursor[] onExecute( NearbyObstaclesFragment fragment, String... params ) {
+            return fragment.doQuery();
+        }
+
+        @Override
+        protected boolean onResult( NearbyObstaclesFragment fragment, Cursor[] result ) {
+            fragment.setCursor( result[ 0 ] );
+            return false;
         }
 
     }

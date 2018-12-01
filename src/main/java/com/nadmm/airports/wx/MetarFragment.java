@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.wx;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -57,8 +58,6 @@ public class MetarFragment extends WxFragmentBase {
     private Location mLocation;
     private ArrayList<String> mRemarks;
 
-    private final int METAR_HOURS_BEFORE = 3;
-
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -85,7 +84,7 @@ public class MetarFragment extends WxFragmentBase {
 
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new MetarTask() ).execute( stationId );
+        setBackgroundTask( new MetarTask( this ) ).execute( stationId );
     }
 
     @Override
@@ -117,93 +116,99 @@ public class MetarFragment extends WxFragmentBase {
         requestMetar( true );
     }
 
-    private final class MetarTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String stationId ) {
+        Cursor[] cursors = new Cursor[ 3 ];
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String stationId = params[ 0 ];
+        SQLiteDatabase db = getActivityBase().getDatabase( DatabaseManager.DB_FADDS );
 
-            Cursor[] cursors = new Cursor[ 3 ];
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Wxs.TABLE_NAME );
+        Cursor c = builder.query( db, new String[] { "*" }, Wxs.STATION_ID+"=?",
+                new String[] { stationId }, null, null, null, null );
+        cursors[ 0 ] = c;
 
-            SQLiteDatabase db = getActivityBase().getDatabase( DatabaseManager.DB_FADDS );
+        String[] wxColumns = new String[] {
+                Awos1.WX_SENSOR_IDENT,
+                Awos1.WX_SENSOR_TYPE,
+                Awos1.STATION_FREQUENCY,
+                Awos1.SECOND_STATION_FREQUENCY,
+                Awos1.STATION_PHONE_NUMBER,
+                Airports.ASSOC_CITY,
+                Airports.ASSOC_STATE
+        };
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Airports.TABLE_NAME+" a"
+                +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
+                +" ON a."+Airports.FAA_CODE+" = w."+Awos1.WX_SENSOR_IDENT );
+        String selection = "a."+Airports.ICAO_CODE+"=? AND w."+Awos1.COMMISSIONING_STATUS+"='Y'";
+        c = builder.query( db, wxColumns, selection, new String[] { stationId },
+                null, null, null );
+        cursors[ 1 ] = c;
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Wxs.TABLE_NAME );
-            Cursor c = builder.query( db, new String[] { "*" }, Wxs.STATION_ID+"=?",
-                    new String[] { stationId }, null, null, null, null );
-            cursors[ 0 ] = c;
-
-            String[] wxColumns = new String[] {
-                    Awos1.WX_SENSOR_IDENT,
-                    Awos1.WX_SENSOR_TYPE,
-                    Awos1.STATION_FREQUENCY,
-                    Awos1.SECOND_STATION_FREQUENCY,
-                    Awos1.STATION_PHONE_NUMBER,
-                    Airports.ASSOC_CITY,
-                    Airports.ASSOC_STATE
-            };
+        if ( c.moveToFirst() ) {
+            String sensorId = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_IDENT ) );
+            String sensorType = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
             builder = new SQLiteQueryBuilder();
-            builder.setTables( Airports.TABLE_NAME+" a"
-                    +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
-                    +" ON a."+Airports.FAA_CODE+" = w."+Awos1.WX_SENSOR_IDENT );
-            String selection = "a."+Airports.ICAO_CODE+"=? AND w."+Awos1.COMMISSIONING_STATUS+"='Y'";
-            c = builder.query( db, wxColumns, selection, new String[] { stationId },
-                    null, null, null );
-            cursors[ 1 ] = c;
+            builder.setTables( Awos2.TABLE_NAME );
+            selection = String.format( "%s=? AND %s=?",
+                    Awos2.WX_SENSOR_IDENT, Awos2.WX_SENSOR_TYPE );
+            c = builder.query( db, new String[] { Awos2.WX_STATION_REMARKS },
+                    selection, new String[] { sensorId, sensorType }, null, null, null );
+            cursors[ 2 ] = c;
+        }
 
-            if ( c.moveToFirst() ) {
-                String sensorId = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_IDENT ) );
-                String sensorType = c.getString( c.getColumnIndex( Awos1.WX_SENSOR_TYPE ) );
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Awos2.TABLE_NAME );
-                selection = String.format( "%s=? AND %s=?",
-                        Awos2.WX_SENSOR_IDENT, Awos2.WX_SENSOR_TYPE );
-                c = builder.query( db, new String[] { Awos2.WX_STATION_REMARKS },
-                        selection, new String[] { sensorId, sensorType }, null, null, null );
-                cursors[ 2 ] = c;
+        return cursors;
+    }
+
+    private void setCursor( Cursor[] result ) {
+        Cursor wxs = result[ 0 ];
+        if ( wxs.moveToFirst() ) {
+            mLocation = new Location( "" );
+            float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+            float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+            mLocation.setLatitude( lat );
+            mLocation.setLongitude( lon );
+
+            Cursor rmk = result[ 2 ];
+            if ( rmk != null && rmk.moveToFirst() ) {
+                mRemarks.clear();
+                do {
+                    String remark = rmk.getString(
+                            rmk.getColumnIndex( Awos2.WX_STATION_REMARKS ) );
+                    mRemarks.add( remark );
+                } while ( rmk.moveToNext() );
             }
 
-            return cursors;
+            showWxTitle( result );
+            requestMetar( false );
+        } else {
+            UiUtils.showToast( getActivity().getApplicationContext(),
+                    "Unable to get weather station info" );
+            getActivity().finish();
+        }
+    }
+
+    private static class MetarTask extends CursorAsyncTask<MetarFragment> {
+
+        private MetarTask( MetarFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            Cursor wxs = result[ 0 ];
-            if ( wxs.moveToFirst() ) {
-                mLocation = new Location( "" );
-                float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-                float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-                mLocation.setLatitude( lat );
-                mLocation.setLongitude( lon );
+        protected Cursor[] onExecute( MetarFragment fragment, String... params ) {
+            String stationId = params[ 0 ];
+            return fragment.doQuery( stationId );
+        }
 
-                Cursor rmk = result[ 2 ];
-                if ( rmk != null && rmk.moveToFirst() ) {
-                    mRemarks.clear();
-                    do {
-                        String remark = rmk.getString(
-                                rmk.getColumnIndex( Awos2.WX_STATION_REMARKS ) );
-                        mRemarks.add( remark );
-                    } while ( rmk.moveToNext() );
-                }
-
-                showWxTitle( result );
-                requestMetar( false );
-            } else {
-                UiUtils.showToast( getActivity().getApplicationContext(),
-                        "Unable to get weather station info" );
-                getActivity().finish();
-            }
+        @Override
+        protected boolean onResult( MetarFragment fragment, Cursor[] result ) {
+            fragment.setCursor( result );
             return true;
         }
 
     }
 
     private void requestMetar( boolean refresh ) {
-        if ( getActivity() == null ) {
-            // Not ready to do this yet
-            return;
-        }
-
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
         Intent service = new Intent( getActivity(), MetarService.class );
@@ -212,17 +217,13 @@ public class MetarFragment extends WxFragmentBase {
         stationIds.add( stationId );
         service.putExtra( NoaaService.STATION_IDS, stationIds );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
-        service.putExtra( NoaaService.HOURS_BEFORE, METAR_HOURS_BEFORE );
+        service.putExtra( NoaaService.HOURS_BEFORE, NoaaService.METAR_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showMetar( Intent intent ) {
-        if ( getActivity() == null ) {
-            // Not ready to do this yet
-            return;
-        }
-
         Metar metar = (Metar) intent.getSerializableExtra( NoaaService.RESULT );
         if ( metar == null ) {
             return;

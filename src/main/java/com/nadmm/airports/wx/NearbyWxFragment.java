@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,17 +19,41 @@
 
 package com.nadmm.airports.wx;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ListView;
 
+import com.nadmm.airports.LocationListFragmentBase;
 import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.utils.CursorAsyncTask;
 
-public class NearbyWxFragment extends WxListFragmentBase {
+import androidx.cursoradapter.widget.CursorAdapter;
+
+public class NearbyWxFragment extends LocationListFragmentBase {
+    private WxDelegate mDelegate;
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
+
+        mDelegate = new WxDelegate( this );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mDelegate.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        mDelegate.onPause();
     }
 
     @Override
@@ -40,21 +64,59 @@ public class NearbyWxFragment extends WxListFragmentBase {
     }
 
     @Override
-    protected LocationTask newLocationTask() {
-        return new NearbyWxTask();
+    public boolean isRefreshable() {
+        return getListAdapter() != null && !getListAdapter().isEmpty();
     }
 
-    private final class NearbyWxTask extends LocationTask {
+    @Override
+    public void requestDataRefresh() {
+        mDelegate.requestMetars( NoaaService.ACTION_GET_METAR, true, true );
+    }
 
-        @Override
-        protected Cursor doInBackground( Void... params ) {
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            return new NearbyWxCursor( db, getLastLocation(), getNearbyRadius() );
+    @Override
+    protected CursorAdapter newListAdapter( Context context, Cursor c ) {
+        return mDelegate.newListAdapter( context, c );
+    }
+
+    @Override
+    protected void setCursor( Cursor c ) {
+        mDelegate.setCursor( c );
+        super.setCursor( c );
+        getActivityBase().enableDisableSwipeRefresh( isRefreshable() );
+        mDelegate.requestMetars( NoaaService.ACTION_GET_METAR, false, true );
+    }
+
+    @Override
+    protected void onListItemClick( ListView l, View v, int position ) {
+        mDelegate.onListItemClick( l, v, position );
+    }
+
+    private Cursor[] doQuery() {
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        Cursor c = new NearbyWxCursor( db, getLastLocation(), getNearbyRadius() );
+        return new Cursor[] { c };
+    }
+
+    @Override
+    protected void startLocationTask() {
+        setBackgroundTask( new NearbyWxTask( this ) ).execute();
+    }
+
+    private static class NearbyWxTask extends CursorAsyncTask<NearbyWxFragment> {
+
+        private NearbyWxTask( NearbyWxFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected void onPostExecute( Cursor c ) {
-            setCursor( c );
+        protected Cursor[] onExecute( NearbyWxFragment fragment, String... params ) {
+            return fragment.doQuery();
+        }
+
+        @Override
+        protected boolean onResult( NearbyWxFragment fragment, Cursor[] result ) {
+            fragment.setCursor( result[ 0 ] );
+            return false;
         }
     }
 

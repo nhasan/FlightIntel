@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,9 +51,8 @@ public final class AttendanceFragment extends FragmentBase {
 
         setActionBarTitle( "Attendance", "" );
 
-        Bundle args = getArguments();
-        String siteNumber = args.getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new AttendanceTask() ).execute( siteNumber );
+        String siteNumber = getArguments().getString( Airports.SITE_NUMBER );
+        setBackgroundTask( new AttendanceTask( this ) ).execute( siteNumber );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -100,37 +99,45 @@ public final class AttendanceFragment extends FragmentBase {
         }
     }
 
-    private final class AttendanceTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String siteNumber ) {
+        Cursor[] cursors = new Cursor[ 3 ];
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 3 ];
+        cursors[ 0 ] = getAirportDetails( siteNumber );
 
-            cursors[ 0 ] = getAirportDetails( siteNumber );
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Attendance.TABLE_NAME );
+        cursors[ 1 ] = builder.query( db,
+                new String[] { Attendance.ATTENDANCE_SCHEDULE },
+                Attendance.SITE_NUMBER+"=?", new String[] { siteNumber },
+                null, null, Attendance.SEQUENCE_NUMBER, null );
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Attendance.TABLE_NAME );
-            cursors[ 1 ] = builder.query( db,
-                    new String[] { Attendance.ATTENDANCE_SCHEDULE },
-                    Attendance.SITE_NUMBER+"=?", new String[] { siteNumber },
-                    null, null, Attendance.SEQUENCE_NUMBER, null );
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Remarks.TABLE_NAME );
+        cursors[ 2 ] = builder.query( db,
+                new String[] { Remarks.REMARK_TEXT },
+                Attendance.SITE_NUMBER+"=? "
+                        +"AND substr("+Remarks.REMARK_NAME+", 1, 3)='A17'",
+                new String[] { siteNumber }, null, null, null, null );
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Remarks.TABLE_NAME );
-            cursors[ 2 ] = builder.query( db,
-                    new String[] { Remarks.REMARK_TEXT },
-                    Attendance.SITE_NUMBER+"=? "
-                    +"AND substr("+Remarks.REMARK_NAME+", 1, 3)='A17'",
-                    new String[] { siteNumber }, null, null, null, null );
+        return cursors;
+    }
 
-            return cursors;
+    private static class AttendanceTask extends CursorAsyncTask<AttendanceFragment> {
+
+        private AttendanceTask( AttendanceFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
+        protected Cursor[] onExecute( AttendanceFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            return fragment.doQuery( siteNumber );
+        }
+
+        @Override
+        protected boolean onResult( AttendanceFragment fragment, Cursor[] result ) {
+            fragment.showDetails( result );
             return true;
         }
 

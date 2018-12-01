@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,17 +24,17 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import androidx.cursoradapter.widget.CursorAdapter;
 import android.view.View;
 import android.widget.ListView;
 
-import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.data.DatabaseManager;
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 import java.util.ArrayList;
+
+import androidx.cursoradapter.widget.CursorAdapter;
 
 public class FavoriteAirportsFragment extends ListFragmentBase {
 
@@ -47,7 +47,7 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
     public void onResume() {
         super.onResume();
 
-        setBackgroundTask( new FavoriteAirportsTask() ).execute( (String[]) null );
+        setBackgroundTask( new FavoriteAirportsTask( this ) ).execute( (String[]) null );
     }
 
     @Override
@@ -71,38 +71,40 @@ public class FavoriteAirportsFragment extends ListFragmentBase {
         startActivity( intent );
     }
 
-    public class FavoriteAirportsTask extends CursorAsyncTask {
+    private Cursor[] doQuery() {
+        DatabaseManager dbManager = getDbManager();
+        ArrayList<String> siteNumbers = dbManager.getAptFavorites();
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            ActivityBase activity = (ActivityBase) getActivity();
-            if ( activity == null ) {
-                cancel( false );
-                return null;
+        StringBuilder builder = new StringBuilder();
+        for (String siteNumber : siteNumbers ) {
+            if ( builder.length() > 0 ) {
+                builder.append( ", " );
             }
+            builder.append( "'" ).append( siteNumber).append( "'" );
+        }
 
-            DatabaseManager dbManager = activity.getDbManager();
-            ArrayList<String> siteNumbers = dbManager.getAptFavorites();
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        String selection = "a."+Airports.SITE_NUMBER+" in ("+builder.toString()+")";
+        Cursor c = AirportsCursorHelper.query( db, selection,
+                null, null, null, Airports.FACILITY_NAME, null );
 
-            String selection = "";
-            for (String siteNumber : siteNumbers ) {
-                if ( selection.length() > 0 ) {
-                    selection += ", ";
-                }
-                selection += "'"+siteNumber+"'";
-            }
+        return new Cursor[] { c };
+    }
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            selection = "a."+Airports.SITE_NUMBER+" in ("+selection+")";
-            Cursor c = AirportsCursorHelper.query( db, selection,
-                    null, null, null, Airports.FACILITY_NAME, null );
+    private static class FavoriteAirportsTask extends CursorAsyncTask<FavoriteAirportsFragment> {
 
-            return new Cursor[] { c };
+        private FavoriteAirportsTask( FavoriteAirportsFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            setCursor( result[ 0 ] );
+        protected Cursor[] onExecute( FavoriteAirportsFragment fragment, String... params ) {
+            return fragment.doQuery();
+        }
+
+        @Override
+        protected boolean onResult( FavoriteAirportsFragment fragment, Cursor[] result ) {
+            fragment.setCursor( result[ 0 ] );
             return false;
         }
     }

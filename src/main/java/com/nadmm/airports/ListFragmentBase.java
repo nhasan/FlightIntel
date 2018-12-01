@@ -66,8 +66,7 @@ public abstract class ListFragmentBase extends FragmentBase {
         if ( mListView != null ) {
             ListAdapter adapter = mListView.getAdapter();
             if ( adapter instanceof CursorAdapter ) {
-                Cursor c = ( (CursorAdapter)adapter ).getCursor();
-                c.close();
+                ( (CursorAdapter)adapter ).getCursor().close();
             }
         }
 
@@ -90,12 +89,6 @@ public abstract class ListFragmentBase extends FragmentBase {
     }
 
     protected void setCursor( Cursor c ) {
-        if ( getActivity() == null ) {
-            // We may get called here after activity has detached
-            c.close();
-            return;
-        }
-
         CursorAdapter adapter = (CursorAdapter) mListView.getAdapter();
         if ( adapter == null ) {
             adapter = newListAdapter( getActivity(), c );

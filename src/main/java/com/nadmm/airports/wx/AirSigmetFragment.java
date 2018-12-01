@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ public class AirSigmetFragment extends WxFragmentBase {
 
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new AirSigmetTask() ).execute( stationId );
+        setBackgroundTask( new AirSigmetTask( this ) ).execute( stationId );
     }
 
     @Override
@@ -113,38 +113,45 @@ public class AirSigmetFragment extends WxFragmentBase {
         requestAirSigmetText( true );
     }
 
-    private final class AirSigmetTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String stationId ) {
+        SQLiteDatabase db = getDbManager().getDatabase( DatabaseManager.DB_FADDS );
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String stationId = params[ 0 ];
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Wxs.TABLE_NAME );
+        String selection = Wxs.STATION_ID+"=?";
+        Cursor c = builder.query( db, new String[]{ "*" }, selection,
+                new String[] { stationId }, null, null, null, null );
+        return new Cursor[] { c };
+    }
 
-            Cursor[] cursors = new Cursor[ 1 ];
-            SQLiteDatabase db = getDbManager().getDatabase( DatabaseManager.DB_FADDS );
+    private void setCursor( Cursor c ) {
+        if ( c.moveToFirst() ) {
+            mStationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
+            mLocation = new Location( "" );
+            float lat = c.getFloat( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+            float lon = c.getFloat( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+            mLocation.setLatitude( lat );
+            mLocation.setLongitude( lon );
+            // Now request the airmet/sigmet
+            requestAirSigmetText( false );
+        }
+    }
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Wxs.TABLE_NAME );
-            String selection = Wxs.STATION_ID+"=?";
-            Cursor c = builder.query( db, new String[]{ "*" }, selection,
-                    new String[] { stationId }, null, null, null, null );
-            cursors[ 0 ] = c;
+    private static class AirSigmetTask extends CursorAsyncTask<AirSigmetFragment> {
 
-            return cursors;
+        private AirSigmetTask( AirSigmetFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            Cursor wxs = result[ 0 ];
-            if ( wxs.moveToFirst() ) {
-                mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
-                mLocation = new Location( "" );
-                float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-                float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-                mLocation.setLatitude( lat );
-                mLocation.setLongitude( lon );
-                // Now request the airmet/sigmet
-                requestAirSigmetText( false );
-            }
+        protected Cursor[] onExecute( AirSigmetFragment fragment, String... params ) {
+            String stationId = params[ 0 ];
+            return fragment.doQuery( stationId );
+        }
+
+        @Override
+        protected boolean onResult( AirSigmetFragment fragment, Cursor[] result ) {
+            fragment.setCursor( result[ 0 ] );
             return true;
         }
 

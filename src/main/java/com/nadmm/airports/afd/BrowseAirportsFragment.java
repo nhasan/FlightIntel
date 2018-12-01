@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.BaseColumns;
-import androidx.cursoradapter.widget.CursorAdapter;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
@@ -42,6 +41,8 @@ import com.nadmm.airports.utils.SectionedCursorAdapter;
 
 import java.util.HashMap;
 import java.util.Locale;
+
+import androidx.cursoradapter.widget.CursorAdapter;
 
 public class BrowseAirportsFragment extends ListFragmentBase {
 
@@ -84,9 +85,9 @@ public class BrowseAirportsFragment extends ListFragmentBase {
         }
 
         if ( mMode == BROWSE_STATE_MODE ) {
-            setBackgroundTask( new BrowseStateTask() ).execute();
+            setBackgroundTask( new BrowseStateTask( this ) ).execute();
         } else {
-            setBackgroundTask( new BrowseAirportsTask() ).execute( mStateCode, mStateName );
+            setBackgroundTask( new BrowseAirportsTask( this ) ).execute( mStateCode, mStateName );
         }
 
         View view = getView();
@@ -100,7 +101,7 @@ public class BrowseAirportsFragment extends ListFragmentBase {
                     // Intercept back key to go back to state mode
                     mMode = BROWSE_STATE_MODE;
                     setAdapter( null );
-                    setBackgroundTask( new BrowseStateTask() ).execute();
+                    setBackgroundTask( new BrowseStateTask( this ) ).execute();
                     return true;
                 }
                 return false;
@@ -141,7 +142,7 @@ public class BrowseAirportsFragment extends ListFragmentBase {
             setAdapter( null );
             mStateCode = c.getString( c.getColumnIndex( DatabaseManager.Airports.ASSOC_STATE ) );
             mStateName = c.getString( c.getColumnIndex( DatabaseManager.States.STATE_NAME ) );
-            setBackgroundTask( new BrowseAirportsTask() ).execute( mStateCode, mStateName );
+            setBackgroundTask( new BrowseAirportsTask( this ) ).execute( mStateCode, mStateName );
         } else {
             String siteNumber = c.getString( c.getColumnIndex( DatabaseManager.Airports.SITE_NUMBER ) );
             Intent intent = new Intent( getActivity(), AirportActivity.class );
@@ -150,9 +151,32 @@ public class BrowseAirportsFragment extends ListFragmentBase {
         }
     }
 
+    private void setStateCursor( Cursor[] result ) {
+        if ( result != null ) {
+            setCursor( result[ 0 ] );
+            if ( mListState != null ) {
+                getListView().onRestoreInstanceState( mListState );
+            }
+        } else {
+            Intent intent = new Intent( getActivity(), DownloadActivity.class );
+            intent.putExtra( "MSG", "Please install the data before using the app" );
+            startActivity( intent );
+        }
+    }
+
+    private void setAirportsCursor( Cursor[] result ) {
+        if ( result != null ) {
+            setCursor( result[ 0 ] );
+        } else {
+            Intent intent = new Intent( getActivity(), DownloadActivity.class );
+            intent.putExtra( "MSG", "Please install the data before using the app" );
+            startActivity( intent );
+        }
+    }
+
     private final class StateCursorAdapter extends SectionedCursorAdapter {
 
-        public StateCursorAdapter( Context context, int layout, Cursor c ) {
+        private StateCursorAdapter( Context context, int layout, Cursor c ) {
             super( context, layout, c, R.layout.list_item_header );
         }
 
@@ -175,7 +199,7 @@ public class BrowseAirportsFragment extends ListFragmentBase {
     private final class CityCursorAdapter extends SectionedCursorAdapter {
 
         AirportsCursorAdapter mAdapter;
-        public CityCursorAdapter( Context context, Cursor c ) {
+        private CityCursorAdapter( Context context, Cursor c ) {
             super( context, R.layout.airport_list_item, c, R.layout.list_item_header );
             mAdapter = new AirportsCursorAdapter( context, c );
         }
@@ -192,19 +216,15 @@ public class BrowseAirportsFragment extends ListFragmentBase {
         }
     }
 
-    private final class BrowseStateTask extends CursorAsyncTask {
+    private static class BrowseStateTask extends CursorAsyncTask<BrowseAirportsFragment> {
+
+        private BrowseStateTask( BrowseAirportsFragment fragment ) {
+            super( fragment );
+        }
 
         @Override
-        protected Cursor[] doInBackground( String... params ) {
-            if ( getActivity() == null ) {
-                cancel( false );
-                return null;
-            }
-
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            if ( db == null ) {
-                return null;
-            }
+        protected Cursor[] onExecute( BrowseAirportsFragment fragment, String... params ) {
+            SQLiteDatabase db = fragment.getDatabase( DatabaseManager.DB_FADDS );
 
             // Show all the states grouped by first letter
             SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
@@ -233,36 +253,22 @@ public class BrowseAirportsFragment extends ListFragmentBase {
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            if ( result != null ) {
-                setCursor( result[ 0 ] );
-                if ( mListState != null ) {
-                    getListView().onRestoreInstanceState( mListState );
-                }
-            } else {
-                Intent intent = new Intent( getActivity(), DownloadActivity.class );
-                intent.putExtra( "MSG", "Please install the data before using the app" );
-                startActivity( intent );
-            }
+        protected boolean onResult( BrowseAirportsFragment fragment, Cursor[] result ) {
+            fragment.setStateCursor( result );
             return false;
         }
 
     }
 
-    private final class BrowseAirportsTask extends CursorAsyncTask {
+    private static class BrowseAirportsTask extends CursorAsyncTask<BrowseAirportsFragment> {
+
+        private BrowseAirportsTask( BrowseAirportsFragment fragment ) {
+            super( fragment );
+        }
 
         @Override
-        protected Cursor[] doInBackground( String... params ) {
-            if ( getActivity() == null ) {
-                cancel( false );
-                return null;
-            }
-
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            if ( db == null ) {
-                return null;
-            }
-
+        protected Cursor[] onExecute( BrowseAirportsFragment fragment, String... params ) {
+            SQLiteDatabase db = fragment.getDatabase( DatabaseManager.DB_FADDS );
             String stateCode = params[ 0 ];
             String stateName = params[ 1 ];
 
@@ -277,14 +283,8 @@ public class BrowseAirportsFragment extends ListFragmentBase {
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            if ( result != null ) {
-                setCursor( result[ 0 ] );
-            } else {
-                Intent intent = new Intent( getActivity(), DownloadActivity.class );
-                intent.putExtra( "MSG", "Please install the data before using the app" );
-                startActivity( intent );
-            }
+        protected boolean onResult( BrowseAirportsFragment fragment, Cursor[] result ) {
+            fragment.setAirportsCursor( result );
             return false;
         }
 

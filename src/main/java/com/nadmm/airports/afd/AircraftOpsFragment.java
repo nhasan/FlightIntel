@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,9 +47,8 @@ public final class AircraftOpsFragment extends FragmentBase {
 
         setActionBarTitle( "Operations", "" );
 
-        Bundle args = getArguments();
-        String siteNumber = args.getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new OpsDetailsTask() ).execute( siteNumber );
+        String siteNumber = getArguments().getString( Airports.SITE_NUMBER );
+        setBackgroundTask( new OpsDetailsTask( this ) ).execute( siteNumber );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -98,23 +97,22 @@ public final class AircraftOpsFragment extends FragmentBase {
         addRow( layout, "As-of", date );
     }
 
-    private final class OpsDetailsTask extends CursorAsyncTask {
+    private static class OpsDetailsTask extends CursorAsyncTask<AircraftOpsFragment> {
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
-
-            Cursor[] cursors = new Cursor[ 1 ];
-
-            Cursor apt = getAirportDetails( siteNumber );
-            cursors[ 0 ] = apt;
-
-            return cursors;
+        private OpsDetailsTask( AircraftOpsFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
+        protected Cursor[] onExecute( AircraftOpsFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            Cursor apt = fragment.getAirportDetails( siteNumber );
+            return new Cursor[] { apt };
+        }
+
+        @Override
+        protected boolean onResult( AircraftOpsFragment fragment, Cursor[] result ) {
+            fragment.showDetails( result );
             return true;
         }
 

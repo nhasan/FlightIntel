@@ -53,8 +53,8 @@ public class AirportsCursorHelper {
 
     private AirportsCursorHelper() {}
 
-    static HashMap<String, String> buildProjectionMap() {
-        HashMap<String, String> map = new HashMap<String, String>();
+    private static HashMap<String, String> buildProjectionMap() {
+        HashMap<String, String> map = new HashMap<>();
         for ( String col : mQueryColumns ) {
             if ( !col.equals( States.STATE_NAME ) ) {
                 map.put( col, col );

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.wx;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -53,9 +54,6 @@ import java.util.Locale;
 public class TafFragment extends WxFragmentBase {
     private final String mAction = NoaaService.ACTION_GET_TAF;
 
-    private final int TAF_RADIUS = 25;
-    private final int TAF_HOURS_BEFORE = 3;
-
     private String mStationId;
     private Forecast mLastForecast;
 
@@ -88,7 +86,7 @@ public class TafFragment extends WxFragmentBase {
         Bundle args = getArguments();
         if ( args != null ) {
             String stationId = args.getString( NoaaService.STATION_ID );
-            setBackgroundTask( new TafFragment.TafTask() ).execute( stationId );
+            setBackgroundTask( new TafFragment.TafTask( this ) ).execute( stationId );
         }
     }
 
@@ -116,120 +114,131 @@ public class TafFragment extends WxFragmentBase {
         requestTaf( mStationId, true );
     }
 
-    private final class TafTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String stationId ) {
+        Cursor[] cursors = new Cursor[ 2 ];
+        SQLiteDatabase db = getDbManager().getDatabase( DatabaseManager.DB_FADDS );
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String stationId = params[ 0 ];
-
-            Cursor[] cursors = new Cursor[ 2 ];
-            SQLiteDatabase db = getDbManager().getDatabase( DatabaseManager.DB_FADDS );
-
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Wxs.TABLE_NAME );
-            String selection = Wxs.STATION_ID+"=?";
-            Cursor c = builder.query( db, new String[] { "*" }, selection,
-                    new String[] { stationId }, null, null, null, null );
-            c.moveToFirst();
-            String siteTypes = c.getString( c.getColumnIndex( Wxs.STATION_SITE_TYPES ) );
-            if ( !siteTypes.contains( "TAF" ) ) {
-                // There is no TAF available at this station, search for the nearest
-                double lat = c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-                double lon = c.getDouble( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-                Location location = new Location( "" );
-                location.setLatitude( lat );
-                location.setLongitude( lon );
-                c.close();
-
-                c = DbUtils.getBoundingBoxCursor( db, Wxs.TABLE_NAME,
-                        Wxs.STATION_LATITUDE_DEGREES, Wxs.STATION_LONGITUDE_DEGREES,
-                        location, TAF_RADIUS );
-
-                stationId = "";
-                if ( c.moveToFirst() ) {
-                    float distance = Float.MAX_VALUE;
-                    do {
-                        siteTypes = c.getString( c.getColumnIndex( Wxs.STATION_SITE_TYPES ) );
-                        if ( !siteTypes.contains( "TAF" ) ) {
-                            continue;
-                        }
-                        // Get the location of this station
-                        float[] results = new float[ 2 ];
-                        Location.distanceBetween(
-                                location.getLatitude(),
-                                location.getLongitude(),
-                                c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) ),
-                                c.getDouble( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) ),
-                                results );
-                        results[ 0 ] /= GeoUtils.METERS_PER_NAUTICAL_MILE;
-                        if ( results[ 0 ] <= TAF_RADIUS && results[ 0 ] < distance ) {
-                            stationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
-                            distance = results[ 0 ];
-                        }
-                    } while ( c.moveToNext() );
-                }
-            }
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Wxs.TABLE_NAME );
+        String selection = Wxs.STATION_ID+"=?";
+        Cursor c = builder.query( db, new String[] { "*" }, selection,
+                new String[] { stationId }, null, null, null, null );
+        c.moveToFirst();
+        String siteTypes = c.getString( c.getColumnIndex( Wxs.STATION_SITE_TYPES ) );
+        if ( !siteTypes.contains( "TAF" ) ) {
+            // There is no TAF available at this station, search for the nearest
+            double lat = c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+            double lon = c.getDouble( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+            Location location = new Location( "" );
+            location.setLatitude( lat );
+            location.setLongitude( lon );
             c.close();
 
-            if ( stationId.length() > 0 ) {
-                // We have the station with TAF
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Wxs.TABLE_NAME );
-                selection = Wxs.STATION_ID+"=?";
-                c = builder.query( db, new String[] { "*" }, selection,
-                        new String[] { stationId }, null, null, null, null );
-                cursors[ 0 ] = c;
+            c = DbUtils.getBoundingBoxCursor( db, Wxs.TABLE_NAME,
+                    Wxs.STATION_LATITUDE_DEGREES, Wxs.STATION_LONGITUDE_DEGREES,
+                    location, NoaaService.TAF_RADIUS );
 
-                String[] wxColumns = new String[] {
-                        Awos1.WX_SENSOR_IDENT,
-                        Awos1.WX_SENSOR_TYPE,
-                        Awos1.STATION_FREQUENCY,
-                        Awos1.SECOND_STATION_FREQUENCY,
-                        Awos1.STATION_PHONE_NUMBER,
-                        Airports.ASSOC_CITY,
-                        Airports.ASSOC_STATE
-                };
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Airports.TABLE_NAME+" a"
-                        +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
-                        +" ON a."+Airports.FAA_CODE+" = w."+Awos1.WX_SENSOR_IDENT );
-                selection = "a."+Airports.ICAO_CODE+"=?";
-                c = builder.query( db, wxColumns, selection, new String[] { stationId },
-                        null, null, null, null );
-                cursors[ 1 ] = c;
+            stationId = "";
+            if ( c.moveToFirst() ) {
+                float distance = Float.MAX_VALUE;
+                do {
+                    siteTypes = c.getString( c.getColumnIndex( Wxs.STATION_SITE_TYPES ) );
+                    if ( !siteTypes.contains( "TAF" ) ) {
+                        continue;
+                    }
+                    // Get the location of this station
+                    float[] results = new float[ 2 ];
+                    Location.distanceBetween(
+                            location.getLatitude(),
+                            location.getLongitude(),
+                            c.getDouble( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) ),
+                            c.getDouble( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) ),
+                            results );
+                    results[ 0 ] /= GeoUtils.METERS_PER_NAUTICAL_MILE;
+                    if ( results[ 0 ] <= NoaaService.TAF_RADIUS && results[ 0 ] < distance ) {
+                        stationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
+                        distance = results[ 0 ];
+                    }
+                } while ( c.moveToNext() );
             }
+        }
+        c.close();
 
-            return cursors;
+        if ( stationId.length() > 0 ) {
+            // We have the station with TAF
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Wxs.TABLE_NAME );
+            selection = Wxs.STATION_ID+"=?";
+            c = builder.query( db, new String[] { "*" }, selection,
+                    new String[] { stationId }, null, null, null, null );
+            cursors[ 0 ] = c;
+
+            String[] wxColumns = new String[] {
+                    Awos1.WX_SENSOR_IDENT,
+                    Awos1.WX_SENSOR_TYPE,
+                    Awos1.STATION_FREQUENCY,
+                    Awos1.SECOND_STATION_FREQUENCY,
+                    Awos1.STATION_PHONE_NUMBER,
+                    Airports.ASSOC_CITY,
+                    Airports.ASSOC_STATE
+            };
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Airports.TABLE_NAME+" a"
+                    +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
+                    +" ON a."+Airports.FAA_CODE+" = w."+Awos1.WX_SENSOR_IDENT );
+            selection = "a."+Airports.ICAO_CODE+"=?";
+            c = builder.query( db, wxColumns, selection, new String[] { stationId },
+                    null, null, null, null );
+            cursors[ 1 ] = c;
+        }
+
+        return cursors;
+    }
+
+    private void setCursor( Cursor[] result ) {
+        Cursor wxs = result[ 0 ];
+        if ( wxs == null || !wxs.moveToFirst() ) {
+            // No station with TAF was found nearby
+            Bundle args = getArguments();
+            String stationId = args.getString( NoaaService.STATION_ID );
+
+            View detail = findViewById( R.id.wx_detail_layout );
+            detail.setVisibility( View.GONE );
+            LinearLayout layout = findViewById( R.id.wx_status_layout );
+            layout.removeAllViews();
+            layout.setVisibility( View.GONE );
+            TextView tv = findViewById( R.id.status_msg );
+            tv.setVisibility( View.VISIBLE );
+            tv.setText( String.format( Locale.US, "No wx station with TAF was found near %s"
+                    +" within %dNM radius", stationId, NoaaService.TAF_RADIUS ) );
+            View title = findViewById( R.id.wx_title_layout );
+            title.setVisibility( View.GONE );
+            setRefreshing( false );
+            setContentShown( true );
+        } else {
+            // Show the weather station info
+            showWxTitle( result );
+            // Now request the weather
+            mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
+            requestTaf( mStationId, false );
+        }
+    }
+
+    private static class TafTask extends CursorAsyncTask<TafFragment> {
+
+        private TafTask( TafFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            Cursor wxs = result[ 0 ];
-            if ( wxs == null || !wxs.moveToFirst() ) {
-                // No station with TAF was found nearby
-                Bundle args = getArguments();
-                String stationId = args.getString( NoaaService.STATION_ID );
+        protected Cursor[] onExecute( TafFragment fragment, String... params ) {
+            String stationId = params[ 0 ];
+            return fragment.doQuery( stationId );
+        }
 
-                View detail = findViewById( R.id.wx_detail_layout );
-                detail.setVisibility( View.GONE );
-                LinearLayout layout = findViewById( R.id.wx_status_layout );
-                layout.removeAllViews();
-                layout.setVisibility( View.GONE );
-                TextView tv = findViewById( R.id.status_msg );
-                tv.setVisibility( View.VISIBLE );
-                tv.setText( String.format( Locale.US, "No wx station with TAF was found near %s"
-                        +" within %dNM radius", stationId, TAF_RADIUS ) );
-                View title = findViewById( R.id.wx_title_layout );
-                title.setVisibility( View.GONE );
-                setRefreshing( false );
-                setContentShown( true );
-            } else {
-                // Show the weather station info
-                showWxTitle( result );
-                // Now request the weather
-                mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
-                requestTaf( mStationId, false );
-            }
+        @Override
+        protected boolean onResult( TafFragment fragment, Cursor[] result ) {
+            fragment.setCursor( result );
             return true;
         }
 
@@ -240,11 +249,12 @@ public class TafFragment extends WxFragmentBase {
         service.setAction( mAction );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
         service.putExtra( NoaaService.STATION_ID, stationId );
-        service.putExtra( NoaaService.HOURS_BEFORE, TAF_HOURS_BEFORE );
+        service.putExtra( NoaaService.HOURS_BEFORE, NoaaService.TAF_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
         getActivity().startService( service );
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showTaf( Intent intent ) {
         if ( getActivity() == null ) {
             return;

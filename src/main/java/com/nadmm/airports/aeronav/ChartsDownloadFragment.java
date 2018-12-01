@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.aeronav;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -89,16 +90,18 @@ public class ChartsDownloadFragment extends FragmentBase {
             @Override
             public void onReceive( Context context, Intent intent ) {
                 String action = intent.getAction();
-                switch ( action ) {
-                    case AeroNavService.ACTION_GET_CHARTS:
-                        onChartDownload( context, intent );
-                        break;
-                    case AeroNavService.ACTION_CHECK_CHARTS:
-                        onChartDelete( context, intent );
-                        break;
-                    case AeroNavService.ACTION_COUNT_CHARTS:
-                        onChartCount( context, intent );
-                        break;
+                if ( action != null ) {
+                    switch ( action ) {
+                        case AeroNavService.ACTION_GET_CHARTS:
+                            onChartDownload();
+                            break;
+                        case AeroNavService.ACTION_CHECK_CHARTS:
+                            onChartDelete();
+                            break;
+                        case AeroNavService.ACTION_COUNT_CHARTS:
+                            onChartCount( intent );
+                            break;
+                    }
                 }
             }
         };
@@ -134,7 +137,9 @@ public class ChartsDownloadFragment extends FragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        setBackgroundTask( new ChartsDownloadTask() ).execute();
+        ChartsDownloadTask task = new ChartsDownloadTask( this );
+        setBackgroundTask( task );
+        task.execute();
     }
 
     @Override
@@ -171,7 +176,7 @@ public class ChartsDownloadFragment extends FragmentBase {
     private void startChartDownload( View v ) {
         mSelectedRow = v;
         String tppVolume = (String) mSelectedRow.getTag( R.id.DTPP_VOLUME_NAME );
-        VolumeDownloadTask task = new VolumeDownloadTask();
+        VolumeDownloadTask task = new VolumeDownloadTask( this );
         task.execute( tppVolume );
     }
 
@@ -192,7 +197,7 @@ public class ChartsDownloadFragment extends FragmentBase {
     private void startChartDelete( View v ) {
         mSelectedRow = v;
         String tppVolume = (String) mSelectedRow.getTag( R.id.DTPP_VOLUME_NAME );
-        VolumeDeleteTask task = new VolumeDeleteTask();
+        VolumeDeleteTask task = new VolumeDeleteTask( this );
         task.execute( tppVolume );
     }
 
@@ -205,40 +210,48 @@ public class ChartsDownloadFragment extends FragmentBase {
         builder.show();
     }
 
-    private class ChartsDownloadTask extends CursorAsyncTask {
+    private Cursor[] doQueryTotals() {
+        Cursor[] result = new Cursor[ 2 ];
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_DTPP );
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            Cursor[] result = new Cursor[ 2 ];
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_DTPP );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( DtppCycle.TABLE_NAME );
+        Cursor c = builder.query( db, new String[] { "*" },
+                null, null, null, null, null, null );
+        result[ 0 ] = c;
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( DtppCycle.TABLE_NAME );
-            Cursor c = builder.query( db, new String[] { "*" },
-                    null, null, null, null, null, null );
-            result[ 0 ] = c;
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Dtpp.TABLE_NAME );
+        c = builder.query( db, new String[] { Dtpp.TPP_VOLUME,
+                        "count(DISTINCT "+Dtpp.PDF_NAME+") AS total" },
+                Dtpp.USER_ACTION+"!='D'",
+                null, Dtpp.TPP_VOLUME, null, null, null );
+        result[ 1 ] = c;
 
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Dtpp.TABLE_NAME );
-            c = builder.query( db, new String[] { Dtpp.TPP_VOLUME,
-                    "count(DISTINCT "+Dtpp.PDF_NAME+") AS total" },
-                    Dtpp.USER_ACTION+"!='D'",
-                    null, Dtpp.TPP_VOLUME, null, null, null );
-            result[ 1 ] = c;
+        return result;
+    }
 
-            return result;
+    private static class ChartsDownloadTask extends CursorAsyncTask<ChartsDownloadFragment> {
+
+        private ChartsDownloadTask( ChartsDownloadFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( final Cursor[] result ) {
-            // Add delay to allow navigation drawer to close without stutter
-            new Handler().postDelayed( () -> showChartInfo( result ), 250 );
+        protected Cursor[] onExecute( ChartsDownloadFragment fragment, String... params ) {
+            return fragment.doQueryTotals();
+        }
 
+        @Override
+        protected boolean onResult( ChartsDownloadFragment fragment, Cursor[] result ) {
+            // Add delay to allow navigation drawer to close without stutter
+            new Handler().postDelayed( () -> fragment.showChartInfo( result ), 250 );
             // Do not close cursors now
             return false;
         }
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showChartInfo( Cursor[] result ) {
         Cursor c = result[ 0 ];
         if ( c.moveToFirst() ) {
@@ -325,42 +338,42 @@ public class ChartsDownloadFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
-    private class VolumeDownloadTask extends CursorAsyncTask {
+    private Cursor[] doQueryVolume( String volume ) {
+        mTppVolume = volume;
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_DTPP );
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            mTppVolume = params[ 0 ];
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_DTPP );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Dtpp.TABLE_NAME );
+        Cursor c = builder.query( db,
+                new String[] { Dtpp.PDF_NAME },
+                Dtpp.TPP_VOLUME+"=? AND "+Dtpp.USER_ACTION+"!=?",
+                new String[] { mTppVolume, "D" },
+                Dtpp.PDF_NAME+","+Dtpp.TPP_VOLUME,
+                null, null );
 
-            Cursor[] result = new Cursor[ 1 ];
+        return new Cursor[] { c };
+    }
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Dtpp.TABLE_NAME );
-            Cursor c = builder.query( db,
-                    new String[] { Dtpp.PDF_NAME },
-                    Dtpp.TPP_VOLUME+"=? AND "+Dtpp.USER_ACTION+"!=?",
-                    new String[] { mTppVolume, "D" },
-                    Dtpp.PDF_NAME+","+Dtpp.TPP_VOLUME,
-                    null, null );
-            result[ 0 ] = c;
+    private static class VolumeDownloadTask extends CursorAsyncTask<ChartsDownloadFragment> {
 
-            return result;
+        private VolumeDownloadTask( ChartsDownloadFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            mCursor = result[ 0 ];
-            mCursor.moveToFirst();
-            mProgressBar = mSelectedRow.findViewById( R.id.progress );
-            mProgressBar.setMax( mCursor.getCount() );
-            mProgressBar.setProgress( 0 );
-            mProgressBar.setVisibility( View.VISIBLE );
-            getNextChart();
+        protected Cursor[] onExecute( ChartsDownloadFragment fragment, String... params ) {
+            String volume = params[ 0 ];
+            return fragment.doQueryVolume( volume );
+        }
+
+        @Override
+        protected boolean onResult( ChartsDownloadFragment fragment, Cursor[] result ) {
+            fragment.downloadCharts( result[ 0 ] );
             return false;
         }
     }
 
-    private void onChartDownload( Context context, Intent intent ) {
+    private void onChartDownload() {
         if ( mCursor != null ) {
             mProgressBar.setProgress( mCursor.getPosition() );
             if ( !mStop && mCursor.moveToNext() ) {
@@ -370,6 +383,16 @@ public class ChartsDownloadFragment extends FragmentBase {
                 finishOperation();
             }
         }
+    }
+
+    private void downloadCharts( Cursor c ) {
+        mCursor = c;
+        mCursor.moveToFirst();
+        mProgressBar = mSelectedRow.findViewById( R.id.progress );
+        mProgressBar.setMax( mCursor.getCount() );
+        mProgressBar.setProgress( 0 );
+        mProgressBar.setVisibility( View.VISIBLE );
+        getNextChart();
     }
 
     private void getNextChart() {
@@ -384,42 +407,42 @@ public class ChartsDownloadFragment extends FragmentBase {
         getActivity().startService( service );
     }
 
-    private class VolumeDeleteTask extends CursorAsyncTask {
+    private Cursor[] doQueryDelete( String volume ) {
+        mTppVolume = volume;
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_DTPP );
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            mTppVolume = params[ 0 ];
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_DTPP );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Dtpp.TABLE_NAME );
+        Cursor c = builder.query( db,
+                new String[] { Dtpp.PDF_NAME },
+                Dtpp.TPP_VOLUME+"=? AND "+Dtpp.USER_ACTION+"!=?",
+                new String[] { mTppVolume, "D" },
+                Dtpp.PDF_NAME+","+Dtpp.TPP_VOLUME,
+                null, null );
 
-            Cursor[] result = new Cursor[ 1 ];
+        return new Cursor[] { c };
+    }
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Dtpp.TABLE_NAME );
-            Cursor c = builder.query( db,
-                    new String[] { Dtpp.PDF_NAME },
-                    Dtpp.TPP_VOLUME+"=? AND "+Dtpp.USER_ACTION+"!=?",
-                    new String[] { mTppVolume, "D" },
-                    Dtpp.PDF_NAME+","+Dtpp.TPP_VOLUME,
-                    null, null );
-            result[ 0 ] = c;
+    private static class VolumeDeleteTask extends CursorAsyncTask<ChartsDownloadFragment> {
 
-            return result;
+        private VolumeDeleteTask( ChartsDownloadFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            mCursor = result[ 0 ];
-            mCursor.moveToFirst();
-            mProgressBar = mSelectedRow.findViewById( R.id.progress );
-            mProgressBar.setMax( mCursor.getCount() );
-            mProgressBar.setProgress( 0 );
-            mProgressBar.setVisibility( View.VISIBLE );
-            deleteNextChart();
+        protected Cursor[] onExecute( ChartsDownloadFragment fragment, String... params ) {
+            String volume = params[ 0 ];
+            return fragment.doQueryDelete( volume );
+        }
+
+        @Override
+        protected boolean onResult( ChartsDownloadFragment fragment, Cursor[] result ) {
+            fragment.deleteCharts( result[ 0 ] );
             return false;
         }
     }
 
-    private void onChartDelete( Context context, Intent intent ) {
+    private void onChartDelete() {
         if ( mCursor != null ) {
             mProgressBar.setProgress( mCursor.getPosition() );
             if ( !mStop && mCursor.moveToNext() ) {
@@ -429,6 +452,16 @@ public class ChartsDownloadFragment extends FragmentBase {
                 finishOperation();
             }
         }
+    }
+
+    private void deleteCharts( Cursor c ) {
+        mCursor = c;
+        mCursor.moveToFirst();
+        mProgressBar = mSelectedRow.findViewById( R.id.progress );
+        mProgressBar.setMax( mCursor.getCount() );
+        mProgressBar.setProgress( 0 );
+        mProgressBar.setVisibility( View.VISIBLE );
+        deleteNextChart();
     }
 
     private void deleteNextChart() {
@@ -464,7 +497,7 @@ public class ChartsDownloadFragment extends FragmentBase {
         getActivity().startService( service );
     }
 
-    private View addTppVolumeRow( LinearLayout layout, String tppVolume, int total ) {
+    private void addTppVolumeRow( LinearLayout layout, String tppVolume, int total ) {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
         }
@@ -486,11 +519,9 @@ public class ChartsDownloadFragment extends FragmentBase {
 
         mVolumeRowMap.put( tppVolume, row );
         getChartCount( mTppCycle, tppVolume );
-
-        return row;
     }
 
-    private void onChartCount( Context context, Intent intent ) {
+    private void onChartCount( Intent intent ) {
         String tppVolume = intent.getStringExtra( AeroNavService.TPP_VOLUME );
         int avail = intent.getIntExtra( AeroNavService.PDF_COUNT, 0 );
         View row = mVolumeRowMap.get( tppVolume );

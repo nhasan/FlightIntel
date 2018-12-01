@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.wx;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -85,7 +86,7 @@ public class PirepFragment extends WxFragmentBase {
 
         Bundle args = getArguments();
         String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new PirepDetailTask() ).execute( stationId );
+        setBackgroundTask( new PirepDetailTask( this ) ).execute( stationId );
     }
 
     @Override
@@ -112,62 +113,72 @@ public class PirepFragment extends WxFragmentBase {
         requestPirep( true );
     }
 
-    private final class PirepDetailTask extends CursorAsyncTask {
+    private Cursor[] doQuery( String stationId ) {
+        Cursor[] cursors = new Cursor[ 2 ];
+        SQLiteDatabase db = getDbManager().getDatabase( DatabaseManager.DB_FADDS );
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String stationId = params[ 0 ];
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Wxs.TABLE_NAME );
+        Cursor c = builder.query( db, new String[] { "*" }, Wxs.STATION_ID+"=?",
+                new String[] { stationId }, null, null, null, null );
+        cursors[ 0 ] = c;
 
-            Cursor[] cursors = new Cursor[ 2 ];
-            SQLiteDatabase db = getDbManager().getDatabase( DatabaseManager.DB_FADDS );
+        String[] wxColumns = new String[] {
+                Awos1.WX_SENSOR_IDENT,
+                Awos1.WX_SENSOR_TYPE,
+                Awos1.STATION_FREQUENCY,
+                Awos1.SECOND_STATION_FREQUENCY,
+                Awos1.STATION_PHONE_NUMBER,
+                Airports.ASSOC_CITY,
+                Airports.ASSOC_STATE
+        };
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Airports.TABLE_NAME+" a"
+                +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
+                +" ON a."+Airports.FAA_CODE+" = w."+Awos1.WX_SENSOR_IDENT );
+        String selection = "a."+Airports.ICAO_CODE+"=?";
+        c = builder.query( db, wxColumns, selection, new String[] { stationId },
+                null, null, null, null );
+        cursors[ 1 ] = c;
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Wxs.TABLE_NAME );
-            Cursor c = builder.query( db, new String[] { "*" }, Wxs.STATION_ID+"=?",
-                    new String[] { stationId }, null, null, null, null );
-            cursors[ 0 ] = c;
+        return cursors;
+    }
 
-            String[] wxColumns = new String[] {
-                    Awos1.WX_SENSOR_IDENT,
-                    Awos1.WX_SENSOR_TYPE,
-                    Awos1.STATION_FREQUENCY,
-                    Awos1.SECOND_STATION_FREQUENCY,
-                    Awos1.STATION_PHONE_NUMBER,
-                    Airports.ASSOC_CITY,
-                    Airports.ASSOC_STATE
-            };
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Airports.TABLE_NAME+" a"
-                    +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
-                    +" ON a."+Airports.FAA_CODE+" = w."+Awos1.WX_SENSOR_IDENT );
-            String selection = "a."+Airports.ICAO_CODE+"=?";
-            c = builder.query( db, wxColumns, selection, new String[] { stationId },
-                    null, null, null, null );
-            cursors[ 1 ] = c;
+    private void setCursor( Cursor c ) {
+        if ( c == null || !c.moveToFirst() ) {
+            Bundle args = getArguments();
+            String stationId = args.getString( NoaaService.STATION_ID );
+            String error = String.format( "Unable to get station info for %s", stationId );
+            showError( error );
+            setRefreshing( false );
+        } else {
+            mLocation = new Location( "" );
+            float lat = c.getFloat( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+            float lon = c.getFloat( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+            mLocation.setLatitude( lat );
+            mLocation.setLongitude( lon );
 
-            return cursors;
+            // Now request the weather
+            mStationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
+            requestPirep( false );
+        }
+    }
+
+    private static class PirepDetailTask extends CursorAsyncTask<PirepFragment> {
+
+        private PirepDetailTask( PirepFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            Cursor wxs = result[ 0 ];
-            if ( wxs == null || !wxs.moveToFirst() ) {
-                Bundle args = getArguments();
-                String stationId = args.getString( NoaaService.STATION_ID );
-                String error = String.format( "Unable to get station info for %s", stationId );
-                showError( error );
-                setRefreshing( false );
-            } else {
-                mLocation = new Location( "" );
-                float lat = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-                float lon = wxs.getFloat( wxs.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-                mLocation.setLatitude( lat );
-                mLocation.setLongitude( lon );
+        protected Cursor[] onExecute( PirepFragment fragment, String... params ) {
+            String stationId = params[ 0 ];
+            return fragment.doQuery( stationId );
+        }
 
-                // Now request the weather
-                mStationId = wxs.getString( wxs.getColumnIndex( Wxs.STATION_ID ) );
-                requestPirep( false );
-            }
+        @Override
+        protected boolean onResult( PirepFragment fragment, Cursor[] result ) {
+            fragment.setCursor( result[ 0 ] );
             return true;
         }
 
@@ -214,6 +225,7 @@ public class PirepFragment extends WxFragmentBase {
         setFragmentContentShown( true );
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showPirepEntry( LinearLayout layout, PirepEntry entry ) {
         RelativeLayout item = (RelativeLayout) inflate( R.layout.pirep_detail_item );
 

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@ package com.nadmm.airports.afd;
 
 import android.content.Context;
 import android.database.Cursor;
-import androidx.cursoradapter.widget.ResourceCursorAdapter;
 import android.view.View;
 import android.widget.TextView;
 
@@ -33,6 +32,8 @@ import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 
 import java.util.Locale;
+
+import androidx.cursoradapter.widget.ResourceCursorAdapter;
 
 public class AirportsCursorAdapter extends ResourceCursorAdapter {
 

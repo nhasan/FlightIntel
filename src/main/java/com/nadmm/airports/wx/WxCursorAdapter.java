@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,10 +19,10 @@
 
 package com.nadmm.airports.wx;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.location.Location;
-import androidx.cursoradapter.widget.ResourceCursorAdapter;
 import android.view.View;
 import android.widget.TextView;
 
@@ -36,12 +36,13 @@ import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 
-import java.util.HashMap;
 import java.util.Locale;
+
+import androidx.cursoradapter.widget.ResourceCursorAdapter;
 
 public final class WxCursorAdapter extends ResourceCursorAdapter {
 
-    private HashMap<String, Metar> mStationWx;
+    private WxDelegate mDelegate;
 
     private class ViewHolder {
         TextView stationName;
@@ -56,12 +57,9 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
         TextView reportAge;
     }
 
-    public WxCursorAdapter( Context context, Cursor c ) {
+    public WxCursorAdapter( Context context, Cursor c, WxDelegate delegate ) {
         super( context, R.layout.wx_list_item, c, 0 );
-    }
-
-    public void setMetars( HashMap<String, Metar> wx ) {
-        mStationWx = wx;
+        mDelegate = delegate;
     }
 
     private void setViewHolder( View view ) {
@@ -165,13 +163,11 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
             holder.stationDistance.setVisibility( View.GONE );
         }
 
-        if ( mStationWx != null ) {
-            Metar metar = mStationWx.get( stationId );
-            showMetarInfo( view, c, metar );
-        }
+        showMetarInfo( view, c, mDelegate.getMetar( stationId ) );
     }
 
-    protected void showMetarInfo( View view, Cursor c, Metar metar ) {
+    @SuppressLint( "SetTextI18n" )
+    public void showMetarInfo( View view, Cursor c, Metar metar ) {
         ViewHolder holder = getViewHolder( view );
 
         if ( metar != null && metar.isValid ) {

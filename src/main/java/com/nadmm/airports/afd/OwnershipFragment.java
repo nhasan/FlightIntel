@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ public final class OwnershipFragment extends FragmentBase {
 
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new FragmentTask() ).execute( siteNumber );
+        setBackgroundTask( new FragmentTask( this ) ).execute( siteNumber );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -133,30 +133,37 @@ public final class OwnershipFragment extends FragmentBase {
         } while ( rmk.moveToNext() );
     }
 
-    private final class FragmentTask extends CursorAsyncTask {
+    private Cursor[] queryData( String siteNumber ) {
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        Cursor[] cursors = new Cursor[ 2 ];
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
+        cursors[ 0 ] = getAirportDetails( siteNumber );
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-            Cursor[] cursors = new Cursor[ 2 ];
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Remarks.TABLE_NAME );
+        cursors[ 1 ] = builder.query( db, new String[] { Remarks.REMARK_TEXT },
+                Runways.SITE_NUMBER+"=? "
+                        +"AND "+Remarks.REMARK_NAME+" in ('A11', 'A12', 'A13', 'A14', 'A15', 'A16')",
+                new String[] { siteNumber }, null, null, null, null );
 
-            cursors[ 0 ] = getAirportDetails( siteNumber );
+        return cursors;
+    }
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Remarks.TABLE_NAME );
-            cursors[ 1 ] = builder.query( db, new String[] { Remarks.REMARK_TEXT },
-                    Runways.SITE_NUMBER+"=? "
-                    +"AND "+Remarks.REMARK_NAME+" in ('A11', 'A12', 'A13', 'A14', 'A15', 'A16')",
-                    new String[] { siteNumber }, null, null, null, null );
+    private static class FragmentTask extends CursorAsyncTask<OwnershipFragment> {
 
-            return cursors;
+        private FragmentTask( OwnershipFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
+        protected Cursor[] onExecute( OwnershipFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            return fragment.queryData( siteNumber );
+        }
+
+        @Override
+        protected boolean onResult( OwnershipFragment fragment, Cursor[] result ) {
+            fragment.showDetails( result );
             return true;
         }
 

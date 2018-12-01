@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.afd;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -64,7 +65,7 @@ public final class RunwaysFragment extends FragmentBase {
         Bundle args = getArguments();
         String siteNumber = args.getString( Airports.SITE_NUMBER );
         String runwayId = args.getString( Runways.RUNWAY_ID );
-        setBackgroundTask( new RunwaysTask() ).execute( siteNumber, runwayId );
+        setBackgroundTask( new RunwaysTask( this ) ).execute( siteNumber, runwayId );
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -89,8 +90,8 @@ public final class RunwaysFragment extends FragmentBase {
         setFragmentContentShown( true );
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showCommonInformation( Cursor[] result ) {
-        Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
 
         String runwayId = rwy.getString( rwy.getColumnIndex( Runways.RUNWAY_ID ) );
@@ -119,6 +120,7 @@ public final class RunwaysFragment extends FragmentBase {
         addRow( layout, "Edge lights", DataUtils.decodeRunwayEdgeLights( edgeLights ) );
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showBaseEndInformation( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
@@ -268,6 +270,7 @@ public final class RunwaysFragment extends FragmentBase {
         showBaseEndRemarks( result );
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showReciprocalEndInformation( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         Cursor rwy = result[ 1 ];
@@ -299,7 +302,7 @@ public final class RunwaysFragment extends FragmentBase {
             args.putString( Ils1.RUNWAY_ID, reciprocalId );
             args.putString( Ils1.ILS_TYPE, ilsType );
             args.putString( Airports.ICAO_CODE, icaoCode );
-            addClickableRow( layout, "Instrument approach", ilsType, IlsFragment.class, args );
+            addClickableRow( layout, "Instrument approach...", ilsType, IlsFragment.class, args );
         }
         Float elevation = rwy.getFloat( rwy.getColumnIndex(
                 Runways.RECIPROCAL_END_RUNWAY_ELEVATION ) );
@@ -416,6 +419,7 @@ public final class RunwaysFragment extends FragmentBase {
         showReciprocalEndRemarks( result );
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showHelipadInformation( Cursor[] result ) {
         // Hide the runway sections
         TextView tv = findViewById( R.id.rwy_base_end_label );
@@ -652,69 +656,77 @@ public final class RunwaysFragment extends FragmentBase {
         return count;
     }
 
-    private final class RunwaysTask extends CursorAsyncTask {
+    private Cursor[] queryData( String siteNumber, String runwayId ) {
+        Cursor[] cursors = new Cursor[ 5 ];
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
-            String runwayId = params[ 1 ];
-            Cursor[] cursors = new Cursor[ 5 ];
+        cursors[ 0 ] = getAirportDetails( siteNumber );
 
-            cursors[ 0 ] = getAirportDetails( siteNumber );
+        Cursor apt = cursors[ 0 ];
+        double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
+        double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
 
-            Cursor apt = cursors[ 0 ];
-            double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
-            double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
+        Location loc = new Location( "" );
+        loc.setLatitude( lat );
+        loc.setLongitude( lon );
+        mDeclination = GeoUtils.getMagneticDeclination( loc );
 
-            Location loc = new Location( "" );
-            loc.setLatitude( lat );
-            loc.setLongitude( lon );
-            mDeclination = GeoUtils.getMagneticDeclination( loc );
+        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
-            SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
+        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+        builder.setTables( Runways.TABLE_NAME );
+        Cursor c = builder.query( db, new String[] { "*" },
+                Runways.SITE_NUMBER+"=? AND "+Runways.RUNWAY_ID+"=?",
+                new String[] { siteNumber, runwayId }, null, null, null, null );
+        c.moveToFirst();
+        cursors[ 1 ] = c;
 
-            SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-            builder.setTables( Runways.TABLE_NAME );
-            Cursor c = builder.query( db, new String[] { "*" },
-                    Runways.SITE_NUMBER+"=? AND "+Runways.RUNWAY_ID+"=?",
-                    new String[] { siteNumber, runwayId }, null, null, null, null );
-            c.moveToFirst();
-            cursors[ 1 ] = c;
-
-            try {
-                String endId = c.getString( c.getColumnIndex( Runways.BASE_END_ID ) );
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Ars.TABLE_NAME );
-                c = builder.query( db, new String[] { "*" },
-                        Ars.SITE_NUMBER+"=? AND "+Ars.RUNWAY_ID+"=? AND "+Ars.RUNWAY_END_ID+"=?",
-                        new String[] { siteNumber, runwayId, endId }, null, null, null, null );
-                cursors[ 2 ] = c;
-
-                endId = c.getString( c.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
-                builder = new SQLiteQueryBuilder();
-                builder.setTables( Ars.TABLE_NAME );
-                c = builder.query( db, new String[] { "*" },
-                        Ars.SITE_NUMBER+"=? AND "+Ars.RUNWAY_ID+"=? AND "+Ars.RUNWAY_END_ID+"=?",
-                        new String[] { siteNumber, runwayId, endId }, null, null, null, null );
-                cursors[ 3 ] = c;
-            } catch ( Exception ignored ) {
-            }
-
+        try {
+            String endId = c.getString( c.getColumnIndex( Runways.BASE_END_ID ) );
             builder = new SQLiteQueryBuilder();
-            builder.setTables( Remarks.TABLE_NAME );
-            c = builder.query( db, new String[] { Remarks.REMARK_NAME, Remarks.REMARK_TEXT },
-                    Runways.SITE_NUMBER+"=? "
-                    +"AND ( substr("+Remarks.REMARK_NAME+", 1, 2) in ('A2', 'A3', 'A4', 'A5', 'A6')"
-                    +"OR "+Remarks.REMARK_NAME+" like 'A81%' )",
-                    new String[] { siteNumber }, null, null, null, null );
-            cursors[ 4 ] = c;
+            builder.setTables( Ars.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" },
+                    Ars.SITE_NUMBER+"=? AND "+Ars.RUNWAY_ID+"=? AND "+Ars.RUNWAY_END_ID+"=?",
+                    new String[] { siteNumber, runwayId, endId }, null, null, null, null );
+            cursors[ 2 ] = c;
 
-            return cursors;
+            endId = c.getString( c.getColumnIndex( Runways.RECIPROCAL_END_ID ) );
+            builder = new SQLiteQueryBuilder();
+            builder.setTables( Ars.TABLE_NAME );
+            c = builder.query( db, new String[] { "*" },
+                    Ars.SITE_NUMBER+"=? AND "+Ars.RUNWAY_ID+"=? AND "+Ars.RUNWAY_END_ID+"=?",
+                    new String[] { siteNumber, runwayId, endId }, null, null, null, null );
+            cursors[ 3 ] = c;
+        } catch ( Exception ignored ) {
+        }
+
+        builder = new SQLiteQueryBuilder();
+        builder.setTables( Remarks.TABLE_NAME );
+        c = builder.query( db, new String[] { Remarks.REMARK_NAME, Remarks.REMARK_TEXT },
+                Runways.SITE_NUMBER+"=? "
+                        +"AND ( substr("+Remarks.REMARK_NAME+", 1, 2) in ('A2', 'A3', 'A4', 'A5', 'A6')"
+                        +"OR "+Remarks.REMARK_NAME+" like 'A81%' )",
+                new String[] { siteNumber }, null, null, null, null );
+        cursors[ 4 ] = c;
+
+        return cursors;
+    }
+
+    private static class RunwaysTask extends CursorAsyncTask<RunwaysFragment> {
+
+        private RunwaysTask( RunwaysFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
+        protected Cursor[] onExecute( RunwaysFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            String runwayId = params[ 1 ];
+            return fragment.queryData( siteNumber, runwayId );
+        }
+
+        @Override
+        protected boolean onResult( RunwaysFragment fragment, Cursor[] result ) {
+            fragment.showDetails( result );
             return true;
         }
 

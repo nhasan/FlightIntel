@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,39 +44,41 @@ public class AirportNotamFragment extends NotamFragmentBase {
 
         Bundle args = getArguments();
         String siteNumber = args.getString( DatabaseManager.Airports.SITE_NUMBER );
-        setBackgroundTask( new AirportNotamTask() ).execute( siteNumber );
+        setBackgroundTask( new AirportNotamTask( this ) ).execute( siteNumber );
     }
 
-    private final class AirportNotamTask extends CursorAsyncTask {
+    private void showNotam( Cursor c ) {
+        showAirportTitle( c );
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            Cursor[] result = new Cursor[ 1 ];
-            String siteNumber = params[ 0 ];
-            Cursor apt = getAirportDetails( siteNumber );
-            result[ 0 ] = apt;
+        String icaoCode = c.getString( c.getColumnIndex( DatabaseManager.Airports.ICAO_CODE ) );
+        if ( icaoCode == null || icaoCode.length() == 0 ) {
+            String faaCode = c.getString( c.getColumnIndex( DatabaseManager.Airports.FAA_CODE ) );
+            icaoCode = "K" + faaCode;
+        }
 
-            return result;
+        boolean showGPS = getActivityBase().getPrefShowGpsNotam();
+        if ( showGPS ) {
+            icaoCode += ",KGPS";
+        }
+        getNotams( icaoCode, "airport" );
+    }
+
+    private static class AirportNotamTask extends CursorAsyncTask<AirportNotamFragment> {
+
+        private AirportNotamTask( AirportNotamFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            Cursor apt = result[ 0 ];
+        protected Cursor[] onExecute( AirportNotamFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            Cursor c = fragment.getAirportDetails( siteNumber );
+            return new Cursor[] { c };
+        }
 
-            showAirportTitle( apt );
-
-            String icaoCode = apt.getString( apt.getColumnIndex( DatabaseManager.Airports.ICAO_CODE ) );
-            if ( icaoCode == null || icaoCode.length() == 0 ) {
-                String faaCode = apt.getString( apt.getColumnIndex( DatabaseManager.Airports.FAA_CODE ) );
-                icaoCode = "K" + faaCode;
-            }
-
-            boolean showGPS = getActivityBase().getPrefShowGpsNotam();
-            if ( showGPS ) {
-                icaoCode += ",KGPS";
-            }
-            getNotams( icaoCode, "airport" );
-
+        @Override
+        protected boolean onResult( AirportNotamFragment fragment, Cursor[] result ) {
+            fragment.showNotam( result[ 0 ] );
             return true;
         }
 

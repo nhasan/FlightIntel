@@ -80,17 +80,6 @@ public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
 
     public abstract String getSectionName();
 
-    public int positionToSectionedPosition( int position ) {
-        int offset = 0;
-        for ( int i = 0; i < mSections.size(); i++ ) {
-            if ( mSections.valueAt( i ).firstPosition > position ) {
-                break;
-            }
-            ++offset;
-        }
-        return position + offset;
-    }
-
     public int sectionedPositionToPosition( int sectionedPosition ) {
         if ( isSectionHeaderPosition( sectionedPosition ) ) {
             return ListView.INVALID_POSITION;

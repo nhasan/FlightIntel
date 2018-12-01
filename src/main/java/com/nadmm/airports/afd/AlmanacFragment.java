@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.afd;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
@@ -56,20 +57,18 @@ public final class AlmanacFragment extends FragmentBase {
 
         setActionBarTitle( "Sunrise and sunset", "" );
 
-        Bundle args = getArguments();
-        String siteNumber = args.getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new AlmanacDetailsTask() ).execute( siteNumber );
+        String siteNumber = getArguments().getString( Airports.SITE_NUMBER );
+        setBackgroundTask( new AlmanacDetailsTask( this ) ).execute( siteNumber );
     }
 
     protected void showDetails( Cursor[] result ) {
         Cursor apt = result[ 0 ];
-
         showAirportTitle( apt );
         showSolarInfo( result );
-
         setFragmentContentShown( true );
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showSolarInfo( Cursor[] result ) {
         Cursor apt = result[ 0 ];
         String timezoneId = apt.getString( apt.getColumnIndex( Airports.TIMEZONE_ID ) );
@@ -144,27 +143,32 @@ public final class AlmanacFragment extends FragmentBase {
                 && now.compareTo( eveningTwilight ) <= 0 );
         addRow( layout, "FAR 1.1 day/night", day? "Day" : "Night" );
         // Determine FAR 61.75(b) definition of day/night for carrying passengers
-        Calendar far6175bBegin = (Calendar) sunset.clone();
-        far6175bBegin.add( Calendar.HOUR_OF_DAY, 1 );
-        Calendar far6175bEnd = (Calendar) sunrise.clone();
-        far6175bEnd.add( Calendar.HOUR_OF_DAY, -1 );
-        day = ( now.compareTo( far6175bEnd ) >= 0 && now.compareTo( far6175bBegin ) <= 0 );
-        addRow( layout, "FAR 61.75(b) day/night", day? "Day" : "Night" );
+        if ( sunset != null && sunrise != null ) {
+            Calendar far6175bBegin = (Calendar) sunset.clone();
+            far6175bBegin.add( Calendar.HOUR_OF_DAY, 1 );
+            Calendar far6175bEnd = (Calendar) sunrise.clone();
+            far6175bEnd.add( Calendar.HOUR_OF_DAY, -1 );
+            day = ( now.compareTo( far6175bEnd ) >= 0 && now.compareTo( far6175bBegin ) <= 0 );
+            addRow( layout, "FAR 61.75(b) day/night", day? "Day" : "Night" );
+        }
     }
 
-    private final class AlmanacDetailsTask extends CursorAsyncTask {
+    private static class AlmanacDetailsTask extends CursorAsyncTask<AlmanacFragment> {
 
-        @Override
-        protected Cursor[] doInBackground( String... params ) {
-            String siteNumber = params[ 0 ];
-            Cursor[] cursors = new Cursor[ 1 ];
-            cursors[ 0 ] = getAirportDetails( siteNumber );
-            return cursors;
+        private AlmanacDetailsTask( AlmanacFragment fragment ) {
+            super( fragment );
         }
 
         @Override
-        protected boolean onResult( Cursor[] result ) {
-            showDetails( result );
+        protected Cursor[] onExecute( AlmanacFragment fragment, String... params ) {
+            String siteNumber = params[ 0 ];
+            Cursor c = fragment.getAirportDetails( siteNumber );
+            return new Cursor[] { c };
+        }
+
+        @Override
+        protected boolean onResult( AlmanacFragment fragment, Cursor[] result ) {
+            fragment.showDetails( result );
             return true;
         }
 
