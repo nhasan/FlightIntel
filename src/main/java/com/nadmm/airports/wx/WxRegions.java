@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ package com.nadmm.airports.wx;
 public class WxRegions {
 
     public static final String[] sWxRegionCodes = new String[] {
-        "INA",
+        "US",
         "ALB",
         "ABQ",
         "AUS",

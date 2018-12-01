@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,9 +29,9 @@ import com.nadmm.airports.R;
 public class PirepMapActivity extends ActivityBase {
 
     private static final String[] sTypeCodes = {
-        "IC",
-        "TB",
-        "WS"
+        "ice",
+        "turb",
+        "wx"
     };
 
     private static final String[] sTypeNames = {
@@ -41,14 +41,14 @@ public class PirepMapActivity extends ActivityBase {
     };
 
     private static final String[] sPirepCodes = {
-        "US",
-        "AK",
-        "NC",
-        "NE",
-        "NW",
-        "SC",
-        "SE",
-        "SW",
+        "us",
+        "ak",
+        "nc",
+        "ne",
+        "nw",
+        "sc",
+        "se",
+        "sw",
     };
 
     private static final String[] sPirepNames = {

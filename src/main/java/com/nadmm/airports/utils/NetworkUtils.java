@@ -26,7 +26,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import androidx.core.net.ConnectivityManagerCompat;
 import android.util.Log;
 
 import com.nadmm.airports.ActivityBase;
@@ -42,6 +41,8 @@ import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+
+import androidx.core.net.ConnectivityManagerCompat;
 
 @SuppressWarnings( "BooleanMethodIsAlwaysInverted" )
 public class NetworkUtils {

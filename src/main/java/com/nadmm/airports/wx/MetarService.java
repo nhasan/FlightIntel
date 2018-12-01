@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class MetarService extends NoaaService {
 
-    private final String METAR_IMAGE_NAME = "sfc_%s.gif";
+    private final String METAR_IMAGE_NAME = "metars_%s.gif";
     private final String METAR_TEXT_QUERY = "datasource=metars&requesttype=retrieve"
     		+ "&hoursBeforeNow=%d&mostRecentForEachStation=constraint"
             + "&format=xml&compression=gzip&stationString=%s";
-    private final String METAR_IMAGE_PATH = "/adds/data/metars/";
+    private final String METAR_IMAGE_PATH = "/data/obs/metar/";
 
     private static final long METAR_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 

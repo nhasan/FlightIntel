@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,11 +31,11 @@ import java.util.Locale;
 
 public class PirepService extends NoaaService {
 
-    private final String PIREP_IMAGE_ZOOM_NAME = "pireps_%s_%s.gif";
+    private final String PIREP_IMAGE_NAME = "pireps_%s_%s.gif";
     private final String PIREP_TEXT_QUERY =
             "dataSource=aircraftreports&requestType=retrieve&format=xml&compression=gzip"
             + "&hoursBeforeNow=%d&radialDistance=%.0f;%.2f,%.2f";
-    private final String PIREP_IMAGE_ZOOM_PATH = "/adds/data/pireps/";
+    private final String PIREP_IMAGE_PATH = "/data/obs/pirep/";
 
     private static final long PIREP_CACHE_MAX_AGE = DateUtils.HOUR_IN_MILLIS;
 
@@ -90,11 +90,11 @@ public class PirepService extends NoaaService {
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );
-                String imageName = String.format( PIREP_IMAGE_ZOOM_NAME, code, imgType );
+                String imageName = String.format( PIREP_IMAGE_NAME, imgType, code );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = PIREP_IMAGE_ZOOM_PATH;
+                        String path = PIREP_IMAGE_PATH;
                         path += imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
