@@ -211,6 +211,9 @@ public abstract class LocationListFragmentBase extends ListFragmentBase {
     }
 
     private void startLocationUpdates() {
+        if ( getActivity() == null ) {
+            return;
+        }
         // First check if location is enabled in the settings
         mSettingsClient.checkLocationSettings( mLocationSettingsRequest )
         // If location is enabled then register for location updates

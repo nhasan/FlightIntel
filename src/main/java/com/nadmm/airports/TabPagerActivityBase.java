@@ -28,7 +28,7 @@ import androidx.viewpager.widget.ViewPager;
 
 public abstract class TabPagerActivityBase extends ActivityBase {
 
-    private int mCurrentFragmentIndex = -1;
+    private int mCurrentTabIndex = -1;
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
     private TabLayout mTabLayout;
@@ -66,8 +66,8 @@ public abstract class TabPagerActivityBase extends ActivityBase {
 
             @Override
             public void onTabSelected( TabLayout.Tab tab ) {
-                mCurrentFragmentIndex = tab.getPosition();
-                mViewPager.setCurrentItem( mCurrentFragmentIndex );
+                mCurrentTabIndex = tab.getPosition();
+                mViewPager.setCurrentItem( mCurrentTabIndex );
                 enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
                 showAppBar( true );
             }
@@ -78,21 +78,23 @@ public abstract class TabPagerActivityBase extends ActivityBase {
 
             @Override
             public void onTabReselected( TabLayout.Tab tab ) {
-                if ( mCurrentFragmentIndex != tab.getPosition() ) {
+                if ( mCurrentTabIndex != tab.getPosition() ) {
                     onTabSelected( tab );
                 }
             }
         } );
 
         if ( savedInstanceState != null ) {
-            mCurrentFragmentIndex = savedInstanceState.getInt( SAVED_TAB );
+            mCurrentTabIndex = savedInstanceState.getInt( SAVED_TAB );
         } else {
-            mCurrentFragmentIndex = getInitialTabIndex();
+            mCurrentTabIndex = getInitialTabIndex();
         }
 
         postRunnable( () -> {
-            mTabLayout.getTabAt( mCurrentFragmentIndex ).select();
-            enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
+            if ( mCurrentTabIndex >= 0 && mCurrentTabIndex < mTabLayout.getTabCount() ) {
+                mTabLayout.getTabAt( mCurrentTabIndex ).select();
+                enableDisableSwipeRefresh( getCurrentFragment().isRefreshable() );
+            }
         }, 0 );
     }
 
@@ -116,7 +118,7 @@ public abstract class TabPagerActivityBase extends ActivityBase {
     }
 
     private FragmentBase getCurrentFragment() {
-        return (FragmentBase) mPagerAdapter.getItem( mCurrentFragmentIndex );
+        return (FragmentBase) mPagerAdapter.getItem( mCurrentTabIndex );
     }
 
     protected int getInitialTabIndex() {
