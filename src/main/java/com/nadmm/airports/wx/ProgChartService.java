@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,8 @@ import java.io.File;
 
 public class ProgChartService extends NoaaService {
 
-    private final String PROGCHART_IMAGE_NAME = "hpc_%s.gif";
-    private final String PROGCHART_IMAGE_PATH = "/adds/data/progs/";
-
+    private final String PROGCHART_IMAGE_NAME = "%s.gif";
+    private final String PROGCHART_IMAGE_PATH = "/data/products/progs/";
     private static final long PROGCHART_CACHE_MAX_AGE = 240*DateUtils.MINUTE_IN_MILLIS;
 
     public ProgChartService() {
@@ -48,9 +47,9 @@ public class ProgChartService extends NoaaService {
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = PROGCHART_IMAGE_PATH;
-                        path += imageName;
-                        fetchFromNoaa( path, null, imageFile, false );
+                        StringBuilder path = new StringBuilder();
+                        path.append( PROGCHART_IMAGE_PATH ).append( imageName );
+                        fetchFromNoaa( path.toString(), null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch PROGCHART image: "
                                 +e.getMessage() );

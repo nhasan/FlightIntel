@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,35 +21,40 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
-
 public class ProgChartFragment extends WxMapFragmentBase {
 
     private static final String[] sProgChartCodes = new String[] {
-        "sfc_analysis",
-        "12_fcst",
-        "24_fcst",
-        "36_fcst",
-        "48_fcst",
-        "60_fcst",
-        "mid_072",
-        "mid_096",
-        "mid_120",
-        "mid_144",
-        "mid_168"
+            "F000_wpc_sfc",
+            "F006_wpc_prog",
+            "F012_wpc_prog",
+            "F018_wpc_prog",
+            "F024_wpc_prog",
+            "F030_wpc_prog",
+            "F036_wpc_prog",
+            "F048_wpc_prog",
+            "F060_wpc_prog",
+            "F072_wpc_prog",
+            "F096_wpc_prog",
+            "F120_wpc_prog",
+            "F144_wpc_prog",
+            "F168_wpc_prog"
     };
 
     private static final String[] sProgChartNames = new String[] {
-        "Current Surface Analysis",
-        "12 hr Surface Prognosis",
-        "24 hr Surface Prognosis",
-        "36 hr Surface Prognosis",
-        "48 hr Surface Prognosis",
-        "60 hr Surface Prognosis",
-        "3 day Surface Prognosis",
-        "4 day Surface Prognosis",
-        "5 day Surface Prognosis",
-        "6 day Surface Prognosis",
-        "7 day Surface Prognosis"
+            "Current Surface Analysis",
+            "6 hr Surface Prognosis",
+            "12 hr Surface Prognosis",
+            "18 hr Surface Prognosis",
+            "24 hr Surface Prognosis",
+            "30 hr Surface Prognosis",
+            "36 hr Surface Prognosis",
+            "48 hr Surface Prognosis",
+            "60 hr Surface Prognosis",
+            "3 day Surface Prognosis",
+            "4 day Surface Prognosis",
+            "5 day Surface Prognosis",
+            "6 day Surface Prognosis",
+            "7 day Surface Prognosis"
     };
 
     public ProgChartFragment() {
