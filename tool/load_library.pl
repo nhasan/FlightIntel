@@ -133,14 +133,14 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_467.pdf", "Callback",
+        "Issue 467 (Dec 2018)", "NASA", 567753, "" );
 insert_book( "periodicals", "cb_466.pdf", "Callback",
         "Issue 466 (Nov 2018)", "NASA", 142657, "" );
 insert_book( "periodicals", "cb_465.pdf", "Callback",
         "Issue 465 (Oct 2018)", "NASA", 115316, "" );
 insert_book( "periodicals", "cb_464.pdf", "Callback",
         "Issue 464 (Sep 2018)", "NASA", 181123, "" );
-insert_book( "periodicals", "cb_463.pdf", "Callback",
-        "Issue 463 (Aug 2018)", "NASA", 235604, "" );
 insert_book( "periodicals", "NovDec2018.pdf", "FAA Safety Briefing",
         "Nov/Dec 2018", "FAA", 5060635, "" );
 insert_book( "periodicals", "SepOct2018.pdf", "FAA Safety Briefing",
@@ -149,14 +149,14 @@ insert_book( "periodicals", "JulAug2018.pdf", "FAA Safety Briefing",
         "Jul/Aug 2018", "FAA", 8635427, "" );
 insert_book( "periodicals", "MayJune2018.pdf", "FAA Safety Briefing",
         "May/Jun 2018", "FAA", 4172836, "" );
+insert_book( "periodicals", "SE_Topic_18_12.pdf", "Safety Fact Sheets",
+        "Dec 2018", "FAA", 1116349, "" );
 insert_book( "periodicals", "SE_Topic_18_11.pdf", "Safety Fact Sheets",
         "Nov 2018", "FAA", 261407, "" );
 insert_book( "periodicals", "SE_Topic_18_10.pdf", "Safety Fact Sheets",
         "Oct 2018", "FAA", 1123638, "" );
 insert_book( "periodicals", "SE_Topic_18_09.pdf", "Safety Fact Sheets",
         "Sep 2018", "FAA", 1340003, "" );
-insert_book( "periodicals", "SE_Topic_18_08.pdf", "Safety Fact Sheets",
-        "Aug 2018", "FAA", 1036542, "" );
 
 insert_book( "safety", "ac_90-48d-chg_1.pdf", "Pilots’ Role in Collision Avoidance",
         "2016", "FAA", 159341, "" );
