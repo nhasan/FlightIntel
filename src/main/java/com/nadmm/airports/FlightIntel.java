@@ -25,7 +25,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.preference.PreferenceManager;
 
 import com.nadmm.airports.afd.AfdMainActivity;
 import com.nadmm.airports.data.DatabaseManager.Catalog;
@@ -38,6 +37,8 @@ import com.nadmm.airports.wx.WxMainActivity;
 
 import java.util.ArrayList;
 import java.util.Date;
+
+import androidx.preference.PreferenceManager;
 
 public class FlightIntel extends ActivityBase {
 

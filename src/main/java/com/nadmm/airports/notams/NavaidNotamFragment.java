@@ -29,6 +29,8 @@ import android.view.ViewGroup;
 
 import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Nav1;
+import com.nadmm.airports.data.DatabaseManager.States;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 public class NavaidNotamFragment extends NotamFragmentBase {
@@ -45,8 +47,8 @@ public class NavaidNotamFragment extends NotamFragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         Bundle args = getArguments();
-        String navaidId = args.getString( DatabaseManager.Nav1.NAVAID_ID );
-        String navaidType = args.getString( DatabaseManager.Nav1.NAVAID_TYPE );
+        String navaidId = args.getString( Nav1.NAVAID_ID );
+        String navaidType = args.getString( Nav1.NAVAID_TYPE );
         setBackgroundTask( new NavaidNotamTask( this ) ).execute( navaidId, navaidType );
     }
 
@@ -54,15 +56,15 @@ public class NavaidNotamFragment extends NotamFragmentBase {
         SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
 
         SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( DatabaseManager.Nav1.TABLE_NAME
+        builder.setTables( Nav1.TABLE_NAME
                 + " a LEFT OUTER JOIN "
-                + DatabaseManager.States.TABLE_NAME
+                + States.TABLE_NAME
                 + " s ON a."
-                + DatabaseManager.Nav1.ASSOC_STATE
+                + Nav1.ASSOC_STATE
                 + "=s."
-                + DatabaseManager.States.STATE_CODE );
+                + States.STATE_CODE );
         Cursor c = builder.query( db, new String[]{ "*" },
-                DatabaseManager.Nav1.NAVAID_ID + "=? AND " + DatabaseManager.Nav1.NAVAID_TYPE + "=?",
+                Nav1.NAVAID_ID + "=? AND " + Nav1.NAVAID_TYPE + "=?",
                 new String[]{ navaidId, navaidType }, null, null, null, null );
         if ( !c.moveToFirst() ) {
             return null;
@@ -72,7 +74,7 @@ public class NavaidNotamFragment extends NotamFragmentBase {
     }
 
     private void showNotam( Cursor c ) {
-        String id = c.getString( c.getColumnIndex( DatabaseManager.Nav1.NAVAID_ID ) );
+        String id = c.getString( c.getColumnIndex( Nav1.NAVAID_ID ) );
         String icaoCode = "K" + id;
         setActionBarTitle( icaoCode );
         showNavaidTitle( c );

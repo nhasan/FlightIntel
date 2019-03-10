@@ -21,7 +21,6 @@ package com.nadmm.airports.wx;
 
 import android.app.IntentService;
 import android.content.Intent;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
@@ -35,6 +34,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public abstract class NoaaService extends IntentService {
 

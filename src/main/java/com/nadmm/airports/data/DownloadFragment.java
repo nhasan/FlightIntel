@@ -505,13 +505,13 @@ public class DownloadFragment extends FragmentBase {
 
         @Override
         protected void onPostExecute( Integer result ) {
-            DownloadFragment fragment = mFragment.get();
-            if ( fragment == null ) {
-                return;
-            }
-
             if ( mTracker != null ) {
                 mTracker.hideProgress();
+            }
+
+            DownloadFragment fragment = mFragment.get();
+            if ( fragment == null || fragment.getActivity() == null ) {
+                return;
             }
 
             // Update the displayed list to reflect the recently installed data
@@ -710,7 +710,7 @@ public class DownloadFragment extends FragmentBase {
         @Override
         protected void onPostExecute( Integer result ) {
             DownloadFragment fragment = mFragment.get();
-            if ( fragment == null ) {
+            if ( fragment == null || fragment.getActivity() == null ) {
                 return;
             }
 

@@ -408,6 +408,7 @@ public final class AirportDetailsFragment extends FragmentBase {
                 final Bundle extras = new Bundle();
                 extras.putString( NoaaService.STATION_ID, icaoCode );
                 extras.putString( Awos1.WX_SENSOR_IDENT, sensorId );
+                extras.putString( Airports.SITE_NUMBER, mSiteNumber );
 
                 Runnable runnable = () -> {
                     cacheMetars();
