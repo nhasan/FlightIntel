@@ -22,6 +22,7 @@ package com.nadmm.airports.wx;
 import android.os.Bundle;
 
 import com.nadmm.airports.TabPagerActivityBase;
+import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.notams.AirportNotamFragment;
 
 public class WxDetailActivity extends TabPagerActivityBase {
@@ -70,6 +71,12 @@ public class WxDetailActivity extends TabPagerActivityBase {
 
         Bundle args = getIntent().getExtras();
         for ( int i=0; i<mTabTitles.length; ++i ) {
+            if ( mClasses[ i ] == AirportNotamFragment.class
+                && !args.containsKey( Airports.SITE_NUMBER ) )
+            {
+                // Do not add NOTAM tab if not accessed from an airport screen
+                continue;
+            }
             addTab( mTabTitles[ i ], mClasses[ i ], args );
         }
     }

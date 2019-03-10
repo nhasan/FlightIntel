@@ -26,7 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nadmm.airports.R;
-import com.nadmm.airports.data.DatabaseManager;
+import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.utils.CursorAsyncTask;
 
 public class AirportNotamFragment extends NotamFragmentBase {
@@ -43,16 +43,16 @@ public class AirportNotamFragment extends NotamFragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         Bundle args = getArguments();
-        String siteNumber = args.getString( DatabaseManager.Airports.SITE_NUMBER );
+        String siteNumber = args.getString( Airports.SITE_NUMBER );
         setBackgroundTask( new AirportNotamTask( this ) ).execute( siteNumber );
     }
 
     private void showNotam( Cursor c ) {
         showAirportTitle( c );
 
-        String icaoCode = c.getString( c.getColumnIndex( DatabaseManager.Airports.ICAO_CODE ) );
+        String icaoCode = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
         if ( icaoCode == null || icaoCode.length() == 0 ) {
-            String faaCode = c.getString( c.getColumnIndex( DatabaseManager.Airports.FAA_CODE ) );
+            String faaCode = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
             icaoCode = "K" + faaCode;
         }
 
