@@ -172,16 +172,19 @@ public final class WxCursorAdapter extends ResourceCursorAdapter {
 
         if ( metar != null && metar.isValid ) {
             // We have METAR for this station
-            double lat = c.getDouble(
-                    c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-            double lon = c.getDouble(
-                    c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-            Location location = new Location( "" );
-            location.setLatitude( lat );
-            location.setLongitude( lon );
-            float declination = GeoUtils.getMagneticDeclination( location );
+            try {
+                double lat = c.getDouble(
+                        c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
+                double lon = c.getDouble(
+                        c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
+                Location location = new Location( "" );
+                location.setLatitude( lat );
+                location.setLongitude( lon );
+                float declination = GeoUtils.getMagneticDeclination( location );
 
-            WxUtils.setColorizedWxDrawable( holder.stationName, metar, declination );
+                WxUtils.setColorizedWxDrawable( holder.stationName, metar, declination );
+            } catch ( Exception e ) {
+            }
 
             StringBuilder info = new StringBuilder();
             info.append( metar.flightCategory );
