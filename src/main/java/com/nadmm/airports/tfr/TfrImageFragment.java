@@ -26,8 +26,6 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.appcompat.app.ActionBar.LayoutParams;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +35,9 @@ import com.nadmm.airports.R;
 import com.nadmm.airports.tfr.TfrList.Tfr;
 import com.nadmm.airports.utils.UiUtils;
 import com.nadmm.airports.views.ImageZoomView;
+
+import androidx.appcompat.app.ActionBar.LayoutParams;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class TfrImageFragment extends FragmentBase {
 

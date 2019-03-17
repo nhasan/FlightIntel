@@ -26,7 +26,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import android.util.Log;
 
 import com.nadmm.airports.ActivityBase;
 
@@ -192,7 +191,6 @@ public class NetworkUtils {
         OutputStream out = null;
 
         try {
-            Log.d( "GET", url.toString() );
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             int status = conn.getResponseCode();
             if ( status != HttpURLConnection.HTTP_OK ) {

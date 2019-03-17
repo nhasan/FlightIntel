@@ -22,6 +22,8 @@ package com.nadmm.airports.tfr;
 import android.content.Intent;
 
 import com.nadmm.airports.tfr.TfrList.Tfr;
+import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.UiUtils;
 
 import java.io.File;
 
@@ -50,6 +52,7 @@ public class TfrImageService extends TfrServiceBase {
     private void getTfrImage( Intent intent ) {
         Tfr tfr = (Tfr) intent.getSerializableExtra( TFR_ENTRY );
         String notamId = tfr.notamId;
+
         int start = notamId.indexOf( ' ' );
         if ( start > 0 ) {
             notamId = notamId.substring( start+1 );
@@ -68,6 +71,14 @@ public class TfrImageService extends TfrServiceBase {
             result.putExtra( TFR_IMAGE_PATH, imageFile.getAbsolutePath() );
         }
         sendResultIntent( result );
+    }
+
+    protected void fetch( String host, String path, String query, File tfrFile ) {
+        try {
+            NetworkUtils.doHttpsGet( this, host, path, query, tfrFile, null, null, null );
+        } catch ( Exception e ) {
+            UiUtils.showToast( this, "TFR: "+e.getMessage() );
+        }
     }
 
 }

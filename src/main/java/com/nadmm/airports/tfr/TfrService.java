@@ -21,6 +21,9 @@ package com.nadmm.airports.tfr;
 
 import android.content.Intent;
 
+import com.nadmm.airports.utils.NetworkUtils;
+import com.nadmm.airports.utils.UiUtils;
+
 import java.io.File;
 import java.util.Collections;
 
@@ -66,6 +69,14 @@ public class TfrService extends TfrServiceBase {
         Intent result = makeResultIntent( intent.getAction() );
         result.putExtra( TFR_LIST, tfrList );
         sendResultIntent( result );
+    }
+
+    protected void fetch( String host, String path, String query, File tfrFile ) {
+        try {
+            NetworkUtils.doHttpGet( this, host, path, query, tfrFile, null, null, null );
+        } catch ( Exception e ) {
+            UiUtils.showToast( this, "TFR: "+e.getMessage() );
+        }
     }
 
 }

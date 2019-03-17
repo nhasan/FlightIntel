@@ -51,15 +51,19 @@ public class TfrDetailFragment extends FragmentBase {
     public void onViewCreated( View view, Bundle savedInstanceState ) {
         super.onViewCreated( view, savedInstanceState );
 
-        Button btnGraphic = view.findViewById( R.id.btnViewGraphic );
-        btnGraphic.setOnClickListener( v -> {
-            Intent intent = new Intent( getActivity(), TfrImageActivity.class );
-            intent.putExtra( TfrListActivity.EXTRA_TFR, mTfr );
-            startActivity( intent );
-        } );
-
         Bundle args = getArguments();
         mTfr = (Tfr) args.getSerializable( TfrListActivity.EXTRA_TFR );
+
+        Button btnGraphic    = view.findViewById( R.id.btnViewGraphic );
+        if ( mTfr.notamId != null && !mTfr.notamId.isEmpty() ) {
+            btnGraphic.setOnClickListener( v -> {
+                Intent intent = new Intent( getActivity(), TfrImageActivity.class );
+                intent.putExtra( TfrListActivity.EXTRA_TFR, mTfr );
+                startActivity( intent );
+            } );
+        } else {
+            btnGraphic.setVisibility( View.GONE );
+        }
 
         LinearLayout layout = view.findViewById( R.id.tfr_header_layout );
         addRow( layout, "Name", mTfr.name );

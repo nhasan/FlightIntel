@@ -22,6 +22,7 @@ package com.nadmm.airports.tfr;
 import android.os.Bundle;
 
 import com.nadmm.airports.FragmentActivityBase;
+import com.nadmm.airports.tfr.TfrList.Tfr;
 
 public class TfrImageActivity extends FragmentActivityBase {
 
@@ -33,7 +34,7 @@ public class TfrImageActivity extends FragmentActivityBase {
 
         Bundle args = getIntent().getExtras();
 
-        mTfr = (TfrList.Tfr) args.getSerializable( TfrListActivity.EXTRA_TFR );
+        mTfr = (Tfr) args.getSerializable( TfrListActivity.EXTRA_TFR );
         setActionBarTitle( mTfr.name );
         setActionBarSubtitle( "TFR Graphic" );
 

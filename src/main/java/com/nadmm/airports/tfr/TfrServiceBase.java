@@ -21,15 +21,14 @@ package com.nadmm.airports.tfr;
 
 import android.app.IntentService;
 import android.content.Intent;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
 
-import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
-import com.nadmm.airports.utils.UiUtils;
 
 import java.io.File;
 import java.util.Date;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public abstract class TfrServiceBase extends IntentService {
 
@@ -61,14 +60,6 @@ public abstract class TfrServiceBase extends IntentService {
             if ( age > maxAge ) {
                 file.delete();
             }
-        }
-    }
-
-    protected void fetch( String host, String path, String query, File tfrFile ) {
-        try {
-            NetworkUtils.doHttpGet( this, host, path, query, tfrFile, null, null, null );
-        } catch ( Exception e ) {
-            UiUtils.showToast( this, "TFR: "+e.getMessage() );
         }
     }
 
