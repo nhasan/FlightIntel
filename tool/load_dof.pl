@@ -33,10 +33,10 @@ sub substrim($$$)
     return $string;
 }
 
-my $DOF_BASE = "/home/nhasan/Documents/FlightIntel/DOF";
+my $DOF_BASE = "data/DOF";
 my $cycle = shift @ARGV;
 my $dbfile = "dof_$cycle.db";
-$DOF_BASE = $DOF_BASE."/DOF_".$cycle;
+my $DOF_FILE = $DOF_BASE."/DOF_".$cycle."/DOF.DAT\n";
 
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
@@ -98,10 +98,9 @@ my $ofh = select STDOUT;
 $| = 1;
 select $ofh;
 
-my $DOF = $DOF_BASE."/DOF.DAT\n";
-print( "Loading ".$DOF );
+print( "Loading ".$DOF_FILE );
 
-open( DOF_FILE, "<$DOF" ) or die "Could not open data file\n";
+open( DOF_FILE, "<$DOF_FILE" ) or die "Could not open data file\n";
 
 my $i = 0;
 

@@ -24,27 +24,28 @@ use DBI;
 use LWP::Simple;
 use XML::Twig;
 
-my $BASE_DIR = shift @ARGV;
+my $BASE_DIR=shift @ARGV;
 my $cycle = shift @ARGV;
-my $TPP_METADATA_FILE = "$BASE_DIR/d-TPP_Metafile.xml";
+my $TPP_METADATA_FILE="${BASE_DIR}/d-TPP_Metafile.xml";
 #my $dtpp_url = "http://aeronav.faa.gov/d-tpp/$cycle/xml_data/d-TPP_Metafile.xml";
 #my $dtpp_url = "https://nfdc.faa.gov/webContent/dtpp/current.xml";
-my $dtpp_url = "file:///home/nhasan/Documents/FlightIntel/d-TPP/DDTPPE_$cycle/d-TPP_Metafile.xml";
+my $dtpp_url = "file://data/d-TPP/DDTPPE_${cycle}/${TPP_METADATA_FILE}";
 my $count = 0;
 
 my $ofh = select STDOUT;
 $| = 1;
 select $ofh;
 
-print "Downloading the d-TPP metafile: ".$dtpp_url."...";
-my $ret = getstore( $dtpp_url, $TPP_METADATA_FILE );
-if ( $ret != 200 )
-{
-    die "\nERROR: Unable to download d-TPP metadata. HTTP-$ret\n\n";
-}
-print "done\n";
+print "Using ${TPP_METADATA_FILE}\n";
+#print "Downloading the d-TPP metafile: ".$dtpp_url."...";
+#my $ret = getstore( $dtpp_url, "d-TPP_Metafile.xml");
+#if ( $ret != 200 )
+#{
+#    die "\nERROR: Unable to download d-TPP metadata. HTTP-$ret\n\n";
+#}
+#print "done\n";
 
-my $dbfile = "$BASE_DIR/dtpp_".$cycle.".db";
+my $dbfile = "dtpp_".$cycle.".db";
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );

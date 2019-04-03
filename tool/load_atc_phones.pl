@@ -22,13 +22,12 @@
 use strict;
 use DBI;
 
-my $BASE_DIR = shift @ARGV;
 my $dbfile = shift @ARGV;
-my $ATC_PHONES_FILE = "$BASE_DIR/atc_phones.csv";
+my $ATC_PHONES_FILE = "atc_phones.csv";
 
 open( FILE, "<$ATC_PHONES_FILE" ) or die "Could not open data file\n";
 
-my $dbh = DBI->connect( "dbi:SQLite:dbname=$BASE_DIR/$dbfile", "", "" );
+my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );
 $dbh->do( "PRAGMA synchronous=OFF" );

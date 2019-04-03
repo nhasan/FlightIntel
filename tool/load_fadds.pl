@@ -108,11 +108,9 @@ sub capitalize($$$)
     return $string;
 }
 
-#my $FADDS_BASE = shift @ARGV;
-my $FADDS_BASE = "/home/nhasan/Documents/FlightIntel/FADDS";
+my $FADDS_BASE = shift @ARGV;
 my $cycle = shift @ARGV;
 my $dbfile = "fadds_$cycle.db";
-$FADDS_BASE = $FADDS_BASE."/".$cycle;
 
 my %site_number;
 

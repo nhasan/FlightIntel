@@ -1,0 +1,116 @@
+#!/bin/bash
+
+DATA_CYCLE="190425";
+
+FADDS_CYCLE="2019-04-25";
+DTPP_CYCLE="190328";
+DCS_CYCLE="20190228";
+
+OUTFILE="fadds_${DATA_CYCLE}.db";
+if [ ! -f "$OUTFILE.gz" ]; then
+    BASE_DIR="data/FADDS/${DATA_CYCLE}";
+    if [ ! -d "${BASE_DIR}" ]; then
+        mkdir -p ${BASE_DIR};
+    fi
+    FADDS_FILE="${BASE_DIR}/28DaySubscription_Effective_${FADDS_CYCLE}.zip";
+    if [ ! -e "${FADDS_FILE}" ]; then
+        FADDS_URL="https://nfdc.faa.gov/webContent/28DaySub/28DaySubscription_Effective_${FADDS_CYCLE}.zip";
+        echo "Downloading FADDS ${FADDS_CYCLE} file:";
+        wget -O ${FADDS_FILE} ${FADDS_URL};
+        unzip -o -d ${BASE_DIR} ${FADDS_FILE};
+    fi
+    echo "Running load_fadds.pl:";
+    ./load_fadds.pl ${BASE_DIR} ${DATA_CYCLE}
+    echo "Running load_wx_stations.pl:";
+    ./load_wx_stations.pl fadds_${DATA_CYCLE}.db
+    echo "Running load_atc_phones.pl:";
+    ./load_atc_phones.pl fadds_${DATA_CYCLE}.db
+    echo "Running cached_tz_lookup.pl:";
+    ./cached_tz_lookup.pl fadds_${DATA_CYCLE}.db fadds_prev.db
+    echo "Running geonames_tz_lookup.pl:";
+    ./geonames_tz_lookup.pl fadds_${DATA_CYCLE}.db
+    echo "Making a copy of FADDS file:";
+    cp ${OUTFILE} fadds_prev.db
+    gzip ${OUTFILE};
+    echo "Copying ${OUTFILE}.gz to Google Storage:"
+    gsutil cp ${OUTFILE}.gz gs://flightintel/database/
+    gsutil acl ch -u Allusers:R gs://flightintel/database/${OUTFILE}.gz
+    echo "--"
+fi
+OUTFILE="dtpp_${DATA_CYCLE}.db";
+if [ ! -f "$OUTFILE.gz" ]; then
+    BASE_DIR="data/d-TPP/${DTPP_CYCLE}";
+    if [ ! -d "${BASE_DIR}" ]; then
+        mkdir -p ${BASE_DIR};
+    fi
+    DTPP_FILE="${BASE_DIR}/DDTPPE_${DTPP_CYCLE}.zip";
+    if [ ! -e "${DTPP_FILE}" ]; then
+        DTPP_URL="https://aeronav.faa.gov/upload_313-d/terminal/DDTPPE_${DTPP_CYCLE}.zip";
+        echo "Downloading d-TPP ${DTPP_CYCLE} file:";
+        wget -O ${DTPP_FILE} ${DTPP_URL};
+        unzip -o -d ${BASE_DIR} ${DTPP_FILE} d-TPP_Metafile.xml;
+    fi
+    echo "Running load_dtpp_metadata.pl ${BASE_DIR} ${DTPP_CYCLE}";
+    ./load_dtpp_metadata.pl ${BASE_DIR} ${DTPP_CYCLE};
+    gzip ${OUTFILE};
+    echo "Copying ${OUTFILE}.gz to Google Storage:"
+    gsutil cp ${OUTFILE}.gz gs://flightintel/database/
+    gsutil acl ch -u Allusers:R gs://flightintel/database/${OUTFILE}.gz
+    echo "--";
+fi
+
+exit
+
+OUTFILE="dcs_${DATA_CYCLE}.db";
+if [ ! -f "$OUTFILE.gz" ]; then
+    BASE_DIR="data/d-CS/${DCS_CYCLE}";
+    if [ ! -d "${BASE_DIR}" ]; then
+        mkdir -p ${BASE_DIR};
+    fi
+    DCS_FILE="${BASE_DIR}/DCS_${DCS_CYCLE}.zip";
+    if [ ! -f "${DCS_FILE}" ]; then
+        DCS_URL="https://aeronav.faa.gov/Upload_313-d/supplements/DCS_${DCS_CYCLE}.zip";
+        echo "Downloading d-CS ${DCS_CYCLE} file:";
+        wget -O ${DCS-FILE}  ${DCS_URL};
+        unzip -o -d ${BASE_DIR} ${DCS_FILE} afd_*.xml;
+    fi
+    echo "Running load_dafd_metadata.pl:";
+    ./load_dafd_metadata.pl ${BASEDIR} ${DATA_CYCLE};
+    gzip ${OUTFILE};
+    echo "Copying ${OUTFILE}.gz to Google Storage:"
+    gsutil cp ${OUTFILE}.gz gs://flightintel/database/
+    gsutil acl ch -u Allusers:R gs://flightintel/database/${OUTFILE}.gz
+    echo "--";
+fi
+
+OUTFILE="dof_${DATA_CYCLE}.db";
+if [ ! -f "$OUTFILE.gz" ]; then
+    BASE_DIR="data/DOF/${DATA_CYCLE}";
+    if [ ! -d "${BASE_DIR}" ]; then
+        mkdir -p ${BASE_DIR};
+    fi
+    DOF_URL="https://aeronav.faa.gov/Obst_Data/DAILY_DOF_DAT.ZIP"
+    echo "Downloading DDOF file:";
+    DOF_FILE="${BASE_DIR}/DAILY_DOF_DAT.ZIP";
+    #wget -O ${DOF_FILE} ${DOF_URL};
+    #unzip -o -d ${BASE_DIR} ${DOF_FILE};
+    echo "Running load_dof.pl:";
+    ./load_dof.pl ${DATA_CYCLE};
+    gzip ${OUTFILE};
+    echo "Copying ${OUTFILE}.gz to Google Storage:"
+    gsutil cp ${OUTFILE}.gz gs://flightintel/database/
+    gsutil acl ch -u Allusers:R gs://flightintel/database/${OUTFILE}.gz
+    echo "--";
+fi
+
+OUTFILE="library_${DATA_CYCLE}.db";
+if [ ! -f "$OUTFILE.gz" ]; then
+    echo "Running load_library.pl:";
+    ./load_library ${DATA_CYCLE};
+    gzip ${OUTFILE};
+    echo "Copying ${OUTFILE}.gz to Google Storage:"
+    gsutil cp ${OUTFILE}.gz gs://flightintel/database/
+    gsutil acl ch -u Allusers:R gs://flightintel/database/${OUTFILE}.gz
+    echo "--";
+fi
+

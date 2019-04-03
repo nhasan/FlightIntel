@@ -22,14 +22,13 @@
 use strict;
 use DBI;
 
-my $FADDS_BASE = shift @ARGV;
 # Current database
 my $dbfile1 = shift @ARGV;
 # Previous database
 my $dbfile2 = shift @ARGV;
 
-my $dbh1 = DBI->connect( "dbi:SQLite:dbname=$FADDS_BASE/$dbfile1", "", "" );
-my $dbh2 = DBI->connect( "dbi:SQLite:dbname=$FADDS_BASE/$dbfile2", "", "" );
+my $dbh1 = DBI->connect( "dbi:SQLite:dbname=$dbfile1", "", "" );
+my $dbh2 = DBI->connect( "dbi:SQLite:dbname=$dbfile2", "", "" );
 
 my $sth_upd = $dbh1->prepare( "update airports set TIMEZONE_ID=? where SITE_NUMBER=?" );
 

@@ -133,14 +133,14 @@ insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
+insert_book( "periodicals", "cb_470.pdf", "Callback",
+        "Issue 470 (Mar 2019)", "NASA", 175298, "" );
 insert_book( "periodicals", "cb_469.pdf", "Callback",
         "Issue 469 (Feb 2019)", "NASA", 129322, "" );
 insert_book( "periodicals", "cb_468.pdf", "Callback",
         "Issue 468 (Jan 2019)", "NASA", 195658, "" );
 insert_book( "periodicals", "cb_467.pdf", "Callback",
         "Issue 467 (Dec 2018)", "NASA", 567753, "" );
-insert_book( "periodicals", "cb_466.pdf", "Callback",
-        "Issue 466 (Nov 2018)", "NASA", 142657, "" );
 insert_book( "periodicals", "JanFeb2019.pdf", "FAA Safety Briefing",
         "Jan/Feb 2019", "FAA", 4733037, "" );
 insert_book( "periodicals", "NovDec2018.pdf", "FAA Safety Briefing",
@@ -179,8 +179,8 @@ insert_book( "safety", "AP_UpsetRecovery_Book.pdf", "Upset Recovery Training Aid
 insert_book( "safety", "tfrweb_2003.pdf.gz", "Pilot's Guide to TFR",
         "2003", "FAA", 1794432, "" );
 
-insert_book( "regs", "aim_180913.pdf", "AIM Change 1 & 2",
-        "Sep 2018", "FAA", "14717067", "" );
+insert_book( "regs", "aim_190228.pdf", "AIM Change 1, 2 and 3",
+        "Feb 2019", "FAA", "15279164", "" );
 insert_book( "regs", "CFR-2018-title14-vol1.pdf", "FAR Volume 1",
         "Parts 1-59", "US GPO 2018", 10860978, "" );
 insert_book( "regs", "CFR-2018-title14-vol2.pdf", "FAR Volume 2",

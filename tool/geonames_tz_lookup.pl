@@ -24,7 +24,6 @@ use DBI;
 use LWP::Simple;
 use JSON;
 
-my $FADDS_BASE = shift @ARGV;
 # Current database
 my $dbfile = shift @ARGV;
 
@@ -35,7 +34,7 @@ my $tz;
 
 my $geonames_url = "http://api.geonames.org/timezoneJSON?";
 
-my $dbh = DBI->connect( "dbi:SQLite:dbname=$FADDS_BASE/$dbfile", "", "" );
+my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 my $sth_upd = $dbh->prepare( "update airports set TIMEZONE_ID=? where SITE_NUMBER=?" );
 
