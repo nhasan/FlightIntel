@@ -22,11 +22,9 @@
 use strict;
 use DBI;
 
-
-my $BASE_DIR = shift @ARGV;
 my $cycle = shift @ARGV;
 
-my $dbh = DBI->connect( "dbi:SQLite:dbname=$BASE_DIR/library_$cycle.db", "", "" );
+my $dbh = DBI->connect( "dbi:SQLite:dbname=library_${cycle}.db", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );
 $dbh->do( "PRAGMA synchronous=OFF" );

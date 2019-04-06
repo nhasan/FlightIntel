@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -25,23 +25,11 @@ use LWP::Simple;
 use XML::Twig;
 
 my $BASE_DIR = shift @ARGV;
-# Format: 05APR2012
 our $cycle = shift @ARGV;
-my $AFD_METADATA_FILE = "$BASE_DIR/d-AFD_Metadata.xml";
-#my $dafd_url = "http://aeronav.faa.gov/afd/afd_$cycle.xml";
-my $dafd_url = "file:///home/nhasan/Documents/FlightIntel/d-CS/afd_$cycle.xml";
+my $AFD_METADATA_FILE = glob "${BASE_DIR}/afd_*.xml";
 my $count = 0;
 
-print "Downloading the d-AFD metafile: ".$dafd_url."...";
-#my $ret = 200;
-my $ret = getstore( $dafd_url, $AFD_METADATA_FILE );
-if ( $ret != 200 )
-{
-    die "\nERROR: Unable to download d-AFD metadata. $ret\n\n";
-}
-print "done\n";
-
-my $dbfile = "$BASE_DIR/dcs_$cycle.db";
+my $dbfile = "dcs_$cycle.db";
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );

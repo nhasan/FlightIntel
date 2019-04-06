@@ -36,7 +36,7 @@ sub substrim($$$)
 my $DOF_BASE = "data/DOF";
 my $cycle = shift @ARGV;
 my $dbfile = "dof_$cycle.db";
-my $DOF_FILE = $DOF_BASE."/DOF_".$cycle."/DOF.DAT\n";
+my $DOF_FILE = "${DOF_BASE}/${cycle}/DOF.DAT";
 
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
@@ -98,7 +98,7 @@ my $ofh = select STDOUT;
 $| = 1;
 select $ofh;
 
-print( "Loading ".$DOF_FILE );
+print( "Loading ${DOF_FILE}\n" );
 
 open( DOF_FILE, "<$DOF_FILE" ) or die "Could not open data file\n";
 
