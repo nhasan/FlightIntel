@@ -25,7 +25,11 @@ FADDS_CYCLE="2019-04-25";
 DTPP_CYCLE="190425";
 DCS_CYCLE="20190425";
 
-OUTFILE="fadds_${DATA_CYCLE}.db";
+OUTDIR="data/database";
+
+GS_URL="gs://flightintel/database/";
+
+OUTFILE="${OUTDIR}/fadds_${DATA_CYCLE}.db";
 if [ ! -f "${OUTFILE}.gz" ]; then
     BASE_DIR="data/FADDS/${DATA_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
@@ -57,7 +61,7 @@ if [ ! -f "${OUTFILE}.gz" ]; then
     echo "--"
 fi
 
-OUTFILE="dtpp_${DATA_CYCLE}.db";
+OUTFILE="${OUTDIR}/dtpp_${DATA_CYCLE}.db";
 if [ ! -f "${OUTFILE}.gz" ]; then
     BASE_DIR="data/d-TPP/${DTPP_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
@@ -75,11 +79,10 @@ if [ ! -f "${OUTFILE}.gz" ]; then
     gzip ${OUTFILE};
     echo "Copying ${OUTFILE}.gz to Google Storage:"
     gsutil cp ${OUTFILE}.gz gs://flightintel/database/
-    gsutil acl ch -u Allusers:R gs://flightintel/database/${OUTFILE}.gz
     echo "--";
 fi
 
-OUTFILE="dcs_${DATA_CYCLE}.db";
+OUTFILE="${OUTDIR}/dcs_${DATA_CYCLE}.db";
 if [ ! -f "${OUTFILE}.gz" ]; then
     BASE_DIR="data/d-CS/${DCS_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
@@ -97,11 +100,10 @@ if [ ! -f "${OUTFILE}.gz" ]; then
     gzip ${OUTFILE};
     echo "Copying ${OUTFILE}.gz to Google Storage:"
     gsutil cp ${OUTFILE}.gz gs://flightintel/database/
-    gsutil acl ch -u Allusers:R gs://flightintel/database/${OUTFILE}.gz
     echo "--";
 fi
 
-OUTFILE="dof_${DATA_CYCLE}.db";
+OUTFILE="${OUTDIR}/dof_${DATA_CYCLE}.db";
 if [ ! -f "${OUTFILE}.gz" ]; then
     BASE_DIR="data/DOF/${DOF_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
@@ -119,18 +121,19 @@ if [ ! -f "${OUTFILE}.gz" ]; then
     gzip ${OUTFILE};
     echo "Copying ${OUTFILE}.gz to Google Storage:"
     gsutil cp ${OUTFILE}.gz gs://flightintel/database/
-    gsutil acl ch -u Allusers:R gs://flightintel/database/${OUTFILE}.gz
     echo "--";
 fi
 
-OUTFILE="library_${DATA_CYCLE}.db";
+OUTFILE="${OUTDIR}/library_${DATA_CYCLE}.db";
 if [ ! -f "${OUTFILE}.gz" ]; then
     echo "Running load_library.pl ${DATA_CYCLE}:";
     ./load_library.pl ${DATA_CYCLE};
     gzip ${OUTFILE};
     echo "Copying ${OUTFILE}.gz to Google Storage:"
     gsutil cp ${OUTFILE}.gz gs://flightintel/database/
-    gsutil acl ch -u Allusers:R gs://flightintel/database/${OUTFILE}.gz
     echo "--";
 fi
+
+gsutil -m rsync -r -d ${OUTDIR} ${GS_URL}
+gsutil -m acl -r ch -u Allusers:R ${GS_URL}
 
