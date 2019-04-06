@@ -1,13 +1,32 @@
 #!/bin/bash
 
+#/*
+# * FlightIntel for Pilots
+# *
+# * Copyright 2019 Nadeem Hasan <nhasan@nadmm.com>
+# *
+# * This program is free software: you can redistribute it and/or modify
+# * it under the terms of the GNU General Public License as published by
+# * the Free Software Foundation, either version 3 of the License, or
+# * (at your option) any later version.
+# *
+# * This program is distributed in the hope that it will be useful,
+# * but WITHOUT ANY WARRANTY; without even the implied warranty of
+# * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# * GNU General Public License for more details.
+# *
+# * You should have received a copy of the GNU General Public License
+# * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# */
+
 DATA_CYCLE="190425";
 
 FADDS_CYCLE="2019-04-25";
-DTPP_CYCLE="190328";
-DCS_CYCLE="20190228";
+DTPP_CYCLE="190425";
+DCS_CYCLE="20190425";
 
 OUTFILE="fadds_${DATA_CYCLE}.db";
-if [ ! -f "$OUTFILE.gz" ]; then
+if [ ! -f "${OUTFILE}.gz" ]; then
     BASE_DIR="data/FADDS/${DATA_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
         mkdir -p ${BASE_DIR};
@@ -19,15 +38,15 @@ if [ ! -f "$OUTFILE.gz" ]; then
         wget -O ${FADDS_FILE} ${FADDS_URL};
         unzip -o -d ${BASE_DIR} ${FADDS_FILE};
     fi
-    echo "Running load_fadds.pl:";
+    echo "Running load_fadds.pl ${BASE_DIR} ${DATA_CYCLE}:";
     ./load_fadds.pl ${BASE_DIR} ${DATA_CYCLE}
-    echo "Running load_wx_stations.pl:";
+    echo "Running load_wx_stations.pl fadds_${DATA_CYCLE}.db:";
     ./load_wx_stations.pl fadds_${DATA_CYCLE}.db
-    echo "Running load_atc_phones.pl:";
+    echo "Running load_atc_phones.pl fadds_${DATA_CYCLE}.db:";
     ./load_atc_phones.pl fadds_${DATA_CYCLE}.db
-    echo "Running cached_tz_lookup.pl:";
+    echo "Running cached_tz_lookup.pl fadds_${DATA_CYCLE}.db fadds_prev.db:";
     ./cached_tz_lookup.pl fadds_${DATA_CYCLE}.db fadds_prev.db
-    echo "Running geonames_tz_lookup.pl:";
+    echo "Running geonames_tz_lookup.pl fadds_${DATA_CYCLE}.db:";
     ./geonames_tz_lookup.pl fadds_${DATA_CYCLE}.db
     echo "Making a copy of FADDS file:";
     cp ${OUTFILE} fadds_prev.db
@@ -37,8 +56,9 @@ if [ ! -f "$OUTFILE.gz" ]; then
     gsutil acl ch -u Allusers:R gs://flightintel/database/${OUTFILE}.gz
     echo "--"
 fi
+
 OUTFILE="dtpp_${DATA_CYCLE}.db";
-if [ ! -f "$OUTFILE.gz" ]; then
+if [ ! -f "${OUTFILE}.gz" ]; then
     BASE_DIR="data/d-TPP/${DTPP_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
         mkdir -p ${BASE_DIR};
@@ -59,10 +79,8 @@ if [ ! -f "$OUTFILE.gz" ]; then
     echo "--";
 fi
 
-exit
-
 OUTFILE="dcs_${DATA_CYCLE}.db";
-if [ ! -f "$OUTFILE.gz" ]; then
+if [ ! -f "${OUTFILE}.gz" ]; then
     BASE_DIR="data/d-CS/${DCS_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
         mkdir -p ${BASE_DIR};
@@ -71,11 +89,11 @@ if [ ! -f "$OUTFILE.gz" ]; then
     if [ ! -f "${DCS_FILE}" ]; then
         DCS_URL="https://aeronav.faa.gov/Upload_313-d/supplements/DCS_${DCS_CYCLE}.zip";
         echo "Downloading d-CS ${DCS_CYCLE} file:";
-        wget -O ${DCS-FILE}  ${DCS_URL};
-        unzip -o -d ${BASE_DIR} ${DCS_FILE} afd_*.xml;
+        wget -O ${DCS_FILE} ${DCS_URL};
+	unzip -o -d ${BASE_DIR} ${DCS_FILE} afd_*.xml;
     fi
-    echo "Running load_dafd_metadata.pl:";
-    ./load_dafd_metadata.pl ${BASEDIR} ${DATA_CYCLE};
+    echo "Running load_dafd_metadata.pl ${BASE_DIR} ${DATA_CYCLE}:";
+    ./load_dafd_metadata.pl ${BASE_DIR} ${DATA_CYCLE};
     gzip ${OUTFILE};
     echo "Copying ${OUTFILE}.gz to Google Storage:"
     gsutil cp ${OUTFILE}.gz gs://flightintel/database/
@@ -84,17 +102,19 @@ if [ ! -f "$OUTFILE.gz" ]; then
 fi
 
 OUTFILE="dof_${DATA_CYCLE}.db";
-if [ ! -f "$OUTFILE.gz" ]; then
-    BASE_DIR="data/DOF/${DATA_CYCLE}";
+if [ ! -f "${OUTFILE}.gz" ]; then
+    BASE_DIR="data/DOF/${DOF_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
         mkdir -p ${BASE_DIR};
     fi
-    DOF_URL="https://aeronav.faa.gov/Obst_Data/DAILY_DOF_DAT.ZIP"
-    echo "Downloading DDOF file:";
     DOF_FILE="${BASE_DIR}/DAILY_DOF_DAT.ZIP";
-    #wget -O ${DOF_FILE} ${DOF_URL};
-    #unzip -o -d ${BASE_DIR} ${DOF_FILE};
-    echo "Running load_dof.pl:";
+    if [ ! -f "${DOF_FILE}" ]; then
+        DOF_URL="https://aeronav.faa.gov/Obst_Data/DAILY_DOF_DAT.ZIP"
+        echo "Downloading DDOF file:";
+        wget -O ${DOF_FILE} ${DOF_URL};
+        unzip -o -d ${BASE_DIR} ${DOF_FILE};
+    fi
+    echo "Running load_dof.pl ${DATA_CYCLE}:";
     ./load_dof.pl ${DATA_CYCLE};
     gzip ${OUTFILE};
     echo "Copying ${OUTFILE}.gz to Google Storage:"
@@ -104,9 +124,9 @@ if [ ! -f "$OUTFILE.gz" ]; then
 fi
 
 OUTFILE="library_${DATA_CYCLE}.db";
-if [ ! -f "$OUTFILE.gz" ]; then
-    echo "Running load_library.pl:";
-    ./load_library ${DATA_CYCLE};
+if [ ! -f "${OUTFILE}.gz" ]; then
+    echo "Running load_library.pl ${DATA_CYCLE}:";
+    ./load_library.pl ${DATA_CYCLE};
     gzip ${OUTFILE};
     echo "Copying ${OUTFILE}.gz to Google Storage:"
     gsutil cp ${OUTFILE}.gz gs://flightintel/database/
