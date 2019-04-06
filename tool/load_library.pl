@@ -115,8 +115,8 @@ insert_book( "handbooks", "faa-h-8083-2-2009.pdf", "Risk Management Handbook",
         "2016", "FAA-H-8083-2", 19766175, "" );
 insert_book( "handbooks", "faa-fs-i-8700-1-2003.pdf", "Information for Banner Tow Operations",
         "2003", "FAA/FS-I-8799-1", 845400, "" );
-insert_book( "handbooks", "fcm-h1-2005.pdf", "Federal Meteorological Handbook No. 1",
-        "2005", "NOAA", 1860432, "" );
+insert_book( "handbooks", "fcm-h1-2017.pdf", "Federal Meteorological Handbook No. 1",
+        "2017", "NOAA", 873910, "" );
 insert_book( "handbooks", "fcm-h2-1988.pdf", "Federal Meteorological Handbook No. 2",
         "1988", "NOAA", 16091462, "" );
 
@@ -124,10 +124,12 @@ insert_book( "manuals", "cug_180913.pdf", "Aeronautical Chart User's Guide",
         "Sep 2018", "FAA", 12039219, "" );
 insert_book( "manuals", "faa-h-8083-19a-2008.pdf", "Plane Sense - General Aviation Information",
         "2008", "FAA-H-8083-19A", 13246143, "" );
-insert_book( "manuals", "ac-00-6a-1975.pdf", "Aviation Weather",
-        "1975", "AC-00-6A", 29916885, "" );
-insert_book( "manuals", "ac-00-45g-2010.pdf", "Aviation Weather Services",
-        "2010", "AC-00-45G", 12250011, "" );
+insert_book( "manuals", "ac-00-6b.pdf", "Aviation Weather",
+        "2016", "AC-00-6B", 11230823, "" );
+insert_book( "manuals", "ac-00-45h_chg_1.pdf", "Aviation Weather Services",
+        "2016", "AC-00-45H", 20911419, "" );
+insert_book( "manuals", "7110.10Z_FSS_190228.pdf.gz", "Flight Services",
+        "2019", "JO 7110.10Z", 3403505, "" );
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
@@ -255,8 +257,8 @@ insert_book( "pts", "FAA-S-8081-6D_180419.pdf", "Flight Instructor PTS",
 insert_book( "pts", "faa-s-8081-9d.pdf", "Flight Instructor Instrument PTS",
         "Jul 2010", "FAA-S-8081-9D", 169064, "" );
 
-insert_book( "misc", "aip_180913.pdf.gz", "Aeronautical Information Publication",
-        "Sep 2018", "FAA", 34997720, "" );
+insert_book( "misc", "aip_190228.pdf.gz", "Aeronautical Information Publication",
+        "Feb 2019", "FAA", 19861763, "" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
 insert_book( "misc", "pcg_180913.pdf", "Pilot/Controller Glossary",
