@@ -53,8 +53,8 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     fi
     echo "Running load_fadds.pl ${BASE_DIR} ${OUT_FILE}:";
     ./load_fadds.pl ${BASE_DIR} ${OUT_FILE}
-    echo "Running load_wx_stations.pl ${OUT_FILE}:";
-    ./load_wx_stations.pl ${OUT_FILE}
+    echo "Running load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}:";
+    ./load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}
     echo "Running load_atc_phones.pl ${OUT_FILE}:";
     ./load_atc_phones.pl ${OUT_FILE}
     echo "Running cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db";

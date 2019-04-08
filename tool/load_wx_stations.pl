@@ -26,12 +26,6 @@ use XML::Twig;
 use Text::Autoformat;
 
 my $reTrim = qr/^\s+|\s+$/;
-my $dbfile = shift @ARGV;
-
-my $STATIONS_FILE = "wx_stations.txt";
-my $wx_url = "http://aviationweather.gov/adds/dataserver_current/httpparam?"
-        ."dataSource=stations&requestType=retrieve&format=xml&stationString=~us,~ca";
-my $count = 0;
 
 sub capitalize($)
 {
@@ -41,12 +35,20 @@ sub capitalize($)
     return $string;
 }
 
+my $BASE_DIR = shift @ARGV;
+my $dbfile = shift @ARGV;
+
+my $STATIONS_FILE = $BASE_DIR."/wx_stations.txt";
+my $wx_url = "http://aviationweather.gov/adds/dataserver_current/httpparam?"
+        ."dataSource=stations&requestType=retrieve&format=xml&stationString=~us,~ca";
+my $count = 0;
+
 print "Downloading wx station data...";
 $| = 1;
 my $ret = getstore( $wx_url, $STATIONS_FILE );
 if ( $ret != 200 )
 {
-    die "Unable to download station list";
+    die "Unable to download wx stations list";
 }
 print "done\n";
 $| = 1;
