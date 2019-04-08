@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -25,11 +25,9 @@ use LWP::Simple;
 use XML::Twig;
 
 my $BASE_DIR=shift @ARGV;
-my $cycle = shift @ARGV;
+my $dbfile = shift @ARGV;
+
 my $TPP_METADATA_FILE="${BASE_DIR}/d-TPP_Metafile.xml";
-#my $dtpp_url = "http://aeronav.faa.gov/d-tpp/$cycle/xml_data/d-TPP_Metafile.xml";
-#my $dtpp_url = "https://nfdc.faa.gov/webContent/dtpp/current.xml";
-my $dtpp_url = "file://data/d-TPP/DDTPPE_${cycle}/${TPP_METADATA_FILE}";
 my $count = 0;
 
 my $ofh = select STDOUT;
@@ -37,15 +35,7 @@ $| = 1;
 select $ofh;
 
 print "Using ${TPP_METADATA_FILE}\n";
-#print "Downloading the d-TPP metafile: ".$dtpp_url."...";
-#my $ret = getstore( $dtpp_url, "d-TPP_Metafile.xml");
-#if ( $ret != 200 )
-#{
-#    die "\nERROR: Unable to download d-TPP metadata. HTTP-$ret\n\n";
-#}
-#print "done\n";
 
-my $dbfile = "dtpp_".$cycle.".db";
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );

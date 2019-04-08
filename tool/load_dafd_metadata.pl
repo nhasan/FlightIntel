@@ -25,11 +25,11 @@ use LWP::Simple;
 use XML::Twig;
 
 my $BASE_DIR = shift @ARGV;
-our $cycle = shift @ARGV;
+my $dbfile = shift @ARGV;
+
 my $AFD_METADATA_FILE = glob "${BASE_DIR}/afd_*.xml";
 my $count = 0;
 
-my $dbfile = "dcs_$cycle.db";
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );

@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2018 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2018-2019 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -33,10 +33,10 @@ sub substrim($$$)
     return $string;
 }
 
-my $DOF_BASE = "data/DOF";
-my $cycle = shift @ARGV;
-my $dbfile = "dof_$cycle.db";
-my $DOF_FILE = "${DOF_BASE}/${cycle}/DOF.DAT";
+my $BASE_DIR = shift @ARGV;
+my $dbfile = shift @ARGV;
+
+my $DOF_FILE = "${BASE_DIR}/DOF.DAT";
 
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
@@ -100,7 +100,7 @@ select $ofh;
 
 print( "Loading ${DOF_FILE}\n" );
 
-open( DOF_FILE, "<$DOF_FILE" ) or die "Could not open data file\n";
+open( DOF_FILE, "<${DOF_FILE}" ) or die "Could not open data file\n";
 
 my $i = 0;
 

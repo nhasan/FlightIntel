@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2012-2017 Hasan <nhasan@nadmm.com>
+# * Copyright 2012-2019 Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,10 @@
 use strict;
 use DBI;
 
-my $cycle = shift @ARGV;
+my $BASE_DIR = shift @ARGV;
+my $dbfile = shift @ARGV;
 
-my $dbh = DBI->connect( "dbi:SQLite:dbname=library_${cycle}.db", "", "" );
+my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
 
 $dbh->do( "PRAGMA page_size=4096" );
 $dbh->do( "PRAGMA synchronous=OFF" );

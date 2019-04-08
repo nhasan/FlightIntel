@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -109,8 +109,7 @@ sub capitalize($$$)
 }
 
 my $FADDS_BASE = shift @ARGV;
-my $cycle = shift @ARGV;
-my $dbfile = "fadds_$cycle.db";
+my $dbfile = shift @ARGV;
 
 my %site_number;
 
