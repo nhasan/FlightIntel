@@ -35,8 +35,10 @@ OUT_DIR="${DATA_DIR}/database";
 if [ ! -d "${OUT_DIR}" ]; then
     mkdir -p ${OUT_DIR};
 fi
+GS_DATA_URL="gs://flightintel/database";
 
-GS_URL="gs://flightintel/database/";
+LIBRARY_DIR="${DATA_DIR}/library";
+GS_LIBRARY_URL="gs://flightintel/library";
 
 OUT_FILE="${OUT_DIR}/fadds_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
@@ -133,6 +135,10 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
 fi
 
 echo "Syncing data files with Google Storage:"
-gsutil -m rsync -r -d ${OUT_DIR} ${GS_URL}
-gsutil -m acl -r ch -u Allusers:R ${GS_URL}
+gsutil -m rsync -r -d ${OUT_DIR} ${GS_DATA_URL}
+gsutil -m acl -r ch -u Allusers:R ${GS_DATA_URL} 2>&1 | grep -v "No changes"
+
+echo "Syncing library files with Google Storage:"
+gsutil -m rsync -d -r ${LIBRARY_DIR} ${GS_LIBRARY_URL}
+gsutil -m acl -r ch -u Allusers:R ${GS_LIBRARY_URL} 2>&1 | grep -v "No changes"
 
