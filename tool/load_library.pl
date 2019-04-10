@@ -22,7 +22,6 @@
 use strict;
 use DBI;
 
-my $BASE_DIR = shift @ARGV;
 my $dbfile = shift @ARGV;
 
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
@@ -131,6 +130,8 @@ insert_book( "manuals", "ac-00-45h_chg_1.pdf", "Aviation Weather Services",
         "2016", "AC-00-45H", 20911419, "" );
 insert_book( "manuals", "7110.10Z_FSS_190228.pdf.gz", "Flight Services",
         "2019", "JO 7110.10Z", 3403505, "" );
+insert_book( "manuals", "7110.65X_ATC_190228.pdf.gz", "Air Traffic Control",
+        "2019", "JO 7110.65X", 4680257, "" );
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 

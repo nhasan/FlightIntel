@@ -128,8 +128,8 @@ fi
 
 OUT_FILE="${OUT_DIR}/library_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    echo "Running load_library.pl ${BASE_DIR} ${OUT_FILE}"
-    ./load_library.pl ${BASE_DIR} ${OUT_FILE};
+    echo "Running load_library.pl ${OUT_FILE}"
+    ./load_library.pl ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
 fi
