@@ -26,6 +26,9 @@ DTPP_CYCLE="190425";
 DCS_CYCLE="20190425";
 DOF_CYCLE="190425";
 
+bold=$(tput bold)
+normal=$(tput sgr0)
+
 DATA_DIR="data";
 if [ ! -d "${DATA_DIR}" ]; then
     mkdir -p ${DATA_DIR};
@@ -49,21 +52,21 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     FADDS_FILE="${BASE_DIR}/28DaySubscription_Effective_${FADDS_CYCLE}.zip";
     if [ ! -f "${FADDS_FILE}" ]; then
         FADDS_URL="https://nfdc.faa.gov/webContent/28DaySub/28DaySubscription_Effective_${FADDS_CYCLE}.zip";
-        echo "Downloading FADDS ${FADDS_CYCLE} file:";
+        echo "${bold}Downloading FADDS ${FADDS_CYCLE} file:${normal}";
         wget -O ${FADDS_FILE} ${FADDS_URL};
         unzip -o -d ${BASE_DIR} ${FADDS_FILE};
     fi
-    echo "Running load_fadds.pl ${BASE_DIR} ${OUT_FILE}:";
+    echo "${bold}Running load_fadds.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
     ./load_fadds.pl ${BASE_DIR} ${OUT_FILE}
-    echo "Running load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}:";
+    echo "${bold}Running load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
     ./load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}
-    echo "Running load_atc_phones.pl ${OUT_FILE}:";
+    echo "${bold}Running load_atc_phones.pl ${OUT_FILE}:${normal}";
     ./load_atc_phones.pl ${OUT_FILE}
-    echo "Running cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db";
+    echo "${bold}Running cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db:${normal}";
     ./cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
-    echo "Running geonames_tz_lookup.pl ${OUT_FILE}:";
+    echo "${bold}Running geonames_tz_lookup.pl ${OUT_FILE}:${normal}";
     ./geonames_tz_lookup.pl ${OUT_FILE}
-    echo "Making a copy of FADDS file:";
+    echo "${bold}Making a copy of FADDS file:${normal}";
     cp ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
     gzip ${OUT_FILE};
     echo "--"
@@ -78,11 +81,11 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     DTPP_FILE="${BASE_DIR}/DDTPPE_${DTPP_CYCLE}.zip";
     if [ ! -f "${DTPP_FILE}" ]; then
         DTPP_URL="https://aeronav.faa.gov/upload_313-d/terminal/DDTPPE_${DTPP_CYCLE}.zip";
-        echo "Downloading d-TPP ${DTPP_CYCLE} file:";
+        echo "${bold}Downloading d-TPP ${DTPP_CYCLE} file:${normal}";
         wget -O ${DTPP_FILE} ${DTPP_URL};
         unzip -o -d ${BASE_DIR} ${DTPP_FILE} d-TPP_Metafile.xml;
     fi
-    echo "Running load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE}";
+    echo "${bold}Running load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
     ./load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
@@ -97,11 +100,11 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     DCS_FILE="${BASE_DIR}/DCS_${DCS_CYCLE}.zip";
     if [ ! -f "${DCS_FILE}" ]; then
         DCS_URL="https://aeronav.faa.gov/Upload_313-d/supplements/DCS_${DCS_CYCLE}.zip";
-        echo "Downloading d-CS ${DCS_CYCLE} file:";
+        echo "${bold}Downloading d-CS ${DCS_CYCLE} file:${normal}";
         wget -O ${DCS_FILE} ${DCS_URL};
 	unzip -o -d ${BASE_DIR} ${DCS_FILE} afd_*.xml;
     fi
-    echo "Running load_dafd_metadata.pl ${BASE_DIR} ${OUT_FILE}:";
+    echo "${bold}Running load_dafd_metadata.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
     ./load_dafd_metadata.pl ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
@@ -116,11 +119,11 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     DOF_FILE="${BASE_DIR}/DAILY_DOF_DAT.ZIP";
     if [ ! -f "${DOF_FILE}" ]; then
         DOF_URL="https://aeronav.faa.gov/Obst_Data/DAILY_DOF_DAT.ZIP"
-        echo "Downloading DDOF file:";
+        echo "${bold}Downloading DDOF file:${normal}";
         wget -O ${DOF_FILE} ${DOF_URL};
         unzip -o -d ${BASE_DIR} ${DOF_FILE};
     fi
-    echo "Running load_dof.pl ${DATA_CYCLE}:";
+    echo "${bold}Running load_dof.pl ${DATA_CYCLE}:${normal}";
     ./load_dof.pl ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
@@ -128,17 +131,19 @@ fi
 
 OUT_FILE="${OUT_DIR}/library_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    echo "Running load_library.pl ${OUT_FILE}"
+    echo "${bold}Running load_library.pl ${OUT_FILE}:${normal}"
     ./load_library.pl ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
 fi
 
-echo "Syncing data files with Google Storage:"
+echo "${bold}Syncing data files with Google Storage:${normal}"
 gsutil -m rsync -r -d ${OUT_DIR} ${GS_DATA_URL}
 gsutil -m acl -r ch -u Allusers:R ${GS_DATA_URL} 2>&1 | grep -v "No changes"
+echo "--";
 
-echo "Syncing library files with Google Storage:"
+echo "${bold}Syncing library files with Google Storage:${normal}"
 gsutil -m rsync -d -r ${LIBRARY_DIR} ${GS_LIBRARY_URL}
 gsutil -m acl -r ch -u Allusers:R ${GS_LIBRARY_URL} 2>&1 | grep -v "No changes"
+echo "--";
 
