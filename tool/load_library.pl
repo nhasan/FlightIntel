@@ -128,10 +128,6 @@ insert_book( "manuals", "ac-00-6b.pdf", "Aviation Weather",
         "2016", "AC-00-6B", 11230823, "" );
 insert_book( "manuals", "ac-00-45h_chg_1.pdf", "Aviation Weather Services",
         "2016", "AC-00-45H", 20911419, "" );
-insert_book( "manuals", "7110.10Z_FSS_190228.pdf.gz", "Flight Services",
-        "2019", "JO 7110.10Z", 3403505, "" );
-insert_book( "manuals", "7110.65X_ATC_190228.pdf.gz", "Air Traffic Control",
-        "2019", "JO 7110.65X", 4680257, "" );
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", 23020072, "" );
 
@@ -259,16 +255,18 @@ insert_book( "pts", "FAA-S-8081-6D_180419.pdf", "Flight Instructor PTS",
 insert_book( "pts", "faa-s-8081-9d.pdf", "Flight Instructor Instrument PTS",
         "Jul 2010", "FAA-S-8081-9D", 169064, "" );
 
-insert_book( "misc", "aip_190228.pdf.gz", "Aeronautical Information Publication",
+insert_book( "misc", "aip_190228.pdf", "Aeronautical Information Publication",
         "Feb 2019", "FAA", 19861763, "" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", 717842, "" );
 insert_book( "misc", "pcg_180913.pdf", "Pilot/Controller Glossary",
         "Sep 2018", "FAA", 561083, "" );
-insert_book( "misc", "atc_180913.pdf", "Air Trafffic Control",
-        "Sep 2018", "FAA", 4567618, "" );
-insert_book( "misc", "fss_180913.pdf", "Flight Services",
-        "Sep 2018", "FAA", 3087677, "" );
+insert_book( "manuals", "7110.10Z_fss_190228.pdf", "Flight Services",
+        "Feb 2019", "JO 7110.10Z", 3403505, "" );
+insert_book( "manuals", "7110.65X_atc_190228.pdf", "Air Traffic Control",
+        "Feb 2019", "JO 7110.65X", 4680257, "" );
+insert_book( "manuals", "7110.118A_lahso_160130.pdf", "Land and Hold Short Operations",
+        "Jan 2016", "JO 7110.118A", 40811, "" );
 
 insert_book( "canada", "AIM_2018-2_EN_181011.pdf.gz", "Aeronautical Information Manual (TC AIM)",
         "Oct 2018", "Nav Canada", 37316128, "" );
