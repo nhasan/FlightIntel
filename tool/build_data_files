@@ -129,10 +129,15 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     echo "--";
 fi
 
+BASE_DIR="${DATA_DIR}/library";
+echo "${bold}Zipping library files:${normal}"
+find ${BASE_DIR} -name *.pdf -print -exec gzip {} \;
+echo "--";
+
 OUT_FILE="${OUT_DIR}/library_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
     echo "${bold}Running load_library.pl ${OUT_FILE}:${normal}"
-    ./load_library.pl ${OUT_FILE};
+    ./load_library.pl ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
 fi
