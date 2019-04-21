@@ -121,8 +121,8 @@ insert_book( "handbooks", "fcm-h1-2017.pdf", "Federal Meteorological Handbook No
 insert_book( "handbooks", "fcm-h2-1988.pdf", "Federal Meteorological Handbook No. 2",
         "1988", "NOAA", "" );
 
-insert_book( "manuals", "cug_180913.pdf", "Aeronautical Chart User's Guide",
-        "Sep 2018", "FAA", "" );
+insert_book( "manuals", "cug_190425.pdf", "Aeronautical Chart User's Guide",
+        "Apr 2019", "FAA", "" );
 insert_book( "manuals", "faa-h-8083-19a-2008.pdf", "Plane Sense - General Aviation Information",
         "2008", "FAA-H-8083-19A", "" );
 insert_book( "manuals", "ac-00-6b.pdf", "Aviation Weather",
