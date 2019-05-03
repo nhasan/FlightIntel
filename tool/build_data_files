@@ -19,12 +19,11 @@
 # * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # */
 
-DATA_CYCLE="190425";
+DATA_CYCLE="190523";
 
-FADDS_CYCLE="2019-04-25";
-DTPP_CYCLE="190425";
+FADDS_CYCLE="2019-05-23";
+DTPP_CYCLE="190523";
 DCS_CYCLE="20190425";
-DOF_CYCLE="190425";
 
 bold=$(tput bold)
 normal=$(tput sgr0)
@@ -74,7 +73,7 @@ fi
 
 OUT_FILE="${OUT_DIR}/dtpp_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    BASE_DIR="${DATA_DIR}/d-TPP/${DTPP_CYCLE}";
+    BASE_DIR="${DATA_DIR}/d-TPP/${DATA_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
         mkdir -p ${BASE_DIR};
     fi
@@ -93,7 +92,7 @@ fi
 
 OUT_FILE="${OUT_DIR}/dcs_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    BASE_DIR="${DATA_DIR}/d-CS/${DCS_CYCLE}";
+    BASE_DIR="${DATA_DIR}/d-CS/${DATA_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
         mkdir -p ${BASE_DIR};
     fi
@@ -112,7 +111,7 @@ fi
 
 OUT_FILE="${OUT_DIR}/dof_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    BASE_DIR="${DATA_DIR}/DOF/${DOF_CYCLE}";
+    BASE_DIR="${DATA_DIR}/DOF/${DATA_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
         mkdir -p ${BASE_DIR};
     fi
@@ -123,7 +122,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
         wget -O ${DOF_FILE} ${DOF_URL};
         unzip -o -d ${BASE_DIR} ${DOF_FILE};
     fi
-    echo "${bold}Running load_dof.pl ${DATA_CYCLE}:${normal}";
+    echo "${bold}Running load_dof.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
     ./load_dof.pl ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
@@ -136,7 +135,7 @@ echo "--";
 
 OUT_FILE="${OUT_DIR}/library_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    echo "${bold}Running load_library.pl ${OUT_FILE}:${normal}"
+    echo "${bold}Running load_library.pl ${BASE_DIR} ${OUT_FILE}:${normal}"
     ./load_library.pl ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
