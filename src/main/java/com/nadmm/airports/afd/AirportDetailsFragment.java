@@ -139,25 +139,31 @@ public final class AirportDetailsFragment extends FragmentBase {
         mRadius = getActivityBase().getPrefNearbyRadius();
         mHome = getActivityBase().getPrefHomeAirport();
 
-        String siteNumber = getArguments().getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new AirportDetailsTask( this ) ).execute( siteNumber );
+        if ( getArguments() != null ) {
+            String siteNumber = getArguments().getString( Airports.SITE_NUMBER );
+            setBackgroundTask( new AirportDetailsTask( this ) ).execute( siteNumber );
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mBcastReceiver, mBcastFilter );
-        requestMetars( false );
+        if ( getActivity() != null ) {
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+            bm.registerReceiver( mBcastReceiver, mBcastFilter );
+            requestMetars( false );
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mBcastReceiver );
+        if ( getActivity() != null ) {
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+            bm.unregisterReceiver( mBcastReceiver );
+        }
     }
 
     @Override
@@ -272,7 +278,7 @@ public final class AirportDetailsFragment extends FragmentBase {
                 for ( String key : freqMap.keySet() ) {
                     ArrayList<Float> freqs = freqMap.get( key );
                     // Do not show here if multiple frequencies are listed
-                    if ( freqs.size() == 1 ) {
+                    if ( freqs != null && freqs.size() == 1 ) {
                         addRow( layout, key, FormatUtils.formatFreq( freqs.get( 0 ) ) );
                     }
                 }
@@ -436,9 +442,11 @@ public final class AirportDetailsFragment extends FragmentBase {
         Cursor home = result[ 14 ];
         if ( home == null ) {
             Runnable runnable = () -> {
-                Intent prefs = new Intent( getActivity(), PreferencesActivity.class );
-                startActivity( prefs );
-                getActivity().finish();
+                if ( getActivity() != null ) {
+                    Intent prefs = new Intent( getActivity(), PreferencesActivity.class );
+                    startActivity( prefs );
+                    getActivity().finish();
+                }
             };
             addClickableRow( layout, "Tap here to set home airport", runnable );
         } else if ( home.moveToFirst() ) {
@@ -873,7 +881,9 @@ public final class AirportDetailsFragment extends FragmentBase {
         } else if ( cacheOnly ) {
             service.putExtra( NoaaService.CACHE_ONLY, true );
         }
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            getActivity().startService( service );
+        }
     }
 
     private void showWxInfo( Metar metar ) {
@@ -923,9 +933,8 @@ public final class AirportDetailsFragment extends FragmentBase {
                 windInfo.append( "no x-wind" );
             }
             if ( metar.windGustKnots < Integer.MAX_VALUE ) {
-                double gustFactor = (metar.windGustKnots-metar.windSpeedKnots)/2;
-                windInfo.append( String.format( Locale.US, ", %d knots gust factor",
-                        Math.round( gustFactor ) ) );
+                long gustFactor = Math.round( (metar.windGustKnots-metar.windSpeedKnots)/2.0 );
+                windInfo.append( String.format( Locale.US, ", %d knots gust factor", gustFactor ) );
             }
             tv.setText( String.format( Locale.US, "Rwy %s: %s", id, windInfo.toString() ) );
             tv.setVisibility( View.VISIBLE );
