@@ -140,14 +140,14 @@ insert_book( "periodicals", "cb_469.pdf", "Callback",
         "Issue 469 (Feb 2019)", "NASA", "" );
 insert_book( "periodicals", "cb_468.pdf", "Callback",
         "Issue 468 (Jan 2019)", "NASA", "" );
+insert_book( "periodicals", "MayJun2019.pdf", "FAA Safety Briefing",
+        "May/Jum 2019", "FAA", "" );
 insert_book( "periodicals", "JanFeb2019.pdf", "FAA Safety Briefing",
         "Jan/Feb 2019", "FAA", "" );
 insert_book( "periodicals", "NovDec2018.pdf", "FAA Safety Briefing",
         "Nov/Dec 2018", "FAA", "" );
 insert_book( "periodicals", "SepOct2018.pdf", "FAA Safety Briefing",
         "Sep/Oct 2018", "FAA", "" );
-insert_book( "periodicals", "JulAug2018.pdf", "FAA Safety Briefing",
-        "Jul/Aug 2018", "FAA", "" );
 
 insert_book( "safety", "ac_90-48d-chg_1.pdf", "Pilots’ Role in Collision Avoidance",
         "2016", "FAA", "" );
