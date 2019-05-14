@@ -21,25 +21,23 @@ package com.nadmm.airports.utils;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
-
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.collection.LruCache;
 import android.util.TypedValue;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.collection.LruCache;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.nadmm.airports.R;
 
@@ -155,11 +153,29 @@ public class UiUtils {
         String key = String.format( Locale.US, "%d:%d", resid, color );
         Drawable d = getDrawableFromCache( key );
         if ( d == null ) {
-            d = AppCompatResources.getDrawable( context, resid ).mutate();
-            d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
-            putDrawableIntoCache( key, d );
+            d = AppCompatResources.getDrawable( context, resid );
+            Drawable wrapped = DrawableCompat.wrap( d ).mutate();
+            DrawableCompat.setTint( wrapped, color );
+            putDrawableIntoCache( key, wrapped );
         }
         return d;
+    }
+
+    static public Drawable getTintedDrawable( Context context, int resid, ColorStateList tintList ) {
+        // Get a mutable copy of the drawable so each can be set to a different color
+        String key = String.format( Locale.US, "%d:%d", resid, tintList.getDefaultColor() );
+        Drawable d = getDrawableFromCache( key );
+        if ( d == null ) {
+            d = AppCompatResources.getDrawable( context, resid );
+            Drawable wrapped = DrawableCompat.wrap( d ).mutate();
+            DrawableCompat.setTintList( wrapped, tintList );
+            putDrawableIntoCache( key, wrapped );
+        }
+        return d;
+    }
+
+    static public Drawable getDefaultTintedDrawable( Context context, int resid ) {
+        return getTintedDrawable( context, resid, getColorStateList( context, android.R.attr.textColorSecondary ) );
     }
 
     static public ColorStateList getColorStateList( Context context, int resid ) {
@@ -169,22 +185,6 @@ public class UiUtils {
             tintList = AppCompatResources.getColorStateList( context, value.resourceId );
         }
         return tintList;
-    }
-
-    static public Drawable getDefaultTintedDrawable( Context context, int resid ) {
-        return getTintedDrawable( context, resid, getColorStateList( context, android.R.attr.textColorSecondary ) );
-    }
-
-    static public Drawable getTintedDrawable( Context context, int resid, ColorStateList tintList ) {
-        // Get a mutable copy of the drawable so each can be set to a different color
-        String key = String.format( Locale.US, "%d:%d", resid, tintList.getDefaultColor() );
-        Drawable d = getDrawableFromCache( key );
-        if ( d == null ) {
-            d = AppCompatResources.getDrawable( context, resid ).mutate();
-            DrawableCompat.setTintList( d, tintList );
-            putDrawableIntoCache( key, d );
-        }
-        return d;
     }
 
     static public void setTintedTextViewDrawable( TextView tv, int resid, int color ) {
@@ -263,6 +263,11 @@ public class UiUtils {
         int res = typedArray.getResourceId( 0, 0 );
         typedArray.recycle();
         return res;
+    }
+
+    public static boolean isDarkTheme( Context context ) {
+        return ( context.getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK ) == Configuration.UI_MODE_NIGHT_YES;
     }
 
 }
