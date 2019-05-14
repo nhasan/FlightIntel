@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,13 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
-<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="Platform.Theme.FlightIntel" parent="Theme.AppCompat.DayNight.NoActionBar">
+    </style>
+
+    <style name="Base.Theme.FlightIntel" parent="Platform.Theme.FlightIntel">
         <item name="listview_margin_bottom">?actionBarSize</item>
     </style>
 
-    <style name="Theme.FlightIntel" parent="Platform.Theme.FlightIntel">
+    <style name="Theme.FlightIntel" parent="Base.Theme.FlightIntel">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>

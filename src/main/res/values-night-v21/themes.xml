@@ -20,7 +20,7 @@
  */
  -->
 <resources>
-    <style name="Platform.Theme.FlightIntel" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Base.Theme.FlightIntel" parent="Platform.Theme.FlightIntel">
         <item name="android:navigationBarColor">@color/color_navigation_bar</item>
         <item name="listview_margin_bottom">0dip</item>
     </style>

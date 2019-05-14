@@ -152,7 +152,6 @@ public class PreferencesActivity extends FragmentActivityBase {
                 boolean darkMode = mSharedPrefs.getBoolean( KEY_DARK_MODE, false );
                 AppCompatDelegate.setDefaultNightMode( darkMode?
                         AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO );
-                getActivity().recreate();
                 UiUtils.clearDrawableCache();
             }
         }

@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,11 @@
  -->
 
 <resources>
-    <color name="color_primary">#202124</color>
-    <color name="color_primary_dark">#202124</color>
-    <color name="color_primary_light">#303134</color>
-    <color name="color_accent">#6ab7ff</color>
-    <color name="color_background">#202124</color>
+    <color name="color_primary">#121212</color>
+    <color name="color_primary_dark">#7f121212</color>
+    <color name="color_primary_light">#1c1c1c</color>
+    <color name="color_accent">#40c4ff</color>
+    <color name="color_background">#121212</color>
+    <color name="color_navigation_bar">@color/color_background</color>
+    <color name="color_surface">#1e1e1e</color>
 </resources>

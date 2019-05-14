@@ -22,7 +22,7 @@ apply plugin: 'com.android.application'
 
 dependencies {
     implementation fileTree(include: '*.jar', dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha05'
     implementation 'androidx.preference:preference:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
@@ -36,8 +36,8 @@ android {
         applicationId "com.nadmm.airports"
         minSdkVersion 15
         targetSdkVersion 28
-        versionName "6.10.6"
-        versionCode 61006
+        versionName "6.10.7"
+        versionCode 61007
     }
 
     signingConfigs {
