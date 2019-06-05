@@ -24,6 +24,7 @@ use DBI;
 use LWP::Simple;
 use XML::Twig;
 
+our $cycle = shift @ARGV;
 my $BASE_DIR = shift @ARGV;
 my $dbfile = shift @ARGV;
 

@@ -19,11 +19,11 @@
 # * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # */
 
-DATA_CYCLE="190523";
+DATA_CYCLE="190620";
 
-FADDS_CYCLE="2019-05-23";
-DTPP_CYCLE="190523";
-DCS_CYCLE="20190425";
+FADDS_CYCLE="2019-06-20";
+DTPP_CYCLE="190620";
+DCS_CYCLE="20190620";
 
 bold=$(tput bold)
 normal=$(tput sgr0)
@@ -103,8 +103,8 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
         wget -O ${DCS_FILE} ${DCS_URL};
 	unzip -o -d ${BASE_DIR} ${DCS_FILE} afd_*.xml;
     fi
-    echo "${bold}Running load_dafd_metadata.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
-    ./load_dafd_metadata.pl ${BASE_DIR} ${OUT_FILE};
+    echo "${bold}Running load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE}:${normal}";
+    ./load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
 fi
