@@ -186,10 +186,10 @@ insert_book( "regs", "CFR-2018-title14-vol2.pdf", "FAR Volume 2",
         "Parts 60-109", "US GPO 2018", "" );
 insert_book( "regs", "CFR-2018-title14-vol3.pdf", "FAR Volume 3",
         "Parts 110-199", "US GPO 2018", "" );
-insert_book( "regs", "CFR-2018-title14-vol4.pdf", "FAR Volume 4",
-        "Parts 200-1199", "US GPO 2018", "" );
-insert_book( "regs", "CFR-2018-title14-vol5.pdf", "FAR Volume 5",
-        "Parts 1200-1399", "US GPO 2018", "" );
+insert_book( "regs", "CFR-2019-title14-vol4.pdf", "FAR Volume 4",
+        "Parts 200-1199", "US GPO 2019", "" );
+insert_book( "regs", "CFR-2019-title14-vol5.pdf", "FAR Volume 5",
+        "Parts 1200-1399", "US GPO 2019", "" );
 
 insert_book( "risk", "wx_decision.pdf", "Weather Decision Making", "2009", "FAA", "" );
 insert_book( "risk", "local_vfr.pdf", "Local VFR Flying", "2012", "FAA", "" );
@@ -260,8 +260,8 @@ insert_book( "misc", "aip_190228.pdf", "Aeronautical Information Publication",
         "Feb 2019", "FAA", "" );
 insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", "" );
-insert_book( "misc", "pcg_180913.pdf", "Pilot/Controller Glossary",
-        "Sep 2018", "FAA", "" );
+insert_book( "misc", "pcg_190228.pdf", "Pilot/Controller Glossary",
+        "Feb 2019", "FAA", "" );
 insert_book( "manuals", "7110.10Z_fss_190228.pdf", "Flight Services",
         "Feb 2019", "JO 7110.10Z", "" );
 insert_book( "manuals", "7110.65X_atc_190228.pdf", "Air Traffic Control",
