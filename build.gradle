@@ -22,15 +22,15 @@ apply plugin: 'com.android.application'
 
 dependencies {
     implementation fileTree(include: '*.jar', dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.1.0-beta01'
+    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'androidx.preference:preference:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0' 
+    implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
 }
 
 android {
     compileSdkVersion 28
-    buildToolsVersion "28.0.3"
+    buildToolsVersion "29.0.0"
 
     defaultConfig {
         applicationId "com.nadmm.airports"
