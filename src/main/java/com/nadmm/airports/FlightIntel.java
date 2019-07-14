@@ -70,14 +70,6 @@ public class FlightIntel extends ActivityBase {
         }
 
         if ( intent == null ) {
-            Date now = new Date();
-            for ( Date end : installed ) {
-                if ( !now.before( end ) ) {
-                    msg = "You are using expired data";
-                    break;
-                }
-            }
-
             Resources res = getResources();
             String afd = res.getString( R.string.afd );
             String home = getPrefHomeScreen();
