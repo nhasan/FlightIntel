@@ -121,8 +121,8 @@ insert_book( "handbooks", "fcm-h1-2017.pdf", "Federal Meteorological Handbook No
 insert_book( "handbooks", "fcm-h2-1988.pdf", "Federal Meteorological Handbook No. 2",
         "1988", "NOAA", "" );
 
-insert_book( "manuals", "cug_190425.pdf", "Aeronautical Chart User's Guide",
-        "Apr 2019", "FAA", "" );
+insert_book( "manuals", "cug_190620.pdf", "Aeronautical Chart User's Guide",
+        "Jun 2019", "FAA", "" );
 insert_book( "manuals", "faa-h-8083-19a-2008.pdf", "Plane Sense - General Aviation Information",
         "2008", "FAA-H-8083-19A", "" );
 insert_book( "manuals", "ac-00-6b.pdf", "Aviation Weather",
@@ -132,14 +132,14 @@ insert_book( "manuals", "ac-00-45h_chg_1.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", "" );
 
+insert_book( "periodicals", "cb_473.pdf", "Callback",
+        "Issue 473 (Jun 2019)", "NASA", "" );
+insert_book( "periodicals", "cb_472.pdf", "Callback",
+        "Issue 472 (May 2019)", "NASA", "" );
 insert_book( "periodicals", "cb_471.pdf", "Callback",
         "Issue 471 (Apr 2019)", "NASA", "" );
 insert_book( "periodicals", "cb_470.pdf", "Callback",
         "Issue 470 (Mar 2019)", "NASA", "" );
-insert_book( "periodicals", "cb_469.pdf", "Callback",
-        "Issue 469 (Feb 2019)", "NASA", "" );
-insert_book( "periodicals", "cb_468.pdf", "Callback",
-        "Issue 468 (Jan 2019)", "NASA", "" );
 insert_book( "periodicals", "MayJun2019.pdf", "FAA Safety Briefing",
         "May/Jum 2019", "FAA", "" );
 insert_book( "periodicals", "JanFeb2019.pdf", "FAA Safety Briefing",
@@ -180,12 +180,12 @@ insert_book( "safety", "tfrweb_2003.pdf.gz", "Pilot's Guide to TFR",
 
 insert_book( "regs", "aim_190228.pdf", "AIM Change 1, 2 and 3",
         "Feb 2019", "FAA", "" );
-insert_book( "regs", "CFR-2018-title14-vol1.pdf", "FAR Volume 1",
-        "Parts 1-59", "US GPO 2018", "" );
+insert_book( "regs", "CFR-2019-title14-vol1.pdf", "FAR Volume 1",
+        "Parts 1-59", "US GPO 2019", "" );
 insert_book( "regs", "CFR-2018-title14-vol2.pdf", "FAR Volume 2",
         "Parts 60-109", "US GPO 2018", "" );
-insert_book( "regs", "CFR-2018-title14-vol3.pdf", "FAR Volume 3",
-        "Parts 110-199", "US GPO 2018", "" );
+insert_book( "regs", "CFR-2019-title14-vol3.pdf", "FAR Volume 3",
+        "Parts 110-199", "US GPO 2019", "" );
 insert_book( "regs", "CFR-2019-title14-vol4.pdf", "FAR Volume 4",
         "Parts 200-1199", "US GPO 2019", "" );
 insert_book( "regs", "CFR-2019-title14-vol5.pdf", "FAR Volume 5",
@@ -230,14 +230,14 @@ insert_book( "testguide", "IPC_Guidance_150909.pdf", "Instrument Proficiency Che
         "Sep 2015", "", "" );
 insert_book( "testguide", "PARSampleExam_181015.pdf", "Airmen Knowledge Test Question Bank",
         "Oct 2018", "Private Airplane", "" );
-insert_book( "testguide", "PRHSampleExam_181015.pdf", "Airmen Knowledge Test Question Bank",
-        "Oct 2018", "Private Helicopter", "" );
-insert_book( "testguide", "IRASampleExam_181015.pdf", "Airmen Knowledge Test Question Bank",
-        "Oct 2018", "Instrument", "" );
+insert_book( "testguide", "PRHSampleExam_190628.pdf", "Airmen Knowledge Test Question Bank",
+        "Jun 2019", "Private Helicopter", "" );
+insert_book( "testguide", "IRASampleExam_190628.pdf", "Airmen Knowledge Test Question Bank",
+        "Jun 2019", "Instrument", "" );
 insert_book( "testguide", "LSPSampleExam_181015.pdf", "Airmen Knowledge Test Question Bank",
         "Oct 2018", "Light Sport", "" );
-insert_book( "testguide", "cax_sample_exam_181015.pdf", "Airmen Knowledge Test Question Bank",
-        "Oct 2018", "Commercial", "" );
+insert_book( "testguide", "cax_sample_exam_190628.pdf", "Airmen Knowledge Test Question Bank",
+        "Jun 2019", "Commercial", "" );
 
 insert_book( "pts", "FAA-S-ACS-7A_180611.pdf", "Commercial Pilot ACS",
         "Jun 2018", "FAA-S-ACS-7A", "" );
