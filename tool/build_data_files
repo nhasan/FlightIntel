@@ -19,11 +19,11 @@
 # * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # */
 
-DATA_CYCLE="190620";
+DATA_CYCLE="190718";
 
-FADDS_CYCLE="2019-06-20";
-DTPP_CYCLE="190620";
-DCS_CYCLE="20190620";
+FADDS_CYCLE="2019-07-18";
+DTPP_CYCLE="1907";
+DCS_CYCLE="20JUN2019";
 
 bold=$(tput bold)
 normal=$(tput sgr0)
@@ -73,16 +73,15 @@ fi
 
 OUT_FILE="${OUT_DIR}/dtpp_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    BASE_DIR="${DATA_DIR}/d-TPP/${DATA_CYCLE}";
+    BASE_DIR="${DATA_DIR}/d-TPP/${DTPP_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
         mkdir -p ${BASE_DIR};
     fi
-    DTPP_FILE="${BASE_DIR}/DDTPPE_${DTPP_CYCLE}.zip";
+    DTPP_FILE="${BASE_DIR}/d-TPP_Metafile.xml";
     if [ ! -f "${DTPP_FILE}" ]; then
-        DTPP_URL="https://aeronav.faa.gov/upload_313-d/terminal/DDTPPE_${DTPP_CYCLE}.zip";
+        DTPP_URL="https://aeronav.faa.gov/d-tpp/${DTPP_CYCLE}/xml_data/d-TPP_Metafile.xml";
         echo "${bold}Downloading d-TPP ${DTPP_CYCLE} file:${normal}";
         wget -O ${DTPP_FILE} ${DTPP_URL};
-        unzip -o -d ${BASE_DIR} ${DTPP_FILE} d-TPP_Metafile.xml;
     fi
     echo "${bold}Running load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
     ./load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE};
@@ -92,16 +91,15 @@ fi
 
 OUT_FILE="${OUT_DIR}/dcs_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    BASE_DIR="${DATA_DIR}/d-CS/${DATA_CYCLE}";
+    BASE_DIR="${DATA_DIR}/d-CS/${DCS_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
         mkdir -p ${BASE_DIR};
     fi
-    DCS_FILE="${BASE_DIR}/DCS_${DCS_CYCLE}.zip";
+    DCS_FILE="${BASE_DIR}/afd_${DCS_CYCLE}.xml";
     if [ ! -f "${DCS_FILE}" ]; then
-        DCS_URL="https://aeronav.faa.gov/Upload_313-d/supplements/DCS_${DCS_CYCLE}.zip";
+	DCS_URL="https://aeronav.faa.gov/afd/afd_${DCS_CYCLE}.xml";
         echo "${bold}Downloading d-CS ${DCS_CYCLE} file:${normal}";
         wget -O ${DCS_FILE} ${DCS_URL};
-	unzip -o -d ${BASE_DIR} ${DCS_FILE} afd_*.xml;
     fi
     echo "${bold}Running load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE}:${normal}";
     ./load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE};
@@ -142,7 +140,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
 fi
 
 echo "${bold}Syncing data files with Google Storage:${normal}"
-gsutil -m rsync -r -d ${OUT_DIR} ${GS_DATA_URL}
+gsutil -m rsync -r -x fadds_prev.db -d ${OUT_DIR} ${GS_DATA_URL}
 gsutil -m acl -r ch -u Allusers:R ${GS_DATA_URL} 2>&1 | grep -v "No changes"
 echo "--";
 
