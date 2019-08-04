@@ -112,8 +112,6 @@ insert_book( "handbooks", "faa-h-8083-1b-2016.pdf", "Weight and Balance Handbook
         "2016", "FAA-H-8083-1B", "" );
 insert_book( "handbooks", "faa-h-8083-21a-2012.pdf", "Helicopter Flying Handbook",
         "2012", "FAA-H-8083-21A", "" );
-insert_book( "handbooks", "faa-h-8083-2-2009.pdf", "Risk Management Handbook",
-        "2016", "FAA-H-8083-2", "" );
 insert_book( "handbooks", "faa-fs-i-8700-1-2003.pdf", "Information for Banner Tow Operations",
         "2003", "FAA/FS-I-8799-1", "" );
 insert_book( "handbooks", "fcm-h1-2017.pdf", "Federal Meteorological Handbook No. 1",
@@ -132,14 +130,14 @@ insert_book( "manuals", "ac-00-45h_chg_1.pdf", "Aviation Weather Services",
 insert_book( "manuals", "00-80T-80.pdf", "Aerodynamics for Naval Aviators",
         "1965", "H. H. Hurt, Jr.", "" );
 
+insert_book( "periodicals", "cb_474.pdf", "Callback",
+        "Issue 474 (Jul 2019)", "NASA", "" );
 insert_book( "periodicals", "cb_473.pdf", "Callback",
         "Issue 473 (Jun 2019)", "NASA", "" );
 insert_book( "periodicals", "cb_472.pdf", "Callback",
         "Issue 472 (May 2019)", "NASA", "" );
 insert_book( "periodicals", "cb_471.pdf", "Callback",
         "Issue 471 (Apr 2019)", "NASA", "" );
-insert_book( "periodicals", "cb_470.pdf", "Callback",
-        "Issue 470 (Mar 2019)", "NASA", "" );
 insert_book( "periodicals", "JulAug2019.pdf", "FAA Safety Briefing",
         "Jul/Aug 2019", "FAA", "" );
 insert_book( "periodicals", "MayJun2019.pdf", "FAA Safety Briefing",
@@ -182,8 +180,8 @@ insert_book( "regs", "aim_190228.pdf", "AIM Change 1, 2 and 3",
         "Feb 2019", "FAA", "" );
 insert_book( "regs", "CFR-2019-title14-vol1.pdf", "FAR Volume 1",
         "Parts 1-59", "US GPO 2019", "" );
-insert_book( "regs", "CFR-2018-title14-vol2.pdf", "FAR Volume 2",
-        "Parts 60-109", "US GPO 2018", "" );
+insert_book( "regs", "CFR-2019-title14-vol2.pdf", "FAR Volume 2",
+        "Parts 60-109", "US GPO 2019", "" );
 insert_book( "regs", "CFR-2019-title14-vol3.pdf", "FAR Volume 3",
         "Parts 110-199", "US GPO 2019", "" );
 insert_book( "regs", "CFR-2019-title14-vol4.pdf", "FAR Volume 4",
@@ -191,6 +189,7 @@ insert_book( "regs", "CFR-2019-title14-vol4.pdf", "FAR Volume 4",
 insert_book( "regs", "CFR-2019-title14-vol5.pdf", "FAR Volume 5",
         "Parts 1200-1399", "US GPO 2019", "" );
 
+insert_book( "risk", "faa-h-8083-2-2009.pdf", "Risk Management Handbook", "2016", "FAA-H-8083-2", "" );
 insert_book( "risk", "wx_decision.pdf", "Weather Decision Making", "2009", "FAA", "" );
 insert_book( "risk", "local_vfr.pdf", "Local VFR Flying", "2012", "FAA", "" );
 insert_book( "risk", "night_vfr.pdf", "Night VFR Flying", "2012", "FAA", "" );
@@ -262,10 +261,10 @@ insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", "" );
 insert_book( "misc", "pcg_190228.pdf", "Pilot/Controller Glossary",
         "Feb 2019", "FAA", "" );
-insert_book( "manuals", "7110.10Z_fss_190228.pdf", "Flight Services",
-        "Feb 2019", "JO 7110.10Z", "" );
-insert_book( "manuals", "7110.65X_atc_190228.pdf", "Air Traffic Control",
-        "Feb 2019", "JO 7110.65X", "" );
+insert_book( "manuals", "7110.10AA_fss_190815.pdf", "Flight Services",
+        "Aug 2019", "JO 7110.10AA", "" );
+insert_book( "manuals", "7110.65Y_atc_190815.pdf", "Air Traffic Control",
+        "Aug 2019", "JO 7110.65Y", "" );
 insert_book( "manuals", "7110.118A_lahso_160130.pdf", "Land and Hold Short Operations",
         "Jan 2016", "JO 7110.118A", "" );
 
