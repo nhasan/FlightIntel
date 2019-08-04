@@ -19,14 +19,17 @@
 # * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # */
 
-DATA_CYCLE="190718";
-
-FADDS_CYCLE="2019-07-18";
-DTPP_CYCLE="1907";
-DCS_CYCLE="20JUN2019";
-
 bold=$(tput bold)
 normal=$(tput sgr0)
+
+source build_data_config
+
+echo ${bold}Using config:${normal}
+echo "DATA_CYCLE=${DATA_CYCLE}"
+echo "FADDS_CYCLE=${FADDS_CYCLE}"
+echo "DTPP_CYCLE=${DTPP_CYCLE}"
+echo "DCS_CYCLE=${DCS_CYCLE}"
+echo
 
 DATA_DIR="data";
 if [ ! -d "${DATA_DIR}" ]; then
@@ -148,4 +151,6 @@ echo "${bold}Syncing library files with Google Storage:${normal}"
 gsutil -m rsync -d -r ${LIBRARY_DIR} ${GS_LIBRARY_URL}
 gsutil -m acl -r ch -u Allusers:R ${GS_LIBRARY_URL} 2>&1 | grep -v "No changes"
 echo "--";
+
+echo "${bold}Done!${normal}"
 
