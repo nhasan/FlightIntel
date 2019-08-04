@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.0-beta05'
+        classpath 'com.android.tools.build:gradle:3.5.0-rc02'
         classpath 'com.google.gms:google-services:4.3.0'
     }
 }
@@ -30,7 +30,7 @@ dependencies {
 
 android {
     compileSdkVersion 28
-    buildToolsVersion "29.0.0"
+    buildToolsVersion "29.0.1"
 
     defaultConfig {
         applicationId "com.nadmm.airports"
