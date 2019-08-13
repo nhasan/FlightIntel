@@ -198,20 +198,22 @@ insert_book( "risk", "vfr_xc.pdf", "VFR XC Flying", "2012", "FAA", "" );
 
 insert_book( "circular", "ac-60-22-1991.pdf", "Aeronautical Decision Making",
         "1991", "AC-60-22", "" );
-insert_book( "circular", "ac-91-13c-1979.pdf", "Cold Weather Operation of Aircraft",
-        "1979", "AC-91-13C", "" );
+insert_book( "circular", "ac-120-100-2010.pdf", "Basics of Aviation Fatigue",
+        "2010", "AC-120-100", "" );
 insert_book( "circular", "ac-91-74b-2015.pdf", "Flight In Icing Conditions",
         "2015", "AC-91-74B", "" );
+insert_book( "circular", "ac-00-24c-2013.pdf", "Thunderstorms",
+        "2013", "AC-00-24C", "" );
 insert_book( "circular", "ac-00-54-1988.pdf", "Pilot Windshear Guide",
         "1988", "AC-00-54", "" );
 insert_book( "circular", "ac-00-46e-2011.pdf", "Aviation Safety Reporting Program",
         "2011", "AC-00-46E", "" );
 insert_book( "circular", "ac-61-134-2003.pdf", "Controlled Flight Into Terrain Awareness",
         "2003", "AC-61-134", "" );
-insert_book( "circular", "ac-61-65f-2016.pdf", "Pilots and Flight and Ground Instructors",
-        "2016", "AC-61-65F", "" );
-insert_book( "circular", "ac-120-76c-2014.pdf", "Use of Electronics Flight Bags",
-        "2014", "AC-120-76C", "" );
+insert_book( "circular", "ac-61-65h-2018.pdf", "Pilots and Flight and Ground Instructors",
+        "2018", "AC-61-65H", "" );
+insert_book( "circular", "ac-120-76d-2017.pdf", "Use of Electronics Flight Bags",
+        "2017", "AC-120-76D", "" );
 insert_book( "circular", "ac-120-12a-1986.pdf", "Private Carriage vs Common Carriage",
         "1986", "AC-120-12A", "" );
 
@@ -261,12 +263,14 @@ insert_book( "misc", "NAT_IGA_2004.pdf", "North Atlantic Operations Manual",
         "3rd Edition", "USA", "" );
 insert_book( "misc", "pcg_190228.pdf", "Pilot/Controller Glossary",
         "Feb 2019", "FAA", "" );
-insert_book( "manuals", "7110.10AA_fss_190815.pdf", "Flight Services",
+insert_book( "misc", "7110.10AA_fss_190815.pdf", "Flight Services",
         "Aug 2019", "JO 7110.10AA", "" );
-insert_book( "manuals", "7110.65Y_atc_190815.pdf", "Air Traffic Control",
+insert_book( "misc", "7110.65Y_atc_190815.pdf", "Air Traffic Control",
         "Aug 2019", "JO 7110.65Y", "" );
-insert_book( "manuals", "7110.118A_lahso_160130.pdf", "Land and Hold Short Operations",
+insert_book( "misc", "7110.118A_lahso_160130.pdf", "Land and Hold Short Operations",
         "Jan 2016", "JO 7110.118A", "" );
+insert_book( "misc", "faa_airspacecard_2014.pdf", "Airspace Card",
+        "Jun 2014", "FAA", "" );
 
 insert_book( "canada", "AIM_2018-2_EN_181011.pdf.gz", "Aeronautical Information Manual (TC AIM)",
         "Oct 2018", "Nav Canada", "" );
