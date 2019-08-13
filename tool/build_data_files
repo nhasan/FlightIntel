@@ -143,7 +143,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
 fi
 
 echo "${bold}Syncing data files with Google Storage:${normal}"
-gsutil -m rsync -r -x fadds_prev.db -d ${OUT_DIR} ${GS_DATA_URL}
+gsutil -m rsync -d -r -x fadds_prev.db -d ${OUT_DIR} ${GS_DATA_URL}
 gsutil -m acl -r ch -u Allusers:R ${GS_DATA_URL} 2>&1 | grep -v "No changes"
 echo "--";
 
