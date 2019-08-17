@@ -1,0 +1,99 @@
+category,filename,description,edition,author
+handbooks,faa-h-8083-3b-2016.pdf,Airplane Flying Handbook,2016,FAA-H-8083-3B
+handbooks,faa-h-8083-25b-2016.pdf,Pilot's Handbook of Aeronautical Knowledge,2016,FAA-H-8083-25B
+handbooks,faa-h-8083-15b-2012.pdf,Instrument Flying Handbook,2012,FAA-H-8083-15B
+handbooks,faa-h-8083-16b-2017.pdf,Instrument Procedures Handbook,2017,FAA-H-8083-16B
+handbooks,faa-h-8083-6-2009.pdf,Advanced Avionics Handbook,2009,FAA-H-8083-6
+handbooks,faa-h-8083-27a-2006.pdf,Student Pilot Guide,2016,FAA-H-8083-27A
+handbooks,faa-h-8083-9a-2008.pdf,Aviation Instructor's Handbook,2008,FAA-H-8083-9A
+handbooks,faa-h-8083-1b-2016.pdf,Weight and Balance Handbook,2016,FAA-H-8083-1B
+handbooks,faa-h-8083-21a-2012.pdf,Helicopter Flying Handbook,2012,FAA-H-8083-21A
+handbooks,faa-fs-i-8700-1-2003.pdf,Information for Banner Tow Operations,2003,FAA/FS-I-8799-1
+handbooks,fcm-h1-2017.pdf,Federal Meteorological Handbook No. 1,2017,NOAA
+handbooks,fcm-h2-1988.pdf,Federal Meteorological Handbook No. 2,1988,NOAA
+manuals,cug-190620.pdf,Aeronautical Chart User's Guide,Jun 2019,FAA
+manuals,faa-h-8083-19a-2008.pdf,Plane Sense - General Aviation Information,2008,FAA-H-8083-19A
+manuals,ac-00-6b.pdf,Aviation Weather,2016,AC-00-6B
+manuals,ac-00-45h_chg_1.pdf,Aviation Weather Services,2016,AC-00-45H
+manuals,00-80T-80.pdf,Aerodynamics for Naval Aviators,1965,H. H. Hurt, Jr.
+periodicals,cb_474.pdf,Callback,Issue 474 (Jul 2019),NASA
+periodicals,cb_473.pdf,Callback,Issue 473 (Jun 2019),NASA
+periodicals,cb_472.pdf,Callback,Issue 472 (May 2019),NASA
+periodicals,cb_471.pdf,Callback,Issue 471 (Apr 2019),NASA
+periodicals,JulAug2019.pdf,FAA Safety Briefing,Jul/Aug 2019,FAA
+periodicals,MayJun2019.pdf,FAA Safety Briefing,May/Jun 2019,FAA
+periodicals,JanFeb2019.pdf,FAA Safety Briefing,Jan/Feb 2019,FAA
+periodicals,NovDec2018.pdf,FAA Safety Briefing,Nov/Dec 2018,FAA
+safety,ac_90-48d-chg_1.pdf,Pilots’ Role in Collision Avoidance,2016,FAA
+safety,safety_advisor_non-towered_airports.pdf,Operations at Nontowered Airports,2007,FAA
+safety,faa-p-8740-02-2008.pdf,Density Altitude,2008,FAA
+safety,faa-p-8740-12-2008.pdf,Thunderstorms,2008,FAA
+safety,faa-p-8740-30-2008.pdf,How to Obtain a Good Weather Briefing,2008,FAA
+safety,faa-p-8740-36-2008.pdf,Proficiency and the Private Pilot,2008,FAA
+safety,faa-p-8740-48-2008.pdf,On Landings Part 1,2008,FAA
+safety,faa-p-8740-49-2008.pdf,On Landings Part 2,2008,FAA
+safety,faa-p-8740-50-2008.pdf,On Landings Part 3,2008,FAA
+safety,faa-p-8740-66-2008.pdf,Flying Light Twins Safely,2008,FAA
+safety,faa-p-8740-69-2008.pdf,Aeronautical Decision Making,2008,FAA
+safety,takeoff_safety.pdf,Pilot Guide to Takeoff Safety,2008,FAA
+safety,AP_UpsetRecovery_Book.pdf,Upset Recovery Training Aid,2008,FAA
+safety,tfrweb_2003.pdf,Pilot's Guide to TFR,2003,FAA
+regs,aim_190228.pdf,AIM Change 1\, 2 and 3,Feb 2019,FAA
+regs,CFR-2019-title14-vol1.pdf,FAR Volume 1,Parts 1-59,US GPO 2019
+regs,CFR-2019-title14-vol2.pdf,FAR Volume 2,Parts 60-109,US GPO 2019
+regs,CFR-2019-title14-vol3.pdf,FAR Volume 3,Parts 110-199,US GPO 2019
+regs,CFR-2019-title14-vol4.pdf,FAR Volume 4,Parts 200-1199,US GPO 2019
+regs,CFR-2019-title14-vol5.pdf,FAR Volume 5,Parts 1200-1399,US GPO 2019
+risk,faa-h-8083-2-2009.pdf,Risk Management Handbook,2016,FAA-H-8083-2
+risk,wx_decision.pdf,Weather Decision Making,2009,FAA
+risk,local_vfr.pdf,Local VFR Flying,2012,FAA
+risk,night_vfr.pdf,Night VFR Flying,2012,FAA
+risk,pract_riskman.pdf,Practical Risk Management,2012,FAA
+risk,vfr_xc.pdf,VFR XC Flying,2012,FAA
+circular,ac-60-22-1991.pdf,Aeronautical Decision Making,1991,AC-60-22
+circular,ac-120-100-2010.pdf,Basics of Aviation Fatigue,2010,AC-120-100
+circular,ac-91-74b-2015.pdf,Flight In Icing Conditions,2015,AC-91-74B
+circular,ac-00-24c-2013.pdf,Thunderstorms,2013,AC-00-24C
+circular,ac-00-54-1988.pdf,Pilot Windshear Guide,1988,AC-00-54
+circular,ac-00-46e-2011.pdf,Aviation Safety Reporting Program,2011,AC-00-46E
+circular,ac-61-134-2003.pdf,Controlled Flight Into Terrain Awareness,2003,AC-61-134
+circular,ac-61-65h-2018.pdf,Pilots and Flight and Ground Instructors,2018,AC-61-65H
+circular,ac-120-76d-2017.pdf,Use of Electronics Flight Bags,2017,AC-120-76D
+circular,ac-120-12a-1986.pdf,Private Carriage vs Common Carriage,1986,AC-120-12A
+testguide,FAA-G-8082-17I_1702.pdf,Private Pilot Knowledge Test Guide,Feb 2017,FAA-G-8082-17I
+testguide,FAA-G-8082-13I_1702.pdf,Instrument Rating Knowledge Test Guide,Feb 2017,FAA-G-8082-13I
+testguide,FAA-G-8082-5H_1702.pdf,Commercial Pilot Knowledge Test Guide,Feb 2017,FAA-G-8082-5H
+testguide,FAA-G-8082-7I_1702.pdf,Flight Instructor Knowledge Test Guide,Feb 2017,FAA-G-8082-7I
+testguide,FAA-G-8082-4D_1702.pdf,Sport Pilot Knowledge Test Guide,Feb 2017,FAA-G-8082-4D
+testguide,IPC_Guidance_150909.pdf,Instrument Proficiency Check Guidance,Sep 2015,
+testguide,PARSampleExam_181015.pdf,Airmen Knowledge Test Question Bank,Oct 2018,Private Airplane
+testguide,PRHSampleExam_190628.pdf,Airmen Knowledge Test Question Bank,Jun 2019,Private Helicopter
+testguide,IRASampleExam_190628.pdf,Airmen Knowledge Test Question Bank,Jun 2019,Instrument
+testguide,LSPSampleExam_181015.pdf,Airmen Knowledge Test Question Bank,Oct 2018,Light Sport
+testguide,cax_sample_exam_190628.pdf,Airmen Knowledge Test Question Bank,Jun 2019,Commercial
+pts,FAA-S-ACS-7A_180611.pdf,Commercial Pilot ACS,Jun 2018,FAA-S-ACS-7A
+pts,FAA-S-ACS-6B_180611.pdf,Private Pilot ACS,Jun 2018,FAA-S-ACS-6B
+pts,faa-s-8081-29.pdf,Sport Pilot PTS,May 2014,FAA-S-8081-29
+pts,faa-s-8081-3a.pdf,Recreational Pilot PTS,Aug 2006,FAA-S-8081-3A
+pts,FAA-S-ACS-8B_180611.pdf,Instrument Rating ACS,Jun 2018,FAA-S-ACS-8B
+pts,faa-s-8081-5f.pdf,Airline Transport Pilot PTS,Jul 2014,FAA-S-8081-5F
+pts,FAA-S-8081-6D_180419.pdf,Flight Instructor PTS,Apr 2018,FAA-S-8081-6D
+pts,faa-s-8081-9d.pdf,Flight Instructor Instrument PTS,Jul 2010,FAA-S-8081-9D
+misc,aip_190228.pdf,Aeronautical Information Publication,Feb 2019,FAA
+misc,NAT_IGA_2004.pdf,North Atlantic Operations Manual,3rd Edition,USA
+misc,pcg_190228.pdf,Pilot/Controller Glossary,Feb 2019,FAA
+misc,7110.10AA_fss_190815.pdf,Flight Services,Aug 2019,JO 7110.10AA
+misc,7110.65Y_atc_190815.pdf,Air Traffic Control,Aug 2019,JO 7110.65Y
+misc,7110.118A_lahso_160130.pdf,Land and Hold Short Operations,Jan 2016,JO 7110.118A
+misc,faa_airspacecard_2014.pdf,Airspace Card,Jun 2014,FAA
+canada,AIM_2018-2_EN_181011.pdf,Aeronautical Information Manual (TC AIM),Oct 2018,Nav Canada
+canada,AWS-Guide-EN_1705.pdf,Aviation Weather Service Guide,May 2017,Nav Canada
+canada,Customer-Guide-Charges-EN_1809.pdf,Customer Guide to Charges,Sep 2018,Nav Canada
+canada,VFR_Phraseology_1505.pdf,VFR Phraseology,May 2015,Nav Canada
+canada,NOTAM-Manual-EN_1603.pdf,Canadian NOTAM Procedures Manual,Mar 2016,Nav Canada
+canada,A34E-W.pdf,The Weather of Atlantic Canada and Eastern Quebec,Nov 2005,Nav Canada
+canada,BC31E-W.pdf,The Weather of British Columbia,Nov 2005,Nav Canada
+canada,N3637E-W.pdf,The Weather of Nunavut and the Arctic,Oct 2005,Nav Canada
+canada,OQ33E-W.pdf,The Weather of Ontario and Quebec,Nov 2005,Nav Canada
+canada,P32E-W.pdf,The Weather of the Canadian Prairies,Nov 2005,Nav Canada
+canada,Y35E-W.pdf,The Weather of the Yukon, NWT and Western Nunavut,Nov 2005,Nav Canada
