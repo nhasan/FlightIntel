@@ -27,6 +27,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -153,29 +154,28 @@ public class UiUtils {
         String key = String.format( Locale.US, "%d:%d", resid, color );
         Drawable d = getDrawableFromCache( key );
         if ( d == null ) {
-            d = AppCompatResources.getDrawable( context, resid );
-            Drawable wrapped = DrawableCompat.wrap( d ).mutate();
-            DrawableCompat.setTint( wrapped, color );
-            putDrawableIntoCache( key, wrapped );
+            d = AppCompatResources.getDrawable( context, resid ).mutate();
+            d.setColorFilter( color, PorterDuff.Mode.SRC_ATOP );
+            putDrawableIntoCache( key, d );
         }
         return d;
     }
 
-    static public Drawable getTintedDrawable( Context context, int resid, ColorStateList tintList ) {
+    static public Drawable getTintedDrawable( Context context, int resid,
+                                              ColorStateList tintList ) {
         // Get a mutable copy of the drawable so each can be set to a different color
         String key = String.format( Locale.US, "%d:%d", resid, tintList.getDefaultColor() );
         Drawable d = getDrawableFromCache( key );
         if ( d == null ) {
-            d = AppCompatResources.getDrawable( context, resid );
-            Drawable wrapped = DrawableCompat.wrap( d ).mutate();
-            DrawableCompat.setTintList( wrapped, tintList );
-            putDrawableIntoCache( key, wrapped );
-        }
+            d = AppCompatResources.getDrawable( context, resid ).mutate();
+            DrawableCompat.setTintList( d, tintList );
+            putDrawableIntoCache( key, d );        }
         return d;
     }
 
     static public Drawable getDefaultTintedDrawable( Context context, int resid ) {
-        return getTintedDrawable( context, resid, getColorStateList( context, android.R.attr.textColorSecondary ) );
+        return getTintedDrawable( context, resid,
+                getColorStateList( context, android.R.attr.textColorSecondary ) );
     }
 
     static public ColorStateList getColorStateList( Context context, int resid ) {
