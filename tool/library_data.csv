@@ -11,15 +11,15 @@ handbooks,faa-h-8083-21a-2012.pdf,Helicopter Flying Handbook,2012,FAA-H-8083-21A
 handbooks,faa-fs-i-8700-1-2003.pdf,Information for Banner Tow Operations,2003,FAA/FS-I-8799-1
 handbooks,fcm-h1-2017.pdf,Federal Meteorological Handbook No. 1,2017,NOAA
 handbooks,fcm-h2-1988.pdf,Federal Meteorological Handbook No. 2,1988,NOAA
-manuals,cug-190620.pdf,Aeronautical Chart User's Guide,Jun 2019,FAA
+manuals,cug_190815.pdf,Aeronautical Chart User's Guide,Aug 2019,FAA
 manuals,faa-h-8083-19a-2008.pdf,Plane Sense - General Aviation Information,2008,FAA-H-8083-19A
 manuals,ac-00-6b.pdf,Aviation Weather,2016,AC-00-6B
 manuals,ac-00-45h_chg_1.pdf,Aviation Weather Services,2016,AC-00-45H
 manuals,00-80T-80.pdf,Aerodynamics for Naval Aviators,1965,H. H. Hurt, Jr.
+periodicals,cb_475.pdf,Callback,Issue 475 (Aug 2019),NASA
 periodicals,cb_474.pdf,Callback,Issue 474 (Jul 2019),NASA
 periodicals,cb_473.pdf,Callback,Issue 473 (Jun 2019),NASA
 periodicals,cb_472.pdf,Callback,Issue 472 (May 2019),NASA
-periodicals,cb_471.pdf,Callback,Issue 471 (Apr 2019),NASA
 periodicals,JulAug2019.pdf,FAA Safety Briefing,Jul/Aug 2019,FAA
 periodicals,MayJun2019.pdf,FAA Safety Briefing,May/Jun 2019,FAA
 periodicals,JanFeb2019.pdf,FAA Safety Briefing,Jan/Feb 2019,FAA
@@ -38,7 +38,7 @@ safety,faa-p-8740-69-2008.pdf,Aeronautical Decision Making,2008,FAA
 safety,takeoff_safety.pdf,Pilot Guide to Takeoff Safety,2008,FAA
 safety,AP_UpsetRecovery_Book.pdf,Upset Recovery Training Aid,2008,FAA
 safety,tfrweb_2003.pdf,Pilot's Guide to TFR,2003,FAA
-regs,aim_190228.pdf,AIM Change 1\, 2 and 3,Feb 2019,FAA
+regs,aim_190815.pdf,AIM 2019,Aug 2019,FAA
 regs,CFR-2019-title14-vol1.pdf,FAR Volume 1,Parts 1-59,US GPO 2019
 regs,CFR-2019-title14-vol2.pdf,FAR Volume 2,Parts 60-109,US GPO 2019
 regs,CFR-2019-title14-vol3.pdf,FAR Volume 3,Parts 110-199,US GPO 2019
@@ -79,9 +79,9 @@ pts,FAA-S-ACS-8B_180611.pdf,Instrument Rating ACS,Jun 2018,FAA-S-ACS-8B
 pts,faa-s-8081-5f.pdf,Airline Transport Pilot PTS,Jul 2014,FAA-S-8081-5F
 pts,FAA-S-8081-6D_180419.pdf,Flight Instructor PTS,Apr 2018,FAA-S-8081-6D
 pts,faa-s-8081-9d.pdf,Flight Instructor Instrument PTS,Jul 2010,FAA-S-8081-9D
-misc,aip_190228.pdf,Aeronautical Information Publication,Feb 2019,FAA
+misc,aip_190815.pdf,AIP Amendment 2,Aug 2019,FAA
 misc,NAT_IGA_2004.pdf,North Atlantic Operations Manual,3rd Edition,USA
-misc,pcg_190228.pdf,Pilot/Controller Glossary,Feb 2019,FAA
+misc,pcg_190815.pdf,Pilot/Controller Glossary,Aug 2019,FAA
 misc,7110.10AA_fss_190815.pdf,Flight Services,Aug 2019,JO 7110.10AA
 misc,7110.65Y_atc_190815.pdf,Air Traffic Control,Aug 2019,JO 7110.65Y
 misc,7110.118A_lahso_160130.pdf,Land and Hold Short Operations,Jan 2016,JO 7110.118A
