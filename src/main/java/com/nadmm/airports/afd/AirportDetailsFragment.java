@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,9 @@ import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.MetarService;
 import com.nadmm.airports.wx.NearbyWxCursor;
 import com.nadmm.airports.wx.NoaaService;
+import com.nadmm.airports.wx.SkyCondition;
 import com.nadmm.airports.wx.WxDetailActivity;
+import com.nadmm.airports.wx.WxSymbol;
 import com.nadmm.airports.wx.WxUtils;
 
 import java.util.ArrayList;
@@ -91,7 +93,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public final class AirportDetailsFragment extends FragmentBase {
 
-    private final HashSet<TextView> mAwosViews = new HashSet<>();
+    private final HashSet<LinearLayout> mAwosViews = new HashSet<>();
     private final HashSet<TextView> mRunwayViews = new HashSet<>();
 
     private BroadcastReceiver mBcastReceiver;
@@ -771,16 +773,19 @@ public final class AirportDetailsFragment extends FragmentBase {
         if ( mIcaoCode.equals( id ) ) {
             sb.append( ", On-site" );
         } else {
-            sb.append( String.format( Locale.US, ", %.1f NM %s", distance,
-                    GeoUtils.getCardinalDirection( bearing ) ) );
+            sb.append( ", " );
+            sb.append( FormatUtils.formatNauticalMiles( distance ) );
+            sb.append( " " );
+            sb.append( GeoUtils.getCardinalDirection( bearing ) );
         }
         String label2 = sb.toString();
 
         View row = addClickableRow( layout, label1, value1, label2, phone, runnable );
-
         TextView tv = row.findViewById( R.id.item_label );
         tv.setTag( id );
-        mAwosViews.add( tv );
+        if ( row instanceof LinearLayout ) {
+            mAwosViews.add((LinearLayout) row);
+        }
         // Make phone number clickable
         tv = row.findViewById( R.id.item_extra_value );
         if ( tv.getText().length() > 0 ) {
@@ -817,7 +822,7 @@ public final class AirportDetailsFragment extends FragmentBase {
             heading = DataUtils.getRunwayHeading( runwayId );
         }
 
-        RelativeLayout row = (RelativeLayout) inflate( R.layout.runway_detail_item );
+        RelativeLayout row = inflate( R.layout.runway_detail_item );
 
         TextView tv = row.findViewById( R.id.runway_id );
         tv.setText( runwayId );
@@ -868,7 +873,8 @@ public final class AirportDetailsFragment extends FragmentBase {
         }
 
         ArrayList<String> stationIds = new ArrayList<>();
-        for ( TextView tv : mAwosViews ) {
+        for ( LinearLayout row : mAwosViews ) {
+            TextView tv = row.findViewById( R.id.item_label );
             String stationId = (String) tv.getTag();
             stationIds.add( stationId );
         }
@@ -898,10 +904,67 @@ public final class AirportDetailsFragment extends FragmentBase {
             showRunwayWindInfo( metar );
         }
 
-        for ( TextView tv : mAwosViews ) {
+        for ( LinearLayout row : mAwosViews ) {
+            TextView tv = row.findViewById( R.id.item_label );
             String icaoCode = (String) tv.getTag();
             if ( icaoCode.equals( metar.stationId ) ) {
                 WxUtils.setColorizedWxDrawable( tv, metar, mDeclination );
+                tv = row.findViewById( R.id.item_extra_label2 );
+                tv.setVisibility( View.VISIBLE );
+
+                StringBuilder info = new StringBuilder();
+                info.append( metar.flightCategory );
+
+                if ( !metar.wxList.isEmpty() ) {
+                    for ( WxSymbol wx : metar.wxList ) {
+                        if ( !wx.getSymbol().equals( "NSW" ) ) {
+                            info.append( ", " );
+                            info.append( wx.toString().toLowerCase( Locale.US ) );
+                        }
+                    }
+                }
+
+                if ( metar.visibilitySM < Float.MAX_VALUE ) {
+                    info.append( ", " );
+                    info.append( FormatUtils.formatStatuteMiles( metar.visibilitySM ) );
+                }
+
+                if ( metar.windSpeedKnots < Integer.MAX_VALUE ) {
+                    if ( metar.windSpeedKnots == 0 ) {
+                        info.append( ", winds calm" );
+                    } else {
+                        info.append( String.format( Locale.US,
+                                ", %d knots", metar.windSpeedKnots ) );
+                        if ( metar.windGustKnots < Integer.MAX_VALUE ) {
+                            info.append( " gusting" );
+                        }
+                    }
+                }
+
+                info.append( ", " );
+                SkyCondition sky = WxUtils.getCeiling( metar.skyConditions );
+                String skyCover = sky.getSkyCover();
+                if ( skyCover.equals( "OVX" ) ) {
+                    info.append( "Ceiling indefinite" );
+                } else if ( !skyCover.equals( "NSC" ) ) {
+                    int ceiling = sky.getCloudBaseAGL();
+                    info.append( "Ceiling " );
+                    info.append( FormatUtils.formatFeet( ceiling ) );
+                } else {
+                    if ( !metar.skyConditions.isEmpty() ) {
+                        sky = metar.skyConditions.get( 0 );
+                        skyCover = sky.getSkyCover();
+                        if ( skyCover.equals( "CLR" ) || skyCover.equals( "SKC" ) ) {
+                            info.append( "Sky clear" );
+                        } else if ( !skyCover.equals( "SKM" ) ) {
+                            info.append( skyCover );
+                            info.append( " " );
+                            info.append( FormatUtils.formatFeet( sky.getCloudBaseAGL() ) );
+                        }
+                    }
+                }
+
+                tv.setText( info.toString() );
                 break;
             }
         }

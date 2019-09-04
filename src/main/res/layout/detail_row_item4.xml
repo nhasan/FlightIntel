@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,58 +16,69 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
-        android:padding="@dimen/item_padding"
-        android:minHeight="48dp"
+    android:orientation="vertical"
+    android:padding="@dimen/item_padding"
+    android:minHeight="48dp"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:paddingBottom="2dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
-    <LinearLayout
-            android:orientation="horizontal"
-            android:paddingBottom="2dp"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
         <TextView android:id="@+id/item_label"
-                style="@style/TextSmall"
-                android:gravity="left"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:paddingRight="@dimen/label_padding"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+            style="@style/TextSmall"
+            android:gravity="left"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:paddingRight="@dimen/label_padding"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
         <TextView android:id="@+id/item_value"
-                style="@style/TextSmall"
-                android:gravity="right"
-                android:paddingLeft="@dimen/label_padding"
-                android:layout_weight="0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            style="@style/TextSmall"
+            android:gravity="right"
+            android:paddingLeft="@dimen/label_padding"
+            android:layout_weight="0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
     <LinearLayout
-            android:orientation="horizontal"
-            android:paddingTop="2dp"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+        android:orientation="horizontal"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
         <TextView android:id="@+id/item_extra_label"
-                style="@style/TextSmall"
-                android:gravity="left"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:paddingRight="@dimen/label_padding"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+            style="@style/TextSmall"
+            android:gravity="left"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:paddingRight="@dimen/label_padding"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
         <TextView android:id="@+id/item_extra_value"
-                style="@style/TextSmall"
-                android:gravity="right"
-                android:paddingLeft="@dimen/label_padding"
-                android:layout_weight="0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            style="@style/TextSmall"
+            android:gravity="right"
+            android:paddingLeft="@dimen/label_padding"
+            android:layout_weight="0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
+    <TextView android:id="@+id/item_extra_label2"
+        style="@style/TextSmaller.Light"
+        android:gravity="left"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:paddingTop="2dp"
+        android:paddingRight="@dimen/label_padding"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>
