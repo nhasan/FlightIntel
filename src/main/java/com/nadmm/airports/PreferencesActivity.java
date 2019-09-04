@@ -138,10 +138,10 @@ public class PreferencesActivity extends FragmentActivityBase {
                     break;
                 case KEY_HOME_AIRPORT: {
                     String code = mSharedPrefs.getString(KEY_HOME_AIRPORT, "");
-                    if (code != null && !code.isEmpty()) {
-                        pref.setSummary("Home airport set to " + code);
-                    } else {
+                    if ( code.isEmpty() ) {
                         pref.setSummary("Home airport is not set");
+                    } else {
+                        pref.setSummary("Home airport set to " + code);
                     }
                     break;
                 }
@@ -152,9 +152,9 @@ public class PreferencesActivity extends FragmentActivityBase {
                 }
                 case KEY_DARK_MODE:
                     boolean darkMode = mSharedPrefs.getBoolean(KEY_DARK_MODE, false);
-                    AppCompatDelegate.setDefaultNightMode(darkMode ?
-                            AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
                     UiUtils.clearDrawableCache();
+                    AppCompatDelegate.setDefaultNightMode( darkMode ?
+                            AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO );
                     break;
             }
         }
