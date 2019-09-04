@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,15 +84,16 @@ public class PirepFragment extends WxFragmentBase {
     public void onResume() {
         super.onResume();
 
-        Bundle args = getArguments();
-        String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new PirepDetailTask( this ) ).execute( stationId );
+        if ( getArguments() != null ) {
+            String stationId = getArguments().getString( NoaaService.STATION_ID );
+            setBackgroundTask( new PirepDetailTask( this ) ).execute( stationId );
+        }
     }
 
     @Override
     protected void handleBroadcast( Intent intent ) {
         String type = intent.getStringExtra( NoaaService.TYPE );
-        if ( type.equals( NoaaService.TYPE_TEXT ) ) {
+        if ( NoaaService.TYPE_TEXT.equals( type ) ) {
             showPirep( intent );
             setRefreshing( false );
         }
@@ -146,11 +147,12 @@ public class PirepFragment extends WxFragmentBase {
 
     private void setCursor( Cursor c ) {
         if ( c == null || !c.moveToFirst() ) {
-            Bundle args = getArguments();
-            String stationId = args.getString( NoaaService.STATION_ID );
-            String error = String.format( "Unable to get station info for %s", stationId );
-            showError( error );
-            setRefreshing( false );
+            if ( getArguments() != null ) {
+                String stationId = getArguments().getString( NoaaService.STATION_ID );
+                String error = String.format( "Unable to get station info for %s", stationId );
+                showError( error );
+                setRefreshing( false );
+            }
         } else {
             mLocation = new Location( "" );
             float lat = c.getFloat( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
@@ -185,19 +187,24 @@ public class PirepFragment extends WxFragmentBase {
     }
 
     private void requestPirep( boolean refresh ) {
-        Intent service = new Intent( getActivity(), PirepService.class );
-        service.setAction( mAction );
-        service.putExtra( NoaaService.STATION_ID, mStationId );
-        service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
-        service.putExtra( PirepService.RADIUS_NM, PIREP_RADIUS_NM );
-        service.putExtra( PirepService.HOURS_BEFORE, PIREP_HOURS_BEFORE );
-        service.putExtra( PirepService.LOCATION, mLocation );
-        service.putExtra( NoaaService.FORCE_REFRESH, refresh );
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            Intent service = new Intent( getActivity(), PirepService.class );
+            service.setAction( mAction );
+            service.putExtra( NoaaService.STATION_ID, mStationId );
+            service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
+            service.putExtra( PirepService.RADIUS_NM, PIREP_RADIUS_NM );
+            service.putExtra( PirepService.HOURS_BEFORE, PIREP_HOURS_BEFORE );
+            service.putExtra( PirepService.LOCATION, mLocation );
+            service.putExtra( NoaaService.FORCE_REFRESH, refresh );
+            getActivity().startService( service );
+        }
     }
 
     private void showPirep( Intent intent ) {
         Pirep pirep = (Pirep) intent.getSerializableExtra( NoaaService.RESULT );
+        if ( pirep == null ) {
+            return;
+        }
 
         LinearLayout layout = findViewById( R.id.pirep_entries_layout );
         layout.removeAllViews();
@@ -227,7 +234,7 @@ public class PirepFragment extends WxFragmentBase {
 
     @SuppressLint( "SetTextI18n" )
     private void showPirepEntry( LinearLayout layout, PirepEntry entry ) {
-        RelativeLayout item = (RelativeLayout) inflate( R.layout.pirep_detail_item );
+        RelativeLayout item = inflate( R.layout.pirep_detail_item );
 
         TextView tv = item.findViewById( R.id.pirep_title );
         if ( entry.flags.contains( Flags.BadLocation ) ) {

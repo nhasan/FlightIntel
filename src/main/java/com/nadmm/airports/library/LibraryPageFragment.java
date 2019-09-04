@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.nadmm.airports.Application;
 import com.nadmm.airports.FragmentBase;
@@ -242,7 +244,7 @@ public class LibraryPageFragment extends FragmentBase {
         LinearLayout topLayout = findViewById( R.id.main_content );
         for ( Cursor c : result ) {
             if ( c.moveToFirst() ) {
-                LinearLayout layout = (LinearLayout) inflate( R.layout.library_detail_section,
+                LinearLayout layout = inflate( R.layout.library_detail_section,
                         topLayout );
                 topLayout.addView( layout );
                 do {
@@ -268,7 +270,7 @@ public class LibraryPageFragment extends FragmentBase {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
         }
-        RelativeLayout row = (RelativeLayout) inflate( R.layout.library_row_item );
+        RelativeLayout row = inflate( R.layout.library_row_item );
         TextView tv = row.findViewById( R.id.book_desc );
         tv.setText( desc );
         tv = row.findViewById( R.id.book_edition );
@@ -336,22 +338,28 @@ public class LibraryPageFragment extends FragmentBase {
     }
 
     private void getBook( String name ) {
-        Intent service = makeServiceIntent( LibraryService.ACTION_GET_BOOK );
-        service.putExtra( LibraryService.BOOK_NAME, name );
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            Intent service = makeServiceIntent( LibraryService.ACTION_GET_BOOK );
+            service.putExtra( LibraryService.BOOK_NAME, name );
+            getActivity().startService( service );
+        }
     }
 
     private void deleteBook( String name ) {
-        Intent service = makeServiceIntent( LibraryService.ACTION_DELETE_BOOK );
-        service.putExtra( LibraryService.BOOK_NAME, name );
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            Intent service = makeServiceIntent( LibraryService.ACTION_DELETE_BOOK );
+            service.putExtra( LibraryService.BOOK_NAME, name );
+            getActivity().startService( service );
+        }
     }
 
     private void checkBooks() {
-        Intent service = makeServiceIntent( LibraryService.ACTION_CHECK_BOOKS );
-        ArrayList<String> books = new ArrayList<>( mBookRowMap.keySet() );
-        service.putExtra( LibraryService.BOOK_NAMES, books );
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            Intent service = makeServiceIntent( LibraryService.ACTION_CHECK_BOOKS );
+            ArrayList<String> books = new ArrayList<>( mBookRowMap.keySet() );
+            service.putExtra( LibraryService.BOOK_NAMES, books );
+            getActivity().startService( service );
+        }
     }
 
     private Intent makeServiceIntent( String action ) {
@@ -362,12 +370,14 @@ public class LibraryPageFragment extends FragmentBase {
     }
 
     @Override
-    public void onCreateContextMenu( ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
+    public void onCreateContextMenu( @NonNull ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
         super.onCreateContextMenu( menu, v, menuInfo );
 
-        MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate( R.menu.library_context_menu, menu );
-        mContextMenuRow = v;
+        if ( getActivity() != null ) {
+            MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate( R.menu.library_context_menu, menu );
+            mContextMenuRow = v;
+        }
     }
 
     @Override

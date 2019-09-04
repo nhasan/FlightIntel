@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.notams;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +28,8 @@ import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
@@ -41,9 +44,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
-
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class NotamFragmentBase extends FragmentBase {
 
@@ -67,23 +69,27 @@ public class NotamFragmentBase extends FragmentBase {
 
     @Override
     public void onResume() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mReceiver, mFilter );
+        if ( getActivity() != null ) {
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+            bm.registerReceiver( mReceiver, mFilter );
+        }
 
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mReceiver );
+        if ( getActivity() != null ) {
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+            bm.unregisterReceiver( mReceiver );
+        }
 
         super.onPause();
     }
 
     private void handleNotamBroadcast( Intent intent ) {
         String action = intent.getAction();
-        if ( action.equals( NotamService.ACTION_GET_NOTAM ) ) {
+        if ( NotamService.ACTION_GET_NOTAM.equals( action ) ) {
             String path = intent.getStringExtra( NotamService.NOTAM_PATH );
             if ( path != null ) {
                 File notamFile = new File( path );
@@ -93,12 +99,15 @@ public class NotamFragmentBase extends FragmentBase {
     }
 
     protected void getNotams( String icaoCode, String type ) {
-        Intent service = new Intent( getActivity(), NotamService.class );
-        service.setAction( NotamService.ACTION_GET_NOTAM );
-        service.putExtra( NotamService.ICAO_CODE, icaoCode );
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            Intent service = new Intent( getActivity(), NotamService.class );
+            service.setAction( NotamService.ACTION_GET_NOTAM );
+            service.putExtra( NotamService.ICAO_CODE, icaoCode );
+            getActivity().startService( service );
+        }
     }
 
+    @SuppressLint( "SetTextI18n" )
     private void showNotams( File notamFile ) {
         LinearLayout content = findViewById( R.id.notam_content_layout );
 
@@ -118,15 +127,17 @@ public class NotamFragmentBase extends FragmentBase {
                 continue;
             }
 
-            LinearLayout item = (LinearLayout) inflate( R.layout.notam_detail_item );
+            LinearLayout item = inflate( R.layout.notam_detail_item );
             TextView tv = item.findViewById( R.id.notam_subject );
             tv.setText( subject );
 
             LinearLayout details = item.findViewById( R.id.notam_details );
             ArrayList<String> list = notams.get( subject );
-            count += list.size();
-            for ( String notam : list ) {
-                addBulletedRow( details, notam );
+            if ( list != null ) {
+                count += list.size();
+                for ( String notam : list ) {
+                    addBulletedRow( details, notam );
+                }
             }
 
             content.addView( item, new LinearLayout.LayoutParams(
@@ -137,7 +148,8 @@ public class NotamFragmentBase extends FragmentBase {
         title1.setText( getResources().getQuantityString( R.plurals.notams_found, count, count ) );
         TextView title2 = findViewById( R.id.notam_title2 );
         Date lastModified = new Date( notamFile.lastModified() );
-        title2.setText( "Updated "+ TimeUtils.formatElapsedTime( lastModified.getTime() ) );
+        title2.setText( String.format( Locale.US, "Updated %s",
+                TimeUtils.formatElapsedTime( lastModified.getTime() ) ) );
 
         setFragmentContentShown( true );
     }

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,10 @@ public final class AttendanceFragment extends FragmentBase {
 
         setActionBarTitle( "Attendance", "" );
 
-        String siteNumber = getArguments().getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new AttendanceTask( this ) ).execute( siteNumber );
+        if ( getArguments() != null ) {
+            String siteNumber = getArguments().getString( Airports.SITE_NUMBER );
+            setBackgroundTask( new AttendanceTask( this ) ).execute( siteNumber );
+        }
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -73,7 +75,7 @@ public final class AttendanceFragment extends FragmentBase {
                 String schedule = att.getString(
                         att.getColumnIndex( Attendance.ATTENDANCE_SCHEDULE ) );
                 String[] parts = schedule.split( "/" );
-                LinearLayout item = (LinearLayout) inflate( R.layout.attendance_detail_item,
+                LinearLayout item = inflate( R.layout.attendance_detail_item,
                         layout );
                 if ( parts.length == 3 ) {
                     addRow( item, "Months", parts[ 0 ] );

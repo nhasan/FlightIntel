@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,8 +111,10 @@ public final class NearbyFssFragment extends FragmentBase {
         setActionBarTitle( "Nearby FSS", "" );
         setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
 
-        String siteNumber = getArguments().getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new FssCommTask( this ) ).execute( siteNumber );
+        if ( getArguments() != null ) {
+            String siteNumber = getArguments().getString( Airports.SITE_NUMBER );
+            setBackgroundTask( new FssCommTask( this ) ).execute( siteNumber );
+        }
     }
 
     protected void showDetails( Cursor[] result ) {
@@ -142,7 +144,7 @@ public final class NearbyFssFragment extends FragmentBase {
                 float bearing  = com.getFloat( com.getColumnIndex( BEARING ) );
                 float distance  = com.getFloat( com.getColumnIndex( DISTANCE ) );
 
-                RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
+                RelativeLayout item = inflate( R.layout.grouped_detail_item );
                 TextView tv = item.findViewById( R.id.group_name );
                 if ( navId.length() > 0 ) {
                     tv.setText( navId+" - "+navName+" "+navType );

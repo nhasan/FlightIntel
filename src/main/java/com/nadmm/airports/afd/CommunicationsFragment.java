@@ -66,9 +66,11 @@ public final class CommunicationsFragment extends FragmentBase {
 
         setActionBarTitle( "Communications", "" );
 
-        Bundle args = getArguments();
-        String siteNumber = args.getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new CommunicationsTask( this ) ).execute( siteNumber );
+        if ( getArguments() != null ) {
+            Bundle args = getArguments();
+            String siteNumber = args.getString( Airports.SITE_NUMBER );
+            setBackgroundTask( new CommunicationsTask( this ) ).execute( siteNumber );
+        }
     }
 
     protected void showDetails( Cursor[] result ) {

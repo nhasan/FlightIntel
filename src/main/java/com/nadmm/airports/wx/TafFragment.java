@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ public class TafFragment extends WxFragmentBase {
     @Override
     protected void handleBroadcast( Intent intent ) {
         String type = intent.getStringExtra( NoaaService.TYPE );
-        if ( type.equals( NoaaService.TYPE_TEXT ) ) {
+        if ( NoaaService.TYPE_TEXT.equals( type ) ) {
             showTaf( intent );
             setRefreshing( false );
         }
@@ -198,23 +198,25 @@ public class TafFragment extends WxFragmentBase {
     private void setCursor( Cursor[] result ) {
         Cursor wxs = result[ 0 ];
         if ( wxs == null || !wxs.moveToFirst() ) {
-            // No station with TAF was found nearby
-            Bundle args = getArguments();
-            String stationId = args.getString( NoaaService.STATION_ID );
+            if ( getArguments() != null ) {
+                // No station with TAF was found nearby
+                String stationId = getArguments().getString( NoaaService.STATION_ID );
 
-            View detail = findViewById( R.id.wx_detail_layout );
-            detail.setVisibility( View.GONE );
-            LinearLayout layout = findViewById( R.id.wx_status_layout );
-            layout.removeAllViews();
-            layout.setVisibility( View.GONE );
-            TextView tv = findViewById( R.id.status_msg );
-            tv.setVisibility( View.VISIBLE );
-            tv.setText( String.format( Locale.US, "No wx station with TAF was found near %s"
-                    +" within %dNM radius", stationId, NoaaService.TAF_RADIUS ) );
-            View title = findViewById( R.id.wx_title_layout );
-            title.setVisibility( View.GONE );
-            setRefreshing( false );
-            setContentShown( true );
+                View detail = findViewById( R.id.wx_detail_layout );
+                detail.setVisibility( View.GONE );
+                LinearLayout layout = findViewById( R.id.wx_status_layout );
+                layout.removeAllViews();
+                layout.setVisibility( View.GONE );
+                TextView tv = findViewById( R.id.status_msg );
+                tv.setVisibility( View.VISIBLE );
+                tv.setText( String.format( Locale.US,
+                        "No wx station with TAF was found near %s within %dNM radius",
+                        stationId, NoaaService.TAF_RADIUS ) );
+                View title = findViewById( R.id.wx_title_layout );
+                title.setVisibility( View.GONE );
+                setRefreshing( false );
+                setContentShown( true );
+            }
         } else {
             // Show the weather station info
             showWxTitle( result );
@@ -245,13 +247,15 @@ public class TafFragment extends WxFragmentBase {
     }
 
     private void requestTaf( String stationId, boolean refresh ) {
-        Intent service = new Intent( getActivity(), TafService.class );
-        service.setAction( mAction );
-        service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
-        service.putExtra( NoaaService.STATION_ID, stationId );
-        service.putExtra( NoaaService.HOURS_BEFORE, NoaaService.TAF_HOURS_BEFORE );
-        service.putExtra( NoaaService.FORCE_REFRESH, refresh );
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            Intent service = new Intent( getActivity(), TafService.class );
+            service.setAction( mAction );
+            service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
+            service.putExtra( NoaaService.STATION_ID, stationId );
+            service.putExtra( NoaaService.HOURS_BEFORE, NoaaService.TAF_HOURS_BEFORE );
+            service.putExtra( NoaaService.FORCE_REFRESH, refresh );
+            getActivity().startService( service );
+        }
     }
 
     @SuppressLint( "SetTextI18n" )
@@ -321,7 +325,7 @@ public class TafFragment extends WxFragmentBase {
 
         StringBuilder sb = new StringBuilder();
         for ( Forecast forecast : taf.forecasts ) {
-            RelativeLayout grp_layout = (RelativeLayout) inflate( R.layout.grouped_detail_item );
+            RelativeLayout grp_layout = inflate( R.layout.grouped_detail_item );
 
             // Keep track of forecast conditions across all change groups
             if ( mLastForecast == null || forecast.changeIndicator == null
