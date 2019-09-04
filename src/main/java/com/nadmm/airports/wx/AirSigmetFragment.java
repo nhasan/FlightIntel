@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,7 +166,9 @@ public class AirSigmetFragment extends WxFragmentBase {
         service.putExtra( NoaaService.COORDS_BOX, box );
         service.putExtra( NoaaService.HOURS_BEFORE, AIRSIGMET_HOURS_BEFORE );
         service.putExtra( NoaaService.FORCE_REFRESH, refresh );
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            getActivity().startService(service);
+        }
     }
 
     private void showAirSigmetText( Intent intent ) {
@@ -205,7 +207,7 @@ public class AirSigmetFragment extends WxFragmentBase {
     }
 
     private void showAirSigmetEntry( LinearLayout layout, AirSigmetEntry entry ) {
-        RelativeLayout item = (RelativeLayout) inflate( R.layout.airsigmet_detail_item );
+        RelativeLayout item = inflate( R.layout.airsigmet_detail_item );
         TextView tv = item.findViewById( R.id.airsigmet_type );
         tv.setText( entry.type );
         tv = item.findViewById( R.id.wx_raw_airsigmet );

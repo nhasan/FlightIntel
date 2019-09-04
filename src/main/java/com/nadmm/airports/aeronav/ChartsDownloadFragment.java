@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,10 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.nadmm.airports.Application;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
@@ -57,9 +61,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class ChartsDownloadFragment extends FragmentBase {
 
@@ -127,8 +128,8 @@ public class ChartsDownloadFragment extends FragmentBase {
     }
 
     @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-                              Bundle savedInstanceState ) {
+    public View onCreateView( @NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState ) {
         View v = inflate( R.layout.charts_download_view );
         return createContentView( v );
     }
@@ -144,33 +145,39 @@ public class ChartsDownloadFragment extends FragmentBase {
 
     @Override
     public void onResume() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mReceiver, mFilter );
+        if ( getActivity() != null ) {
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getActivity());
+            bm.registerReceiver(mReceiver, mFilter);
+        }
 
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mReceiver );
-        finishOperation();
+        if ( getActivity() != null ) {
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getActivity());
+            bm.unregisterReceiver(mReceiver);
+            finishOperation();
+        }
 
         super.onPause();
     }
 
     private void confirmStartDownload( final View v ) {
-        int total = (Integer) v.getTag( R.id.DTPP_CHART_TOTAL );
-        int avail = (Integer) v.getTag( R.id.DTPP_CHART_AVAIL );
-        String tppVolume = (String) v.getTag( R.id.DTPP_VOLUME_NAME );
-        AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
-        builder.setTitle( "Start Download" );
-        builder.setMessage( String.format( Locale.US,
-                "Do you want to download %d charts for %s volume?",
-                total-avail, tppVolume ) );
-        builder.setPositiveButton( "Yes", ( dialog, which ) -> startChartDownload( v ) );
-        builder.setNegativeButton( "No", null );
-        builder.show();
+        if ( getActivity() != null ) {
+            int total = (Integer) v.getTag(R.id.DTPP_CHART_TOTAL);
+            int avail = (Integer) v.getTag(R.id.DTPP_CHART_AVAIL);
+            String tppVolume = (String) v.getTag(R.id.DTPP_VOLUME_NAME);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Start Download");
+            builder.setMessage(String.format(Locale.US,
+                    "Do you want to download %d charts for %s volume?",
+                    total - avail, tppVolume));
+            builder.setPositiveButton("Yes", (dialog, which) -> startChartDownload(v));
+            builder.setNegativeButton("No", null);
+            builder.show();
+        }
     }
 
     private void startChartDownload( View v ) {
@@ -181,17 +188,19 @@ public class ChartsDownloadFragment extends FragmentBase {
     }
 
     private void confirmChartDelete( final View v ) {
-        int avail = (Integer) v.getTag( R.id.DTPP_CHART_AVAIL );
-        String tppVolume = (String) v.getTag( R.id.DTPP_VOLUME_NAME );
-        AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
-        builder.setTitle( "Confirm Delete" );
-        builder.setMessage( String.format( Locale.US,
-                "Are you sure you want to delete all %d charts for %s volume?",
-                avail, tppVolume ) );
-        builder.setPositiveButton( android.R.string.yes,
-                ( dialog, which ) -> startChartDelete( v ) );
-        builder.setNegativeButton( android.R.string.no, null );
-        builder.show();
+        if ( getActivity() != null ) {
+            int avail = (Integer) v.getTag(R.id.DTPP_CHART_AVAIL);
+            String tppVolume = (String) v.getTag(R.id.DTPP_VOLUME_NAME);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Confirm Delete");
+            builder.setMessage(String.format(Locale.US,
+                    "Are you sure you want to delete all %d charts for %s volume?",
+                    avail, tppVolume));
+            builder.setPositiveButton(android.R.string.yes,
+                    (dialog, which) -> startChartDelete(v));
+            builder.setNegativeButton(android.R.string.no, null);
+            builder.show();
+        }
     }
 
     private void startChartDelete( View v ) {
@@ -202,12 +211,14 @@ public class ChartsDownloadFragment extends FragmentBase {
     }
 
     private void confirmStopDownload() {
-        AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
-        builder.setTitle( "Stop Download" );
-        builder.setMessage( "Do you want to stop the chart download?" );
-        builder.setPositiveButton( "Yes", ( dialog, which ) -> mStop = true );
-        builder.setNegativeButton( "No", null );
-        builder.show();
+        if ( getActivity() != null ) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Stop Download");
+            builder.setMessage("Do you want to stop the chart download?");
+            builder.setPositiveButton("Yes", (dialog, which) -> mStop = true);
+            builder.setNegativeButton("No", null);
+            builder.show();
+        }
     }
 
     private Cursor[] doQueryTotals() {
@@ -257,8 +268,10 @@ public class ChartsDownloadFragment extends FragmentBase {
         if ( c.moveToFirst() ) {
             mTppCycle = c.getString( c.getColumnIndex( DtppCycle.TPP_CYCLE ) );
         } else {
-            UiUtils.showToast( getActivity(), "d-TPP database is not installed" );
-            getActivity().finish();
+            if ( getActivity() != null ) {
+                UiUtils.showToast(getActivity(), "d-TPP database is not installed");
+                getActivity().finish();
+            }
             return;
         }
 
@@ -396,15 +409,17 @@ public class ChartsDownloadFragment extends FragmentBase {
     }
 
     private void getNextChart() {
-        String pdfName = mCursor.getString( mCursor.getColumnIndex( Dtpp.PDF_NAME ) );
-        ArrayList<String> pdfNames = new ArrayList<>();
-        pdfNames.add( pdfName );
-        Intent service = new Intent( getActivity(), DtppService.class );
-        service.setAction( AeroNavService.ACTION_GET_CHARTS );
-        service.putExtra( AeroNavService.CYCLE_NAME, mTppCycle );
-        service.putExtra( AeroNavService.TPP_VOLUME, mTppVolume );
-        service.putExtra( AeroNavService.PDF_NAMES, pdfNames );
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            String pdfName = mCursor.getString(mCursor.getColumnIndex(Dtpp.PDF_NAME));
+            ArrayList<String> pdfNames = new ArrayList<>();
+            pdfNames.add(pdfName);
+            Intent service = new Intent(getActivity(), DtppService.class);
+            service.setAction(AeroNavService.ACTION_GET_CHARTS);
+            service.putExtra(AeroNavService.CYCLE_NAME, mTppCycle);
+            service.putExtra(AeroNavService.TPP_VOLUME, mTppVolume);
+            service.putExtra(AeroNavService.PDF_NAMES, pdfNames);
+            getActivity().startService(service);
+        }
     }
 
     private Cursor[] doQueryDelete( String volume ) {
@@ -465,15 +480,17 @@ public class ChartsDownloadFragment extends FragmentBase {
     }
 
     private void deleteNextChart() {
-        String pdfName = mCursor.getString( mCursor.getColumnIndex( Dtpp.PDF_NAME ) );
-        ArrayList<String> pdfNames = new ArrayList<>();
-        pdfNames.add( pdfName );
-        Intent service = new Intent( getActivity(), DtppService.class );
-        service.setAction( AeroNavService.ACTION_DELETE_CHARTS );
-        service.putExtra( AeroNavService.CYCLE_NAME, mTppCycle );
-        service.putExtra( AeroNavService.TPP_VOLUME, mTppVolume );
-        service.putExtra( AeroNavService.PDF_NAMES, pdfNames );
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            String pdfName = mCursor.getString(mCursor.getColumnIndex(Dtpp.PDF_NAME));
+            ArrayList<String> pdfNames = new ArrayList<>();
+            pdfNames.add(pdfName);
+            Intent service = new Intent(getActivity(), DtppService.class);
+            service.setAction(AeroNavService.ACTION_DELETE_CHARTS);
+            service.putExtra(AeroNavService.CYCLE_NAME, mTppCycle);
+            service.putExtra(AeroNavService.TPP_VOLUME, mTppVolume);
+            service.putExtra(AeroNavService.PDF_NAMES, pdfNames);
+            getActivity().startService(service);
+        }
     }
 
     private void finishOperation() {
@@ -490,11 +507,13 @@ public class ChartsDownloadFragment extends FragmentBase {
     }
 
     private void getChartCount( String tppCycle, String tppVolume ) {
-        Intent service = new Intent( getActivity(), DtppService.class );
-        service.setAction( AeroNavService.ACTION_COUNT_CHARTS );
-        service.putExtra( AeroNavService.CYCLE_NAME, tppCycle );
-        service.putExtra( AeroNavService.TPP_VOLUME, tppVolume );
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            Intent service = new Intent(getActivity(), DtppService.class);
+            service.setAction(AeroNavService.ACTION_COUNT_CHARTS);
+            service.putExtra(AeroNavService.CYCLE_NAME, tppCycle);
+            service.putExtra(AeroNavService.TPP_VOLUME, tppVolume);
+            getActivity().startService(service);
+        }
     }
 
     private void addTppVolumeRow( LinearLayout layout, String tppVolume, int total ) {
@@ -502,7 +521,7 @@ public class ChartsDownloadFragment extends FragmentBase {
             addSeparator( layout );
         }
 
-        RelativeLayout row = (RelativeLayout) inflate( R.layout.list_item_with_progressbar );
+        RelativeLayout row = inflate( R.layout.list_item_with_progressbar );
 
         TextView tv = row.findViewById( R.id.item_label );
         tv.setText( tppVolume );
@@ -526,12 +545,14 @@ public class ChartsDownloadFragment extends FragmentBase {
         int avail = intent.getIntExtra( AeroNavService.PDF_COUNT, 0 );
         View row = mVolumeRowMap.get( tppVolume );
         if ( row != null ) {
-            row.setOnClickListener( mOnClickListener );
-            int background = UiUtils.getSelectableItemBackgroundResource( getActivity() );
-            row.setBackgroundResource( background );
-            row.setTag( R.id.DTPP_CHART_AVAIL, avail );
-            int total = (Integer) row.getTag( R.id.DTPP_CHART_TOTAL );
-            showStatus( row, avail, total );
+            if ( getActivity() != null ) {
+                row.setOnClickListener( mOnClickListener );
+                int background = UiUtils.getSelectableItemBackgroundResource( getActivity() );
+                row.setBackgroundResource( background );
+                row.setTag( R.id.DTPP_CHART_AVAIL, avail );
+                int total = (Integer) row.getTag( R.id.DTPP_CHART_TOTAL );
+                showStatus( row, avail, total );
+            }
         }
     }
 

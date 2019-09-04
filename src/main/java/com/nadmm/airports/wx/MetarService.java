@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,12 +35,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class MetarService extends NoaaService {
 
-    private final String METAR_IMAGE_NAME = "metars_%s.gif";
-    private final String METAR_TEXT_QUERY = "datasource=metars&requesttype=retrieve"
-    		+ "&hoursBeforeNow=%d&mostRecentForEachStation=constraint"
-            + "&format=xml&compression=gzip&stationString=%s";
-    private final String METAR_IMAGE_PATH = "/data/obs/metar/";
-
     private static final long METAR_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
     private MetarParser mParser;
@@ -53,6 +47,16 @@ public class MetarService extends NoaaService {
     @Override
     protected void onHandleIntent( Intent intent ) {
         String action = intent.getAction();
+        if ( action == null ) {
+            return;
+        }
+
+        String METAR_IMAGE_NAME = "metars_%s.gif";
+        String METAR_TEXT_QUERY = "datasource=metars&requesttype=retrieve"
+                + "&hoursBeforeNow=%d&mostRecentForEachStation=constraint"
+                + "&format=xml&compression=gzip&stationString=%s";
+        String METAR_IMAGE_PATH = "/data/obs/metar/";
+
         if ( action.equals( ACTION_GET_METAR ) || action.equals( ACTION_CACHE_METAR ) ) {
             String type = intent.getStringExtra( TYPE );
             if ( type.equals( TYPE_TEXT ) ) {

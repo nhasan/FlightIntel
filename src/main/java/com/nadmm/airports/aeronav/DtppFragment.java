@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager;
@@ -52,9 +55,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class DtppFragment extends FragmentBase {
 
@@ -97,16 +97,20 @@ public class DtppFragment extends FragmentBase {
     public void onResume() {
         super.onResume();
 
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mReceiver, mFilter );
+        if ( getActivity() != null ) {
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getActivity());
+            bm.registerReceiver(mReceiver, mFilter);
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mReceiver );
+        if ( getActivity() != null ) {
+            LocalBroadcastManager bm = LocalBroadcastManager.getInstance(getActivity());
+            bm.unregisterReceiver(mReceiver);
+        }
     }
 
     @Override
@@ -128,8 +132,10 @@ public class DtppFragment extends FragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         Bundle args = getArguments();
-        String siteNumber = args.getString( DatabaseManager.Airports.SITE_NUMBER );
-        setBackgroundTask( new DtppTask( this ) ).execute( siteNumber );
+        if ( args != null ) {
+            String siteNumber = args.getString(DatabaseManager.Airports.SITE_NUMBER);
+            setBackgroundTask(new DtppTask(this)).execute(siteNumber);
+        }
     }
 
     private void showDtppSummary( Cursor[] result ) {
@@ -140,7 +146,7 @@ public class DtppFragment extends FragmentBase {
         mTppCycle = cycle.getString( cycle.getColumnIndex( DatabaseManager.DtppCycle.TPP_CYCLE ) );
         String to = cycle.getString( cycle.getColumnIndex( DatabaseManager.DtppCycle.TO_DATE ) );
 
-        RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
+        RelativeLayout item = inflate( R.layout.grouped_detail_item );
         TextView tv = item.findViewById( R.id.group_name );
         tv.setVisibility( View.GONE );
         LinearLayout layout = item.findViewById( R.id.group_details );
@@ -194,7 +200,7 @@ public class DtppFragment extends FragmentBase {
     private void showChartGroup( LinearLayout layout, Cursor c ) {
         if ( c.moveToFirst() ) {
             String chartCode = c.getString( c.getColumnIndex( DatabaseManager.Dtpp.CHART_CODE ) );
-            RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
+            RelativeLayout item = inflate( R.layout.grouped_detail_item );
             TextView tv = item.findViewById( R.id.group_name );
             tv.setText( DataUtils.decodeChartCode( chartCode ) );
             LinearLayout group = item.findViewById( R.id.group_details );
@@ -212,7 +218,7 @@ public class DtppFragment extends FragmentBase {
 
     @SuppressLint( "SetTextI18n" )
     private void showOtherCharts( LinearLayout layout ) {
-        RelativeLayout item = (RelativeLayout) inflate( R.layout.grouped_detail_item );
+        RelativeLayout item = inflate( R.layout.grouped_detail_item );
         TextView tv = item.findViewById( R.id.group_name );
         LinearLayout group = item.findViewById( R.id.group_details );
         tv.setText( "Other" );
@@ -243,30 +249,38 @@ public class DtppFragment extends FragmentBase {
     }
 
     private void checkTppCharts( ArrayList<String> pdfNames, boolean download ) {
-        mPendingCharts = pdfNames;
-        Intent service = makeServiceIntent( DtppService.ACTION_CHECK_CHARTS );
-        service.putExtra( DtppService.DOWNLOAD_IF_MISSING, download );
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            mPendingCharts = pdfNames;
+            Intent service = makeServiceIntent(DtppService.ACTION_CHECK_CHARTS);
+            service.putExtra(DtppService.DOWNLOAD_IF_MISSING, download);
+            getActivity().startService(service);
+        }
     }
 
     private void getTppChart( String pdfName ) {
-        mPendingCharts.add( pdfName );
-        Intent service = makeServiceIntent( DtppService.ACTION_GET_CHARTS );
-        getActivity().startService( service );
+        if (getActivity() != null) {
+            mPendingCharts.add(pdfName);
+            Intent service = makeServiceIntent(DtppService.ACTION_GET_CHARTS);
+            getActivity().startService(service);
+        }
     }
 
     private void deleteCharts() {
         for ( String pdfName : mDtppRowMap.keySet() ) {
             View v = mDtppRowMap.get( pdfName );
-            String userAction = (String) v.getTag( R.id.DTPP_USER_ACTION );
-            String chartCode = (String) v.getTag( R.id.DTPP_CHART_CODE );
-            String path = (String) v.getTag( R.id.DTPP_PDF_PATH );
-            if ( !userAction.equals( "D" ) && chartCode.length() > 0 && path != null ) {
-                mPendingCharts.add( pdfName );
+            if ( v != null ) {
+                String userAction = (String) v.getTag(R.id.DTPP_USER_ACTION);
+                String chartCode = (String) v.getTag(R.id.DTPP_CHART_CODE);
+                String path = (String) v.getTag(R.id.DTPP_PDF_PATH);
+                if (!userAction.equals("D") && chartCode.length() > 0 && path != null) {
+                    mPendingCharts.add(pdfName);
+                }
             }
         }
-        Intent service = makeServiceIntent( DtppService.ACTION_DELETE_CHARTS );
-        getActivity().startService( service );
+        if ( getActivity() != null ) {
+            Intent service = makeServiceIntent(DtppService.ACTION_DELETE_CHARTS);
+            getActivity().startService(service);
+        }
     }
 
     private Intent makeServiceIntent( String action ) {
@@ -282,12 +296,14 @@ public class DtppFragment extends FragmentBase {
         ArrayList<String> pdfNames = new ArrayList<>();
         for ( String pdfName : mDtppRowMap.keySet() ) {
             View v = mDtppRowMap.get( pdfName );
-            String userAction = (String) v.getTag( R.id.DTPP_USER_ACTION );
-            String path = (String) v.getTag( R.id.DTPP_PDF_PATH );
-            // Skip deleted and downloaded charts
-            if ( !userAction.equals( "D" ) && path == null ) {
-                // This PDF is not available on the device
-                pdfNames.add( pdfName );
+            if ( v != null ) {
+                String userAction = (String) v.getTag(R.id.DTPP_USER_ACTION);
+                String path = (String) v.getTag(R.id.DTPP_PDF_PATH);
+                // Skip deleted and downloaded charts
+                if (!userAction.equals("D") && path == null) {
+                    // This PDF is not available on the device
+                    pdfNames.add(pdfName);
+                }
             }
         }
         UiUtils.showToast( getActivity(), String.format( Locale.US,
@@ -340,13 +356,15 @@ public class DtppFragment extends FragmentBase {
         boolean none = true;
         for ( String key : mDtppRowMap.keySet() ) {
             View v = mDtppRowMap.get( key );
-            String path = (String) v.getTag( R.id.DTPP_PDF_PATH );
-            String chartCode = (String) v.getTag( R.id.DTPP_CHART_CODE );
-            if ( chartCode.length() > 0 ) {
-                if ( path == null ) {
-                    all = false;
-                } else {
-                    none = false;
+            if ( v != null ) {
+                String path = (String) v.getTag(R.id.DTPP_PDF_PATH);
+                String chartCode = (String) v.getTag(R.id.DTPP_CHART_CODE);
+                if (chartCode.length() > 0) {
+                    if (path == null) {
+                        all = false;
+                    } else {
+                        none = false;
+                    }
                 }
             }
         }
@@ -378,12 +396,15 @@ public class DtppFragment extends FragmentBase {
     }
 
     private void checkDelete() {
-        AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
-        builder.setMessage( "Delete all downloaded charts for this airport?" )
-                .setPositiveButton( "Yes", ( dialog, id ) -> deleteCharts() )
-                .setNegativeButton( "No", ( dialog, id ) -> {} );
-        AlertDialog alert = builder.create();
-        alert.show();
+        if ( getActivity() != null ) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Delete all downloaded charts for this airport?")
+                    .setPositiveButton("Yes", (dialog, id) -> deleteCharts())
+                    .setNegativeButton("No", (dialog, id) -> {
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
     }
 
     private Cursor[] doQuery( String siteNumber ) {

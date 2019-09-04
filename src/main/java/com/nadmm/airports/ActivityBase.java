@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -479,8 +479,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
     }
 
     protected View createContentView( int id ) {
-        View view = inflate( id );
-        return createContentView( view );
+        return createContentView( inflate( id ) );
     }
 
     public View createContentView( View view ) {
@@ -579,7 +578,8 @@ public abstract class ActivityBase extends AppCompatActivity implements
         FragmentManager fm = getSupportFragmentManager();
         Fragment f = fm.findFragmentByTag( tag );
         if ( f == null ) {
-            f = Fragment.instantiate( this, clss.getName(), args );
+            f = fm.getFragmentFactory().instantiate( getClassLoader(), clss.getName() );
+            f.setArguments( args );
         }
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace( id, f, tag );
@@ -613,12 +613,12 @@ public abstract class ActivityBase extends AppCompatActivity implements
         return fm.findFragmentByTag( tag );
     }
 
-    protected View inflate( int resId ) {
-        return mInflater.inflate( resId, null, false );
+    protected <T extends View> T inflate( int resId ) {
+        return inflate( resId, null );
     }
 
-    protected View inflate( int resId, ViewGroup root ) {
-        return mInflater.inflate( resId, root, false );
+    protected <T extends View> T inflate( int resId, ViewGroup root ) {
+        return (T) mInflater.inflate( resId, root, false );
     }
 
     public Cursor getAirportDetails( String siteNumber ) {

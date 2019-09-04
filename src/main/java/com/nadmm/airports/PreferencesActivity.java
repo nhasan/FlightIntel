@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,8 +24,6 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.nadmm.airports.utils.UiUtils;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -34,6 +32,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.nadmm.airports.utils.UiUtils;
 
 public class PreferencesActivity extends FragmentActivityBase {
 
@@ -49,7 +49,6 @@ public class PreferencesActivity extends FragmentActivityBase {
     public static final String KEY_ALWAYS_SHOW_NEARBY = "always_show_nearby";
     public static final String KEY_DARK_MODE = "dark_mode";
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
@@ -68,13 +67,11 @@ public class PreferencesActivity extends FragmentActivityBase {
 
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
-        switch ( item.getItemId() ) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                return super.onOptionsItemSelected( item );
+        if ( item.getItemId() == android.R.id.home ) {
+            onBackPressed();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -88,7 +85,8 @@ public class PreferencesActivity extends FragmentActivityBase {
         FragmentManager fm = getSupportFragmentManager();
         Fragment f = fm.findFragmentByTag( tag );
         if ( f == null ) {
-            f = Fragment.instantiate( this, clss.getName(), getIntent().getExtras() );
+            f = fm.getFragmentFactory().instantiate(getClassLoader(), clss.getName() );
+            f.setArguments(getIntent().getExtras());
             FragmentTransaction ft = fm.beginTransaction();
             ft.add( R.id.fragment_container, f, tag );
             ft.commit();
@@ -100,7 +98,6 @@ public class PreferencesActivity extends FragmentActivityBase {
 
         private SharedPreferences mSharedPrefs;
 
-        @SuppressWarnings("deprecation")
         @Override
         public void onCreate( Bundle savedInstanceState ) {
             super.onCreate( savedInstanceState );
@@ -131,28 +128,34 @@ public class PreferencesActivity extends FragmentActivityBase {
             mSharedPrefs.unregisterOnSharedPreferenceChangeListener( this );
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
             Preference pref = findPreference( key );
-            if ( key.equals( KEY_LOCATION_NEARBY_RADIUS ) ) {
-                String radius = mSharedPrefs.getString( key, "30" );
-                pref.setSummary( "Show locations within "+radius+" NM radius" );
-            } else if ( key.equals( KEY_HOME_AIRPORT ) ) {
-                String code = mSharedPrefs.getString( KEY_HOME_AIRPORT, "" );
-                if ( code.length() > 0 ) {
-                    pref.setSummary( "Home airport set to "+code );
-                } else {
-                    pref.setSummary( "Home airport is not set" );
+            switch ( key ) {
+                case KEY_LOCATION_NEARBY_RADIUS:
+                    String radius = mSharedPrefs.getString(key, "30");
+                    pref.setSummary("Show locations within " + radius + " NM radius");
+                    break;
+                case KEY_HOME_AIRPORT: {
+                    String code = mSharedPrefs.getString(KEY_HOME_AIRPORT, "");
+                    if (code != null && !code.isEmpty()) {
+                        pref.setSummary("Home airport set to " + code);
+                    } else {
+                        pref.setSummary("Home airport is not set");
+                    }
+                    break;
                 }
-            } else if ( key.equals( KEY_HOME_SCREEN ) ) {
-                String code = mSharedPrefs.getString( KEY_HOME_SCREEN, "" );
-                pref.setSummary( "Show "+code+" screen on startup" );
-            } else if ( key.equals( KEY_DARK_MODE ) ) {
-                boolean darkMode = mSharedPrefs.getBoolean( KEY_DARK_MODE, false );
-                AppCompatDelegate.setDefaultNightMode( darkMode?
-                        AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO );
-                UiUtils.clearDrawableCache();
+                case KEY_HOME_SCREEN: {
+                    String code = mSharedPrefs.getString(KEY_HOME_SCREEN, "");
+                    pref.setSummary("Show " + code + " screen on startup");
+                    break;
+                }
+                case KEY_DARK_MODE:
+                    boolean darkMode = mSharedPrefs.getBoolean(KEY_DARK_MODE, false);
+                    AppCompatDelegate.setDefaultNightMode(darkMode ?
+                            AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
+                    UiUtils.clearDrawableCache();
+                    break;
             }
         }
 

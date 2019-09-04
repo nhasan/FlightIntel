@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -256,24 +256,19 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         CheckBox cb = root.findViewById( R.id.airport_star );
         cb.setChecked( getDbManager().isFavoriteWx( icaoCode ) );
         cb.setTag( icaoCode );
-        cb.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                CheckBox cb = (CheckBox) v;
-                String icaoCode = (String) cb.getTag();
-                if ( cb.isChecked() ) {
-                    getDbManager().addToFavoriteWx( icaoCode );
-                    Toast.makeText( mActivity, "Added to favorites list",
-                            Toast.LENGTH_SHORT ).show();
-                } else {
-                    getDbManager().removeFromFavoriteWx( icaoCode );
-                    Toast.makeText( mActivity, "Removed from favorites list",
-                            Toast.LENGTH_SHORT ).show();
-                }
+        cb.setOnClickListener(v -> {
+            CheckBox cb1 = (CheckBox) v;
+            String icaoCode1 = (String) cb1.getTag();
+            if ( cb1.isChecked() ) {
+                getDbManager().addToFavoriteWx(icaoCode1);
+                Toast.makeText( mActivity, "Added to favorites list",
+                        Toast.LENGTH_SHORT ).show();
+            } else {
+                getDbManager().removeFromFavoriteWx(icaoCode1);
+                Toast.makeText( mActivity, "Removed from favorites list",
+                        Toast.LENGTH_SHORT ).show();
             }
-
-        } );
+        });
     }
 
     private void makeClickToCall( View row, int resid ) {
@@ -368,7 +363,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         if ( layout.getChildCount() > 0 ) {
             addSeparator( layout );
         }
-        LinearLayout row = (LinearLayout) inflate( R.layout.list_item_text1 );
+        LinearLayout row = inflate( R.layout.list_item_text1 );
         TextView tv = row.findViewById( R.id.text );
         tv.setText( label );
         layout.addView( row, new LinearLayout.LayoutParams(
@@ -377,7 +372,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
     }
 
     protected View addSimpleRow( LinearLayout layout, String value ) {
-        TextView tv = (TextView) inflate( R.layout.detail_row_simple );
+        TextView tv = inflate( R.layout.detail_row_simple );
         tv.setText( value );
         layout.addView( tv, new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
@@ -393,7 +388,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
             addSeparator( layout );
         }
 
-        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item2 );
+        LinearLayout row = inflate( R.layout.detail_row_item2 );
         TextView tv = row.findViewById( R.id.item_label );
         tv.setText( label );
         tv = row.findViewById( R.id.item_value );
@@ -412,7 +407,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
             addSeparator( layout );
         }
 
-        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item3 );
+        LinearLayout row = inflate( R.layout.detail_row_item3 );
         TextView tv = row.findViewById( R.id.item_label );
         tv.setText( label );
         tv = row.findViewById( R.id.item_value );
@@ -438,7 +433,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
             addSeparator( layout );
         }
 
-        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_item4 );
+        LinearLayout row = inflate( R.layout.detail_row_item4 );
         TextView tv = row.findViewById( R.id.item_label );
         tv.setText( label1 );
         tv = row.findViewById( R.id.item_value );
@@ -465,7 +460,7 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
     }
 
     protected void addBulletedRow( LinearLayout layout, String text ) {
-        LinearLayout row = (LinearLayout) inflate( R.layout.detail_row_bullet );
+        LinearLayout row = inflate( R.layout.detail_row_bullet );
         TextView tv = row.findViewById( R.id.item_value );
         tv.setText( text );
         layout.addView( row, new LinearLayout.LayoutParams(
@@ -493,11 +488,11 @@ public abstract class FragmentBase extends Fragment implements IRefreshable {
         return view!=null? view.findViewById( id ) : null;
     }
 
-    protected View inflate( int id ) {
+    protected <T extends View> T inflate( int id ) {
         return mActivity.inflate( id );
     }
 
-    protected View inflate( int id, ViewGroup root ) {
+    protected <T extends View> T inflate( int id, ViewGroup root ) {
         return mActivity.inflate( id, root );
     }
 

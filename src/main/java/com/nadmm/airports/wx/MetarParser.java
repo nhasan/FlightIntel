@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ import javax.xml.parsers.SAXParserFactory;
 public final class MetarParser {
 
     private long mFetchTime;
-    public HashMap<String, Metar> mMetars = new HashMap<>();
+    private HashMap<String, Metar> mMetars = new HashMap<>();
 
     public ArrayList<Metar> parse( File xmlFile, ArrayList<String> stationIds )
             throws ParserConfigurationException, SAXException, IOException {
@@ -199,7 +199,7 @@ public final class MetarParser {
 
     }
 
-    public void parseRemarks( Metar metar ) {
+    private void parseRemarks( Metar metar ) {
         int index = metar.rawText.indexOf( "RMK" );
         if ( index == -1 ) {
             return;
@@ -209,30 +209,38 @@ public final class MetarParser {
         index = 0;
         while ( index < rmks.length ) {
             String rmk = rmks[ index++ ];
-            if ( rmk.equals( "PRESRR" ) ) {
-                metar.presrr = true;
-            } else if ( rmk.equals( "PRESFR" ) ) {
-                metar.presfr = true;
-            } else if ( rmk.equals( "SNINCR" ) ) {
-                metar.snincr = true;
-            } else if ( rmk.equals( "WSHFT" ) ) {
-                metar.wshft = true;
-            } else if ( rmk.equals( "FROPA" ) ) {
-                metar.fropa = true;
-            } else if ( rmk.equals( "PNO" ) ) {
-                metar.flags.add( Flags.RainSensorOff );
-            } else if ( rmk.equals( "PK" ) ) {
-                rmk = rmks[ index++ ];
-                if ( rmk.equals( "WND" ) ) {
-                    rmk = rmks[ index++ ];
-                    String speed = rmk.substring( 3, rmk.indexOf( '/' ) );
-                    metar.windPeakKnots = Integer.valueOf( speed );
-                }
+            switch (rmk) {
+                case "PRESRR":
+                    metar.presrr = true;
+                    break;
+                case "PRESFR":
+                    metar.presfr = true;
+                    break;
+                case "SNINCR":
+                    metar.snincr = true;
+                    break;
+                case "WSHFT":
+                    metar.wshft = true;
+                    break;
+                case "FROPA":
+                    metar.fropa = true;
+                    break;
+                case "PNO":
+                    metar.flags.add(Flags.RainSensorOff);
+                    break;
+                case "PK":
+                    rmk = rmks[index++];
+                    if (rmk.equals("WND")) {
+                        rmk = rmks[index++];
+                        String speed = rmk.substring(3, rmk.indexOf('/'));
+                        metar.windPeakKnots = Integer.valueOf(speed);
+                    }
+                    break;
             }
         }
     }
 
-    public void setMissingFields( Metar metar ) {
+    private void setMissingFields( Metar metar ) {
         if ( metar.flightCategory == null ) {
             metar.flightCategory =
                     WxUtils.computeFlightCategory( metar.skyConditions, metar.visibilitySM );
