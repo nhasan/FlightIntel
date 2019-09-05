@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -233,4 +233,5 @@
         <item quantity="one">1 airport matching \'%2$s\'</item>
         <item quantity="other">%1$d airports matching \'%2$s\'</item>
     </plurals>
+    <string name="theme_default">BatterySaver</string>
 </resources>

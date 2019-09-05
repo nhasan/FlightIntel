@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,29 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
+
 <resources>
-    <string-array name="nearby_radius_entries">
-        <item>10 NM</item>
-        <item>30 NM</item>
-        <item>50 NM</item>
-    </string-array>
-    <string-array name="nearby_radius_values">
-        <item>10</item>
-        <item>30</item>
-        <item>50</item>
-    </string-array>
-    <string-array name="home_screen">
-        <item>@string/afd</item>
-        <item>@string/weather</item>
-    </string-array>
     <string-array name="themes">
         <item>Light</item>
         <item>Dark</item>
-        <item>Set by Battery Saver</item>
+        <item>System Default</item>
     </string-array>
     <string-array name="themes_values">
         <item>Light</item>
         <item>Dark</item>
-        <item>BatterySaver</item>
+        <item>SystemDefault</item>
     </string-array>
 </resources>

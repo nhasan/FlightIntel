@@ -136,9 +136,10 @@ public abstract class ActivityBase extends AppCompatActivity implements
     protected void onCreate( Bundle savedInstanceState ) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences( this );
 
-        int darkMode = mPreferences.getBoolean( PreferencesActivity.KEY_DARK_MODE, false )?
-                AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO;
-        AppCompatDelegate.setDefaultNightMode( darkMode );
+        String theme = mPreferences.getString( PreferencesActivity.KEY_THEME,
+                getResources().getString( R.string.theme_default ) );
+        int mode = PreferencesActivity.getNighMode( theme );
+        AppCompatDelegate.setDefaultNightMode( mode );
 
         super.onCreate(savedInstanceState);
 

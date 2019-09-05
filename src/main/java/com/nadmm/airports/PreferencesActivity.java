@@ -47,7 +47,7 @@ public class PreferencesActivity extends FragmentActivityBase {
     public static final String KEY_SHOW_LOCAL_TIME = "show_local_time";
     public static final String KEY_HOME_SCREEN = "home_screen";
     public static final String KEY_ALWAYS_SHOW_NEARBY = "always_show_nearby";
-    public static final String KEY_DARK_MODE = "dark_mode";
+    public static final String KEY_THEME = "theme";
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -93,6 +93,25 @@ public class PreferencesActivity extends FragmentActivityBase {
         }
     }
 
+    public static int getNighMode( String theme ) {
+        int mode = AppCompatDelegate.MODE_NIGHT_YES;
+        switch ( theme ) {
+            case "Light":
+                mode = AppCompatDelegate.MODE_NIGHT_NO;
+                break;
+            case "Dark":
+                mode = AppCompatDelegate.MODE_NIGHT_YES;
+                break;
+            case "BatterySaver":
+                mode = AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY;
+                break;
+            case "SystemDefault":
+                mode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+                break;
+        }
+        return mode;
+    }
+
     public static class PreferencesFragment extends PreferenceFragmentCompat
             implements OnSharedPreferenceChangeListener {
 
@@ -113,6 +132,7 @@ public class PreferencesActivity extends FragmentActivityBase {
         public void onResume() {
             super.onResume();
             // Initialize the preference screen
+            onSharedPreferenceChanged( mSharedPrefs, KEY_THEME );
             onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
             onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_AIRPORT );
             onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_SCREEN );
@@ -133,32 +153,43 @@ public class PreferencesActivity extends FragmentActivityBase {
             Preference pref = findPreference( key );
             switch ( key ) {
                 case KEY_LOCATION_NEARBY_RADIUS:
-                    String radius = mSharedPrefs.getString(key, "30");
-                    pref.setSummary("Show locations within " + radius + " NM radius");
+                    String radius = mSharedPrefs.getString( key, "30" );
+                    pref.setSummary( "Show locations within " + radius + " NM radius" );
                     break;
                 case KEY_HOME_AIRPORT: {
-                    String code = mSharedPrefs.getString(KEY_HOME_AIRPORT, "");
+                    String code = mSharedPrefs.getString( KEY_HOME_AIRPORT, "" );
                     if ( code.isEmpty() ) {
-                        pref.setSummary("Home airport is not set");
+                        pref.setSummary( "Home airport is not set" );
                     } else {
-                        pref.setSummary("Home airport set to " + code);
+                        pref.setSummary( "Home airport set to " + code );
                     }
                     break;
                 }
                 case KEY_HOME_SCREEN: {
-                    String code = mSharedPrefs.getString(KEY_HOME_SCREEN, "");
-                    pref.setSummary("Show " + code + " screen on startup");
+                    String code = mSharedPrefs.getString( KEY_HOME_SCREEN, "" );
+                    pref.setSummary( "Show " + code + " screen on startup" );
                     break;
                 }
-                case KEY_DARK_MODE:
-                    boolean darkMode = mSharedPrefs.getBoolean(KEY_DARK_MODE, false);
+                case KEY_THEME:
                     UiUtils.clearDrawableCache();
-                    AppCompatDelegate.setDefaultNightMode( darkMode ?
-                            AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO );
+                    String theme = mSharedPrefs.getString( KEY_THEME,
+                            getResources().getString( R.string.theme_default ) );
+                    int mode = PreferencesActivity.getNighMode( theme );
+                    AppCompatDelegate.setDefaultNightMode( mode );
+                    pref.setSummary( getThemeDescription( theme ) );
                     break;
             }
         }
 
+        private String getThemeDescription( String theme ) {
+            switch ( theme ) {
+                case "SystemDefault":
+                    return "System Default";
+                case "BatterySaver":
+                    return "Set by Battery Saver";
+                default:
+                    return theme+" mode";
+            }
+        }
     }
-
 }
