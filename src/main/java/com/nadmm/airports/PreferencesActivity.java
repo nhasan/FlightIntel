@@ -22,18 +22,26 @@ package com.nadmm.airports;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.view.MenuItem;
+import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.nadmm.airports.utils.UiUtils;
+
+import java.util.List;
 
 public class PreferencesActivity extends FragmentActivityBase {
 
@@ -120,6 +128,40 @@ public class PreferencesActivity extends FragmentActivityBase {
         @Override
         public void onCreate( Bundle savedInstanceState ) {
             super.onCreate( savedInstanceState );
+
+            EditTextPreference homeAirport = findPreference( KEY_HOME_AIRPORT );
+            if ( homeAirport != null ) {
+                homeAirport.setSummaryProvider(
+                        (Preference.SummaryProvider<EditTextPreference>) preference -> {
+                    String value = preference.getText();
+                    if ( TextUtils.isEmpty( value ) ) {
+                        return "Home airport is not set";
+                    }else {
+                        return "Home airport set to: " + value;
+                    }
+                } );
+
+                homeAirport.setOnBindEditTextListener( editText -> editText.setInputType(
+                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS ) );
+            }
+
+            ListPreference radius = findPreference( KEY_LOCATION_NEARBY_RADIUS );
+            if ( radius != null ) {
+                radius.setSummaryProvider( preference ->
+                        "Show locations within " + radius.getValue() + " NM radius" );
+            }
+
+            ListPreference homeScreen = findPreference( KEY_HOME_SCREEN );
+            if ( homeScreen != null ) {
+                homeScreen.setSummaryProvider( preference ->
+                        "Show " + homeScreen.getValue() + " screen on startup");
+            }
+
+            ListPreference theme = findPreference( KEY_THEME );
+            if ( theme != null ) {
+                theme.setSummaryProvider( preference ->
+                        "Theme set to: "+getThemeDescription( theme.getValue() ) );
+            }
         }
 
         @Override
@@ -150,34 +192,12 @@ public class PreferencesActivity extends FragmentActivityBase {
 
         @Override
         public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
-            Preference pref = findPreference( key );
-            switch ( key ) {
-                case KEY_LOCATION_NEARBY_RADIUS:
-                    String radius = mSharedPrefs.getString( key, "30" );
-                    pref.setSummary( "Show locations within " + radius + " NM radius" );
-                    break;
-                case KEY_HOME_AIRPORT: {
-                    String code = mSharedPrefs.getString( KEY_HOME_AIRPORT, "" );
-                    if ( code.isEmpty() ) {
-                        pref.setSummary( "Home airport is not set" );
-                    } else {
-                        pref.setSummary( "Home airport set to " + code );
-                    }
-                    break;
-                }
-                case KEY_HOME_SCREEN: {
-                    String code = mSharedPrefs.getString( KEY_HOME_SCREEN, "" );
-                    pref.setSummary( "Show " + code + " screen on startup" );
-                    break;
-                }
-                case KEY_THEME:
-                    UiUtils.clearDrawableCache();
-                    String theme = mSharedPrefs.getString( KEY_THEME,
-                            getResources().getString( R.string.theme_default ) );
-                    int mode = PreferencesActivity.getNighMode( theme );
-                    AppCompatDelegate.setDefaultNightMode( mode );
-                    pref.setSummary( getThemeDescription( theme ) );
-                    break;
+            if ( KEY_THEME.equals( key ) ) {
+                UiUtils.clearDrawableCache();
+                String theme = mSharedPrefs.getString( KEY_THEME,
+                        getResources().getString( R.string.theme_default ) );
+                int mode = PreferencesActivity.getNighMode( theme );
+                AppCompatDelegate.setDefaultNightMode( mode );
             }
         }
 
