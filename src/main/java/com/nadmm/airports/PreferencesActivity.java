@@ -25,9 +25,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.MenuItem;
-import android.widget.EditText;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -40,8 +38,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.nadmm.airports.utils.UiUtils;
-
-import java.util.List;
 
 public class PreferencesActivity extends FragmentActivityBase {
 
