@@ -7,7 +7,7 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.0'
-        classpath 'com.google.gms:google-services:4.3.1'
+        classpath 'com.google.gms:google-services:4.3.2'
     }
 }
 
@@ -26,6 +26,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.google.firebase:firebase-messaging:20.0.0'
 }
 
 android {
@@ -34,10 +35,10 @@ android {
 
     defaultConfig {
         applicationId "com.nadmm.airports"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 29
-        versionName "6.11.0"
-        versionCode 61100
+        versionName "6.11.1"
+        versionCode 61101
     }
 
     signingConfigs {

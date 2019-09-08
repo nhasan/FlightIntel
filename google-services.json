@@ -1,52 +1,37 @@
 {
   "project_info": {
-    "project_number": "1001937642359",
-    "firebase_url": "https://flightintel-1de24.firebaseio.com",
-    "project_id": "flightintel-1de24",
-    "storage_bucket": "flightintel-1de24.appspot.com"
+    "project_number": "918936729492",
+    "firebase_url": "https://flightintel-fcm.firebaseio.com",
+    "project_id": "flightintel-fcm",
+    "storage_bucket": "flightintel-fcm.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1001937642359:android:a85ad70dec584f87",
+        "mobilesdk_app_id": "1:918936729492:android:9f7404a5358cb1a24f4181",
         "android_client_info": {
           "package_name": "com.nadmm.airports"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1001937642359-l5kkftanjql2ai7qckdd1em7rb6lfh30.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.nadmm.airports",
-            "certificate_hash": "2d0a2d5a22418237ebed5ccda23402c24ccea857"
-          }
-        },
-        {
-          "client_id": "1001937642359-qn0eq2t7j7k4dv9ncrmse1goivj23sqv.apps.googleusercontent.com",
+          "client_id": "918936729492-soguuhtgtodnbju42mqcsol9sgjmjhkf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB6_YfKLIEUJx4FfpQZS-D-hxbFqahCHE0"
+          "current_key": "AIzaSyDkOKRbbJJb1m-FTTOYcae9ZxgLnsNr1pY"
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "1001937642359-qn0eq2t7j7k4dv9ncrmse1goivj23sqv.apps.googleusercontent.com",
+              "client_id": "918936729492-soguuhtgtodnbju42mqcsol9sgjmjhkf.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       }
     }

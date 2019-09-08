@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.preference.PreferenceManager;
+
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.nadmm.airports.afd.AfdMainActivity;
 import com.nadmm.airports.data.DatabaseManager.Catalog;
 import com.nadmm.airports.data.DownloadActivity;
@@ -37,8 +40,6 @@ import com.nadmm.airports.wx.WxMainActivity;
 
 import java.util.ArrayList;
 import java.util.Date;
-
-import androidx.preference.PreferenceManager;
 
 public class FlightIntel extends ActivityBase {
 
@@ -53,6 +54,13 @@ public class FlightIntel extends ActivityBase {
         String msg = null;
 
         PreferenceManager.setDefaultValues( this, R.xml.preferences, false );
+
+        if ( getAlertsEnabled() ) {
+            FirebaseMessaging.getInstance().subscribeToTopic( "all" );
+        } else {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic( "all" );
+        }
+
         boolean agreed = getPrefDisclaimerAgreed();
         Intent intent = !agreed? new Intent( this, DisclaimerActivity.class ) : null;
         if ( intent == null ) {

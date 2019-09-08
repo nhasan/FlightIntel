@@ -918,4 +918,8 @@ public abstract class ActivityBase extends AppCompatActivity implements
         return mPreferences.getBoolean( PreferencesActivity.KEY_ALWAYS_SHOW_NEARBY, false );
     }
 
+    public boolean getAlertsEnabled() {
+        return mPreferences.getBoolean( PreferencesActivity.KEY_FCM_ENABLE, false );
+    }
+
 }

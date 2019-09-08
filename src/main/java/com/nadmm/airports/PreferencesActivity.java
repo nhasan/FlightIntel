@@ -37,6 +37,7 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.nadmm.airports.utils.UiUtils;
 
 public class PreferencesActivity extends FragmentActivityBase {
@@ -52,6 +53,7 @@ public class PreferencesActivity extends FragmentActivityBase {
     public static final String KEY_HOME_SCREEN = "home_screen";
     public static final String KEY_ALWAYS_SHOW_NEARBY = "always_show_nearby";
     public static final String KEY_THEME = "theme";
+    public static final String KEY_FCM_ENABLE = "fcm_enable";
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -194,6 +196,13 @@ public class PreferencesActivity extends FragmentActivityBase {
                         getResources().getString( R.string.theme_default ) );
                 int mode = PreferencesActivity.getNighMode( theme );
                 AppCompatDelegate.setDefaultNightMode( mode );
+            } else if ( KEY_FCM_ENABLE.equals( key ) ) {
+                boolean enabled = mSharedPrefs.getBoolean( KEY_FCM_ENABLE, true  );
+                if ( enabled ) {
+                    FirebaseMessaging.getInstance().subscribeToTopic( "all" );
+                } else {
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic( "all" );
+                }
             }
         }
 

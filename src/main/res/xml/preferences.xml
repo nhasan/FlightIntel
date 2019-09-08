@@ -45,51 +45,57 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="Home airport">
         <EditTextPreference
-                android:key="home_airport"
-                android:title="Home airport"
-                android:dialogTitle="Enter home airport code"
-                android:summary="Set the code for your home airport" />
+            android:key="home_airport"
+            android:title="Home airport"
+            android:dialogTitle="Enter home airport code"
+            android:summary="Set the code for your home airport" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Location settings">
         <SwitchPreferenceCompat
-                android:key="location_use_gps"
-                android:title="Use GPS for location"
-                android:summaryOn="Using GPS-based accurate location"
-                android:summaryOff="Using network-based coarse location"
-                android:defaultValue="true" />
+            android:key="location_use_gps"
+            android:title="Use GPS for location"
+            android:summaryOn="Using GPS-based accurate location"
+            android:summaryOff="Using network-based coarse location"
+            android:defaultValue="true" />
         <ListPreference
-                android:key="location_nearby_radius"
-                android:title="Nearby radius"
-                android:entries="@array/nearby_radius_entries"
-                android:entryValues="@array/nearby_radius_values"
-                android:defaultValue="30" />
+            android:key="location_nearby_radius"
+            android:title="Nearby radius"
+            android:entries="@array/nearby_radius_entries"
+            android:entryValues="@array/nearby_radius_values"
+            android:defaultValue="30" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Airport details">
         <SwitchPreferenceCompat
-                android:key="extra_runway_data"
-                android:title="Show extra runway data"
-                android:summaryOn="Showing extended runway information"
-                android:summaryOff="Showing basic runway information"
-                android:defaultValue="false" />
+            android:key="extra_runway_data"
+            android:title="Show extra runway data"
+            android:summaryOn="Showing extended runway information"
+            android:summaryOff="Showing basic runway information"
+            android:defaultValue="false" />
         <SwitchPreferenceCompat
-                android:key="show_gps_notams"
-                android:title="Show GPS NOTAMs"
-                android:summaryOn="GPS NOTAMs will also be shown"
-                android:summaryOff="GPS NOTAMs will not be shown"
-                android:defaultValue="false" />
+            android:key="show_gps_notams"
+            android:title="Show GPS NOTAMs"
+            android:summaryOn="GPS NOTAMs will also be shown"
+            android:summaryOff="GPS NOTAMs will not be shown"
+            android:defaultValue="false" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Miscellaneous">
         <SwitchPreferenceCompat
-                android:key="auto_download_on_3G"
-                android:title="Use mobile data freely"
-                android:summaryOn="Do not ask before using mobile data"
-                android:summaryOff="Ask before using mobile data"
-                android:defaultValue="false" />
+            android:key="fcm_enable"
+            android:title="Enable alerts"
+            android:summaryOn="Display alerts from application"
+            android:summaryOff="Suppress alerts from application"
+            android:defaultValue="true" />
         <SwitchPreferenceCompat
-                android:key="show_local_time"
-                android:title="Show local time"
-                android:summaryOn="Time displayed using local timezone"
-                android:summaryOff="Time displayed using UTC timezone"
-                android:defaultValue="false" />
+            android:key="auto_download_on_3G"
+            android:title="Use mobile data freely"
+            android:summaryOn="Do not ask before using mobile data"
+            android:summaryOff="Ask before using mobile data"
+            android:defaultValue="false" />
+        <SwitchPreferenceCompat
+            android:key="show_local_time"
+            android:title="Show local time"
+            android:summaryOn="Time displayed using local timezone"
+            android:summaryOff="Time displayed using UTC timezone"
+            android:defaultValue="false" />
     </PreferenceCategory>
 </PreferenceScreen>
