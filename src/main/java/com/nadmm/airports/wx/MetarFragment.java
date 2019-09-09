@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
+import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar.Flags;
 
 import java.text.NumberFormat;
@@ -83,8 +84,10 @@ public class MetarFragment extends WxFragmentBase {
         super.onResume();
 
         Bundle args = getArguments();
-        String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new MetarTask( this ) ).execute( stationId );
+        if ( args != null ) {
+            String stationId = args.getString( NoaaService.STATION_ID );
+            setBackgroundTask( new MetarTask( this ) ).execute( stationId );
+        }
     }
 
     @Override
@@ -95,7 +98,7 @@ public class MetarFragment extends WxFragmentBase {
         }
 
         String type = intent.getStringExtra( NoaaService.TYPE );
-        if ( type.equals( NoaaService.TYPE_TEXT ) ) {
+        if ( NoaaService.TYPE_TEXT.equals( type ) ) {
             showMetar( intent );
             setRefreshing( false );
         }
@@ -182,9 +185,11 @@ public class MetarFragment extends WxFragmentBase {
             showWxTitle( result );
             requestMetar( false );
         } else {
-            UiUtils.showToast( getActivity().getApplicationContext(),
-                    "Unable to get weather station info" );
-            getActivity().finish();
+            if ( getActivity() != null ) {
+                UiUtils.showToast( getActivity().getApplicationContext(),
+                        "Unable to get weather station info" );
+                getActivity().finish();
+            }
         }
     }
 
@@ -210,16 +215,18 @@ public class MetarFragment extends WxFragmentBase {
 
     private void requestMetar( boolean refresh ) {
         Bundle args = getArguments();
-        String stationId = args.getString( NoaaService.STATION_ID );
-        Intent service = new Intent( getActivity(), MetarService.class );
-        service.setAction( mAction );
-        ArrayList<String> stationIds = new ArrayList<>();
-        stationIds.add( stationId );
-        service.putExtra( NoaaService.STATION_IDS, stationIds );
-        service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
-        service.putExtra( NoaaService.HOURS_BEFORE, NoaaService.METAR_HOURS_BEFORE );
-        service.putExtra( NoaaService.FORCE_REFRESH, refresh );
-        getActivity().startService( service );
+        if ( getActivity() != null && args != null ) {
+            String stationId = args.getString( NoaaService.STATION_ID );
+            Intent service = new Intent( getActivity(), MetarService.class );
+            service.setAction( mAction );
+            ArrayList<String> stationIds = new ArrayList<>();
+            stationIds.add( stationId );
+            service.putExtra( NoaaService.STATION_IDS, stationIds );
+            service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
+            service.putExtra( NoaaService.HOURS_BEFORE, NoaaService.METAR_HOURS_BEFORE );
+            service.putExtra( NoaaService.FORCE_REFRESH, refresh );
+            getActivity().startService( service );
+        }
     }
 
     @SuppressLint( "SetTextI18n" )

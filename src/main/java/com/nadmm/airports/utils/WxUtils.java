@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.nadmm.airports.wx;
+package com.nadmm.airports.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -27,8 +27,8 @@ import android.graphics.drawable.Drawable;
 import android.widget.TextView;
 
 import com.nadmm.airports.R;
-import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.utils.UiUtils;
+import com.nadmm.airports.wx.Metar;
+import com.nadmm.airports.wx.SkyCondition;
 
 import java.util.ArrayList;
 import java.util.Locale;

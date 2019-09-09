@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.e6b;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,7 @@ import android.widget.TextView;
 
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.wx.WxUtils;
+import com.nadmm.airports.utils.WxUtils;
 
 public class CrossWindFragment extends E6bFragmentBase {
 
@@ -73,6 +74,7 @@ public class CrossWindFragment extends E6bFragmentBase {
         return null;
     }
 
+    @SuppressLint( "SetTextI18n" )
     protected void processInput() {
         double windSpeed = Double.MAX_VALUE;
         double windDir = Double.MAX_VALUE;
@@ -113,7 +115,7 @@ public class CrossWindFragment extends E6bFragmentBase {
                 mWindMsg.setText( "Right quartering cross wind with head wind" );
             } else if ( headWind > 0 && crossWind < 0 ) {
                 mWindMsg.setText( "Left quartering cross wind with head wind" );
-            } else if ( headWind > 0 && crossWind == 0 ) {
+            } else if ( headWind > 0 ) {
                 mWindMsg.setText( "Head wind only, no cross wind" );
             } else if ( headWind == 0 && crossWind > 0 ) {
                 mWindMsg.setText( "Right cross wind only, no head wind" );
@@ -123,10 +125,10 @@ public class CrossWindFragment extends E6bFragmentBase {
                 mWindMsg.setText( "Left quartering cross wind with tail wind" );
             } else if ( headWind < 0 && crossWind > 0 ) {
                 mWindMsg.setText( "Right quartering cross wind with tail wind" );
-            } else if ( headWind < 0 && crossWind == 0 ) {
+            } else if ( headWind < 0 ) {
                 mWindMsg.setText( "Tail wind only, no cross wind" );
-            } else if ( headWind == 0 && crossWind == 0 ) {
-                mWindMsg.setText( "Calm winds" );
+            } else {
+                mWindMsg.setText( "Winds calm" );
             }
         } else {
             mHwndEdit.setText( "" );

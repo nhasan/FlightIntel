@@ -45,6 +45,7 @@ import com.nadmm.airports.utils.DbUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
+import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Taf.Forecast;
 import com.nadmm.airports.wx.Taf.IcingCondition;
 import com.nadmm.airports.wx.Taf.TurbulenceCondition;

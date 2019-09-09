@@ -26,6 +26,8 @@ import android.location.Location;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.cursoradapter.widget.ResourceCursorAdapter;
+
 import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager.Airports;
 import com.nadmm.airports.data.DatabaseManager.Awos1;
@@ -35,10 +37,9 @@ import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.FormatUtils;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.TimeUtils;
+import com.nadmm.airports.utils.WxUtils;
 
 import java.util.Locale;
-
-import androidx.cursoradapter.widget.ResourceCursorAdapter;
 
 public final class WxCursorAdapter extends ResourceCursorAdapter {
 

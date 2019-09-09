@@ -22,6 +22,7 @@ package com.nadmm.airports.wx;
 import android.text.format.Time;
 import android.util.TimeFormatException;
 
+import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar.Flags;
 
 import org.xml.sax.Attributes;
