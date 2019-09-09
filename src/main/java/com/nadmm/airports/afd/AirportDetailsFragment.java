@@ -81,7 +81,7 @@ import com.nadmm.airports.wx.NoaaService;
 import com.nadmm.airports.wx.SkyCondition;
 import com.nadmm.airports.wx.WxDetailActivity;
 import com.nadmm.airports.wx.WxSymbol;
-import com.nadmm.airports.wx.WxUtils;
+import com.nadmm.airports.utils.WxUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -934,7 +934,8 @@ public final class AirportDetailsFragment extends FragmentBase {
                         info.append( ", winds calm" );
                     } else {
                         info.append( String.format( Locale.US,
-                                ", %d knots", metar.windSpeedKnots ) );
+                                ", %d knots ", metar.windSpeedKnots ) );
+                        info.append( GeoUtils.getCardinalDirection( metar.windDirDegrees ) );
                         if ( metar.windGustKnots < Integer.MAX_VALUE ) {
                             info.append( " gusting" );
                         }
