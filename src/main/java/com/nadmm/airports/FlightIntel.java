@@ -55,10 +55,15 @@ public class FlightIntel extends ActivityBase {
 
         PreferenceManager.setDefaultValues( this, R.xml.preferences, false );
 
-        if ( getAlertsEnabled() ) {
-            FirebaseMessaging.getInstance().subscribeToTopic( "all" );
+        FirebaseMessaging firebaseMsg = FirebaseMessaging.getInstance();
+        if ( getPrefAlertsEnabled() ) {
+            firebaseMsg.subscribeToTopic( "all" );
+            if ( getPrefHomeAirport().equals( "TEST" ) ) {
+                firebaseMsg.subscribeToTopic( "test" );
+            }
         } else {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic( "all" );
+            firebaseMsg.unsubscribeFromTopic( "all" );
+            firebaseMsg.unsubscribeFromTopic( "test" );
         }
 
         boolean agreed = getPrefDisclaimerAgreed();
@@ -71,7 +76,7 @@ public class FlightIntel extends ActivityBase {
 
         if ( intent == null ) {
             if ( installed.size() < 4 ) {
-                // This should really happen only on first install
+                // Required databases are not installed
                 msg = "Please download the required database";
                 intent = new Intent( this, DownloadActivity.class );
             }
