@@ -22,6 +22,9 @@ package com.nadmm.airports.donate;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.nadmm.airports.FlightIntel;
 import com.nadmm.airports.FragmentActivityBase;
 
@@ -47,11 +50,19 @@ public class DonateActivity extends FragmentActivityBase {
 
     @Override
     public void onActivityResult( int requestCode, int resultCode, Intent data ) {
-        DonateFragment f = (DonateFragment) getFragment( DonateFragment.class );
+        super.onActivityResult( requestCode, resultCode, data );
+        DonateFragment f = (DonateFragment) getFragment();
         if ( f != null )
         {
             f.onActivityResult( requestCode, resultCode, data );
         }
+    }
+
+    protected Fragment getFragment() {
+        Class<?> clss = DonateFragment.class;
+        String tag = clss.getSimpleName();
+        FragmentManager fm = getSupportFragmentManager();
+        return fm.findFragmentByTag( tag );
     }
 
 }
