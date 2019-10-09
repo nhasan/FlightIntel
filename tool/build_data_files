@@ -22,6 +22,8 @@
 bold=$(tput bold)
 normal=$(tput sgr0)
 
+gcloud components update
+
 source build_data_config
 
 echo ${bold}Using config:${normal}
