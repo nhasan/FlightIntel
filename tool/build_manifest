@@ -1,0 +1,86 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use DateTime;
+use File::Basename;
+use XML::Simple qw(:strict);
+
+my $DATA_DIR = "data/database/";
+
+my @datafiles = (
+  {
+    'file' => 'fadds_*.db.gz',
+    'type' => 'FADDS',
+    'desc' => 'National Airspace System (FAA)',
+  },
+  {
+    'file' => 'dcs_*.db.gz',
+    'type' => 'DAFD',
+    'desc' => 'AeroNav d-CS (FAA)',
+  },
+  {
+    'file' => 'dtpp_*.db.gz',
+    'type' => 'DTPP',
+    'desc' => 'AeroNav d-TPP (FAA)',
+  },
+  {
+    'file' => 'dof_*.db.gz',
+    'type' => 'DOF',
+    'desc' => 'Obstacle Data (DOF)',
+  },
+  {
+    'file' => 'library_*.db.gz',
+    'type' => 'LIBRARY',
+    'desc' => 'Documents Library',
+  }
+);
+
+my $manifest = {
+  datafile => [
+  ]
+};
+
+foreach my $datafile (@datafiles) {
+  my @files = glob(${DATA_DIR}.$datafile->{file});
+  foreach my $file (@files) {
+    my $size = -s $file;
+
+    $file = basename($file);
+    $file =~ s/.gz$//;
+
+    $file =~ /.*_([0-9]+)\.db/;
+    my $date = $1;
+    my $year = 2000 + substr($date, 0, 2);
+    my $month = substr($date, 2, 2);
+    my $day = substr($date, 4, 2);
+
+    my $start = DateTime->new(year=>$year, month=>$month, day=>$day,
+	                      hour=>9, minute=>1, second=>0, time_zone=>'UTC');
+    my $end = $start->clone->add(days=>28);
+
+    my $entry = {};
+    $entry->{type} = [$datafile->{type}];
+    $entry->{desc} = [$datafile->{desc}];
+    $entry->{version} = [$start->strftime("%Y%m%d")];
+    $entry->{filename} = [$file];
+    $entry->{size} = [$size];
+    $entry->{start} = [$start->datetime."Z"];
+    $entry->{end} = [$end->datetime."Z"];
+
+    push @{$manifest->{datafile}}, $entry;
+  }
+}
+
+open my $fh, ">${DATA_DIR}/manifest.xml" or die "open: $!";
+
+XMLout(
+    $manifest,
+    KeyAttr => {},
+    NoSort => 1,
+    RootName => "manifest",
+    XMLDecl => 1,
+    OutputFile => $fh
+);
+
