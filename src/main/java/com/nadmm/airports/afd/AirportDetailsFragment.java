@@ -36,6 +36,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.nadmm.airports.Application;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.PreferencesActivity;
@@ -74,6 +76,7 @@ import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.TimeUtils;
 import com.nadmm.airports.utils.UiUtils;
+import com.nadmm.airports.utils.WxUtils;
 import com.nadmm.airports.wx.Metar;
 import com.nadmm.airports.wx.MetarService;
 import com.nadmm.airports.wx.NearbyWxCursor;
@@ -81,15 +84,12 @@ import com.nadmm.airports.wx.NoaaService;
 import com.nadmm.airports.wx.SkyCondition;
 import com.nadmm.airports.wx.WxDetailActivity;
 import com.nadmm.airports.wx.WxSymbol;
-import com.nadmm.airports.utils.WxUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public final class AirportDetailsFragment extends FragmentBase {
 
@@ -154,7 +154,6 @@ public final class AirportDetailsFragment extends FragmentBase {
         if ( getActivity() != null ) {
             LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
             bm.registerReceiver( mBcastReceiver, mBcastFilter );
-            requestMetars( false );
         }
     }
 
