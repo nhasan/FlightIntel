@@ -22,7 +22,7 @@
 <resources>
     <style name="Base.Theme.FlightIntel" parent="Platform.Theme.FlightIntel">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/color_navigation_bar</item>
         <item name="listview_margin_bottom">0dip</item>
     </style>
 </resources>

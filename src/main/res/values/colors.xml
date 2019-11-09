@@ -38,7 +38,7 @@
     <color name="color_grey_tint">#888</color>
 
     <color name="color_background">#f4f4f6</color>
-    <color name="color_navigation_bar">#f4f4f6</color>
+    <color name="color_navigation_bar">#40f4f4f6</color>
 
     <color name="blue_300">#64b5f6</color>
     <color name="blue_600">#1e88e5</color>

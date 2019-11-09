@@ -32,12 +32,13 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/main_content"
             android:clipChildren="false"
-            app:shadowDrawable="@drawable/header_shadow"
+            android:fitsSystemWindows="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
+            android:fitsSystemWindows="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -46,9 +47,12 @@
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/sliding_tabs"
-                app:tabMode="scrollable"
+                android:background="?attr/colorPrimary"
                 app:tabBackground="?attr/colorPrimary"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:tabTextColor="@color/tab_text_color"
+                app:tabIndicatorColor="?colorAccent"
+                app:tabMode="scrollable"
+                app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </com.google.android.material.appbar.AppBarLayout>

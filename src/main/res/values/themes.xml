@@ -21,7 +21,7 @@
  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Platform.Theme.FlightIntel" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Platform.Theme.FlightIntel" parent="Theme.MaterialComponents.DayNight.NoActionBar">
     </style>
 
     <style name="Base.Theme.FlightIntel" parent="Platform.Theme.FlightIntel">

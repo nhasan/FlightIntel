@@ -31,11 +31,13 @@
     <!-- Main layout -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:clipChildren="false"
+            android:fitsSystemWindows="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/appbar"
+                android:fitsSystemWindows="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -49,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-            <FrameLayout
+            <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/fragment_container"
                     android:clipToPadding="false"
                     android:scrollbarStyle="outsideOverlay"
