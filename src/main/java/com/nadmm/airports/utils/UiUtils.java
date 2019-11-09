@@ -22,7 +22,6 @@ package com.nadmm.airports.utils;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -50,8 +49,6 @@ public class UiUtils {
 
     private static final  Handler sHandler;
     private static final  Paint sPaint = new Paint( Paint.FILTER_BITMAP_FLAG );
-
-    private static final int[] RES_IDS_ACTION_BAR_SIZE = { R.attr.actionBarSize };
 
     private UiUtils() {}
 
