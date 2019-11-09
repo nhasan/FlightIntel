@@ -31,6 +31,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
@@ -49,6 +50,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -128,7 +130,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
     protected static final String EXTRA_MSG = "MSG";
 
     private FragmentManager.OnBackStackChangedListener mBackStackChangedListener =
-            () -> updateDrawerToggle();
+            this::updateDrawerToggle;
 
     public static final String FRAGMENT_TAG_EXTRA = "FRAGMENT_TAG_EXTRA";
 
@@ -190,6 +192,12 @@ public abstract class ActivityBase extends AppCompatActivity implements
             mNavigationView.setCheckedItem( getSelfNavDrawerItem() );
         }
 
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION );
+        }
+
         // Whenever the fragment back stack changes, we may need to update the
         // action bar toggle: only top level screens show the hamburger-like icon, inner
         // screens - either Activities or fragments - show the "Up" icon instead.
@@ -217,7 +225,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
     }
 
     @Override
-    public void onConfigurationChanged( Configuration newConfig ) {
+    public void onConfigurationChanged( @NonNull Configuration newConfig ) {
         super.onConfigurationChanged( newConfig );
         if ( mDrawerToggle != null ) {
             mDrawerToggle.onConfigurationChanged( newConfig );
@@ -412,7 +420,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
                     R.color.refresh_progress_1,
                     R.color.refresh_progress_2,
                     R.color.refresh_progress_3 );
-            mSwipeRefreshLayout.setOnRefreshListener( () -> requestDataRefresh() );
+            mSwipeRefreshLayout.setOnRefreshListener( this::requestDataRefresh );
 
             if ( mSwipeRefreshLayout instanceof MultiSwipeRefreshLayout ) {
                 MultiSwipeRefreshLayout mswrl = (MultiSwipeRefreshLayout) mSwipeRefreshLayout;
@@ -440,10 +448,6 @@ public abstract class ActivityBase extends AppCompatActivity implements
         if ( mSwipeRefreshLayout != null ) {
             mSwipeRefreshLayout.setEnabled( enable );
         }
-    }
-
-    public AppBarLayout getAppBar() {
-        return mAppBar;
     }
 
     protected void requestDataRefresh() {
@@ -608,12 +612,6 @@ public abstract class ActivityBase extends AppCompatActivity implements
         return f;
     }
 
-    protected Fragment getFragment( Class<?> clss ) {
-        String tag = clss.getSimpleName();
-        FragmentManager fm = getSupportFragmentManager();
-        return fm.findFragmentByTag( tag );
-    }
-
     protected <T extends View> T inflate( int resId ) {
         return inflate( resId, null );
     }
@@ -749,7 +747,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
         tv = root.findViewById( R.id.navaid_info );
         tv.setText( String.format( Locale.US, "%s, %s", city, state ) );
         String use = c.getString( c.getColumnIndex( Nav1.PUBLIC_USE ) );
-        Float elev_msl = c.getFloat( c.getColumnIndex( Nav1.ELEVATION_MSL ) );
+        float elev_msl = c.getFloat( c.getColumnIndex( Nav1.ELEVATION_MSL ) );
         tv = root.findViewById( R.id.navaid_info2 );
         tv.setText( String.format( Locale.US, "%s, %s elevation",
                 use.equals( "Y" )? "Public use" : "Private use",
@@ -825,7 +823,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
             code = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
         }
         String title = code;
-        Boolean isScreenWide = getResources().getBoolean( R.bool.IsScreenWide );
+        boolean isScreenWide = getResources().getBoolean( R.bool.IsScreenWide );
         if ( isScreenWide ) {
             String siteNumber = c.getString( c.getColumnIndex( Airports.SITE_NUMBER ) );
             String type = DataUtils.decodeLandingFaclityType( siteNumber );
@@ -918,7 +916,7 @@ public abstract class ActivityBase extends AppCompatActivity implements
         return mPreferences.getBoolean( PreferencesActivity.KEY_ALWAYS_SHOW_NEARBY, false );
     }
 
-    public boolean getAlertsEnabled() {
+    public boolean getPrefAlertsEnabled() {
         return mPreferences.getBoolean( PreferencesActivity.KEY_FCM_ENABLE, false );
     }
 
