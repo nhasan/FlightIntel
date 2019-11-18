@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,20 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.nadmm.airports.afd;
+package com.nadmm.airports.afd
 
-import android.os.Bundle;
+import android.os.Bundle
 
-import com.nadmm.airports.FragmentActivityBase;
+import com.nadmm.airports.FragmentActivityBase
 
-public class AirportActivity extends FragmentActivityBase {
+class AirportActivity : FragmentActivityBase() {
 
-    @Override
-    protected void onPostCreate( Bundle savedInstanceState ) {
-        super.onPostCreate( savedInstanceState );
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
 
-        Bundle args = getIntent().getExtras();
-        addFragment( AirportDetailsFragment.class, args );
+        addFragment(AirportDetailsFragment::class.java, intent.extras)
     }
 
 }
