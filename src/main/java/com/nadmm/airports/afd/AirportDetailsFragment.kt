@@ -19,6 +19,7 @@
 
 package com.nadmm.airports.afd
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -426,9 +427,9 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
                 val initialBearing = ((results[1] + mDeclination + 360f) % 360).roundToInt()
                 val finalBearing = ((results[2] + mDeclination + 360f) % 360).roundToInt()
 
-                addRow(layout!!, "Distance from $mHome", String.format(Locale.US, "%s %s",
-                        FormatUtils.formatNauticalMiles(distance.toFloat()),
-                        GeoUtils.getCardinalDirection(initialBearing.toFloat())))
+                val strDistance = FormatUtils.formatNauticalMiles(distance.toFloat())
+                val strBearing = GeoUtils.getCardinalDirection(initialBearing.toFloat())
+                addRow(layout, "Distance from $mHome", "$strDistance $strBearing")
                 addRow(layout, "Initial bearing",
                         FormatUtils.formatDegrees(initialBearing) + " M")
                 if (abs(finalBearing - initialBearing) >= 10) {
@@ -476,16 +477,13 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
         val lon = apt.getString(apt.getColumnIndex(Airports.REF_LONGITUDE_DEGREES))
         if (lat.isNotEmpty() && lon.isNotEmpty()) {
             // Link to the sectional at VFRMAP if location is available
-            var uri = Uri.parse(String.format(Locale.US,
-                    "http://vfrmap.com/?type=vfrc&lat=%s&lon=%s&zoom=10", lat, lon))
+            var uri = Uri.parse("http://vfrmap.com/?type=vfrc&lat=$lat&lon=$lon&zoom=10")
             var intent = Intent(Intent.ACTION_VIEW, uri)
             addClickableRow(layout, "$sectional Sectional VFR", null, intent)
-            uri = Uri.parse(String.format(Locale.US,
-                    "http://vfrmap.com/?type=ifrlc&lat=%s&lon=%s&zoom=10", lat, lon))
+            uri = Uri.parse("http://vfrmap.com/?type=ifrlc&lat=$lat&lon=$lon&zoom=10")
             intent = Intent(Intent.ACTION_VIEW, uri)
             addClickableRow(layout, "Low-altitude IFR", intent)
-            uri = Uri.parse(String.format(Locale.US,
-                    "http://vfrmap.com/?type=ehc&lat=%s&lon=%s&zoom=10", lat, lon))
+            uri = Uri.parse("http://vfrmap.com/?type=ehc&lat=$lat&lon=$lon&zoom=10")
             intent = Intent(Intent.ACTION_VIEW, uri)
             addClickableRow(layout, "High-altitude IFR", intent)
         } else {
@@ -587,17 +585,14 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
             val variation = apt.getInt(apt.getColumnIndex(Airports.MAGNETIC_VARIATION_DEGREES))
             val year = apt.getString(apt.getColumnIndex(Airports.MAGNETIC_VARIATION_YEAR))
             if (year.isNotEmpty()) {
-                addRow(layout, "Magnetic variation",
-                        String.format(Locale.US, "%d\u00B0 %s (%s)", variation, dir, year))
+                addRow(layout, "Magnetic variation", "$variation\u00B0 $dir ($year)")
             } else {
-                addRow(layout, "Magnetic variation",
-                        String.format(Locale.US, "%d\u00B0 %s", variation, dir))
+                addRow(layout, "Magnetic variation", "$variation\u00B0 $dir")
             }
         } else {
             val variation = GeoUtils.getMagneticDeclination(mLocation).roundToInt()
             dir = if (variation >= 0) "W" else "E"
-            addRow(layout, "Magnetic variation",
-                    String.format(Locale.US, "%d\u00B0 %s (actual)", abs(variation), dir))
+            addRow(layout, "Magnetic variation", "${abs(variation)}\u00B0 $dir (actual)")
         }
         val intlEntry = apt.getString(apt.getColumnIndex(Airports.INTL_ENTRY_AIRPORT))
         if (intlEntry != null && intlEntry == "Y") {
@@ -734,6 +729,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun addRunwayRow(layout: LinearLayout?, c: Cursor) {
         val siteNumber = c.getString(c.getColumnIndex(Runways.SITE_NUMBER))
         val runwayId = c.getString(c.getColumnIndex(Runways.RUNWAY_ID))
@@ -775,9 +771,10 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
             tv.visibility = View.VISIBLE
         }
 
+        val runwayLength = FormatUtils.formatFeet(length.toFloat())
+        val runwayWidth = FormatUtils.formatFeet(width.toFloat())
         tv = row.findViewById(R.id.runway_size)
-        tv.text = String.format(Locale.US, "%s x %s",
-                FormatUtils.formatFeet(length.toFloat()), FormatUtils.formatFeet(width.toFloat()))
+        tv.text = "$runwayLength x $runwayWidth"
 
         tv = row.findViewById(R.id.runway_surface)
         tv.text = DataUtils.decodeSurfaceType(surfaceType)
@@ -873,8 +870,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
                     if (metar.windSpeedKnots == 0) {
                         info.append(", winds calm")
                     } else {
-                        info.append(String.format(Locale.US,
-                                ", %d knots ", metar.windSpeedKnots))
+                        info.append(", ${metar.windSpeedKnots} knots ")
                         info.append(GeoUtils.getCardinalDirection(metar.windDirDegrees.toFloat()))
                         if (metar.windGustKnots < Integer.MAX_VALUE) {
                             info.append(" gusting")
@@ -931,16 +927,15 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
             crossWind = abs(crossWind)
             val windInfo = StringBuilder()
             if (crossWind > 0) {
-                windInfo.append(String.format(Locale.US, "%d %s %s x-wind",
-                        crossWind, if (crossWind > 1) "knots" else "knot", side))
+                windInfo.append("$crossWind ${if (crossWind>1) "knots" else "knot"} $side x-wind")
             } else {
                 windInfo.append("no x-wind")
             }
             if (metar.windGustKnots < Integer.MAX_VALUE) {
                 val gustFactor = round((metar.windGustKnots - metar.windSpeedKnots) / 2.0)
-                windInfo.append(String.format(Locale.US, ", %d knots gust factor", gustFactor))
+                windInfo.append(", $gustFactor knots gust factor")
             }
-            tv.text = String.format(Locale.US, "Rwy %s: %s", id, windInfo.toString())
+            tv.text = "Rwy $id: ${windInfo}"
             tv.visibility = View.VISIBLE
         }
     }
