@@ -22,6 +22,7 @@
 bold=$(tput bold)
 normal=$(tput sgr0)
 
+echo "${bold}Checking for updates to gcloud tool:${normal}";
 gcloud components update
 
 source build_data_config
