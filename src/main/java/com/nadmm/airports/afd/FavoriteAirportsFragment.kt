@@ -45,7 +45,7 @@ class FavoriteAirportsFragment : ListFragmentBase() {
         setEmptyText("No favorite airports selected.")
     }
 
-    override fun newListAdapter(context: Context, c: Cursor): CursorAdapter? {
+    override fun newListAdapter(context: Context?, c: Cursor?): CursorAdapter? {
         return AirportsCursorAdapter(context, c)
     }
 

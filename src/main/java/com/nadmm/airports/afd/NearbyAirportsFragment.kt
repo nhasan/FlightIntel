@@ -26,10 +26,13 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ListView
 import androidx.cursoradapter.widget.CursorAdapter
+import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.LocationListFragmentBase
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
-import com.nadmm.airports.utils.CursorAsyncTask
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NearbyAirportsFragment : LocationListFragmentBase() {
 
@@ -45,48 +48,36 @@ class NearbyAirportsFragment : LocationListFragmentBase() {
     }
 
     override fun startLocationTask() {
-        setBackgroundTask(NearbyAirportsTask(this)).execute()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                doQuery()
+            }
+            setCursor(result[0])
+        }
     }
 
-    override fun newListAdapter(context: Context, c: Cursor): CursorAdapter? {
+    override fun newListAdapter(context: Context?, c: Cursor?): CursorAdapter? {
         return AirportsCursorAdapter(context, c)
     }
 
     override fun onListItemClick(l: ListView, v: View, position: Int) {
         val c = l.getItemAtPosition(position) as Cursor
         val siteNumber = c.getString(c.getColumnIndex(Airports.SITE_NUMBER))
-        val intent = Intent(activity, AirportActivity::class.java)
-        intent.putExtra(Airports.SITE_NUMBER, siteNumber)
+        val intent = Intent(activity, AirportActivity::class.java).apply {
+            putExtra(Airports.SITE_NUMBER, siteNumber)
+        }
         startActivity(intent)
     }
 
     private fun doQuery(): Array<Cursor?> {
         val db = getDatabase(DatabaseManager.DB_FADDS)
 
-        var extraSelection: String? = null
-        val faaCode = arguments?.getString(Airports.FAA_CODE)
-        if (faaCode != null && faaCode.isNotEmpty()) {
-            extraSelection = "AND ${Airports.FAA_CODE} <> '$faaCode'"
+        val extraSelection = arguments?.getString(Airports.SITE_NUMBER)?.let {
+            "AND ${Airports.SITE_NUMBER} <> '$it'"
         }
 
         val c = NearbyAirportsCursor(db, lastLocation, nearbyRadius, extraSelection)
         return arrayOf(c)
-    }
-
-    private class NearbyAirportsTask(fragment: NearbyAirportsFragment)
-        : CursorAsyncTask<NearbyAirportsFragment>(fragment) {
-
-        override fun onExecute(fragment: NearbyAirportsFragment, vararg params: String)
-                : Array<Cursor?> {
-            return fragment.doQuery()
-        }
-
-        override fun onResult(fragment: NearbyAirportsFragment, result: Array<Cursor?>)
-                : Boolean {
-            fragment.setCursor(result[0])
-            return false
-        }
-
     }
 
 }

@@ -35,7 +35,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.annotation.WorkerThread
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nadmm.airports.Application
 import com.nadmm.airports.FragmentBase
@@ -51,17 +51,16 @@ import com.nadmm.airports.notams.AirportNotamActivity
 import com.nadmm.airports.tfr.TfrListActivity
 import com.nadmm.airports.utils.*
 import com.nadmm.airports.wx.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
-import kotlin.coroutines.CoroutineContext
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 import kotlin.math.round
 import kotlin.math.roundToInt
 
-class AirportDetailsFragment : FragmentBase(), CoroutineScope {
+class AirportDetailsFragment : FragmentBase() {
 
     private val mAwosViews = HashSet<LinearLayout>()
     private val mRunwayViews = HashSet<TextView>()
@@ -74,9 +73,6 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
     private var mRadius: Int = 0
     private lateinit var mHome: String
     private lateinit var mSiteNumber: String
-
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main
 
     init {
         mBcastFilter.run {
@@ -105,22 +101,15 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
         setActionBarTitle("Airport Details", "")
 
         mRadius = activityBase.prefNearbyRadius
-        mHome = activityBase.prefHomeAirport ?: ""
+        mHome = activityBase.prefHomeAirport
 
-        val siteNumber = arguments?.getString(Airports.SITE_NUMBER) ?: return
-        launch(Dispatchers.Main) {
-            val result = doInBackground {
-                doQuery(siteNumber)
+        arguments?.getString(Airports.SITE_NUMBER)?.let {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = withContext(Dispatchers.IO) {
+                    doQuery(it)
+                }
+                showDetails(result)
             }
-            showDetails(result)
-        }
-    }
-
-    @WorkerThread
-    private suspend fun doInBackground(block: suspend () -> Array<Cursor?>)
-            : Array<Cursor?> {
-        return withContext(Dispatchers.IO) {
-            block.invoke()
         }
     }
 
@@ -192,7 +181,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
     }
 
     private fun showDetails(result: Array<Cursor?>) {
-        val apt = result[0]
+        val apt = result[0] ?: return
 
         showAirportTitle(apt)
 
@@ -255,10 +244,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
 
     private fun addFrequencyToMap(freqMap: HashMap<String, ArrayList<Float>>,
                                   key: String, value: String) {
-        var freqs = freqMap[key]
-        if (freqs == null) {
-            freqs = ArrayList()
-        }
+        val freqs = freqMap[key] ?: ArrayList()
         var i = 0
         while (i < value.length) {
             val c = value[i]
@@ -317,7 +303,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
         val label = findViewById<TextView>(R.id.detail_remarks_label)
         val layout = findViewById<LinearLayout>(R.id.detail_remarks_layout)
         val rmk = result[2]
-        if (rmk != null && rmk.moveToFirst()) {
+        if (rmk?.moveToFirst() == true) {
             do {
                 val remark = rmk.getString(rmk.getColumnIndex(Remarks.REMARK_TEXT))
                 addBulletedRow(layout!!, remark)
@@ -349,9 +335,9 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
     }
 
     private fun showAwosDetails(result: Array<Cursor?>) {
-        val layout = findViewById<LinearLayout>(R.id.detail_awos_layout)
+        val layout = findViewById<LinearLayout>(R.id.detail_awos_layout) ?: return
         val awos1 = result[7]
-        if (awos1 != null && awos1.moveToFirst()) {
+        if (awos1?.moveToFirst() == true) {
             do {
                 if (awos1.position == 5) {
                     break
@@ -363,7 +349,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
                 }
                 val type = awos1.getString(awos1.getColumnIndex(Awos1.WX_SENSOR_TYPE))
                 var freq = awos1.getString(awos1.getColumnIndex(Awos1.STATION_FREQUENCY))
-                if (freq == null || freq.isEmpty()) {
+                if (freq.isNullOrBlank()) {
                     freq = awos1.getString(awos1.getColumnIndex(Awos1.SECOND_STATION_FREQUENCY))
                 }
                 val phone = awos1.getString(awos1.getColumnIndex(Awos1.STATION_PHONE_NUMBER)) ?: ""
@@ -371,8 +357,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
                 val distance = awos1.getFloat(awos1.getColumnIndex("DISTANCE"))
                 val bearing = awos1.getFloat(awos1.getColumnIndex("BEARING"))
 
-                val extras = Bundle()
-                with( extras ){
+                val extras = Bundle().apply {
                     putString(NoaaService.STATION_ID, icaoCode)
                     putString(Awos1.WX_SENSOR_IDENT, sensorId)
                     putString(Airports.SITE_NUMBER, mSiteNumber)
@@ -400,7 +385,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
     }
 
     private fun showHomeDistance(result: Array<Cursor?>) {
-        val layout = findViewById<LinearLayout>(R.id.detail_home_layout)
+        val layout = findViewById<LinearLayout>(R.id.detail_home_layout) ?: return
         val home: Cursor? = result[14]
         if (home == null) {
             val runnable = Runnable {
@@ -443,17 +428,13 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
     }
 
     private fun showNearbyFacilities() {
-        val layout = findViewById<LinearLayout>(R.id.detail_nearby_layout)
+        val layout = findViewById<LinearLayout>(R.id.detail_nearby_layout) ?: return
 
-        val args = Bundle()
-        args.putParcelable(LocationColumns.LOCATION, mLocation)
-        args.putInt(LocationColumns.RADIUS, mRadius)
-        args.putString(Airports.ICAO_CODE, mIcaoCode)
-        args.putString(Airports.FAA_CODE, mFAACode)
-        addClickableRow(layout, "Airports", NearbyAirportsFragment::class.java, args)
+        arguments?.putParcelable(LocationColumns.LOCATION, mLocation)
+        addClickableRow(layout, "Airports", NearbyAirportsFragment::class.java, arguments)
         addClickableRow(layout, "FSS outlets", NearbyFssFragment::class.java, arguments)
         addClickableRow(layout, "Navaids", NearbyNavaidsFragment::class.java, arguments)
-        addClickableRow(layout, "Obstacles", NearbyObstaclesFragment::class.java, args)
+        addClickableRow(layout, "Obstacles", NearbyObstaclesFragment::class.java, arguments)
     }
 
     private fun showNotamAndTfr() {
@@ -468,7 +449,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
     private fun showCharts(result: Array<Cursor?>) {
         val apt = result[0] ?: return
 
-        val layout = findViewById<LinearLayout>(R.id.detail_charts_layout)
+        val layout = findViewById<LinearLayout>(R.id.detail_charts_layout) ?: return
         var sectional: String? = apt.getString(apt.getColumnIndex(Airports.SECTIONAL_CHART))
         if (sectional == null || sectional.isEmpty()) {
             sectional = "N/A"
@@ -487,7 +468,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
             intent = Intent(Intent.ACTION_VIEW, uri)
             addClickableRow(layout, "High-altitude IFR", intent)
         } else {
-            addRow(layout!!, "Sectional chart", sectional)
+            addRow(layout, "Sectional chart", sectional)
         }
 
         val classb = result[15]
@@ -497,7 +478,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
                 val faaCode = classb.getString(classb.getColumnIndex(Airports.FAA_CODE))
                 val classBName = ClassBUtils.getClassBName(faaCode)
                 if (!seen.contains(classBName)) {
-                    val row = addClickableRow(layout, "$classBName Class B airspace", null)
+                    val row = addClickableRow(layout, "$classBName Class B airspace", "")
                     row.tag = faaCode
                     row.setOnClickListener { v ->
                         val faaCode1 = v.tag as String
@@ -517,12 +498,12 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
         val faaCode = apt.getString(apt.getColumnIndex(Airports.FAA_CODE))
         addRow(layout, "FAA code", faaCode)
         val timezoneId = apt.getString(apt.getColumnIndex(Airports.TIMEZONE_ID))
-        if (timezoneId.isNotEmpty()) {
+        if (timezoneId.isNotBlank()) {
             val tz = TimeZone.getTimeZone(timezoneId)
             addRow(layout, "Local time zone", TimeUtils.getTimeZoneAsString(tz))
         }
         val activation = apt.getString(apt.getColumnIndex(Airports.ACTIVATION_DATE))
-        if (activation.isNotEmpty()) {
+        if (activation.isNotBlank()) {
             addRow(layout, "Activation date", activation)
         }
         val twr8 = result[9]
@@ -539,19 +520,19 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
         if (twr5 != null && twr5.moveToFirst()) {
             val radarList = HashSet<String>()
             var towerRadar = twr5.getString(twr5.getColumnIndex(Tower5.TOWER_RADAR_TYPE_1))
-            if (towerRadar.isNotEmpty()) {
+            if (towerRadar.isNotBlank()) {
                 radarList.add(towerRadar)
             }
             towerRadar = twr5.getString(twr5.getColumnIndex(Tower5.TOWER_RADAR_TYPE_2))
-            if (towerRadar.isNotEmpty()) {
+            if (towerRadar.isNotBlank()) {
                 radarList.add(towerRadar)
             }
             towerRadar = twr5.getString(twr5.getColumnIndex(Tower5.TOWER_RADAR_TYPE_3))
-            if (towerRadar.isNotEmpty()) {
+            if (towerRadar.isNotBlank()) {
                 radarList.add(towerRadar)
             }
             towerRadar = twr5.getString(twr5.getColumnIndex(Tower5.TOWER_RADAR_TYPE_4))
-            if (towerRadar.isNotEmpty()) {
+            if (towerRadar.isNotBlank()) {
                 radarList.add(towerRadar)
             }
 
@@ -567,12 +548,12 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
         val beacon = apt.getString(apt.getColumnIndex(Airports.BEACON_COLOR))
         addRow(layout, "Beacon", DataUtils.decodeBeacon(beacon))
         var lighting = apt.getString(apt.getColumnIndex(Airports.LIGHTING_SCHEDULE))
-        if (lighting.isNotEmpty()) {
+        if (lighting.isNotBlank()) {
             addRow(layout, "Airport lighting", lighting)
         }
         try {
             lighting = apt.getString(apt.getColumnIndex(Airports.BEACON_LIGHTING_SCHEDULE))
-            if (lighting.isNotEmpty()) {
+            if (lighting.isNotBlank()) {
                 addRow(layout, "Beacon lighting", lighting)
             }
         } catch (ignored: Exception) {
@@ -581,10 +562,10 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
         val landingFee = apt.getString(apt.getColumnIndex(Airports.LANDING_FEE))
         addRow(layout, "Landing fee", if (landingFee == "Y") "Yes" else "No")
         var dir = apt.getString(apt.getColumnIndex(Airports.MAGNETIC_VARIATION_DIRECTION))
-        if (dir.isNotEmpty()) {
+        if (dir.isNotBlank()) {
             val variation = apt.getInt(apt.getColumnIndex(Airports.MAGNETIC_VARIATION_DEGREES))
             val year = apt.getString(apt.getColumnIndex(Airports.MAGNETIC_VARIATION_YEAR))
-            if (year.isNotEmpty()) {
+            if (year.isNotBlank()) {
                 addRow(layout, "Magnetic variation", "$variation\u00B0 $dir ($year)")
             } else {
                 addRow(layout, "Magnetic variation", "$variation\u00B0 $dir")
@@ -595,32 +576,29 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
             addRow(layout, "Magnetic variation", "${abs(variation)}\u00B0 $dir (actual)")
         }
         val intlEntry = apt.getString(apt.getColumnIndex(Airports.INTL_ENTRY_AIRPORT))
-        if (intlEntry != null && intlEntry == "Y") {
+        if (intlEntry == "Y") {
             addRow(layout, "International entry", "Yes")
         }
-        val customs = apt.getString(apt.getColumnIndex(
-                Airports.CUSTOMS_LANDING_RIGHTS_AIRPORT))
-        if (customs != null && customs == "Y") {
+        val customs = apt.getString(apt.getColumnIndex(Airports.CUSTOMS_LANDING_RIGHTS_AIRPORT))
+        if (customs == "Y") {
             addRow(layout, "Customs landing rights", "Yes")
         }
-        val jointUse = apt.getString(apt.getColumnIndex(
-                Airports.CIVIL_MILITARY_JOINT_USE))
-        if (jointUse != null && jointUse == "Y") {
+        val jointUse = apt.getString(apt.getColumnIndex(Airports.CIVIL_MILITARY_JOINT_USE))
+        if (jointUse == "Y") {
             addRow(layout, "Civil/military joint use", "Yes")
         }
-        val militaryRights = apt.getString(apt.getColumnIndex(
-                Airports.MILITARY_LANDING_RIGHTS))
+        val militaryRights = apt.getString(apt.getColumnIndex(Airports.MILITARY_LANDING_RIGHTS))
         if (militaryRights != null && militaryRights == "Y") {
             addRow(layout, "Military landing rights", "Yes")
         }
         val medical = apt.getString(apt.getColumnIndex(Airports.MEDICAL_USE))
-        if (medical != null && medical == "Y") {
+        if (medical == "Y") {
             addRow(layout, "Medical use", "Yes")
         }
     }
 
     private fun showAeroNavDetails(result: Array<Cursor?>) {
-        val layout = findViewById<LinearLayout>(R.id.detail_aeronav_layout)
+        val layout = findViewById<LinearLayout>(R.id.detail_aeronav_layout) ?: return
         if (Application.sDonationDone) {
             val apt = result[0] ?: return
             val siteNumber = apt.getString(apt.getColumnIndex(Airports.SITE_NUMBER))
@@ -630,7 +608,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
                 val dafd = result[13]
                 if (dafd != null && dafd.moveToFirst()) {
                     val pdfName = dafd.getString(dafd.getColumnIndex(Dafd.PDF_NAME))
-                    val row = addClickableRow(layout, "A/FD page", null)
+                    val row = addClickableRow(layout, "A/FD page", "")
                     row.setTag(R.id.DAFD_CYCLE, afdCycle)
                     row.setTag(R.id.DAFD_PDF_NAME, pdfName)
                     row.setOnClickListener { v ->
@@ -667,12 +645,12 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
             fuelTypes = "No"
         }
         addRow(layout!!, "Fuel available", fuelTypes)
-        var repair = apt.getString(apt.getColumnIndex(Airports.AIRFRAME_REPAIR_SERVICE))
+        var repair = apt.getString(apt.getColumnIndex(Airports.AIRFRAME_REPAIR_SERVICE)) ?: ""
         if (repair.isEmpty()) {
             repair = "No"
         }
         addRow(layout, "Airframe repair", repair)
-        repair = apt.getString(apt.getColumnIndex(Airports.POWER_PLANT_REPAIR_SERVICE))
+        repair = apt.getString(apt.getColumnIndex(Airports.POWER_PLANT_REPAIR_SERVICE)) ?: ""
         if (repair.isEmpty()) {
             repair = "No"
         }
@@ -681,21 +659,20 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
     }
 
     private fun showOtherDetails() {
-        val args = arguments
-        val layout = findViewById<LinearLayout>(R.id.detail_other_layout)
-        addClickableRow(layout, "Ownership and contact", OwnershipFragment::class.java, args)
-        addClickableRow(layout, "Aircraft operations", AircraftOpsFragment::class.java, args)
-        addClickableRow(layout, "Additional remarks", RemarksFragment::class.java, args)
-        addClickableRow(layout, "Attendance", AttendanceFragment::class.java, args)
-        addClickableRow(layout, "Sunrise and sunset", AlmanacFragment::class.java, args)
+        val layout = findViewById<LinearLayout>(R.id.detail_other_layout) ?: return
+        addClickableRow(layout, "Ownership and contact", OwnershipFragment::class.java, arguments)
+        addClickableRow(layout, "Aircraft operations", AircraftOpsFragment::class.java, arguments)
+        addClickableRow(layout, "Additional remarks", RemarksFragment::class.java, arguments)
+        addClickableRow(layout, "Attendance", AttendanceFragment::class.java, arguments)
+        addClickableRow(layout, "Sunrise and sunset", AlmanacFragment::class.java, arguments)
     }
 
-    private fun addAwosRow(layout: LinearLayout?, id: String, name: String?, type: String,
+    private fun addAwosRow(layout: LinearLayout, id: String, name: String, type: String,
                            freq: String?, phone: String, distance: Float, bearing: Float,
                            runnable: Runnable) {
         val sb = StringBuilder()
         sb.append(id)
-        if (name != null && name.isNotEmpty()) {
+        if (name.isNotEmpty()) {
             sb.append(" - ")
             sb.append(name)
         }
@@ -718,19 +695,19 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
 
         val row = addClickableRow(layout, label1, value1, label2, phone, runnable)
         var tv = row.findViewById<TextView>(R.id.item_label)
-        tv.tag = id
+        tv?.tag = id
         if (row is LinearLayout) {
             mAwosViews.add(row)
         }
         // Make phone number clickable
         tv = row.findViewById(R.id.item_extra_value)
-        if (tv.text.isNotEmpty()) {
-            makeClickToCall(tv)
+        if (!tv?.text.isNullOrBlank()) {
+            makeClickToCall(tv!!)
         }
     }
 
     @SuppressLint("SetTextI18n")
-    private fun addRunwayRow(layout: LinearLayout?, c: Cursor) {
+    private fun addRunwayRow(layout: LinearLayout, c: Cursor) {
         val siteNumber = c.getString(c.getColumnIndex(Runways.SITE_NUMBER))
         val runwayId = c.getString(c.getColumnIndex(Runways.RUNWAY_ID))
         val length = c.getInt(c.getColumnIndex(Runways.RUNWAY_LENGTH))
@@ -762,22 +739,22 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
         val row = inflate<RelativeLayout>(R.layout.runway_detail_item)
 
         var tv = row.findViewById<TextView>(R.id.runway_id)
-        tv.text = runwayId
+        tv?.text = runwayId
         UiUtils.setRunwayDrawable(activity, tv, runwayId, length, heading)
 
         if (rp != null) {
             tv = row.findViewById(R.id.runway_rp)
-            tv.text = rp
-            tv.visibility = View.VISIBLE
+            tv?.text = rp
+            tv?.visibility = View.VISIBLE
         }
 
         val runwayLength = FormatUtils.formatFeet(length.toFloat())
         val runwayWidth = FormatUtils.formatFeet(width.toFloat())
         tv = row.findViewById(R.id.runway_size)
-        tv.text = "$runwayLength x $runwayWidth"
+        tv?.text = "$runwayLength x $runwayWidth"
 
         tv = row.findViewById(R.id.runway_surface)
-        tv.text = DataUtils.decodeSurfaceType(surfaceType)
+        tv?.text = DataUtils.decodeSurfaceType(surfaceType)
 
         if (!runwayId.startsWith("H")) {
             // Save the textview and runway info for later use
@@ -786,8 +763,8 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
             tag.putString(Runways.BASE_END_ID, baseId)
             tag.putString(Runways.RECIPROCAL_END_ID, reciprocalId)
             tag.putInt(Runways.BASE_END_HEADING, heading)
-            tv.tag = tag
-            mRunwayViews.add(tv)
+            tv?.tag = tag
+            mRunwayViews.add(tv!!)
         }
 
         val args = Bundle()
@@ -907,6 +884,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showRunwayWindInfo(metar: Metar) {
         for (tv in mRunwayViews) {
             val tag = tv.tag as Bundle
@@ -935,7 +913,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
                 val gustFactor = round((metar.windGustKnots - metar.windSpeedKnots) / 2.0)
                 windInfo.append(", $gustFactor knots gust factor")
             }
-            tv.text = "Rwy $id: ${windInfo}"
+            tv.text = "Rwy $id: $windInfo"
             tv.visibility = View.VISIBLE
         }
     }
@@ -946,7 +924,7 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
         mSiteNumber = siteNumber
         var db = getDatabase(DB_FADDS)
 
-        val apt = getAirportDetails(mSiteNumber)
+        val apt = getAirportDetails(mSiteNumber) ?: return cursors
         cursors[0] = apt
 
         val faaCode = apt.getString(apt.getColumnIndex(Airports.FAA_CODE))
@@ -1032,30 +1010,25 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
                 arrayOf(mSiteNumber), null, null, Attendance.SEQUENCE_NUMBER, null)
 
         db = getDatabase(DB_DTPP)
-        if (db != null) {
-            builder = SQLiteQueryBuilder()
-            builder.tables = Dtpp.TABLE_NAME
-            cursors[11] = builder.query(db, arrayOf("*"),
-                    "${Dtpp.FAA_CODE} = ?",
-                    arrayOf(faaCode), null, null, null, null)
-        }
+        builder = SQLiteQueryBuilder()
+        builder.tables = Dtpp.TABLE_NAME
+        cursors[11] = builder.query(db, arrayOf("*"),
+                "${Dtpp.FAA_CODE} = ?",
+                arrayOf(faaCode), null, null, null, null)
 
         db = getDatabase(DB_DAFD)
-        if (db != null) {
-            builder = SQLiteQueryBuilder()
-            builder.tables = DafdCycle.TABLE_NAME
-            cursors[12] = builder.query(db, arrayOf("*"),
-                    null, null, null, null, null, null)
+        builder = SQLiteQueryBuilder()
+        builder.tables = DafdCycle.TABLE_NAME
+        cursors[12] = builder.query(db, arrayOf("*"),
+                null, null, null, null, null, null)
 
-            builder = SQLiteQueryBuilder()
-            builder.tables = Dafd.TABLE_NAME
-            cursors[13] = builder.query(db, arrayOf("*"),
-                    "${Dafd.FAA_CODE} = ?",
-                    arrayOf(faaCode), null, null, null, null)
-        }
+        builder = SQLiteQueryBuilder()
+        builder.tables = Dafd.TABLE_NAME
+        cursors[13] = builder.query(db, arrayOf("*"),
+                "${Dafd.FAA_CODE} = ?",
+                arrayOf(faaCode), null, null, null, null)
 
         db = getDatabase(DB_FADDS)
-
         if (mHome.isNotEmpty()) {
             builder = SQLiteQueryBuilder()
             builder.tables = Airports.TABLE_NAME
@@ -1076,7 +1049,6 @@ class AirportDetailsFragment : FragmentBase(), CoroutineScope {
         cursors[16] = builder.query(db, arrayOf("*"),
                 "${Tower5.FACILITY_ID} = ?", arrayOf(faaCode),
                 null, null, null, null)
-
         return cursors
     }
 

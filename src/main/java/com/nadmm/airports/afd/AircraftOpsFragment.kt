@@ -25,28 +25,39 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.R.layout
 import com.nadmm.airports.data.DatabaseManager.Airports
-import com.nadmm.airports.utils.CursorAsyncTask
 import com.nadmm.airports.utils.FormatUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AircraftOpsFragment : FragmentBase() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view: View? = inflater.inflate(layout.aircraft_ops_view, container, false)
+        val view = inflater.inflate(layout.aircraft_ops_view, container, false)
         return createContentView(view)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         setActionBarTitle("Operations", "")
-        val siteNumber = arguments!!.getString(Airports.SITE_NUMBER)
-        setBackgroundTask(OpsDetailsTask(this)).execute(siteNumber)
+
+        arguments?.getString(Airports.SITE_NUMBER)?.let {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = withContext(Dispatchers.IO) {
+                    doQuery(it)
+                }
+                showDetails(result)
+            }
+        }
     }
 
-    protected fun showDetails(result: Array<Cursor?>) {
+    private fun showDetails(result: Array<Cursor?>) {
         val apt = result[0]?: return
         showAirportTitle(apt)
         showBasedAircraft(apt)
@@ -55,7 +66,7 @@ class AircraftOpsFragment : FragmentBase() {
     }
 
     private fun showBasedAircraft(apt: Cursor) {
-        val layout: LinearLayout = findViewById(R.id.based_aircraft_layout)
+        val layout: LinearLayout = findViewById(R.id.based_aircraft_layout) ?: return
         var count = apt.getInt(apt.getColumnIndex(Airports.SINGLE_ENGINE_COUNT))
         addRow(layout, "Single engine", FormatUtils.formatNumber(count.toFloat()))
         count = apt.getInt(apt.getColumnIndex(Airports.MULTI_ENGINE_COUNT))
@@ -73,7 +84,7 @@ class AircraftOpsFragment : FragmentBase() {
     }
 
     private fun showAnnualOps(apt: Cursor) {
-        val layout: LinearLayout = findViewById(R.id.aircraft_ops_layout)
+        val layout: LinearLayout = findViewById(R.id.aircraft_ops_layout) ?: return
         var count = apt.getInt(apt.getColumnIndex(Airports.ANNUAL_COMMERCIAL_OPS))
         addRow(layout, "Commercial", FormatUtils.formatNumber(count.toFloat()))
         count = apt.getInt(apt.getColumnIndex(Airports.ANNUAL_COMMUTER_OPS))
@@ -90,20 +101,9 @@ class AircraftOpsFragment : FragmentBase() {
         addRow(layout, "As-of", date)
     }
 
-    private class OpsDetailsTask(fragment: AircraftOpsFragment)
-        : CursorAsyncTask<AircraftOpsFragment>(fragment) {
-
-        override fun onExecute(fragment: AircraftOpsFragment, vararg params: String)
-                : Array<Cursor?> {
-            val siteNumber = params[0]
-            val apt: Cursor = fragment.getAirportDetails(siteNumber)
-            return arrayOf(apt)
-        }
-
-        override fun onResult(fragment: AircraftOpsFragment, result: Array<Cursor?>)
-                : Boolean {
-            fragment.showDetails(result)
-            return true
-        }
+    private fun doQuery(siteNumber: String): Array<Cursor?> {
+        val c = getAirportDetails(siteNumber)
+        return arrayOf(c)
     }
+
 }

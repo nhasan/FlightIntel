@@ -33,7 +33,7 @@ import com.nadmm.airports.utils.FormatUtils
 import com.nadmm.airports.utils.GeoUtils
 import java.util.*
 
-class AirportsCursorAdapter(context: Context, c: Cursor)
+class AirportsCursorAdapter(context: Context?, c: Cursor?)
     : ResourceCursorAdapter(context, R.layout.airport_list_item, c, 0) {
 
     internal class ViewHolder {

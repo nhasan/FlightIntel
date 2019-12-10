@@ -40,10 +40,12 @@ class AfdMainActivity : TabPagerActivityBase() {
     private val FAVORITES = mTabTitles.indexOf(R.string.favorites)
     private val NEARBY = mTabTitles.indexOf(R.string.nearby)
 
+    override val selfNavDrawerItem = R.id.navdrawer_afd
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setActionBarTitle("Airports", null)
+        setActionBarTitle("Airports")
 
         val args = Bundle()
         for (i in mTabTitles.indices) {
@@ -58,10 +60,6 @@ class AfdMainActivity : TabPagerActivityBase() {
 
         val fav = dbManager.aptFavorites
         return if (fav.isNotEmpty()) FAVORITES else NEARBY
-    }
-
-    override fun getSelfNavDrawerItem(): Int {
-        return R.id.navdrawer_afd
     }
 
 }

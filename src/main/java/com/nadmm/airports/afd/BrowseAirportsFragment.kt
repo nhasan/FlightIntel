@@ -95,7 +95,7 @@ class BrowseAirportsFragment : ListFragmentBase() {
         }
     }
 
-    override fun newListAdapter(context: Context, c: Cursor): CursorAdapter? {
+    override fun newListAdapter(context: Context?, c: Cursor?): CursorAdapter? {
         mAdapter = if (mMode == BROWSE_STATE_MODE) {
             StateCursorAdapter(context, R.layout.browse_all_item, c)
         } else {
@@ -137,7 +137,7 @@ class BrowseAirportsFragment : ListFragmentBase() {
         setCursor(apt)
     }
 
-    private inner class StateCursorAdapter(context: Context, layout: Int, c: Cursor)
+    private inner class StateCursorAdapter(context: Context?, layout: Int, c: Cursor?)
         : SectionedCursorAdapter(context, layout, c, R.layout.list_item_header) {
 
         override fun bindView(view: View, context: Context, c: Cursor) {
@@ -154,7 +154,7 @@ class BrowseAirportsFragment : ListFragmentBase() {
         }
     }
 
-    private inner class CityCursorAdapter(context: Context, c: Cursor)
+    private inner class CityCursorAdapter(context: Context?, c: Cursor?)
         : SectionedCursorAdapter(context, R.layout.airport_list_item, c, R.layout.list_item_header) {
 
         internal var mAdapter: AirportsCursorAdapter = AirportsCursorAdapter(context, c)
@@ -182,19 +182,12 @@ class BrowseAirportsFragment : ListFragmentBase() {
                     " ON a.${Airports.ASSOC_STATE}=s.${States.STATE_CODE}")
             builder.projectionMap = sStateMap
             val c = builder.query(db,
-                    // String[] projectionIn
                     arrayOf(
                             BaseColumns._ID,
                             Airports.ASSOC_STATE, States.
                             STATE_NAME, BaseColumns._COUNT
                     ),
-                    null, null,
-                    // String groupBy
-                    States.STATE_NAME, null,
-                    // String sortOrder
-                    States.STATE_NAME)// String selection
-            // String[] selectionArgs
-            // String having
+                    null, null, States.STATE_NAME, null, States.STATE_NAME)
 
             return arrayOf(c)
         }

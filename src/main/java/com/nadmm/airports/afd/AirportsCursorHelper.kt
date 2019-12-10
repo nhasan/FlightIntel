@@ -55,8 +55,8 @@ object AirportsCursorHelper {
                 map[col] = col
             }
         }
-        map[States.STATE_NAME] = "IFNULL(${States.STATE_NAME}, ${Airports.ASSOC_COUNTY})" +
-                " AS ${States.STATE_NAME}"
+        map[States.STATE_NAME] =
+                "IFNULL(${States.STATE_NAME}, ${Airports.ASSOC_COUNTY}) AS ${States.STATE_NAME}"
         return map
     }
 
