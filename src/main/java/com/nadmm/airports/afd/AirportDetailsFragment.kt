@@ -519,21 +519,11 @@ class AirportDetailsFragment : FragmentBase() {
         val twr5: Cursor? = result[16]
         if (twr5 != null && twr5.moveToFirst()) {
             val radarList = HashSet<String>()
-            var towerRadar = twr5.getString(twr5.getColumnIndex(Tower5.TOWER_RADAR_TYPE_1))
-            if (towerRadar.isNotBlank()) {
-                radarList.add(towerRadar)
-            }
-            towerRadar = twr5.getString(twr5.getColumnIndex(Tower5.TOWER_RADAR_TYPE_2))
-            if (towerRadar.isNotBlank()) {
-                radarList.add(towerRadar)
-            }
-            towerRadar = twr5.getString(twr5.getColumnIndex(Tower5.TOWER_RADAR_TYPE_3))
-            if (towerRadar.isNotBlank()) {
-                radarList.add(towerRadar)
-            }
-            towerRadar = twr5.getString(twr5.getColumnIndex(Tower5.TOWER_RADAR_TYPE_4))
-            if (towerRadar.isNotBlank()) {
-                radarList.add(towerRadar)
+            for (i: Int in 1..4) {
+                var towerRadar = twr5.getString(twr5.getColumnIndex("TOWER_RADAR_TYPE_$i"))
+                if (towerRadar.isNotBlank()) {
+                    radarList.add(towerRadar)
+                }
             }
 
             if (radarList.isNotEmpty()) {
@@ -551,12 +541,9 @@ class AirportDetailsFragment : FragmentBase() {
         if (lighting.isNotBlank()) {
             addRow(layout, "Airport lighting", lighting)
         }
-        try {
-            lighting = apt.getString(apt.getColumnIndex(Airports.BEACON_LIGHTING_SCHEDULE))
-            if (lighting.isNotBlank()) {
-                addRow(layout, "Beacon lighting", lighting)
-            }
-        } catch (ignored: Exception) {
+        lighting = apt.getString(apt.getColumnIndex(Airports.BEACON_LIGHTING_SCHEDULE))
+        if (lighting.isNotBlank()) {
+            addRow(layout, "Beacon lighting", lighting)
         }
 
         val landingFee = apt.getString(apt.getColumnIndex(Airports.LANDING_FEE))
@@ -602,7 +589,7 @@ class AirportDetailsFragment : FragmentBase() {
         if (Application.sDonationDone) {
             val apt = result[0] ?: return
             val siteNumber = apt.getString(apt.getColumnIndex(Airports.SITE_NUMBER))
-            val cycle: Cursor? = result[12]
+            val cycle = result[12]
             if (cycle != null && cycle.moveToFirst()) {
                 val afdCycle = cycle.getString(cycle.getColumnIndex(DafdCycle.AFD_CYCLE))
                 val dafd = result[13]
@@ -641,17 +628,17 @@ class AirportDetailsFragment : FragmentBase() {
         val layout = findViewById<LinearLayout>(R.id.detail_services_layout)
         var fuelTypes = DataUtils.decodeFuelTypes(
                 apt.getString(apt.getColumnIndex(Airports.FUEL_TYPES)))
-        if (fuelTypes.isEmpty()) {
+        if (fuelTypes.isBlank()) {
             fuelTypes = "No"
         }
         addRow(layout!!, "Fuel available", fuelTypes)
         var repair = apt.getString(apt.getColumnIndex(Airports.AIRFRAME_REPAIR_SERVICE)) ?: ""
-        if (repair.isEmpty()) {
+        if (repair.isBlank()) {
             repair = "No"
         }
         addRow(layout, "Airframe repair", repair)
         repair = apt.getString(apt.getColumnIndex(Airports.POWER_PLANT_REPAIR_SERVICE)) ?: ""
-        if (repair.isEmpty()) {
+        if (repair.isBlank()) {
             repair = "No"
         }
         addRow(layout, "Power plant repair", repair)
@@ -670,18 +657,12 @@ class AirportDetailsFragment : FragmentBase() {
     private fun addAwosRow(layout: LinearLayout, id: String, name: String, type: String,
                            freq: String?, phone: String, distance: Float, bearing: Float,
                            runnable: Runnable) {
-        val sb = StringBuilder()
-        sb.append(id)
-        if (name.isNotEmpty()) {
-            sb.append(" - ")
-            sb.append(name)
-        }
-        val label1 = sb.toString()
+        val label1 = if (name.isNotBlank()) "$id - $name" else id
 
-        val f: Float = freq?.toFloatOrNull() ?: 0f
+        val f = freq?.toFloatOrNull() ?: 0f
         val value1 = if (f > 0) FormatUtils.formatFreq(f) else ""
 
-        sb.setLength(0)
+        val sb = StringBuilder()
         sb.append(type)
         if (mIcaoCode == id) {
             sb.append(", On-site")
@@ -695,14 +676,14 @@ class AirportDetailsFragment : FragmentBase() {
 
         val row = addClickableRow(layout, label1, value1, label2, phone, runnable)
         var tv = row.findViewById<TextView>(R.id.item_label)
-        tv?.tag = id
-        if (row is LinearLayout) {
-            mAwosViews.add(row)
-        }
+        tv.tag = id
         // Make phone number clickable
         tv = row.findViewById(R.id.item_extra_value)
-        if (!tv?.text.isNullOrBlank()) {
-            makeClickToCall(tv!!)
+        if (!tv.text.isNullOrBlank()) {
+            makeClickToCall(tv)
+        }
+        if (row is LinearLayout) {
+            mAwosViews.add(row)
         }
     }
 

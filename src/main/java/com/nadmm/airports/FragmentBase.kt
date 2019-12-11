@@ -450,7 +450,6 @@ abstract class FragmentBase : Fragment(), IRefreshable {
     }
 
     fun <T : View> findViewById(id: Int): T? {
-        val view = view
         return view?.findViewById(id)
     }
 
