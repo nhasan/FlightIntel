@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,7 @@ class NearbyAirportsFragment : LocationListFragmentBase() {
             "AND ${Airports.SITE_NUMBER} <> '$it'"
         }
 
-        val c = NearbyAirportsCursor(db, lastLocation, nearbyRadius, extraSelection)
+        val c = NearbyAirportsCursor(db, lastLocation!!, nearbyRadius, extraSelection)
         return arrayOf(c)
     }
 

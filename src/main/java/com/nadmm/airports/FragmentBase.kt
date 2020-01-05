@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -286,7 +286,9 @@ abstract class FragmentBase : Fragment(), IRefreshable {
 
     protected fun addClickableRow(layout: LinearLayout, label: String, clss: Class<*>,
                                   args: Bundle?): View {
-        return addClickableRow(layout, label, clss, args)
+        val row = addRow(layout, label)
+        makeRowClickable(row, clss, args)
+        return row
     }
 
     protected fun addClickableRow(layout: LinearLayout, row: View, clss: Class<*>,

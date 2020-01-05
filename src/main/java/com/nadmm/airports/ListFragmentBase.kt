@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,14 +82,8 @@ abstract class ListFragmentBase : FragmentBase() {
     }
 
     protected open fun setCursor(c: Cursor?) {
-        var adapter: CursorAdapter? = listView.adapter as CursorAdapter
-        if (adapter == null) {
-            adapter = newListAdapter(activity, c)
-            setAdapter(adapter)
-        } else {
-            adapter.changeCursor(c)
-            setListShown(c?.count ?: 0 > 0)
-        }
+        val adapter = newListAdapter(activity, c)
+        setAdapter(adapter)
     }
 
     fun setAdapter(adapter: ListAdapter?) {
