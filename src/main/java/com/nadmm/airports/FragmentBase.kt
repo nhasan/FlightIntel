@@ -266,7 +266,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
     }
 
     private fun makeRowClickable(row: View, clss: Class<*>, args: Bundle?) {
-        val r = { activityBase.replaceFragment(clss, args, true) }
+        val r = Runnable { activityBase.replaceFragment(clss, args, true) }
         makeRowClickable(row, r)
     }
 

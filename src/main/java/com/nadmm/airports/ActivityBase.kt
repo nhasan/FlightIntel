@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -764,7 +764,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         supportActionBar?.subtitle = getTitle()
     }
 
-    fun setActionBarTitle(title: String, subtitle: String) {
+    fun setActionBarTitle(title: String, subtitle: String?) {
         supportActionBar?.title = title
         supportActionBar?.subtitle = subtitle
     }
