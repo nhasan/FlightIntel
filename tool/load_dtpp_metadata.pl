@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2012-2020 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -24,10 +24,9 @@ use DBI;
 use LWP::Simple;
 use XML::Twig;
 
-my $BASE_DIR=shift @ARGV;
+my $TPP_METADATA_FILE=shift @ARGV;
 my $dbfile = shift @ARGV;
 
-my $TPP_METADATA_FILE="${BASE_DIR}/d-TPP_Metafile.xml";
 my $count = 0;
 
 my $ofh = select STDOUT;

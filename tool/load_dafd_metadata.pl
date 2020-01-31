@@ -24,11 +24,9 @@ use DBI;
 use LWP::Simple;
 use XML::Twig;
 
-our $cycle = shift @ARGV;
-my $BASE_DIR = shift @ARGV;
+my $AFD_METADATA_FILE = shift @ARGV;
 my $dbfile = shift @ARGV;
 
-my $AFD_METADATA_FILE = glob "${BASE_DIR}/afd_*.xml";
 my $count = 0;
 
 my $dbh = DBI->connect( "dbi:SQLite:dbname=$dbfile", "", "" );
