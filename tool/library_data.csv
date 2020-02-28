@@ -11,19 +11,19 @@ handbooks,faa-h-8083-21b-2019.pdf,Helicopter Flying Handbook,2019,FAA-H-8083-21B
 handbooks,faa-fs-i-8700-1-2003.pdf,Information for Banner Tow Operations,2003,FAA/FS-I-8799-1
 handbooks,fcm-h1-2017.pdf,Federal Meteorological Handbook No. 1,2017,NOAA
 handbooks,fcm-h2-1988.pdf,Federal Meteorological Handbook No. 2,1988,NOAA
-manuals,cug_191205.pdf,Aeronautical Chart User's Guide,Dec 2019,FAA
+manuals,cug_200130.pdf,Aeronautical Chart User's Guide,Jan 2020,FAA
 manuals,faa-h-8083-19a-2008.pdf,Plane Sense - General Aviation Information,2008,FAA-H-8083-19A
 manuals,ac-00-6b.pdf,Aviation Weather,2016,AC-00-6B
 manuals,ac-00-45h_chg_1.pdf,Aviation Weather Services,2016,AC-00-45H
 manuals,00-80T-80.pdf,Aerodynamics for Naval Aviators,1965,H. H. Hurt, Jr.
+periodicals,cb_481.pdf,Callback,Issue 481 (Feb 2020),NASA
+periodicals,cb_480.pdf,Callback,Issue 480 (Jan 2020),NASA
 periodicals,cb_479.pdf,Callback,Issue 479 (Dec 2019),NASA
 periodicals,cb_478.pdf,Callback,Issue 478 (Nov 2019),NASA
-periodicals,cb_477.pdf,Callback,Issue 477 (Oct 2019),NASA
-periodicals,cb_476.pdf,Callback,Issue 476 (Sep 2019),NASA
+periodicals,JanFeb2020.pdf,FAA Safety Briefing,Jan/Feb 2020,FAA
 periodicals,NovDec2019.pdf,FAA Safety Briefing,Nov/Dec 2019,FAA
 periodicals,SepOct2019.pdf,FAA Safety Briefing,Sep/Oct 2019,FAA
 periodicals,JulAug2019.pdf,FAA Safety Briefing,Jul/Aug 2019,FAA
-periodicals,MayJun2019.pdf,FAA Safety Briefing,May/Jun 2019,FAA
 safety,ac_90-48d-chg_1.pdf,Pilots’ Role in Collision Avoidance,2016,FAA
 safety,safety_advisor_non-towered_airports.pdf,Operations at Nontowered Airports,2007,FAA
 safety,faa-p-8740-02-2008.pdf,Density Altitude,2008,FAA
@@ -38,7 +38,7 @@ safety,faa-p-8740-69-2008.pdf,Aeronautical Decision Making,2008,FAA
 safety,takeoff_safety.pdf,Pilot Guide to Takeoff Safety,2008,FAA
 safety,AP_UpsetRecovery_Book.pdf,Upset Recovery Training Aid,2008,FAA
 safety,tfrweb_2003.pdf,Pilot's Guide to TFR,2003,FAA
-regs,aim_190815.pdf,AIM 2019,Aug 2019,FAA
+regs,aim_200130.pdf,AIM,Jan 2020,FAA
 regs,CFR-2019-title14-vol1.pdf,FAR Volume 1,Parts 1-59,US GPO 2019
 regs,CFR-2019-title14-vol2.pdf,FAR Volume 2,Parts 60-109,US GPO 2019
 regs,CFR-2019-title14-vol3.pdf,FAR Volume 3,Parts 110-199,US GPO 2019
@@ -79,11 +79,11 @@ pts,FAA-S-ACS-8B_180611.pdf,Instrument Rating ACS,Jun 2018,FAA-S-ACS-8B
 pts,faa-s-8081-5f.pdf,Airline Transport Pilot PTS,Jul 2014,FAA-S-8081-5F
 pts,FAA-S-8081-6D_180419.pdf,Flight Instructor PTS,Apr 2018,FAA-S-8081-6D
 pts,faa-s-8081-9d.pdf,Flight Instructor Instrument PTS,Jul 2010,FAA-S-8081-9D
-misc,aip_190815.pdf,AIP Amendment 2,Aug 2019,FAA
-misc,NAT_IGA_2004.pdf,North Atlantic Operations Manual,3rd Edition,USA
-misc,pcg_190815.pdf,Pilot/Controller Glossary,Aug 2019,FAA
-misc,7110.10AA_fss_190815.pdf,Flight Services,Aug 2019,JO 7110.10AA
-misc,7110.65Y_atc_190815.pdf,Air Traffic Control,Aug 2019,JO 7110.65Y
+misc,aip_200130.pdf,AIP Amendment 3,Jan 2020,FAA
+misc,nat_doc_007_200130.pdf,North Atlantic Operations Manual,V.2020-1,USA
+misc,pcg_200130.pdf,Pilot/Controller Glossary,Jan 2020,FAA
+misc,7110.10AA_fss_200130.pdf,Flight Services,Jan 2020,JO 7110.10AA
+misc,7110.65Y_atc_200130.pdf,Air Traffic Control,Jan 2020,JO 7110.65Y
 misc,7110.118A_lahso_160130.pdf,Land and Hold Short Operations,Jan 2016,JO 7110.118A
 misc,faa_airspacecard_2014.pdf,Airspace Card,Jun 2014,FAA
 canada,AIM_2018-2_EN_181011.pdf,Aeronautical Information Manual (TC AIM),Oct 2018,Nav Canada
