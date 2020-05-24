@@ -21,8 +21,9 @@ package com.nadmm.airports.notams;
 
 import android.app.IntentService;
 import android.content.Intent;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.text.format.DateUtils;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
@@ -38,6 +39,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -105,7 +107,7 @@ public class NotamService extends IntentService {
 
         // Write out the form parameters as the request body
         OutputStream faa = conn.getOutputStream();
-        faa.write( params.getBytes( "UTF-8" ) );
+        faa.write( params.getBytes( StandardCharsets.UTF_8 ) );
         faa.close();
 
         int response = conn.getResponseCode();
@@ -176,10 +178,12 @@ public class NotamService extends IntentService {
     private void cleanupCache() {
         Date now = new Date();
         File[] files = mDataDir.listFiles();
-        for ( File file : files ) {
-            long age = now.getTime()-file.lastModified();
-            if ( age > NOTAM_CACHE_MAX_AGE ) {
-                file.delete();
+        if ( files != null ) {
+            for ( File file : files ) {
+                long age = now.getTime() - file.lastModified();
+                if ( age > NOTAM_CACHE_MAX_AGE ) {
+                    file.delete();
+                }
             }
         }
     }
