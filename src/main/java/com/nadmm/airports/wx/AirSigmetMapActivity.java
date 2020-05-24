@@ -30,7 +30,6 @@ public class AirSigmetMapActivity extends ActivityBase {
 
     private static final String[] sAirSigmetCodes = new String[] {
         "ALL",
-        "ASH",
         "CB",
         "IC",
         "IF",
@@ -38,12 +37,11 @@ public class AirSigmetMapActivity extends ActivityBase {
     };
 
     private static final String[] sAirSigmetNames = new String[] {
-        "All G-AIRMETs and SIGMETs",
-        "Volcanic Ash SIGMETs",
+        "All active SIGMETs",
         "Convective SIGMETs and Outlooks",
-        "Icing G-AIRMETs and SIGMETs",
-        "IFR/Mtn. Obsc. G-AIRMETs and Sand/Dust Storm SIGMETs",
-        "Turbulence G-AIRMETs and SIGMETs"
+        "Icing SIGMETs",
+        "IFR SIGMETs",
+        "Turbulence SIGMETs"
     };
 
     @Override
