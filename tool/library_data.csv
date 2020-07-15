@@ -5,25 +5,25 @@ handbooks,faa-h-8083-15b-2012.pdf,Instrument Flying Handbook,2012,FAA-H-8083-15B
 handbooks,faa-h-8083-16b-2017.pdf,Instrument Procedures Handbook,2017,FAA-H-8083-16B
 handbooks,faa-h-8083-6-2009.pdf,Advanced Avionics Handbook,2009,FAA-H-8083-6
 handbooks,faa-h-8083-27a-2006.pdf,Student Pilot Guide,2016,FAA-H-8083-27A
-handbooks,faa-h-8083-9a-2008.pdf,Aviation Instructor's Handbook,2008,FAA-H-8083-9A
+handbooks,faa-h-8083-9b-2020.pdf,Aviation Instructor's Handbook,2020,FAA-H-8083-9B
 handbooks,faa-h-8083-1b-2016.pdf,Weight and Balance Handbook,2016,FAA-H-8083-1B
 handbooks,faa-h-8083-21b-2019.pdf,Helicopter Flying Handbook,2019,FAA-H-8083-21B
 handbooks,faa-fs-i-8700-1-2003.pdf,Information for Banner Tow Operations,2003,FAA/FS-I-8799-1
 handbooks,fcm-h1-2017.pdf,Federal Meteorological Handbook No. 1,2017,NOAA
 handbooks,fcm-h2-1988.pdf,Federal Meteorological Handbook No. 2,1988,NOAA
-manuals,cug_20200521.pdf,Aeronautical Chart User's Guide,May 2020,FAA
+manuals,cug_20200716.pdf,Aeronautical Chart User's Guide,Jul 2020,FAA
 manuals,faa-h-8083-19a-2008.pdf,Plane Sense - General Aviation Information,2008,FAA-H-8083-19A
 manuals,ac-00-6b.pdf,Aviation Weather,2016,AC-00-6B
 manuals,ac-00-45h_chg_1.pdf,Aviation Weather Services,2016,AC-00-45H
 manuals,00-80T-80.pdf,Aerodynamics for Naval Aviators,1965,H. H. Hurt Jr.
-periodicals,cb_484.pdf,Callback,Issue 48r (May 2020),NASA
+periodicals,cb_485.pdf,Callback,Issue 485 (Jun 2020),NASA
+periodicals,cb_484.pdf,Callback,Issue 484 (May 2020),NASA
 periodicals,cb_483.pdf,Callback,Issue 483 (Apr 2020),NASA
 periodicals,cb_482.pdf,Callback,Issue 482 (Mar 2020),NASA
-periodicals,cb_481.pdf,Callback,Issue 481 (Feb 2020),NASA
+periodicals,JulAug2020.pdf,FAA Safety Briefing,Jul/Aug 2020,FAA
 periodicals,MayJun2020.pdf,FAA Safety Briefing,May/Jun 2020,FAA
 periodicals,MarApr2020.pdf,FAA Safety Briefing,Mar/Apr 2020,FAA
 periodicals,JanFeb2020.pdf,FAA Safety Briefing,Jan/Feb 2020,FAA
-periodicals,NovDec2019.pdf,FAA Safety Briefing,Nov/Dec 2019,FAA
 safety,ac_90-48d-chg_1.pdf,Pilots’ Role in Collision Avoidance,2016,FAA
 safety,safety_advisor_non-towered_airports.pdf,Operations at Nontowered Airports,2007,FAA
 safety,faa-p-8740-02-2008.pdf,Density Altitude,2008,FAA
@@ -39,11 +39,11 @@ safety,takeoff_safety.pdf,Pilot Guide to Takeoff Safety,2008,FAA
 safety,AP_UpsetRecovery_Book.pdf,Upset Recovery Training Aid,2008,FAA
 safety,tfrweb_2003.pdf,Pilot's Guide to TFR,2003,FAA
 regs,aim_200130.pdf,AIM,Jan 2020,FAA
-regs,CFR-2019-title14-vol1.pdf,FAR Volume 1,Parts 1-59,US GPO 2019
-regs,CFR-2019-title14-vol2.pdf,FAR Volume 2,Parts 60-109,US GPO 2019
-regs,CFR-2019-title14-vol3.pdf,FAR Volume 3,Parts 110-199,US GPO 2019
+regs,CFR-2020-title14-vol1.pdf,FAR Volume 1,Parts 1-59,US GPO 2020
+regs,CFR-2020-title14-vol2.pdf,FAR Volume 2,Parts 60-109,US GPO 2020
+regs,CFR-2020-title14-vol3.pdf,FAR Volume 3,Parts 110-199,US GPO 2020
 regs,CFR-2019-title14-vol4.pdf,FAR Volume 4,Parts 200-1199,US GPO 2019
-regs,CFR-2019-title14-vol5.pdf,FAR Volume 5,Parts 1200-1399,US GPO 2019
+regs,CFR-2020-title14-vol5.pdf,FAR Volume 5,Parts 1200-1399,US GPO 2020
 risk,faa-h-8083-2-2009.pdf,Risk Management Handbook,2016,FAA-H-8083-2
 risk,wx_decision.pdf,Weather Decision Making,2009,FAA
 risk,local_vfr.pdf,Local VFR Flying,2012,FAA
