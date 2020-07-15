@@ -103,7 +103,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     fi
     DCS_FILE="${BASE_DIR}/afd_${DCS_CYCLE}.xml";
     if [ ! -f "${DCS_FILE}" ]; then
-	DCS_URL="https://aeronav.faa.gov/afd/afd_${DCS_CYCLE}.xml";
+	DCS_URL="https://aeronav.faa.gov/afd/${DCS_CYCLE}/afd_${DCS_CYCLE}.xml";
         echo "${bold}Downloading d-CS ${DCS_CYCLE} file:${normal}";
         wget -O ${DCS_FILE} ${DCS_URL};
     fi
