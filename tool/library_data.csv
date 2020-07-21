@@ -38,7 +38,7 @@ safety,faa-p-8740-69-2008.pdf,Aeronautical Decision Making,2008,FAA
 safety,takeoff_safety.pdf,Pilot Guide to Takeoff Safety,2008,FAA
 safety,AP_UpsetRecovery_Book.pdf,Upset Recovery Training Aid,2008,FAA
 safety,tfrweb_2003.pdf,Pilot's Guide to TFR,2003,FAA
-regs,aim_200130.pdf,AIM,Jan 2020,FAA
+regs,aim_200716.pdf,AIM,Jul 2020,FAA
 regs,CFR-2020-title14-vol1.pdf,FAR Volume 1,Parts 1-59,US GPO 2020
 regs,CFR-2020-title14-vol2.pdf,FAR Volume 2,Parts 60-109,US GPO 2020
 regs,CFR-2020-title14-vol3.pdf,FAR Volume 3,Parts 110-199,US GPO 2020
@@ -79,11 +79,11 @@ pts,FAA-S-ACS-8B_180611.pdf,Instrument Rating ACS,Jun 2018,FAA-S-ACS-8B
 pts,faa-s-8081-5f.pdf,Airline Transport Pilot PTS,Jul 2014,FAA-S-8081-5F
 pts,FAA-S-8081-6D_180419.pdf,Flight Instructor PTS,Apr 2018,FAA-S-8081-6D
 pts,faa-s-8081-9d.pdf,Flight Instructor Instrument PTS,Jul 2010,FAA-S-8081-9D
-misc,aip_200130.pdf,AIP Amendment 3,Jan 2020,FAA
-misc,nat_doc_007_200130.pdf,North Atlantic Operations Manual,V.2020-1,USA
-misc,pcg_200130.pdf,Pilot/Controller Glossary,Jan 2020,FAA
-misc,7110.10AA_fss_200130.pdf,Flight Services,Jan 2020,JO 7110.10AA
-misc,7110.65Y_atc_200130.pdf,Air Traffic Control,Jan 2020,JO 7110.65Y
+misc,aip_200716.pdf,AIP (26th Edition),Jul 2020,FAA
+misc,nat_doc_007_200716.pdf,North Atlantic Operations Manual,V.2020-2,USA
+misc,pcg_200716.pdf,Pilot/Controller Glossary,Jul 2020,FAA
+misc,7110.10AA_fss_200716.pdf,Flight Services,Jul 2020,JO 7110.10AA
+misc,7110.65Y_atc_200716.pdf,Air Traffic Control,Jul 2020,JO 7110.65Y
 misc,7110.118A_lahso_160130.pdf,Land and Hold Short Operations,Jan 2016,JO 7110.118A
 misc,faa_airspacecard_2014.pdf,Airspace Card,Jun 2014,FAA
 canada,AIM_2018-2_EN_181011.pdf,Aeronautical Information Manual (TC AIM),Oct 2018,Nav Canada
