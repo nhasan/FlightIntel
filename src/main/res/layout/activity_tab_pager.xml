@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,10 +47,7 @@
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/sliding_tabs"
-                android:background="?attr/colorPrimary"
-                app:tabBackground="?attr/colorPrimary"
-                app:tabTextColor="@color/tab_text_color"
-                app:tabIndicatorColor="?colorAccent"
+                style="@style/Widget.MaterialComponents.TabLayout.PrimarySurface"
                 app:tabMode="scrollable"
                 app:layout_scrollFlags="scroll|enterAlwaysCollapsed"
                 android:layout_width="match_parent"
