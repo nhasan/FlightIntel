@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,10 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 
+import androidx.core.net.ConnectivityManagerCompat;
+
 import com.nadmm.airports.ActivityBase;
+import com.nadmm.airports.Application;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -40,8 +43,6 @@ import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-
-import androidx.core.net.ConnectivityManagerCompat;
 
 @SuppressWarnings( "BooleanMethodIsAlwaysInverted" )
 public class NetworkUtils {
@@ -83,7 +84,7 @@ public class NetworkUtils {
 
         if ( NetworkUtils.isConnectedToMeteredNetwork( context ) ) {
             AlertDialog.Builder builder = new AlertDialog.Builder( context );
-            builder.setMessage( "You are conneteced to a metered network such as mobile data"
+            builder.setMessage( "You are connected to a metered network such as mobile data"
                     + " or tethered to mobile data.\nContinue download?" )
                     .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
                         @Override
@@ -140,11 +141,6 @@ public class NetworkUtils {
         }
     }
 
-    public static boolean doHttpGet( Context context, String host, String path, File file )
-            throws Exception {
-        return doHttpGet( context, "http", host, 80, path, null, file, null, null, null );
-    }
-
     public static boolean doHttpsGet( Context context, String host, String path, File file )
             throws Exception {
         return doHttpGet( context, "https", host, 443, path, null, file, null, null, null );
@@ -187,11 +183,14 @@ public class NetworkUtils {
         }
 
         InputStream f = null;
-        CountingInputStream in = null;
+        CountingInputStream in;
         OutputStream out = null;
 
         try {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty( "User-Agent",
+                    String.format( "FlightIntel/%s (Android; nhasan@nadmm.com)",
+                            Application.version) );
             int status = conn.getResponseCode();
             if ( status != HttpURLConnection.HTTP_OK ) {
                 if ( receiver != null ) {
