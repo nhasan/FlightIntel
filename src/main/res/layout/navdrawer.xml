@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2015-2020 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,15 +20,14 @@
  */
  -->
 
-<com.google.android.material.navigation.NavigationView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/navdrawer"
-        android:layout_width="@dimen/navdrawer_width"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:itemTextColor="@color/drawer_item_text_color"
-        app:itemIconTint="@color/drawer_item_text_color"
-        app:headerLayout="@layout/navigationview_header"
-        app:menu="@menu/navigation_menu" />
+<com.google.android.material.navigation.NavigationView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navdrawer"
+    android:layout_width="@dimen/navdrawer_width"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:fitsSystemWindows="true"
+    app:headerLayout="@layout/navigationview_header"
+    app:itemIconTint="@color/drawer_item_text_color"
+    app:itemTextColor="@color/drawer_item_text_color"
+    app:menu="@menu/navigation_menu" />

@@ -32,7 +32,7 @@
     </style>
 
     <style name="TextSmall.Red">
-        <item name="android:textColor">@color/red</item>
+        <item name="android:textColor">@color/red_500</item>
     </style>
 
     <style name="TextSmall.White">
