@@ -23,7 +23,6 @@
 <resources>
     <color name="color_primary">#40c4ff</color>
     <color name="color_primary_dark">#7f121212</color>
-    <color name="color_primary_light">#1c1c1c</color>
     <color name="color_accent">#40c4ff</color>
     <color name="color_background">#121212</color>
     <color name="color_navigation_bar">@color/color_background</color>
