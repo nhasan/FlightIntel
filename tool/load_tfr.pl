@@ -28,22 +28,23 @@ use XML::Parser;
 my $TFR_URL_BASE = "https://tfr.faa.gov/tfr2/";
 my $TFR_URL = "$TFR_URL_BASE/list.html";
 my $FEET_PER_METER = 3.28084;
+my $TFR_OUTPUT_FILE = "tfr_list.xml";
 
 my %links = ();
-my $text = "";
-my $NotUid = 0;
+
 my $tfr_output = "";
 
-my $valDistVerLower = "";
-my $codeDistVerLower = "";
-my $uomDistVerLower = "";
-my $valDistVerUpper = "";
-my $codeDistVerUpper = "";
-my $uomDistVerUpper = "";
-my $dateEffective = "";
-my $dateExpire = "";
-my $dateIndexYear = "";
-my $noSeqNo = "";
+my @valDistVerLower;
+my @codeDistVerLower;
+my @uomDistVerLower;
+my @valDistVerUpper;
+my @codeDistVerUpper;
+my @uomDistVerUpper;
+my $dateIndexYear;
+my $noSeqNo;
+my $TFRAreaGroup;
+my $text;
+my $numGroups;
 
 sub cb {
     my($tag, %link) = @_;
@@ -62,8 +63,21 @@ sub handle_start() {
     shift;
     my ($elem, %attrs) = @_;
     $text = "";
-    if ($elem eq "NotUid") {
-        $NotUid = 1;
+
+    if ($elem eq "TFRAreaGroup") {
+        $TFRAreaGroup = 1;
+    }
+    elsif ($elem eq "TfrNot") {
+        @valDistVerLower = ();
+        @codeDistVerLower = ();
+        @uomDistVerLower = ();
+        @valDistVerUpper = ();
+        @codeDistVerUpper = ();
+        @uomDistVerUpper = ();
+        $dateIndexYear = "";
+        $noSeqNo = "";
+        $TFRAreaGroup = 0;
+        $numGroups = 0;
     }
 }
 
@@ -78,95 +92,51 @@ sub handle_end() {
     my ($elem) = @_;
 
     if ($elem eq "TFRAreaGroup") {
-        if ($uomDistVerLower eq "M") {
-            $valDistVerLower *= $FEET_PER_METER;
-        }
-        elsif ($uomDistVerLower eq "FL") {
-            $valDistVerLower *= 100;
-        }
-        if ($codeDistVerLower eq "HEI") {
-            $codeDistVerLower = "A";
-        }
-        elsif ($codeDistVerLower eq "ALT") {
-            $codeDistVerLower = "M";
-        }
-        $tfr_output .= "  <MINALT>${valDistVerLower}${codeDistVerLower}</MINALT>\n";
-
-        if ($uomDistVerUpper eq "M") {
-            $valDistVerUpper *= $FEET_PER_METER;
-        }
-        elsif ($uomDistVerUpper eq "FL") {
-            $valDistVerUpper *= 100;
-        }
-        if ($codeDistVerUpper eq "HEI") {
-            $codeDistVerUpper = "A";
-        }
-        elsif ($codeDistVerUpper eq "ALT") {
-            $codeDistVerUpper = "M";
-        }
-        $tfr_output .= "  <MAXALT>${valDistVerUpper}${codeDistVerUpper}</MAXALT>\n";
-
-        $valDistVerLower = "";
-        $codeDistVerLower = "";
-        $uomDistVerLower = "";
-        $valDistVerUpper = "";
-        $codeDistVerUpper = "";
-        $uomDistVerUpper = "";
-
-        $tfr_output .= "  <ACTIVE><TEXT>${dateEffective}Z</TEXT></ACTIVE>\n";
-        if ($dateExpire ne "") {
-            $tfr_output .= "  <EXPIRES><TEXT>${dateExpire}Z</TEXT></EXPIRES>\n";
-        }
-
-        $dateEffective = "";
-        $dateExpire = "";
+        $TFRAreaGroup = 0;
+        $numGroups++;
     }
     elsif ($elem eq "NotUid") {
-        $NotUid = 0;
+        $tfr_output .= "  <NID>${dateIndexYear}/${noSeqNo}</NID>\n";
     }
-    elsif ($elem eq "dateEffective") {
-        $dateEffective = $text;
+    elsif ($elem eq "dateEffective" && !$TFRAreaGroup) {
+        $tfr_output .= "  <ACTIVE><TEXT>${text}Z</TEXT></ACTIVE>\n";
     }
-    elsif ($elem eq "dateExpire") {
-        $dateExpire = $text;
+    elsif ($elem eq "dateExpire" && !$TFRAreaGroup) {
+        $tfr_output .= "  <EXPIRES><TEXT>${text}Z</TEXT></EXPIRES>\n";
     }
     elsif ($elem eq "valDistVerLower") {
-        $valDistVerLower = $text;
+        push @valDistVerLower, $text;
     }
     elsif ($elem eq "codeDistVerLower") {
-        $codeDistVerLower = $text;
+        push @codeDistVerLower, $text;
     }
     elsif ($elem eq "uomDistVerLower") {
-        $uomDistVerLower = $text;
+        push @uomDistVerLower, $text;
     }
     elsif ($elem eq "valDistVerUpper") {
-        $valDistVerUpper = $text;
+        push @valDistVerUpper, $text;
     }
     elsif ($elem eq "codeDistVerUpper") {
-        $codeDistVerUpper = $text;    
+        push @codeDistVerUpper, $text;    
     }
     elsif ($elem eq "uomDistVerUpper") {
-        $uomDistVerUpper = $text;
+        push @uomDistVerUpper, $text;
     }
-    elsif ($elem eq "dateIssued" && $NotUid) {
+    elsif ($elem eq "dateIssued") {
         $tfr_output .= "  <CREATED><TEXT>${text}Z</TEXT></CREATED>\n";
         $tfr_output .= "  <MODIFIED><TEXT>${text}Z</TEXT></MODIFIED>\n";
     }
-    elsif ($elem eq "dateIndexYear" && $NotUid) {
-        $dateIndexYear = $text;
+    elsif ($elem eq "dateIndexYear") {
+        $dateIndexYear = $text % 10;
     }
-    elsif ($elem eq "noSeqNo" && $NotUid) {
+    elsif ($elem eq "noSeqNo") {
         $noSeqNo = $text;
     }
-    elsif ($elem eq "txtLocalName" && $NotUid) {
+    elsif ($elem eq "txtLocalName") {
         $tfr_output .= "  <NAME>$text</NAME>\n";
     }
     elsif ($elem eq "txtDescrUSNS") {
         $tfr_output .= "  <SRC>$text</SRC>\n";
-    }
-    elsif ($elem eq "Group") {
-        $dateIndexYear %= 10;
-        $tfr_output .= "  <NID>${dateIndexYear}/${noSeqNo}</NID>\n";
     }
     elsif ($elem eq "codeFacility") {
         $tfr_output .= "  <FACILITY>$text</FACILITY>\n";
@@ -179,6 +149,66 @@ sub handle_end() {
     }
     elsif ($elem eq "codeCoordFacilityType") {
         $tfr_output .= "  <FACILITYTYPE>$text</FACILITYTYPE>\n";
+    }
+    elsif ($elem eq "TfrNot") {
+        # Normalize the height values and decode AGL/MSL
+        my $index = 0;
+        while ($index < $numGroups) {
+            my $uom = $uomDistVerLower[$index];
+            my $code = $codeDistVerLower[$index];
+            my $val = $valDistVerLower[$index];
+
+            if ($uomDistVerLower[$index] eq "M") {
+                $valDistVerLower[$index] *= $FEET_PER_METER;
+            }
+            elsif ($uomDistVerLower[$index] eq "FL") {
+                $valDistVerLower[$index] *= 100;
+            }
+            $codeDistVerLower[$index] = "ALT" if !defined $codeDistVerLower[$index]; 
+            if ($codeDistVerLower[$index] eq "HEI") {
+                $codeDistVerLower[$index] = "A";
+            }
+            elsif ($codeDistVerLower[$index] eq "ALT") {
+                $codeDistVerLower[$index] = "M";
+            }
+            if ($uomDistVerUpper[$index] eq "M") {
+                $valDistVerUpper[$index] *= $FEET_PER_METER;
+            }
+            elsif ($uomDistVerUpper[$index] eq "FL") {
+                $valDistVerUpper[$index] *= 100;
+            }
+            $codeDistVerUpper[$index] = "ALT" if !defined $codeDistVerUpper[$index]; 
+            if ($codeDistVerUpper[$index] eq "HEI") {
+                $codeDistVerUpper[$index] = "A";
+            }
+            elsif ($codeDistVerUpper[$index] eq "ALT") {
+                $codeDistVerUpper[$index] = "M";
+            }
+            $index++;
+        }
+
+        my $codeLower;
+        my $valLower;
+        my $codeUpper;
+        my $valUpper; 
+
+        # Calculate min and max heights across all groups
+        $index = 0;
+        while ($index < $numGroups) {
+            if (!defined $valLower or $valDistVerLower[$index] < $valLower) {
+                $valLower = $valDistVerLower[$index];
+                $codeLower = $codeDistVerLower[$index];
+            }
+            
+            if (!defined $valUpper or $valDistVerUpper[$index] > $valUpper) {
+                $valUpper = $valDistVerUpper[$index];
+                $codeUpper = $codeDistVerUpper[$index];
+            }
+            $index++;
+        }
+
+        $tfr_output .= "  <MINALT>${valLower}${codeLower}</MINALT>\n";
+        $tfr_output .= "  <MAXALT>${valUpper}${codeUpper}</MAXALT>\n";
     }
 }
 
@@ -197,19 +227,23 @@ my $tfr_html = get($TFR_URL) or die;
 $LX->parse($tfr_html);
 
 $tfr_output = "<xml>\n";
-
-my $seq = "0";
+my $seq = 0;
 
 foreach my $url (keys %links) {
     print "$url\n";
-    $tfr_output .= "<TFR$seq>\n";
-    my $xml = get($url);
-    $parser->parse($xml);
-    $tfr_output .= "</TFR>\n";
-    $seq++;
-    last;
+    if (my $xml = get($url) ) {
+        $seq++;
+        $tfr_output .= "<TFR$seq>\n";
+        $parser->parse($xml);
+        $tfr_output .= "</TFR$seq>\n";
+    }
 }
 
 $tfr_output .= "</xml>";
 
-print "$tfr_output\n";
+if ($seq > 0) {
+    open(OUTPUT, ">$TFR_OUTPUT_FILE") or die;
+    print OUTPUT $tfr_output;
+}
+
+print "Loaded $seq TFRs\n";
