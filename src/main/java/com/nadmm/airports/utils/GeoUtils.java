@@ -45,7 +45,7 @@ public class GeoUtils {
     private GeoUtils() {}
 
     public static double getEarthRadius( double radLat ) {
-        // Earth radius in nautical miles at a given lattitude, according to the WGS-84 ellipsoid
+        // Earth radius in nautical miles at a given latitude, according to the WGS-84 ellipsoid
         // http://en.wikipedia.org/wiki/Earth_radius
         double An = WGS84_a*WGS84_a * Math.cos( radLat );
         double Bn = WGS84_b*WGS84_b * Math.sin( radLat );
@@ -58,7 +58,7 @@ public class GeoUtils {
         double radLat = Math.toRadians( location.getLatitude() );
         double radLon = Math.toRadians( location.getLongitude() );
 
-        // Calculate the radius of earth at this lattitude
+        // Calculate the radius of earth at this latitude
         double R = getEarthRadius( radLat );
         // Calculate the angular distance
         double radDist = r/R;
