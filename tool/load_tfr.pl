@@ -22,6 +22,7 @@
 # Ubuntu package dependencies
 #    libhtml-linkextractor-perl
 #    liblwp-protocol-https-perl
+#    libtext-autoformat-perl
 #    libxml-parser-perl
 
 use strict;
@@ -35,7 +36,7 @@ use XML::Parser;
 my $TFR_URL_BASE = "https://tfr.faa.gov/tfr2/";
 my $TFR_URL = "$TFR_URL_BASE/list.html";
 my $FEET_PER_METER = 3.28084;
-my $TFR_OUTPUT_FILE = "/var/www/flightintel/html/data/tfr_list.xml";
+my $TFR_OUTPUT_FILE = "/var/www/api.flightintel.com/html/data/tfr_list.xml";
 
 my %links = ();
 
@@ -245,7 +246,7 @@ my $tfr_html = get($TFR_URL) or die;
 $LX->parse($tfr_html);
 
 my $now = strftime "%FT%TZ", gmtime time;
-$tfr_output = "<?xml timestamp=\"$now\" ?>\n";
+$tfr_output = "<?xml version=\"0\" ?>\n";
 $tfr_output .= "<TFRList>\n";
 my $seq = 0;
 
@@ -260,6 +261,7 @@ foreach my $url (keys %links) {
 }
 
 $tfr_output .= "</TFRList>\n";
+$tfr_output .= "<Footer num=\"$seq\" timestamp=\"$now\" />\n";
 
 if ($seq > 0) {
     open(OUTPUT, ">$TFR_OUTPUT_FILE") or die;
