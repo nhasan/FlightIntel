@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel
 # *
-# * Copyright 2020 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2021 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -19,16 +19,23 @@
 # * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # */
 
+# Ubuntu package dependencies
+#    libhtml-linkextractor-perl
+#    liblwp-protocol-https-perl
+#    libxml-parser-perl
+
 use strict;
 use warnings;
+use POSIX;
 use HTML::LinkExtor;
 use LWP::Simple;
+use Text::Autoformat;
 use XML::Parser;
 
 my $TFR_URL_BASE = "https://tfr.faa.gov/tfr2/";
 my $TFR_URL = "$TFR_URL_BASE/list.html";
 my $FEET_PER_METER = 3.28084;
-my $TFR_OUTPUT_FILE = "tfr_list.xml";
+my $TFR_OUTPUT_FILE = "/var/www/flightintel/html/data/tfr_list.xml";
 
 my %links = ();
 
@@ -45,6 +52,17 @@ my $noSeqNo;
 my $TFRAreaGroup;
 my $text;
 my $numGroups;
+
+my $reTrim = qr/^\s+|\s+$/;
+
+sub capitalize($)
+{
+    my ( $string ) = @_;
+    $string = autoformat( $string, { case => 'highlight' } );
+    $string =~ s/\s+(Afb)\s+/ \U$1\E /g;
+    $string =~ s/$reTrim//g;
+    return $string;
+}
 
 sub cb {
     my($tag, %link) = @_;
@@ -96,13 +114,13 @@ sub handle_end() {
         $numGroups++;
     }
     elsif ($elem eq "NotUid") {
-        $tfr_output .= "  <NID>${dateIndexYear}/${noSeqNo}</NID>\n";
+        $tfr_output .= "    <NID>${dateIndexYear}/${noSeqNo}</NID>\n";
     }
     elsif ($elem eq "dateEffective" && !$TFRAreaGroup) {
-        $tfr_output .= "  <ACTIVE><TEXT>${text}Z</TEXT></ACTIVE>\n";
+        $tfr_output .= "    <ACTIVE>${text}Z</ACTIVE>\n";
     }
     elsif ($elem eq "dateExpire" && !$TFRAreaGroup) {
-        $tfr_output .= "  <EXPIRES><TEXT>${text}Z</TEXT></EXPIRES>\n";
+        $tfr_output .= "    <EXPIRES>${text}Z</EXPIRES>\n";
     }
     elsif ($elem eq "valDistVerLower") {
         push @valDistVerLower, $text;
@@ -123,8 +141,8 @@ sub handle_end() {
         push @uomDistVerUpper, $text;
     }
     elsif ($elem eq "dateIssued") {
-        $tfr_output .= "  <CREATED><TEXT>${text}Z</TEXT></CREATED>\n";
-        $tfr_output .= "  <MODIFIED><TEXT>${text}Z</TEXT></MODIFIED>\n";
+        $tfr_output .= "    <CREATED>${text}Z</CREATED>\n";
+        $tfr_output .= "    <MODIFIED>${text}Z</MODIFIED>\n";
     }
     elsif ($elem eq "dateIndexYear") {
         $dateIndexYear = $text % 10;
@@ -133,22 +151,22 @@ sub handle_end() {
         $noSeqNo = $text;
     }
     elsif ($elem eq "txtLocalName") {
-        $tfr_output .= "  <NAME>$text</NAME>\n";
+        $tfr_output .= "    <NAME>$text</NAME>\n";
     }
     elsif ($elem eq "txtDescrUSNS") {
-        $tfr_output .= "  <SRC>$text</SRC>\n";
+        $tfr_output .= "    <SRC>$text</SRC>\n";
     }
     elsif ($elem eq "codeFacility") {
-        $tfr_output .= "  <FACILITY>$text</FACILITY>\n";
+        $tfr_output .= "    <FACILITY>$text</FACILITY>\n";
     }
     elsif ($elem eq "txtNameCity") {
-        $tfr_output .= "  <CITY>$text</CITY>\n";
+        $tfr_output .= "    <CITY>".capitalize($text)."</CITY>\n";
     }
     elsif ($elem eq "txtNameUSState") {
-        $tfr_output .= "  <STATE>$text</STATE>\n";
+        $tfr_output .= "    <STATE>".capitalize($text)."</STATE>\n";
     }
     elsif ($elem eq "codeCoordFacilityType") {
-        $tfr_output .= "  <FACILITYTYPE>$text</FACILITYTYPE>\n";
+        $tfr_output .= "    <FACILITYTYPE>$text</FACILITYTYPE>\n";
     }
     elsif ($elem eq "TfrNot") {
         # Normalize the height values and decode AGL/MSL
@@ -207,8 +225,8 @@ sub handle_end() {
             $index++;
         }
 
-        $tfr_output .= "  <MINALT>${valLower}${codeLower}</MINALT>\n";
-        $tfr_output .= "  <MAXALT>${valUpper}${codeUpper}</MAXALT>\n";
+        $tfr_output .= "    <MINALT>${valLower}${codeLower}</MINALT>\n";
+        $tfr_output .= "    <MAXALT>${valUpper}${codeUpper}</MAXALT>\n";
     }
 }
 
@@ -226,20 +244,22 @@ my $tfr_html = get($TFR_URL) or die;
 
 $LX->parse($tfr_html);
 
-$tfr_output = "<xml>\n";
+my $now = strftime "%FT%TZ", gmtime time;
+$tfr_output = "<?xml timestamp=\"$now\" ?>\n";
+$tfr_output .= "<TFRList>\n";
 my $seq = 0;
 
 foreach my $url (keys %links) {
     print "$url\n";
     if (my $xml = get($url) ) {
         $seq++;
-        $tfr_output .= "<TFR$seq>\n";
+        $tfr_output .= "  <TFR$seq>\n";
         $parser->parse($xml);
-        $tfr_output .= "</TFR$seq>\n";
+        $tfr_output .= "  </TFR$seq>\n";
     }
 }
 
-$tfr_output .= "</xml>";
+$tfr_output .= "</TFRList>\n";
 
 if ($seq > 0) {
     open(OUTPUT, ">$TFR_OUTPUT_FILE") or die;
