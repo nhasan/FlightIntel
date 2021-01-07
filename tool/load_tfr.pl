@@ -39,9 +39,9 @@ my $FEET_PER_METER = 3.28084;
 my $TFR_OUTPUT_FILE = "/var/www/api.flightintel.com/html/data/tfr_list.xml";
 
 my %links = ();
+my @tfr_list = ();
 
-my $tfr_output = "";
-
+my $tfr_output;
 my @valDistVerLower;
 my @codeDistVerLower;
 my @uomDistVerLower;
@@ -83,7 +83,11 @@ sub handle_start() {
     my ($elem, %attrs) = @_;
     $text = "";
 
-    if ($elem eq "TFRAreaGroup") {
+    if ($elem eq "Not") {
+        $tfr_output = "";
+        $tfr_output .= "  <TFR>\n";
+    }
+    elsif ($elem eq "TFRAreaGroup") {
         $TFRAreaGroup = 1;
     }
     elsif ($elem eq "TfrNot") {
@@ -229,6 +233,10 @@ sub handle_end() {
         $tfr_output .= "    <MINALT>${valLower}${codeLower}</MINALT>\n";
         $tfr_output .= "    <MAXALT>${valUpper}${codeUpper}</MAXALT>\n";
     }
+    elsif ($elem eq "Not") {
+        $tfr_output .= "  </TFR>\n";
+        push @tfr_list, $tfr_output;
+    }
 }
 
 sub handle_default() {
@@ -245,23 +253,28 @@ my $tfr_html = get($TFR_URL) or die;
 
 $LX->parse($tfr_html);
 
-my $now = strftime "%FT%TZ", gmtime time;
-$tfr_output = "<?xml version=\"0\" ?>\n";
-$tfr_output .= "<TFRList>\n";
 my $seq = 0;
 
 foreach my $url (keys %links) {
-    print "$url\n";
     if (my $xml = get($url) ) {
+        print "Fetched $url\n";
         $seq++;
-        $tfr_output .= "  <TFR$seq>\n";
         $parser->parse($xml);
-        $tfr_output .= "  </TFR$seq>\n";
+    } else {
+        print "Failed  $url\n";
     }
 }
 
+my $now = strftime "%FT%TZ", gmtime time;
+$tfr_output = "";
+$tfr_output = "<?xml version=\"1.0\" ?>\n";
+$tfr_output .= "<TFRList count=\"$seq\" timestamp=\"$now\">\n";
+
+foreach my $tfr (@tfr_list) {
+    $tfr_output .= $tfr;
+}
+
 $tfr_output .= "</TFRList>\n";
-$tfr_output .= "<Footer num=\"$seq\" timestamp=\"$now\" />\n";
 
 if ($seq > 0) {
     open(OUTPUT, ">$TFR_OUTPUT_FILE") or die;
