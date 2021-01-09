@@ -30,19 +30,19 @@ dependencies {
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
     implementation 'com.google.android.gms:play-services-location:17.1.0'
-    implementation 'com.google.firebase:firebase-messaging:21.0.0'
+    implementation 'com.google.firebase:firebase-messaging:21.0.1'
 }
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.nadmm.airports"
         minSdkVersion 19
         targetSdkVersion 30
-        versionName "6.2.0"
-        versionCode 62000
+        versionName "6.2.1"
+        versionCode 62001
     }
 
     signingConfigs {
