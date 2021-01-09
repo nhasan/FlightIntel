@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,14 +27,13 @@
     <LinearLayout
             android:id="@+id/main_content"
             android:orientation="vertical"
-            android:paddingLeft="@dimen/padding_left"
-            android:paddingRight="@dimen/padding_right"
+            android:paddingStart="@dimen/padding_left"
+            android:paddingEnd="@dimen/padding_right"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <Button android:id="@+id/btnViewGraphic"
                 style="@style/FlatButton"
                 android:text="@string/view_graphic"
-                android:gravity="center"
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/section_margin"
                 android:layout_marginBottom="@dimen/section_margin"
@@ -51,15 +50,9 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        <TextView android:id="@+id/tfr_text_label"
-                style="@style/TextLabel"
-                android:layout_marginTop="@dimen/section_margin"
-                android:paddingBottom="@dimen/label_padding"
-                android:text="@string/tfr_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
         <LinearLayout android:id="@+id/tfr_text_layout"
                 android:background="@drawable/rounded_rectangle"
+                android:layout_marginTop="@dimen/section_margin"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

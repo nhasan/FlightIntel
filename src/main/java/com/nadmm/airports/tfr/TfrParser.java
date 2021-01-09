@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ import com.nadmm.airports.tfr.TfrList.Tfr;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -32,6 +31,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -50,21 +50,21 @@ public class TfrParser {
             XMLReader xmlReader = parser.getXMLReader();
             xmlReader.setContentHandler( handler );
             xmlReader.parse( input );
+            Collections.sort( tfrList.entries );
         } catch ( Exception ignored ) {
         }
     }
 
     protected final class TfrHandler extends DefaultHandler {
 
-        private TfrList tfrList;
+        private final TfrList tfrList;
         private Tfr tfr;
-        private StringBuilder text;
-        private String dateName;
-        private SimpleDateFormat sdf;
+        private final StringBuilder text;
+        private final SimpleDateFormat sdf;
 
         public TfrHandler( TfrList tfrList ) {
             this.tfrList = tfrList;
-            sdf = new SimpleDateFormat( "M/d/yyyy h:m:s a", Locale.US );
+            sdf = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US );
             sdf.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
             text = new StringBuilder();
         }
@@ -77,14 +77,13 @@ public class TfrParser {
         @Override
         public void startElement( String uri, String localName, String qName,
                 Attributes attributes ) {
-            if ( qName.toUpperCase( Locale.US ).matches( "TFR\\d+" ) ) {
+            if ( qName.toUpperCase( Locale.US ).matches( "TFRLIST" ) ) {
+                tfrList.fetchTime = parseDateTime( attributes.getValue( "timestamp" ) );
+            } else if ( qName.toUpperCase( Locale.US ).matches( "TFR" ) ) {
                 tfr = new Tfr();
-            } else if ( qName.equalsIgnoreCase( "CREATED" )
-                    || qName.equalsIgnoreCase( "MODIFIED" )
-                    || qName.equalsIgnoreCase( "ACTIVE" )
-                    || qName.equalsIgnoreCase( "EXPIRES" ) ) {
-                dateName = qName.toUpperCase( Locale.US );
             }
+
+            text.setLength( 0 );
         }
 
         @Override
@@ -93,6 +92,14 @@ public class TfrParser {
                 tfr.notamId = text.toString().trim();
             } else if ( qName.equalsIgnoreCase( "NAME" ) ) {
                 tfr.name = text.toString().trim();
+            } else if ( qName.equalsIgnoreCase( "CITY" ) ) {
+                tfr.city = text.toString().trim();
+            } else if ( qName.equalsIgnoreCase( "STATE" ) ) {
+                tfr.state = text.toString().trim();
+            } else if ( qName.equalsIgnoreCase( "FACILITY" ) ) {
+                tfr.facility = text.toString().trim();
+            } else if ( qName.equalsIgnoreCase( "FACILITYTYPE" ) ) {
+                tfr.facilityType = text.toString().trim();
             } else if ( qName.equalsIgnoreCase( "SRC" ) ) {
                 tfr.text = text.toString().trim();
             } else if ( qName.equalsIgnoreCase( "TYPE" ) ) {
@@ -101,44 +108,62 @@ public class TfrParser {
                 parseMinAlt( text.toString() );
             } else if ( qName.equalsIgnoreCase( "MAXALT" ) ) {
                 parseMaxAlt( text.toString() );
-            } else if ( qName.equalsIgnoreCase( "TEXT" ) ) {
-                if ( text.length() > 0 ) {
-                    try {
-                        if ( dateName.equals( "CREATED" ) ) {
-                            tfr.createTime = sdf.parse( text.toString() ).getTime();
-                        } else if ( dateName.equals( "MODIFIED" ) ) {
-                            tfr.modifyTime = sdf.parse( text.toString() ).getTime();
-                        } else if ( dateName.equals( "ACTIVE" ) ) {
-                            tfr.activeTime = sdf.parse( text.toString() ).getTime();
-                        } else if ( dateName.equals( "EXPIRES" ) ) {
-                            tfr.expireTime = sdf.parse( text.toString() ).getTime();
-                        }
-                    } catch ( ParseException ignored ) {
-                    }
-                }
-            } else if ( qName.toUpperCase( Locale.US ).matches( "TFR\\d+" ) ) {
+            } else if ( qName.equals( "CREATED" ) ) {
+                tfr.createTime = parseDateTime( text.toString() );
+            } else if ( qName.equals( "MODIFIED" ) ) {
+                tfr.modifyTime = parseDateTime( text.toString() );
+            } else if ( qName.equals( "ACTIVE" ) ) {
+                tfr.activeTime = parseDateTime( text.toString() );
+            } else if ( qName.equals( "EXPIRES" ) ) {
+                tfr.expireTime = parseDateTime( text.toString() );
+            } else if ( qName.toUpperCase( Locale.US ).matches( "TFR" ) ) {
                 if ( !tfr.name.equalsIgnoreCase( "Latest Update" ) ) {
                     if ( tfr.modifyTime == 0 )
                     {
                         tfr.modifyTime = tfr.createTime;
                     }
+                    tfr.type = getType( tfr.text );
                     tfrList.entries.add( tfr );
                 }
             }
+        }
 
-            text.setLength( 0 );
+        private long parseDateTime( String text )
+        {
+            long dt = Long.MAX_VALUE;
+            try {
+                dt = sdf.parse( text.trim() ).getTime();
+            } catch ( ParseException ignored ) {
+                String msg = ignored.getMessage();
+            }
+            return dt;
+        }
+
+        private String getType( String text ) {
+            if ( text.contains( "SPECIAL SECURITY" ) ) {
+                return "Special";
+            } else if ( text.contains( "SECURITY" ) ) {
+                return "Security";
+            } else if ( text.contains( "VIP" ) ) {
+                return "VIP";
+            } else if ( text.contains( "SPACE OPERATIONS AREA" ) ) {
+                return "Space Operations";
+            } else if ( text.contains( "HAZARD AREA" ) ) {
+                return "Hazards";
+            }
+            return "";
         }
 
         private void parseMinAlt( String alt ) {
-            tfr.minAltitudeFeet = Integer.valueOf( alt.substring( 0, alt.length()-1 ) );
-            tfr.minAltitudeType = alt.substring( alt.length()-1, alt.length() )
-                    .equals( "A" ) ? AltitudeType.AGL : AltitudeType.MSL;
+            tfr.minAltitudeFeet = Integer.parseInt( alt.substring( 0, alt.length()-1 ) );
+            tfr.minAltitudeType = alt.startsWith( "A", alt.length()-1 ) ?
+                    AltitudeType.AGL : AltitudeType.MSL;
         }
 
         private void parseMaxAlt( String alt ) {
-            tfr.maxAltitudeFeet = Integer.valueOf( alt.substring( 0, alt.length()-1 ) );
-            tfr.maxAltitudeType = alt.substring( alt.length()-1, alt.length() )
-                    .equals( "A" ) ? AltitudeType.AGL : AltitudeType.MSL;
+            tfr.maxAltitudeFeet = Integer.parseInt( alt.substring( 0, alt.length()-1 ) );
+            tfr.maxAltitudeType = alt.startsWith( "A", alt.length()-1 ) ?
+                    AltitudeType.AGL : AltitudeType.MSL;
         }
 
     }

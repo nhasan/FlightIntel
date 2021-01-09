@@ -29,9 +29,9 @@ import java.util.Collections;
 
 public class TfrService extends TfrServiceBase {
 
-    public static final String TFR_HOST = "www.jepptech.com";
-    public static final String TFR_PATH = "/tfr/Query.asp";
-    public static final String TFR_QUERY = "UserID=Public&DeletedMinutes=180&ExpiredMinutes=0";
+    public static final String TFR_HOST = "api.flightintel.com";
+    public static final String TFR_PATH = "/data/tfr_list.xml";
+    public static final String TFR_QUERY = "";
 
     public static final String ACTION_GET_TFR_LIST = "flightintel.tfr.action.GET_TFR_LIST";
     public static final String FORCE_REFRESH = "FORCE_REFRESH";
@@ -73,7 +73,7 @@ public class TfrService extends TfrServiceBase {
 
     protected void fetch( String host, String path, String query, File tfrFile ) {
         try {
-            NetworkUtils.doHttpGet( this, host, path, query, tfrFile, null, null, null );
+            NetworkUtils.doHttpsGet( this, host, path, query, tfrFile, null, null, null );
         } catch ( Exception e ) {
             UiUtils.showToast( this, "TFR: "+e.getMessage() );
         }

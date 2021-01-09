@@ -31,14 +31,14 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.nadmm.airports.ListFragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.tfr.TfrList.Tfr;
 import com.nadmm.airports.utils.TimeUtils;
 
 import java.util.Locale;
-
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class TfrListFragment extends ListFragmentBase {
 

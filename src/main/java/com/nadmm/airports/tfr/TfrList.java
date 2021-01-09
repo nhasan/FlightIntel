@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,10 @@ public class TfrList implements Serializable {
 
         public String notamId;
         public String name;
+        public String city;
+        public String state;
+        public String facility;
+        public String facilityType;
         public String type;
         public String text;
         public int minAltitudeFeet;
@@ -89,24 +93,33 @@ public class TfrList implements Serializable {
 
         public String formatAltitudeRange() {
             StringBuilder sb = new StringBuilder();
-            if ( minAltitudeFeet < Integer.MAX_VALUE && maxAltitudeFeet < Integer.MAX_VALUE ) {
-                if ( minAltitudeType == AltitudeType.AGL && minAltitudeFeet == 0 ) {
+            if ( minAltitudeFeet < Integer.MAX_VALUE && maxAltitudeFeet < Integer.MAX_VALUE
+                    && maxAltitudeFeet > 0 ) {
+                if ( minAltitudeFeet == 0 ) {
                     sb.append( "Surface" );
                 } else {
                     sb.append( formatAltitude( minAltitudeFeet, minAltitudeType ) );
                 }
-                sb.append( " to " );
-                sb.append( formatAltitude( maxAltitudeFeet, maxAltitudeType ) );
+                sb.append( " up to " );
+                if ( maxAltitudeFeet >= 91000 ) {
+                    sb.append( "unlimited" );
+                } else {
+                    sb.append( formatAltitude( maxAltitudeFeet, maxAltitudeType ) );
+                }
             } else if ( minAltitudeFeet < Integer.MAX_VALUE
                     && maxAltitudeFeet == Integer.MAX_VALUE ) {
-                sb.append( formatAltitude( minAltitudeFeet, minAltitudeType ) );
+                if ( minAltitudeFeet == 0 ) {
+                    sb.append( "Surface" );
+                } else {
+                    sb.append( formatAltitude( minAltitudeFeet, minAltitudeType ) );
+                }
                 sb.append( " and above" );
             } else if ( minAltitudeFeet == Integer.MAX_VALUE
                     && maxAltitudeFeet < Integer.MAX_VALUE ) {
                 sb.append( formatAltitude( maxAltitudeFeet, maxAltitudeType ) );
                 sb.append( " and below" );
             } else {
-                sb.append( "No altitudes" );
+                sb.append( "Altitude not specified" );
             }
 
             return sb.toString();
@@ -154,10 +167,22 @@ public class TfrList implements Serializable {
             }
         }
 
+        public String formatLocation()
+        {
+            StringBuilder location = new StringBuilder();
+            if ( city != null ) {
+                location.append( city );
+                location.append( ", " );
+            }
+            location.append( state );
+            return location.toString();
+        }
+
         @Override
         public int compareTo( Tfr another ) {
             return modifyTime == another.modifyTime? 0 : modifyTime < another.modifyTime? 1 : -1;
         }
+
     }
 
     public TfrList() {

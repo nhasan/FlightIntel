@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,20 +29,18 @@ import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.tfr.TfrList.Tfr;
 
+import java.util.Locale;
+
 public class TfrListAdapter extends BaseAdapter {
 
-    private LayoutInflater mInflater;
+    private final LayoutInflater mInflater;
     private final TfrList mTfrList;
-    private ActivityBase mContext;
-    private int mActiveColor;
-    private int mInactiveColor;
+    private final ActivityBase mContext;
 
     public TfrListAdapter( ActivityBase activity, TfrList tfrList ) {
         mContext = activity;
         mInflater = LayoutInflater.from( mContext );
         mTfrList = tfrList;
-        mActiveColor = mContext.getResources().getColor( R.color.lightred );
-        mInactiveColor = mContext.getResources().getColor( R.color.lightgray );
     }
 
     @Override
@@ -80,12 +78,17 @@ public class TfrListAdapter extends BaseAdapter {
             tv.setText( tfr.notamId.substring( 0, index ) );
         }
         tv = convertView.findViewById( R.id.tfr_name );
-        tv.setText( tfr.name );
+        if ( tfr.notamId.equals( tfr.name ) ) {
+            tv.setText( tfr.notamId );
+        } else {
+            tv.setText( String.format( Locale.US, "%s - %s", tfr.notamId, tfr.name ) );
+        }
+        tv = convertView.findViewById( R.id.tfr_location );
+        tv.setText( tfr.formatLocation() );
         tv = convertView.findViewById( R.id.tfr_time );
         tv.setText( tfr.formatTimeRange( mContext ) );
         tv = convertView.findViewById( R.id.tfr_active );
         tv.setText( tfr.isExpired()? "Expired" : tfr.isActive()? "Active" : "Inactive" );
-        tv.setTextColor( tfr.isActive()? mActiveColor : mInactiveColor );
         tv = convertView.findViewById( R.id.tfr_type );
         tv.setText( tfr.type );
         tv = convertView.findViewById( R.id.tfr_altitudes );
