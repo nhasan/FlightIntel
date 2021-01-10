@@ -115,14 +115,15 @@ public class TfrParser {
             } else if ( qName.equals( "ACTIVE" ) ) {
                 tfr.activeTime = parseDateTime( text.toString() );
             } else if ( qName.equals( "EXPIRES" ) ) {
-                tfr.expireTime = parseDateTime( text.toString() );
+                tfr.expireTime = parseDateTime(text.toString());
+            } else if ( qName.equals( "TYPE" ) ) {
+                tfr.type = text.toString().trim();
             } else if ( qName.toUpperCase( Locale.US ).matches( "TFR" ) ) {
                 if ( !tfr.name.equalsIgnoreCase( "Latest Update" ) ) {
                     if ( tfr.modifyTime == 0 )
                     {
                         tfr.modifyTime = tfr.createTime;
                     }
-                    tfr.type = getType( tfr.text );
                     tfrList.entries.add( tfr );
                 }
             }
@@ -137,21 +138,6 @@ public class TfrParser {
                 String msg = ignored.getMessage();
             }
             return dt;
-        }
-
-        private String getType( String text ) {
-            if ( text.contains( "SPECIAL SECURITY" ) ) {
-                return "Special";
-            } else if ( text.contains( "SECURITY" ) ) {
-                return "Security";
-            } else if ( text.contains( "VIP" ) ) {
-                return "VIP";
-            } else if ( text.contains( "SPACE OPERATIONS AREA" ) ) {
-                return "Space Operations";
-            } else if ( text.contains( "HAZARD AREA" ) ) {
-                return "Hazards";
-            }
-            return "";
         }
 
         private void parseMinAlt( String alt ) {
