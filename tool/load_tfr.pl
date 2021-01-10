@@ -41,6 +41,9 @@ my $TFR_OUTPUT_FILE = "/var/www/api.flightintel.com/html/data/tfr_list.xml";
 my %links = ();
 my @tfr_list = ();
 
+# Order of strings is important
+my @tfr_types = ("Special", "Security", "Space Operations", "VIP", "Hazards");
+
 my $tfr_output;
 my @valDistVerLower;
 my @codeDistVerLower;
@@ -160,6 +163,14 @@ sub handle_end() {
     }
     elsif ($elem eq "txtDescrUSNS") {
         $tfr_output .= "    <SRC>$text</SRC>\n";
+    }
+    elsif ($elem eq "txtDescrModern" ) {
+        foreach my $tfr_type (@tfr_types) {
+            if ($text =~ /\>$tfr_type\</) {
+                $tfr_output .= "    <TYPE>$tfr_type</TYPE>\n";
+                last;
+            }
+        }
     }
     elsif ($elem eq "codeFacility") {
         $tfr_output .= "    <FACILITY>$text</FACILITY>\n";
