@@ -48,8 +48,10 @@ my $localtimestamp = $cfg->param("FIL.timestamp");
 my $dbname = $cfg->param("OUTPUT.dbname");
 
 my $tablename = "notams";
-my $aixm_file = "initial_load_aixm.xml";
-#my $aixm_file = "sample_aixm_notam.xml";
+#my $aixm_file = "initial_load_aixm.xml";
+my $aixm_file = "sample_fil_aixm.xml";
+
+my $reCoordinates = qr/^\d{4}[NS]\d{5}[EW]$/;
 
 my $dbh = DBI->connect("dbi:SQLite:dbname=$dbname", "", "");
 
@@ -146,67 +148,62 @@ $xpc->registerNs("ns11", "http://www.aixm.aero/schema/5.1/event");
 $xpc->registerNs("nns12", "urn:us.gov.dot.faa.aim.fns");
 $xpc->registerNs("ns13", "http://www.aixm.aero/schema/5.1/message");
 $xpc->registerNs("ns14", "http://www.opengis.net/wfs-util/2.0");
-#$xpc->registerNs("ns1", "http://www.opengis.net/ows/1.1");
-#$xpc->registerNs("ns2", "http://www.w3.org/1999/xlink");
-#$xpc->registerNs("ns3", "http://www.aixm.aero/schema/5.1");
-#$xpc->registerNs("ns4", "http://www.isotc211.org/2005/gco");
-#$xpc->registerNs("ns5", "http://www.isotc211.org/2005/gmd");
-#$xpc->registerNs("ns6", "http://www.isotc211.org/2005/gts");
-#$xpc->registerNs("ns7", "urn:us.gov.dot.faa.aim.fns");
-#$xpc->registerNs("ns8", "http://www.aixm.aero/schema/5.1/event");
-#$xpc->registerNs("ns9", "http://www.aixm.aero/schema/5.1/extensions/FAA/FNSE");
-#$xpc->registerNs("ns10", "http://www.aixm.aero/schema/5.1/message");
-
-my $elem;
 
 foreach my $msg ($xpc->findnodes("//ns13:AIXMBasicMessage")) {
     my $id = $msg->getAttribute("ns5:id");
     my ($timeslice) = $xpc->findnodes(".//ns11:EventTimeSlice", $msg);
     my ($notam) = $xpc->findnodes(".//ns11:textNOTAM/ns11:NOTAM", $timeslice);
-    my ($series) = map { $_->to_literal } $xpc->findnodes(".//ns11:series", $notam) // "";
-    my ($number) = map { int($_->to_literal) } $xpc->findnodes(".//ns11:number", $notam);
-    my ($year) = map { int($_->to_literal) } $xpc->findnodes(".//ns11:year", $notam);
-    my ($type) = map { $_->to_literal } $xpc->findnodes(".//ns11:type", $notam);
-    my ($issued) = map { $_->to_literal } $xpc->findnodes(".//ns11:issued", $notam);
-    my ($affectedFIR) = map { $_->to_literal } $xpc->findnodes(".//ns11:affectedFIR", $notam) // "";
-    my ($selectionCode) = map { $_->to_literal } $xpc->findnodes(".//ns11:selectionCode", $notam) // "";
-    my ($traffic) = map { $_->to_literal } $xpc->findnodes(".//ns11:traffic", $notam) // "";
-    my ($purpose) = map { $_->to_literal } $xpc->findnodes(".//ns11:purpose", $notam) // "";
-    my ($scope) = map { $_->to_literal } $xpc->findnodes(".//ns11:scope", $notam) // "";
-    my ($minimumFL) = map { int($_->to_literal) } $xpc->findnodes(".//ns11:minimumFL", $notam) // "";
-    my ($maximumFL) = map { int($_->to_literal) } $xpc->findnodes(".//ns11:maximumFL", $notam) // "";
-    my ($coordinates) = map { $_->to_literal } $xpc->findnodes(".//ns11:coordinates", $notam) // "";
-    my ($radius) = map { int($_->to_literal() // 0) } $xpc->findnodes(".//ns11:radius", $notam) // "";
-    my ($text) = map { $_->to_literal } $xpc->findnodes(".//ns11:text", $notam) // "";
+    my ($series) = $xpc->findvalue(".//ns11:series", $notam) // "";
+    my ($number) = $xpc->findvalue(".//ns11:number", $notam);
+    my ($year) = $xpc->findvalue(".//ns11:year", $notam);
+    my ($type) = $xpc->findvalue(".//ns11:type", $notam);
+    my ($issued) = $xpc->findvalue(".//ns11:issued", $notam);
+    my ($affectedFIR) = $xpc->findvalue(".//ns11:affectedFIR", $notam) // "";
+    my ($selectionCode) = $xpc->findvalue(".//ns11:selectionCode", $notam) // "";
+    my ($traffic) = $xpc->findvalue(".//ns11:traffic", $notam) // "";
+    my ($purpose) = $xpc->findvalue(".//ns11:purpose", $notam) // "";
+    my ($scope) = $xpc->findvalue(".//ns11:scope", $notam) // "";
+    my ($minimumFL) = $xpc->findvalue(".//ns11:minimumFL", $notam) // "";
+    my ($maximumFL) = $xpc->findvalue(".//ns11:maximumFL", $notam) // "";
+    my ($coordinates) = $xpc->findvalue(".//ns11:coordinates", $notam) 
+            if $xpc->exists(".//ns11:coordinates", $notam);
+    if ( $id eq "FNS_ID_58381588" ) {
+        say $id." ".$xpc->exists(".//ns11:coordinates", $notam);
+    }
+    $coordinates //= "";
+    my ($radius) = $xpc->findvalue(".//ns11:radius", $notam) // "";
+    my ($text) = $xpc->findvalue(".//ns11:text", $notam) // "";
 
-    my ($effectiveStart) = map { $_->to_literal() } $xpc->findnodes(".//ns5:beginPosition", $timeslice) // "";
-    my ($effectiveEnd) = map { $_->to_literal() } $xpc->findnodes(".//ns5:endPosition", $timeslice) // "";
+    my ($effectiveStart) = $xpc->findvalue(".//ns5:beginPosition", $timeslice) // "";
+    my ($effectiveEnd) = $xpc->findvalue(".//ns5:endPosition", $timeslice) // "";
 
     my ($extension) = $xpc->findnodes(".//ns6:EventExtension", $msg);
-    my ($classification) = map { $_->to_literal } $xpc->findnodes(".//ns6:classification", $extension) // "";
-    my ($icaoLocation) = map { $_->to_literal } $xpc->findnodes(".//ns6:icaoLocation", $extension) // "";
-    my ($lastUpdated) = map { $_->to_literal } $xpc->findnodes(".//ns6:lastUpdated", $extension) // "";
-    my ($airportname) = map { $_->to_literal } $xpc->findnodes(".//ns6:airportname", $extension) // "";
+    my ($classification) = $xpc->findvalue(".//ns6:classification", $extension) // "";
+    my ($icaoLocation) = $xpc->findvalue(".//ns6:icaoLocation", $extension) // "";
+    my ($lastUpdated) = $xpc->findvalue(".//ns6:lastUpdated", $extension) // "";
+    my ($airportname) = $xpc->findvalue(".//ns6:airportname", $extension) // "";
 
     my $latittude = 0;
     my $longitude = 0;
-    if (length($coordinates) == 11) { 
-        my $latittude = substr($coordinates, 0, 4)/100.0;
+    if ($coordinates =~ /$reCoordinates/) {
+        $latittude = substr($coordinates, 0, 4)/100.0;
         if ( substr($coordinates, 4, 1) eq "S" )
         {
             $latittude *= -1;
         }
-        my $longitude = substr($coordinates, 5, 5)/100.0;
+        $longitude = substr($coordinates, 5, 5)/100.0;
         if ( substr($coordinates, 10, 1) eq "W" )
         {
             $longitude *= -1;
         }
+    } else {
+        say "Bad format: $id" if length($coordinates) > 100;
     }
 
-    say "$id, $series, $number, $year";
     #say "$id, $series, $number, $year, $type, $issued, $affectedFIR, $selectionCode, $traffic, $purpose, $scope, ";
-    #    ."$minimumFL, $maximumFL, $latittude, $longitude, $radius, $effectiveStart, $effectiveEnd, $classification, "
-    #    ."$icaoLocation, $airportname, $lastUpdated, $text";
+    say "$id, $series, $number, $year, $type, $issued, $affectedFIR, $selectionCode, $traffic, $purpose, $scope, "
+        ."$minimumFL, $maximumFL, $latittude, $longitude, $radius, $effectiveStart, $effectiveEnd, $classification, "
+        ."$icaoLocation, $airportname, $lastUpdated";
 }
 
 $dbh->disconnect();
