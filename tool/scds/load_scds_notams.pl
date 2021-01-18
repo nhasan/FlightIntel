@@ -68,7 +68,9 @@ sub load_notams_from_file($$$) {
 
     my $new = 0;
     my $reader = XML::LibXML::Reader->new(IO => $fh);
-    while ( $reader->read ) {
+    while ( 1 ) {
+        my $result = eval { $reader->read };
+        last unless ($result);
         next unless $reader->matchesPattern($msg_pattern);
         my $msg = $reader->copyCurrentNode(1);
         $reader->next;
@@ -89,15 +91,20 @@ sub load_notams_from_file($$$) {
         $xpc->registerNs("ns14", "http://www.opengis.net/wfs-util/2.0");
 
         my $id = $xpc->findvalue('./@ns5:id');
+        if (exists $notams{$id}) {
+            # This Notam already exists, skip it.
+            $notams{$id}++;
+            next;
+        }
+
         my ($timeslice) = $xpc->findnodes(".//ns11:EventTimeSlice", $msg);
         my ($notam) = $xpc->findnodes(".//ns11:textNOTAM", $timeslice);
         my $type = $xpc->findvalue(".//ns11:NOTAM/ns11:type", $notam);
-
         if ($type eq "C") {
             # This notam is cancelled, skip it.
             next;
         }
-        
+
         my $series = $xpc->findvalue(".//ns11:series", $notam) // "";
         my $number = $xpc->findvalue(".//ns11:number", $notam);
         my $year = $xpc->findvalue(".//ns11:year", $notam);
@@ -184,6 +191,29 @@ sub delete_notams($$) {
     say "Deleted $size Notams.";
 }
 
+sub process_jms($$$) {
+    my ($file, $dbh, $sth_insert_notam) = @_;
+    if (open my $fh, "<", $file) {
+        load_notams_from_file($fh, $dbh, $sth_insert_notam);
+        close $fh || warn "close failed: $!";
+        unlink $file
+    } else {
+        say "Unable to open $file: $!";
+    }
+}
+
+sub process_fil($$$$) {
+    my ($file, $dbh, $sth_insert_notam, $sth_delete_notam) = @_;
+    if (open my $fh, '<:gzip', $file) {
+        load_current_notam_ids($dbh);
+        load_notams_from_file($fh, $dbh, $sth_insert_notam);
+        delete_notams($dbh, $sth_delete_notam);
+        unlink $file
+    } else {
+        say "Unable to open $file: $!";
+    }
+}
+
 my $dbh = DBI->connect("dbi:SQLite:dbname=$dbname", "", "");
 my $tablename = "notams";
 my $info = $dbh->table_info(undef, undef, $tablename)->fetchall_arrayref;
@@ -262,30 +292,31 @@ say "Watching $filpath";
 $monitor->watch( { name => "$filpath", files => 1 } );
 $monitor->scan;
 
+# Process existing NOTAM files first
+opendir(DIR, $jmspath) or die "can't opendir $jmspath: $!";
+while (defined(my $file = readdir(DIR))) {
+    next if $file =~ /^\.\.?$/;
+    next if $file =~ /^messages\.log$/;
+    $file = "$jmspath/$file";
+    say "$file was found.";
+    process_jms($file, $dbh, $sth_insert_notam);
+}
+closedir(DIR);
+
 while (1) {
     my @changes = $monitor->scan;
+    # Wait a little to make sure files are completely written to disk
+    sleep(1);
     for my $change (@changes) {
         for my $file ($change->files_created) {
             next if $file =~ /.*\/messages\.log$/;
             say "$file was created.";
             if (rindex($file, $jmspath, 0) == 0) {
-                if (open my $fh, "<", $file) {
-                    load_notams_from_file($fh, $dbh, $sth_insert_notam);
-                    close $fh || warn "close failed: $!";
-                } else {
-                    say "Unable to open $file: $!";
-                }
+                process_jms($file, $dbh, $sth_insert_notam);
             }
             elsif (rindex($file, $filpath, 0) == 0) {
-                if (open my $fh, '<:gzip', $file) {
-                    load_current_notam_ids($dbh);
-                    load_notams_from_file($fh, $dbh, $sth_insert_notam);
-                    delete_notams($dbh, $sth_delete_notam);
-                } else {
-                    say "Unable to open $file: $!";
-                }
+                process_fil($file, $dbh, $sth_insert_notam, $sth_delete_notam);
             }
-            unlink $file
         }
     }
     sleep(3);
