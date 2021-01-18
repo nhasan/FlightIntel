@@ -23,8 +23,7 @@
 #   libconfig-simple-perl
 #   libdbi-perl
 #   libdbd-sqlite3-perl
-#   libnet-sftp-foreign-perl
-#   libperlio-gzip-perl
+#   libfile-monitor-perl
 #   libxml-libxml-perl
 #
 
@@ -34,23 +33,19 @@ use v5.10;
 
 use Config::Simple;
 use DBI;
-use Net::SFTP::Foreign;
-use PerlIO::gzip;
+use File::Monitor;
 use XML::LibXML::Reader;
 
 # Read the configuration
-my $cfg = new Config::Simple("load_notam_fil.cfg");
-my $host = $cfg->param("SWIM.host");
-my $user = $cfg->param("SWIM.user");
-my $timestampfile = $cfg->param("SWIM.timestampfile");
-my $datafile = $cfg->param("SWIM.datafile");
-my $localtimestamp = $cfg->param("FIL.timestamp");
+my $cfg = new Config::Simple("load_scds_notams.cfg");
+my $jmspath = $cfg->param("JMS.path");
+my $filpath = $cfg->param("FIL.path");
 my $dbname = $cfg->param("OUTPUT.dbname");
 
 my %notams = ();
 my $reCoordinates = qr/^\d{4}[NS]\d{5}[EW]\d{0,3}$/;
 
-sub loadExistingNotamIds($) {
+sub load_current_notam_ids($) {
     my $dbh = shift;
     
     my $sth = $dbh->prepare("SELECT id FROM notams;");
@@ -65,7 +60,7 @@ sub loadExistingNotamIds($) {
     say "Loaded $size existing Notams.";
 }
 
-sub loadNotamsFromFIL($$$) {
+sub load_notams_from_file($$$) {
     my ($fh, $dbh, $sth_insert) = @_;
 
     my $msg_pattern = XML::LibXML::Pattern->new('//ns13:AIXMBasicMessage',
@@ -76,10 +71,7 @@ sub loadNotamsFromFIL($$$) {
     while ( $reader->read ) {
         next unless $reader->matchesPattern($msg_pattern);
         my $msg = $reader->copyCurrentNode(1);
-        my $id = $msg->getAttribute("ns5:id");
-
         $reader->next;
-
         my $xpc = XML::LibXML::XPathContext->new($msg);
         $xpc->registerNs("ns1", "http://www.opengis.net/ows/1.1");
         $xpc->registerNs("ns2", "http://www.w3.org/1999/xlink");
@@ -96,17 +88,13 @@ sub loadNotamsFromFIL($$$) {
         $xpc->registerNs("ns13", "http://www.aixm.aero/schema/5.1/message");
         $xpc->registerNs("ns14", "http://www.opengis.net/wfs-util/2.0");
 
+        my $id = $xpc->findvalue('./@ns5:id');
         my ($timeslice) = $xpc->findnodes(".//ns11:EventTimeSlice", $msg);
         my ($notam) = $xpc->findnodes(".//ns11:textNOTAM", $timeslice);
         my $type = $xpc->findvalue(".//ns11:NOTAM/ns11:type", $notam);
 
         if ($type eq "C") {
             # This notam is cancelled, skip it.
-            next;
-        }
-        if (exists $notams{$id}) {
-            # This notam already exists in our db, skip to next
-            $notams{$id}++;
             next;
         }
         
@@ -173,8 +161,11 @@ sub loadNotamsFromFIL($$$) {
         $sth_insert->bind_param(21, $classification);
         $sth_insert->bind_param(22, $text);
 
-        $sth_insert->execute() or die "Can't execute statement: $DBI::errstr\n";
-        ++$new;
+        if (!$sth_insert->execute()) {
+            say "Could onot insert $id: $DBI::errstr";
+        } else {
+            ++$new;
+        }
     }
 
     say "Inserted $new new Notams.";
@@ -228,7 +219,7 @@ if (scalar @$info == 0) {
 }
 
 my $insert_notams_row =
-    "INSERT INTO notams ("
+    "INSERT OR IGNORE INTO notams ("
         . "id, "
         . "series, "
         . "number, "
@@ -263,38 +254,39 @@ my $sth_delete_notam = $dbh->prepare($delete_notams_row);
 $dbh->do( "PRAGMA page_size=4096" );
 $dbh->do( "PRAGMA synchronous=OFF" );
 
-say "Connecting to $user\@$host...";
+my $monitor = File::Monitor->new();
 
-my $sftp = Net::SFTP::Foreign->new($host, user => $user, queue_size => 1);
-$sftp->error and die "SFTP failed: " . $sftp->error;
-say "Created SFTP session.";
+say "Watching $jmspath";
+$monitor->watch( { name => "$jmspath", files => 1 } );
+say "Watching $filpath";
+$monitor->watch( { name => "$filpath", files => 1 } );
+$monitor->scan;
 
-my $remotetimestamp = $sftp->get_content($timestampfile)
-    or die "$timestampfile failed: " . $sftp->error;
-chomp($remotetimestamp);
-
-say "Last fetch timestamp was $localtimestamp";
-if ($localtimestamp ne $remotetimestamp) {
-    say "Fetching data file $datafile from FAA server.";
-    $sftp->get($datafile, $datafile)
-        or die "$datafile failed: " . $sftp->error;
-    say "Closing SFTP session.";
-    undef $sftp;
-
-    $cfg->param(-block => 'FIL', -values => {'timestamp' => $remotetimestamp});
-    $cfg->save();
-
-    open my $fh, '<:gzip', $datafile or die "Unable to open $datafile: $!\n";
-
-    loadExistingNotamIds($dbh);
-    loadNotamsFromFIL($fh, $dbh, $sth_insert_notam);
-    delete_notams($dbh, $sth_delete_notam);
-} else {
-    say "Noting new to fetch from FAA server.";
-    say "Closing SFTP session.";
-    undef $sftp;
+while (1) {
+    my @changes = $monitor->scan;
+    for my $change (@changes) {
+        for my $file ($change->files_created) {
+            next if $file =~ /.*\/messages\.log$/;
+            say "$file was created.";
+            if (rindex($file, $jmspath, 0) == 0) {
+                if (open my $fh, "<", $file) {
+                    load_notams_from_file($fh, $dbh, $sth_insert_notam);
+                    close $fh || warn "close failed: $!";
+                } else {
+                    say "Unable to open $file: $!";
+                }
+            }
+            elsif (rindex($file, $filpath, 0) == 0) {
+                if (open my $fh, '<:gzip', $file) {
+                    load_current_notam_ids($dbh);
+                    load_notams_from_file($fh, $dbh, $sth_insert_notam);
+                    delete_notams($dbh, $sth_delete_notam);
+                } else {
+                    say "Unable to open $file: $!";
+                }
+            }
+            unlink $file
+        }
+    }
+    sleep(3);
 }
-
-$dbh->disconnect();
-
-exit (0);
