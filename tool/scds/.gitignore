@@ -1,2 +1,4 @@
 *.cfg
 *.db
+*.gz
+*.xml
