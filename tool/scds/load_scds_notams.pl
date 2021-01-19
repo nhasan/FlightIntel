@@ -128,11 +128,11 @@ sub load_notams_from_file($$$) {
         my $location = $xpc->findvalue(".//ns11:location", $notam) // "";
         my $text = eval {
             if ($classification eq "DOM" or $classification eq "FDC") {
-                $xpc->findvalue(".//ns11:simpleText", $notam) // "";
+                $xpc->findvalue(".//ns11:simpleText", $notam);
             } else {
-                $xpc->findvalue(".//ns11:text", $notam) // "";
+                $xpc->findvalue(".//ns11:text", $notam);
             }
-        };
+        } // "";
 
         my $latittude = 0;
         my $longitude = 0;
@@ -311,17 +311,19 @@ closedir(DIR);
 
 while (1) {
     my @changes = $monitor->scan;
-    # Wait a little to make sure files are completely written to disk
-    sleep(1);
-    for my $change (@changes) {
-        for my $file ($change->files_created) {
-            next if $file =~ /.*\/messages\.log$/;
-            say "$file was created.";
-            if (rindex($file, $jmspath, 0) == 0) {
-                process_jms($file, $dbh, $sth_insert_notam);
-            }
-            elsif (rindex($file, $filpath, 0) == 0) {
-                process_fil($file, $dbh, $sth_insert_notam, $sth_delete_notam);
+    if (scalar @changes) {
+        # Wait a little to make sure files are completely written to disk
+        sleep(1);
+        for my $change (@changes) {
+            for my $file ($change->files_created) {
+                next if $file =~ /.*\/messages\.log$/;
+                say "$file was created.";
+                if (rindex($file, $jmspath, 0) == 0) {
+                    process_jms($file, $dbh, $sth_insert_notam);
+                }
+                elsif (rindex($file, $filpath, 0) == 0) {
+                    process_fil($file, $dbh, $sth_insert_notam, $sth_delete_notam);
+                }
             }
         }
     }

@@ -51,6 +51,7 @@ while ($retry) {
     if ($error) { 
         say "SFTP connection failed: ".sftp->error;
         sleep(30);
+        $retry--;
         next;
     }
     say "Created SFTP session.";
@@ -60,6 +61,7 @@ while ($retry) {
         say "$timestampfile failed: ".$sftp->error;
         undef $sftp;
         sleep(30);
+        $retry--;
         next;
     }
 
@@ -73,6 +75,7 @@ while ($retry) {
             say "$datafile failed: ".$sftp->error;
             undef $sftp;
             sleep(30);
+            $retry--;
             next;
         }
 
