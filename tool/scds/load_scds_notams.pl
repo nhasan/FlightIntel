@@ -98,13 +98,20 @@ sub load_notams_from_file($$$) {
         }
 
         my ($timeslice) = $xpc->findnodes(".//ns11:EventTimeSlice", $msg);
+        my $effectiveStart = $xpc->findvalue(".//ns5:beginPosition", $timeslice) // "";
+        my $effectiveEnd = $xpc->findvalue(".//ns5:endPosition", $timeslice) // "";
         my ($notam) = $xpc->findnodes(".//ns11:textNOTAM", $timeslice);
+
+        my ($extension) = $xpc->findnodes(".//ns6:EventExtension", $msg);
+        my $classification = $xpc->findvalue(".//ns6:classification", $extension) // "";
+        my $lastUpdated = $xpc->findvalue(".//ns6:lastUpdated", $extension) // "";
+
+
         my $type = $xpc->findvalue(".//ns11:NOTAM/ns11:type", $notam);
         if ($type eq "C") {
             # This notam is cancelled, skip it.
             next;
         }
-
         my $series = $xpc->findvalue(".//ns11:series", $notam) // "";
         my $number = $xpc->findvalue(".//ns11:number", $notam);
         my $year = $xpc->findvalue(".//ns11:year", $notam);
@@ -119,14 +126,13 @@ sub load_notams_from_file($$$) {
         my $coordinates = $xpc->findvalue(".//ns11:coordinates", $notam) // "";
         my $radius = $xpc->findvalue(".//ns11:radius", $notam) // "";
         my $location = $xpc->findvalue(".//ns11:location", $notam) // "";
-        my $text = $xpc->findvalue(".//ns11:text", $notam) // "";
-
-        my $effectiveStart = $xpc->findvalue(".//ns5:beginPosition", $timeslice) // "";
-        my $effectiveEnd = $xpc->findvalue(".//ns5:endPosition", $timeslice) // "";
-
-        my ($extension) = $xpc->findnodes(".//ns6:EventExtension", $msg);
-        my $classification = $xpc->findvalue(".//ns6:classification", $extension) // "";
-        my $lastUpdated = $xpc->findvalue(".//ns6:lastUpdated", $extension) // "";
+        my $text = eval {
+            if ($classification eq "DOM" or $classification eq "FDC") {
+                $xpc->findvalue(".//ns11:simpleText", $notam) // "";
+            } else {
+                $xpc->findvalue(".//ns11:text", $notam) // "";
+            }
+        };
 
         my $latittude = 0;
         my $longitude = 0;
