@@ -32,6 +32,8 @@ use HTML::LinkExtor;
 use LWP::Simple;
 use Text::Autoformat;
 use XML::Parser;
+use XML::LibXML;
+use v5.10;
 
 my $TFR_URL_BASE = "https://tfr.faa.gov/tfr2/";
 my $TFR_URL = "$TFR_URL_BASE/list.html";
@@ -39,12 +41,10 @@ my $FEET_PER_METER = 3.28084;
 my $TFR_OUTPUT_FILE = "/var/www/api.flightintel.com/html/data/tfr_list.xml";
 
 my %links = ();
-my @tfr_list = ();
 
 # Order of strings is important
 my @tfr_types = ("Special", "Security", "Space Operations", "VIP", "Hazards");
 
-my $tfr_output;
 my @valDistVerLower;
 my @codeDistVerLower;
 my @uomDistVerLower;
@@ -58,6 +58,12 @@ my $text;
 my $numGroups;
 
 my $reTrim = qr/^\s+|\s+$/;
+
+# LibXML
+my $doc;
+my $root;
+my $tfr_elem;
+my $node;
 
 sub capitalize($)
 {
@@ -87,8 +93,8 @@ sub handle_start() {
     $text = "";
 
     if ($elem eq "Not") {
-        $tfr_output = "";
-        $tfr_output .= "  <TFR>\n";
+        $tfr_elem = $doc->createElement("TFR");
+        $root->appendChild($tfr_elem);
     }
     elsif ($elem eq "TFRAreaGroup") {
         $TFRAreaGroup = 1;
@@ -122,13 +128,19 @@ sub handle_end() {
         $numGroups++;
     }
     elsif ($elem eq "NotUid") {
-        $tfr_output .= "    <NID>${dateIndexYear}/${noSeqNo}</NID>\n";
+        $node = $doc->createElement("NID");
+        $node->appendTextNode("${dateIndexYear}/${noSeqNo}");
+        $tfr_elem->appendChild($node); 
     }
     elsif ($elem eq "dateEffective" && !$TFRAreaGroup) {
-        $tfr_output .= "    <ACTIVE>${text}Z</ACTIVE>\n";
+        $node = $doc->createElement("ACTIVE");
+        $node->appendTextNode("${text}Z");
+        $tfr_elem->appendChild($node); 
     }
     elsif ($elem eq "dateExpire" && !$TFRAreaGroup) {
-        $tfr_output .= "    <EXPIRES>${text}Z</EXPIRES>\n";
+        $node = $doc->createElement("EXPIRES");
+        $node->appendTextNode("${text}Z");
+        $tfr_elem->appendChild($node); 
     }
     elsif ($elem eq "valDistVerLower") {
         push @valDistVerLower, $text;
@@ -149,8 +161,12 @@ sub handle_end() {
         push @uomDistVerUpper, $text;
     }
     elsif ($elem eq "dateIssued") {
-        $tfr_output .= "    <CREATED>${text}Z</CREATED>\n";
-        $tfr_output .= "    <MODIFIED>${text}Z</MODIFIED>\n";
+        $node = $doc->createElement("CREATED");
+        $node->appendTextNode("${text}Z");
+        $tfr_elem->appendChild($node); 
+        $node = $doc->createElement("MODIFIED");
+        $node->appendTextNode("${text}Z");
+        $tfr_elem->appendChild($node); 
     }
     elsif ($elem eq "dateIndexYear") {
         $dateIndexYear = $text % 10;
@@ -159,30 +175,44 @@ sub handle_end() {
         $noSeqNo = $text;
     }
     elsif ($elem eq "txtLocalName") {
-        $tfr_output .= "    <NAME>$text</NAME>\n";
+        $node = $doc->createElement("NAME");
+        $node->appendTextNode($text);
+        $tfr_elem->appendChild($node); 
     }
     elsif ($elem eq "txtDescrUSNS") {
-        $tfr_output .= "    <SRC>$text</SRC>\n";
+        $node = $doc->createElement("SRC");
+        $node->appendTextNode($text);
+        $tfr_elem->appendChild($node); 
     }
     elsif ($elem eq "txtDescrModern" ) {
         foreach my $tfr_type (@tfr_types) {
             if ($text =~ /\>$tfr_type\</) {
-                $tfr_output .= "    <TYPE>$tfr_type</TYPE>\n";
+                $node = $doc->createElement("TYPE");
+                $node->appendTextNode($tfr_type);
+                $tfr_elem->appendChild($node); 
                 last;
             }
         }
     }
     elsif ($elem eq "codeFacility") {
-        $tfr_output .= "    <FACILITY>$text</FACILITY>\n";
+        $node = $doc->createElement("FACILITY");
+        $node->appendTextNode($text);
+        $tfr_elem->appendChild($node); 
     }
     elsif ($elem eq "txtNameCity") {
-        $tfr_output .= "    <CITY>".capitalize($text)."</CITY>\n";
+        $node = $doc->createElement("CITY");
+        $node->appendTextNode(capitalize($text));
+        $tfr_elem->appendChild($node); 
     }
     elsif ($elem eq "txtNameUSState") {
-        $tfr_output .= "    <STATE>".capitalize($text)."</STATE>\n";
+        $node = $doc->createElement("STATE");
+        $node->appendTextNode(capitalize($text));
+        $tfr_elem->appendChild($node); 
     }
     elsif ($elem eq "codeCoordFacilityType") {
-        $tfr_output .= "    <FACILITYTYPE>$text</FACILITYTYPE>\n";
+        $node = $doc->createElement("FACILITYTYPE");
+        $node->appendTextNode($text);
+        $tfr_elem->appendChild($node); 
     }
     elsif ($elem eq "TfrNot") {
         # Normalize the height values and decode AGL/MSL
@@ -241,12 +271,12 @@ sub handle_end() {
             $index++;
         }
 
-        $tfr_output .= "    <MINALT>${valLower}${codeLower}</MINALT>\n";
-        $tfr_output .= "    <MAXALT>${valUpper}${codeUpper}</MAXALT>\n";
-    }
-    elsif ($elem eq "Not") {
-        $tfr_output .= "  </TFR>\n";
-        push @tfr_list, $tfr_output;
+        $node = $doc->createElement("MINALT");
+        $node->appendTextNode("${valLower}${codeLower}");
+        $tfr_elem->appendChild($node); 
+        $node = $doc->createElement("MAXALT");
+        $node->appendTextNode("${valUpper}${codeUpper}");
+        $tfr_elem->appendChild($node); 
     }
 }
 
@@ -265,6 +295,9 @@ my $tfr_html = get($TFR_URL) or die;
 $LX->parse($tfr_html);
 
 my $seq = 0;
+my $now = strftime "%FT%TZ", gmtime time;
+$doc = XML::LibXML::Document->new("1.0", "UTF-8");
+$root = $doc->createElement("TFRList");
 
 foreach my $url (keys %links) {
     if (my $xml = get($url) ) {
@@ -276,20 +309,13 @@ foreach my $url (keys %links) {
     }
 }
 
-my $now = strftime "%FT%TZ", gmtime time;
-$tfr_output = "";
-$tfr_output = "<?xml version=\"1.0\" ?>\n";
-$tfr_output .= "<TFRList count=\"$seq\" timestamp=\"$now\">\n";
-
-foreach my $tfr (@tfr_list) {
-    $tfr_output .= $tfr;
-}
-
-$tfr_output .= "</TFRList>\n";
+$root->setAttribute("count", $seq);
+$root->setAttribute("timestamp", $now);
+$doc->setDocumentElement($root);
 
 if ($seq > 0) {
     open(OUTPUT, ">$TFR_OUTPUT_FILE") or die;
-    print OUTPUT $tfr_output;
+    print OUTPUT $doc->toString(1);
 }
 
 print "Loaded $seq TFRs\n";
