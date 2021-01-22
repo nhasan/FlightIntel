@@ -43,7 +43,7 @@ my $TFR_OUTPUT_FILE = "/var/www/api.flightintel.com/html/data/tfr_list.xml";
 my %links = ();
 
 # Order of strings is important
-my @tfr_types = ("Special", "Security", "Space Operations", "VIP", "Hazards");
+my @tfr_types = ("Special", "Security", "Space Operations", "VIP", "Hazards", "Airshow");
 
 my @valDistVerLower;
 my @codeDistVerLower;
