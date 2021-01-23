@@ -30,7 +30,8 @@ use v5.10;
 
 use Config::Simple;
 use Net::SFTP::Foreign;
-use File::Copy "mv";
+use File::Copy qw(mv);
+use File::Path qw(make_path);
 
 my $cfgfile = shift or die "Missing config file parameter.";
 -f $cfgfile or die "Config file not found.";
@@ -49,6 +50,10 @@ my $datafile = $FIL->{datafile};
 
 my $retry = 5;      
 my $error;
+
+# Create the directories if missing
+-e $outdir || make_path($outdir);
+-e $tmpdir || make_path($tmpdir);
 
 while ($retry) {
     $error = 0;
