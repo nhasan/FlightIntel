@@ -38,20 +38,20 @@ my $cfgfile = shift or die "Missing config file parameter.";
 my $cfg = new Config::Simple($cfgfile) or die Config::Simple->error();
 
 my $SWIM = $cfg->param(-block => "SWIM");
-my $host = $SWIM->{host};
-my $user = $SWIM->{user};
+my $host = $SWIM->{host} or die "Missing config 'SWIM.host'.";
+my $user = $SWIM->{user} or die "Missing config 'SWIM.user'.";
 
 my $FIL = $cfg->param(-block => "FIL");
-my $timestampfile = $FIL->{timestampfile};
+my $timestampfile = $FIL->{timestampfile} or die "Missing config 'FIL.timestampfile'.";
 my $localtimestamp = $FIL->{timestamp} // "";
-my $outdir = $FIL->{outdir};
-my $tmpdir = $FIL->{tmpdir};
-my $datafile = $FIL->{datafile};
+my $outdir = $FIL->{outdir} or die "Missing config 'FIL.outdir'.";
+my $tmpdir = $FIL->{tmpdir} or die "Missing config 'FIL.tmpdir'.";
+my $datafile = $FIL->{datafile} or die "Missing config 'FIL.datafile'.";
 
 my $retry = 5;      
 my $error;
 
-# Create the directories if missing
+# Create the output directories if missing
 -e $outdir || make_path($outdir);
 -e $tmpdir || make_path($tmpdir);
 
