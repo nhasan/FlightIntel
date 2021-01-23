@@ -34,17 +34,20 @@ use File::Copy "mv";
 
 my $cfgfile = shift or die "Missing config file parameter.";
 -f $cfgfile or die "Config file not found.";
-
-# Read the configuration
 my $cfg = new Config::Simple($cfgfile) or die Config::Simple->error();
-my $host = $cfg->param("SWIM.host");
-my $user = $cfg->param("SWIM.user");
-my $timestampfile = $cfg->param("FIL.timestampfile");
-my $localtimestamp = $cfg->param("LAST.timestamp") // "";
-my $path = $cfg->param("FIL.path");
-my $datafile = $cfg->param("FIL.datafile");
 
-my $retry = 5;
+my $SWIM = $cfg->param(-block => "SWIM");
+my $host = $SWIM->{host};
+my $user = $SWIM->{user};
+
+my $FIL = $cfg->param(-block => "FIL");
+my $timestampfile = $FIL->{timestampfile};
+my $localtimestamp = $FIL->{timestamp} // "";
+my $outdir = $FIL->{outdir};
+my $tmpdir = $FIL->{tmpdir};
+my $datafile = $FIL->{datafile};
+
+my $retry = 5;      
 my $error;
 
 while ($retry) {
@@ -72,7 +75,7 @@ while ($retry) {
     say "Last fetch timestamp was $localtimestamp";
     if ($localtimestamp ne $remotetimestamp) {
         say "Fetching data file $datafile from FAA server.";
-        $sftp->get($datafile, "$path/$datafile") or $error = 1;
+        $sftp->get($datafile, "$tmpdir/$datafile") or $error = 1;
         if ($error) {
             say "$datafile failed: ".$sftp->error;
             undef $sftp;
@@ -81,9 +84,10 @@ while ($retry) {
             next;
         }
 
-        mv($datafile, "$path/$datafile");
+        mv("$tmpdir/$datafile", "$outdir/$datafile");
 
-        $cfg->param(-block => "LAST", -values => {"timestamp" => $remotetimestamp});
+        $FIL->{timestamp} = $remotetimestamp;
+        $cfg->param(-block => "FIL", -values => $FIL);
         $cfg->save();
     } else {
         say "Noting new to fetch from FAA server.";
