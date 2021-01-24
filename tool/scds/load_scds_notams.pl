@@ -34,13 +34,20 @@ use v5.10;
 use Config::Simple;
 use DBI;
 use File::Monitor;
+use File::Path qw(make_path);
 use XML::LibXML::Reader;
 
-# Read the configuration
-my $cfg = new Config::Simple("load_scds_notams.cfg");
-my $jmspath = $cfg->param("JMS.path");
-my $filpath = $cfg->param("FIL.path");
-my $dbname = $cfg->param("OUTPUT.dbname");
+my $cfgfile = shift or die "Missing config file parameter.";
+-f $cfgfile or die "Config file not found.";
+my $cfg = new Config::Simple($cfgfile) or die Config::Simple->error();
+
+my $jmspath = $cfg->param("JMS.outdir") or die "Missing config 'JMS.outdir'.";
+my $filpath = $cfg->param("FIL.outdir") or die "Missing config 'FIL.outdir'.";
+my $outdir = $cfg->param("NOTAM.outdir") or die "Missing config 'NOTAM.outdir'.";
+my $dbname = $cfg->param("NOTAM.dbname") or die "Missing config 'NOTAM.dbname'.";
+
+# Create the output directories if missing
+-e $outdir || make_path($outdir);
 
 my %notams = ();
 my $reCoordinates = qr/^\d{4}[NS]\d{5}[EW]\d{0,3}$/;
@@ -220,7 +227,7 @@ sub process_fil($$$$) {
     }
 }
 
-my $dbh = DBI->connect("dbi:SQLite:dbname=$dbname", "", "");
+my $dbh = DBI->connect("dbi:SQLite:dbname=$outdir/$dbname", "", "");
 my $tablename = "notams";
 my $info = $dbh->table_info(undef, undef, $tablename)->fetchall_arrayref;
 if (scalar @$info == 0) {
@@ -309,7 +316,17 @@ while (defined(my $file = readdir(DIR))) {
 }
 closedir(DIR);
 
-while (1) {
+# Process existing NOTAM files first
+opendir(DIR, $filpath) or die "can't opendir $filpath: $!";
+while (defined(my $file = readdir(DIR))) {
+    next if $file =~ /^\.\.?$/;
+    $file = "$filpath/$file";
+    say "$file was found.";
+    process_fil($file, $dbh, $sth_insert_notam, $sth_delete_notam);
+}
+closedir(DIR);
+
+while (0) {
     my @changes = $monitor->scan;
     if (scalar @changes) {
         # Wait a little to make sure files are completely written to disk
