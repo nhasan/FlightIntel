@@ -24,6 +24,7 @@
 #   libdbi-perl
 #   libdbd-sqlite3-perl
 #   libfile-monitor-perl
+#   libperlio-gzip-perl
 #   libxml-libxml-perl
 #
 
@@ -45,6 +46,7 @@ my $jmspath = $cfg->param("JMS.outdir") or die "Missing config 'JMS.outdir'.";
 my $filpath = $cfg->param("FIL.outdir") or die "Missing config 'FIL.outdir'.";
 my $outdir = $cfg->param("NOTAM.outdir") or die "Missing config 'NOTAM.outdir'.";
 my $dbname = $cfg->param("NOTAM.dbname") or die "Missing config 'NOTAM.dbname'.";
+my $watch = $cfg->param("NOTAM.watch") // 0;
 
 # Create the output directories if missing
 -e $outdir || make_path($outdir);
@@ -182,7 +184,7 @@ sub load_notams_from_file($$$) {
         $sth_insert->bind_param(22, $text);
 
         if (!$sth_insert->execute()) {
-            say "Could onot insert $id: $DBI::errstr";
+            say "Could not insert $id: $DBI::errstr";
         } else {
             ++$new;
         }
@@ -199,7 +201,7 @@ sub delete_notams($$) {
     foreach my $id (@delete_ids) {
         say "Deleting Notam $id.";
         $sth_delete->bind_param(1, $id);
-        $sth_delete->execute() or die "Can't execute statement: $DBI::errstr\n";
+        $sth_delete->execute() or die "Could not delete $id: $DBI::errstr\n";
     }
     say "Deleted $size Notams.";
 }
@@ -299,13 +301,27 @@ $dbh->do( "PRAGMA synchronous=OFF" );
 
 my $monitor = File::Monitor->new();
 
-say "Watching $jmspath";
-$monitor->watch( { name => "$jmspath", files => 1 } );
-say "Watching $filpath";
-$monitor->watch( { name => "$filpath", files => 1 } );
-$monitor->scan;
+if ($watch) {
+    say "Watching $jmspath";
+    $monitor->watch( { name => "$jmspath", files => 1 } );
+    say "Watching $filpath";
+    $monitor->watch( { name => "$filpath", files => 1 } );
+    $monitor->scan;
+}
 
 # Process existing NOTAM files first
+say "Checking existing FIL files.";
+opendir(DIR, $filpath) or die "can't opendir $filpath: $!";
+while (defined(my $file = readdir(DIR))) {
+    next if $file =~ /^\.\.?$/;
+    $file = "$filpath/$file";
+    say "$file was found.";
+    process_fil($file, $dbh, $sth_insert_notam, $sth_delete_notam);
+}
+closedir(DIR);
+
+# Process existing NOTAM files first
+say 'Checking existing JMS files.';
 opendir(DIR, $jmspath) or die "can't opendir $jmspath: $!";
 while (defined(my $file = readdir(DIR))) {
     next if $file =~ /^\.\.?$/;
@@ -316,17 +332,7 @@ while (defined(my $file = readdir(DIR))) {
 }
 closedir(DIR);
 
-# Process existing NOTAM files first
-opendir(DIR, $filpath) or die "can't opendir $filpath: $!";
-while (defined(my $file = readdir(DIR))) {
-    next if $file =~ /^\.\.?$/;
-    $file = "$filpath/$file";
-    say "$file was found.";
-    process_fil($file, $dbh, $sth_insert_notam, $sth_delete_notam);
-}
-closedir(DIR);
-
-while (0) {
+while ($watch) {
     my @changes = $monitor->scan;
     if (scalar @changes) {
         # Wait a little to make sure files are completely written to disk
