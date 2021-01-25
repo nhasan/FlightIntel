@@ -1,5 +1,5 @@
 [Unit]
-Description=Run the SCDS JMS service to get NOTAM messages
+Description=Service to receive NOTAM messages pushed in realtime via JMS
 Requires=network-online.target
 
 [Service]
