@@ -1,0 +1,9 @@
+[Unit]
+Description=Run the SCDS JMS service to get NOTAM messages
+Requires=network-online.target
+
+[Service]
+ExecStart=/bin/bash /home/nhasan_nadmm_com/sw/scds/jms/start
+
+[Install]
+WantedBy=multi-user.target

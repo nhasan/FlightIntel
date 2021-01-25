@@ -1,4 +1,4 @@
 #!/bin/bash
 
-./bin/run -Dconfig.file=flightintel.cfg
-
+basedir=`dirname $0`
+$basedir/bin/run -Dconfig.file=$basedir/flightintel.cfg > $basedir/../../log/jms.log 2>&1
