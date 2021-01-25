@@ -1,0 +1,9 @@
+[Unit]
+Description=Run the SCDS loader service to load NOTAM messages into a SQLite db
+Requires=network-online.target
+
+[Service]
+ExecStart=/bin/bash /home/nhasan_nadmm_com/sw/scds/start
+
+[Install]
+WantedBy=multi-user.target
