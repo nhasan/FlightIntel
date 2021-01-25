@@ -1,4 +1,5 @@
 #!/bin/bash
 
 basedir=`dirname $0`
-$basedir/load_scds_notams.pl $basedir/load_scds_notams.cfg > $basedir/../log/load_scds_notams.log 2>&1
+cd $basedir
+./load_scds_notams.pl load_scds_notams.cfg > ../log/load_scds_notams.log 2>&1
