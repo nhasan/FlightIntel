@@ -16,16 +16,16 @@ manuals,faa-h-8083-19a-2008.pdf,Plane Sense - General Aviation Information,2008,
 manuals,ac-00-6b.pdf,Aviation Weather,2016,AC-00-6B
 manuals,ac-00-45h_chg_1.pdf,Aviation Weather Services,2016,AC-00-45H
 manuals,00-80T-80.pdf,Aerodynamics for Naval Aviators,1965,H. H. Hurt Jr.
+periodicals,cb_492.pdf,Callback,Issue 492 (Jan 2021),NASA
 periodicals,cb_491.pdf,Callback,Issue 491 (Dec 2020),NASA
 periodicals,cb_490.pdf,Callback,Issue 490 (Nov 2020),NASA
 periodicals,cb_489.pdf,Callback,Issue 489 (Oct 2020),NASA
 periodicals,cb_488.pdf,Callback,Issue 488 (Sep 2020),NASA
-periodicals,cb_487.pdf,Callback,Issue 487 (Aug 2020),NASA
+periodicals,JanFeb2021.pdf,FAA Safety Briefing,Jan/Feb 2021,FAA
 periodicals,NovDec2020.pdf,FAA Safety Briefing,Nov/Dec 2020,FAA
 periodicals,SepOct2020.pdf,FAA Safety Briefing,Sep/Oct 2020,FAA
 periodicals,JulAug2020.pdf,FAA Safety Briefing,Jul/Aug 2020,FAA
 periodicals,MayJun2020.pdf,FAA Safety Briefing,May/Jun 2020,FAA
-periodicals,MarApr2020.pdf,FAA Safety Briefing,Mar/Apr 2020,FAA
 safety,ac_90-48d-chg_1.pdf,Pilots’ Role in Collision Avoidance,2016,FAA
 safety,safety_advisor_non-towered_airports.pdf,Operations at Nontowered Airports,2007,FAA
 safety,faa-p-8740-02-2008.pdf,Density Altitude,2008,FAA
@@ -40,7 +40,7 @@ safety,faa-p-8740-69-2008.pdf,Aeronautical Decision Making,2008,FAA
 safety,takeoff_safety.pdf,Pilot Guide to Takeoff Safety,2008,FAA
 safety,AP_UpsetRecovery_Book.pdf,Upset Recovery Training Aid,2008,FAA
 safety,tfrweb_2003.pdf,Pilot's Guide to TFR,2003,FAA
-regs,aim_200716.pdf,AIM,Jul 2020,FAA
+regs,aim_201231.pdf,AIM,Dec 2020,Changes 1-3
 regs,CFR-2020-title14-vol1.pdf,FAR Volume 1,Parts 1-59,US GPO 2020
 regs,CFR-2020-title14-vol2.pdf,FAR Volume 2,Parts 60-109,US GPO 2020
 regs,CFR-2020-title14-vol3.pdf,FAR Volume 3,Parts 110-199,US GPO 2020
@@ -81,20 +81,20 @@ pts,FAA-S-ACS-8B_180611.pdf,Instrument Rating ACS,Jun 2018,FAA-S-ACS-8B
 pts,faa-s-8081-5f.pdf,Airline Transport Pilot PTS,Jul 2014,FAA-S-8081-5F
 pts,FAA-S-8081-6D_180419.pdf,Flight Instructor PTS,Apr 2018,FAA-S-8081-6D
 pts,faa-s-8081-9d.pdf,Flight Instructor Instrument PTS,Jul 2010,FAA-S-8081-9D
-misc,aip_200716.pdf,AIP (26th Edition),Jul 2020,FAA
+misc,aip_201231.pdf,AIP (26th Edition),Dec 2020,Amdt. 1
 misc,nat_doc_007_200716.pdf,North Atlantic Operations Manual,V.2020-2,USA
-misc,pcg_200716.pdf,Pilot/Controller Glossary,Jul 2020,FAA
-misc,7110.10AA_fss_200716.pdf,Flight Services,Jul 2020,JO 7110.10AA
-misc,7110.65Y_atc_200716.pdf,Air Traffic Control,Jul 2020,JO 7110.65Y
+misc,pcg_201231.pdf,Pilot/Controller Glossary,Dec 2020,Changes 1-3
+misc,7110.10AA_fss_201231.pdf,Flight Services,Dec 2020,Changes 1-3
+misc,7110.65Y_atc_201231.pdf,Air Traffic Control,Dec 2020,Changes 1-3
 misc,7110.118B_lahso_201115.pdf,Land and Hold Short Operations,Nov 2020,JO 7110.118B
 misc,faa_airspacecard_2014.pdf,Airspace Card,Jun 2014,FAA
-misc,Pilots_NOTAM_primer_for_2021.pdf,NOTAMs Primer for Pilots,Dec 2018,FAA
+misc,Pilots_NOTAM_primer_for_2021.pdf,NOTAMs Primer for Pilots,Dec 2020,FAA
 canada,AIM_2020-2_EN_201008.pdf,Aeronautical Information Manual (TC AIM),Oct 2020,Nav Canada
 canada,AWS-Guide-EN_1705.pdf,Aviation Weather Service Guide,May 2017,Nav Canada
 canada,Customer-Guide-Charges-EN_2009.pdf,Customer Guide to Charges,Sep 2020,Nav Canada
 canada,VFR_Phraseology_1804.pdf,VFR Phraseology,Apr 2018,Nav Canada
 canada,IFR_Phraseology_1905.pdf,IFR Phraseology,May 2019,Nav Canada
-canada,RNV_Phraseology_2006.pdf,RNAV Phraseology,Jun 2020,Nav Canada
+canada,RNAV_Phraseology_2009.pdf,RNAV Phraseology,Sep 2020,Nav Canada
 canada,NOTAM-Manual-EN_201105.pdf,Canadian NOTAM Procedures Manual,Nov 2020,Nav Canada
 canada,DAH_EN_201231.pdf,Designated Airspace Handbook,Dec 2020,Nav Canada
 canada,A34E-W.pdf,The Weather of Atlantic Canada and Eastern Quebec,Nov 2005,Nav Canada
