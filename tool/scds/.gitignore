@@ -2,3 +2,5 @@
 *.db
 *.gz
 *.xml
+.classpath
+.project
