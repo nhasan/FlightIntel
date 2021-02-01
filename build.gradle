@@ -6,8 +6,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
-        classpath 'com.google.gms:google-services:4.3.4'
+        classpath 'com.android.tools.build:gradle:4.1.2'
+        classpath 'com.google.gms:google-services:4.3.5'
     }
 }
 
@@ -39,10 +39,10 @@ android {
 
     defaultConfig {
         applicationId "com.nadmm.airports"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 30
-        versionName "6.2.1"
-        versionCode 62001
+        versionName "6.20.2"
+        versionCode 62002
     }
 
     signingConfigs {
