@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ public class TfrDetailFragment extends FragmentBase {
 
         LinearLayout layout = view.findViewById( R.id.tfr_header_layout );
         addRow( layout, "NOTAM Id", mTfr.notamId );
-        if ( !mTfr.type.isEmpty() ) {
+        if ( mTfr.type != null && !mTfr.type.isEmpty() ) {
             addRow( layout, "Type", mTfr.type );
         }
         addRow( layout, "Status", mTfr.isExpired()? "Expired"
@@ -92,10 +92,9 @@ public class TfrDetailFragment extends FragmentBase {
         addRow( layout, mTfr.text.replace( "\\n", "\n" ) );
 
         TextView tv = view.findViewById( R.id.tfr_warning_text );
-        tv.setText( String.format( Locale.US,
-                "Depicted TFR data may not be a complete listing. Pilots should not use "
-                + "the information for flight planning purposes. For the latest information, "
-                + "call your local Flight Service Station at 1-800-WX-BRIEF." ) );
+        tv.setText("Depicted TFR data may not be a complete listing. Pilots should not use "
+        + "the information for flight planning purposes. For the latest information, "
+        + "call your local Flight Service Station at 1-800-WX-BRIEF.");
     }
 
     @Override
