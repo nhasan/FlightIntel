@@ -1,0 +1,6 @@
+{
+    "Notams": {
+        "port": 8000,
+        "dbname": "./db/fns_notams.db"
+    }
+}
