@@ -30,7 +30,7 @@ let db = new sqlite3.Database(config.get("Notams.dbname"),
 );
 
 let getNotams = function (location, finish) {
-    db.all('select * from notams where location = ?',
+    db.all('SELECT * FROM notams WHERE location = ? ORDER BY lastUpdated DESC',
     [location], 
     (err, rows) => {
         if (err) {
