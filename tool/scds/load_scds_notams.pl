@@ -78,7 +78,7 @@ if (scalar @$info == 0) {
             . "scope TEXT, "
             . "minimumFL INTEGER, "
             . "maximumFL INTEGER, "
-            . "latittude REAL, "
+            . "latitude REAL, "
             . "longitude REAL, "
             . "radius INTEGER, "
             . "classification TEXT, "
@@ -108,7 +108,7 @@ my $insert_notams_row =
         . "scope, "
         . "minimumFL, "
         . "maximumFL, "
-        . "latittude, "
+        . "latitude, "
         . "longitude, "
         . "radius, "
         . "classification, "
@@ -204,13 +204,13 @@ sub load_notams_from_file($) {
             }
         } // "";
 
-        my $latittude = 0;
+        my $latitude = 0;
         my $longitude = 0;
         if ($coordinates =~ /$reCoordinates/) {
-            $latittude = substr($coordinates, 0, 4)/100.0;
+            $latitude = substr($coordinates, 0, 4)/100.0;
             if ( substr($coordinates, 4, 1) eq "S" )
             {
-                $latittude *= -1;
+                $latitude *= -1;
             }
             $longitude = substr($coordinates, 5, 5)/100.0;
             if ( substr($coordinates, 10, 1) eq "W" )
@@ -243,7 +243,7 @@ sub load_notams_from_file($) {
         $sth_insert_notam->bind_param(15, $scope);
         $sth_insert_notam->bind_param(16, $minimumFL);
         $sth_insert_notam->bind_param(17, $maximumFL);
-        $sth_insert_notam->bind_param(18, $latittude);
+        $sth_insert_notam->bind_param(18, $latitude);
         $sth_insert_notam->bind_param(19, $longitude);
         $sth_insert_notam->bind_param(20, $radius);
         $sth_insert_notam->bind_param(21, $classification);
