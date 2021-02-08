@@ -179,21 +179,20 @@ sub load_notams_from_file($) {
         my $classification = $xpc->findvalue(".//ns6:classification", $extension) // "";
         my $lastUpdated = $xpc->findvalue(".//ns6:lastUpdated", $extension) // "";
 
-
-        my $type = $xpc->findvalue(".//ns11:NOTAM/ns11:type", $notam);
+        my $type = $xpc->findvalue(".//ns11:NOTAM/ns11:type", $notam) // "";
         my $series = $xpc->findvalue(".//ns11:series", $notam) // "";
-        my $number = $xpc->findvalue(".//ns11:number", $notam);
-        my $year = $xpc->findvalue(".//ns11:year", $notam);
+        my $number = $xpc->findvalue(".//ns11:number", $notam) // 0;
+        my $year = $xpc->findvalue(".//ns11:year", $notam) // 0;
         my $issued = $xpc->findvalue(".//ns11:issued", $notam);
         my $affectedFIR = $xpc->findvalue(".//ns11:affectedFIR", $notam) // "";
         my $selectionCode = $xpc->findvalue(".//ns11:selectionCode", $notam) // "";
         my $traffic = $xpc->findvalue(".//ns11:traffic", $notam) // "";
         my $purpose = $xpc->findvalue(".//ns11:purpose", $notam) // "";
         my $scope = $xpc->findvalue(".//ns11:scope", $notam) // "";
-        my $minimumFL = $xpc->findvalue(".//ns11:minimumFL", $notam) // "";
-        my $maximumFL = $xpc->findvalue(".//ns11:maximumFL", $notam) // "";
+        my $minimumFL = $xpc->findvalue(".//ns11:minimumFL", $notam) // 0;
+        my $maximumFL = $xpc->findvalue(".//ns11:maximumFL", $notam) // 999;
         my $coordinates = $xpc->findvalue(".//ns11:coordinates", $notam) // "";
-        my $radius = $xpc->findvalue(".//ns11:radius", $notam) // "";
+        my $radius = $xpc->findvalue(".//ns11:radius", $notam) // 0;
         my $location = $xpc->findvalue(".//ns11:location", $notam) // "";
         my $schedule = $xpc->findvalue(".//ns11:schedule", $notam) // "";
         my $text = eval {
