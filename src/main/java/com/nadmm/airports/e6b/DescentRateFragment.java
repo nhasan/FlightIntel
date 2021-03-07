@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
 
 import java.util.Locale;
@@ -35,7 +36,7 @@ public class DescentRateFragment extends E6bFragmentBase {
     private EditText mCrossAltEdit;
     private EditText mGsEdit;
     private EditText mFixDistEdit;
-    private EditText mDscntRateEdit;
+    private EditText mDescentRateEdit;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -48,11 +49,18 @@ public class DescentRateFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mInitAltEdit = findViewById( R.id.e6b_edit_initial_alt );
-        mCrossAltEdit = findViewById( R.id.e6b_edit_crossing_alt );
-        mGsEdit = findViewById( R.id.e6b_edit_gs );
-        mFixDistEdit = findViewById( R.id.e6b_edit_fix_distance );
-        mDscntRateEdit = findViewById( R.id.e6b_edit_descent_rate );
+        TextInputLayout layout;
+        layout = findViewById( R.id.e6b_edit_initial_alt );
+        mInitAltEdit = layout.getEditText();
+        layout = findViewById( R.id.e6b_edit_crossing_alt );
+        mCrossAltEdit = layout.getEditText();
+        layout = findViewById( R.id.e6b_edit_gs );
+        mGsEdit = layout.getEditText();
+        layout = findViewById( R.id.e6b_edit_fix_distance );
+        mFixDistEdit = layout.getEditText();
+        layout = findViewById( R.id.e6b_edit_descent_rate );
+        mDescentRateEdit = layout.getEditText();
+        setEditTextReadOnly( mDescentRateEdit );
 
         mInitAltEdit.addTextChangedListener( mTextWatcher );
         mCrossAltEdit.addTextChangedListener( mTextWatcher );
@@ -87,9 +95,9 @@ public class DescentRateFragment extends E6bFragmentBase {
         if ( initAlt != Double.MAX_VALUE && crossAlt != Double.MAX_VALUE
                 && gs != Double.MAX_VALUE && fixDist != Double.MAX_VALUE ) {
             double dscntRate = ( initAlt-crossAlt )/( ( fixDist/gs )*60 );
-            mDscntRateEdit.setText( String.format( Locale.US, "%d", Math.round( dscntRate ) ) );
+            mDescentRateEdit.setText( String.format( Locale.US, "%d", Math.round( dscntRate ) ) );
         } else {
-            mDscntRateEdit.setText( "" );
+            mDescentRateEdit.setText( "" );
         }
     }
 

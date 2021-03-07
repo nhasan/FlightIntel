@@ -22,6 +22,7 @@ package com.nadmm.airports.e6b;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.nadmm.airports.FragmentBase;
@@ -61,6 +62,15 @@ abstract class E6bFragmentBase extends FragmentBase {
             TextView msg = findViewById( R.id.e6b_msg );
             msg.setText( text );
         }
+    }
+
+    public void setEditTextReadOnly( EditText editText )
+    {
+        editText.setFocusable( false );
+        editText.setFocusableInTouchMode( false );
+        editText.setClickable( false );
+        editText.setLongClickable( false );
+        editText.setCursorVisible( false );
     }
 
     protected abstract String getMessage();
