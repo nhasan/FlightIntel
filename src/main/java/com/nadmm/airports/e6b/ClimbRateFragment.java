@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
 
 import java.util.Locale;
@@ -47,10 +48,17 @@ public class ClimbRateFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mClimbGradEdit = findViewById( R.id.e6b_edit_climb_grad );
-        mGsEdit = findViewById( R.id.e6b_edit_gs );
-        mClimbRateEdit = findViewById( R.id.e6b_edit_climb_rate );
-        mClimbGradPctEdit = findViewById( R.id.e6b_edit_climb_grad_pct );
+        TextInputLayout layout;
+        layout = findViewById( R.id.e6b_edit_climb_grad );
+        mClimbGradEdit = layout.getEditText();
+        layout = findViewById( R.id.e6b_edit_gs );
+        mGsEdit = layout.getEditText();
+        layout = findViewById( R.id.e6b_edit_climb_rate );
+        mClimbRateEdit = layout.getEditText();
+        setEditTextReadOnly( mClimbRateEdit );
+        layout  = findViewById( R.id.e6b_edit_climb_grad_pct );
+        mClimbGradPctEdit = layout.getEditText();
+        setEditTextReadOnly( mClimbGradPctEdit );
 
         mClimbGradEdit.addTextChangedListener( mTextWatcher );
         mGsEdit.addTextChangedListener( mTextWatcher );

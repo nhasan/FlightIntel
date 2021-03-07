@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,11 @@
  */
  -->
 
-<androidx.core.widget.NestedScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:paddingTop="?actionBarSize"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingTop="@dimen/item_padding"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <LinearLayout
             android:orientation="vertical"
             android:padding="@dimen/item_padding"
@@ -32,13 +32,12 @@
             android:layout_height="wrap_content">
         <TextView android:id="@+id/e6b_label"
                 style="@style/TextLabel"
-                android:padding="@dimen/label_padding"
+                android:textColor="?colorPrimary"
+                android:layout_marginBottom="@dimen/item_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         <TableLayout
-                android:background="@drawable/rounded_rectangle"
-                android:stretchColumns="0,1"
-                android:padding="@dimen/item_padding"
+                android:stretchColumns="*"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <TableRow
@@ -47,40 +46,51 @@
                 <TextView
                         style="@style/TextMedium"
                         android:text="@string/climb_grad"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_width="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content" />
                 <TextView
                         style="@style/TextMedium"
                         android:text="@string/climb_rate"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_width="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
                     android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                <EditText android:id="@+id/e6b_edit_climb_grad"
-                        style="@style/TextSmall"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/e6b_edit_climb_grad"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:hint="@string/ftpnm"
+                    app:endIconMode="clear_text"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:inputType="number"
-                        android:hint="@string/input_ftpnm"
-                        android:layout_marginTop="-6dp"
-                        android:layout_marginLeft="6dp"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content" />
-                <EditText android:id="@+id/e6b_edit_climb_rate"
-                        style="@style/TextSmall.Bold"
-                        android:inputType="none"
-                        android:hint="@string/ftpmin"
-                        android:focusable="false"
-                        android:layout_marginTop="-6dp"
-                        android:layout_marginRight="6dp"
-                        android:layout_marginLeft="14dp"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content" />
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/e6b_edit_climb_rate"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:hint="@string/ftpmin"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
             </TableRow>
             <TableRow
                     android:layout_width="match_parent"
@@ -88,38 +98,51 @@
                 <TextView
                         style="@style/TextMedium"
                         android:text="@string/gs"
-                        android:paddingLeft="8dp"
-                        android:layout_width="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content" />
                 <TextView
                         style="@style/TextMedium"
                         android:text="@string/climb_grad"
-                        android:paddingLeft="16dp"
-                        android:layout_width="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
                     android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                <EditText android:id="@+id/e6b_edit_gs"
-                        style="@style/TextSmall"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/e6b_edit_gs"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:hint="@string/kts"
+                    app:endIconMode="clear_text"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:inputType="number"
-                        android:hint="@string/input_kts"
-                        android:layout_marginTop="-6dp"
-                        android:layout_marginLeft="6dp"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content" />
-                <EditText android:id="@+id/e6b_edit_climb_grad_pct"
-                        style="@style/TextSmall.Bold"
-                        android:inputType="none"
-                        android:focusable="false"
-                        android:hint="@string/pct"
-                        android:layout_marginTop="-6dp"
-                        android:layout_marginRight="6dp"
-                        android:layout_marginLeft="14dp"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content" />
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/e6b_edit_climb_grad_pct"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:hint="@string/pct"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
             </TableRow>
         </TableLayout>
         <TextView android:id="@+id/e6b_msg"
