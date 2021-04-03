@@ -38,6 +38,7 @@ public class WindTriangleFragment extends E6bFragmentBase {
     private TextInputLayout mEdit4;
     private TextInputLayout mEdit5;
     private TextInputLayout mEdit6;
+    private TextInputLayout mEdit7;
     private TextView mTextMsg;
 
     private long mMode;
@@ -81,25 +82,27 @@ public class WindTriangleFragment extends E6bFragmentBase {
                 double crs = parseDirection( mEdit4 );
                 double ws = Math.round( Math.sqrt( Math.pow( tas-gs, 2 )
                         + 4*tas*gs*( Math.pow( Math.sin( ( hdg-crs )/2 ), 2 ) ) ) );
-                double wdirRad = crs + Math.atan2( tas*Math.sin( hdg-crs ),
+                double wdir = crs + Math.atan2( tas*Math.sin( hdg-crs ),
                         ( tas*Math.cos( hdg-crs ) )-gs );
 
                 showValue( mEdit5, ws );
-                showDirection( mEdit6, wdirRad );
+                showDirection( mEdit6, wdir );
+                showDirection( mEdit7, hdg-crs );
             } else if ( mMode == R.id.E6B_WIND_TRIANGLE_HDG_GS ) {
                 double tas = parseDouble( mEdit1 );
                 double ws = parseDouble( mEdit2 );
                 double wdir = parseDirection( mEdit3 );
                 double crs = parseDirection( mEdit4 );
                 double swc = ( ws/tas )*Math.sin( wdir-crs );
-                double hdgRad = crs+Math.asin( swc );
+                double hdg = crs+Math.asin( swc );
                 double gs = tas * Math.sqrt( 1.0-Math.pow( swc, 2 ) ) - ws*Math.cos( wdir-crs );
                 if ( gs <= 0 || Math.abs( swc ) > 1 ) {
                     mTextMsg.setText( "Course cannot be flown, wind is too strong." );
                 }
 
                 showValue( mEdit5, gs );
-                showDirection( mEdit6, hdgRad );
+                showDirection( mEdit6, hdg );
+                showDirection( mEdit7, hdg-crs );
             } else if ( mMode == R.id.E6B_WIND_TRIANGLE_CRS_GS ) {
                 double tas = parseDouble( mEdit1 );
                 double ws = parseDouble( mEdit2 );
@@ -113,6 +116,7 @@ public class WindTriangleFragment extends E6bFragmentBase {
 
                 showValue( mEdit5, gs );
                 showDirection( mEdit6, crs );
+                showDirection( mEdit7, hdg-crs );
             }
         } catch ( NumberFormatException ignored ) {
             clearEditText( mEdit5 );
@@ -133,7 +137,10 @@ public class WindTriangleFragment extends E6bFragmentBase {
         mEdit4 = findViewById( R.id.e6b_edit_value4 );
         mEdit5 = findViewById( R.id.e6b_edit_value5 );
         mEdit6 = findViewById( R.id.e6b_edit_value6 );
+        mEdit7 = findViewById( R.id.e6b_edit_value7 );
         mTextMsg = findViewById( R.id.e6b_msg );
+
+        addReadOnlyField( mEdit7 );
 
         if ( mMode == R.id.E6B_WIND_TRIANGLE_WIND ) {
             // Find wind speed and direction

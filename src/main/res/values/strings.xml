@@ -144,7 +144,8 @@
     <string name="hdg">Heading</string>
     <string name="crs">Course</string>
     <string name="ws">Wind Speed</string>
-    <string name="wdir">Wind Dir</string>
+    <string name="wca">WCA</string>
+    <string name="wdir">Wind Direction</string>
     <string name="altitude">Altitude</string>
     <string name="input_degC">\? \u00B0C</string>
     <string name="input_ft">ft</string>
