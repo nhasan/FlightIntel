@@ -19,10 +19,12 @@
 
 package com.nadmm.airports.e6b;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -70,6 +72,18 @@ abstract class E6bFragmentBase extends FragmentBase {
             TextView msg = findViewById( R.id.e6b_msg );
             msg.setText( text );
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        hideKeyboard();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        hideKeyboard();
     }
 
     protected void addEditField( TextInputLayout textInputLayout, int textHintId )
@@ -251,6 +265,11 @@ abstract class E6bFragmentBase extends FragmentBase {
             return radians-2*Math.PI;
         }
         return radians;
+    }
+
+    public void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService( Activity.INPUT_METHOD_SERVICE );
+        imm.hideSoftInputFromWindow(getView().getRootView().getWindowToken(), 0);
     }
 
     protected abstract String getMessage();
