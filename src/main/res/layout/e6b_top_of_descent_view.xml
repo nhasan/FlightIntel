@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,8 @@
 
 <androidx.core.widget.NestedScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:paddingTop="?actionBarSize"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:paddingTop="@dimen/item_padding"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
     <LinearLayout
@@ -32,13 +33,12 @@
             android:layout_height="wrap_content">
         <TextView android:id="@+id/e6b_label"
                 style="@style/TextLabel"
-                android:padding="@dimen/label_padding"
+                android:textColor="?colorPrimary"
+                android:layout_marginBottom="@dimen/item_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
         <TableLayout
-                android:background="@drawable/rounded_rectangle"
-                android:stretchColumns="0,1"
-                android:padding="@dimen/item_padding"
+                android:stretchColumns="*"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <TableRow
@@ -47,40 +47,48 @@
                 <TextView
                         style="@style/TextMedium"
                         android:text="@string/initial_alt"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_width="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content" />
                 <TextView
                         style="@style/TextMedium"
                         android:text="@string/distance"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_width="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
                     android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                <EditText android:id="@+id/e6b_edit_initial_alt"
-                        style="@style/TextSmall"
-                        android:inputType="number"
-                        android:hint="@string/input_ft"
-                        android:layout_marginTop="-6dp"
-                        android:layout_marginLeft="6dp"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content" />
-                <EditText android:id="@+id/e6b_edit_distance"
-                        style="@style/TextSmall.Bold"
-                        android:inputType="none"
+                <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/e6b_edit_initial_alt"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:hint="@string/ft"
+                        app:endIconMode="clear_text"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/e6b_edit_fix_distance"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
                         android:hint="@string/nm"
-                        android:focusable="false"
-                        android:layout_marginTop="-6dp"
-                        android:layout_marginRight="6dp"
-                        android:layout_marginLeft="14dp"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content" />
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="numberDecimal" />
+                </com.google.android.material.textfield.TextInputLayout>
             </TableRow>
             <TableRow
                     android:layout_width="match_parent"
@@ -88,23 +96,28 @@
                 <TextView
                         style="@style/TextMedium"
                         android:text="@string/desired_alt"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_width="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
                     android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                <EditText android:id="@+id/e6b_edit_desired_alt"
-                        style="@style/TextSmall"
-                        android:inputType="number"
-                        android:hint="@string/input_ft"
-                        android:layout_marginTop="-6dp"
-                        android:layout_marginLeft="6dp"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content" />
+                <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/e6b_edit_desired_alt"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:hint="@string/ft"
+                        app:endIconMode="clear_text"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
             </TableRow>
             <TableRow
                     android:layout_width="match_parent"
@@ -112,22 +125,28 @@
                 <TextView
                         style="@style/TextMedium"
                         android:text="@string/gs"
-                        android:paddingLeft="8dp"
-                        android:layout_width="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
                     android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                <EditText android:id="@+id/e6b_edit_gs"
-                        style="@style/TextSmall"
-                        android:inputType="number"
-                        android:hint="@string/input_kts"
-                        android:layout_marginTop="-6dp"
-                        android:layout_marginLeft="6dp"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content" />
+                <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/e6b_edit_gs"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:hint="@string/kts"
+                        app:endIconMode="clear_text"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
             </TableRow>
             <TableRow
                     android:layout_width="match_parent"
@@ -135,22 +154,28 @@
                 <TextView
                         style="@style/TextMedium"
                         android:text="@string/descent_rate"
-                        android:paddingLeft="8dp"
-                        android:layout_width="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content" />
             </TableRow>
             <TableRow
                     android:paddingBottom="@dimen/item_padding"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                <EditText android:id="@+id/e6b_edit_descent_rate"
-                        style="@style/TextSmall"
-                        android:inputType="number"
-                        android:hint="@string/input_ftpmin"
-                        android:layout_marginTop="-6dp"
-                        android:layout_marginLeft="6dp"
-                        android:layout_width="120dp"
-                        android:layout_height="wrap_content" />
+                <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/e6b_edit_descent_rate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:hint="@string/ftpmin"
+                        app:endIconMode="clear_text"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
             </TableRow>
         </TableLayout>
         <TextView android:id="@+id/e6b_msg"

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,17 +23,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
 
 public class TrueAirspeedFragment extends E6bFragmentBase {
 
-    private EditText mIndicatedAirSpeedEdit;
-    private EditText mIndicatedAltitudeEdit;
-    private EditText mAltimeterEdit;
-    private EditText mTemperatureEdit;
-    private EditText mTrueAirSpeedEdit;
+    private TextInputLayout mIndicatedAirSpeedEdit;
+    private TextInputLayout mIndicatedAltitudeEdit;
+    private TextInputLayout mAltimeterEdit;
+    private TextInputLayout mTemperatureEdit;
+    private TextInputLayout mTrueAirSpeedEdit;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -47,15 +47,16 @@ public class TrueAirspeedFragment extends E6bFragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         mIndicatedAirSpeedEdit = findViewById( R.id.e6b_edit_ias );
-        mIndicatedAltitudeEdit = findViewById( R.id.e6b_edit_ia );
+        mIndicatedAltitudeEdit = findViewById( R.id.e6b_edit_altitude );
         mAltimeterEdit = findViewById( R.id.e6b_edit_altimeter );
         mTemperatureEdit = findViewById( R.id.e6b_edit_temperature_c );
         mTrueAirSpeedEdit = findViewById( R.id.e6b_edit_tas );
 
-        mIndicatedAirSpeedEdit.addTextChangedListener( mTextWatcher );
-        mIndicatedAltitudeEdit.addTextChangedListener( mTextWatcher );
-        mAltimeterEdit.addTextChangedListener( mTextWatcher );
-        mTemperatureEdit.addTextChangedListener( mTextWatcher );
+        addEditField( mIndicatedAirSpeedEdit );
+        addEditField( mIndicatedAltitudeEdit );
+        addEditField( mAltimeterEdit );
+        addEditField( mTemperatureEdit );
+        addReadOnlyField( mTrueAirSpeedEdit );
 
         setFragmentContentShown( true );
     }
@@ -68,32 +69,23 @@ public class TrueAirspeedFragment extends E6bFragmentBase {
 
     @Override
     protected void processInput() {
-        double ias = Double.MAX_VALUE;
-        double ia = Double.MAX_VALUE;
-        double altimeter = Double.MAX_VALUE;
-        double temperatureC = Double.MAX_VALUE;
-
         try {
-            ias = Double.parseDouble( mIndicatedAirSpeedEdit.getText().toString() );
-            ia = Double.parseDouble( mIndicatedAltitudeEdit.getText().toString() );
-            altimeter = Double.parseDouble( mAltimeterEdit.getText().toString() );
-            temperatureC = Double.parseDouble( mTemperatureEdit.getText().toString() );
-        } catch ( NumberFormatException ignored ) {
-        }
+            double ias = parseDouble( mIndicatedAirSpeedEdit );
+            double altitude = parseDouble( mIndicatedAltitudeEdit );
+            double altimeter = parseDouble( mAltimeterEdit );
+            double temperatureC = parseDouble( mTemperatureEdit );
 
-        if ( ias != Double.MAX_VALUE && ia != Double.MAX_VALUE
-                && altimeter != Double.MAX_VALUE && temperatureC != Double.MAX_VALUE ) {
             double delta = 145442.2*( 1-Math.pow( altimeter/29.92126, 0.190261 ) );
-            double pa = ia+delta;
-            double stdTempK = 15.0-( 0.0019812*ia )+273.15;
+            double pa = altitude+delta;
+            double stdTempK = 15.0-( 0.0019812*altitude )+273.15;
             double actTempK = temperatureC+273.15;
             double da = pa+( stdTempK/0.0019812 )*( 1-Math.pow( stdTempK/actTempK, 0.234969 ) );
             double factor = Math.sqrt( Math.pow( ( stdTempK-( da*0.0019812 ) )/stdTempK,
                     1/0.234969 ) );
             long tas = Math.round( ias/factor )-1;
-            mTrueAirSpeedEdit.setText( String.valueOf( tas ) );
-        } else {
-            mTrueAirSpeedEdit.setText( "" );
+            showValue( mTrueAirSpeedEdit, tas );
+        } catch ( NumberFormatException ignored ) {
+            clearEditText( mTrueAirSpeedEdit );
         }
     }
 

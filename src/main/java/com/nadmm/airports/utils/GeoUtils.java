@@ -139,8 +139,8 @@ public class GeoUtils {
         return -1*geoField.getDeclination();
     }
 
-    public static double applyDeclination( double windDir, double magVar ) {
-        return ( windDir+magVar+360 )%360;
+    public static double applyDeclination( double windDir, double declination ) {
+        return ( windDir+declination+360 )%360;
     }
 
     public static long applyDeclination( long heading, float declination ) {

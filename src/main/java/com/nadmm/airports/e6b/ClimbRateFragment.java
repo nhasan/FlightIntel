@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,19 +23,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
 
-import java.util.Locale;
-
 public class ClimbRateFragment extends E6bFragmentBase {
 
-    private EditText mClimbGradEdit;
-    private EditText mGsEdit;
-    private EditText mClimbRateEdit;
-    private EditText mClimbGradPctEdit;
+    private TextInputLayout mClimbGradEdit;
+    private TextInputLayout mGsEdit;
+    private TextInputLayout mClimbRateEdit;
+    private TextInputLayout mClimbGradPctEdit;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -48,20 +45,15 @@ public class ClimbRateFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        TextInputLayout layout;
-        layout = findViewById( R.id.e6b_edit_climb_grad );
-        mClimbGradEdit = layout.getEditText();
-        layout = findViewById( R.id.e6b_edit_gs );
-        mGsEdit = layout.getEditText();
-        layout = findViewById( R.id.e6b_edit_climb_rate );
-        mClimbRateEdit = layout.getEditText();
-        setEditTextReadOnly( mClimbRateEdit );
-        layout  = findViewById( R.id.e6b_edit_climb_grad_pct );
-        mClimbGradPctEdit = layout.getEditText();
-        setEditTextReadOnly( mClimbGradPctEdit );
+        mClimbGradEdit = findViewById( R.id.e6b_edit_climb_grad );
+        mGsEdit = findViewById( R.id.e6b_edit_gs );
+        mClimbRateEdit = findViewById( R.id.e6b_edit_climb_rate );
+        mClimbGradPctEdit  = findViewById( R.id.e6b_edit_climb_grad_pct );
 
-        mClimbGradEdit.addTextChangedListener( mTextWatcher );
-        mGsEdit.addTextChangedListener( mTextWatcher );
+        addEditField( mClimbGradEdit );
+        addEditField( mGsEdit );
+        addReadOnlyField( mClimbRateEdit );
+        addReadOnlyField( mClimbGradPctEdit );
 
         setFragmentContentShown( true );
     }
@@ -73,23 +65,16 @@ public class ClimbRateFragment extends E6bFragmentBase {
 
     @Override
     protected void processInput() {
-        double climbGrad = Double.MAX_VALUE;
-        double gs = Double.MAX_VALUE;
-
         try {
-            climbGrad = Double.parseDouble( mClimbGradEdit.getText().toString() );
-            gs = Double.parseDouble( mGsEdit.getText().toString() );
-        } catch ( NumberFormatException ignored ) {
-        }
-
-        if ( climbGrad != Double.MAX_VALUE && gs != Double.MAX_VALUE ) {
+            double climbGrad = parseDouble( mClimbGradEdit );
+            double gs = parseDouble( mGsEdit );
             double climbRate = climbGrad*gs/60;
             double climbGradPct = ( climbGrad/6076.115 )*100;
-            mClimbRateEdit.setText( String.format( Locale.US, "%d", Math.round( climbRate ) ) );
-            mClimbGradPctEdit.setText( String.format( Locale.US, "%.1f", climbGradPct ) );
-        } else {
-            mClimbRateEdit.setText( "" );
-            mClimbGradPctEdit.setText( "" );
+            showValue( mClimbRateEdit, climbRate );
+            showDecimalValue( mClimbGradPctEdit, climbGradPct );
+        } catch ( NumberFormatException ignored ) {
+            clearEditText( mClimbRateEdit );
+            clearEditText( mClimbGradPctEdit );
         }
     }
 

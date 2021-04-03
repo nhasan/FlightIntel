@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,107 +23,33 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.AutoCompleteTextView;
 
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
 
-import java.util.Locale;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class FuelWeightFragment extends E6bFragmentBase {
 
-    private Spinner mFuelTypes;
-    private EditText mFuelTotal;
-    private EditText mFuelWeight;
+    private TextInputLayout mFuelTypes;
+    private TextInputLayout mFuelTotal;
+    private TextInputLayout mFuelWeight;
+    private MaterialAutoCompleteTextView mTextView;
 
-    private static abstract class FuelWeight {
-        public abstract double lbsPerGallon();
-    }
-
-    private FuelWeight[] mFuels = new FuelWeight[] {
-
-        new FuelWeight() {
-
-            @Override
-            public double lbsPerGallon() {
-                return 6.08;
-            }
-
-            @Override
-            public String toString() {
-                return "100LL";
-            }
-        },
-
-        new FuelWeight() {
-
-            @Override
-            public double lbsPerGallon() {
-                return 6.71;
-            }
-
-            @Override
-            public String toString() {
-                return "JetA1";
-            }
-        },
-
-        new FuelWeight() {
-
-            @Override
-            public double lbsPerGallon() {
-                return 6.84;
-            }
-
-            @Override
-            public String toString() {
-                return "JetA";
-            }
-        },
-
-        new FuelWeight() {
-
-            @Override
-            public double lbsPerGallon() {
-                return 6.36;
-            }
-
-            @Override
-            public String toString() {
-                return "JetB";
-            }
-        },
-
-        new FuelWeight() {
-
-            @Override
-            public double lbsPerGallon() {
-                return 6.76;
-            }
-
-            @Override
-            public String toString() {
-                return "JP-5";
-            }
-        },
-
-        new FuelWeight() {
-
-            @Override
-            public double lbsPerGallon() {
-                return 6.76;
-            }
-
-            @Override
-            public String toString() {
-                return "JP-8";
-            }
-        }
-
-    };
+    private final Map<String, Double> mFuels = new HashMap<String, Double>() {{
+        put( "100LL", 6.08 );
+        put( "Jet A1", 6.71 );
+        put( "Jet A", 6.84 );
+        put( "Jet B", 6.36 );
+        put( "JP-5", 6.76 );
+        put( "JP-8", 6.76 );
+    }};
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -137,27 +63,19 @@ public class FuelWeightFragment extends E6bFragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         mFuelTypes = findViewById( R.id.e6b_fuel_types );
-        ArrayAdapter<FuelWeight> adapter = new ArrayAdapter<>( getActivity(),
-                android.R.layout.simple_spinner_item, mFuels );
-        adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
-        mFuelTypes.setAdapter( adapter );
-
-        mFuelTypes.setOnItemSelectedListener( new OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected( AdapterView<?> parent, View view, int pos, long id ) {
-                processInput();
-            }
-
-            @Override
-            public void onNothingSelected( AdapterView<?> arg0 ) {
-            }
-        } );
+        String [] names = mFuels.keySet().toArray( new String[ 0 ] );
+        Arrays.sort( names );
+        ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
+                R.layout.list_item, names );
+        mTextView = (MaterialAutoCompleteTextView) Objects.requireNonNull( mFuelTypes.getEditText() );
+        mTextView.setAdapter( adapter );
+        mTextView.setOnItemClickListener( ( parent, view, position, id ) -> processInput() );
 
         mFuelTotal = findViewById( R.id.e6b_edit_total_fuel );
         mFuelWeight = findViewById( R.id.e6b_edit_total_weight );
 
-        mFuelTotal.addTextChangedListener( mTextWatcher );
+        addEditField( mFuelTotal );
+        addReadOnlyField( mFuelWeight );
 
         setFragmentContentShown( true );
     }
@@ -171,19 +89,15 @@ public class FuelWeightFragment extends E6bFragmentBase {
 
     @Override
     protected void processInput() {
-        double fuelTotal = Double.MAX_VALUE;
-
         try {
-            fuelTotal = Double.parseDouble( mFuelTotal.getText().toString() );
-        } catch ( NumberFormatException ignored ) {
-        }
-
-        if ( fuelTotal != Double.MAX_VALUE ) {
-            FuelWeight fuel = (FuelWeight) mFuelTypes.getSelectedItem();
-            double weight = fuelTotal*fuel.lbsPerGallon();
-            mFuelWeight.setText( String.format( Locale.US, "%.0f", weight ) );
-        } else {
-            mFuelWeight.setText( "" );
+            double fuelTotal = parseDouble( mFuelTotal );
+            String name = mTextView.getText().toString();
+            if ( !name.isEmpty() ) {
+                double weight = fuelTotal * Objects.requireNonNull( mFuels.get( name ) );
+                showDecimalValue( mFuelWeight, weight );
+            }
+        } catch ( RuntimeException e ) {
+            clearEditText( mFuelWeight );
         }
     }
 

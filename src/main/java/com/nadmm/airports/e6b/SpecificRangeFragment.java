@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,16 +23,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
 
 public class SpecificRangeFragment extends E6bFragmentBase {
 
-    private EditText mFuelTotalEdit;
-    private EditText mFuelRateEdit;
-    private EditText mGsEdit;
-    private EditText mRangeEdit;
+    private TextInputLayout mFuelTotalEdit;
+    private TextInputLayout mFuelRateEdit;
+    private TextInputLayout mGsEdit;
+    private TextInputLayout mRangeEdit;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -50,9 +50,10 @@ public class SpecificRangeFragment extends E6bFragmentBase {
         mGsEdit = findViewById( R.id.e6b_edit_gs );
         mRangeEdit = findViewById( R.id.e6b_edit_range );
 
-        mFuelTotalEdit.addTextChangedListener( mTextWatcher );
-        mFuelRateEdit.addTextChangedListener( mTextWatcher );
-        mGsEdit.addTextChangedListener( mTextWatcher );
+        addEditField( mFuelTotalEdit );
+        addEditField( mFuelRateEdit );
+        addEditField( mGsEdit );
+        addReadOnlyField( mRangeEdit );
 
         setFragmentContentShown( true );
     }
@@ -64,23 +65,14 @@ public class SpecificRangeFragment extends E6bFragmentBase {
 
     @Override
     protected void processInput() {
-        double fuelTotal = Double.MAX_VALUE;
-        double fuelRate = Double.MAX_VALUE;
-        double gs = Double.MAX_VALUE;
-
         try {
-            fuelTotal = Double.parseDouble( mFuelTotalEdit.getText().toString() );
-            fuelRate = Double.parseDouble( mFuelRateEdit.getText().toString() );
-            gs = Double.parseDouble( mGsEdit.getText().toString() );
-        } catch ( NumberFormatException ignored ) {
-        }
-
-        if ( fuelTotal != Double.MAX_VALUE && fuelRate != Double.MAX_VALUE
-                && gs != Double.MAX_VALUE ) {
+            double fuelTotal = parseDouble( mFuelTotalEdit );
+            double fuelRate = parseDouble( mFuelRateEdit );
+            double gs = parseDouble( mGsEdit );
             double range = ( fuelTotal/fuelRate )*gs;
-            mRangeEdit.setText( String.valueOf( Math.round( range ) ) );
-        } else {
-            mRangeEdit.setText( "" );
+            showValue( mRangeEdit, range );
+        } catch ( NumberFormatException ignored ) {
+            clearEditText( mRangeEdit );
         }
     }
 

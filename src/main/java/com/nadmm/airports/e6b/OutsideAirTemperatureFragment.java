@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,16 +23,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
 
 public class OutsideAirTemperatureFragment extends E6bFragmentBase {
 
-    private EditText mIatEdit;
-    private EditText mRecoveryFactorEdit;
-    private EditText mTasEdit;
-    private EditText mOatEdit;
+    private TextInputLayout mIatEdit;
+    private TextInputLayout mRecoveryFactorEdit;
+    private TextInputLayout mTasEdit;
+    private TextInputLayout mOatEdit;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -50,12 +50,12 @@ public class OutsideAirTemperatureFragment extends E6bFragmentBase {
         mTasEdit = findViewById( R.id.e6b_edit_tas );
         mOatEdit = findViewById( R.id.e6b_edit_oat );
 
-        // Use a comon case default
-        mRecoveryFactorEdit.setText( "0.95" );
+        showDecimalValue( mRecoveryFactorEdit, 0.95, 2 );
 
-        mIatEdit.addTextChangedListener( mTextWatcher );
-        mRecoveryFactorEdit.addTextChangedListener( mTextWatcher );
-        mTasEdit.addTextChangedListener( mTextWatcher );
+        addEditField( mIatEdit );
+        addEditField( mRecoveryFactorEdit );
+        addEditField( mTasEdit );
+        addReadOnlyField( mOatEdit );
 
         setFragmentContentShown( true );
     }
@@ -68,22 +68,14 @@ public class OutsideAirTemperatureFragment extends E6bFragmentBase {
 
     @Override
     protected void processInput() {
-        double iat = Double.MAX_VALUE;
-        double k = Double.MAX_VALUE;
-        double tas = Double.MAX_VALUE;
-
         try {
-            iat = Double.parseDouble( mIatEdit.getText().toString() );
-            k = Double.parseDouble( mRecoveryFactorEdit.getText().toString() );
-            tas = Double.parseDouble( mTasEdit.getText().toString() );
-        } catch ( NumberFormatException ignored ) {
-        }
-
-        if ( iat != Double.MAX_VALUE && k != Double.MAX_VALUE && tas != Double.MAX_VALUE ) {
+            double iat = parseDouble( mIatEdit );
+            double k = parseDouble( mRecoveryFactorEdit );
+            double tas = parseDouble( mTasEdit );
             double oat = iat - k*Math.pow( tas, 2 )/7592;
-            mOatEdit.setText( String.valueOf( Math.round( oat ) ) );
-        } else {
-            mOatEdit.setText( "" );
+            showDecimalValue( mOatEdit, oat );
+        } catch ( NumberFormatException ignored ) {
+            clearEditText( mOatEdit );
         }
     }
 

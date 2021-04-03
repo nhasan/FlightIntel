@@ -23,24 +23,23 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Set;
 
-public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelectedListener {
+public class UnitConvertFrament extends E6bFragmentBase implements AdapterView.OnItemClickListener {
 
     private static final Unit[] mTemperatureUnits = new Unit[] {
         new Celsius(),
@@ -104,16 +103,15 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
 
     private DecimalFormat mFormat;
 
-    private Spinner mUnitTypeSpinner;
-    private Spinner mFromUnitSpinner;
-    private Spinner mToUnitSpinner;
-    private EditText mFromUnitValue;
-    private EditText mToUnitValue;
+    private TextInputLayout mFromUnitSpinner;
+    private TextInputLayout mToUnitSpinner;
+    private TextInputLayout mFromUnitValue;
+    private TextInputLayout mToUnitValue;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.unit_convert_view, container, false );
+        View view = inflater.inflate( R.layout.e6b_unit_convert_view, container, false );
         return createContentView( view );
     }
 
@@ -127,31 +125,32 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
 
         // Create the adapters for all unit types
         for ( String type : mUnitTypeMap.keySet() ) {
-            mUnitAdapters.put( type, getArrayAdapter( mUnitTypeMap.get( type ) ) );
+            ArrayAdapter<Unit> adapter = new ArrayAdapter<>( getActivity(),
+                        R.layout.list_item, mUnitTypeMap.get( type ) );
+            mUnitAdapters.put( type, adapter );
         }
 
         mFormat = new DecimalFormat( "#,##0.###" );
 
-        mUnitTypeSpinner = findViewById( R.id.unit_type_spinner );
-        ArrayAdapter<String> adapter = getArrayAdapter( mUnitAdapters.keySet() );
-        mUnitTypeSpinner.setAdapter( adapter );
-        mUnitTypeSpinner.setOnItemSelectedListener( this );
+        String [] types = mUnitTypeMap.keySet().toArray( new String[ 0 ] );
+        Arrays.sort( types );
+        ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
+                R.layout.list_item, types );
 
-        mFromUnitSpinner = findViewById( R.id.unit_from_spinner );
-        mFromUnitSpinner.setOnItemSelectedListener( this );
-        mToUnitSpinner = findViewById( R.id.unit_to_spinner );
-        mToUnitSpinner.setOnItemSelectedListener( this );
+        TextInputLayout unitTypeSpinner = findViewById( R.id.e6b_unit_type_spinner );
+        AutoCompleteTextView textView = getAutoCompleteTextView( unitTypeSpinner );
+        textView.setAdapter( adapter );
+        textView.setOnItemClickListener( this );
 
-        mToUnitValue = findViewById( R.id.unit_to_value );
-        mToUnitValue.setFocusable( false );
-        mFromUnitValue = findViewById( R.id.unit_from_value );
-        mFromUnitValue.addTextChangedListener( mTextWatcher );
+        mFromUnitSpinner = findViewById( R.id.e6b_unit_from_spinner );
+        mToUnitSpinner = findViewById( R.id.e6b_unit_to_spinner );
+        mFromUnitValue = findViewById( R.id.e6b_unit_from_value );
+        mToUnitValue = findViewById( R.id.e6b_unit_to_value );
 
-        Button btn = findViewById( R.id.btnReset );
-        btn.setOnClickListener( v -> {
-            mFromUnitValue.setText( "" );
-            mToUnitValue.setText( "" );
-        } );
+        addSpinnerField( mFromUnitSpinner );
+        addSpinnerField( mToUnitSpinner );
+        addEditField( mFromUnitValue );
+        addReadOnlyField( mToUnitValue );
 
         setFragmentContentShown( true );
     }
@@ -162,54 +161,30 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
     }
 
     @Override
-    public void onItemSelected( AdapterView<?> parent, View view, int pos, long id ) {
-        int spinnerId = parent.getId();
-        if ( spinnerId == R.id.unit_type_spinner ) {
-            String type = (String) mUnitTypeSpinner.getSelectedItem();
-            SpinnerAdapter unitAdapter = mUnitAdapters.get( type );
-            mFromUnitSpinner.setAdapter( unitAdapter );
-            mFromUnitSpinner.setSelection( 0, true );
-            mToUnitSpinner.setAdapter( unitAdapter );
-            mToUnitSpinner.setSelection( 1, true );
-        } else {
-            Unit fromUnit = (Unit) mFromUnitSpinner.getSelectedItem();
-            mFromUnitValue.setInputType( fromUnit.getInputType() );
-            processInput();
-        }
-    }
-
-    @Override
-    public void onNothingSelected( AdapterView<?> parent ) {
+    public void onItemClick( AdapterView<?> parent, View view, int position, long id ) {
+        String type = parent.getItemAtPosition( position ).toString();
+        ArrayAdapter<Unit> unitAdapter = mUnitAdapters.get( type );
+        clearEditText( mFromUnitValue );
+        clearEditText( mToUnitValue );
+        setSpinnerAdapter( mFromUnitSpinner, unitAdapter, 0 );
+        setSpinnerAdapter( mToUnitSpinner, unitAdapter, 1 );
     }
 
     @Override
     protected void processInput() {
-        if ( mFromUnitSpinner.getSelectedItemPosition() >= 0
-             && mToUnitSpinner.getSelectedItemPosition() >= 0 ) {
-            try {
-                double fromValue = Double.valueOf( mFromUnitValue.getText().toString() );
-                Unit fromUnit = (Unit) mFromUnitSpinner.getSelectedItem();
-                Unit toUnit = (Unit) mToUnitSpinner.getSelectedItem();
+        try {
+            Unit fromUnit = (Unit) getSelectedItem( mFromUnitSpinner );
+            Unit toUnit = (Unit) getSelectedItem( mToUnitSpinner );
+            if ( fromUnit != null && toUnit != null ) {
+                EditText editText = mFromUnitValue.getEditText();
+                editText.setInputType( fromUnit.getInputType() );
+                double fromValue = parseDouble( mFromUnitValue );
                 double toValue = fromUnit.convertTo( toUnit, fromValue );
-                mToUnitValue.setText( mFormat.format( toValue ) );
-            } catch ( NumberFormatException e ) {
-                mToUnitValue.setText( "" );
+                showValue( mToUnitValue, mFormat.format( toValue ) );
             }
+        } catch ( NumberFormatException e ) {
+            clearEditText( mToUnitValue );
         }
-    }
-
-    private ArrayAdapter<Unit> getArrayAdapter( Unit[] units ) {
-        ArrayAdapter<Unit> adapter = new ArrayAdapter<>( getActivity(),
-                android.R.layout.simple_spinner_item, units );
-        adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
-        return adapter;
-    }
-
-    private ArrayAdapter<String> getArrayAdapter( Set<String> list ) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
-                android.R.layout.simple_spinner_item, list.toArray( new String[ list.size() ] ) );
-        adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
-        return adapter;
     }
 
     private static abstract class Unit {
@@ -257,9 +232,10 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return super.getInputType() | InputType.TYPE_NUMBER_FLAG_SIGNED;
         }
 
+        @NonNull
         @Override
         public String toString() {
-            return "Celsius";
+            return "\u00B0C";
         }
     }
 
@@ -284,9 +260,10 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return super.getInputType() | InputType.TYPE_NUMBER_FLAG_SIGNED;
         }
 
+        @NonNull
         @Override
         public String toString() {
-            return "Fahrenheit";
+            return "\u00B0F";
         }
     }
 
@@ -297,9 +274,14 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 5.0/9.0;
         }
 
+        public int getInputType() {
+            return super.getInputType() | InputType.TYPE_NUMBER_FLAG_SIGNED;
+        }
+
+        @NonNull
         @Override
         public String toString() {
-            return "Rankine";
+            return "\u00B0Ra";
         }
     }
 
@@ -314,9 +296,10 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return super.getInputType() | InputType.TYPE_NUMBER_FLAG_SIGNED;
         }
 
+        @NonNull
         @Override
         public String toString() {
-            return "Kelvins";
+            return "K";
         }
     }
 
@@ -328,6 +311,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 1609.344;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "mi";
@@ -341,6 +325,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 1852.0;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "nm";
@@ -354,6 +339,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 0.9144;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "yd";
@@ -367,6 +353,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 0.3048;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "ft";
@@ -380,6 +367,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 0.0254;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "in";
@@ -393,6 +381,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 0.01;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "cm";
@@ -406,6 +395,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 0.001;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "mm";
@@ -419,6 +409,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 1000.0;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "km";
@@ -432,6 +423,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 1.0;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "m";
@@ -446,6 +438,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 0.514444;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "knot";
@@ -459,6 +452,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 0.44704;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "mi/h";
@@ -472,6 +466,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 0.277778;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "km/h";
@@ -485,6 +480,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 0.3048;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "ft/s";
@@ -498,6 +494,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 1.0;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "m/s";
@@ -512,6 +509,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 3.785411784;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "gal";
@@ -525,6 +523,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 0.946353;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "qt";
@@ -538,6 +537,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 0.0295735296;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "fl oz";
@@ -551,6 +551,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 0.001;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "mL";
@@ -564,6 +565,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 1.0;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "L";
@@ -578,6 +580,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 33.863753;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "inHg";
@@ -591,6 +594,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 1.0;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "hPa";
@@ -604,6 +608,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 1.0;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "mbar";
@@ -618,6 +623,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 453.59237;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "lb";
@@ -631,6 +637,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 28.349523;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "oz";
@@ -644,6 +651,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 1000.0;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "kg";
@@ -657,6 +665,7 @@ public class UnitConvertFrament extends E6bFragmentBase implements OnItemSelecte
             return 1.0;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return "g";

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,22 +24,22 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.GeoUtils;
 import com.nadmm.airports.utils.WxUtils;
 
 public class CrossWindFragment extends E6bFragmentBase {
 
-    private EditText mWsEdit;
-    private EditText mWdirEdit;
-    private EditText mMagVar;
-    private EditText mRwyEdit;
-    private EditText mHwndEdit;
-    private EditText mXwndEdit;
-    private TextView mWindMsg;
+    private TextInputLayout mWsEdit;
+    private TextInputLayout mWdirEdit;
+    private TextInputLayout mDeclnEdit;
+    private TextInputLayout mRwyEdit;
+    private TextInputLayout mHwndEdit;
+    private TextInputLayout mXwndEdit;
+    private TextView mTextMsg;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -54,17 +54,18 @@ public class CrossWindFragment extends E6bFragmentBase {
 
         mWsEdit = findViewById( R.id.e6b_edit_wind_speed );
         mWdirEdit = findViewById( R.id.e6b_edit_wind_dir );
-        mMagVar = findViewById( R.id.e6b_edit_mag_var );
+        mDeclnEdit = findViewById( R.id.e6b_edit_mag_var );
         mRwyEdit = findViewById( R.id.e6b_edit_runway_id );
         mHwndEdit = findViewById( R.id.e6b_edit_head_wind );
         mXwndEdit = findViewById( R.id.e6b_edit_cross_wind );
-        mWindMsg = findViewById( R.id.e6b_msg );
+        mTextMsg = findViewById( R.id.e6b_msg );
 
-        mMagVar.setText( "0" );
-
-        mWsEdit.addTextChangedListener( mTextWatcher );
-        mWdirEdit.addTextChangedListener( mTextWatcher );
-        mRwyEdit.addTextChangedListener( mTextWatcher );
+        addEditField( mWsEdit );
+        addEditField( mWdirEdit );
+        addEditField( mDeclnEdit );
+        addEditField( mRwyEdit );
+        addReadOnlyField( mHwndEdit );
+        addReadOnlyField( mXwndEdit );
 
         setFragmentContentShown( true );
     }
@@ -76,64 +77,40 @@ public class CrossWindFragment extends E6bFragmentBase {
 
     @SuppressLint( "SetTextI18n" )
     protected void processInput() {
-        double windSpeed = Double.MAX_VALUE;
-        double windDir = Double.MAX_VALUE;
-        double magVar = Double.MAX_VALUE;
-        double runwayId = Double.MAX_VALUE;
-
         try {
-            windSpeed = Double.parseDouble( mWsEdit.getText().toString() );
-            magVar = Double.parseDouble( mMagVar.getText().toString() );
-        } catch ( NumberFormatException ignored ) {
-        }
-        try {
-            windDir = Double.parseDouble( mWdirEdit.getText().toString() );
-            if ( windDir == 0 || windDir > 360 ) {
-                mWdirEdit.setError( "Enter a value between 1 and 360" );
-                windDir = Double.MAX_VALUE;
-            }
-        } catch ( NumberFormatException ignored ) {
-        }
-        try {
-            runwayId = Double.parseDouble( mRwyEdit.getText().toString() );
-            if ( runwayId == 0 || runwayId > 36 ) {
-                mRwyEdit.setError( "Enter a value between 1 and 36" );
-                runwayId = -1;
-            }
-        } catch ( NumberFormatException ignored ) {
-        }
-
-        if ( windSpeed != Double.MAX_VALUE && windDir != Double.MAX_VALUE
-                && magVar != Double.MAX_VALUE && runwayId != Double.MAX_VALUE ) {
-            windDir = GeoUtils.applyDeclination( windDir, magVar );
+            double windSpeed = parseDouble( mWsEdit );
+            double declination = parseDeclination( mDeclnEdit );
+            double windDir = parseDirection( mWdirEdit );
+            double runwayId = parseRunway( mRwyEdit );
+            windDir = GeoUtils.applyDeclination( Math.toDegrees( windDir ), declination );
             long headWind = WxUtils.getHeadWindComponent( windSpeed, windDir, runwayId*10 );
             long crossWind = WxUtils.getCrossWindComponent( windSpeed, windDir, runwayId*10 );
-            mHwndEdit.setText( String.valueOf( headWind ) );
-            mXwndEdit.setText( String.valueOf( crossWind ) );
+            showValue( mHwndEdit, headWind );
+            showValue( mXwndEdit, crossWind );
 
             if ( headWind > 0 && crossWind > 0 ) {
-                mWindMsg.setText( "Right quartering cross wind with head wind" );
+                mTextMsg.setText( "Right quartering cross wind with head wind" );
             } else if ( headWind > 0 && crossWind < 0 ) {
-                mWindMsg.setText( "Left quartering cross wind with head wind" );
+                mTextMsg.setText( "Left quartering cross wind with head wind" );
             } else if ( headWind > 0 ) {
-                mWindMsg.setText( "Head wind only, no cross wind" );
+                mTextMsg.setText( "Head wind only, no cross wind" );
             } else if ( headWind == 0 && crossWind > 0 ) {
-                mWindMsg.setText( "Right cross wind only, no head wind" );
+                mTextMsg.setText( "Right cross wind only, no head wind" );
             } else if ( headWind == 0 && crossWind < 0 ) {
-                mWindMsg.setText( "Left cross wind only, no head wind" );
+                mTextMsg.setText( "Left cross wind only, no head wind" );
             } else if ( headWind < 0 && crossWind < 0 ) {
-                mWindMsg.setText( "Left quartering cross wind with tail wind" );
+                mTextMsg.setText( "Left quartering cross wind with tail wind" );
             } else if ( headWind < 0 && crossWind > 0 ) {
-                mWindMsg.setText( "Right quartering cross wind with tail wind" );
+                mTextMsg.setText( "Right quartering cross wind with tail wind" );
             } else if ( headWind < 0 ) {
-                mWindMsg.setText( "Tail wind only, no cross wind" );
+                mTextMsg.setText( "Tail wind only, no cross wind" );
             } else {
-                mWindMsg.setText( "Winds calm" );
+                mTextMsg.setText( "Winds calm" );
             }
-        } else {
-            mHwndEdit.setText( "" );
-            mXwndEdit.setText( "" );
-            mWindMsg.setText( "" );
+        } catch ( NumberFormatException ignored ) {
+            clearEditText( mHwndEdit );
+            clearEditText( mXwndEdit );
+            mTextMsg.setText( "" );
         }
     }
 
