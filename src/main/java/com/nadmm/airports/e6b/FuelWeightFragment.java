@@ -24,7 +24,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputLayout;
@@ -33,11 +32,9 @@ import com.nadmm.airports.R;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class FuelWeightFragment extends E6bFragmentBase {
 
-    private TextInputLayout mFuelTypes;
     private TextInputLayout mFuelTotal;
     private TextInputLayout mFuelWeight;
     private MaterialAutoCompleteTextView mTextView;
@@ -62,12 +59,12 @@ public class FuelWeightFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        mFuelTypes = findViewById( R.id.e6b_fuel_types );
         String [] names = mFuels.keySet().toArray( new String[ 0 ] );
         Arrays.sort( names );
         ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
                 R.layout.list_item, names );
-        mTextView = (MaterialAutoCompleteTextView) Objects.requireNonNull( mFuelTypes.getEditText() );
+        TextInputLayout fuelTypes = findViewById( R.id.e6b_fuel_types );
+        mTextView = (MaterialAutoCompleteTextView) fuelTypes.getEditText();
         mTextView.setAdapter( adapter );
         mTextView.setOnItemClickListener( ( parent, view, position, id ) -> processInput() );
 
@@ -93,7 +90,7 @@ public class FuelWeightFragment extends E6bFragmentBase {
             double fuelTotal = parseDouble( mFuelTotal );
             String name = mTextView.getText().toString();
             if ( !name.isEmpty() ) {
-                double weight = fuelTotal * Objects.requireNonNull( mFuels.get( name ) );
+                double weight = fuelTotal * mFuels.get( name );
                 showDecimalValue( mFuelWeight, weight );
             }
         } catch ( RuntimeException e ) {
