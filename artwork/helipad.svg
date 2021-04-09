@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -13,7 +11,7 @@
    height="250"
    id="svg4472"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
    sodipodi:docname="helipad.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/helipad.png"
    inkscape:export-xdpi="288"
@@ -62,15 +60,16 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="846"
-     inkscape:window-x="0"
-     inkscape:window-y="-3"
+     inkscape:window-width="2560"
+     inkscape:window-height="1409"
+     inkscape:window-x="2560"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
-     fit-margin-bottom="0" />
+     fit-margin-bottom="0"
+     inkscape:document-rotation="0" />
   <metadata
      id="metadata4477">
     <rdf:RDF>
@@ -79,7 +78,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -92,17 +91,21 @@
        style="fill:#a0a0a0;fill-opacity:1;stroke:none"
        d="m 500.00001,477.36217 c 0,69.0356 -55.9644,125 -125,125 -69.03559,0 -125,-55.9644 -125,-125 0,-69.03559 55.96441,-125 125,-125 69.0356,0 125,55.96441 125,125 z"
        id="path3005"
-       inkscape:connector-curvature="0" />
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/nhasan/Android/workspace/FlightIntel/src/main/res/drawable-xxxhdpi/helipad.png"
+       inkscape:export-xdpi="49.150002"
+       inkscape:export-ydpi="49.150002" />
     <text
        xml:space="preserve"
-       style="font-size:220px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans Bold"
-       x="295.29297"
-       y="555.88757"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.5634px;line-height:0%;font-family:'Droid Sans';-inkscape-font-specification:'Droid Sans Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1.92724;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="308.25153"
+       y="535.46283"
        id="text3007"
-       sodipodi:linespacing="125%"><tspan
+       transform="scale(0.96316938,1.038239)"><tspan
          sodipodi:role="line"
          id="tspan3009"
-         x="295.29297"
-         y="555.88757">H</tspan></text>
+         x="308.25153"
+         y="535.46283"
+         style="font-size:211.995px;line-height:1.25;stroke-width:1.92724">H</tspan></text>
   </g>
 </svg>
