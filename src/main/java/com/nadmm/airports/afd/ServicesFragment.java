@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.data.DatabaseManager.Airports;
@@ -89,14 +91,17 @@ public final class ServicesFragment extends FragmentBase {
             services.add( "Bulk Oxygen" );
         }
         if ( !services.isEmpty() ) {
-            LinearLayout layout = findViewById( R.id.airport_services_layout );
+            ChipGroup chips = findViewById( R.id.airport_services_chips );
             for ( String service : services ) {
-                addBulletedRow( layout, service );
+                Chip chip = new Chip( getActivity() );
+                chip.setText( service );
+                chip.setTextAppearance( R.style.TextSmall );
+                chips.addView( chip );
             }
         } else {
             TextView tv = findViewById( R.id.airport_services_label );
             tv.setVisibility( View.GONE );
-            LinearLayout layout = findViewById( R.id.airport_services_layout );
+            LinearLayout layout = findViewById( R.id.airport_services_chips );
             layout.setVisibility( View.GONE );
         }
     }
