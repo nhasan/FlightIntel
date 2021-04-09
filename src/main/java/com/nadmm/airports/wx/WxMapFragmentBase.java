@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,25 +26,26 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.ImageViewActivity;
 import com.nadmm.airports.R;
 
 public abstract class WxMapFragmentBase extends WxFragmentBase {
 
-    private String mAction;
-    private String[] mWxTypeCodes;
-    private String[] mWxTypeNames;
-    private String[] mWxMapCodes;
-    private String[] mWxMapNames;
+    private final String mAction;
+    private final String[] mWxTypeCodes;
+    private final String[] mWxTypeNames;
+    private final String[] mWxMapCodes;
+    private final String[] mWxMapNames;
     private String mLabel;
     private String mTitle;
     private String mHelpText;
     private View mPendingRow;
-    private Spinner mSpinner;
+    private TextInputLayout mSpinner;
 
     public WxMapFragmentBase( String action, String[] mapCodes, String[] mapNames ) {
         mAction = action;
@@ -114,9 +115,10 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
             layout.setVisibility( View.VISIBLE );
             mSpinner = view.findViewById( R.id.map_type );
             ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
-                    android.R.layout.simple_spinner_item, mWxTypeNames );
-            adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
-            mSpinner.setAdapter( adapter );
+                    R.layout.list_item, mWxTypeNames );
+            AutoCompleteTextView textView = getAutoCompleteTextView( mSpinner );
+            textView.setAdapter( adapter );
+            textView.setText( mWxTypeNames[0], false);
         }
 
         setFragmentContentShown( true );
@@ -145,7 +147,7 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_IMAGE );
         service.putExtra( NoaaService.IMAGE_CODE, code );
         if ( mSpinner != null ) {
-            int pos = mSpinner.getSelectedItemPosition();
+            int pos = getSelectedItemPos( mSpinner );
             service.putExtra( NoaaService.IMAGE_TYPE, mWxTypeCodes[ pos ] );
         }
         setServiceParams( service );
