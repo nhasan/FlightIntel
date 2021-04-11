@@ -47,7 +47,10 @@
         <item name="android:windowBackground">@drawable/launch_screen</item>
     </style>
 
-    <style name="Theme.Light.Dialog" parent="Theme.MaterialComponents.DayNight.DialogWhenLarge">
+    <style name="Theme.DayNight.Dialog" parent="Theme.MaterialComponents.DayNight.DialogWhenLarge">
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
     </style>
 
     <style name="Widget.FlightIntel.PopupMenu" parent="Widget.AppCompat.Light.PopupMenu">
