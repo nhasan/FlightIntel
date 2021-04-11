@@ -108,7 +108,7 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
             row.setOnClickListener( listener );
         }
 
-        if ( mWxTypeCodes != null ) {
+        if ( mWxTypeCodes != null && mWxTypeNames != null) {
             TextView tv = view.findViewById( R.id.wx_map_type_label );
             tv.setVisibility( View.VISIBLE );
             layout = view.findViewById( R.id.wx_map_type_layout );
@@ -146,7 +146,7 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
         service.setAction( mAction );
         service.putExtra( NoaaService.TYPE, NoaaService.TYPE_IMAGE );
         service.putExtra( NoaaService.IMAGE_CODE, code );
-        if ( mSpinner != null ) {
+        if ( mSpinner != null && mWxTypeCodes != null) {
             int pos = getSelectedItemPos( mSpinner );
             service.putExtra( NoaaService.IMAGE_TYPE, mWxTypeCodes[ pos ] );
         }
