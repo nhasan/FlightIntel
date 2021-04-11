@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ public class WxRegions {
 
     public static final String[] sWxRegionCodes = new String[] {
         "US",
+        "AK",
         "ALB",
         "ABQ",
         "AUS",
@@ -33,6 +34,7 @@ public class WxRegions {
         "DEN",
         "DTW",
         "EVV",
+        "HI",
         "LAS",
         "LWS",
         "LIT",
@@ -46,6 +48,7 @@ public class WxRegions {
 
     public static final String[] sWxRegionNames = new String[] {
         "Continental USA",
+        "Alaska, AK",
         "Albany, NY",
         "Albuquerque, NM",
         "Austin, TX",
@@ -55,6 +58,7 @@ public class WxRegions {
         "Denver, CO",
         "Detroit, MI",
         "Evansville, IN",
+        "Hawaii, HI",
         "Las Vegas, NV",
         "Lewiston, ID",
         "Little Rock, AR",

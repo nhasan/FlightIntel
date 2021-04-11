@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,9 @@ import com.nadmm.airports.utils.NetworkUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 import java.io.File;
+import java.util.Locale;
 
 public class RadarService extends NoaaService {
-
-    private final String RADAR_IMAGE_NAME = "%s.gif";
-    private final String RADAR_IMAGE_PATH = "/ridge/Conus/RadarImg/";
 
     private final static long RADAR_CACHE_MAX_AGE = 10*DateUtils.MINUTE_IN_MILLIS;
 
@@ -44,13 +42,15 @@ public class RadarService extends NoaaService {
         if ( action.equals( ACTION_GET_RADAR ) ) {
             String type = intent.getStringExtra( TYPE );
             if ( type.equals( TYPE_IMAGE ) ) {
+                String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );
-                String imageName = String.format( RADAR_IMAGE_NAME, code );
+                String imageName = String.format( Locale.US, "rad_%s_%s.gif",
+                        imgType, code.toLowerCase() );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = RADAR_IMAGE_PATH+imageName;
-                        NetworkUtils.doHttpsGet( this, RADAR_HOST, path, imageFile );
+                        String path = "/data/obs/radar/" +imageName;
+                        NetworkUtils.doHttpsGet( this, AWC_HOST, path, imageFile );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch RADAR image: "+e.getMessage() );
                     }
