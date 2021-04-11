@@ -41,6 +41,7 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
     private final String[] mWxTypeNames;
     private final String[] mWxMapCodes;
     private final String[] mWxMapNames;
+    private String mTypeName;
     private String mLabel;
     private String mTitle;
     private String mHelpText;
@@ -111,6 +112,9 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
         if ( mWxTypeCodes != null && mWxTypeNames != null) {
             TextView tv = view.findViewById( R.id.wx_map_type_label );
             tv.setVisibility( View.VISIBLE );
+            if ( mTypeName != null && mTypeName.length() > 0 ) {
+                tv.setText( mTypeName );
+            }
             layout = view.findViewById( R.id.wx_map_type_layout );
             layout.setVisibility( View.VISIBLE );
             mSpinner = view.findViewById( R.id.map_type );
@@ -194,6 +198,10 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
 
     protected void setLabel( String label ) {
         mLabel = label;
+    }
+
+    protected void setMapTypeName( String typeName ) {
+        mTypeName = typeName;
     }
 
     protected void setTitle( String title ) {
