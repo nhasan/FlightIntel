@@ -33,6 +33,7 @@
         <TextView android:id="@+id/wx_map_type_label"
                 style="@style/TextLabel"
                 android:text="@string/select_type"
+                android:textColor="?colorPrimary"
                 android:visibility="gone"
                 android:paddingTop="@dimen/item_padding"
                 android:paddingBottom="@dimen/label_padding"
@@ -57,6 +58,7 @@
         </LinearLayout>
         <TextView android:id="@+id/wx_map_label"
                 style="@style/TextLabel"
+                android:textColor="?colorPrimary"
                 android:paddingTop="@dimen/item_padding"
                 android:paddingBottom="@dimen/label_padding"
                 android:visibility="gone"
