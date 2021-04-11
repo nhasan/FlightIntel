@@ -24,7 +24,6 @@ public class WxRegions {
 
     public static final String[] sWxRegionCodes = new String[] {
         "US",
-        "AK",
         "ALB",
         "ABQ",
         "AUS",
@@ -34,7 +33,6 @@ public class WxRegions {
         "DEN",
         "DTW",
         "EVV",
-        "HI",
         "LAS",
         "LWS",
         "LIT",
@@ -48,7 +46,6 @@ public class WxRegions {
 
     public static final String[] sWxRegionNames = new String[] {
         "Continental USA",
-        "Alaska, AK",
         "Albany, NY",
         "Albuquerque, NM",
         "Austin, TX",
@@ -58,7 +55,6 @@ public class WxRegions {
         "Denver, CO",
         "Detroit, MI",
         "Evansville, IN",
-        "Hawaii, HI",
         "Las Vegas, NV",
         "Lewiston, ID",
         "Little Rock, AR",
