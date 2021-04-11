@@ -30,7 +30,6 @@ public class WxDetailActivity extends TabPagerActivityBase {
     private final String[] mTabTitles = new String[] {
             "METAR",
             "TAF",
-            "NOTAM",
             "PIREP",
             "RADAR",
             "SATELLITE",
@@ -48,7 +47,6 @@ public class WxDetailActivity extends TabPagerActivityBase {
     private final Class<?>[] mClasses = new Class<?>[] {
             MetarFragment.class,
             TafFragment.class,
-            AirportNotamFragment.class,
             PirepFragment.class,
             RadarFragment.class,
             SatelliteFragment.class,
