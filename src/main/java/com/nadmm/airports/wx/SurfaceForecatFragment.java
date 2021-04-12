@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2017-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,28 +55,28 @@ public class SurfaceForecatFragment extends WxMapFragmentBase {
 
     private static final String[] sRegionCodes = new String[]{
             "us",
-            "c",
-            "e",
-            "nc",
             "ne",
-            "nw",
-            "sc",
+            "e",
             "se",
-            "sw",
-            "w"
+            "nc",
+            "c",
+            "sc",
+            "nw",
+            "w",
+            "sw"
     };
 
     private static final String[] sRegionNames = new String[]{
             "Continental US",
-            "Central",
-            "East",
-            "North Central",
             "Northeast",
-            "Northwest",
-            "South Central",
+            "East",
             "Southeast",
-            "Southwest",
-            "West"
+            "North Central",
+            "Central",
+            "South Central",
+            "Northwest",
+            "West",
+            "Southwest"
     };
 
     public SurfaceForecatFragment() {
