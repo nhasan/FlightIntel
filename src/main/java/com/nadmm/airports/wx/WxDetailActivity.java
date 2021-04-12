@@ -33,7 +33,7 @@ public class WxDetailActivity extends TabPagerActivityBase {
             "PIREP",
             "RADAR",
             "SATELLITE",
-            "SFC FORECAST",
+            "GFA",
             "AREA FORECAST",
             "AIRMET/SIGMET",
             "PROG CHARTS",

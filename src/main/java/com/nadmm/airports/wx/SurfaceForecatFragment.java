@@ -24,48 +24,67 @@ import android.content.Intent;
 public class SurfaceForecatFragment extends WxMapFragmentBase {
 
     private static final String[] sFcastCodes = new String[]{
-            "F03",
-            "F06",
-            "F09",
-            "F12",
-            "F15",
-            "F18"
+            "F03_gfa_clouds",
+            "F03_gfa_sfc",
+            "F06_gfa_clouds",
+            "F06_gfa_sfc",
+            "F09_gfa_clouds",
+            "F09_gfa_sfc",
+            "F12_gfa_clouds",
+            "F12_gfa_sfc",
+            "F15_gfa_clouds",
+            "F15_gfa_sfc",
+            "F18_gfa_clouds",
+            "F18_gfa_sfc"
     };
 
     private static final String[] sFcastNames = new String[]{
-            "3 Hour",
-            "6 Hour",
-            "9 Hour",
-            "12 Hour",
-            "15 Hour",
-            "18 Hour"
+            "3 Hour Clouds",
+            "3 Hour Surface",
+            "6 Hour Clouds",
+            "6 Hour Surface",
+            "9 Hour Clouds",
+            "9 Hour Surface",
+            "12 Hour Clouds",
+            "12 Hour Surface",
+            "15 Hour Clouds",
+            "15 Hour Surface",
+            "18 Hour Clouds",
+            "18 Hour Surface"
     };
 
     private static final String[] sRegionCodes = new String[]{
             "us",
+            "c",
+            "e",
             "nc",
             "ne",
             "nw",
             "sc",
             "se",
-            "sw"
+            "sw",
+            "w"
     };
 
     private static final String[] sRegionNames = new String[]{
             "Continental US",
+            "Central",
+            "East",
             "North Central",
             "Northeast",
             "Northwest",
             "South Central",
             "Southeast",
-            "Southwest"
+            "Southwest",
+            "West"
     };
 
     public SurfaceForecatFragment() {
         super( NoaaService.ACTION_GET_GFA, sRegionCodes, sRegionNames,
                 sFcastCodes, sFcastNames );
 
-        setTitle( "Surface Forecast" );
+        setTitle( "Graphical Forecast" );
+        setMapTypeName( "Select Forecast" );
         setLabel( "Select Region" );
     }
 
