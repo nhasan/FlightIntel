@@ -39,8 +39,6 @@ public class WxDetailActivity extends TabPagerActivityBase {
             "PROG CHARTS",
             "WINDS/TEMPERATURE",
             "WINDS ALOFT",
-            "SIG WX",
-            "CIG/VIS",
             "ICING"
     };
 
@@ -56,8 +54,6 @@ public class WxDetailActivity extends TabPagerActivityBase {
             ProgChartFragment.class,
             WindFragment.class,
             WindsAloftFragment.class,
-            SigWxFragment.class,
-            CvaFragment.class,
             IcingFragment.class
     };
 
