@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +29,11 @@ import com.nadmm.airports.R;
 public class AirSigmetMapActivity extends ActivityBase {
 
     private static final String[] sAirSigmetCodes = new String[] {
-        "ALL",
-        "CB",
-        "IC",
-        "IF",
-        "TB"
+        "all",
+        "cb",
+        "ic",
+        "if",
+        "tb"
     };
 
     private static final String[] sAirSigmetNames = new String[] {

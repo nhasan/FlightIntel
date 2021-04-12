@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,13 +29,7 @@ import java.util.Locale;
 
 public class AirSigmetService extends NoaaService {
 
-    private final String AIRSIGMET_IMAGE_ZOOM_NAME = "airmets_%s.gif";
-    private final String AIRSIGMET_TEXT_QUERY =
-            "datasource=airsigmets&requesttype=retrieve&format=xml&compression=gzip"
-            + "&hoursBeforeNow=%d&minLat=%.2f&maxLat=%.2f&minLon=%.2f&maxLon=%.2f";
-    private final String AIRSIGMET_IMAGE_PATH = "/adds/data/airmets/";
-
-    private static final long AIRSIGMET_CACHE_MAX_AGE = DateUtils.HOUR_IN_MILLIS;
+    private static final long AIRSIGMET_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
     private final AirSigmetParser mParser;
 
@@ -62,11 +56,16 @@ public class AirSigmetService extends NoaaService {
 
                 if ( forceRefresh || ( !cacheOnly && !xmlFile.exists() ) ) {
                     try {
+                        String AIRSIGMET_TEXT_QUERY = "datasource=airsigmets"
+                                + "&requesttype=retrieve&format=xml&compression=gzip"
+                                + "&hoursBeforeNow=%d&minLat=%.2f&maxLat=%.2f"
+                                + "&minLon=%.2f&maxLon=%.2f";
                         String query = String.format( Locale.US, AIRSIGMET_TEXT_QUERY,
                                 hours, box[ 0 ], box[ 1 ], box[ 2 ], box[ 3 ] );
                         fetchFromNoaa( query, xmlFile, true );
                     } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch AirSigmet: "+e.getMessage() );
+                        UiUtils.showToast( this, "Unable to fetch AirSigmet: "
+                                +e.getMessage() );
                     }
                 }
 
@@ -84,11 +83,11 @@ public class AirSigmetService extends NoaaService {
                 sendSerializableResultIntent( action, stationId, airSigmet );
             } else if ( type.equals( TYPE_IMAGE ) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
-                String imageName = String.format( AIRSIGMET_IMAGE_ZOOM_NAME, code );
+                 String imageName = String.format( "sigmet_%s.gif", code );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = AIRSIGMET_IMAGE_PATH;
+                        String path = "/data/products/sigmet/";
                         path += imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
