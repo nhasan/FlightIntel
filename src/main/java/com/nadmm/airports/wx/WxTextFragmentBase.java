@@ -42,6 +42,7 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
     private final String[] mWxAreaCodes;
     private final String[] mWxAreaNames;
     private TextInputLayout mSpinner;
+    private String mHelpText;
 
     private View mPendingRow;
 
@@ -98,7 +99,13 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
             row.setOnClickListener( listener );
         }
 
-        if ( mWxTypeCodes != null ) {
+        if ( mHelpText != null && mHelpText.length() > 0 ) {
+            tv = view.findViewById( R.id.help_text );
+            tv.setText( mHelpText );
+            tv.setVisibility( View.VISIBLE );
+        }
+
+        if ( mWxTypeCodes != null && mWxTypeNames != null ) {
             tv = view.findViewById( R.id.wx_map_type_label );
             tv.setVisibility( View.VISIBLE );
             layout = view.findViewById( R.id.wx_map_type_layout );
@@ -145,7 +152,7 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
         Intent service = getServiceIntent();
         service.setAction( mAction );
         service.putExtra( NoaaService.TEXT_CODE, code );
-        if ( mSpinner != null ) {
+        if ( mSpinner != null && mWxTypeCodes != null ) {
             int pos = getSelectedItemPos( mSpinner );
             service.putExtra( NoaaService.TEXT_TYPE, mWxTypeCodes[ pos ] );
         }
@@ -159,6 +166,10 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
             View view = mPendingRow.findViewById( R.id.progress );
             view.setVisibility( visible? View.VISIBLE : View.INVISIBLE );
         }
+    }
+
+    protected void setHelpText( String text ) {
+        mHelpText = text;
     }
 
     protected abstract String getTitle();
