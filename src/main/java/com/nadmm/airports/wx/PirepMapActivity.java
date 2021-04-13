@@ -82,7 +82,7 @@ public class PirepMapActivity extends ActivityBase {
         public PirepMapFragment() {
             super( NoaaService.ACTION_GET_PIREP,
                     sPirepCodes, sPirepNames, sTypeCodes, sTypeNames );
-            setLabel( "Select Region and Category" );
+            setLabel( "Select Region" );
         }
 
         @Override
