@@ -62,6 +62,7 @@ if (scalar @$info == 0) {
     my $create_notams_table = 
         "CREATE TABLE $tablename ( "
             . "id TEXT PRIMARY KEY, "
+            . "notamID TEXT, "
             . "series TEXT, "
             . "number INTEGER, "
             . "year INTEGER, "
@@ -70,7 +71,9 @@ if (scalar @$info == 0) {
             . "lastUpdated TEXT, "
             . "effectiveStart TEXT, "
             . "effectiveEnd TEXT, "
+            . "estimatedEnd TEXT, "
             . "location TEXT, "
+            . "icaoLocation TEXT, "
             . "affectedFIR TEXT, "
             . "selectionCode TEXT, "
             . "traffic TEXT, "
@@ -83,15 +86,18 @@ if (scalar @$info == 0) {
             . "radius INTEGER, "
             . "classification TEXT, "
             . "schedule TEXT, "
-            . "text TEXT "
+            . "text TEXT, "
+            . "xovernotamID TEXT"
             . ")";
     $dbh->do($create_notams_table);
     $dbh->do("CREATE INDEX idx_location on notams ( location );");
+    $dbh->do("CREATE INDEX idx_notamID on notams (notamID);");
 }
 
 my $insert_notams_row =
     "INSERT OR IGNORE INTO notams ("
         . "id, "
+        . "notamID, "
         . "series, "
         . "number, "
         . "year, "
@@ -100,7 +106,9 @@ my $insert_notams_row =
         . "lastUpdated, "
         . "effectiveStart, "
         . "effectiveEnd, "
+        . "estimatedEnd, "
         . "location, "
+        . "icaoLocation, "
         . "affectedFIR, "
         . "selectionCode, "
         . "traffic, "
@@ -113,15 +121,19 @@ my $insert_notams_row =
         . "radius, "
         . "classification, "
         . "schedule, "
-        . "text"
+        . "text, "
+	    . "xovernotamID"
         . ") VALUES ("
-        . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
-        . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
+        . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
+        . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
         . ")";
 my $sth_insert_notam = $dbh->prepare($insert_notams_row);
 
 my $delete_notams_row = "DELETE FROM notams WHERE id=?";
 my $sth_delete_notam = $dbh->prepare($delete_notams_row);
+
+my $select_notams_row = "SELECT * FROM notams WHERE id=?";
+my $sth_select_notam = $dbh->prepare($select_notams_row);
 
 $dbh->do( "PRAGMA page_size=4096" );
 $dbh->do( "PRAGMA synchronous=OFF" );
@@ -173,13 +185,42 @@ sub load_notams_from_file($) {
         my ($timeslice) = $xpc->findnodes(".//ns11:EventTimeSlice", $msg);
         my $effectiveStart = $xpc->findvalue(".//ns5:beginPosition", $timeslice) // "";
         my $effectiveEnd = $xpc->findvalue(".//ns5:endPosition", $timeslice) // "";
-        my ($notam) = $xpc->findnodes(".//ns11:textNOTAM", $timeslice);
-
+        my $estimatedEnd = "Y" if (($xpc->findvalue(q{.//ns5:endPosition/@indeterminatePosition}, $timeslice) // "") eq "unknown");
         my ($extension) = $xpc->findnodes(".//ns6:EventExtension", $msg);
         my $classification = $xpc->findvalue(".//ns6:classification", $extension) // "";
         my $lastUpdated = $xpc->findvalue(".//ns6:lastUpdated", $extension) // "";
+        my $xovernotamID = $xpc->findvalue(".//ns6:xovernotamID", $extension) // "";
+        my $icaoLocation = $xpc->findvalue(".//ns6:icaoLocation", $extension) // "";
 
+        my ($notam) = $xpc->findnodes(".//ns11:textNOTAM", $timeslice);
         my $type = $xpc->findvalue(".//ns11:NOTAM/ns11:type", $notam) // "";
+        my $text = $xpc->findvalue(".//ns11:text", $notam) // "";
+
+        if ($type eq "R") {
+            if (exists $notams{$id}) {
+                my $row = get_notam($id);
+                say "$id => $type => $lastUpdated => $row->{lastUpdated}";
+                if ($lastUpdated gt $row->{lastUpdated}) {
+                    # We got a replace event with an updated record
+                    say "Replacing => $id ($icaoLocation)";
+                    delete_notam($id);
+                    delete $notams{$id};
+                } else {
+                    # We already have a more recent record
+                    next;
+                }
+            } 
+        } elsif ($type eq "C") {
+                # We got a cancel event
+                my @tokens = split(/\s/, $text, 4);
+                my $cancelID = $tokens[2];
+                if ($cancelID && exists $notams{$cancelID}) {
+                    say "Deleting => $cancelID ($icaoLocation)";
+                    delete_notam($cancelID);
+                }
+                next;
+        }
+
         my $series = $xpc->findvalue(".//ns11:series", $notam) // "";
         my $number = $xpc->findvalue(".//ns11:number", $notam) // 0;
         my $year = $xpc->findvalue(".//ns11:year", $notam) // 0;
@@ -195,13 +236,6 @@ sub load_notams_from_file($) {
         my $radius = $xpc->findvalue(".//ns11:radius", $notam) // 0;
         my $location = $xpc->findvalue(".//ns11:location", $notam) // "";
         my $schedule = $xpc->findvalue(".//ns11:schedule", $notam) // "";
-        my $text = eval {
-            if ($classification eq "DOM" or $classification eq "FDC") {
-                $xpc->findvalue(".//ns11:simpleText", $notam);
-            } else {
-                $xpc->findvalue(".//ns11:text", $notam);
-            }
-        } // "";
 
         my $latitude = 0;
         my $longitude = 0;
@@ -218,38 +252,26 @@ sub load_notams_from_file($) {
             }
         }
 
-        if (exists $notams{$id}) {
-            delete_notam($id);
+        my $notamID = q{};
+        if ($classification eq "INTL" or $classification eq "LMIL" or $classification eq "MIL") {
+            $notamID = $series.sprintf("%04s", $number)."/".substr($year, 2, 2);
+        } elsif ($classification eq "DOM") {
+            $notamID = substr($issued, 5, 2)."/".sprintf("%03s", $number);
+        } elsif ($classification eq "FDC") {
+            $notamID = substr($issued, 3, 1)."/".sprintf("%04s", $number);
         }
-        $notams{$id}++;
 
-        say "Inserting notam $id -> $location";
+        $notams{$id} = 1;
 
-        $sth_insert_notam->bind_param(1, $id);
-        $sth_insert_notam->bind_param(2, $series);
-        $sth_insert_notam->bind_param(3, $number);
-        $sth_insert_notam->bind_param(4, $year);
-        $sth_insert_notam->bind_param(5, $type);
-        $sth_insert_notam->bind_param(6, $issued);
-        $sth_insert_notam->bind_param(7, $lastUpdated);
-        $sth_insert_notam->bind_param(8, $effectiveStart);
-        $sth_insert_notam->bind_param(9, $effectiveEnd);
-        $sth_insert_notam->bind_param(10, $location);
-        $sth_insert_notam->bind_param(11, $affectedFIR);
-        $sth_insert_notam->bind_param(12, $selectionCode);
-        $sth_insert_notam->bind_param(13, $traffic);
-        $sth_insert_notam->bind_param(14, $purpose);
-        $sth_insert_notam->bind_param(15, $scope);
-        $sth_insert_notam->bind_param(16, $minimumFL);
-        $sth_insert_notam->bind_param(17, $maximumFL);
-        $sth_insert_notam->bind_param(18, $latitude);
-        $sth_insert_notam->bind_param(19, $longitude);
-        $sth_insert_notam->bind_param(20, $radius);
-        $sth_insert_notam->bind_param(21, $classification);
-        $sth_insert_notam->bind_param(22, $schedule);
-        $sth_insert_notam->bind_param(23, $text);
+        #say "Inserting notam $id -> $location";
 
-        if (!$sth_insert_notam->execute()) {
+        if (!$sth_insert_notam->execute(
+                ($id, $notamID, $series, $number, $year, $type, $issued, $lastUpdated,
+                $effectiveStart, $effectiveEnd, $estimatedEnd, $location, $icaoLocation,
+                $affectedFIR, $selectionCode, $traffic, $purpose, $scope, $minimumFL,
+                $maximumFL, $latitude,  $longitude, $radius, $classification, $schedule,
+                $text, $xovernotamID)
+                )) {
             say "Could not insert $id: $DBI::errstr";
         } else {
             ++$new;
@@ -259,10 +281,15 @@ sub load_notams_from_file($) {
     say "Inserted $new new Notams.";
 }
 
+sub get_notam($) {
+    my ($id) = @_;
+    $sth_select_notam->execute(($id)) or die "Can't execute statement: $DBI::errstr\n";
+    return $sth_select_notam->fetchrow_hashref;
+}
+
 sub delete_notam($) {
     my ($id) = @_;
-    $sth_delete_notam->bind_param(1, $id);
-    $sth_delete_notam->execute() or die "Could not delete $id: $DBI::errstr\n";
+    $sth_delete_notam->execute(($id)) or die "Could not delete $id: $DBI::errstr\n";
 }
 
 sub delete_notams() {
