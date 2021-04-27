@@ -185,7 +185,8 @@ sub load_notams_from_file($) {
         my ($timeslice) = $xpc->findnodes(".//ns11:EventTimeSlice", $msg);
         my $effectiveStart = $xpc->findvalue(".//ns5:beginPosition", $timeslice) // "";
         my $effectiveEnd = $xpc->findvalue(".//ns5:endPosition", $timeslice) // "";
-        my $estimatedEnd = "Y" if (($xpc->findvalue(q{.//ns5:endPosition/@indeterminatePosition}, $timeslice) // "") eq "unknown");
+        my $estimatedEnd = (($xpc->findvalue(q{.//ns5:endPosition/@indeterminatePosition},
+            $timeslice) // "") eq "unknown")? "Y" : "N";
         my ($extension) = $xpc->findnodes(".//ns6:EventExtension", $msg);
         my $classification = $xpc->findvalue(".//ns6:classification", $extension) // "";
         my $lastUpdated = $xpc->findvalue(".//ns6:lastUpdated", $extension) // "";
