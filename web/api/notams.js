@@ -30,8 +30,11 @@ let db = new sqlite3.Database(config.get("Notams.dbname"),
 );
 
 let getNotams = function (location, finish) {
-    db.all("SELECT * FROM notams WHERE location = ? and ((classification in ('DOM', 'FDC') and xovernotamID <> '') or xovernotamID = '') order by issued DESC, notamID DESC",
-    [location], 
+    db.all("SELECT * FROM notams WHERE location = ? "
+        +"and ((classification in ('DOM', 'FDC') and xovernotamID <> '') or xovernotamID = '') "
+        +"and (effectiveEnd = '' or effectiveEnd > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) "
+        +"order by issued DESC, notamID DESC",
+    [location],
     (err, rows) => {
         if (err) {
             finish({ error: err.message });
