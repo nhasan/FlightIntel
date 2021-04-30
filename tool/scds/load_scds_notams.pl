@@ -30,7 +30,7 @@
 
 use strict;
 use warnings;
-use v5.10;
+use v5.012;
 
 use Config::Simple;
 use DBI;
@@ -54,11 +54,16 @@ my $watch = $cfg->param("NOTAM.watch") // 0;
 my %notams = ();
 my $reCoordinates = qr/^\d{4}[NS]\d{5}[EW]\d{0,3}$/;
 
+sub logmsg($) {
+    my $now = localtime;
+    say "$now: ".join " ", @_;
+}
+
 my $dbh = DBI->connect("dbi:SQLite:dbname=$outdir/$dbname", "", "");
 my $tablename = "notams";
 my $info = $dbh->table_info(undef, undef, $tablename)->fetchall_arrayref;
 if (scalar @$info == 0) {
-    say "Creating table $tablename.";
+    logmsg "Creating table $tablename.";
     my $create_notams_table = 
         "CREATE TABLE $tablename ( "
             . "id TEXT PRIMARY KEY, "
@@ -147,7 +152,7 @@ sub load_current_notam_ids() {
     }
 
     my $size = scalar keys %notams;
-    say "Loaded $size existing Notams.";
+    logmsg "Loaded $size existing Notams.";
 }
 
 sub load_notams_from_file($) {
@@ -164,6 +169,7 @@ sub load_notams_from_file($) {
         next unless $reader->matchesPattern($msg_pattern);
         my $msg = $reader->copyCurrentNode(1);
         $reader->next;
+
         my $xpc = XML::LibXML::XPathContext->new($msg);
         $xpc->registerNs("ns1", "http://www.opengis.net/ows/1.1");
         $xpc->registerNs("ns2", "http://www.w3.org/1999/xlink");
@@ -220,7 +226,7 @@ sub load_notams_from_file($) {
                     next;
                 }
                 # We got a replace event with an updated record
-                say "Replacing => ($notamID) ($location)";
+                logmsg "Replacing ($notamID) ($location)";
                 delete_notam_by_id($id);
             }
         } elsif ($type eq "C") {
@@ -239,11 +245,11 @@ sub load_notams_from_file($) {
                         $cancelID = $tokens[2];
                     }
                 }
-                if ($cancelID) {
-                    say "Deleting ($cancelID) ($location)";
+                if (length $cancelID) {
+                    logmsg "Deleting ($cancelID) ($location)";
                     delete_notam_by_notamid($cancelID, $location);
                 } else {
-                    say "Unknown CANCEL format => " . (split /\n/, $text )[0];
+                    logmsg "Unknown CANCEL format => " . (split /\n/, $text )[0];
                 }
                 next;
         }
@@ -281,7 +287,7 @@ sub load_notams_from_file($) {
             }
         }
 
-        say "Inserting ($notamID) ($location)";
+        logmsg "Inserting ($notamID) ($location)";
 
         if (!$sth_insert_notam->execute(
                 ($id, $notamID, $series, $number, $year, $type, $issued, $lastUpdated,
@@ -290,14 +296,14 @@ sub load_notams_from_file($) {
                 $maximumFL, $latitude,  $longitude, $radius, $classification, $schedule,
                 $text, $xovernotamID)
                 )) {
-            say "Could not insert $id: $DBI::errstr";
+            logmsg "Could not insert $id: $DBI::errstr";
         } else {
             ++$new;
         }
     }
 
     if ($new > 1) {
-        say "Inserted $new new Notams.";
+        logmsg "Inserted $new new Notams.";
     }
 }
 
@@ -321,10 +327,10 @@ sub delete_notams() {
     my @delete_ids = grep {$notams{$_} == 0} keys %notams;
     my $size = scalar @delete_ids;
     foreach my $id (@delete_ids) {
-        say "Deleting Notam $id.";
+        logmsg "Deleting Notam $id.";
         delete_notam_by_id($id);
     }
-    say "Deleted $size Notams.";
+    logmsg "Deleted $size Notams.";
 }
 
 sub process_jms($) {
@@ -334,7 +340,7 @@ sub process_jms($) {
         close $fh || warn "close failed: $!";
         unlink $file or die "Can't unlink $file: $!";
     } else {
-        say "Unable to open $file: $!";
+        logmsg "Unable to open $file: $!";
     }
 }
 
@@ -346,39 +352,39 @@ sub process_fil($) {
         delete_notams();
         unlink $file or die "Can't unlink $file: $!";
     } else {
-        say "Unable to open $file: $!";
+        logmsg "Unable to open $file: $!";
     }
 }
 
 my $monitor = File::Monitor->new();
 
 if ($watch) {
-    say "Watching $jmspath";
+    logmsg "Watching $jmspath";
     $monitor->watch( { name => "$jmspath", files => 1 } );
-    say "Watching $filpath";
+    logmsg "Watching $filpath";
     $monitor->watch( { name => "$filpath", files => 1 } );
     $monitor->scan;
 }
 
 # Process existing NOTAM files first
-say "Checking existing FIL files.";
+logmsg "Checking existing FIL files.";
 opendir(DIR, $filpath) or die "can't opendir $filpath: $!";
 while (defined(my $file = readdir(DIR))) {
     next if $file =~ /^\.\.?$/;
     $file = "$filpath/$file";
-    say "$file was found.";
+    logmsg "$file was found.";
     process_fil($file);
 }
 closedir(DIR);
 
 # Process existing NOTAM files first
-say 'Checking existing JMS files.';
+logmsg 'Checking existing JMS files.';
 opendir(DIR, $jmspath) or die "can't opendir $jmspath: $!";
 while (defined(my $file = readdir(DIR))) {
     next if $file =~ /^\.\.?$/;
-    next if $file =~ /^messages\.log$/;
+    next if $file =~ /^messages\.logmsg$/;
     $file = "$jmspath/$file";
-    say "$file was found.";
+    logmsg "$file was found.";
     process_jms($file);
 }
 closedir(DIR);
@@ -390,8 +396,8 @@ while ($watch) {
         sleep(1);
         for my $change (@changes) {
             for my $file ($change->files_created) {
-                next if $file =~ /.*\/messages\.log$/;
-                say "$file was created.";
+                next if $file =~ /.*\/messages\.logmsg$/;
+                logmsg "$file was created.";
                 if (rindex($file, $jmspath, 0) == 0) {
                     process_jms($file);
                 }
