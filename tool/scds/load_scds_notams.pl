@@ -129,16 +129,15 @@ my $insert_notams_row =
         . ")";
 my $sth_insert_notam = $dbh->prepare($insert_notams_row);
 
-my $delete_notams_row = "DELETE FROM notams WHERE id=?";
-my $sth_delete_notam = $dbh->prepare($delete_notams_row);
-
-my $select_notams_row = "SELECT * FROM notams WHERE id=?";
-my $sth_select_notam = $dbh->prepare($select_notams_row);
+my $sth_delete_notam_by_id = $dbh->prepare("DELETE FROM notams WHERE id=?");
+my $sth_delete_notam_by_notamid = $dbh->prepare("DELETE FROM notams WHERE notamID=? and location=?");
+my $sth_select_notam = $dbh->prepare("SELECT * FROM notams WHERE id=?");
 
 $dbh->do( "PRAGMA page_size=4096" );
 $dbh->do( "PRAGMA synchronous=OFF" );
 
 sub load_current_notam_ids() {
+    %notams = ();
     my $sth = $dbh->prepare("SELECT id FROM notams;");
     $sth->execute or die "Can't execute statement: $DBI::errstr\n";
 
@@ -183,49 +182,79 @@ sub load_notams_from_file($) {
 
         my $id = $xpc->findvalue('./@ns5:id');
         my ($timeslice) = $xpc->findnodes(".//ns11:EventTimeSlice", $msg);
-        my $effectiveStart = $xpc->findvalue(".//ns5:beginPosition", $timeslice) // "";
-        my $effectiveEnd = $xpc->findvalue(".//ns5:endPosition", $timeslice) // "";
-        my $estimatedEnd = (($xpc->findvalue(q{.//ns5:endPosition/@indeterminatePosition},
-            $timeslice) // "") eq "unknown")? "Y" : "N";
-        my ($extension) = $xpc->findnodes(".//ns6:EventExtension", $msg);
-        my $classification = $xpc->findvalue(".//ns6:classification", $extension) // "";
-        my $lastUpdated = $xpc->findvalue(".//ns6:lastUpdated", $extension) // "";
-        my $xovernotamID = $xpc->findvalue(".//ns6:xovernotamID", $extension) // "";
-        my $icaoLocation = $xpc->findvalue(".//ns6:icaoLocation", $extension) // "";
-
         my ($notam) = $xpc->findnodes(".//ns11:textNOTAM", $timeslice);
-        my $type = $xpc->findvalue(".//ns11:NOTAM/ns11:type", $notam) // "";
-        my $text = $xpc->findvalue(".//ns11:text", $notam) // "";
-
-        if ($type eq "R") {
-            if (exists $notams{$id}) {
-                my $row = get_notam($id);
-                say "$id => $type => $lastUpdated => $row->{lastUpdated}";
-                if ($lastUpdated gt $row->{lastUpdated}) {
-                    # We got a replace event with an updated record
-                    say "Replacing => $id ($icaoLocation)";
-                    delete_notam($id);
-                    delete $notams{$id};
-                } else {
-                    # We already have a more recent record
-                    next;
-                }
-            } 
-        } elsif ($type eq "C") {
-                # We got a cancel event
-                my @tokens = split(/\s/, $text, 4);
-                my $cancelID = $tokens[2];
-                if ($cancelID && exists $notams{$cancelID}) {
-                    say "Deleting => $cancelID ($icaoLocation)";
-                    delete_notam($cancelID);
-                }
-                next;
-        }
-
         my $series = $xpc->findvalue(".//ns11:series", $notam) // "";
         my $number = $xpc->findvalue(".//ns11:number", $notam) // 0;
         my $year = $xpc->findvalue(".//ns11:year", $notam) // 0;
         my $issued = $xpc->findvalue(".//ns11:issued", $notam);
+        my $type = $xpc->findvalue(".//ns11:NOTAM/ns11:type", $notam) // "";
+        my $text = $xpc->findvalue(".//ns11:text", $notam) // "";
+        my $location = $xpc->findvalue(".//ns11:location", $notam) // "";
+        my ($extension) = $xpc->findnodes(".//ns6:EventExtension", $msg);
+        my $classification = $xpc->findvalue(".//ns6:classification", $extension) // "";
+        my $lastUpdated = $xpc->findvalue(".//ns6:lastUpdated", $extension) // "";
+
+        my $notamID = q{};
+        if (rindex($series, "SW", 0) == 0) {
+            # This is a SNOWTAM
+            $notamID = $series.sprintf("%04s", $number);
+        } elsif ($classification eq "INTL" or $classification eq "LMIL" or $classification eq "MIL") {
+            $notamID = $series.sprintf("%04s", $number)."/".substr($year, 2, 2);
+        } elsif ($classification eq "DOM") {
+            $notamID = substr($issued, 5, 2)."/".sprintf("%03s", $number);
+        } elsif ($classification eq "FDC") {
+            $notamID = substr($issued, 3, 1)."/".sprintf("%04s", $number);
+        }
+
+        if ($type eq "N" or $type eq "") {
+            if (defined $notams{$id}) {
+                # We already have this notam, so skip to next
+                $notams{$id} = 1;
+                next;
+            }
+        } elsif ($type eq "R") {
+            my $row = get_notam($id);
+            if (defined $row) {
+                if ($lastUpdated le $row->{lastUpdated}) {
+                    # We already have a more recent record
+                    next;
+                }
+                # We got a replace event with an updated record
+                say "Replacing => ($notamID) ($location)";
+                delete_notam_by_id($id);
+            }
+        } elsif ($type eq "C") {
+                # We got a cancel event
+                my $cancelID;
+                if ($classification eq "FDC") {
+                    $text = $xpc->findvalue(".//ns11:simpleText", $notam) // "";
+                    my @tokens = split(/\s/, $text, 7);
+                    if (scalar @tokens >= 6 and $tokens[3] eq "CANCEL") {
+                        $cancelID = $tokens[4];
+                        $location = $tokens[5];
+                    }    
+                } else {
+                    my @tokens = split(/\s/, $text, 4);
+                    if (scalar @tokens == 4) {
+                        $cancelID = $tokens[2];
+                    }
+                }
+                if ($cancelID) {
+                    say "Deleting ($cancelID) ($location)";
+                    delete_notam_by_notamid($cancelID, $location);
+                } else {
+                    say "Unknown CANCEL format => " . (split /\n/, $text )[0];
+                }
+                next;
+        }
+
+        my $effectiveStart = $xpc->findvalue(".//ns5:beginPosition", $timeslice) // "";
+        my $effectiveEnd = $xpc->findvalue(".//ns5:endPosition", $timeslice) // "";
+        my $estimatedEnd = (($xpc->findvalue(q{.//ns5:endPosition/@indeterminatePosition},
+            $timeslice) // "") eq "unknown")? "Y" : "N";
+        my $xovernotamID = $xpc->findvalue(".//ns6:xovernotamID", $extension) // "";
+        my $icaoLocation = $xpc->findvalue(".//ns6:icaoLocation", $extension) // "";
+
         my $affectedFIR = $xpc->findvalue(".//ns11:affectedFIR", $notam) // "";
         my $selectionCode = $xpc->findvalue(".//ns11:selectionCode", $notam) // "";
         my $traffic = $xpc->findvalue(".//ns11:traffic", $notam) // "";
@@ -235,7 +264,6 @@ sub load_notams_from_file($) {
         my $maximumFL = $xpc->findvalue(".//ns11:maximumFL", $notam) // 999;
         my $coordinates = $xpc->findvalue(".//ns11:coordinates", $notam) // "";
         my $radius = $xpc->findvalue(".//ns11:radius", $notam) // 0;
-        my $location = $xpc->findvalue(".//ns11:location", $notam) // "";
         my $schedule = $xpc->findvalue(".//ns11:schedule", $notam) // "";
 
         my $latitude = 0;
@@ -253,18 +281,7 @@ sub load_notams_from_file($) {
             }
         }
 
-        my $notamID = q{};
-        if ($classification eq "INTL" or $classification eq "LMIL" or $classification eq "MIL") {
-            $notamID = $series.sprintf("%04s", $number)."/".substr($year, 2, 2);
-        } elsif ($classification eq "DOM") {
-            $notamID = substr($issued, 5, 2)."/".sprintf("%03s", $number);
-        } elsif ($classification eq "FDC") {
-            $notamID = substr($issued, 3, 1)."/".sprintf("%04s", $number);
-        }
-
-        $notams{$id} = 1;
-
-        #say "Inserting notam $id -> $location";
+        say "Inserting ($notamID) ($location)";
 
         if (!$sth_insert_notam->execute(
                 ($id, $notamID, $series, $number, $year, $type, $issued, $lastUpdated,
@@ -279,7 +296,9 @@ sub load_notams_from_file($) {
         }
     }
 
-    say "Inserted $new new Notams.";
+    if ($new > 1) {
+        say "Inserted $new new Notams.";
+    }
 }
 
 sub get_notam($) {
@@ -288,9 +307,14 @@ sub get_notam($) {
     return $sth_select_notam->fetchrow_hashref;
 }
 
-sub delete_notam($) {
+sub delete_notam_by_id($) {
     my ($id) = @_;
-    $sth_delete_notam->execute(($id)) or die "Could not delete $id: $DBI::errstr\n";
+    $sth_delete_notam_by_id->execute(($id)) or die "Could not delete $id: $DBI::errstr\n";
+}
+
+sub delete_notam_by_notamid($$) {
+    my ($notamID, $location) = @_;
+    $sth_delete_notam_by_notamid->execute(($notamID, $location)) or die "Could not delete $notamID: $DBI::errstr\n";
 }
 
 sub delete_notams() {
@@ -298,7 +322,7 @@ sub delete_notams() {
     my $size = scalar @delete_ids;
     foreach my $id (@delete_ids) {
         say "Deleting Notam $id.";
-        delete_notam($id);
+        delete_notam_by_id($id);
     }
     say "Deleted $size Notams.";
 }
@@ -308,7 +332,7 @@ sub process_jms($) {
     if (open my $fh, "<", $file) {
         load_notams_from_file($fh);
         close $fh || warn "close failed: $!";
-        unlink $file
+        unlink $file or die "Can't unlink $file: $!";
     } else {
         say "Unable to open $file: $!";
     }
@@ -320,7 +344,7 @@ sub process_fil($) {
         load_current_notam_ids();
         load_notams_from_file($fh);
         delete_notams();
-        unlink $file
+        unlink $file or die "Can't unlink $file: $!";
     } else {
         say "Unable to open $file: $!";
     }
