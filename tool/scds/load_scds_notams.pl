@@ -380,7 +380,7 @@ say 'Checking existing JMS files.';
 opendir(DIR, $jmspath) or die "can't opendir $jmspath: $!";
 while (defined(my $file = readdir(DIR))) {
     next if $file =~ /^\.\.?$/;
-    next if $file =~ /^messages\.say$/;
+    next if $file =~ /^messages\.log$/;
     $file = "$jmspath/$file";
     say "$file was found.";
     process_jms($file);
@@ -394,7 +394,7 @@ while ($watch) {
         sleep(1);
         for my $change (@changes) {
             for my $file ($change->files_created) {
-                next if $file =~ /.*\/messages\.say$/;
+                next if $file =~ /.*\/messages\.log$/;
                 say "$file was created.";
                 if (rindex($file, $jmspath, 0) == 0) {
                     process_jms($file);
