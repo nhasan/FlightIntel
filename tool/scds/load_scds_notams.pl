@@ -59,6 +59,9 @@ sub logmsg($) {
     say "$now: ".join " ", @_;
 }
 
+# Turn off buffering on STDOUT
+binmode(STDOUT, ":unix") || die "can't binmode STDOUT to :unix: $!";
+
 my $dbh = DBI->connect("dbi:SQLite:dbname=$outdir/$dbname", "", "");
 my $tablename = "notams";
 my $info = $dbh->table_info(undef, undef, $tablename)->fetchall_arrayref;
