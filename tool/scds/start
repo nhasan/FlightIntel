@@ -2,4 +2,4 @@
 
 basedir=`dirname $0`
 cd $basedir
-./load_scds_notams.pl load_scds_notams.cfg > ../log/load_scds_notams.log 2>&1
+./load_scds_notams.pl load_scds_notams.cfg

@@ -4,10 +4,13 @@ After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash /home/nhasan_nadmm_com/sw/scds/start
+ExecStart=/home/nhasan_nadmm_com/sw/scds/start
 Restart=on-failure
 RestartSec=5
 User=nhasan_nadmm_com
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=notams
 
 [Install]
 WantedBy=multi-user.target
