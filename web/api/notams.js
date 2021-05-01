@@ -33,7 +33,6 @@ let getNotams = function (location, finish) {
     db.all("SELECT * FROM notams WHERE location = ? "
         +"and ((classification in ('DOM', 'FDC') and xovernotamID <> '') or xovernotamID = '') "
         +"and (effectiveEnd = '' or effectiveEnd > strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) "
-        +"and type <> 'C' "
         +"order by issued DESC, notamID DESC",
     [location],
     (err, rows) => {
@@ -54,7 +53,7 @@ router.get('/:location', function (req, res) {
             if (result.hasOwnProperty("error")) {
                 res.status(500);
             }
-            res.json(result)
+            res.type('json').send(JSON.stringify(result, null, 2));
         });
 });
 
