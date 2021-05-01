@@ -54,11 +54,6 @@ my $watch = $cfg->param("NOTAM.watch") // 0;
 my %notams = ();
 my $reCoordinates = qr/^\d{4}[NS]\d{5}[EW]\d{0,3}$/;
 
-sub logmsg($) {
-    my $now = localtime;
-    say "$now: ".join " ", @_;
-}
-
 # Turn off buffering on STDOUT
 binmode(STDOUT, ":unix") || die "can't binmode STDOUT to :unix: $!";
 
@@ -66,7 +61,7 @@ my $dbh = DBI->connect("dbi:SQLite:dbname=$outdir/$dbname", "", "");
 my $tablename = "notams";
 my $info = $dbh->table_info(undef, undef, $tablename)->fetchall_arrayref;
 if (scalar @$info == 0) {
-    logmsg "Creating table $tablename.";
+    say "Creating table $tablename.";
     my $create_notams_table = 
         "CREATE TABLE $tablename ( "
             . "id TEXT PRIMARY KEY, "
@@ -155,7 +150,7 @@ sub load_current_notam_ids() {
     }
 
     my $size = scalar keys %notams;
-    logmsg "Loaded $size existing Notams.";
+    say "Loaded $size existing Notams.";
 }
 
 sub load_notams_from_file($) {
@@ -229,7 +224,7 @@ sub load_notams_from_file($) {
                     next;
                 }
                 # We got a replace event with an updated record
-                logmsg "Replacing ($notamID) ($location)";
+                say "Replacing ($notamID) ($location)";
                 delete_notam_by_id($id);
             }
         } elsif ($type eq "C") {
@@ -249,10 +244,10 @@ sub load_notams_from_file($) {
                     }
                 }
                 if (length $cancelID) {
-                    logmsg "Deleting ($cancelID) ($location)";
+                    say "Deleting ($cancelID) ($location)";
                     delete_notam_by_notamid($cancelID, $location);
                 } else {
-                    logmsg "Unknown CANCEL format => " . (split /\n/, $text )[0];
+                    say "Unknown CANCEL format => " . (split /\n/, $text )[0];
                 }
                 next;
         }
@@ -290,7 +285,7 @@ sub load_notams_from_file($) {
             }
         }
 
-        logmsg "Inserting ($notamID) ($location)";
+        say "Inserting ($notamID) ($location)";
 
         if (!$sth_insert_notam->execute(
                 ($id, $notamID, $series, $number, $year, $type, $issued, $lastUpdated,
@@ -299,14 +294,14 @@ sub load_notams_from_file($) {
                 $maximumFL, $latitude,  $longitude, $radius, $classification, $schedule,
                 $text, $xovernotamID)
                 )) {
-            logmsg "Could not insert $id: $DBI::errstr";
+            say "Could not insert $id: $DBI::errstr";
         } else {
             ++$new;
         }
     }
 
     if ($new > 1) {
-        logmsg "Inserted $new new Notams.";
+        say "Inserted $new new Notams.";
     }
 }
 
@@ -330,10 +325,10 @@ sub delete_notams() {
     my @delete_ids = grep {$notams{$_} == 0} keys %notams;
     my $size = scalar @delete_ids;
     foreach my $id (@delete_ids) {
-        logmsg "Deleting Notam $id.";
+        say "Deleting Notam $id.";
         delete_notam_by_id($id);
     }
-    logmsg "Deleted $size Notams.";
+    say "Deleted $size Notams.";
 }
 
 sub process_jms($) {
@@ -343,7 +338,7 @@ sub process_jms($) {
         close $fh || warn "close failed: $!";
         unlink $file or die "Can't unlink $file: $!";
     } else {
-        logmsg "Unable to open $file: $!";
+        say "Unable to open $file: $!";
     }
 }
 
@@ -355,39 +350,39 @@ sub process_fil($) {
         delete_notams();
         unlink $file or die "Can't unlink $file: $!";
     } else {
-        logmsg "Unable to open $file: $!";
+        say "Unable to open $file: $!";
     }
 }
 
 my $monitor = File::Monitor->new();
 
 if ($watch) {
-    logmsg "Watching $jmspath";
+    say "Watching $jmspath";
     $monitor->watch( { name => "$jmspath", files => 1 } );
-    logmsg "Watching $filpath";
+    say "Watching $filpath";
     $monitor->watch( { name => "$filpath", files => 1 } );
     $monitor->scan;
 }
 
 # Process existing NOTAM files first
-logmsg "Checking existing FIL files.";
+say "Checking existing FIL files.";
 opendir(DIR, $filpath) or die "can't opendir $filpath: $!";
 while (defined(my $file = readdir(DIR))) {
     next if $file =~ /^\.\.?$/;
     $file = "$filpath/$file";
-    logmsg "$file was found.";
+    say "$file was found.";
     process_fil($file);
 }
 closedir(DIR);
 
 # Process existing NOTAM files first
-logmsg 'Checking existing JMS files.';
+say 'Checking existing JMS files.';
 opendir(DIR, $jmspath) or die "can't opendir $jmspath: $!";
 while (defined(my $file = readdir(DIR))) {
     next if $file =~ /^\.\.?$/;
-    next if $file =~ /^messages\.logmsg$/;
+    next if $file =~ /^messages\.say$/;
     $file = "$jmspath/$file";
-    logmsg "$file was found.";
+    say "$file was found.";
     process_jms($file);
 }
 closedir(DIR);
@@ -399,8 +394,8 @@ while ($watch) {
         sleep(1);
         for my $change (@changes) {
             for my $file ($change->files_created) {
-                next if $file =~ /.*\/messages\.logmsg$/;
-                logmsg "$file was created.";
+                next if $file =~ /.*\/messages\.say$/;
+                say "$file was created.";
                 if (rindex($file, $jmspath, 0) == 0) {
                     process_jms($file);
                 }
