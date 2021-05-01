@@ -19,3 +19,4 @@ proguard.cfg
 .directory
 google-services.json
 tool/tfr_list.xml
+release/
