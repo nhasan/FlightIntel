@@ -224,7 +224,7 @@ sub load_notams_from_file($) {
                     next;
                 }
                 # We got a replace event with an updated record
-                say "Replacing ($notamID) ($location)";
+                say "Replacing ($notamID) ($location) ($id)";
                 delete_notam_by_id($id);
             }
         } elsif ($type eq "C") {
@@ -244,7 +244,7 @@ sub load_notams_from_file($) {
                     }
                 }
                 if (length $cancelID) {
-                    say "Deleting ($cancelID) ($location)";
+                    say "Deleting ($cancelID) ($location) ($id)";
                     delete_notam_by_notamid($cancelID, $location);
                 } else {
                     say "Unknown CANCEL format => " . (split /\n/, $text )[0];
@@ -285,7 +285,7 @@ sub load_notams_from_file($) {
             }
         }
 
-        say "Inserting ($notamID) ($location)";
+        say "Inserting ($notamID) ($location) ($id)";
 
         if (!$sth_insert_notam->execute(
                 ($id, $notamID, $series, $number, $year, $type, $issued, $lastUpdated,
@@ -370,7 +370,6 @@ opendir(DIR, $filpath) or die "can't opendir $filpath: $!";
 while (defined(my $file = readdir(DIR))) {
     next if $file =~ /^\.\.?$/;
     $file = "$filpath/$file";
-    say "$file was found.";
     process_fil($file);
 }
 closedir(DIR);
@@ -382,7 +381,6 @@ while (defined(my $file = readdir(DIR))) {
     next if $file =~ /^\.\.?$/;
     next if $file =~ /^messages\.log$/;
     $file = "$jmspath/$file";
-    say "$file was found.";
     process_jms($file);
 }
 closedir(DIR);
@@ -395,7 +393,6 @@ while ($watch) {
         for my $change (@changes) {
             for my $file ($change->files_created) {
                 next if $file =~ /.*\/messages\.log$/;
-                say "$file was created.";
                 if (rindex($file, $jmspath, 0) == 0) {
                     process_jms($file);
                 }
