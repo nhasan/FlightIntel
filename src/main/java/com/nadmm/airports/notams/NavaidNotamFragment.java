@@ -78,7 +78,7 @@ public class NavaidNotamFragment extends NotamFragmentBase {
         String icaoCode = "K" + id;
         setActionBarTitle( icaoCode );
         showNavaidTitle( c );
-        getNotams( icaoCode, "navaid" );
+        getNotams( icaoCode, false );
     }
 
     private static class NavaidNotamTask extends CursorAsyncTask<NavaidNotamFragment> {

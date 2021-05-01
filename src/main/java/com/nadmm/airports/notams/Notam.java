@@ -19,18 +19,20 @@
 
 package com.nadmm.airports.notams;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 
 public class Notam {
     String id;
+    String notamID;
     String series;
     int number;
     int year;
     String type;
-    Date issued;
-    Date lastUpdated;
-    Date effectiveStart;
-    Date effectiveEnd;
+    OffsetDateTime issued;
+    OffsetDateTime lastUpdated;
+    OffsetDateTime effectiveStart;
+    OffsetDateTime effectiveEnd;
+    String estimatedEnd;
     String location;
     String affectedFIR;
     String selectionCode;
@@ -44,5 +46,6 @@ public class Notam {
     int radius;
     String classification;
     String schedule;
+    String xovernotamID;
     String text;
 }

@@ -31,6 +31,8 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 
 public class AirportNotamFragment extends NotamFragmentBase {
 
+    private String mfaaCode;
+
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState ) {
@@ -50,17 +52,18 @@ public class AirportNotamFragment extends NotamFragmentBase {
     private void showNotam( Cursor c ) {
         showAirportTitle( c );
 
-        String icaoCode = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
-        if ( icaoCode == null || icaoCode.length() == 0 ) {
-            String faaCode = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
-            icaoCode = "K" + faaCode;
-        }
+        mfaaCode = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
+        getNotams( mfaaCode, false );
+    }
 
-        boolean showGPS = getActivityBase().getPrefShowGpsNotam();
-        if ( showGPS ) {
-            icaoCode += ",KGPS";
-        }
-        getNotams( icaoCode, "airport" );
+    @Override
+    public boolean isRefreshable() {
+        return true;
+    }
+
+    @Override
+    public void requestDataRefresh() {
+        getNotams( mfaaCode, true );
     }
 
     private static class AirportNotamTask extends CursorAsyncTask<AirportNotamFragment> {
