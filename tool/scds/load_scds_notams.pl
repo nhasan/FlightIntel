@@ -358,9 +358,9 @@ my $monitor = File::Monitor->new();
 
 if ($watch) {
     say "Watching $jmspath";
-    $monitor->watch( { name => "$jmspath", files => 1 } );
+    $monitor->watch( { name => "$jmspath", recurse => 0, files => 1 } );
     say "Watching $filpath";
-    $monitor->watch( { name => "$filpath", files => 1 } );
+    $monitor->watch( { name => "$filpath", recurse => 0, files => 1 } );
     $monitor->scan;
 }
 
