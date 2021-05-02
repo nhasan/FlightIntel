@@ -98,7 +98,7 @@ if (scalar @$info == 0) {
 }
 
 my $insert_notams_row =
-    "INSERT OR IGNORE INTO notams ("
+    "INSERT OR REPLACE INTO notams ("
         . "id, "
         . "notamID, "
         . "series, "
@@ -244,6 +244,14 @@ sub load_notams_from_file($) {
                     }
                 }
                 if (length $cancelID) {
+                    my $row = get_notam($cancelID);
+                    if (defined $row) {
+                        my $xovernotamID = $row->{xovernotamID};
+                        if (length $xovernotamID) {
+                            say "Deleting ($xovernotamID) ($location) ($row->{id})";
+                            delete_notam_by_notamid($xovernotamID, $location);
+                        }
+                    }
                     say "Deleting ($cancelID) ($location) ($id)";
                     delete_notam_by_notamid($cancelID, $location);
                 } else {
