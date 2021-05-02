@@ -211,11 +211,7 @@ sub load_notams_from_file($) {
         }
 
         if ($type eq "N" or $type eq "") {
-            if (defined $notams{$id}) {
-                # We already have this notam, so skip to next
-                $notams{$id} = 1;
-                next;
-            }
+            $notams{$id} = 1;
         } elsif ($type eq "R") {
             my $row = get_notam($id);
             if (defined $row) {
@@ -225,7 +221,6 @@ sub load_notams_from_file($) {
                 }
                 # We got a replace event with an updated record
                 say "Replacing ($notamID) ($location) ($id)";
-                delete_notam_by_id($id);
             }
         } elsif ($type eq "C") {
                 # We got a cancel event
