@@ -125,7 +125,7 @@ my $insert_notams_row =
         . "classification, "
         . "schedule, "
         . "text, "
-	    . "xovernotamID"
+        . "xovernotamID"
         . ") VALUES ("
         . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
         . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
@@ -134,6 +134,7 @@ my $sth_insert_notam = $dbh->prepare($insert_notams_row);
 
 my $sth_delete_notam_by_id = $dbh->prepare("DELETE FROM notams WHERE id=?");
 my $sth_delete_notam_by_notamid = $dbh->prepare("DELETE FROM notams WHERE notamID=? and location=?");
+my $sth_delete_notam_by_xovernotamid = $dbh->prepare("DELETE FROM notams WHERE xovernotamID=? and location=?");
 my $sth_select_notam = $dbh->prepare("SELECT * FROM notams WHERE id=?");
 
 $dbh->do( "PRAGMA page_size=4096" );
@@ -239,14 +240,6 @@ sub load_notams_from_file($) {
                     }
                 }
                 if (length $cancelID) {
-                    my $row = get_notam($cancelID);
-                    if (defined $row) {
-                        my $xovernotamID = $row->{xovernotamID};
-                        if (length $xovernotamID) {
-                            say "Deleting ($xovernotamID) ($location) ($row->{id})";
-                            delete_notam_by_notamid($xovernotamID, $location);
-                        }
-                    }
                     say "Deleting ($cancelID) ($location) ($id)";
                     delete_notam_by_notamid($cancelID, $location);
                 } else {
@@ -322,6 +315,7 @@ sub delete_notam_by_id($) {
 sub delete_notam_by_notamid($$) {
     my ($notamID, $location) = @_;
     $sth_delete_notam_by_notamid->execute(($notamID, $location)) or die "Could not delete $notamID: $DBI::errstr\n";
+    $sth_delete_notam_by_xovernotamid->execute(($notamID, $location)) or die "Could not delete xover $notamID: $DBI::errstr\n";
 }
 
 sub delete_notams() {
