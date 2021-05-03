@@ -235,7 +235,7 @@ sub load_notams_from_file($) {
                     }    
                 } else {
                     my @tokens = split(/\s/, $text, 4);
-                    if (scalar @tokens == 4) {
+                    if (scalar @tokens >= 3 and $token[1] eq "NOTAMC") {
                         $cancelID = $tokens[2];
                     }
                 }
@@ -303,13 +303,13 @@ sub load_notams_from_file($) {
 
 sub get_notam($) {
     my ($id) = @_;
-    $sth_select_notam->execute(($id)) or die "Can't execute statement: $DBI::errstr\n";
+    $sth_select_notam->execute($id) or die "Can't execute statement: $DBI::errstr\n";
     return $sth_select_notam->fetchrow_hashref;
 }
 
 sub delete_notam_by_id($) {
     my ($id) = @_;
-    $sth_delete_notam_by_id->execute(($id)) or die "Could not delete $id: $DBI::errstr\n";
+    $sth_delete_notam_by_id->execute($id) or die "Could not delete $id: $DBI::errstr\n";
 }
 
 sub delete_notam_by_notamid($$) {
