@@ -238,9 +238,11 @@ sub load_notams_from_file($) {
                     my @tokens = split(/\s/, $text, 4);
                     if (scalar @tokens >= 3 and $tokens[1] eq "NOTAMC") {
                         $cancelID = $tokens[2];
+                    } elsif (scalar @tokens >= 2 and $tokens[1] eq "NOTAMN") {
+                        $cancelID = $tokens[0];
                     }
                 }
-                if (length $cancelID) {
+                if (length $cancelID and length $location) {
                     say "Deleting ($cancelID) ($location) ($id)";
                     delete_notam_by_notamid($cancelID, $location);
                 } else {
