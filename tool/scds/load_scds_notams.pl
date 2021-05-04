@@ -216,8 +216,9 @@ sub load_notams_from_file($) {
         } elsif ($type eq "R") {
             my $row = get_notam($id);
             if (defined $row) {
-                if ($lastUpdated le $row->{lastUpdated}) {
+                if ($lastUpdated lt $row->{lastUpdated}) {
                     # We already have a more recent record
+                    say "Skipping ($notamID) ($location) ($id)";
                     next;
                 }
                 # We got a replace event with an updated record
@@ -235,7 +236,7 @@ sub load_notams_from_file($) {
                     }    
                 } else {
                     my @tokens = split(/\s/, $text, 4);
-                    if (scalar @tokens >= 3 and $token[1] eq "NOTAMC") {
+                    if (scalar @tokens >= 3 and $tokens[1] eq "NOTAMC") {
                         $cancelID = $tokens[2];
                     }
                 }
