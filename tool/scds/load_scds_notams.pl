@@ -135,7 +135,7 @@ my $sth_insert_notam = $dbh->prepare($insert_notams_row);
 my $sth_delete_notam_by_id = $dbh->prepare("DELETE FROM notams WHERE id=?");
 my $sth_delete_notam_by_notamid = $dbh->prepare("DELETE FROM notams WHERE notamID=? and location=?");
 my $sth_delete_notam_by_xovernotamid = $dbh->prepare("DELETE FROM notams WHERE xovernotamID=? and location=?");
-my $sth_select_notam = $dbh->prepare("SELECT * FROM notams WHERE id=?");
+my $sth_select_notam_by_notamid = $dbh->prepare("SELECT * FROM notams WHERE notamID=? and location=?");
 
 $dbh->do( "PRAGMA page_size=4096" );
 $dbh->do( "PRAGMA synchronous=OFF" );
@@ -212,18 +212,18 @@ sub load_notams_from_file($) {
         }
 
         if ($type eq "N" or $type eq "") {
+            say "Inserting ($notamID) ($location) ($id)";
             $notams{$id} = 1;
         } elsif ($type eq "R") {
-            my $row = get_notam($id);
+            my $row = get_notam_by_notamid($notamID, $location);
             if (defined $row) {
                 if ($lastUpdated lt $row->{lastUpdated}) {
                     # We already have a more recent record
                     say "Skipping ($notamID) ($location) ($id)";
                     next;
                 }
-                # We got a replace event with an updated record
-                say "Replacing ($notamID) ($location) ($id)";
             }
+            say "Replacing ($notamID) ($location) ($id)";
         } elsif ($type eq "C") {
                 # We got a cancel event
                 my $cancelID;
@@ -282,8 +282,6 @@ sub load_notams_from_file($) {
             }
         }
 
-        say "Inserting ($notamID) ($location) ($id)";
-
         if (!$sth_insert_notam->execute(
                 ($id, $notamID, $series, $number, $year, $type, $issued, $lastUpdated,
                 $effectiveStart, $effectiveEnd, $estimatedEnd, $location, $icaoLocation,
@@ -302,21 +300,25 @@ sub load_notams_from_file($) {
     }
 }
 
-sub get_notam($) {
-    my ($id) = @_;
-    $sth_select_notam->execute($id) or die "Can't execute statement: $DBI::errstr\n";
-    return $sth_select_notam->fetchrow_hashref;
+sub get_notam_by_notamid($$) {
+    my ($notamID, $location) = @_;
+    $sth_select_notam_by_notamid->execute(($notamID, $location))
+            or die "Can't execute statement: $DBI::errstr\n";
+    return $sth_select_notam_by_notamid->fetchrow_hashref;
 }
 
 sub delete_notam_by_id($) {
     my ($id) = @_;
-    $sth_delete_notam_by_id->execute($id) or die "Could not delete $id: $DBI::errstr\n";
+    $sth_delete_notam_by_id->execute($id)
+            or die "Could not delete $id: $DBI::errstr\n";
 }
 
 sub delete_notam_by_notamid($$) {
     my ($notamID, $location) = @_;
-    $sth_delete_notam_by_notamid->execute(($notamID, $location)) or die "Could not delete $notamID: $DBI::errstr\n";
-    $sth_delete_notam_by_xovernotamid->execute(($notamID, $location)) or die "Could not delete xover $notamID: $DBI::errstr\n";
+    $sth_delete_notam_by_notamid->execute(($notamID, $location))
+            or die "Could not delete $notamID: $DBI::errstr\n";
+    $sth_delete_notam_by_xovernotamid->execute(($notamID, $location))
+            or die "Could not delete xover $notamID: $DBI::errstr\n";
 }
 
 sub delete_notams() {
