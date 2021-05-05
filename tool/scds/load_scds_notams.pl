@@ -90,11 +90,14 @@ if (scalar @$info == 0) {
             . "classification TEXT, "
             . "schedule TEXT, "
             . "text TEXT, "
-            . "xovernotamID TEXT"
+            . "xovernotamID TEXT, "
+	    . "xoveraccountID TEXT"
             . ")";
     $dbh->do($create_notams_table);
     $dbh->do("CREATE INDEX idx_location on notams ( location );");
     $dbh->do("CREATE INDEX idx_notamID on notams (notamID);");
+    $dbh->do("CREATE INDEX idx_xovernotamID on notams (xovernotamID);");
+    $dbh->do("CREATE INDEX idx_xoveraccountID on notams (xoveraccountID);");
 }
 
 my $insert_notams_row =
@@ -125,16 +128,21 @@ my $insert_notams_row =
         . "classification, "
         . "schedule, "
         . "text, "
-        . "xovernotamID"
+        . "xovernotamID, "
+	. "xoveraccountID"
         . ") VALUES ("
         . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
-        . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
+        . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
         . ")";
-my $sth_insert_notam = $dbh->prepare($insert_notams_row);
 
-my $sth_delete_notam_by_id = $dbh->prepare("DELETE FROM notams WHERE id=?");
-my $sth_delete_notam_by_notamid = $dbh->prepare("DELETE FROM notams WHERE (notamID=?1 or xovernotamID=?1) and location=?2");
-my $sth_select_notam_by_notamid = $dbh->prepare("SELECT * FROM notams WHERE notamID=? and location=?");
+my $sth_insert_notam = $dbh->prepare($insert_notams_row)
+        or die "Can't prepare statement: $DBI::errstr\n";
+my $sth_delete_notam_by_id = $dbh->prepare("DELETE FROM notams WHERE id=?")
+        or die "Can't prepare statement: $DBI::errstr\n";
+my $sth_delete_notam_by_notamid = $dbh->prepare("DELETE FROM notams WHERE (notamID=?1 or xovernotamID=?1) and location=?2")
+        or die "Can't prepare statement: $DBI::errstr\n";
+my $sth_select_notam_by_notamid = $dbh->prepare("SELECT * FROM notams WHERE notamID=? and location=?")
+        or die "Can't prepare statement: $DBI::errstr\n";
 
 $dbh->do( "PRAGMA page_size=4096" );
 $dbh->do( "PRAGMA synchronous=OFF" );
@@ -255,6 +263,7 @@ sub load_notams_from_file($) {
         my $estimatedEnd = (($xpc->findvalue(q{.//ns5:endPosition/@indeterminatePosition},
             $timeslice) // "") eq "unknown")? "Y" : "N";
         my $xovernotamID = $xpc->findvalue(".//ns6:xovernotamID", $extension) // "";
+        my $xoveraccountID = $xpc->findvalue(".//ns6:xoveraccountID", $extension) // "";
         my $icaoLocation = $xpc->findvalue(".//ns6:icaoLocation", $extension) // "";
 
         my $affectedFIR = $xpc->findvalue(".//ns11:affectedFIR", $notam) // "";
@@ -288,7 +297,7 @@ sub load_notams_from_file($) {
                 $effectiveStart, $effectiveEnd, $estimatedEnd, $location, $icaoLocation,
                 $affectedFIR, $selectionCode, $traffic, $purpose, $scope, $minimumFL,
                 $maximumFL, $latitude,  $longitude, $radius, $classification, $schedule,
-                $text, $xovernotamID)
+                $text, $xovernotamID, $xoveraccountID)
                 )) {
             say "Could not insert $id: $DBI::errstr";
         } else {
