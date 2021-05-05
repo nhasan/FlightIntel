@@ -293,12 +293,11 @@ sub load_notams_from_file($) {
         }
 
         if (!$sth_insert_notam->execute(
-                ($id, $notamID, $series, $number, $year, $type, $issued, $lastUpdated,
+                $id, $notamID, $series, $number, $year, $type, $issued, $lastUpdated,
                 $effectiveStart, $effectiveEnd, $estimatedEnd, $location, $icaoLocation,
                 $affectedFIR, $selectionCode, $traffic, $purpose, $scope, $minimumFL,
                 $maximumFL, $latitude,  $longitude, $radius, $classification, $schedule,
-                $text, $xovernotamID, $xoveraccountID)
-                )) {
+                $text, $xovernotamID, $xoveraccountID)) {
             say "Could not insert $id: $DBI::errstr";
         } else {
             ++$new;
