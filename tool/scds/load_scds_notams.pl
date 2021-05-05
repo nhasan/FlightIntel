@@ -133,8 +133,7 @@ my $insert_notams_row =
 my $sth_insert_notam = $dbh->prepare($insert_notams_row);
 
 my $sth_delete_notam_by_id = $dbh->prepare("DELETE FROM notams WHERE id=?");
-my $sth_delete_notam_by_notamid = $dbh->prepare("DELETE FROM notams WHERE notamID=? and location=?");
-my $sth_delete_notam_by_xovernotamid = $dbh->prepare("DELETE FROM notams WHERE xovernotamID=? and location=?");
+my $sth_delete_notam_by_notamid = $dbh->prepare("DELETE FROM notams WHERE (notamID=?1 or xovernotamID=?1) and location=?2");
 my $sth_select_notam_by_notamid = $dbh->prepare("SELECT * FROM notams WHERE notamID=? and location=?");
 
 $dbh->do( "PRAGMA page_size=4096" );
@@ -304,7 +303,7 @@ sub load_notams_from_file($) {
 
 sub get_notam_by_notamid($$) {
     my ($notamID, $location) = @_;
-    $sth_select_notam_by_notamid->execute(($notamID, $location))
+    $sth_select_notam_by_notamid->execute($notamID, $location)
             or die "Can't execute statement: $DBI::errstr\n";
     return $sth_select_notam_by_notamid->fetchrow_hashref;
 }
@@ -317,10 +316,8 @@ sub delete_notam_by_id($) {
 
 sub delete_notam_by_notamid($$) {
     my ($notamID, $location) = @_;
-    $sth_delete_notam_by_notamid->execute(($notamID, $location))
+    $sth_delete_notam_by_notamid->execute($notamID, $location)
             or die "Could not delete $notamID: $DBI::errstr\n";
-    $sth_delete_notam_by_xovernotamid->execute(($notamID, $location))
-            or die "Could not delete xover $notamID: $DBI::errstr\n";
 }
 
 sub delete_notams() {
