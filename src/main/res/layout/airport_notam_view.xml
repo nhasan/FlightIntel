@@ -26,9 +26,9 @@
         android:layout_height="match_parent">
     <LinearLayout android:id="@+id/main_content"
             android:orientation="vertical"
+            android:paddingTop="@dimen/item_padding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <include layout="@layout/airport_title_layout" />
         <TextView android:id="@+id/notam_title1"
             style="@style/TextSmall"
             android:gravity="center_horizontal"
