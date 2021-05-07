@@ -49,10 +49,9 @@ public class AirportNotamFragment extends NotamFragmentBase {
         setBackgroundTask( new AirportNotamTask( this ) ).execute( siteNumber );
     }
 
-    private void showNotam( Cursor c ) {
-        showAirportTitle( c );
-
+    private void requestNotams( Cursor c ) {
         mfaaCode = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
+        getActivityBase().setTitle( mfaaCode+" NOTAMs" );
         getNotams( mfaaCode, false );
     }
 
@@ -81,7 +80,7 @@ public class AirportNotamFragment extends NotamFragmentBase {
 
         @Override
         protected boolean onResult( AirportNotamFragment fragment, Cursor[] result ) {
-            fragment.showNotam( result[ 0 ] );
+            fragment.requestNotams( result[ 0 ] );
             return true;
         }
 

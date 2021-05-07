@@ -70,8 +70,9 @@ public class NotamFragmentBase extends FragmentBase {
                 if ( NotamService.ACTION_GET_NOTAM.equals( action ) ) {
                     String path = intent.getStringExtra( NotamService.NOTAM_PATH );
                     if ( path != null ) {
+                        String location = intent.getStringExtra( NotamService.LOCATION );
                         File notamFile = new File( path );
-                        showNotams( notamFile );
+                        showNotams( location, notamFile );
                         setRefreshing( false );
                     }
                 }
@@ -104,7 +105,7 @@ public class NotamFragmentBase extends FragmentBase {
     }
 
     @SuppressLint( "SetTextI18n" )
-    private void showNotams( File notamFile ) {
+    private void showNotams( String location, File notamFile ) {
         ArrayList<Notam> notams = parseNotams( notamFile );
 
         TextView title1 = findViewById( R.id.notam_title1 );
@@ -121,21 +122,21 @@ public class NotamFragmentBase extends FragmentBase {
         for (Notam notam : notams)
         {
             if ( !notam.classification.equals( "FDC" ) ) {
-                addRow( content, formatNotam( notam ) );
+                addRow( content, formatNotam( location, notam ) );
             }
         }
 
         for (Notam notam : notams)
         {
             if ( notam.classification.equals( "FDC" ) ) {
-                addRow( content, formatNotam( notam ) );
+                addRow( content, formatNotam( location, notam ) );
             }
         }
 
         setFragmentContentShown( true );
     }
 
-    private String formatNotam( Notam notam ) {
+    private String formatNotam( String location, Notam notam ) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern( "dd MMM HH:mm yyyy", Locale.US );
         StringBuilder sb = new StringBuilder();
 
@@ -149,6 +150,10 @@ public class NotamFragmentBase extends FragmentBase {
             sb.append( ")" );
         }
         sb.append( " - " );
+        if ( !notam.location.equals( location ) ) {
+            sb.append( notam.location );
+            sb.append( " " );
+        }
         sb.append( notam.text );
         if ( !notam.text.endsWith( "." ) ) {
             sb.append( "." );

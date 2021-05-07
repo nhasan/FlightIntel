@@ -30,7 +30,6 @@ import com.nadmm.airports.utils.SystemUtils;
 import com.nadmm.airports.utils.UiUtils;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
@@ -46,7 +45,7 @@ public class NotamService extends IntentService {
 
     private File mDataDir;
 
-    public NotamService() throws MalformedURLException {
+    public NotamService() {
         super( SERVICE_NAME );
     }
 
@@ -71,24 +70,25 @@ public class NotamService extends IntentService {
                 UiUtils.showToast( this, e.getMessage() );
             }
         }
-        sendResult( notamFile );
+        sendResult( location, notamFile );
     }
 
     private void fetchNotams( String location, File notamFile ) throws Exception {
         String NOTAM_URL = "https://api.flightintel.com/notams/%s";
         URL url = new URL( String.format( NOTAM_URL, location ) );
         boolean ok = NetworkUtils.doHttpGet(this, url, notamFile, null, null, null );
-        if (ok && notamFile.length() > 0) {
-            sendResult(notamFile);
+        if ( ok && notamFile.length() > 0 ) {
+            sendResult( location, notamFile );
         }
     }
 
-    protected void sendResult( File notamFile ) {
+    protected void sendResult( String location, File notamFile ) {
         Intent result = new Intent();
         result.setAction( ACTION_GET_NOTAM );
         if ( notamFile.exists() ) {
             result.putExtra( NOTAM_PATH, notamFile.getAbsolutePath() );
         }
+        result.putExtra( LOCATION, location );
         LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
         bm.sendBroadcast( result );
     }
