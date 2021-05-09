@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ public class NotamService extends IntentService {
     public static final String FORCE_REFRESH = "FORCE_REFRESH";
     public static final String NOTAM_PATH = "NOTAM_PATH";
 
-    private static final long NOTAM_CACHE_MAX_AGE = 5*DateUtils.MINUTE_IN_MILLIS;
+    private static final long NOTAM_CACHE_MAX_AGE = 15*DateUtils.MINUTE_IN_MILLIS;
     private static final String SERVICE_NAME = "notam";
 
     private File mDataDir;

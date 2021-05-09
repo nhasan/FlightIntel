@@ -229,9 +229,9 @@
         <item quantity="other">%1$d airports found</item>
     </plurals>
     <plurals name="notams_found">
-        <item quantity="zero">No active NOTAMs found</item>
-        <item quantity="one">1 active NOTAM found</item>
-        <item quantity="other">%1$d active NOTAMs found</item>
+        <item quantity="zero">No NOTAMs found</item>
+        <item quantity="one">1 NOTAM found</item>
+        <item quantity="other">%1$d NOTAMs found</item>
     </plurals>
     <plurals name="search_entry_found">
         <item quantity="zero">No airports matching \'%2$s\'</item>

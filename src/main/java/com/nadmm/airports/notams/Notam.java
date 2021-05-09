@@ -28,6 +28,7 @@ public class Notam {
     int number;
     int year;
     String type;
+    String category;
     OffsetDateTime issued;
     OffsetDateTime lastUpdated;
     OffsetDateTime effectiveStart;

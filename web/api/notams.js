@@ -52,6 +52,7 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/:location', function (req, res) {
+    console.log("Request for location="+req.params.location+" from "+req.headers['x-forwarded-for']);
     getNotams(req.params.location,
         function finish(result) {
             if (result.hasOwnProperty("error")) {

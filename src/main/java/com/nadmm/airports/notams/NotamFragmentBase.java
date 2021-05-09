@@ -50,12 +50,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class NotamFragmentBase extends FragmentBase {
 
     private IntentFilter mFilter;
     private BroadcastReceiver mReceiver;
+    private final List<String> mCategories = new ArrayList<>();
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
@@ -104,22 +106,26 @@ public class NotamFragmentBase extends FragmentBase {
         getActivity().startService( service );
     }
 
+    protected void addCategory( String type ) {
+        mCategories.add( type );
+    }
+
     @SuppressLint( "SetTextI18n" )
     private void showNotams( String location, File notamFile ) {
         ArrayList<Notam> notams = parseNotams( notamFile );
 
-        TextView title1 = findViewById( R.id.notam_title1 );
-        title1.setText( getResources().getQuantityString( R.plurals.notams_found,
+        setActionBarSubtitle( getResources().getQuantityString( R.plurals.notams_found,
                 notams.size(), notams.size() ) );
-        TextView title2 = findViewById( R.id.notam_title2 );
+
+        TextView updated = findViewById( R.id.notam_last_updated );
         Date lastModified = new Date( notamFile.lastModified() );
-        title2.setText( String.format( Locale.US, "Updated %s",
+        updated.setText( String.format( Locale.US, "Updated %s",
                 TimeUtils.formatElapsedTime( lastModified.getTime() ) ) );
 
         LinearLayout content = findViewById( R.id.notam_content_layout );
         content.removeAllViews();
 
-        for (Notam notam : notams)
+        for ( Notam notam : notams )
         {
             if ( !notam.classification.equals( "FDC" ) ) {
                 addRow( content, formatNotam( location, notam ) );
@@ -171,10 +177,6 @@ public class NotamFragmentBase extends FragmentBase {
         }
         sb.append( ". CREATED: " );
         sb.append( dtf.format( notam.issued ).toUpperCase() );
-        if ( notam.lastUpdated.isAfter( notam.issued ) ) {
-            sb.append( " UPDATED: " );
-            sb.append( dtf.format( notam.lastUpdated ).toUpperCase() );
-        }
         return sb.toString();
     }
 
@@ -191,7 +193,10 @@ public class NotamFragmentBase extends FragmentBase {
             reader.beginArray();
             while ( reader.hasNext() ) {
                 Notam notam = gson.fromJson( reader, Notam.class );
-                notams.add( notam );
+                notam.category = notam.text.substring( 0, notam.text.indexOf( " " ) ).trim();
+                if ( mCategories.isEmpty() || mCategories.contains( notam.category ) ) {
+                    notams.add( notam );
+                }
             }
             reader.endArray();
             reader.close();

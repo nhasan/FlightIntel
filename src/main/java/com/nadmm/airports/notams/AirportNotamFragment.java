@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ public class AirportNotamFragment extends NotamFragmentBase {
 
     private void requestNotams( Cursor c ) {
         mfaaCode = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
-        getActivityBase().setTitle( mfaaCode+" NOTAMs" );
+        setActionBarTitle( mfaaCode+" - NOTAMs" );
         getNotams( mfaaCode, false );
     }
 
