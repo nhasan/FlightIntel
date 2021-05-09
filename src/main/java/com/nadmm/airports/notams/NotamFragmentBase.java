@@ -118,9 +118,8 @@ public class NotamFragmentBase extends FragmentBase {
                 notams.size(), notams.size() ) );
 
         TextView updated = findViewById( R.id.notam_last_updated );
-        Date lastModified = new Date( notamFile.lastModified() );
         updated.setText( String.format( Locale.US, "Updated %s",
-                TimeUtils.formatElapsedTime( lastModified.getTime() ) ) );
+                TimeUtils.formatElapsedTime( notamFile.lastModified() ) ) );
 
         LinearLayout content = findViewById( R.id.notam_content_layout );
         content.removeAllViews();

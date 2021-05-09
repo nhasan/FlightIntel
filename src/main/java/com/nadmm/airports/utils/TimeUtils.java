@@ -162,7 +162,7 @@ public class TimeUtils {
     }
 
     public static CharSequence formatElapsedTime( long time1, long time2 ) {
-        if ( (time2-time1) < DateUtils.MINUTE_IN_MILLIS ) {
+        if ( (time1-time2) < DateUtils.MINUTE_IN_MILLIS ) {
             return "just now";
         }
         return DateUtils.getRelativeTimeSpanString( time2, time1,
