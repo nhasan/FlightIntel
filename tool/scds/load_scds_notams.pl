@@ -327,7 +327,6 @@ sub delete_notam_by_notamid($$) {
 
 sub process_jms($) {
     my ($file) = @_;
-    say "Loading $file";
     if (open my $fh, "<", $file) {
         load_notams_from_file($fh);
         close $fh || warn "close failed: $!";
@@ -339,7 +338,6 @@ sub process_jms($) {
 
 sub process_fil($) {
     my ($file) = @_;
-    say "Loading $file";
     if (open my $fh, '<:gzip', $file) {
         drop_notams_table();
         create_notams_table();
