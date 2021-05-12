@@ -55,13 +55,21 @@ my $error;
 -e $outdir || make_path($outdir);
 -e $tmpdir || make_path($tmpdir);
 
+my $lock_file = "$outdir/lock";
+
+-f $lock_file && die "Lock file found.";
+
+# Create the lock file
+open my $fh, ">", $lock_file or die "Couldn't create lock: $!";
+close $fh;
+
 while ($retry) {
     $error = 0;
     say "Connecting to $user\@$host...";
     my $sftp = Net::SFTP::Foreign->new($host, user => $user, queue_size => 1) or $error = 1;
     if ($error) { 
         say "SFTP connection failed: ".sftp->error;
-        sleep(30);
+        sleep(15);
         $retry--;
         next;
     }
@@ -70,7 +78,7 @@ while ($retry) {
     if ($error) {
         say "$timestampfile failed: ".$sftp->error;
         undef $sftp;
-        sleep(30);
+        sleep(15);
         $retry--;
         next;
     }
@@ -84,11 +92,12 @@ while ($retry) {
         if ($error) {
             say "$datafile failed: ".$sftp->error;
             undef $sftp;
-            sleep(30);
+            sleep(15);
             $retry--;
             next;
         }
 
+        unlink $lock_file or die "Couldn't unlink lock: $!";
         mv("$tmpdir/$datafile", "$outdir/$datafile");
 
         $FIL->{timestamp} = $remotetimestamp;

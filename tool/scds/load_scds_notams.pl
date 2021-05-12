@@ -23,7 +23,7 @@
 #   libconfig-simple-perl
 #   libdbi-perl
 #   libdbd-sqlite3-perl
-#   libfile-monitor-perl
+#   libpath-tiny-perl
 #   libperlio-gzip-perl
 #   libxml-libxml-perl
 #
@@ -34,8 +34,7 @@ use v5.012;
 
 use Config::Simple;
 use DBI;
-use File::Monitor;
-use File::Path qw(make_path);
+use Path::Tiny;
 use XML::LibXML::Reader;
 
 my $cfgfile = shift or die "Missing config file parameter.";
@@ -49,58 +48,43 @@ my $dbname = $cfg->param("NOTAM.dbname") or die "Missing config 'NOTAM.dbname'."
 my $watch = $cfg->param("NOTAM.watch") // 0;
 
 # Create the output directories if missing
--e $outdir || make_path($outdir);
+-e $outdir || path($outdir)->mkpath;
 
-my %notams = ();
 my $reCoordinates = qr/^\d{4}[NS]\d{5}[EW]\d{0,3}$/;
 
-# Turn off buffering on STDOUT
-binmode(STDOUT, ":unix") || die "can't binmode STDOUT to :unix: $!";
+my $create_notams_table_sql = 
+    "CREATE TABLE notams ( "
+        . "id TEXT PRIMARY KEY, "
+        . "notamID TEXT, "
+        . "series TEXT, "
+        . "number INTEGER, "
+        . "year INTEGER, "
+        . "type TEXT, "
+        . "issued TEXT, "
+        . "lastUpdated TEXT, "
+        . "effectiveStart TEXT, "
+        . "effectiveEnd TEXT, "
+        . "estimatedEnd TEXT, "
+        . "location TEXT, "
+        . "icaoLocation TEXT, "
+        . "affectedFIR TEXT, "
+        . "selectionCode TEXT, "
+        . "traffic TEXT, "
+        . "purpose TEXT, "
+        . "scope TEXT, "
+        . "minimumFL INTEGER, "
+        . "maximumFL INTEGER, "
+        . "latitude REAL, "
+        . "longitude REAL, "
+        . "radius INTEGER, "
+        . "classification TEXT, "
+        . "schedule TEXT, "
+        . "text TEXT, "
+        . "xovernotamID TEXT, "
+        . "xoveraccountID TEXT"
+        . ")";
 
-my $dbh = DBI->connect("dbi:SQLite:dbname=$outdir/$dbname", "", "");
-my $tablename = "notams";
-my $info = $dbh->table_info(undef, undef, $tablename)->fetchall_arrayref;
-if (scalar @$info == 0) {
-    say "Creating table $tablename.";
-    my $create_notams_table = 
-        "CREATE TABLE $tablename ( "
-            . "id TEXT PRIMARY KEY, "
-            . "notamID TEXT, "
-            . "series TEXT, "
-            . "number INTEGER, "
-            . "year INTEGER, "
-            . "type TEXT, "
-            . "issued TEXT, "
-            . "lastUpdated TEXT, "
-            . "effectiveStart TEXT, "
-            . "effectiveEnd TEXT, "
-            . "estimatedEnd TEXT, "
-            . "location TEXT, "
-            . "icaoLocation TEXT, "
-            . "affectedFIR TEXT, "
-            . "selectionCode TEXT, "
-            . "traffic TEXT, "
-            . "purpose TEXT, "
-            . "scope TEXT, "
-            . "minimumFL INTEGER, "
-            . "maximumFL INTEGER, "
-            . "latitude REAL, "
-            . "longitude REAL, "
-            . "radius INTEGER, "
-            . "classification TEXT, "
-            . "schedule TEXT, "
-            . "text TEXT, "
-            . "xovernotamID TEXT, "
-	    . "xoveraccountID TEXT"
-            . ")";
-    $dbh->do($create_notams_table);
-    $dbh->do("CREATE INDEX idx_location on notams ( location );");
-    $dbh->do("CREATE INDEX idx_notamID on notams (notamID);");
-    $dbh->do("CREATE INDEX idx_xovernotamID on notams (xovernotamID);");
-    $dbh->do("CREATE INDEX idx_xoveraccountID on notams (xoveraccountID);");
-}
-
-my $insert_notams_row =
+my $insert_notams_row_sql =
     "INSERT OR REPLACE INTO notams ("
         . "id, "
         . "notamID, "
@@ -135,9 +119,28 @@ my $insert_notams_row =
         . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
         . ")";
 
-my $sth_insert_notam = $dbh->prepare($insert_notams_row)
-        or die "Can't prepare statement: $DBI::errstr\n";
-my $sth_delete_notam_by_id = $dbh->prepare("DELETE FROM notams WHERE id=?")
+my $dbh = DBI->connect("dbi:SQLite:dbname=$outdir/$dbname", "", "");
+
+sub create_notams_table() {
+    say "Creating notams table.";
+    $dbh->do($create_notams_table_sql);
+    $dbh->do("CREATE INDEX idx_location on notams ( location );");
+    $dbh->do("CREATE INDEX idx_notamID on notams (notamID);");
+    $dbh->do("CREATE INDEX idx_xovernotamID on notams (xovernotamID);");
+    $dbh->do("CREATE INDEX idx_xoveraccountID on notams (xoveraccountID);");
+}
+
+sub drop_notams_table() {
+    say "Dropping notams table.";
+    $dbh->do("DROP TABLE notams");
+}
+
+my $info = $dbh->table_info(undef, undef, "notams")->fetchall_arrayref;
+if (scalar @$info == 0) {
+    create_notams_table();
+}
+
+my $sth_insert_notam = $dbh->prepare($insert_notams_row_sql)
         or die "Can't prepare statement: $DBI::errstr\n";
 my $sth_delete_notam_by_notamid = $dbh->prepare("DELETE FROM notams WHERE (notamID=?1 or xovernotamID=?1) and location=?2")
         or die "Can't prepare statement: $DBI::errstr\n";
@@ -147,19 +150,8 @@ my $sth_select_notam_by_notamid = $dbh->prepare("SELECT * FROM notams WHERE nota
 $dbh->do( "PRAGMA page_size=4096" );
 $dbh->do( "PRAGMA synchronous=OFF" );
 
-sub load_current_notam_ids() {
-    %notams = ();
-    my $sth = $dbh->prepare("SELECT id FROM notams;");
-    $sth->execute or die "Can't execute statement: $DBI::errstr\n";
-
-    while ( ( my $id ) = $sth->fetchrow_array )
-    {
-        $notams{$id} = 0;
-    }
-
-    my $size = scalar keys %notams;
-    say "Loaded $size existing Notams.";
-}
+# Turn off buffering on STDOUT
+binmode(STDOUT, ":unix") || die "can't binmode STDOUT to :unix: $!";
 
 sub load_notams_from_file($) {
     my ($fh) = @_;
@@ -169,9 +161,7 @@ sub load_notams_from_file($) {
 
     my $new = 0;
     my $reader = XML::LibXML::Reader->new(IO => $fh);
-    while ( 1 ) {
-        my $result = eval { $reader->read };
-        last unless ($result);
+    while ($reader->read) {
         next unless $reader->matchesPattern($msg_pattern);
         my $msg = $reader->copyCurrentNode(1);
         $reader->next;
@@ -220,13 +210,12 @@ sub load_notams_from_file($) {
 
         if ($type eq "N" or $type eq "") {
             say "Inserting ($notamID) ($location) ($id)";
-            $notams{$id} = 1;
         } elsif ($type eq "R") {
             my $row = get_notam_by_notamid($notamID, $location);
             if (defined $row) {
                 if ($lastUpdated lt $row->{lastUpdated}) {
                     # We already have a more recent record
-                    say "Skipping ($notamID) ($location) ($id)";
+                    say "Skipping replace ($notamID) ($location) ($id)";
                     next;
                 }
             }
@@ -245,18 +234,25 @@ sub load_notams_from_file($) {
                     my @tokens = split(/\s/, $text, 4);
                     if (scalar @tokens >= 3 and $tokens[1] eq "NOTAMC") {
                         $cancelID = $tokens[2];
-                        my $row = get_notam_by_notamid($cancelID, $location);
-                        if (length $row->{xovernotamID}) {
-                            say "Deleting ($row->{xovernotamID}) ($location) ($row->{id})";
-                            delete_notam_by_notamid($row->{xovernotamID}, $location);
-                        }
                     } elsif (scalar @tokens >= 2 and $tokens[1] eq "NOTAMN") {
                         $cancelID = $tokens[0];
                     }
                 }
                 if (length $cancelID and length $location) {
-                    say "Deleting ($cancelID) ($location) ($id)";
-                    delete_notam_by_notamid($cancelID, $location);
+                    my $row = get_notam_by_notamid($cancelID, $location);
+                    if ($row) {
+                        if (length $row->{xovernotamID}) {
+                            my $xover = get_notam_by_notamid($row->{xovernotamID}, $location);
+                            if ($xover) {
+                                say "Deleting* ($row->{xovernotamID}) ($location) ($xover->{id})";
+                                delete_notam_by_notamid($row->{xovernotamID}, $location);
+                            }
+                        }
+                        say "Deleting ($cancelID) ($location) ($row->{id})";
+                        delete_notam_by_notamid($cancelID, $location);
+                    } else {
+                        say "Skipping cancel ($cancelID) ($location) ($id)";
+                    }
                 } else {
                     say "Unknown CANCEL format => " . (split /\n/, $text )[0];
                 }
@@ -297,20 +293,22 @@ sub load_notams_from_file($) {
             }
         }
 
-        if (!$sth_insert_notam->execute(
+        if ($sth_insert_notam->execute(
                 $id, $notamID, $series, $number, $year, $type, $issued, $lastUpdated,
                 $effectiveStart, $effectiveEnd, $estimatedEnd, $location, $icaoLocation,
                 $affectedFIR, $selectionCode, $traffic, $purpose, $scope, $minimumFL,
                 $maximumFL, $latitude,  $longitude, $radius, $classification, $schedule,
                 $text, $xovernotamID, $xoveraccountID)) {
-            say "Could not insert $id: $DBI::errstr";
-        } else {
             ++$new;
+        } else {
+            say "Could not insert $id: $DBI::errstr";
         }
     }
 
+    $reader->finish;
+
     if ($new > 1) {
-        say "Inserted $new new Notams.";
+        say "Inserted $new Notams.";
     }
 }
 
@@ -321,30 +319,15 @@ sub get_notam_by_notamid($$) {
     return $sth_select_notam_by_notamid->fetchrow_hashref;
 }
 
-sub delete_notam_by_id($) {
-    my ($id) = @_;
-    $sth_delete_notam_by_id->execute($id)
-            or die "Could not delete $id: $DBI::errstr\n";
-}
-
 sub delete_notam_by_notamid($$) {
     my ($notamID, $location) = @_;
     $sth_delete_notam_by_notamid->execute($notamID, $location)
             or die "Could not delete $notamID: $DBI::errstr\n";
 }
 
-sub delete_notams() {
-    my @delete_ids = grep {$notams{$_} == 0} keys %notams;
-    my $size = scalar @delete_ids;
-    foreach my $id (@delete_ids) {
-        say "Deleting Notam $id.";
-        delete_notam_by_id($id);
-    }
-    say "Deleted $size Notams.";
-}
-
 sub process_jms($) {
     my ($file) = @_;
+    say "Loading $file";
     if (open my $fh, "<", $file) {
         load_notams_from_file($fh);
         close $fh || warn "close failed: $!";
@@ -356,63 +339,31 @@ sub process_jms($) {
 
 sub process_fil($) {
     my ($file) = @_;
+    say "Loading $file";
     if (open my $fh, '<:gzip', $file) {
-        load_current_notam_ids();
+        drop_notams_table();
+        create_notams_table();
         load_notams_from_file($fh);
-        delete_notams();
+        close $fh || warn "close failed: $!";
         unlink $file or die "Can't unlink $file: $!";
     } else {
         say "Unable to open $file: $!";
     }
 }
 
-my $monitor = File::Monitor->new();
+say 'Starting NOTAM loop...';
 
-if ($watch) {
-    say "Watching $jmspath";
-    $monitor->watch( { name => "$jmspath", recurse => 0, files => 1 } );
-    say "Watching $filpath";
-    $monitor->watch( { name => "$filpath", recurse => 0, files => 1 } );
-    $monitor->scan;
-}
-
-# Process existing NOTAM files first
-say "Checking existing FIL files.";
-opendir(DIR, $filpath) or die "can't opendir $filpath: $!";
-while (defined(my $file = readdir(DIR))) {
-    next if $file =~ /^\.\.?$/;
-    $file = "$filpath/$file";
-    process_fil($file);
-}
-closedir(DIR);
-
-# Process existing NOTAM files first
-say 'Checking existing JMS files.';
-opendir(DIR, $jmspath) or die "can't opendir $jmspath: $!";
-while (defined(my $file = readdir(DIR))) {
-    next if $file =~ /^\.\.?$/;
-    next if $file =~ /^messages\.log$/;
-    $file = "$jmspath/$file";
-    process_jms($file);
-}
-closedir(DIR);
-
-while ($watch) {
-    my @changes = $monitor->scan;
-    if (scalar @changes) {
-        # Wait a little to make sure files are completely written to disk
-        sleep(1);
-        for my $change (@changes) {
-            for my $file ($change->files_created) {
-                next if $file =~ /.*\/messages\.log$/;
-                if (rindex($file, $jmspath, 0) == 0) {
-                    process_jms($file);
-                }
-                elsif (rindex($file, $filpath, 0) == 0) {
-                    process_fil($file);
-                }
-            }
-        }
-    }
+while (1) {
     sleep(3);
+
+    my @fil_files = map { $_->stringify } path($filpath)->children();
+    next if grep { /^lock$/ } @fil_files;
+    foreach my $file (@fil_files) {
+        process_fil($file);
+    }
+
+    my @jms_files = map { $_->stringify } path($jmspath)->children(qr/\d+/);
+    foreach my $file (@jms_files) {
+        process_jms($file);
+    }
 }
