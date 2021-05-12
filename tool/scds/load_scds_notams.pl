@@ -213,13 +213,16 @@ sub load_notams_from_file($) {
         } elsif ($type eq "R") {
             my $row = get_notam_by_notamid($notamID, $location);
             if (defined $row) {
-                if ($lastUpdated lt $row->{lastUpdated}) {
+                if ($lastUpdated gt $row->{lastUpdated}) {
+                    say "Replacing ($notamID) ($location) ($id)";
+                } else {
                     # We already have a more recent record
                     say "Skipping replace ($notamID) ($location) ($id)";
                     next;
                 }
+            } else {
+                say "Inserting ($notamID) ($location) ($id)";
             }
-            say "Replacing ($notamID) ($location) ($id)";
         } elsif ($type eq "C") {
                 # We got a cancel event
                 my $cancelID;
