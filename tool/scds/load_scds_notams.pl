@@ -142,9 +142,11 @@ if (scalar @$info == 0) {
 
 my $sth_insert_notam = $dbh->prepare($insert_notams_row_sql)
         or die "Can't prepare statement: $DBI::errstr\n";
-my $sth_delete_notam_by_notamid = $dbh->prepare("DELETE FROM notams WHERE (notamID=?1 or xovernotamID=?1) and location=?2")
+my $sth_delete_notam_by_id = $dbh->prepare("DELETE FROM notams WHERE id=?1")
         or die "Can't prepare statement: $DBI::errstr\n";
-my $sth_select_notam_by_notamid = $dbh->prepare("SELECT * FROM notams WHERE notamID=? and location=?")
+my $sth_select_notam_by_notamid = $dbh->prepare("SELECT * FROM notams WHERE notamID=?1 and location=?2")
+        or die "Can't prepare statement: $DBI::errstr\n";
+my $sth_select_notam_by_xovernotamid = $dbh->prepare("SELECT * FROM notams WHERE notamID=?1 and xovernotamID=?2")
         or die "Can't prepare statement: $DBI::errstr\n";
 
 $dbh->do( "PRAGMA page_size=4096" );
@@ -245,14 +247,14 @@ sub load_notams_from_file($) {
                     my $row = get_notam_by_notamid($cancelID, $location);
                     if ($row) {
                         if (length $row->{xovernotamID}) {
-                            my $xover = get_notam_by_notamid($row->{xovernotamID}, $location);
+                            my $xover = get_notam_by_xovernotamid($row->{xovernotamID}, $cancelID);
                             if ($xover) {
                                 say "Deleting* ($row->{xovernotamID}) ($location) ($xover->{id})";
-                                delete_notam_by_notamid($row->{xovernotamID}, $location);
+                                delete_notam_by_id($xover->{id});
                             }
                         }
                         say "Deleting ($cancelID) ($location) ($row->{id})";
-                        delete_notam_by_notamid($cancelID, $location);
+                        delete_notam_by_id($row->{id});
                     } else {
                         say "Skipping cancel ($cancelID) ($location) ($id)";
                     }
@@ -322,10 +324,17 @@ sub get_notam_by_notamid($$) {
     return $sth_select_notam_by_notamid->fetchrow_hashref;
 }
 
-sub delete_notam_by_notamid($$) {
-    my ($notamID, $location) = @_;
-    $sth_delete_notam_by_notamid->execute($notamID, $location)
-            or die "Could not delete $notamID: $DBI::errstr\n";
+sub get_notam_by_xovernotamid($$) {
+    my ($notamID, $xovernotamID) = @_;
+    $sth_select_notam_by_xovernotamid->execute($notamID, $xovernotamID)
+            or die "Can't execute statement: $DBI::errstr\n";
+    return $sth_select_notam_by_xovernotamid->fetchrow_hashref;
+}
+
+sub delete_notam_by_id($) {
+    my ($id) = @_;
+    $sth_delete_notam_by_id->execute($id)
+            or die "Can't execute statement: $DBI::errstr\n";
 }
 
 sub process_jms($) {
