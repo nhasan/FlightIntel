@@ -22,16 +22,16 @@
 # Ubuntu package dependencies
 #   libconfig-simple-perl
 #   libnet-sftp-foreign-perl
+#   libpath-tiny-perl
 #
 
 use strict;
 use warnings;
-use v5.10;
+use v5.012;
 
 use Config::Simple;
 use Net::SFTP::Foreign;
-use File::Copy qw(mv);
-use File::Path qw(make_path);
+use Path::Tiny;
 
 my $cfgfile = shift or die "Missing config file parameter.";
 -f $cfgfile or die "Config file not found.";
@@ -52,12 +52,17 @@ my $retry = 5;
 my $error;
 
 # Create the output directories if missing
--e $outdir || make_path($outdir);
--e $tmpdir || make_path($tmpdir);
+-e $outdir || path($outdir)->mkpath;
+-e $tmpdir || path($tmpdir)->mkpath;
 
 my $lock_file = "$outdir/lock";
 
 -f $lock_file && die "Lock file found.";
+
+# Wait here to make sure we have overlap between JMS and FIL
+my $wait = 300;
+say "Waiting for $wait secs...";
+sleep($wait);
 
 # Create the lock file
 open my $fh, ">", $lock_file or die "Couldn't create lock: $!";
@@ -86,7 +91,7 @@ while ($retry) {
     chomp($remotetimestamp);
 
     say "Last fetch timestamp was $localtimestamp";
-    if ($localtimestamp ne $remotetimestamp) {
+    if ($localtimestamp lt $remotetimestamp) {
         say "Fetching data file $datafile from FAA server.";
         $sftp->get($datafile, "$tmpdir/$datafile") or $error = 1;
         if ($error) {
@@ -98,7 +103,8 @@ while ($retry) {
         }
 
         unlink $lock_file or die "Couldn't unlink lock: $!";
-        mv("$tmpdir/$datafile", "$outdir/$datafile");
+        path("$tmpdir/$datafile")->move("$outdir/$datafile")
+                or die "Couldn't move datafile: $!";
 
         $FIL->{timestamp} = $remotetimestamp;
         $cfg->param(-block => "FIL", -values => $FIL);

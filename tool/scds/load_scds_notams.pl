@@ -43,12 +43,12 @@ my $cfg = new Config::Simple($cfgfile) or die Config::Simple->error();
 
 my $jmspath = $cfg->param("JMS.outdir") or die "Missing config 'JMS.outdir'.";
 my $filpath = $cfg->param("FIL.outdir") or die "Missing config 'FIL.outdir'.";
-my $outdir = $cfg->param("NOTAM.outdir") or die "Missing config 'NOTAM.outdir'.";
+my $dbdir = $cfg->param("NOTAM.dbdir") or die "Missing config 'NOTAM.dbdir'.";
 my $dbname = $cfg->param("NOTAM.dbname") or die "Missing config 'NOTAM.dbname'.";
 my $watch = $cfg->param("NOTAM.watch") // 0;
 
 # Create the output directories if missing
--e $outdir || path($outdir)->mkpath;
+-e $dbdir || path($dbdir)->mkpath;
 
 my $reCoordinates = qr/^\d{4}[NS]\d{5}[EW]\d{0,3}$/;
 
@@ -119,7 +119,8 @@ my $insert_notams_row_sql =
         . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
         . ")";
 
-my $dbh = DBI->connect("dbi:SQLite:dbname=$outdir/$dbname", "", "");
+my $dbh = DBI->connect("dbi:SQLite:dbname=$dbdir/$dbname", "", "")
+        or die "Could not open notam db: $DBI::errstr\n";
 
 sub create_notams_table() {
     say "Creating notams table.";
@@ -135,8 +136,9 @@ sub drop_notams_table() {
     $dbh->do("DROP TABLE notams");
 }
 
-my $info = $dbh->table_info(undef, undef, "notams")->fetchall_arrayref;
-if (scalar @$info == 0) {
+my @tables = $dbh->tables(undef, undef, "notams")
+        or die "Could not fetch table info: $DBI::errstr\n";
+if (scalar @tables == 0) {
     create_notams_table();
 }
 
@@ -367,7 +369,7 @@ while (1) {
     sleep(3);
 
     my @fil_files = map { $_->stringify } path($filpath)->children();
-    next if grep { /^lock$/ } @fil_files;
+    next if grep { /lock$/ } @fil_files;
     foreach my $file (@fil_files) {
         process_fil($file);
     }
