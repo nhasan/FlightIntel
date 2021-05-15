@@ -248,14 +248,14 @@ sub load_notams_from_file($) {
                 }
                 if (length $cancelID and length $location) {
                     my $rows = get_notams_by_notamid($cancelID, $location);
-                    if ($rows) {
+                    if (%$rows) {
                         my $xovernotamID;
                         foreach my $key (keys %$rows) {
-                            if ($rows->{$key}->{notamID} eq $cancelID) {
-                                $xovernotamID = $rows->{$key}->{xovernotamID};
+                            if ($rows->{$key}{notamID} eq $cancelID) {
+                                $xovernotamID = $rows->{$key}{xovernotamID};
                             }
-                            say "Deleting ($rows->{$key}->{notamID}) ($location) ($rows->{$key}->{id})";
-                            delete_notam_by_id($rows->{$key}->{id});
+                            say "Deleting ($rows->{$key}{notamID}) ($location) ($rows->{$key}{id})";
+                            delete_notam_by_id($rows->{$key}{id});
                         }
                         if (length $xovernotamID) {
                             # In case the xover notam has different location
