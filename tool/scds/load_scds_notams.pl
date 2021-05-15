@@ -45,7 +45,6 @@ my $jmspath = $cfg->param("JMS.outdir") or die "Missing config 'JMS.outdir'.";
 my $filpath = $cfg->param("FIL.outdir") or die "Missing config 'FIL.outdir'.";
 my $dbdir = $cfg->param("NOTAM.dbdir") or die "Missing config 'NOTAM.dbdir'.";
 my $dbname = $cfg->param("NOTAM.dbname") or die "Missing config 'NOTAM.dbname'.";
-my $watch = $cfg->param("NOTAM.watch") // 0;
 
 # Create the output directories if missing
 -e $dbdir || path($dbdir)->mkpath;
@@ -148,6 +147,8 @@ my $sth_delete_notam_by_id = $dbh->prepare("DELETE FROM notams WHERE id=?1")
         or die "Can't prepare statement: $DBI::errstr\n";
 my $sth_select_notam_by_notamid = $dbh->prepare("SELECT * FROM notams WHERE notamID=?1 and location=?2")
         or die "Can't prepare statement: $DBI::errstr\n";
+my $sth_select_notams_by_notamid = $dbh->prepare("SELECT * FROM notams WHERE (notamID=?1 or xovernotamID=?1) and location=?2")
+        or die "Can't prepare statement: $DBI::errstr\n";
 my $sth_select_notam_by_xovernotamid = $dbh->prepare("SELECT * FROM notams WHERE notamID=?1 and xovernotamID=?2")
         or die "Can't prepare statement: $DBI::errstr\n";
 
@@ -246,17 +247,24 @@ sub load_notams_from_file($) {
                     }
                 }
                 if (length $cancelID and length $location) {
-                    my $row = get_notam_by_notamid($cancelID, $location);
-                    if ($row) {
-                        if (length $row->{xovernotamID}) {
-                            my $xover = get_notam_by_xovernotamid($row->{xovernotamID}, $cancelID);
+                    my $rows = get_notams_by_notamid($cancelID, $location);
+                    if ($rows) {
+                        my $xovernotamID;
+                        foreach my $key (keys %$rows) {
+                            if ($rows->{$key}->{notamID} eq $cancelID) {
+                                $xovernotamID = $rows->{$key}->{xovernotamID};
+                            }
+                            say "Deleting ($rows->{$key}->{notamID}) ($location) ($rows->{$key}->{id})";
+                            delete_notam_by_id($rows->{$key}->{id});
+                        }
+                        if (length $xovernotamID) {
+                            # In case the xover notam has different location
+                            my $xover = get_notam_by_xovernotamid($xovernotamID, $cancelID);
                             if ($xover) {
-                                say "Deleting* ($row->{xovernotamID}) ($location) ($xover->{id})";
+                                say "Deleting* ($xovernotamID) ($location) ($xover->{id})";
                                 delete_notam_by_id($xover->{id});
                             }
                         }
-                        say "Deleting ($cancelID) ($location) ($row->{id})";
-                        delete_notam_by_id($row->{id});
                     } else {
                         say "Skipping cancel ($cancelID) ($location) ($id)";
                     }
@@ -324,6 +332,13 @@ sub get_notam_by_notamid($$) {
     $sth_select_notam_by_notamid->execute($notamID, $location)
             or die "Can't execute statement: $DBI::errstr\n";
     return $sth_select_notam_by_notamid->fetchrow_hashref;
+}
+
+sub get_notams_by_notamid($$) {
+    my ($notamID, $location) = @_;
+    $sth_select_notams_by_notamid->execute($notamID, $location)
+            or die "Can't execute statement: $DBI::errstr\n";
+    return $sth_select_notams_by_notamid->fetchall_hashref('id');
 }
 
 sub get_notam_by_xovernotamid($$) {
