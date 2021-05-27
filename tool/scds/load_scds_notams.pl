@@ -200,6 +200,7 @@ sub load_notams_from_file($) {
         my ($extension) = $xpc->findnodes(".//ns6:EventExtension", $msg);
         my $classification = $xpc->findvalue(".//ns6:classification", $extension) // "";
         my $lastUpdated = $xpc->findvalue(".//ns6:lastUpdated", $extension) // "";
+        my $canceled = $xpc->findvalue(".//ns6:canceled", $extension) // "";
 
         my $notamID = q{};
         if (rindex($series, "SW", 0) == 0) {
@@ -214,6 +215,11 @@ sub load_notams_from_file($) {
         }
 
         if ($type eq "N" or $type eq "") {
+            if (length $canceled) {
+                say "Deleting ($notamID) ($location) ($id)";
+                delete_notam_by_id($id);
+		next;
+            }
             say "Inserting ($notamID) ($location) ($id)";
         } elsif ($type eq "R") {
             my $row = get_notam_by_notamid($notamID, $location);
@@ -229,49 +235,8 @@ sub load_notams_from_file($) {
                 say "Inserting ($notamID) ($location) ($id)";
             }
         } elsif ($type eq "C") {
-                # We got a cancel event
-                my $cancelID;
-                if ($classification eq "FDC") {
-                    $text = $xpc->findvalue(".//ns11:simpleText", $notam) // "";
-                    my @tokens = split(/\s/, $text, 7);
-                    if (scalar @tokens >= 6 and $tokens[3] eq "CANCEL") {
-                        $cancelID = $tokens[4];
-                        $location = $tokens[5];
-                    }    
-                } else {
-                    my @tokens = split(/\s/, $text, 4);
-                    if (scalar @tokens >= 3 and $tokens[1] eq "NOTAMC") {
-                        $cancelID = $tokens[2];
-                    } elsif (scalar @tokens >= 2 and $tokens[1] eq "NOTAMN") {
-                        $cancelID = $tokens[0];
-                    }
-                }
-                if (length $cancelID and length $location) {
-                    my $rows = get_notams_by_notamid($cancelID, $location);
-                    if (%$rows) {
-                        my $xovernotamID;
-                        foreach my $key (keys %$rows) {
-                            if ($rows->{$key}{notamID} eq $cancelID) {
-                                $xovernotamID = $rows->{$key}{xovernotamID};
-                            }
-                            say "Deleting ($rows->{$key}{notamID}) ($location) ($rows->{$key}{id})";
-                            delete_notam_by_id($rows->{$key}{id});
-                        }
-                        if (length $xovernotamID) {
-                            # In case the xover notam has different location
-                            my $xover = get_notam_by_xovernotamid($xovernotamID, $cancelID);
-                            if ($xover) {
-                                say "Deleting* ($xovernotamID) ($location) ($xover->{id})";
-                                delete_notam_by_id($xover->{id});
-                            }
-                        }
-                    } else {
-                        say "Skipping cancel ($cancelID) ($location) ($id)";
-                    }
-                } else {
-                    say "Unknown CANCEL format => " . (split /\n/, $text )[0];
-                }
-                next;
+            # Canceled or expired Notams are handled above
+            next;
         }
 
         my $effectiveStart = $xpc->findvalue(".//ns5:beginPosition", $timeslice) // "";
