@@ -183,7 +183,7 @@ sub load_notams_from_file($) {
         $xpc->registerNs("ns9", "http://www.aixm.aero/schema/5.1");
         $xpc->registerNs("ns10", "http://www.isotc211.org/2005/gts");
         $xpc->registerNs("ns11", "http://www.aixm.aero/schema/5.1/event");
-        $xpc->registerNs("nns12", "urn:us.gov.dot.faa.aim.fns");
+        $xpc->registerNs("ns12", "urn:us.gov.dot.faa.aim.fns");
         $xpc->registerNs("ns13", "http://www.aixm.aero/schema/5.1/message");
         $xpc->registerNs("ns14", "http://www.opengis.net/wfs-util/2.0");
 
