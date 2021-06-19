@@ -178,9 +178,19 @@ public final class CommunicationsFragment extends FragmentBase {
         String extra = "";
 
         int i = freq.indexOf( ';' );
-        if ( i >= 0 ) {
+        if ( i >= 0 && i < freq.length() ) {
             extra = freq.substring( i+1 );
             freq = freq.substring( 0, i );
+        }
+        i = 0;
+        while ( i < freq.length() ) {
+            char c = freq.charAt( i );
+            if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
+                ++i;
+                continue;
+            }
+            freq = freq.substring( 0, i );
+            break;
         }
 
         if ( freqUse.contains( "LCL" ) || freqUse.contains( "LC/P" ) ) {
