@@ -177,17 +177,12 @@ public final class CommunicationsFragment extends FragmentBase {
         boolean found = false;
         String extra = "";
 
-        int i = 0;
-        while ( i < freq.length() ) {
-            char c = freq.charAt( i );
-            if ( ( c >= '0' && c <= '9' ) || c == '.' ) {
-                ++i;
-                continue;
-            }
-            extra = freq.substring( i );
+        int i = freq.indexOf( ';' );
+        if ( i >= 0 ) {
+            extra = freq.substring( i+1 );
             freq = freq.substring( 0, i );
-            break;
         }
+
         if ( freqUse.contains( "LCL" ) || freqUse.contains( "LC/P" ) ) {
             addFrequencyToMap( map, towerRadioCall+" Tower", freq, extra );
             found = true;
@@ -458,7 +453,7 @@ public final class CommunicationsFragment extends FragmentBase {
         if ( list == null ) {
             list = new ArrayList<>();
         }
-        list.add( Pair.create( FormatUtils.formatFreq( Float.valueOf( freq ) ), extra.trim() ) );
+        list.add( Pair.create( FormatUtils.formatFreq( Float.parseFloat( freq ) ), extra.trim() ) );
         map.put( key, list );
     }
 
