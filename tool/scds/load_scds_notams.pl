@@ -112,7 +112,7 @@ my $insert_notams_row_sql =
         . "schedule, "
         . "text, "
         . "xovernotamID, "
-	. "xoveraccountID"
+        . "xoveraccountID"
         . ") VALUES ("
         . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
         . "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"
@@ -146,10 +146,6 @@ my $sth_insert_notam = $dbh->prepare($insert_notams_row_sql)
 my $sth_delete_notam_by_id = $dbh->prepare("DELETE FROM notams WHERE id=?1")
         or die "Can't prepare statement: $DBI::errstr\n";
 my $sth_select_notam_by_notamid = $dbh->prepare("SELECT * FROM notams WHERE notamID=?1 and location=?2")
-        or die "Can't prepare statement: $DBI::errstr\n";
-my $sth_select_notams_by_notamid = $dbh->prepare("SELECT * FROM notams WHERE (notamID=?1 or xovernotamID=?1) and location=?2")
-        or die "Can't prepare statement: $DBI::errstr\n";
-my $sth_select_notam_by_xovernotamid = $dbh->prepare("SELECT * FROM notams WHERE notamID=?1 and xovernotamID=?2")
         or die "Can't prepare statement: $DBI::errstr\n";
 
 $dbh->do( "PRAGMA page_size=4096" );
@@ -218,7 +214,7 @@ sub load_notams_from_file($) {
             if (length $canceled) {
                 say "Deleting ($notamID) ($location) ($id)";
                 delete_notam_by_id($id);
-		next;
+                next;
             }
             say "Inserting ($notamID) ($location) ($id)";
         } elsif ($type eq "R") {
@@ -297,20 +293,6 @@ sub get_notam_by_notamid($$) {
     $sth_select_notam_by_notamid->execute($notamID, $location)
             or die "Can't execute statement: $DBI::errstr\n";
     return $sth_select_notam_by_notamid->fetchrow_hashref;
-}
-
-sub get_notams_by_notamid($$) {
-    my ($notamID, $location) = @_;
-    $sth_select_notams_by_notamid->execute($notamID, $location)
-            or die "Can't execute statement: $DBI::errstr\n";
-    return $sth_select_notams_by_notamid->fetchall_hashref('id');
-}
-
-sub get_notam_by_xovernotamid($$) {
-    my ($notamID, $xovernotamID) = @_;
-    $sth_select_notam_by_xovernotamid->execute($notamID, $xovernotamID)
-            or die "Can't execute statement: $DBI::errstr\n";
-    return $sth_select_notam_by_xovernotamid->fetchrow_hashref;
 }
 
 sub delete_notam_by_id($) {
