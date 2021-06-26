@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,19 +23,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
-
-import java.util.Locale;
 
 public class IsaFragment extends E6bFragmentBase {
 
-    private EditText mAltitudeEdit;
-    private EditText mTemperatureCEdit;
-    private EditText mTemperatureFEdit;
-    private EditText mPressureInEdit;
-    private EditText mPressureMbEdit;
+    private TextInputLayout mAltitudeEdit;
+    private TextInputLayout mTemperatureCEdit;
+    private TextInputLayout mTemperatureFEdit;
+    private TextInputLayout mPressureInEdit;
+    private TextInputLayout mPressureMbEdit;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -54,7 +52,11 @@ public class IsaFragment extends E6bFragmentBase {
         mPressureInEdit = findViewById( R.id.e6b_edit_pressure_inHg );
         mPressureMbEdit = findViewById( R.id.e6b_edit_pressure_mb );
 
-        mAltitudeEdit.addTextChangedListener( mTextWatcher );
+        addEditField( mAltitudeEdit );
+        addReadOnlyField( mTemperatureCEdit );
+        addReadOnlyField( mTemperatureFEdit );
+        addReadOnlyField( mPressureInEdit );
+        addReadOnlyField( mPressureMbEdit );
 
         setFragmentContentShown( true );
     }
@@ -68,25 +70,16 @@ public class IsaFragment extends E6bFragmentBase {
 
     @Override
     protected void processInput() {
-        double altitude = Double.MAX_VALUE;
-
         try {
-            altitude = Double.parseDouble( mAltitudeEdit.getText().toString() );
-            if ( altitude < 0 || altitude > 65620 ) {
-                mAltitudeEdit.setError( "Enter a value between 0 and 65,620" );
-                altitude = Double.MAX_VALUE;
-            }
-        } catch ( NumberFormatException ignored ) {
-        }
+            double altitude = parseAltitude( mAltitudeEdit );
 
-        if ( altitude != Double.MAX_VALUE ) {
             double isaTempC = -56.5;
             if ( altitude <= 36089.24 ) {
                 isaTempC = 15.0 - 0.0019812*altitude;
             }
             double isaTempF = ( isaTempC*9/5 )+32;
-            mTemperatureCEdit.setText( String.format( Locale.US, "%.1f", isaTempC ) );
-            mTemperatureFEdit.setText( String.format( Locale.US, "%.1f", isaTempF ) );
+            showDecimalValue( mTemperatureCEdit, isaTempC );
+            showDecimalValue( mTemperatureFEdit, isaTempF );
 
             double isaPressureInHg;
             if ( altitude < 36089.24 ) {
@@ -96,13 +89,14 @@ public class IsaFragment extends E6bFragmentBase {
                 isaPressureInHg = 29.92126*0.2233609*Math.exp( -4.806346*10e-5*altitude );
             }
             double isaPressureMbar = isaPressureInHg*33.863753;
-            mPressureInEdit.setText( String.format( Locale.US, "%.2f", isaPressureInHg ) );
-            mPressureMbEdit.setText( String.format( Locale.US, "%.1f", isaPressureMbar ) );
-        } else {
-            mTemperatureCEdit.setText( "" );
-            mTemperatureFEdit.setText( "" );
-            mPressureInEdit.setText( "" );
-            mPressureMbEdit.setText( "" );
+            showDecimalValue( mPressureInEdit, isaPressureInHg, 2 );
+            showDecimalValue( mPressureMbEdit, isaPressureMbar );
+
+        } catch ( NumberFormatException ignored ) {
+            clearEditText( mTemperatureCEdit );
+            clearEditText( mTemperatureFEdit );
+            clearEditText( mPressureInEdit );
+            clearEditText( mPressureMbEdit );
         }
     }
 

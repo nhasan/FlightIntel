@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,10 @@ package com.nadmm.airports.e6b;
 
 import android.database.Cursor;
 import android.provider.BaseColumns;
-import androidx.collection.LongSparseArray;
 import android.view.View;
 import android.widget.ListView;
+
+import androidx.collection.LongSparseArray;
 
 import com.nadmm.airports.Application;
 import com.nadmm.airports.ListMenuFragment;
@@ -35,33 +36,33 @@ public class E6bMenuFragment extends ListMenuFragment {
     private static final LongSparseArray<Class<?>> mDispatchMap;
     static {
         mDispatchMap = new LongSparseArray<>( 32 );
-        mDispatchMap.put( (long)R.id.E6B_WIND_CALCS, E6bMenuFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_CROSS_WIND, CrossWindFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_WIND, WindTriangleFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_HDG_GS, WindTriangleFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_WIND_TRIANGLE_CRS_GS, WindTriangleFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY, E6bMenuFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_ISA, IsaFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_ALTITUDES, AltitudesFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_TAS, TrueAirspeedFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_OAT, OutsideAirTemperatureFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_MACH, MachNumberFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_ALTIMETRY_TA, TrueAltitudeFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_TIME_SPEED_DISTANCE, E6bMenuFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_TSD_TIME, TimeSpeedDistanceFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_TSD_SPEED, TimeSpeedDistanceFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_TSD_DISTANCE, TimeSpeedDistanceFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_FUEL_CALCS, E6bMenuFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_FUEL_ENDURANCE, FuelCalcsFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_FUEL_BURN_RATE, FuelCalcsFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_FUEL_TOTAL_BURNED, FuelCalcsFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_FUEL_SPECIFIC_RANGE, SpecificRangeFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_FUEL_WEIGHTS, FuelWeightFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT, E6bMenuFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_REQCLIMB, ClimbRateFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_REQDSCNT, DescentRateFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_CLIMB_DESCENT_TOPDSCNT, TopOfDescentFragment.class );
-        mDispatchMap.put( (long)R.id.E6B_UNIT_CONVERSIONS, UnitConvertFrament.class );
+        mDispatchMap.put( R.id.E6B_WIND_CALCS, E6bMenuFragment.class );
+        mDispatchMap.put( R.id.E6B_CROSS_WIND, CrossWindFragment.class );
+        mDispatchMap.put( R.id.E6B_WIND_TRIANGLE_WIND, WindTriangleFragment.class );
+        mDispatchMap.put( R.id.E6B_WIND_TRIANGLE_HDG_GS, WindTriangleFragment.class );
+        mDispatchMap.put( R.id.E6B_WIND_TRIANGLE_CRS_GS, WindTriangleFragment.class );
+        mDispatchMap.put( R.id.E6B_ALTIMETRY, E6bMenuFragment.class );
+        mDispatchMap.put( R.id.E6B_ALTIMETRY_ISA, IsaFragment.class );
+        mDispatchMap.put( R.id.E6B_ALTIMETRY_ALTITUDES, AltitudesFragment.class );
+        mDispatchMap.put( R.id.E6B_ALTIMETRY_TAS, TrueAirspeedFragment.class );
+        mDispatchMap.put( R.id.E6B_ALTIMETRY_OAT, OutsideAirTemperatureFragment.class );
+        mDispatchMap.put( R.id.E6B_ALTIMETRY_MACH, MachNumberFragment.class );
+        mDispatchMap.put( R.id.E6B_ALTIMETRY_TA, TrueAltitudeFragment.class );
+        mDispatchMap.put( R.id.E6B_TIME_SPEED_DISTANCE, E6bMenuFragment.class );
+        mDispatchMap.put( R.id.E6B_TSD_TIME, TimeSpeedDistanceFragment.class );
+        mDispatchMap.put( R.id.E6B_TSD_SPEED, TimeSpeedDistanceFragment.class );
+        mDispatchMap.put( R.id.E6B_TSD_DISTANCE, TimeSpeedDistanceFragment.class );
+        mDispatchMap.put( R.id.E6B_FUEL_CALCS, E6bMenuFragment.class );
+        mDispatchMap.put( R.id.E6B_FUEL_ENDURANCE, FuelCalcsFragment.class );
+        mDispatchMap.put( R.id.E6B_FUEL_BURN_RATE, FuelCalcsFragment.class );
+        mDispatchMap.put( R.id.E6B_FUEL_TOTAL_BURNED, FuelCalcsFragment.class );
+        mDispatchMap.put( R.id.E6B_FUEL_SPECIFIC_RANGE, SpecificRangeFragment.class );
+        mDispatchMap.put( R.id.E6B_FUEL_WEIGHTS, FuelWeightFragment.class );
+        mDispatchMap.put( R.id.E6B_CLIMB_DESCENT, E6bMenuFragment.class );
+        mDispatchMap.put( R.id.E6B_CLIMB_DESCENT_REQCLIMB, ClimbRateFragment.class );
+        mDispatchMap.put( R.id.E6B_CLIMB_DESCENT_REQDSCNT, DescentRateFragment.class );
+        mDispatchMap.put( R.id.E6B_CLIMB_DESCENT_TOPDSCNT, TopOfDescentFragment.class );
+        mDispatchMap.put( R.id.E6B_UNIT_CONVERSIONS, UnitConvertFragment.class );
     }
 
     @Override
@@ -86,7 +87,7 @@ public class E6bMenuFragment extends ListMenuFragment {
         }
     }
 
-    public class E6bMenuCursor extends ListMenuCursor {
+    public static class E6bMenuCursor extends ListMenuCursor {
 
         public E6bMenuCursor( long id ) {
             super( id );

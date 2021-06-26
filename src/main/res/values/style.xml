@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,16 +20,7 @@
  */
  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="FlatButton">
-        <item name="android:background">@drawable/flat_button</item>
-        <item name="android:textSize">@dimen/small_text_size</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/button_color</item>
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">4dp</item>
-        <item name="android:gravity">center_vertical|center_horizontal</item>
-        <item name="android:paddingLeft">12dp</item>
-        <item name="android:paddingRight">12dp</item>
+    <style name="FlatButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
     </style>
 
     <style name="TextSmall" parent="TextAppearance.AppCompat.Body1">
@@ -41,7 +32,7 @@
     </style>
 
     <style name="TextSmall.Red">
-        <item name="android:textColor">@color/red</item>
+        <item name="android:textColor">@color/red_500</item>
     </style>
 
     <style name="TextSmall.White">

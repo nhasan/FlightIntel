@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -725,7 +725,6 @@ public class DatabaseManager {
             String query = "SELECT *"
                 +" FROM "+Catalog.TABLE_NAME+" c1"
                 +" WHERE "
-                    +Catalog.TYPE+"='DOF' OR "
                     +Catalog.END_DATE+"=(SELECT max("+Catalog.END_DATE+")"
                     +" FROM "+Catalog.TABLE_NAME+" c2 WHERE"
                     +" c2."+Catalog.TYPE+"=c1."+Catalog.TYPE

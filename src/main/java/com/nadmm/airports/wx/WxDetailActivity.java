@@ -30,25 +30,21 @@ public class WxDetailActivity extends TabPagerActivityBase {
     private final String[] mTabTitles = new String[] {
             "METAR",
             "TAF",
-            "NOTAM",
             "PIREP",
             "RADAR",
             "SATELLITE",
-            "SFC FORECAST",
+            "GFA",
             "AREA FORECAST",
             "AIRMET/SIGMET",
             "PROG CHARTS",
             "WINDS/TEMPERATURE",
             "WINDS ALOFT",
-            "SIG WX",
-            "CIG/VIS",
             "ICING"
     };
 
     private final Class<?>[] mClasses = new Class<?>[] {
             MetarFragment.class,
             TafFragment.class,
-            AirportNotamFragment.class,
             PirepFragment.class,
             RadarFragment.class,
             SatelliteFragment.class,
@@ -58,8 +54,6 @@ public class WxDetailActivity extends TabPagerActivityBase {
             ProgChartFragment.class,
             WindFragment.class,
             WindsAloftFragment.class,
-            SigWxFragment.class,
-            CvaFragment.class,
             IcingFragment.class
     };
 

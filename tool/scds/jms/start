@@ -1,0 +1,5 @@
+#!/bin/bash
+
+basedir=`dirname $0`
+cd $basedir
+./bin/run -Dconfig.file=flightintel.cfg > ../../log/jms.log 2>&1

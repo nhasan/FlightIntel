@@ -209,8 +209,8 @@ public class PirepFragment extends WxFragmentBase {
         LinearLayout layout = findViewById( R.id.pirep_entries_layout );
         layout.removeAllViews();
 
+        TextView tv = findViewById( R.id.pirep_title_msg );
         if ( !pirep.entries.isEmpty() ) {
-            TextView tv = findViewById( R.id.pirep_title_msg );
             tv.setText( String.format( Locale.US,
                     "%d PIREPs reported within %d NM of %s during last %d hours",
                     pirep.entries.size(), PIREP_RADIUS_NM, mStationId, PIREP_HOURS_BEFORE ) );
@@ -218,13 +218,12 @@ public class PirepFragment extends WxFragmentBase {
                 showPirepEntry( layout, entry );
             }
         } else {
-            TextView tv = findViewById( R.id.pirep_title_msg );
             tv.setText( String.format( Locale.US,
                     "No PIREPs reported within %d NM of %s in last %d hours",
                     PIREP_RADIUS_NM, mStationId, PIREP_HOURS_BEFORE ) );
         }
 
-        TextView tv = findViewById( R.id.wx_fetch_time );
+        tv = findViewById( R.id.wx_fetch_time );
         tv.setText( String.format( Locale.US, "Fetched on %s",
                 TimeUtils.formatDateTime( getActivityBase(), pirep.fetchTime ) ) );
         tv.setVisibility( View.VISIBLE );

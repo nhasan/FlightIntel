@@ -22,6 +22,7 @@ package com.nadmm.airports;
 public class Application extends android.app.Application {
 
     public static Boolean sDonationDone = true;
+    public static String version = "xx.yy";
 
     @Override
     public void onCreate() {

@@ -1,0 +1,13 @@
+[Unit]
+Description=Service to receive NOTAM messages pushed in realtime via JMS
+Requires=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /home/nhasan_nadmm_com/sw/scds/jms/start
+Restart=on-failure
+RestartSec=5
+User=%i
+
+[Install]
+WantedBy=multi-user.target

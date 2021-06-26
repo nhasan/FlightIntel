@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.ExternalStorageActivity;
@@ -69,9 +73,6 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
 public class DownloadFragment extends FragmentBase {
 
@@ -173,7 +174,7 @@ public class DownloadFragment extends FragmentBase {
     }
 
     @Override
-    public void onPrepareOptionsMenu( Menu menu ) {
+    public void onPrepareOptionsMenu( @NonNull Menu menu ) {
         super.onPrepareOptionsMenu( menu );
 
         Cursor c = mDbManager.getCurrentFromCatalog();
@@ -200,16 +201,16 @@ public class DownloadFragment extends FragmentBase {
     }
 
     private void checkDelete() {
-        AlertDialog.Builder builder = new AlertDialog.Builder( getActivity() );
-        builder.setMessage( "Are you sure you want to delete all installed data?" )
+        new MaterialAlertDialogBuilder( getActivity() )
+                .setTitle( "Delete Data" )
+                .setMessage( "Are you sure you want to delete all installed data?" )
                 .setPositiveButton( "Yes", ( dialog, id ) -> {
                     DeleteDataTask deleteTask = new DeleteDataTask( this );
                     deleteTask.execute( (Void) null );
                 } )
                 .setNegativeButton( "No", ( dialog, id ) -> {
-                } );
-        AlertDialog alert = builder.create();
-        alert.show();
+                } )
+                .show();
     }
 
     private void checkData() {
@@ -230,7 +231,7 @@ public class DownloadFragment extends FragmentBase {
                 Date end = TimeUtils.parse3339( s );
                 if ( end == null || !end.after( now ) ) {
                     // This database has expired, remove it
-                    Integer _id = c.getInt( c.getColumnIndex( DatabaseManager.Catalog._ID ) );
+                    int _id = c.getInt( c.getColumnIndex( DatabaseManager.Catalog._ID ) );
                     String dbName = c.getString( c.getColumnIndex( DatabaseManager.Catalog.DB_NAME ) );
                     File file = mDbManager.getDatabaseFile( dbName );
                     if ( catalogDb.isOpen() && file.delete() ) {

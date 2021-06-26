@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,17 +23,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
 
 public class TrueAltitudeFragment extends E6bFragmentBase {
 
-    private EditText mIaEdit;
-    private EditText mOatEdit;
-    private EditText mAltimeterEdit;
-    private EditText mStationAltitudeEdit;
-    private EditText mTrueAltitudeEdit;
+    private TextInputLayout mIaEdit;
+    private TextInputLayout mOatEdit;
+    private TextInputLayout mStationAltitudeEdit;
+    private TextInputLayout mTrueAltitudeEdit;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -48,14 +47,13 @@ public class TrueAltitudeFragment extends E6bFragmentBase {
 
         mIaEdit = findViewById( R.id.e6b_edit_ia );
         mOatEdit = findViewById( R.id.e6b_edit_oat );
-        mAltimeterEdit = findViewById( R.id.e6b_edit_altimeter );
         mStationAltitudeEdit = findViewById( R.id.e6b_edit_station_altitude );
         mTrueAltitudeEdit = findViewById( R.id.e6b_edit_ta );
 
-        mIaEdit.addTextChangedListener( mTextWatcher );
-        mOatEdit.addTextChangedListener( mTextWatcher );
-        mAltimeterEdit.addTextChangedListener( mTextWatcher );
-        mStationAltitudeEdit.addTextChangedListener( mTextWatcher );
+        addEditField( mIaEdit );
+        addEditField( mOatEdit );
+        addEditField( mStationAltitudeEdit );
+        addReadOnlyField( mTrueAltitudeEdit );
 
         setFragmentContentShown( true );
     }
@@ -67,34 +65,26 @@ public class TrueAltitudeFragment extends E6bFragmentBase {
 
     @Override
     protected void processInput() {
-        double ia = Double.MAX_VALUE;
-        double oat = Double.MAX_VALUE;
-        double altimeter = Double.MAX_VALUE;
-        double stationAltitude = Double.MAX_VALUE;
-
         try {
-            ia = Double.parseDouble( mIaEdit.getText().toString() );
-            oat = Double.parseDouble( mOatEdit.getText().toString() );
-            altimeter = Double.parseDouble( mAltimeterEdit.getText().toString() );
-            stationAltitude = Double.parseDouble( mStationAltitudeEdit.getText().toString() );
+            double ia = parseDouble( mIaEdit );
+            double oat = parseDouble( mOatEdit );
+            double stationAltitude = parseDouble( mStationAltitudeEdit );
 
             if ( ia > 65620 ) {
-                mIaEdit.setError( "Enter a value between 0 and 65,620" );
-                ia = Double.MAX_VALUE;
+                mIaEdit.setError( "Valid values: 0 to 65,620" );
+                throw new NumberFormatException();
+            } else {
+                mIaEdit.setError( "" );
             }
-        } catch ( NumberFormatException ignored ) {
-        }
 
-        if ( ia != Double.MAX_EXPONENT && oat != Double.MAX_EXPONENT
-                && altimeter != Double.MAX_EXPONENT && stationAltitude != Double.MAX_VALUE ) {
             double isaTempC = -56.5;
             if ( ia <= 36089.24 ) {
                 isaTempC = 15.0 - 0.0019812*ia;
             }
-            double ta = ia + ( ( ia-stationAltitude )*( oat-isaTempC )/( 273.15+oat ) );
-            mTrueAltitudeEdit.setText( String.valueOf( Math.round( ta ) ) );
-        } else {
-            mTrueAltitudeEdit.setText( "" );
+            double ta = Math.round( ia + ( ( ia-stationAltitude )*( oat-isaTempC )/( 273.15+oat ) ) );
+            showValue( mTrueAltitudeEdit, ta );
+        } catch ( NumberFormatException ignored ) {
+            clearEditText( mTrueAltitudeEdit );
         }
     }
 

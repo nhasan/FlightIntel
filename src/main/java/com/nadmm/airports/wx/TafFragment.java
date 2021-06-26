@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,9 +70,6 @@ public class TafFragment extends WxFragmentBase {
             Bundle savedInstanceState ) {
         View view = inflater.inflate( R.layout.taf_detail_view, container, false );
         Button btnGraphic = view.findViewById( R.id.btnViewGraphic );
-        // Latest TAF images are not available using simple naming convention.
-        // Will need more work to support the timestamped file names.
-        btnGraphic.setVisibility( View.GONE );
         btnGraphic.setOnClickListener( v -> {
             Intent intent = new Intent( getActivity(), TafMapActivity.class );
             startActivity( intent );

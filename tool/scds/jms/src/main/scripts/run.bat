@@ -1,0 +1,1 @@
+java %* -jar "%~dp0..\lib\jumpstart-jar-with-dependencies.jar"

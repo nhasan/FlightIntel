@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         <Button android:id="@+id/btnViewGraphic"
-                style="@style/FlatButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:text="@string/view_graphic"
                 android:gravity="center"
                 android:layout_gravity="center"

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,6 @@ import java.io.File;
 
 public class WindService extends NoaaService {
 
-    private final String WIND_IMAGE_ZOOM_NAME = "ruc00hr_%s_%s.gif";
-    private final String WIND_IMAGE_ZOOM_PATH = "/adds/data/winds/";
-
     private static final long WIND_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
     public WindService() {
@@ -45,14 +42,15 @@ public class WindService extends NoaaService {
             if ( type.equals( TYPE_IMAGE ) ) {
                 String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );
-                String imageName = String.format( WIND_IMAGE_ZOOM_NAME, code, imgType );
+                String imageName = String.format( "F00_rap_%s_%s.gif", code, imgType );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = WIND_IMAGE_ZOOM_PATH+imageName;
+                        String path = "/data/products/wind/" +imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch Wind image: "+e.getMessage() );
+                        UiUtils.showToast( this, "Unable to fetch Wind image: "
+                                +e.getMessage() );
                     }
                 }
 

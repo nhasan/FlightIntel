@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,17 +23,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
 
 public class AltitudesFragment extends E6bFragmentBase {
 
-    private EditText mElevationEdit;
-    private EditText mAltimeterEdit;
-    private EditText mTemperatureEdit;
-    private EditText mPressureAltitudeEdit;
-    private EditText mDensityAltitudeEdit;
+    private TextInputLayout mElevationEdit;
+    private TextInputLayout mAltimeterEdit;
+    private TextInputLayout mTemperatureEdit;
+    private TextInputLayout mDewpointEdit;
+    private TextInputLayout mPressureAltitudeEdit;
+    private TextInputLayout mDensityAltitudeEdit;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -49,12 +50,16 @@ public class AltitudesFragment extends E6bFragmentBase {
         mElevationEdit = findViewById( R.id.e6b_edit_elevation );
         mAltimeterEdit = findViewById( R.id.e6b_edit_altimeter_inhg );
         mTemperatureEdit = findViewById( R.id.e6b_edit_temperature_c );
+        mDewpointEdit = findViewById( R.id.e6b_edit_dewpoint_c );
         mPressureAltitudeEdit = findViewById( R.id.e6b_edit_pa );
         mDensityAltitudeEdit = findViewById( R.id.e6b_edit_da );
 
-        mElevationEdit.addTextChangedListener( mTextWatcher );
-        mAltimeterEdit.addTextChangedListener( mTextWatcher );
-        mTemperatureEdit.addTextChangedListener( mTextWatcher );
+        addEditField( mElevationEdit );
+        addEditField( mAltimeterEdit );
+        addEditField( mTemperatureEdit );
+        addEditField( mDewpointEdit );
+        addReadOnlyField( mPressureAltitudeEdit );
+        addReadOnlyField( mDensityAltitudeEdit );
 
         setFragmentContentShown( true );
     }
@@ -67,33 +72,30 @@ public class AltitudesFragment extends E6bFragmentBase {
 
     @Override
     protected void processInput() {
-        double elevation = Double.MAX_VALUE;
-        double altimeter = Double.MAX_VALUE;
-        double temperatureC = Double.MAX_VALUE;
-
         try {
-            elevation = Double.parseDouble( mElevationEdit.getText().toString() );
-            altimeter = Double.parseDouble( mAltimeterEdit.getText().toString() );
-            temperatureC = Double.parseDouble( mTemperatureEdit.getText().toString() );
+            long elevation = parseLong( mElevationEdit );
+            double altimeterHg = parseDouble( mAltimeterEdit );
+            double altimeterMb = 33.8639*altimeterHg;
+            double temperatureC = parseDouble( mTemperatureEdit );
+            double dewPointC = parseDouble( mDewpointEdit );
+            double temperatureK = temperatureC+273.16;
+
+            // Source: https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
+            long pa = elevation+Math.round((1-Math.pow( altimeterMb/1013.25, 0.190284 ))*145366.45);
+            showValue( mPressureAltitudeEdit, pa );
+
+            // Source: https://www.weather.gov/media/epz/wxcalc/densityAltitude.pdf
+            // Calculate vapor pressure first
+            double e = 6.11 * Math.pow( 10, ( 7.5*dewPointC/( 237.7+dewPointC ) ) );
+            // Next, calculate virtual temperature in Kelvin
+            double tv = temperatureK/( 1-( e/altimeterMb )*( 1-0.622 ) );
+            // Convert Kelvin to Rankin to use in the next step
+            tv = ( 9*( tv-273.16 )/5+32 )+459.69;
+            long da = elevation + Math.round( 145366*( 1-Math.pow( 17.326*altimeterHg/tv, 0.235 ) ) );
+            showValue( mDensityAltitudeEdit, da );
         } catch ( NumberFormatException ignored ) {
-        }
-
-        if ( elevation != Double.MAX_VALUE
-                && altimeter != Double.MAX_VALUE
-                && temperatureC != Double.MAX_VALUE ) {
-            double delta = 145442.2*( 1-Math.pow( altimeter/29.92126, 0.190261 ) );
-            long pa = Math.round( elevation+delta );
-            mPressureAltitudeEdit.setText( String.valueOf( pa ) );
-
-            double stdTempK = 15.0-( 0.0019812*elevation )+273.15;
-            double actTempK = temperatureC+273.15;
-            long da = Math.round( pa
-                    +( stdTempK/0.0019812 )*( 1-Math.pow( stdTempK/actTempK, 0.234969 ) ) );
-            mDensityAltitudeEdit.setText( String.valueOf( da ) );
-        } else {
-            mPressureAltitudeEdit.setText( "" );
-            mDensityAltitudeEdit.setText( "" );
+            clearEditText( mPressureAltitudeEdit );
+            clearEditText( mDensityAltitudeEdit );
         }
     }
-
 }

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,27 +24,27 @@ import android.content.Intent;
 public class IcingFragment extends WxMapFragmentBase {
 
     private static final String[] sTypeCodes = {
-        "00_cip",
-        "01_fip",
-        "02_fip",
-        "03_fip",
-        "06_fip",
-        "09_fip",
-        "12_fip",
-        "15_fip",
-        "18_fip"
+        "F00_cip",
+        "F01_fip",
+        "F02_fip",
+        "F03_fip",
+        "F06_fip",
+        "F09_fip",
+        "F12_fip",
+        "F15_fip",
+        "F18_fip"
     };
 
     private static final String[] sTypeNames = {
-        "CIP Analysis",
-        "FIP 1-hr Forecast",
-        "FIP 2-hr Forecast",
-        "FIP 3-hr Forecast",
-        "FIP 6-hr Forecast",
-        "FIP 9-hr Forecast",
-        "FIP 12-hr Forecast",
-        "FIP 15-hr Forecast",
-        "FIP 18-hr Forecast"
+        "Current",
+        "1 Hour",
+        "2 hour",
+        "3 Hour",
+        "6 Hour",
+        "9 Hour",
+        "12 Hour",
+        "15 Hour",
+        "18 Hour"
     };
 
     private static final String[] sMapCodes = new String[] {

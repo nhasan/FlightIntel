@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,44 +23,23 @@ import android.content.Intent;
 
 public class RadarFragment extends WxMapFragmentBase {
 
-    private static final String[] sRadarCodes = new String[] {
-        "latest",
-        "alaska",
-        "centgrtlakes",
-        "greatlakes",
-        "hawaii",
-        "northeast",
-        "northrockies",
-        "pacnorthwest",
-        "pacsouthwest",
-        "southeast",
-        "southmissvly",
-        "southplains",
-        "southrockies",
-        "uppermissvly"
+    private static final String[] sTypeCodes = new String[]{
+            "cref",
+            "rala",
+            "tops-18"
     };
 
-    private static final String[] sRadarNames = new String[] {
-        "National Mosaic",
-        "Alaska Sector",
-        "Central Great Lakes Sector",
-        "Great Lakes Sector",
-        "Hawaii Sector",
-        "Northeast Sector",
-        "Northern Rockies Sector",
-        "Pacific Northwest Sector",
-        "Pacific Southwest Sector",
-        "Southeast Sector",
-        "Southen Mississippi Valey Sector",
-        "Southern Plains Sector",
-        "Southern Rockies Sector",
-        "Upper Mississippi Valey Sector"
+    private static final String[] sTypeNames = new String[]{
+            "Composite Reference",
+            "Refl at Lowest Alt",
+            "Echo Tops"
     };
 
     public RadarFragment() {
-        super( NoaaService.ACTION_GET_RADAR, sRadarCodes, sRadarNames );
-        setTitle( "NWS Radar Mosaic" );
-        setLabel( "Select Radar Sector" );
+        super( NoaaService.ACTION_GET_RADAR,
+                WxRegions.sWxRegionCodes, WxRegions.sWxRegionNames,
+                sTypeCodes, sTypeNames );
+        setLabel( "Select Region" );
     }
 
     @Override

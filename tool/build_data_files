@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2020 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2019 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 bold=$(tput bold)
 normal=$(tput sgr0)
 
+echo "${bold}Checking for updates to gcloud tool:${normal}";
 gcloud components update
 
 source build_data_config
@@ -42,122 +43,117 @@ OUT_DIR="${DATA_DIR}/database";
 if [ ! -d "${OUT_DIR}" ]; then
     mkdir -p ${OUT_DIR};
 fi
-GS_DATA_URL="gs://flightintel/database"
+GS_DATA_URL="gs://flightintel/database";
 
-LIBRARY_DIR="${DATA_DIR}/library"
-GS_LIBRARY_URL="gs://flightintel/library"
+LIBRARY_DIR="${DATA_DIR}/library";
+GS_LIBRARY_URL="gs://flightintel/library";
 
-OUT_FILE="${OUT_DIR}/fadds_${DATA_CYCLE}.db"
+OUT_FILE="${OUT_DIR}/fadds_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    BASE_DIR="${DATA_DIR}/FADDS/${DATA_CYCLE}"
+    BASE_DIR="${DATA_DIR}/FADDS/${DATA_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
-        mkdir -p ${BASE_DIR}
+        mkdir -p ${BASE_DIR};
     fi
-    FADDS_FILE="${BASE_DIR}/28DaySubscription_Effective_${FADDS_CYCLE}.zip"
+    FADDS_FILE="${BASE_DIR}/28DaySubscription_Effective_${FADDS_CYCLE}.zip";
     if [ ! -f "${FADDS_FILE}" ]; then
-        FADDS_URL="https://nfdc.faa.gov/webContent/28DaySub/28DaySubscription_Effective_${FADDS_CYCLE}.zip"
-        echo "${bold}Downloading FADDS ${FADDS_CYCLE} file:${normal}"
-        wget -O ${FADDS_FILE} ${FADDS_URL}
-        unzip -o -d ${BASE_DIR} ${FADDS_FILE}
+        FADDS_URL="https://nfdc.faa.gov/webContent/28DaySub/28DaySubscription_Effective_${FADDS_CYCLE}.zip";
+        echo "${bold}Downloading FADDS ${FADDS_CYCLE} file:${normal}";
+        wget -O ${FADDS_FILE} ${FADDS_URL};
+        unzip -o -d ${BASE_DIR} ${FADDS_FILE};
     fi
-    echo "${bold}Running load_fadds.pl ${BASE_DIR} ${OUT_FILE}:${normal}"
+    echo "${bold}Running load_fadds.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
     ./load_fadds.pl ${BASE_DIR} ${OUT_FILE}
-    echo "${bold}Running load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}:${normal}"
+    echo "${bold}Running load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
     ./load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}
-    echo "${bold}Running load_atc_phones.pl ${OUT_FILE}:${normal}"
+    echo "${bold}Running load_atc_phones.pl ${OUT_FILE}:${normal}";
     ./load_atc_phones.pl ${OUT_FILE}
-    echo "${bold}Running cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db:${normal}"
-    ./cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db
-    echo "${bold}Running geonames_tz_lookup.pl ${OUT_FILE}:${normal}"
+    echo "${bold}Running cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db:${normal}";
+    ./cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
+    echo "${bold}Running geonames_tz_lookup.pl ${OUT_FILE}:${normal}";
     ./geonames_tz_lookup.pl ${OUT_FILE}
-    echo "${bold}Making a copy of FADDS file:${normal}"
-    cp ${OUT_FILE} ${OUT_DIR}/fadds_prev.db
-    gzip ${OUT_FILE}
+    echo "${bold}Making a copy of FADDS file:${normal}";
+    cp ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
+    gzip ${OUT_FILE};
     echo "--"
 fi
 
-OUT_FILE="${OUT_DIR}/dtpp_${DATA_CYCLE}.db"
+OUT_FILE="${OUT_DIR}/dtpp_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    BASE_DIR="${DATA_DIR}/d-TPP"
+    BASE_DIR="${DATA_DIR}/d-TPP/${DTPP_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
-        mkdir -p ${BASE_DIR}
+        mkdir -p ${BASE_DIR};
     fi
-    DTPP_FILE="${BASE_DIR}/d-TPP_Metafile_${DTPP_CYCLE}.xml"
+    DTPP_FILE="${BASE_DIR}/d-TPP_Metafile.xml";
     if [ ! -f "${DTPP_FILE}" ]; then
-        DTPP_URL="https://aeronav.faa.gov/d-tpp/${DTPP_CYCLE}/xml_data/d-TPP_Metafile.xml"
-        echo "${bold}Downloading d-TPP ${DTPP_CYCLE} file:${normal}"
-        wget -O ${DTPP_FILE} ${DTPP_URL}
+        DTPP_URL="https://aeronav.faa.gov/d-tpp/${DTPP_CYCLE}/xml_data/d-TPP_Metafile.xml";
+        echo "${bold}Downloading d-TPP ${DTPP_CYCLE} file:${normal}";
+        wget -O ${DTPP_FILE} ${DTPP_URL};
     fi
-    echo "${bold}Running load_dtpp_metadata.pl ${DTPP_FILE} ${OUT_FILE}:${normal}"
-    ./load_dtpp_metadata.pl ${DTPP_FILE} ${OUT_FILE}
-    gzip ${OUT_FILE}
-    echo "--"
+    echo "${bold}Running load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
+    ./load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE};
+    gzip ${OUT_FILE};
+    echo "--";
 fi
 
-OUT_FILE="${OUT_DIR}/dcs_${DATA_CYCLE}.db"
+OUT_FILE="${OUT_DIR}/dcs_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    BASE_DIR="${DATA_DIR}/d-CS"
+    BASE_DIR="${DATA_DIR}/d-CS/${DCS_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
-        mkdir -p ${BASE_DIR}
+        mkdir -p ${BASE_DIR};
     fi
-    DCS_FILE="afd_${DCS_CYCLE}.xml"
+    DCS_FILE="${BASE_DIR}/afd_${DCS_CYCLE}.xml";
     if [ ! -f "${DCS_FILE}" ]; then
-        DCS_ZIP_FILE="DCS_20${DATA_CYCLE}.zip"
-	    #DCS_URL="https://aeronav.faa.gov/afd/afd_${DCS_CYCLE}.xml"
-        if [ ! -f ${BASE_DIR}/${DCS_ZIP_FILE} ]; then
-            DCS_URL="https://aeronav.faa.gov/Upload_313-d/supplements/${DCS_ZIP_FILE}"
-            echo "${bold}Downloading ${DCS_ZIP_FILE}:${normal}"
-            wget -P ${BASE_DIR} ${DCS_URL}
-        fi
-        unzip -o ${BASE_DIR}/${DCS_ZIP_FILE} ${DCS_FILE} -d ${BASE_DIR}
+	DCS_URL="https://aeronav.faa.gov/afd/${DCS_CYCLE}/afd_${DCS_CYCLE}.xml";
+        echo "${bold}Downloading d-CS ${DCS_CYCLE} file:${normal}";
+        wget -O ${DCS_FILE} ${DCS_URL};
     fi
-    echo "${bold}Running load_dafd_metadata.pl ${BASE_DIR}/${DCS_FILE} ${OUT_FILE}:${normal}"
-    ./load_dafd_metadata.pl ${BASE_DIR}/${DCS_FILE} ${OUT_FILE}
-    gzip ${OUT_FILE}
-    echo "--"
+    echo "${bold}Running load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE}:${normal}";
+    ./load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE};
+    gzip ${OUT_FILE};
+    echo "--";
 fi
 
-OUT_FILE="${OUT_DIR}/dof_${DATA_CYCLE}.db"
+OUT_FILE="${OUT_DIR}/dof_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    BASE_DIR="${DATA_DIR}/DOF/${DATA_CYCLE}"
+    BASE_DIR="${DATA_DIR}/DOF/${DATA_CYCLE}";
     if [ ! -d "${BASE_DIR}" ]; then
-        mkdir -p ${BASE_DIR}
+        mkdir -p ${BASE_DIR};
     fi
-    DOF_FILE="${BASE_DIR}/DAILY_DOF_DAT.ZIP"
+    DOF_FILE="${BASE_DIR}/DAILY_DOF_DAT.ZIP";
     if [ ! -f "${DOF_FILE}" ]; then
         DOF_URL="https://aeronav.faa.gov/Obst_Data/DAILY_DOF_DAT.ZIP"
-        echo "${bold}Downloading DDOF file:${normal}"
-        wget -O ${DOF_FILE} ${DOF_URL}
-        unzip -o -d ${BASE_DIR} ${DOF_FILE}
+        echo "${bold}Downloading DDOF file:${normal}";
+        wget -O ${DOF_FILE} ${DOF_URL};
+        unzip -o -d ${BASE_DIR} ${DOF_FILE};
     fi
-    echo "${bold}Running load_dof.pl ${BASE_DIR} ${OUT_FILE}:${normal}"
-    ./load_dof.pl ${BASE_DIR} ${OUT_FILE}
-    gzip ${OUT_FILE}
-    echo "--"
+    echo "${bold}Running load_dof.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
+    ./load_dof.pl ${BASE_DIR} ${OUT_FILE};
+    gzip ${OUT_FILE};
+    echo "--";
 fi
 
 BASE_DIR="${DATA_DIR}/library";
 echo "${bold}Zipping library files:${normal}"
 find ${BASE_DIR} -name *.pdf -print -exec gzip {} \;
-echo "--"
+echo "--";
 
 OUT_FILE="${OUT_DIR}/library_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
     echo "${bold}Running load_library.pl ${BASE_DIR} ${OUT_FILE}:${normal}"
-    ./load_library.pl ${BASE_DIR} ${OUT_FILE}
-    gzip ${OUT_FILE}
-    echo "--"
+    ./load_library.pl ${BASE_DIR} ${OUT_FILE};
+    gzip ${OUT_FILE};
+    echo "--";
 fi
 
 echo "${bold}Syncing data files with Google Storage:${normal}"
 gsutil -m rsync -d -r -x fadds_prev.db -d ${OUT_DIR} ${GS_DATA_URL}
 gsutil -m acl -r ch -u Allusers:R ${GS_DATA_URL} 2>&1 | grep -v "No changes"
-echo "--"
+echo "--";
 
 echo "${bold}Syncing library files with Google Storage:${normal}"
 gsutil -m rsync -d -r ${LIBRARY_DIR} ${GS_LIBRARY_URL}
 gsutil -m acl -r ch -u Allusers:R ${GS_LIBRARY_URL} 2>&1 | grep -v "No changes"
-echo "--"
+echo "--";
 
 echo "${bold}Done!${normal}"
 

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,17 +23,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
-
-import java.util.Locale;
 
 public class MachNumberFragment extends E6bFragmentBase {
 
-    private EditText mTasEdit;
-    private EditText mOatEdit;
-    private EditText mMachEdit;
+    private TextInputLayout mTasEdit;
+    private TextInputLayout mOatEdit;
+    private TextInputLayout mMachEdit;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
@@ -50,8 +48,9 @@ public class MachNumberFragment extends E6bFragmentBase {
         mOatEdit = findViewById( R.id.e6b_edit_oat );
         mMachEdit = findViewById( R.id.e6b_edit_mach );
 
-        mTasEdit.addTextChangedListener( mTextWatcher );
-        mOatEdit.addTextChangedListener( mTextWatcher );
+        addEditField( mTasEdit );
+        addEditField( mOatEdit );
+        addReadOnlyField( mMachEdit );
 
         setFragmentContentShown( true );
     }
@@ -63,20 +62,13 @@ public class MachNumberFragment extends E6bFragmentBase {
 
     @Override
     protected void processInput() {
-        double tas = Double.MAX_VALUE;
-        double oat = Double.MAX_VALUE;
-
         try {
-            tas = Double.parseDouble( mTasEdit.getText().toString() );
-            oat = Double.parseDouble( mOatEdit.getText().toString() );
-        } catch ( NumberFormatException ignored ) {
-        }
-
-        if ( tas != Double.MAX_VALUE && oat != Double.MAX_VALUE ) {
+            double tas = parseDouble( mTasEdit );
+            double oat = parseDouble( mOatEdit );
             double mach = tas/( 38.967854*Math.sqrt( oat+273.15 ) );
-            mMachEdit.setText( String.format( Locale.US, "%.2f", mach ) );
-        } else {
-            mMachEdit.setText( "" );
+            showDecimalValue( mMachEdit, mach, 2 );
+        } catch ( NumberFormatException ignored ) {
+            clearEditText( mMachEdit );
         }
     }
 

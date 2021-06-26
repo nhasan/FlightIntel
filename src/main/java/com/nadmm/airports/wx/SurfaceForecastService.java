@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,9 +29,6 @@ import java.util.Locale;
 
 public class SurfaceForecastService extends NoaaService {
 
-    private final String GFA_IMAGE_NAME = "%s_gfa_sfc_%s.png";
-    private final String GFA_IMAGE_PATH = "/data/products/gfa/";
-
     private static final long CACHE_MAX_AGE = 30* DateUtils.MINUTE_IN_MILLIS;
 
     public SurfaceForecastService() {
@@ -47,11 +44,11 @@ public class SurfaceForecastService extends NoaaService {
                 String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );
 
-                String imageName = String.format( Locale.US, GFA_IMAGE_NAME, imgType, code );
+                String imageName = String.format( Locale.US, "%s_%s.png", imgType, code );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = GFA_IMAGE_PATH+imageName;
+                        String path = "/data/products/gfa/" +imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch gfa image: "

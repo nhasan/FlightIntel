@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -66,13 +65,18 @@ public class TfrDetailFragment extends FragmentBase {
         }
 
         LinearLayout layout = view.findViewById( R.id.tfr_header_layout );
-        addRow( layout, "Name", mTfr.name );
-        addRow( layout, "NOTAM", mTfr.notamId );
-        addRow( layout, "Type", mTfr.type );
+        addRow( layout, "NOTAM Id", mTfr.notamId );
+        if ( mTfr.type != null && !mTfr.type.isEmpty() ) {
+            addRow( layout, "Type", mTfr.type );
+        }
         addRow( layout, "Status", mTfr.isExpired()? "Expired"
                 : mTfr.isActive()? "Active" : "Inactive" );
+        addRow( layout, "Location", mTfr.formatLocation() );
+        if ( !mTfr.facilityType.isEmpty() && !mTfr.facility.isEmpty() ) {
+            addRow( layout, mTfr.facilityType, mTfr.facility );
+        }
         addRow( layout, "Time", mTfr.formatTimeRange( getActivityBase() ) );
-        addRow( layout, "Altitudes", mTfr.formatAltitudeRange() );
+        addRow( layout, "Altitude", mTfr.formatAltitudeRange() );
 
         layout = view.findViewById( R.id.tfr_time_layout );
         if ( mTfr.createTime < Long.MAX_VALUE ) {
@@ -88,18 +92,17 @@ public class TfrDetailFragment extends FragmentBase {
         addRow( layout, mTfr.text.replace( "\\n", "\n" ) );
 
         TextView tv = view.findViewById( R.id.tfr_warning_text );
-        tv.setText( String.format( Locale.US,
-                "Depicted TFR data may not be a complete listing. Pilots should not use "
-                + "the information for flight planning purposes. For the latest information, "
-                + "call your local Flight Service Station at 1-800-WX-BRIEF." ) );
+        tv.setText("Depicted TFR data may not be a complete listing. Pilots should not use "
+        + "the information for flight planning purposes. For the latest information, "
+        + "call your local Flight Service Station at 1-800-WX-BRIEF.");
     }
 
     @Override
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
-        setActionBarTitle( mTfr.name );
-        setActionBarSubtitle( "TFR Details" );
+        setActionBarTitle( "TFR Details" );
+        setActionBarSubtitle( mTfr.name );
 
         setFragmentContentShown( true );
     }

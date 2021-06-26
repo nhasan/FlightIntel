@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@ import com.nadmm.airports.utils.CursorAsyncTask;
 
 public class AirportNotamFragment extends NotamFragmentBase {
 
+    private String mfaaCode;
+
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState ) {
@@ -47,20 +49,20 @@ public class AirportNotamFragment extends NotamFragmentBase {
         setBackgroundTask( new AirportNotamTask( this ) ).execute( siteNumber );
     }
 
-    private void showNotam( Cursor c ) {
-        showAirportTitle( c );
+    private void requestNotams( Cursor c ) {
+        mfaaCode = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
+        setActionBarTitle( mfaaCode+" - NOTAMs" );
+        getNotams( mfaaCode, false );
+    }
 
-        String icaoCode = c.getString( c.getColumnIndex( Airports.ICAO_CODE ) );
-        if ( icaoCode == null || icaoCode.length() == 0 ) {
-            String faaCode = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
-            icaoCode = "K" + faaCode;
-        }
+    @Override
+    public boolean isRefreshable() {
+        return true;
+    }
 
-        boolean showGPS = getActivityBase().getPrefShowGpsNotam();
-        if ( showGPS ) {
-            icaoCode += ",KGPS";
-        }
-        getNotams( icaoCode, "airport" );
+    @Override
+    public void requestDataRefresh() {
+        getNotams( mfaaCode, true );
     }
 
     private static class AirportNotamTask extends CursorAsyncTask<AirportNotamFragment> {
@@ -78,7 +80,7 @@ public class AirportNotamFragment extends NotamFragmentBase {
 
         @Override
         protected boolean onResult( AirportNotamFragment fragment, Cursor[] result ) {
-            fragment.showNotam( result[ 0 ] );
+            fragment.requestNotams( result[ 0 ] );
             return true;
         }
 

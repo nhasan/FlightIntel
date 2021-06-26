@@ -33,6 +33,7 @@
         <TextView android:id="@+id/wx_map_type_label"
                 style="@style/TextLabel"
                 android:text="@string/select_type"
+                android:textColor="?colorPrimary"
                 android:visibility="gone"
                 android:paddingTop="@dimen/item_padding"
                 android:paddingBottom="@dimen/label_padding"
@@ -43,12 +44,21 @@
                 android:padding="@dimen/item_padding"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            <Spinner android:id="@+id/map_type"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/map_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
         <TextView android:id="@+id/wx_map_label"
                 style="@style/TextLabel"
+                android:textColor="?colorPrimary"
                 android:paddingTop="@dimen/item_padding"
                 android:paddingBottom="@dimen/label_padding"
                 android:visibility="gone"

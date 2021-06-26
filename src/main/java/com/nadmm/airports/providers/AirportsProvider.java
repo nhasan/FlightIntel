@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ public class AirportsProvider extends ContentProvider {
                 +") ||' - '||"+Airports.FACILITY_NAME
                 +" AS "+SearchManager.SUGGEST_COLUMN_TEXT_1 );
         map.put( SearchManager.SUGGEST_COLUMN_TEXT_2,
-                Airports.ASSOC_CITY+"||' '||"+Airports.ASSOC_STATE
+                Airports.ASSOC_CITY+"||', '||"+Airports.ASSOC_STATE
                 +" AS "+SearchManager.SUGGEST_COLUMN_TEXT_2 );
         map.put( SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA,
                 Airports.SITE_NUMBER+" AS "+SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA);

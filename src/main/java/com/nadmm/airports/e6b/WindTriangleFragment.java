@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,26 +19,27 @@
 
 package com.nadmm.airports.e6b;
 
-import android.graphics.Typeface;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
 public class WindTriangleFragment extends E6bFragmentBase {
 
-    private static final double TWO_PI = 2*Math.PI;
-
-    private EditText mTasEdit;
-    private EditText mGsEdit;
-    private EditText mHdgEdit;
-    private EditText mCrsEdit;
-    private EditText mWsEdit;
-    private EditText mWdirEdit;
+    private TextInputLayout mEdit1;
+    private TextInputLayout mEdit2;
+    private TextInputLayout mEdit3;
+    private TextInputLayout mEdit4;
+    private TextInputLayout mEdit5;
+    private TextInputLayout mEdit6;
+    private TextInputLayout mEdit7;
+    private TextView mTextMsg;
 
     private long mMode;
 
@@ -53,11 +54,13 @@ public class WindTriangleFragment extends E6bFragmentBase {
     public void onActivityCreated( Bundle savedInstanceState ) {
         super.onActivityCreated( savedInstanceState );
 
+        mMode = R.id.E6B_WIND_TRIANGLE_WIND;
         Bundle args = getArguments();
-        mMode = args.getLong( ListMenuFragment.MENU_ID );
+        if ( args != null ) {
+            mMode = args.getLong( ListMenuFragment.MENU_ID );
+        }
 
         setupUi();
-
         setFragmentContentShown( true );
     }
 
@@ -66,209 +69,122 @@ public class WindTriangleFragment extends E6bFragmentBase {
         return null;
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void processInput() {
-        double tas = -1;
-        double gs = -1;
-        double hdg = -1;
-        double crs = -1;
-        double ws = -1;
-        double wdir = -1;
+        mTextMsg.setText( "" );
 
-        if ( mMode == R.id.E6B_WIND_TRIANGLE_WIND ) {
-            try {
-                tas = Double.valueOf( mTasEdit.getText().toString() );
-                gs = Double.valueOf( mGsEdit.getText().toString() );
-                hdg = Double.valueOf( mHdgEdit.getText().toString() );
-                crs = Double.valueOf( mCrsEdit.getText().toString() );
+        try {
+            if ( mMode == R.id.E6B_WIND_TRIANGLE_WIND ) {
+                double tas = parseDouble( mEdit1 );
+                double gs = parseDouble( mEdit2 );
+                double hdg = parseDirection( mEdit3 );
+                double crs = parseDirection( mEdit4 );
+                double ws = Math.round( Math.sqrt( Math.pow( tas-gs, 2 )
+                        + 4*tas*gs*( Math.pow( Math.sin( ( hdg-crs )/2 ), 2 ) ) ) );
+                double wdir = crs + Math.atan2( tas*Math.sin( hdg-crs ),
+                        ( tas*Math.cos( hdg-crs ) )-gs );
 
-                // Check bounds
-                if ( hdg == 0 || hdg > 360 ) {
-                    mHdgEdit.setError( "Enter a value between 1-360" );
-                    hdg = -1;
+                showValue( mEdit5, ws );
+                showDirection( mEdit6, wdir );
+                showDirection( mEdit7, hdg-crs );
+            } else if ( mMode == R.id.E6B_WIND_TRIANGLE_HDG_GS ) {
+                double tas = parseDouble( mEdit1 );
+                double ws = parseDouble( mEdit2 );
+                double wdir = parseDirection( mEdit3 );
+                double crs = parseDirection( mEdit4 );
+                double swc = ( ws/tas )*Math.sin( wdir-crs );
+                double hdg = crs+Math.asin( swc );
+                double gs = tas * Math.sqrt( 1.0-Math.pow( swc, 2 ) ) - ws*Math.cos( wdir-crs );
+                if ( gs <= 0 || Math.abs( swc ) > 1 ) {
+                    mTextMsg.setText( "Course cannot be flown, wind is too strong." );
                 }
-                if ( crs == 0 || crs > 360 ) {
-                    mCrsEdit    .setError( "Enter a value between 1-360" );
-                    crs = -1;
-                }
-            } catch ( NumberFormatException ignored ) {
+
+                showValue( mEdit5, gs );
+                showDirection( mEdit6, hdg );
+                showDirection( mEdit7, hdg-crs );
+            } else if ( mMode == R.id.E6B_WIND_TRIANGLE_CRS_GS ) {
+                double tas = parseDouble( mEdit1 );
+                double ws = parseDouble( mEdit2 );
+                double wdir = parseDirection( mEdit3 );
+                double hdg = parseDirection( mEdit4 );
+                double gs = Math.sqrt( Math.pow( ws, 2 ) + Math.pow( tas, 2 )
+                        - 2*ws*tas*Math.cos( hdg-wdir ) );
+                double wca = Math.atan2( ws*Math.sin( hdg-wdir ),
+                        tas-( ws*Math.cos( hdg-wdir ) ) );
+                double crs = ( hdg+wca )%(2*Math.PI);
+
+                showValue( mEdit5, gs );
+                showDirection( mEdit6, crs );
+                showDirection( mEdit7, hdg-crs );
             }
-
-            if ( tas != -1 && gs != -1 && hdg != -1 && crs != -1 ) {
-                double hdgRad = Math.toRadians( hdg );
-                double crsRad = Math.toRadians( crs );
-
-                // Calculate wind speed and direction
-                ws = Math.round( Math.sqrt( Math.pow( tas-gs, 2 )
-                            + 4*tas*gs*( Math.pow( Math.sin( ( hdgRad-crsRad )/2 ), 2 ) ) ) );
-                double wdirRad = crsRad + Math.atan2( tas*Math.sin( hdgRad-crsRad ),
-                            ( tas*Math.cos( hdgRad-crsRad ) )-gs );
-                wdirRad = normalizeDir( wdirRad );
-                wdir = Math.toDegrees( wdirRad );
-
-                mWsEdit.setText( String.valueOf( Math.round( ws ) ) );
-                mWdirEdit.setText( String.valueOf( Math.round( wdir ) ) );
-            } else {
-                mWsEdit.setText( "" );
-                mWdirEdit.setText( "" );
-            }
-        } else if ( mMode == R.id.E6B_WIND_TRIANGLE_HDG_GS ) {
-            try {
-                tas = Double.valueOf( mTasEdit.getText().toString() );
-                crs = Double.valueOf( mCrsEdit.getText().toString() );
-                ws = Double.valueOf( mWsEdit.getText().toString() );
-                wdir = Double.valueOf( mWdirEdit.getText().toString() );
-
-                // Check bounds
-                if ( wdir == 0 || wdir > 360 ) {
-                    mWdirEdit.setError( "Enter a value between 1-360" );
-                    wdir = -1;
-                }
-                if ( crs == 0 || crs > 360 ) {
-                    mCrsEdit.setError( "Enter a value between 1-360" );
-                    crs = -1;
-                }
-            } catch ( NumberFormatException ignored ) {
-            }
-
-            if ( tas != -1 && crs != -1 && ws != -1 && wdir != -1 ) {
-                double wdirRad = Math.toRadians( wdir );
-                double crsRad = Math.toRadians( crs );
-
-                // Calculate heading and ground speed
-                double swc = ( ws/tas )*Math.sin( wdirRad-crsRad );
-                if ( Math.abs( swc ) > 1 ) {
-                    mWsEdit.setError( "Course cannot be flown, wind too strong" );
-                    mGsEdit.setText( "" );
-                    mHdgEdit.setText( "" );
-                } else {
-                    double hdgRad = crsRad+Math.asin( swc );
-                    hdgRad = normalizeDir( hdgRad );
-                    hdg = Math.toDegrees( hdgRad );
-                    gs = tas * Math.sqrt( 1.0-Math.pow( swc, 2 ) ) - ws*Math.cos( wdirRad-crsRad );
-                    if ( gs <= 0 ) {
-                        mWsEdit.setError( "Course cannot be flown, wind too strong" );
-                        mGsEdit.setText( "" );
-                        mHdgEdit.setText( "" );
-                    } else {
-                        mGsEdit.setText( String.valueOf( Math.round( gs ) ) );
-                        mHdgEdit.setText( String.valueOf( Math.round( hdg ) ) );
-                    }
-                }
-            } else {
-                mGsEdit.setText( "" );
-                mHdgEdit.setText( "" );
-            }
-        } else if ( mMode == R.id.E6B_WIND_TRIANGLE_CRS_GS ) {
-            try {
-                tas = Double.valueOf( mTasEdit.getText().toString() );
-                hdg = Double.valueOf( mHdgEdit.getText().toString() );
-                ws = Double.valueOf( mWsEdit.getText().toString() );
-                wdir = Double.valueOf( mWdirEdit.getText().toString() );
-
-                // Check bounds
-                if ( wdir == 0 || wdir > 360 ) {
-                    mWdirEdit.setError( "Enter a value between 1-360" );
-                    wdir = -1;
-                }
-                if ( hdg == 0 || hdg > 360 ) {
-                    mHdgEdit.setError( "Enter a value between 1-360" );
-                    hdg = -1;
-                }
-            } catch ( NumberFormatException ignored ) {
-            }
-
-            if ( tas != -1 && hdg != -1 && ws != -1 && wdir != -1 ) {
-                double wdirRad = Math.toRadians( wdir );
-                double hdgRad = Math.toRadians( hdg );
-
-                // Calculate course and ground speed
-                gs = Math.sqrt( Math.pow( ws, 2 ) + Math.pow( tas, 2 )
-                        - 2*ws*tas*Math.cos( hdgRad-wdirRad ) );
-                double wca = Math.atan2( ws*Math.sin( hdgRad-wdirRad ),
-                        tas-( ws*Math.cos( hdgRad-wdirRad ) ) );
-                crs = Math.toDegrees( ( hdgRad+wca )%TWO_PI );
-
-                mGsEdit.setText( String.valueOf( Math.round( gs ) ) );
-                mCrsEdit.setText( String.valueOf( Math.round( crs ) ) );
-            } else {
-                mGsEdit.setText( "" );
-                mCrsEdit.setText( "" );
-            }
+        } catch ( NumberFormatException ignored ) {
+            clearEditText( mEdit5 );
+            clearEditText( mEdit6 );
         }
-    }
-
-    private double normalizeDir( double radians ) {
-        if ( radians <= 0 ) {
-            return radians+TWO_PI;
-        } else if ( radians > TWO_PI ) {
-            return radians-TWO_PI;
-        }
-        return radians;
     }
 
     private void setupUi() {
-        mTasEdit = findViewById( R.id.e6b_tas_edit );
-        mGsEdit = findViewById( R.id.e6b_gs_edit );
-        mHdgEdit = findViewById( R.id.e6b_hdg_edit );
-        mCrsEdit = findViewById( R.id.e6b_crs_edit );
-        mWsEdit = findViewById( R.id.e6b_ws_edit );
-        mWdirEdit = findViewById( R.id.e6b_wdir_edit );
+        TextView mLabel1 = findViewById( R.id.e6b_label_value1 );
+        TextView mLabel2 = findViewById( R.id.e6b_label_value2 );
+        TextView mLabel3 = findViewById( R.id.e6b_label_value3 );
+        TextView mLabel4 = findViewById( R.id.e6b_label_value4 );
+        TextView mLabel5 = findViewById( R.id.e6b_label_value5 );
+        TextView mLabel6 = findViewById( R.id.e6b_label_value6 );
+        mEdit1 = findViewById( R.id.e6b_edit_value1 );
+        mEdit2 = findViewById( R.id.e6b_edit_value2 );
+        mEdit3 = findViewById( R.id.e6b_edit_value3 );
+        mEdit4 = findViewById( R.id.e6b_edit_value4 );
+        mEdit5 = findViewById( R.id.e6b_edit_value5 );
+        mEdit6 = findViewById( R.id.e6b_edit_value6 );
+        mEdit7 = findViewById( R.id.e6b_edit_value7 );
+        mTextMsg = findViewById( R.id.e6b_msg );
+
+        addReadOnlyField( mEdit7 );
 
         if ( mMode == R.id.E6B_WIND_TRIANGLE_WIND ) {
             // Find wind speed and direction
-            mTasEdit.addTextChangedListener( mTextWatcher );
-            mTasEdit.setHint( R.string.input_kts );
-            mGsEdit.addTextChangedListener( mTextWatcher );
-            mGsEdit.setHint( R.string.input_kts );
-            mHdgEdit.addTextChangedListener( mTextWatcher );
-            mHdgEdit.setHint( R.string.input_deg );
-            mCrsEdit.addTextChangedListener( mTextWatcher );
-            mCrsEdit.setHint( R.string.input_deg );
-            mWsEdit.setFocusable( false );
-            mWsEdit.setFocusableInTouchMode( false );
-            mWsEdit.setTypeface( null, Typeface.BOLD );
-            mWsEdit.setHint( R.string.kts );
-            mWdirEdit.setFocusable( false );
-            mWdirEdit.setFocusableInTouchMode( false );
-            mWdirEdit.setTypeface( null, Typeface.BOLD );
-            mWdirEdit.setHint( R.string.deg );
+            mLabel1.setText( R.string.tas );
+            addEditField( mEdit1, R.string.kts );
+            mLabel2.setText( R.string.gs );
+            addEditField( mEdit2, R.string.kts );
+            mLabel3.setText( R.string.hdg );
+            addEditField( mEdit3, R.string.deg );
+            mLabel4.setText( R.string.crs );
+            addEditField( mEdit4, R.string.deg );
+            mEdit4.setHint( R.string.deg );
+            mLabel5.setText( R.string.ws );
+            addReadOnlyField( mEdit5, R.string.kts );
+            mLabel6.setText( R.string.wdir );
+            addReadOnlyField( mEdit6, R.string.deg );
         } else if ( mMode == R.id.E6B_WIND_TRIANGLE_HDG_GS ) {
             // Find HDG and GS
-            mTasEdit.addTextChangedListener( mTextWatcher );
-            mTasEdit.setHint( R.string.input_kts );
-            mGsEdit.setFocusable( false );
-            mGsEdit.setFocusableInTouchMode( false );
-            mGsEdit.setTypeface( null, Typeface.BOLD );
-            mGsEdit.setHint( R.string.kts );
-            mHdgEdit.setFocusable( false );
-            mHdgEdit.setFocusableInTouchMode( false );
-            mHdgEdit.setTypeface( null, Typeface.BOLD );
-            mHdgEdit.setHint( R.string.deg );
-            mCrsEdit.addTextChangedListener( mTextWatcher );
-            mCrsEdit.setHint( R.string.input_deg );
-            mWsEdit.addTextChangedListener( mTextWatcher );
-            mWsEdit.setHint( R.string.input_kts );
-            mWdirEdit.addTextChangedListener( mTextWatcher );
-            mWdirEdit.setHint( R.string.input_deg );
+            mLabel1.setText( R.string.tas );
+            addEditField( mEdit1, R.string.kts );
+            mLabel2.setText( R.string.ws );
+            addEditField( mEdit2, R.string.kts );
+            mLabel3.setText( R.string.wdir );
+            addEditField( mEdit3, R.string.deg );
+            mLabel4.setText( R.string.crs );
+            addEditField( mEdit4, R.string.deg );
+            mLabel5.setText( R.string.gs );
+            addReadOnlyField( mEdit5, R.string.kts );
+            mLabel6.setText( R.string.hdg );
+            addReadOnlyField( mEdit6, R.string.deg );
         } else if ( mMode == R.id.E6B_WIND_TRIANGLE_CRS_GS ) {
             // Find CRS and GS
-            mTasEdit.addTextChangedListener( mTextWatcher );
-            mTasEdit.setHint( R.string.input_kts );
-            mGsEdit.setFocusable( false );
-            mGsEdit.setFocusableInTouchMode( false );
-            mGsEdit.setTypeface( null, Typeface.BOLD );
-            mGsEdit.setHint( R.string.kts );
-            mHdgEdit.addTextChangedListener( mTextWatcher );
-            mHdgEdit.setHint( R.string.input_deg );
-            mCrsEdit.setFocusable( false );
-            mCrsEdit.setFocusableInTouchMode( false );
-            mCrsEdit.setTypeface( null, Typeface.BOLD );
-            mCrsEdit.setHint( R.string.deg );
-            mWsEdit.addTextChangedListener( mTextWatcher );
-            mWsEdit.setHint( R.string.input_kts );
-            mWdirEdit.addTextChangedListener( mTextWatcher );
-            mWdirEdit.setHint( R.string.input_deg );
+            mLabel1.setText( R.string.tas );
+            addEditField( mEdit1, R.string.kts );
+            mLabel2.setText( R.string.ws );
+            addEditField( mEdit2, R.string.kts );
+            mLabel3.setText( R.string.wdir );
+            addEditField( mEdit3, R.string.deg );
+            mLabel4.setText( R.string.hdg );
+            addEditField( mEdit4, R.string.deg );
+            mLabel5.setText( R.string.gs );
+            addReadOnlyField( mEdit5, R.string.kts );
+            mLabel6.setText( R.string.crs );
+            addReadOnlyField( mEdit6, R.string.deg );
         }
     }
 

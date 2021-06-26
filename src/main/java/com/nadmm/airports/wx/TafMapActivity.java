@@ -45,9 +45,63 @@ public class TafMapActivity extends ActivityBase {
 
     public static class TafMapFragment extends WxMapFragmentBase {
 
+        private static final String[] sTypeCodes = new String[]{
+                "F01",
+                "F02",
+                "F03",
+                "F04",
+                "F05",
+                "F06",
+                "F07",
+                "F08",
+                "F09",
+                "F10",
+                "F11",
+                "F12",
+                "F13",
+                "F14",
+                "F15",
+                "F16",
+                "F17",
+                "F18",
+                "F19",
+                "F20",
+                "F21",
+                "F22",
+                "F23",
+        };
+
+        private static final String[] sTypeNames = new String[]{
+                "1 Hour",
+                "2 Hours",
+                "3 Hours",
+                "4 Hours",
+                "5 Hours",
+                "6 Hours",
+                "7 Hours",
+                "8 Hours",
+                "9 Hours",
+                "10 Hours",
+                "11 Hours",
+                "12 Hours",
+                "13 Hours",
+                "14 Hours",
+                "15 Hours",
+                "16 Hours",
+                "17 Hours",
+                "18 Hours",
+                "19 Hours",
+                "20 Hours",
+                "21 Hours",
+                "22 Hours",
+                "23 Hours",
+        };
+
         public TafMapFragment() {
-            super( NoaaService.ACTION_GET_TAF, WxRegions.sWxRegionCodes,
-                    WxRegions.sWxRegionNames );
+            super( NoaaService.ACTION_GET_TAF,
+                    WxRegions.sWxRegionCodes, WxRegions.sWxRegionNames,
+                    sTypeCodes, sTypeNames );
+            setMapTypeName( "Valid From" );
             setLabel( "Select Region" );
         }
 

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,24 +19,22 @@
 
 package com.nadmm.airports.e6b;
 
-import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.ListMenuFragment;
 import com.nadmm.airports.R;
 
-import java.util.Locale;
-
 public class FuelCalcsFragment extends E6bFragmentBase {
 
-    private EditText mFuelTotalEdit;
-    private EditText mFuelRateEdit;
-    private EditText mTimeEdit;
-    private EditText mTime2Edit;
+    private TextInputLayout mEdit1;
+    private TextInputLayout mEdit2;
+    private TextInputLayout mEdit3;
 
     private long mMenuId;
 
@@ -63,105 +61,58 @@ public class FuelCalcsFragment extends E6bFragmentBase {
 
     @Override
     protected void processInput() {
-        double fuelTotal = Double.MAX_VALUE;
-        double fuelRate = Double.MAX_VALUE;
-        double endurance = Double.MAX_VALUE;
-
-        if ( mMenuId == R.id.E6B_FUEL_ENDURANCE ) {
-            try {
-                fuelTotal = Double.parseDouble( mFuelTotalEdit.getText().toString() );
-                fuelRate = Double.parseDouble( mFuelRateEdit.getText().toString() );
-            } catch ( NumberFormatException ignored ) {
+        try {
+            if ( mMenuId == R.id.E6B_FUEL_ENDURANCE ) {
+                double fuelTotal = parseDouble( mEdit1 );
+                double fuelRate = parseDouble( mEdit2 );
+                double endurance = fuelTotal/( fuelRate/60 );
+                showValue( mEdit3, endurance );
+            } else if ( mMenuId == R.id.E6B_FUEL_TOTAL_BURNED ) {
+                double fuelRate = parseDouble( mEdit1 );
+                double endurance = parseDouble( mEdit2 );
+                double fuelTotal = ( endurance/60 )*fuelRate;
+                showValue( mEdit3, fuelTotal );
+            } else if ( mMenuId == R.id.E6B_FUEL_BURN_RATE ) {
+                double fuelTotal = parseDouble( mEdit1 );
+                double endurance = parseDouble( mEdit2 );
+                double fuelRate = fuelTotal/( endurance/60 );
+                showDecimalValue( mEdit3, fuelRate );
             }
-
-            if ( fuelTotal != Double.MAX_VALUE && fuelRate != Double.MAX_VALUE ) {
-                endurance = fuelTotal/( fuelRate/60 );
-                mTimeEdit.setText( String.format( Locale.US, "%.0f", endurance ) );
-            } else {
-                mTimeEdit.setText( "" );
-            }
-        } else if ( mMenuId == R.id.E6B_FUEL_BURN_RATE ) {
-            try {
-                fuelTotal = Double.parseDouble( mFuelTotalEdit.getText().toString() );
-            } catch ( NumberFormatException ignored ) {
-            }
-            try {
-                endurance = Double.parseDouble( mTimeEdit.getText().toString() );
-            } catch ( NumberFormatException ignored ) {
-            }
-
-
-            if ( fuelTotal != Double.MAX_VALUE && endurance != Double.MAX_VALUE ) {
-                fuelRate = fuelTotal/( endurance/60 );
-                mFuelRateEdit.setText( String.format( Locale.US, "%.1f", fuelRate  ) );
-            } else {
-                mFuelRateEdit.setText( "" );
-            }
-        } else if ( mMenuId == R.id.E6B_FUEL_TOTAL_BURNED ) {
-            try {
-                fuelRate = Double.parseDouble( mFuelRateEdit.getText().toString() );
-            } catch ( NumberFormatException ignored ) {
-            }
-            try {
-                endurance = Double.parseDouble( mTimeEdit.getText().toString() );
-            } catch ( NumberFormatException ignored ) {
-            }
-
-
-            if ( fuelRate != Double.MAX_VALUE && endurance != Double.MAX_VALUE ) {
-                fuelTotal = ( endurance/60 )*fuelRate;
-                mFuelTotalEdit.setText( String.format( Locale.US, "%.1f", fuelTotal  ) );
-            } else {
-                mFuelTotalEdit.setText( "" );
-            }
-        }
-
-        if ( endurance != Double.MAX_VALUE ) {
-            mTime2Edit.setText( getFormattedTime( endurance ) );
-        } else {
-            mTime2Edit.setText( "" );
+        } catch ( NumberFormatException ignored ) {
+            clearEditText( mEdit3 );
         }
     }
 
     private void setupUi() {
-        mFuelTotalEdit = findViewById( R.id.e6b_edit_total_fuel );
-        mFuelRateEdit = findViewById( R.id.e6b_edit_burn_rate );
-        mTimeEdit = findViewById( R.id.e6b_edit_time );
-        mTime2Edit = findViewById( R.id.e6b_edit_time2 );
+        TextView label1 = findViewById( R.id.e6b_label_value1 );
+        TextView label2 = findViewById( R.id.e6b_label_value2 );
+        TextView label3 = findViewById( R.id.e6b_label_value3 );
+        mEdit1 = findViewById( R.id.e6b_edit_value1 );
+        mEdit2 = findViewById( R.id.e6b_edit_value2 );
+        mEdit3 = findViewById( R.id.e6b_edit_value3 );
 
         if ( mMenuId == R.id.E6B_FUEL_ENDURANCE ) {
-            mFuelTotalEdit.addTextChangedListener( mTextWatcher );
-            mFuelTotalEdit.setHint( R.string.input_gal );
-            mFuelRateEdit.addTextChangedListener( mTextWatcher );
-            mFuelRateEdit.setHint( R.string.input_gph );
-            mTimeEdit.setFocusable( false );
-            mTimeEdit.setTypeface( null, Typeface.BOLD );
-            mTimeEdit.setHint( R.string.min );
+            label1.setText( R.string.total_fuel );
+            addEditField( mEdit1, R.string.gal );
+            label2.setText( R.string.burn_rate );
+            addEditField( mEdit2, R.string.gph );
+            label3.setText( R.string.endurance );
+            addReadOnlyField( mEdit3, R.string.min );
         } else if ( mMenuId == R.id.E6B_FUEL_BURN_RATE ) {
-            mFuelTotalEdit.addTextChangedListener( mTextWatcher );
-            mFuelTotalEdit.setHint( R.string.input_gal );
-            mFuelRateEdit.setFocusable( false );
-            mFuelRateEdit.setTypeface( null, Typeface.BOLD );
-            mFuelRateEdit.setHint( R.string.gph );
-            mTimeEdit.addTextChangedListener( mTextWatcher );
-            mTimeEdit.setHint( R.string.input_min );
+            label1.setText( R.string.total_fuel );
+            addEditField( mEdit1, R.string.gal );
+            label2.setText( R.string.endurance );
+            addEditField( mEdit2, R.string.min );
+            label3.setText( R.string.burn_rate );
+            addReadOnlyField( mEdit3, R.string.gph );
         } else if ( mMenuId == R.id.E6B_FUEL_TOTAL_BURNED ) {
-            mFuelTotalEdit.setFocusable( false );
-            mFuelTotalEdit.setTypeface( null, Typeface.BOLD );
-            mFuelTotalEdit.setHint( R.string.gal );
-            mFuelRateEdit.addTextChangedListener( mTextWatcher );
-            mFuelRateEdit.setHint( R.string.input_gph );
-            mTimeEdit.addTextChangedListener( mTextWatcher );
-            mTimeEdit.setHint( R.string.input_min );
+            label1.setText( R.string.burn_rate );
+            addEditField( mEdit1, R.string.gph );
+            label2.setText( R.string.endurance );
+            addEditField( mEdit2, R.string.min );
+            label3.setText( R.string.total_fuel );
+            addReadOnlyField( mEdit3, R.string.gal );
         }
-    }
-
-    private String getFormattedTime( double time ) {
-        long secs = Math.round( time*60 );
-        long hrs = secs/(60*60);
-        secs -= hrs*60*60;
-        long mins = secs/60;
-        return String.format( Locale.US, "%d h %d m", hrs, mins );
     }
 
 }

@@ -1,0 +1,16 @@
+[Unit]
+Description=Service to load NOTAM messages into a SQLite db
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/home/nhasan_nadmm_com/sw/scds/start
+Restart=on-failure
+RestartSec=5
+User=nhasan_nadmm_com
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=notams
+
+[Install]
+WantedBy=multi-user.target

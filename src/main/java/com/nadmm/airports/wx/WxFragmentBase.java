@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,10 +24,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.utils.UiUtils;
 
@@ -79,6 +83,29 @@ public abstract class WxFragmentBase extends FragmentBase {
         int background = UiUtils.getSelectableItemBackgroundResource( getActivity() );
         row.setBackgroundResource( background );
         return row;
+    }
+
+    protected AutoCompleteTextView getAutoCompleteTextView( TextInputLayout textInputLayout) {
+        return (AutoCompleteTextView) textInputLayout.getEditText();
+    }
+
+    protected int getSelectedItemPos( TextInputLayout textInputLayout )
+    {
+        AutoCompleteTextView textView = getAutoCompleteTextView( textInputLayout );
+        if ( textView == null ) return -1;
+
+        ArrayAdapter<?> adapter = (ArrayAdapter<?>) textView.getAdapter();
+        if ( adapter == null ) return -1;
+
+        String text = textView.getText().toString();
+        if ( text != null && !text.isEmpty() ) {
+            int count = adapter.getCount();
+            for ( int i = 0; i < count; ++i ) {
+                Object o = adapter.getItem( i );
+                if ( o.toString().equals( text ) ) return i;
+            }
+        }
+        return -1;
     }
 
     protected void handleBroadcast( Intent intent ) {

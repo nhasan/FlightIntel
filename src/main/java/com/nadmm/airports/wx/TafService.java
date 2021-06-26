@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,12 +29,7 @@ import java.util.Locale;
 
 public class TafService extends NoaaService {
 
-    private final String TAF_IMAGE_NAME = "taf_%s.gif";
-    private final String TAF_TEXT_QUERY = "dataSource=tafs&requestType=retrieve"
-            +"&format=xml&compression=gzip&hoursBeforeNow=%d&mostRecent=true&stationString=%s";
-    private final String TAF_IMAGE_PATH = "/adds/data/tafs";
-
-    private static final long TAF_CACHE_MAX_AGE = DateUtils.HOUR_IN_MILLIS;
+    private static final long TAF_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
 
     protected TafParser mParser;
 
@@ -62,6 +57,9 @@ public class TafService extends NoaaService {
                     File tmpFile = null;
                     try {
                         tmpFile = File.createTempFile( "taf", null );
+                        String TAF_TEXT_QUERY = "dataSource=tafs&requestType=retrieve"
+                                + "&format=xml&compression=gzip&hoursBeforeNow=%d"
+                                +"&mostRecent=true&stationString=%s";
                         String query = String.format( Locale.US, TAF_TEXT_QUERY, hours, stationId );
                         fetchFromNoaa( query, tmpFile, true );
                         taf = mParser.parse( tmpFile );
@@ -86,15 +84,19 @@ public class TafService extends NoaaService {
                 // Broadcast the result
                 sendSerializableResultIntent( action, stationId, taf );
             } else if ( type.equals( TYPE_IMAGE ) ) {
-                String code = intent.getStringExtra( IMAGE_CODE );
-                String imageName = String.format( TAF_IMAGE_NAME, code );
+                String imgType = intent.getStringExtra( IMAGE_TYPE );
+                String code = intent.getStringExtra( IMAGE_CODE ).toLowerCase();
+                String imageName = String.format( "%s_taf_%s_prevail.gif", imgType, code );
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
+                    String path = "/data/products/taf/";
                     try {
-                        String path = TAF_IMAGE_PATH+imageName;
+                        path += imageName;
                         fetchFromNoaa( path, null, imageFile, false );
                     } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch TAF image: "+e.getMessage() );
+                        UiUtils.showToast( this, "Unable to fetch TAF image: "
+                                +path+" "
+                                +e.getMessage() );
                     }
                 }
 

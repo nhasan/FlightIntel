@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2020 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +34,8 @@
     <dimen name="action_bar_auto_hide_min_y">64dp</dimen>
     <dimen name="action_bar_auto_hide_sensivity">16dp</dimen>
 
-    <dimen name="navdrawer_width">260dip</dimen>
-    <dimen name="navdrawer_image_height">140dip</dimen>
+    <dimen name="navdrawer_width">320dip</dimen>
+    <dimen name="navdrawer_image_height">180dip</dimen>
     <dimen name="navdrawer_item_height">48dip</dimen>
     <dimen name="navdrawer_text_size">14sp</dimen>
 

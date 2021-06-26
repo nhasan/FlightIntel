@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,159 +26,179 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
-import com.nadmm.airports.utils.DataUtils;
 import com.nadmm.airports.utils.TimeUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 public class NotamFragmentBase extends FragmentBase {
 
     private IntentFilter mFilter;
     private BroadcastReceiver mReceiver;
+    private final List<String> mCategories = new ArrayList<>();
 
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        mFilter = new IntentFilter();
-        mFilter.addAction( NotamService.ACTION_GET_NOTAM );
+        mFilter = new IntentFilter( NotamService.ACTION_GET_NOTAM );
 
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive( Context context, Intent intent ) {
-                handleNotamBroadcast( intent );
+                String action = intent.getAction();
+                if ( NotamService.ACTION_GET_NOTAM.equals( action ) ) {
+                    String path = intent.getStringExtra( NotamService.NOTAM_PATH );
+                    if ( path != null ) {
+                        String location = intent.getStringExtra( NotamService.LOCATION );
+                        File notamFile = new File( path );
+                        showNotams( location, notamFile );
+                        setRefreshing( false );
+                    }
+                }
             }
         };
     }
 
     @Override
     public void onResume() {
-        if ( getActivity() != null ) {
-            LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-            bm.registerReceiver( mReceiver, mFilter );
-        }
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+        bm.registerReceiver( mReceiver, mFilter );
 
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        if ( getActivity() != null ) {
-            LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-            bm.unregisterReceiver( mReceiver );
-        }
+        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
+        bm.unregisterReceiver( mReceiver );
 
         super.onPause();
     }
 
-    private void handleNotamBroadcast( Intent intent ) {
-        String action = intent.getAction();
-        if ( NotamService.ACTION_GET_NOTAM.equals( action ) ) {
-            String path = intent.getStringExtra( NotamService.NOTAM_PATH );
-            if ( path != null ) {
-                File notamFile = new File( path );
-                showNotams( notamFile );
-            }
-        }
+    protected void getNotams( String location, boolean force ) {
+        Intent service = new Intent( getActivity(), NotamService.class );
+        service.setAction( NotamService.ACTION_GET_NOTAM );
+        service.putExtra( NotamService.LOCATION, location );
+        service.putExtra( NotamService.FORCE_REFRESH, force );
+        getActivity().startService( service );
     }
 
-    protected void getNotams( String icaoCode, String type ) {
-        if ( getActivity() != null ) {
-            Intent service = new Intent( getActivity(), NotamService.class );
-            service.setAction( NotamService.ACTION_GET_NOTAM );
-            service.putExtra( NotamService.ICAO_CODE, icaoCode );
-            getActivity().startService( service );
-        }
+    protected void addCategory( String type ) {
+        mCategories.add( type );
     }
 
     @SuppressLint( "SetTextI18n" )
-    private void showNotams( File notamFile ) {
+    private void showNotams( String location, File notamFile ) {
+        ArrayList<Notam> notams = parseNotams( notamFile );
+
+        setActionBarSubtitle( getResources().getQuantityString( R.plurals.notams_found,
+                notams.size(), notams.size() ) );
+
+        TextView updated = findViewById( R.id.notam_last_updated );
+        updated.setText( String.format( Locale.US, "Updated %s",
+                TimeUtils.formatElapsedTime( notamFile.lastModified() ) ) );
+
         LinearLayout content = findViewById( R.id.notam_content_layout );
+        content.removeAllViews();
 
-        HashMap<String, ArrayList<String>> notams = parseNotams( notamFile );
-        if ( notams == null ) {
-            // NOTAM cache file is missing. Must be an issue with fetching from FAA
-            TextView title1 = findViewById( R.id.notam_title1 );
-            title1.setText( "Unable to show NOTAMs at this moment" );
-            return;
+        for ( Notam notam : notams )
+        {
+            if ( !notam.classification.equals( "FDC" ) ) {
+                addRow( content, formatNotam( location, notam ) );
+            }
         }
 
-        int count = 0;
-        // Get subjects in specific order
-        String[] subjects = DataUtils.getNotamSubjects();
-        for ( String subject : subjects ) {
-            if ( !notams.containsKey( subject ) ) {
-                continue;
+        for (Notam notam : notams)
+        {
+            if ( notam.classification.equals( "FDC" ) ) {
+                addRow( content, formatNotam( location, notam ) );
             }
-
-            LinearLayout item = inflate( R.layout.notam_detail_item );
-            TextView tv = item.findViewById( R.id.notam_subject );
-            tv.setText( subject );
-
-            LinearLayout details = item.findViewById( R.id.notam_details );
-            ArrayList<String> list = notams.get( subject );
-            if ( list != null ) {
-                count += list.size();
-                for ( String notam : list ) {
-                    addBulletedRow( details, notam );
-                }
-            }
-
-            content.addView( item, new LinearLayout.LayoutParams(
-                    LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
         }
-
-        TextView title1 = findViewById( R.id.notam_title1 );
-        title1.setText( getResources().getQuantityString( R.plurals.notams_found, count, count ) );
-        TextView title2 = findViewById( R.id.notam_title2 );
-        Date lastModified = new Date( notamFile.lastModified() );
-        title2.setText( String.format( Locale.US, "Updated %s",
-                TimeUtils.formatElapsedTime( lastModified.getTime() ) ) );
 
         setFragmentContentShown( true );
     }
 
-    private HashMap<String, ArrayList<String>> parseNotams( File notamFile ) {
-        // Remember the ids we have seen to remove duplicates
-        HashMap<String, ArrayList<String>> notams = new HashMap<>();
-        BufferedReader in = null;
+    private String formatNotam( String location, Notam notam ) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern( "dd MMM HH:mm yyyy", Locale.US );
+        StringBuilder sb = new StringBuilder();
 
-        // Build the NOTAM list group by the subject
+        if (notam.classification.equals( "FDC" )) {
+            sb.append( "FDC " );
+        }
+        sb.append( notam.notamID );
+        if ( notam.xovernotamID != null && !notam.xovernotamID.trim().isEmpty() ) {
+            sb.append( " (" );
+            sb.append( notam.xovernotamID );
+            sb.append( ")" );
+        }
+        sb.append( " - " );
+        if ( !notam.location.equals( location ) ) {
+            sb.append( notam.location );
+            sb.append( " " );
+        }
+        sb.append( notam.text );
+        if ( !notam.text.endsWith( "." ) ) {
+            sb.append( "." );
+        }
+        sb.append( " " );
+        sb.append( dtf.format( notam.effectiveStart ).toUpperCase() );
+        sb.append( " UNTIL " );
+        if ( notam.effectiveEnd != null ) {
+            sb.append( dtf.format( notam.effectiveEnd ).toUpperCase() );
+            if ( notam.estimatedEnd.equals( "Y" ) ) {
+                sb.append( " ESTIMATED" );
+            }
+        } else {
+            sb.append( "PERM" );
+        }
+        sb.append( ". CREATED: " );
+        sb.append( dtf.format( notam.issued ).toUpperCase() );
+        return sb.toString();
+    }
+
+    private ArrayList<Notam> parseNotams( File notamFile ) {
+        FileInputStream in = null;
+        ArrayList<Notam> notams = new ArrayList<>();
         try {
-            Set<String> notamIDs = new HashSet<>();
-            in = new BufferedReader( new FileReader( notamFile ) );
-            String notam;
-            while ( ( notam = in.readLine() ) != null ) {
-                String[] parts = notam.split( " ", 5 );
-                String notamID = parts[ 1 ];
-                if ( !notamIDs.contains( notamID ) ) {
-                    String keyword = parts[0].equals( "!FDC" )? "FDC" : parts[ 3 ];
-                    String subject = DataUtils.getNotamSubjectFromKeyword( keyword );
-                    ArrayList<String> list = notams.get( subject );
-                    if ( list == null ) {
-                        list = new ArrayList<>();
-                    }
-                    list.add( notam );
-                    notams.put( subject, list );
-                    notamIDs.add( notamID );
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter( int.class, new IntTypeAdapter() )
+                    .registerTypeAdapter( OffsetDateTime.class, new DateTypeAdapter() )
+                    .create();
+            in = new FileInputStream( notamFile );
+            JsonReader reader = new JsonReader( new InputStreamReader( in, StandardCharsets.UTF_8 ) );
+            reader.beginArray();
+            while ( reader.hasNext() ) {
+                Notam notam = gson.fromJson( reader, Notam.class );
+                notam.category = notam.text.substring( 0, notam.text.indexOf( " " ) ).trim();
+                if ( mCategories.isEmpty() || mCategories.contains( notam.category ) ) {
+                    notams.add( notam );
                 }
             }
+            reader.endArray();
+            reader.close();
         } catch ( IOException e ) {
             e.printStackTrace();
         } finally {
@@ -189,8 +209,52 @@ public class NotamFragmentBase extends FragmentBase {
             } catch ( IOException ignored ) {
             }
         }
-
         return notams;
+    }
+
+    public static class IntTypeAdapter extends TypeAdapter<Integer> {
+
+        @Override
+        public Integer read( JsonReader in ) throws IOException {
+            // Allows to parse empty strings
+            if ( in.peek() == JsonToken.NULL ) {
+                in.nextNull();
+                return null;
+            }
+            String stringValue = in.nextString();
+            try {
+                return Integer.parseInt( stringValue );
+            } catch ( NumberFormatException e ) {
+                return 0;
+            }
+        }
+
+        @Override
+        public void write( JsonWriter out, Integer value ) {
+
+        }
+    }
+
+    public static class DateTypeAdapter extends TypeAdapter<OffsetDateTime> {
+
+        @Override
+        public OffsetDateTime read( JsonReader in ) throws IOException {
+            // Allows to parse empty strings
+            if ( in.peek() == JsonToken.NULL ) {
+                in.nextNull();
+                return null;
+            }
+            String stringValue = in.nextString();
+            try {
+                return OffsetDateTime.parse( stringValue );
+            } catch ( DateTimeParseException e ) {
+                return null;
+            }
+        }
+
+        @Override
+        public void write( JsonWriter out, OffsetDateTime value ) {
+        }
     }
 
 }

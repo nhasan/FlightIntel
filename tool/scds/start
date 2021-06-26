@@ -1,0 +1,5 @@
+#!/bin/bash
+
+basedir=`dirname $0`
+cd $basedir
+./load_scds_notams.pl load_scds_notams.cfg

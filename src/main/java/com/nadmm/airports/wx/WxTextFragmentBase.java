@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,21 +26,23 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.R;
 import com.nadmm.airports.utils.TextFileViewActivity;
 
 public abstract class WxTextFragmentBase extends WxFragmentBase {
 
     private final String mAction;
-    private String[] mWxTypeCodes;
-    private String[] mWxTypeNames;
+    private final String[] mWxTypeCodes;
+    private final String[] mWxTypeNames;
     private final String[] mWxAreaCodes;
     private final String[] mWxAreaNames;
-    private Spinner mSpinner;
+    private TextInputLayout mSpinner;
+    private String mHelpText;
 
     private View mPendingRow;
 
@@ -97,16 +99,23 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
             row.setOnClickListener( listener );
         }
 
-        if ( mWxTypeCodes != null ) {
+        if ( mHelpText != null && mHelpText.length() > 0 ) {
+            tv = view.findViewById( R.id.help_text );
+            tv.setText( mHelpText );
+            tv.setVisibility( View.VISIBLE );
+        }
+
+        if ( mWxTypeCodes != null && mWxTypeNames != null ) {
             tv = view.findViewById( R.id.wx_map_type_label );
             tv.setVisibility( View.VISIBLE );
             layout = view.findViewById( R.id.wx_map_type_layout );
             layout.setVisibility( View.VISIBLE );
             mSpinner = view.findViewById( R.id.map_type );
             ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
-                    android.R.layout.simple_spinner_item, mWxTypeNames );
-            adapter.setDropDownViewResource( R.layout.support_simple_spinner_dropdown_item );
-            mSpinner.setAdapter( adapter );
+                    R.layout.list_item, mWxTypeNames );
+            AutoCompleteTextView textView = getAutoCompleteTextView( mSpinner );
+            textView.setAdapter( adapter );
+            textView.setText( mWxTypeNames[0], false);
         }
 
         setFragmentContentShown( true );
@@ -143,8 +152,8 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
         Intent service = getServiceIntent();
         service.setAction( mAction );
         service.putExtra( NoaaService.TEXT_CODE, code );
-        if ( mSpinner != null ) {
-            int pos = mSpinner.getSelectedItemPosition();
+        if ( mSpinner != null && mWxTypeCodes != null ) {
+            int pos = getSelectedItemPos( mSpinner );
             service.putExtra( NoaaService.TEXT_TYPE, mWxTypeCodes[ pos ] );
         }
         if ( getActivity() != null ) {
@@ -157,6 +166,10 @@ public abstract class WxTextFragmentBase extends WxFragmentBase {
             View view = mPendingRow.findViewById( R.id.progress );
             view.setVisibility( visible? View.VISIBLE : View.INVISIBLE );
         }
+    }
+
+    protected void setHelpText( String text ) {
+        mHelpText = text;
     }
 
     protected abstract String getTitle();
