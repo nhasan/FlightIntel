@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.*
 import android.view.animation.AnimationUtils
 import android.widget.*
@@ -71,8 +72,6 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     lateinit var dbManager: DatabaseManager
         private set
-
-    private var mTask: CursorAsyncTask<*>? = null
 
     private var mActionBarToolbar: Toolbar? = null
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
@@ -161,7 +160,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         mInflater = layoutInflater
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
 
-        mHandler = Handler()
+        mHandler = Handler(Looper.getMainLooper())
 
         if (Application.sDonationDone == null) {
             val db = DonateDatabase(this)
@@ -178,9 +177,6 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     }
 
     override fun onPause() {
-        if (mTask != null) {
-            mTask!!.cancel(true)
-        }
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         supportFragmentManager.removeOnBackStackChangedListener(mBackStackChangedListener)
         super.onPause()
@@ -259,11 +255,11 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
                 R.string.drawer_open, R.string.drawer_close) {
             override fun onDrawerClosed(view: View) {
                 invalidateOptionsMenu()
-                onNavDrawerStateChanged(isOpen = false, isAnimating = false)
+                onNavDrawerStateChanged()
             }
 
             override fun onDrawerOpened(drawerView: View) {
-                onNavDrawerStateChanged(isOpen = true, isAnimating = false)
+                onNavDrawerStateChanged()
                 invalidateOptionsMenu() // creates call to onPrepareOptionsMenu()
             }
         }
@@ -407,12 +403,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     }
 
     // Subclasses can override this for custom behavior
-    protected fun onNavDrawerStateChanged(isOpen: Boolean, isAnimating: Boolean) {}
-
-    protected fun setBackgroundTask(task: CursorAsyncTask<*>): CursorAsyncTask<*>? {
-        mTask = task
-        return mTask
-    }
+    protected fun onNavDrawerStateChanged() {}
 
     protected open fun externalStorageStatusChanged() {
         if (!SystemUtils.isExternalStorageAvailable()) {
@@ -422,7 +413,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     }
 
     fun createContentView(id: Int): View? {
-        return createContentView(inflate<View>(id))
+        return createContentView(inflate(id))
     }
 
     fun createContentView(view: View?): View? {
@@ -796,7 +787,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         protected const val NAVDRAWER_ITEM_INVALID = -1
         protected const val EXTRA_MSG = "MSG"
 
-        protected const val FRAGMENT_TAG_EXTRA = "FRAGMENT_TAG_EXTRA"
+        const val FRAGMENT_TAG_EXTRA = "FRAGMENT_TAG_EXTRA"
     }
 
 }
