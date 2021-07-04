@@ -63,8 +63,8 @@ class ServicesFragment : FragmentBase() {
         val apt = result[0] ?: return
         showAirportTitle(apt)
         showAirportServices(apt)
-        showFaaServices( apt )
-        showFssServices( apt )
+        showFaaServices(apt)
+        showFssServices(apt)
         setFragmentContentShown(true)
     }
 
@@ -102,7 +102,7 @@ class ServicesFragment : FragmentBase() {
         }
     }
 
-    private fun showFaaServices( apt: Cursor ) {
+    private fun showFaaServices(apt: Cursor) {
         val layout = findViewById<LinearLayout>(R.id.faa_services_layout)
         val faaRegion = apt.getString(apt.getColumnIndex(Airports.REGION_CODE))
         if (faaRegion.isNotEmpty()) {
