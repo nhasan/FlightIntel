@@ -16,64 +16,55 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.e6b
 
-package com.nadmm.airports.e6b;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.google.android.material.textfield.TextInputLayout
+import com.nadmm.airports.R
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+class SpecificRangeFragment : E6bFragmentBase() {
+    private var mFuelTotalEdit: TextInputLayout? = null
+    private var mFuelRateEdit: TextInputLayout? = null
+    private var mGsEdit: TextInputLayout? = null
+    private var mRangeEdit: TextInputLayout? = null
 
-import com.google.android.material.textfield.TextInputLayout;
-import com.nadmm.airports.R;
-
-public class SpecificRangeFragment extends E6bFragmentBase {
-
-    private TextInputLayout mFuelTotalEdit;
-    private TextInputLayout mFuelRateEdit;
-    private TextInputLayout mGsEdit;
-    private TextInputLayout mRangeEdit;
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.e6b_specific_range_view, container, false );
-        return createContentView( view );
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.e6b_specific_range_view, container, false)
+        return createContentView(view)
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        mFuelTotalEdit = findViewById( R.id.e6b_edit_total_fuel );
-        mFuelRateEdit = findViewById( R.id.e6b_edit_burn_rate );
-        mGsEdit = findViewById( R.id.e6b_edit_gs );
-        mRangeEdit = findViewById( R.id.e6b_edit_range );
-
-        addEditField( mFuelTotalEdit );
-        addEditField( mFuelRateEdit );
-        addEditField( mGsEdit );
-        addReadOnlyField( mRangeEdit );
-
-        setFragmentContentShown( true );
+        mFuelTotalEdit = findViewById(R.id.e6b_edit_total_fuel)
+        mFuelRateEdit = findViewById(R.id.e6b_edit_burn_rate)
+        mGsEdit = findViewById(R.id.e6b_edit_gs)
+        mRangeEdit = findViewById(R.id.e6b_edit_range)
+        addEditField(mFuelTotalEdit)
+        addEditField(mFuelRateEdit)
+        addEditField(mGsEdit)
+        addReadOnlyField(mRangeEdit)
+        setFragmentContentShown(true)
     }
 
-    @Override
-    protected String getMessage() {
-        return "You can directly substitute Gallons with Pounds for Jet fuel";
-    }
+    override val message: String
+        get() = "You can directly substitute Gallons with Pounds for Jet fuel"
 
-    @Override
-    protected void processInput() {
+    override fun processInput() {
         try {
-            double fuelTotal = parseDouble( mFuelTotalEdit );
-            double fuelRate = parseDouble( mFuelRateEdit );
-            double gs = parseDouble( mGsEdit );
-            double range = ( fuelTotal/fuelRate )*gs;
-            showValue( mRangeEdit, range );
-        } catch ( NumberFormatException ignored ) {
-            clearEditText( mRangeEdit );
+            val fuelTotal = parseDouble(mFuelTotalEdit)
+            val fuelRate = parseDouble(mFuelRateEdit)
+            val gs = parseDouble(mGsEdit)
+            val range = fuelTotal / fuelRate * gs
+            showValue(mRangeEdit, range)
+        } catch (ignored: NumberFormatException) {
+            clearEditText(mRangeEdit)
         }
     }
-
 }

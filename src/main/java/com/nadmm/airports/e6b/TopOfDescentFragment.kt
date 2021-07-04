@@ -16,69 +16,60 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.e6b
 
-package com.nadmm.airports.e6b;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.google.android.material.textfield.TextInputLayout
+import com.nadmm.airports.R
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+class TopOfDescentFragment : E6bFragmentBase() {
+    private var mInitAltEdit: TextInputLayout? = null
+    private var mDesiredAltEdit: TextInputLayout? = null
+    private var mGsEdit: TextInputLayout? = null
+    private var mDescentRateEdit: TextInputLayout? = null
+    private var mFixDistanceEdit: TextInputLayout? = null
 
-import com.google.android.material.textfield.TextInputLayout;
-import com.nadmm.airports.R;
-
-public class TopOfDescentFragment extends E6bFragmentBase {
-
-    private TextInputLayout mInitAltEdit;
-    private TextInputLayout mDesiredAltEdit;
-    private TextInputLayout mGsEdit;
-    private TextInputLayout mDescentRateEdit;
-    private TextInputLayout mFixDistanceEdit;
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.e6b_top_of_descent_view, container, false );
-        return createContentView( view );
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.e6b_top_of_descent_view, container, false)
+        return createContentView(view)
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        mInitAltEdit = findViewById( R.id.e6b_edit_initial_alt );
-        mDesiredAltEdit = findViewById( R.id.e6b_edit_desired_alt );
-        mGsEdit = findViewById( R.id.e6b_edit_gs );
-        mDescentRateEdit = findViewById( R.id.e6b_edit_descent_rate );
-        mFixDistanceEdit = findViewById( R.id.e6b_edit_fix_distance );
-
-        addEditField( mInitAltEdit );
-        addEditField( mDesiredAltEdit );
-        addEditField( mGsEdit );
-        addEditField( mDescentRateEdit );
-        addReadOnlyField( mFixDistanceEdit );
-
-        setFragmentContentShown( true );
+        mInitAltEdit = findViewById(R.id.e6b_edit_initial_alt)
+        mDesiredAltEdit = findViewById(R.id.e6b_edit_desired_alt)
+        mGsEdit = findViewById(R.id.e6b_edit_gs)
+        mDescentRateEdit = findViewById(R.id.e6b_edit_descent_rate)
+        mFixDistanceEdit = findViewById(R.id.e6b_edit_fix_distance)
+        addEditField(mInitAltEdit)
+        addEditField(mDesiredAltEdit)
+        addEditField(mGsEdit)
+        addEditField(mDescentRateEdit)
+        addReadOnlyField(mFixDistanceEdit)
+        setFragmentContentShown(true)
     }
 
-    @Override
-    protected String getMessage() {
-        return "Find the distance at which to start the descent to arrive at the" +
-                " destination at the desired altitude.";
-    }
+    override val message: String
+        get() = "Find the distance at which to start the descent to arrive at the" +
+                " destination at the desired altitude."
 
-    @Override
-    protected void processInput() {
+    override fun processInput() {
         try {
-            double initAlt = parseDouble( mInitAltEdit );
-            double desiredAlt = parseDouble( mDesiredAltEdit );
-            double gs = parseDouble( mGsEdit );
-            double descentRate = parseDouble( mDescentRateEdit );
-            double distance = gs*( ( initAlt-desiredAlt )/( descentRate*60 ) );
-            showDecimalValue( mFixDistanceEdit, distance );
-        } catch ( NumberFormatException ignored ) {
-            clearEditText( mFixDistanceEdit );
+            val initAlt = parseDouble(mInitAltEdit)
+            val desiredAlt = parseDouble(mDesiredAltEdit)
+            val gs = parseDouble(mGsEdit)
+            val descentRate = parseDouble(mDescentRateEdit)
+            val distance = gs * ((initAlt - desiredAlt) / (descentRate * 60))
+            showDecimalValue(mFixDistanceEdit!!, distance)
+        } catch (ignored: NumberFormatException) {
+            clearEditText(mFixDistanceEdit)
         }
     }
-
 }

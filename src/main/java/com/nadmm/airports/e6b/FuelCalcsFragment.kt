@@ -16,103 +16,101 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.e6b
 
-package com.nadmm.airports.e6b;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import com.google.android.material.textfield.TextInputLayout
+import com.nadmm.airports.ListMenuFragment
+import com.nadmm.airports.R
 
-import android.os.Bundle;
-import android.text.InputType;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+class FuelCalcsFragment : E6bFragmentBase() {
+    private var mEdit1: TextInputLayout? = null
+    private var mEdit2: TextInputLayout? = null
+    private var mEdit3: TextInputLayout? = null
+    private var mMenuId: Long = 0
 
-import com.google.android.material.textfield.TextInputLayout;
-import com.nadmm.airports.ListMenuFragment;
-import com.nadmm.airports.R;
-
-public class FuelCalcsFragment extends E6bFragmentBase {
-
-    private TextInputLayout mEdit1;
-    private TextInputLayout mEdit2;
-    private TextInputLayout mEdit3;
-
-    private long mMenuId;
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.e6b_fuel_calcs_view, container, false );
-        return createContentView( view );
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.e6b_fuel_calcs_view, container, false)
+        return createContentView(view)
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        mMenuId = getArguments().getLong( ListMenuFragment.MENU_ID );
-        setupUi();
-        setFragmentContentShown( true );
+        mMenuId = requireArguments().getLong(ListMenuFragment.MENU_ID)
+        setupUi()
+        setFragmentContentShown(true)
     }
 
-    @Override
-    protected String getMessage() {
-        return "You can directly substitute Gallons with Pounds for Jet fuel";
-    }
+    override val message: String
+        get() = "You can directly substitute Gallons with Pounds for Jet fuel"
 
-    @Override
-    protected void processInput() {
+    override fun processInput() {
         try {
-            if ( mMenuId == R.id.E6B_FUEL_ENDURANCE ) {
-                double fuelTotal = parseDouble( mEdit1 );
-                double fuelRate = parseDouble( mEdit2 );
-                double endurance = fuelTotal/( fuelRate/60 );
-                showValue( mEdit3, endurance );
-            } else if ( mMenuId == R.id.E6B_FUEL_TOTAL_BURNED ) {
-                double fuelRate = parseDouble( mEdit1 );
-                double endurance = parseDouble( mEdit2 );
-                double fuelTotal = ( endurance/60 )*fuelRate;
-                showValue( mEdit3, fuelTotal );
-            } else if ( mMenuId == R.id.E6B_FUEL_BURN_RATE ) {
-                double fuelTotal = parseDouble( mEdit1 );
-                double endurance = parseDouble( mEdit2 );
-                double fuelRate = fuelTotal/( endurance/60 );
-                showDecimalValue( mEdit3, fuelRate );
+            when (mMenuId) {
+                R.id.E6B_FUEL_ENDURANCE.toLong() -> {
+                    val fuelTotal = parseDouble(mEdit1)
+                    val fuelRate = parseDouble(mEdit2)
+                    val endurance = fuelTotal / (fuelRate / 60)
+                    showValue(mEdit3, endurance)
+                }
+                R.id.E6B_FUEL_TOTAL_BURNED.toLong() -> {
+                    val fuelRate = parseDouble(mEdit1)
+                    val endurance = parseDouble(mEdit2)
+                    val fuelTotal = endurance / 60 * fuelRate
+                    showValue(mEdit3, fuelTotal)
+                }
+                R.id.E6B_FUEL_BURN_RATE.toLong() -> {
+                    val fuelTotal = parseDouble(mEdit1)
+                    val endurance = parseDouble(mEdit2)
+                    val fuelRate = fuelTotal / (endurance / 60)
+                    showDecimalValue(mEdit3!!, fuelRate)
+                }
             }
-        } catch ( NumberFormatException ignored ) {
-            clearEditText( mEdit3 );
+        } catch (ignored: NumberFormatException) {
+            clearEditText(mEdit3)
         }
     }
 
-    private void setupUi() {
-        TextView label1 = findViewById( R.id.e6b_label_value1 );
-        TextView label2 = findViewById( R.id.e6b_label_value2 );
-        TextView label3 = findViewById( R.id.e6b_label_value3 );
-        mEdit1 = findViewById( R.id.e6b_edit_value1 );
-        mEdit2 = findViewById( R.id.e6b_edit_value2 );
-        mEdit3 = findViewById( R.id.e6b_edit_value3 );
-
-        if ( mMenuId == R.id.E6B_FUEL_ENDURANCE ) {
-            label1.setText( R.string.total_fuel );
-            addEditField( mEdit1, R.string.gal );
-            label2.setText( R.string.burn_rate );
-            addEditField( mEdit2, R.string.gph );
-            label3.setText( R.string.endurance );
-            addReadOnlyField( mEdit3, R.string.min );
-        } else if ( mMenuId == R.id.E6B_FUEL_BURN_RATE ) {
-            label1.setText( R.string.total_fuel );
-            addEditField( mEdit1, R.string.gal );
-            label2.setText( R.string.endurance );
-            addEditField( mEdit2, R.string.min );
-            label3.setText( R.string.burn_rate );
-            addReadOnlyField( mEdit3, R.string.gph );
-        } else if ( mMenuId == R.id.E6B_FUEL_TOTAL_BURNED ) {
-            label1.setText( R.string.burn_rate );
-            addEditField( mEdit1, R.string.gph );
-            label2.setText( R.string.endurance );
-            addEditField( mEdit2, R.string.min );
-            label3.setText( R.string.total_fuel );
-            addReadOnlyField( mEdit3, R.string.gal );
+    private fun setupUi() {
+        val label1 = findViewById<TextView>(R.id.e6b_label_value1)
+        val label2 = findViewById<TextView>(R.id.e6b_label_value2)
+        val label3 = findViewById<TextView>(R.id.e6b_label_value3)
+        mEdit1 = findViewById(R.id.e6b_edit_value1)
+        mEdit2 = findViewById(R.id.e6b_edit_value2)
+        mEdit3 = findViewById(R.id.e6b_edit_value3)
+        when (mMenuId) {
+            R.id.E6B_FUEL_ENDURANCE.toLong() -> {
+                label1!!.setText(R.string.total_fuel)
+                addEditField(mEdit1, R.string.gal)
+                label2!!.setText(R.string.burn_rate)
+                addEditField(mEdit2, R.string.gph)
+                label3!!.setText(R.string.endurance)
+                addReadOnlyField(mEdit3!!, R.string.min)
+            }
+            R.id.E6B_FUEL_BURN_RATE.toLong() -> {
+                label1!!.setText(R.string.total_fuel)
+                addEditField(mEdit1, R.string.gal)
+                label2!!.setText(R.string.endurance)
+                addEditField(mEdit2, R.string.min)
+                label3!!.setText(R.string.burn_rate)
+                addReadOnlyField(mEdit3!!, R.string.gph)
+            }
+            R.id.E6B_FUEL_TOTAL_BURNED.toLong() -> {
+                label1!!.setText(R.string.burn_rate)
+                addEditField(mEdit1, R.string.gph)
+                label2!!.setText(R.string.endurance)
+                addEditField(mEdit2, R.string.min)
+                label3!!.setText(R.string.total_fuel)
+                addReadOnlyField(mEdit3!!, R.string.gal)
+            }
         }
     }
-
 }

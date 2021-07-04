@@ -16,86 +16,79 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.e6b
 
-package com.nadmm.airports.e6b;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.google.android.material.textfield.TextInputLayout
+import com.nadmm.airports.R
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+class AltitudesFragment : E6bFragmentBase() {
+    private var mElevationEdit: TextInputLayout? = null
+    private var mAltimeterEdit: TextInputLayout? = null
+    private var mTemperatureEdit: TextInputLayout? = null
+    private var mDewpointEdit: TextInputLayout? = null
+    private var mPressureAltitudeEdit: TextInputLayout? = null
+    private var mDensityAltitudeEdit: TextInputLayout? = null
 
-import com.google.android.material.textfield.TextInputLayout;
-import com.nadmm.airports.R;
-
-public class AltitudesFragment extends E6bFragmentBase {
-
-    private TextInputLayout mElevationEdit;
-    private TextInputLayout mAltimeterEdit;
-    private TextInputLayout mTemperatureEdit;
-    private TextInputLayout mDewpointEdit;
-    private TextInputLayout mPressureAltitudeEdit;
-    private TextInputLayout mDensityAltitudeEdit;
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.e6b_altimetry_altitudes_view, container, false );
-        return createContentView( view );
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.e6b_altimetry_altitudes_view, container, false)
+        return createContentView(view)
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
-
-        mElevationEdit = findViewById( R.id.e6b_edit_elevation );
-        mAltimeterEdit = findViewById( R.id.e6b_edit_altimeter_inhg );
-        mTemperatureEdit = findViewById( R.id.e6b_edit_temperature_c );
-        mDewpointEdit = findViewById( R.id.e6b_edit_dewpoint_c );
-        mPressureAltitudeEdit = findViewById( R.id.e6b_edit_pa );
-        mDensityAltitudeEdit = findViewById( R.id.e6b_edit_da );
-
-        addEditField( mElevationEdit );
-        addEditField( mAltimeterEdit );
-        addEditField( mTemperatureEdit );
-        addEditField( mDewpointEdit );
-        addReadOnlyField( mPressureAltitudeEdit );
-        addReadOnlyField( mDensityAltitudeEdit );
-
-        setFragmentContentShown( true );
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mElevationEdit = findViewById(R.id.e6b_edit_elevation)
+        mAltimeterEdit = findViewById(R.id.e6b_edit_altimeter_inhg)
+        mTemperatureEdit = findViewById(R.id.e6b_edit_temperature_c)
+        mDewpointEdit = findViewById(R.id.e6b_edit_dewpoint_c)
+        mPressureAltitudeEdit = findViewById(R.id.e6b_edit_pa)
+        mDensityAltitudeEdit = findViewById(R.id.e6b_edit_da)
+        addEditField(mElevationEdit)
+        addEditField(mAltimeterEdit)
+        addEditField(mTemperatureEdit)
+        addEditField(mDewpointEdit)
+        addReadOnlyField(mPressureAltitudeEdit)
+        addReadOnlyField(mDensityAltitudeEdit)
+        setFragmentContentShown(true)
     }
 
-    @Override
-    protected String getMessage() {
-        return "At sea level on a standard day, temperature is 15\u00B0C or 59\u00B0F"
-            + " and pressure is 29.92126 inHg or 1013.25 mB";
-    }
+    override val message: String
+        get() =  "At sea level on a standard day, temperature is 15\u00B0C or 59\u00B0F" +
+                " and pressure is 29.92126 inHg or 1013.25 mB"
 
-    @Override
-    protected void processInput() {
+    override fun processInput() {
         try {
-            long elevation = parseLong( mElevationEdit );
-            double altimeterHg = parseDouble( mAltimeterEdit );
-            double altimeterMb = 33.8639*altimeterHg;
-            double temperatureC = parseDouble( mTemperatureEdit );
-            double dewPointC = parseDouble( mDewpointEdit );
-            double temperatureK = temperatureC+273.16;
+            val elevation = parseLong(mElevationEdit)
+            val altimeterHg = parseDouble(mAltimeterEdit)
+            val altimeterMb = 33.8639 * altimeterHg
+            val temperatureC = parseDouble(mTemperatureEdit)
+            val dewPointC = parseDouble(mDewpointEdit)
+            val temperatureK = temperatureC + 273.16
 
             // Source: https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
-            long pa = elevation+Math.round((1-Math.pow( altimeterMb/1013.25, 0.190284 ))*145366.45);
-            showValue( mPressureAltitudeEdit, pa );
+            val pa =
+                elevation + Math.round((1 - Math.pow(altimeterMb / 1013.25, 0.190284)) * 145366.45)
+            showValue(mPressureAltitudeEdit, pa.toDouble())
 
             // Source: https://www.weather.gov/media/epz/wxcalc/densityAltitude.pdf
             // Calculate vapor pressure first
-            double e = 6.11 * Math.pow( 10, ( 7.5*dewPointC/( 237.7+dewPointC ) ) );
+            val e = 6.11 * Math.pow(10.0, 7.5 * dewPointC / (237.7 + dewPointC))
             // Next, calculate virtual temperature in Kelvin
-            double tv = temperatureK/( 1-( e/altimeterMb )*( 1-0.622 ) );
+            var tv = temperatureK / (1 - e / altimeterMb * (1 - 0.622))
             // Convert Kelvin to Rankin to use in the next step
-            tv = ( 9*( tv-273.16 )/5+32 )+459.69;
-            long da = elevation + Math.round( 145366*( 1-Math.pow( 17.326*altimeterHg/tv, 0.235 ) ) );
-            showValue( mDensityAltitudeEdit, da );
-        } catch ( NumberFormatException ignored ) {
-            clearEditText( mPressureAltitudeEdit );
-            clearEditText( mDensityAltitudeEdit );
+            tv = 9 * (tv - 273.16) / 5 + 32 + 459.69
+            val da =
+                elevation + Math.round(145366 * (1 - Math.pow(17.326 * altimeterHg / tv, 0.235)))
+            showValue(mDensityAltitudeEdit, da.toDouble())
+        } catch (ignored: NumberFormatException) {
+            clearEditText(mPressureAltitudeEdit)
+            clearEditText(mDensityAltitudeEdit)
         }
     }
 }

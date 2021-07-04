@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,32 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.e6b
 
-package com.nadmm.airports.e6b;
+import android.os.Bundle
+import com.nadmm.airports.FragmentActivityBase
+import com.nadmm.airports.ListMenuFragment
+import com.nadmm.airports.R
 
-import android.os.Bundle;
-
-import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.FragmentActivityBase;
-import com.nadmm.airports.ListMenuFragment;
-import com.nadmm.airports.R;
-
-public class E6bActivity extends FragmentActivityBase {
-
-    @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        Bundle args = new Bundle();
-        args.putString( ActivityBase.FRAGMENT_TAG_EXTRA, String.valueOf( R.id.CATEGORY_MAIN ) );
-        args.putString( ListMenuFragment.SUBTITLE_TEXT, "No More Slide Rule" );
-        args.putLong( ListMenuFragment.MENU_ID, R.id.CATEGORY_MAIN );
-        addFragment( E6bMenuFragment.class, args );
+class E6bActivity : FragmentActivityBase() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val args = Bundle()
+        args.putString(FRAGMENT_TAG_EXTRA, R.id.CATEGORY_MAIN.toString())
+        args.putString(ListMenuFragment.SUBTITLE_TEXT, "No More Slide Rule")
+        args.putLong(ListMenuFragment.MENU_ID, R.id.CATEGORY_MAIN.toLong())
+        addFragment(E6bMenuFragment::class.java, args)
     }
 
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return R.id.navdrawer_e6b;
-    }
-
+    override val selfNavDrawerItem: Int
+        get() = R.id.navdrawer_e6b
 }

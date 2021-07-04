@@ -16,60 +16,52 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.e6b
 
-package com.nadmm.airports.e6b;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.google.android.material.textfield.TextInputLayout
+import com.nadmm.airports.R
+import kotlin.math.sqrt
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+class MachNumberFragment : E6bFragmentBase() {
+    private var mTasEdit: TextInputLayout? = null
+    private var mOatEdit: TextInputLayout? = null
+    private var mMachEdit: TextInputLayout? = null
 
-import com.google.android.material.textfield.TextInputLayout;
-import com.nadmm.airports.R;
-
-public class MachNumberFragment extends E6bFragmentBase {
-
-    private TextInputLayout mTasEdit;
-    private TextInputLayout mOatEdit;
-    private TextInputLayout mMachEdit;
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.e6b_altimetry_mach_view, container, false );
-        return createContentView( view );
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.e6b_altimetry_mach_view, container, false)
+        return createContentView(view)
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        mTasEdit = findViewById( R.id.e6b_edit_tas );
-        mOatEdit = findViewById( R.id.e6b_edit_oat );
-        mMachEdit = findViewById( R.id.e6b_edit_mach );
-
-        addEditField( mTasEdit );
-        addEditField( mOatEdit );
-        addReadOnlyField( mMachEdit );
-
-        setFragmentContentShown( true );
+        mTasEdit = findViewById(R.id.e6b_edit_tas)
+        mOatEdit = findViewById(R.id.e6b_edit_oat)
+        mMachEdit = findViewById(R.id.e6b_edit_mach)
+        addEditField(mTasEdit)
+        addEditField(mOatEdit)
+        addReadOnlyField(mMachEdit)
+        setFragmentContentShown(true)
     }
 
-    @Override
-    protected String getMessage() {
-        return "Speed of sound and hence Mach number varies directly with OAT";
-    }
+    override val message: String
+        get() = "Speed of sound and hence Mach number varies directly with OAT"
 
-    @Override
-    protected void processInput() {
+    override fun processInput() {
         try {
-            double tas = parseDouble( mTasEdit );
-            double oat = parseDouble( mOatEdit );
-            double mach = tas/( 38.967854*Math.sqrt( oat+273.15 ) );
-            showDecimalValue( mMachEdit, mach, 2 );
-        } catch ( NumberFormatException ignored ) {
-            clearEditText( mMachEdit );
+            val tas = parseDouble(mTasEdit)
+            val oat = parseDouble(mOatEdit)
+            val mach = tas / (38.967854 * sqrt(oat + 273.15))
+            showDecimalValue(mMachEdit!!, mach, 2)
+        } catch (ignored: NumberFormatException) {
+            clearEditText(mMachEdit)
         }
     }
-
 }

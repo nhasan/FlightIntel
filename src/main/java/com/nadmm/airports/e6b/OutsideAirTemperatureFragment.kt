@@ -16,67 +16,58 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.e6b
 
-package com.nadmm.airports.e6b;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.google.android.material.textfield.TextInputLayout
+import com.nadmm.airports.R
+import kotlin.math.pow
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+class OutsideAirTemperatureFragment : E6bFragmentBase() {
+    private var mIatEdit: TextInputLayout? = null
+    private var mRecoveryFactorEdit: TextInputLayout? = null
+    private var mTasEdit: TextInputLayout? = null
+    private var mOatEdit: TextInputLayout? = null
 
-import com.google.android.material.textfield.TextInputLayout;
-import com.nadmm.airports.R;
-
-public class OutsideAirTemperatureFragment extends E6bFragmentBase {
-
-    private TextInputLayout mIatEdit;
-    private TextInputLayout mRecoveryFactorEdit;
-    private TextInputLayout mTasEdit;
-    private TextInputLayout mOatEdit;
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.e6b_altimetry_oat_view, container, false );
-        return createContentView( view );
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.e6b_altimetry_oat_view, container, false)
+        return createContentView(view)
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        mIatEdit = findViewById( R.id.e6b_edit_iat );
-        mRecoveryFactorEdit = findViewById( R.id.e6b_edit_recovery_factor );
-        mTasEdit = findViewById( R.id.e6b_edit_tas );
-        mOatEdit = findViewById( R.id.e6b_edit_oat );
-
-        showDecimalValue( mRecoveryFactorEdit, 0.95, 2 );
-
-        addEditField( mIatEdit );
-        addEditField( mRecoveryFactorEdit );
-        addEditField( mTasEdit );
-        addReadOnlyField( mOatEdit );
-
-        setFragmentContentShown( true );
+        mIatEdit = findViewById(R.id.e6b_edit_iat)
+        mRecoveryFactorEdit = findViewById(R.id.e6b_edit_recovery_factor)
+        mTasEdit = findViewById(R.id.e6b_edit_tas)
+        mOatEdit = findViewById(R.id.e6b_edit_oat)
+        showDecimalValue(mRecoveryFactorEdit!!, 0.95, 2)
+        addEditField(mIatEdit)
+        addEditField(mRecoveryFactorEdit)
+        addEditField(mTasEdit)
+        addReadOnlyField(mOatEdit)
+        setFragmentContentShown(true)
     }
 
-    @Override
-    protected String getMessage() {
-        return "The recovery factor depends on installation, and is usually" +
-                " in the range of 0.95 to 1.0, but can be as low as 0.7";
-    }
+    override val message: String
+        get() = "The recovery factor depends on installation, and is usually" +
+                " in the range of 0.95 to 1.0, but can be as low as 0.7"
 
-    @Override
-    protected void processInput() {
+    override fun processInput() {
         try {
-            double iat = parseDouble( mIatEdit );
-            double k = parseDouble( mRecoveryFactorEdit );
-            double tas = parseDouble( mTasEdit );
-            double oat = iat - k*Math.pow( tas, 2 )/7592;
-            showDecimalValue( mOatEdit, oat );
-        } catch ( NumberFormatException ignored ) {
-            clearEditText( mOatEdit );
+            val iat = parseDouble(mIatEdit)
+            val k = parseDouble(mRecoveryFactorEdit)
+            val tas = parseDouble(mTasEdit)
+            val oat = iat - k * tas.pow(2.0) / 7592
+            showDecimalValue(mOatEdit!!, oat)
+        } catch (ignored: NumberFormatException) {
+            clearEditText(mOatEdit)
         }
     }
-
 }

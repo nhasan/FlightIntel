@@ -16,264 +16,221 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.e6b
 
-package com.nadmm.airports.e6b;
+import android.app.Activity
+import android.os.Bundle
+import android.text.Editable
+import android.text.InputType
+import android.text.TextWatcher
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemClickListener
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.TextView
+import com.google.android.material.textfield.TextInputLayout
+import com.nadmm.airports.FragmentBase
+import com.nadmm.airports.ListMenuFragment
+import com.nadmm.airports.R
+import java.util.*
+import kotlin.math.roundToInt
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextWatcher;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.TextView;
-
-import com.google.android.material.textfield.TextInputLayout;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.ListMenuFragment;
-import com.nadmm.airports.R;
-
-import java.util.Locale;
-
-abstract class E6bFragmentBase extends FragmentBase {
-
-    protected final TextWatcher mTextWatcher = new TextWatcher() {
-
-        @Override
-        public void onTextChanged( CharSequence s, int start, int before, int count ) {
-        }
-
-        @Override
-        public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
-        }
-
-        @Override
-        public void afterTextChanged( Editable s ) {
-            processInput();
-        }
-    };
-
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
-
-        TextView label = findViewById( R.id.e6b_label );
-        Bundle args = getArguments();
-        if ( label != null && args != null ) {
-            String title = args.getString( ListMenuFragment.SUBTITLE_TEXT );
-            label.setText( title );
-        }
-
-        String text = getMessage();
-        if ( text != null ) {
-            TextView msg = findViewById( R.id.e6b_msg );
-            msg.setText( text );
+abstract class E6bFragmentBase : FragmentBase() {
+    protected val mTextWatcher: TextWatcher = object : TextWatcher {
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+        override fun afterTextChanged(s: Editable) {
+            processInput()
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        hideKeyboard();
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        hideKeyboard();
-    }
-
-    protected void addEditField( TextInputLayout textInputLayout, int textHintId )
-    {
-        addEditField( textInputLayout );
-        textInputLayout.setHint( textHintId );
-    }
-
-    protected void addEditField( TextInputLayout textInputLayout )
-    {
-        EditText editText = textInputLayout.getEditText();
-        if ( editText != null ) {
-            editText.addTextChangedListener( mTextWatcher );
+        val label = findViewById<TextView>(R.id.e6b_label)
+        val args = arguments
+        if (label != null && args != null) {
+            val title = args.getString(ListMenuFragment.SUBTITLE_TEXT)
+            label.text = title
+        }
+        val text = message
+        if (text != null) {
+            val msg = findViewById<TextView>(R.id.e6b_msg)
+            msg!!.text = text
         }
     }
 
-    protected void addSpinnerField( TextInputLayout textInputLayout )
-    {
-        AutoCompleteTextView textView = getAutoCompleteTextView( textInputLayout );
-        if ( textView != null ) {
-            textView.setOnItemClickListener( ( parent, view, position, id ) -> processInput() );
+    override fun onResume() {
+        super.onResume()
+        hideKeyboard()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        hideKeyboard()
+    }
+
+    protected fun addEditField(textInputLayout: TextInputLayout?, textHintId: Int) {
+        addEditField(textInputLayout)
+        textInputLayout?.setHint(textHintId)
+    }
+
+    protected fun addEditField(textInputLayout: TextInputLayout?) {
+        val editText = textInputLayout?.editText
+        editText?.addTextChangedListener(mTextWatcher)
+    }
+
+    protected fun addSpinnerField(textInputLayout: TextInputLayout) {
+        val textView = getAutoCompleteTextView(textInputLayout)
+        if (textView != null) {
+            textView.onItemClickListener =
+                OnItemClickListener { parent: AdapterView<*>?, view: View?, position: Int, id: Long -> processInput() }
         }
     }
 
-    protected void setSpinnerAdapter( TextInputLayout textInputLayout, ArrayAdapter<?> adapter,
-                                      int selectedIndex )
-    {
-        AutoCompleteTextView textView = getAutoCompleteTextView( textInputLayout );
-        if ( textView != null ) {
-            if ( adapter != null ) {
-                textView.setAdapter( adapter );
+    protected fun setSpinnerAdapter(
+        textInputLayout: TextInputLayout, adapter: ArrayAdapter<*>?,
+        selectedIndex: Int
+    ) {
+        val textView = getAutoCompleteTextView(textInputLayout)
+        if (textView != null) {
+            if (adapter != null) {
+                textView.setAdapter(adapter)
             }
-            textView.setText( adapter.getItem( selectedIndex ).toString(), false );
+            textView.setText(adapter!!.getItem(selectedIndex).toString(), false)
         }
     }
 
-    protected Object getSelectedItem( TextInputLayout textInputLayout )
-    {
-        AutoCompleteTextView textView = getAutoCompleteTextView( textInputLayout );
-        if ( textView == null ) return null;
-
-        ArrayAdapter<?> adapter = (ArrayAdapter<?>) textView.getAdapter();
-        if ( adapter == null ) return null;
-
-        String text = textView.getText().toString();
-        if ( text != null && !text.isEmpty() ) {
-            int count = adapter.getCount();
-            for ( int i = 0; i < count; ++i ) {
-                Object o = adapter.getItem( i );
-                if ( o.toString().equals( text ) ) return o;
+    protected fun getSelectedItem(textInputLayout: TextInputLayout): Any? {
+        val textView = getAutoCompleteTextView(textInputLayout) ?: return null
+        val adapter = textView.adapter as ArrayAdapter<*>
+        val text = textView.text.toString()
+        if (text.isNotEmpty()) {
+            val count = adapter.count
+            for (i in 0 until count) {
+                val o = adapter.getItem(i)
+                if (o.toString() == text) return o
             }
         }
-        return null;
+        return null
     }
 
-    protected AutoCompleteTextView getAutoCompleteTextView( TextInputLayout textInputLayout) {
-        return (AutoCompleteTextView) textInputLayout.getEditText();
+    protected fun getAutoCompleteTextView(textInputLayout: TextInputLayout): AutoCompleteTextView? {
+        return textInputLayout.editText as AutoCompleteTextView?
     }
 
-    protected void addReadOnlyField( TextInputLayout textInputLayout, int textHintId )
-    {
-        addReadOnlyField( textInputLayout );
-        textInputLayout.setHint( textHintId );
+    protected fun addReadOnlyField(textInputLayout: TextInputLayout, textHintId: Int) {
+        addReadOnlyField(textInputLayout)
+        textInputLayout.setHint(textHintId)
     }
 
-    protected void addReadOnlyField( TextInputLayout textInputLayout )
-    {
-        EditText editText = textInputLayout.getEditText();
-        if ( editText != null ) {
-            editText.setInputType( InputType.TYPE_NULL );
-            editText.setKeyListener( null );
-        }
+    protected fun addReadOnlyField(textInputLayout: TextInputLayout?) {
+        val editText = textInputLayout?.editText
+        editText?.inputType = InputType.TYPE_NULL
+        editText?.keyListener = null
     }
 
-    protected String getValue( TextInputLayout textInputLayout )
-    {
-        EditText edit = textInputLayout.getEditText();
-        return edit != null? edit.getText().toString() : "";
+    protected fun getValue(textInputLayout: TextInputLayout?): String {
+        val edit = textInputLayout?.editText
+        return edit?.text?.toString() ?: ""
     }
 
-    protected double parseDouble( TextInputLayout textInputLayout )
-    {
-        return Double.parseDouble( getValue( textInputLayout ) );
+    protected fun parseDouble(textInputLayout: TextInputLayout?): Double {
+        return getValue(textInputLayout).toDouble()
     }
 
-    protected long parseLong( TextInputLayout textInputLayout )
-    {
-        return Long.parseLong( getValue( textInputLayout ) );
+    protected fun parseLong(textInputLayout: TextInputLayout?): Long {
+        return getValue(textInputLayout).toLong()
     }
 
-    protected double parseDirection( TextInputLayout textInputLayout )
-    {
-        double direction = parseDouble( textInputLayout );
-        if ( direction == 0 || direction > 360 ) {
-            textInputLayout.setError( "Valid values: 1 to 360" );
-            throw( new NumberFormatException() );
+    protected fun parseDirection(textInputLayout: TextInputLayout?): Double {
+        var direction = parseDouble(textInputLayout)
+        if (direction == 0.0 || direction > 360) {
+            textInputLayout?.error = "Valid values: 1 to 360"
+            throw NumberFormatException()
         } else {
-            direction = Math.toRadians( direction );
-            textInputLayout.setError( "" );
+            direction = Math.toRadians(direction)
+            textInputLayout?.error = ""
         }
-        return direction;
+        return direction
     }
 
-    protected double parseDeclination( TextInputLayout textInputLayout )
-    {
-        double declination = parseDouble( textInputLayout );
-        if ( declination < -45 || declination > 45 ) {
-            textInputLayout.setError( "Valid values: -45 to +45" );
-            throw( new NumberFormatException() );
+    protected fun parseDeclination(textInputLayout: TextInputLayout?): Double {
+        val declination = parseDouble(textInputLayout)
+        if (declination < -45 || declination > 45) {
+            textInputLayout?.error = "Valid values: -45 to +45"
+            throw NumberFormatException()
         } else {
-            textInputLayout.setError( "" );
+            textInputLayout?.error = ""
         }
-        return declination;
+        return declination
     }
 
-    protected double parseAltitude( TextInputLayout textInputLayout )
-    {
-        double altitude = parseDouble( textInputLayout );
-        if ( altitude < 0 || altitude > 65620 ) {
-            textInputLayout.setError( "Valid values: 0 to 65,620" );
-            throw( new NumberFormatException() );
+    protected fun parseAltitude(textInputLayout: TextInputLayout?): Double {
+        val altitude = parseDouble(textInputLayout)
+        if (altitude < 0 || altitude > 65620) {
+            textInputLayout?.error = "Valid values: 0 to 65,620"
+            throw NumberFormatException()
         } else {
-            textInputLayout.setError( "" );
+            textInputLayout?.error = ""
         }
-        return altitude;
+        return altitude
     }
 
-    protected double parseRunway( TextInputLayout textInputLayout )
-    {
-        double rwy = parseDouble( textInputLayout );
-        if ( rwy < 1 || rwy > 36 ) {
-            textInputLayout.setError( "Valid values: 1 to 36" );
-            throw( new NumberFormatException() );
+    protected fun parseRunway(textInputLayout: TextInputLayout?): Double {
+        val rwy = parseDouble(textInputLayout)
+        if (rwy < 1 || rwy > 36) {
+            textInputLayout?.error = "Valid values: 1 to 36"
+            throw NumberFormatException()
         } else {
-            textInputLayout.setError( "" );
+            textInputLayout?.error = ""
         }
-        return rwy;
+        return rwy
     }
 
-    protected void showValue( TextInputLayout textInputLayout, String value )
-    {
-        EditText editText = textInputLayout.getEditText();
-        if ( editText != null ) {
-            editText.setText( value );
+    protected fun showValue(textInputLayout: TextInputLayout?, value: String?) {
+        val editText = textInputLayout?.editText
+        editText?.setText(value)
+    }
+
+    protected fun showValue(textInputLayout: TextInputLayout?, value: Double) {
+        showValue(textInputLayout, value.roundToInt().toString())
+    }
+
+    protected fun showDecimalValue(
+        textInputLayout: TextInputLayout,
+        value: Double,
+        decimals: Int = 1
+    ) {
+        val fmt = String.format(Locale.US, "%%.%df", decimals)
+        showValue(textInputLayout, String.format(Locale.US, fmt, value))
+    }
+
+    protected fun showDirection(textInputLayout: TextInputLayout, dirRadians: Double) {
+        val dirDegrees = Math.toDegrees(normalizeDir(dirRadians))
+        showValue(textInputLayout, dirDegrees.roundToInt().toDouble())
+    }
+
+    protected fun clearEditText(textInputLayout: TextInputLayout?) {
+        showValue(textInputLayout, "")
+    }
+
+    protected fun normalizeDir(radians: Double): Double {
+        if (radians <= 0) {
+            return radians + 2 * Math.PI
+        } else if (radians > 2 * Math.PI) {
+            return radians - 2 * Math.PI
         }
+        return radians
     }
 
-    protected void showValue( TextInputLayout textInputLayout, double value )
-    {
-        showValue( textInputLayout, String.valueOf( Math.round( value ) ) );
+    fun hideKeyboard() {
+        val imm = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(requireView().rootView.windowToken, 0)
     }
 
-    protected void showDecimalValue( TextInputLayout textInputLayout, double value )
-    {
-        showDecimalValue( textInputLayout, value, 1 );
-    }
-
-    protected void showDecimalValue( TextInputLayout textInputLayout, double value, int decimals )
-    {
-        String fmt = String.format( Locale.US, "%%.%df", decimals );
-        showValue( textInputLayout, String.format( Locale.US, fmt, value ) );
-    }
-
-    protected void showDirection( TextInputLayout textInputLayout, double dirRadians )
-    {
-        double dirDegrees = Math.toDegrees( normalizeDir( dirRadians ) );
-        showValue( textInputLayout, Math.round( dirDegrees ) );
-    }
-
-    protected void clearEditText( TextInputLayout textInputLayout )
-    {
-        showValue( textInputLayout, "" );
-    }
-
-    protected double normalizeDir( double radians ) {
-        if ( radians <= 0 ) {
-            return radians+2*Math.PI;
-        } else if ( radians > 2*Math.PI ) {
-            return radians-2*Math.PI;
-        }
-        return radians;
-    }
-
-    public void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService( Activity.INPUT_METHOD_SERVICE );
-        imm.hideSoftInputFromWindow(getView().getRootView().getWindowToken(), 0);
-    }
-
-    protected abstract String getMessage();
-
-    protected abstract void processInput();
-
+    protected abstract val message: String?
+    protected abstract fun processInput()
 }

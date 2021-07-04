@@ -16,77 +16,71 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.e6b
 
-package com.nadmm.airports.e6b;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.google.android.material.textfield.TextInputLayout
+import com.nadmm.airports.R
+import kotlin.math.pow
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+class TrueAirspeedFragment : E6bFragmentBase() {
+    private var mIndicatedAirSpeedEdit: TextInputLayout? = null
+    private var mIndicatedAltitudeEdit: TextInputLayout? = null
+    private var mAltimeterEdit: TextInputLayout? = null
+    private var mTemperatureEdit: TextInputLayout? = null
+    private var mTrueAirSpeedEdit: TextInputLayout? = null
 
-import com.google.android.material.textfield.TextInputLayout;
-import com.nadmm.airports.R;
-
-public class TrueAirspeedFragment extends E6bFragmentBase {
-
-    private TextInputLayout mIndicatedAirSpeedEdit;
-    private TextInputLayout mIndicatedAltitudeEdit;
-    private TextInputLayout mAltimeterEdit;
-    private TextInputLayout mTemperatureEdit;
-    private TextInputLayout mTrueAirSpeedEdit;
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.e6b_altimetry_tas_view, container, false );
-        return createContentView( view );
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.e6b_altimetry_tas_view, container, false)
+        return createContentView(view)
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        mIndicatedAirSpeedEdit = findViewById( R.id.e6b_edit_ias );
-        mIndicatedAltitudeEdit = findViewById( R.id.e6b_edit_altitude );
-        mAltimeterEdit = findViewById( R.id.e6b_edit_altimeter );
-        mTemperatureEdit = findViewById( R.id.e6b_edit_temperature_c );
-        mTrueAirSpeedEdit = findViewById( R.id.e6b_edit_tas );
-
-        addEditField( mIndicatedAirSpeedEdit );
-        addEditField( mIndicatedAltitudeEdit );
-        addEditField( mAltimeterEdit );
-        addEditField( mTemperatureEdit );
-        addReadOnlyField( mTrueAirSpeedEdit );
-
-        setFragmentContentShown( true );
+        mIndicatedAirSpeedEdit = findViewById(R.id.e6b_edit_ias)
+        mIndicatedAltitudeEdit = findViewById(R.id.e6b_edit_altitude)
+        mAltimeterEdit = findViewById(R.id.e6b_edit_altimeter)
+        mTemperatureEdit = findViewById(R.id.e6b_edit_temperature_c)
+        mTrueAirSpeedEdit = findViewById(R.id.e6b_edit_tas)
+        addEditField(mIndicatedAirSpeedEdit)
+        addEditField(mIndicatedAltitudeEdit)
+        addEditField(mAltimeterEdit)
+        addEditField(mTemperatureEdit)
+        addReadOnlyField(mTrueAirSpeedEdit)
+        setFragmentContentShown(true)
     }
 
-    @Override
-    protected String getMessage() {
-        return "True airspeed is affected by density altitude. True airspeed" +
-                " exceeds indicated airspeed as density altitude increases.";
-    }
+    override val message: String
+        get() = "True airspeed is affected by density altitude. True airspeed" +
+                " exceeds indicated airspeed as density altitude increases."
 
-    @Override
-    protected void processInput() {
+    override fun processInput() {
         try {
-            double ias = parseDouble( mIndicatedAirSpeedEdit );
-            double altitude = parseDouble( mIndicatedAltitudeEdit );
-            double altimeter = parseDouble( mAltimeterEdit );
-            double temperatureC = parseDouble( mTemperatureEdit );
-
-            double delta = 145442.2*( 1-Math.pow( altimeter/29.92126, 0.190261 ) );
-            double pa = altitude+delta;
-            double stdTempK = 15.0-( 0.0019812*altitude )+273.15;
-            double actTempK = temperatureC+273.15;
-            double da = pa+( stdTempK/0.0019812 )*( 1-Math.pow( stdTempK/actTempK, 0.234969 ) );
-            double factor = Math.sqrt( Math.pow( ( stdTempK-( da*0.0019812 ) )/stdTempK,
-                    1/0.234969 ) );
-            long tas = Math.round( ias/factor )-1;
-            showValue( mTrueAirSpeedEdit, tas );
-        } catch ( NumberFormatException ignored ) {
-            clearEditText( mTrueAirSpeedEdit );
+            val ias = parseDouble(mIndicatedAirSpeedEdit)
+            val altitude = parseDouble(mIndicatedAltitudeEdit)
+            val altimeter = parseDouble(mAltimeterEdit)
+            val temperatureC = parseDouble(mTemperatureEdit)
+            val delta = 145442.2 * (1 - (altimeter / 29.92126).pow(0.190261))
+            val pa = altitude + delta
+            val stdTempK = 15.0 - 0.0019812 * altitude + 273.15
+            val actTempK = temperatureC + 273.15
+            val da = pa + stdTempK / 0.0019812 * (1 - (stdTempK / actTempK).pow(0.234969))
+            val factor = sqrt(
+                ((stdTempK - da * 0.0019812) / stdTempK).pow(1 / 0.234969)
+            )
+            val tas = (ias / factor).roundToInt() - 1
+            showValue(mTrueAirSpeedEdit, tas.toDouble())
+        } catch (ignored: NumberFormatException) {
+            clearEditText(mTrueAirSpeedEdit)
         }
     }
-
 }

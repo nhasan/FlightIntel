@@ -16,102 +16,101 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.e6b
 
-package com.nadmm.airports.e6b;
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import com.google.android.material.textfield.TextInputLayout
+import com.nadmm.airports.ListMenuFragment
+import com.nadmm.airports.R
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+class TimeSpeedDistanceFragment : E6bFragmentBase() {
+    private var mEdit1: TextInputLayout? = null
+    private var mEdit2: TextInputLayout? = null
+    private var mEdit3: TextInputLayout? = null
+    private var mMode: Long = 0
 
-import com.google.android.material.textfield.TextInputLayout;
-import com.nadmm.airports.ListMenuFragment;
-import com.nadmm.airports.R;
-
-public class TimeSpeedDistanceFragment extends E6bFragmentBase {
-
-    private TextInputLayout mEdit1;
-    private TextInputLayout mEdit2;
-    private TextInputLayout mEdit3;
-
-    private long mMode;
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.e6b_time_speed_distance_view, container, false );
-        return createContentView( view );
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.e6b_time_speed_distance_view, container, false)
+        return createContentView(view)
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        mMode = getArguments().getLong( ListMenuFragment.MENU_ID );
-        setupUi();
-        setFragmentContentShown( true );
+        mMode = requireArguments().getLong(ListMenuFragment.MENU_ID)
+        setupUi()
+        setFragmentContentShown(true)
     }
 
-    @Override
-    protected String getMessage() {
-        return null;
-    }
+    override val message: String?
+        get() = null
 
-    @Override
-    protected void processInput() {
+    override fun processInput() {
         try {
-            if ( mMode == R.id.E6B_TSD_TIME ) {
-                double speed = parseDouble( mEdit1 );
-                double distance = parseDouble( mEdit2 );
-                double time = distance*60/speed;
-                showValue( mEdit3, time );
-            } else if ( mMode == R.id.E6B_TSD_SPEED ) {
-                double distance = parseDouble( mEdit1 );
-                double time = parseDouble( mEdit2 );
-                double speed = distance/(time/60);
-                showValue( mEdit3, speed );
-            } else if ( mMode == R.id.E6B_TSD_DISTANCE ) {
-                double speed = parseDouble( mEdit1 );
-                double time = parseDouble( mEdit2 );
-                double distance = ( time/60 )*speed;
-                showDecimalValue( mEdit3, distance );
+            when (mMode) {
+                R.id.E6B_TSD_TIME.toLong() -> {
+                    val speed = parseDouble(mEdit1)
+                    val distance = parseDouble(mEdit2)
+                    val time = distance * 60 / speed
+                    showValue(mEdit3, time)
+                }
+                R.id.E6B_TSD_SPEED.toLong() -> {
+                    val distance = parseDouble(mEdit1)
+                    val time = parseDouble(mEdit2)
+                    val speed = distance / (time / 60)
+                    showValue(mEdit3, speed)
+                }
+                R.id.E6B_TSD_DISTANCE.toLong() -> {
+                    val speed = parseDouble(mEdit1)
+                    val time = parseDouble(mEdit2)
+                    val distance = time / 60 * speed
+                    showDecimalValue(mEdit3!!, distance)
+                }
             }
-        } catch ( NumberFormatException ignored ) {
-            clearEditText( mEdit3 );
+        } catch (ignored: NumberFormatException) {
+            clearEditText(mEdit3)
         }
     }
 
-    private void setupUi() {
-        TextView mLabel1 = findViewById( R.id.e6b_label_value1 );
-        TextView mLabel2 = findViewById( R.id.e6b_label_value2 );
-        TextView mLabel3 = findViewById( R.id.e6b_label_value3 );
-        mEdit1 = findViewById( R.id.e6b_edit_value1 );
-        mEdit2 = findViewById( R.id.e6b_edit_value2 );
-        mEdit3 = findViewById( R.id.e6b_edit_value3 );
-
-        if ( mMode == R.id.E6B_TSD_TIME ) {
-            mLabel1.setText( R.string.gs );
-            addEditField( mEdit1, R.string.kts );
-            mLabel2.setText( R.string.distance_flown );
-            addEditField( mEdit2, R.string.nm );
-            mLabel3.setText( R.string.time_flown );
-            addReadOnlyField( mEdit3, R.string.min );
-        } else if ( mMode == R.id.E6B_TSD_SPEED ) {
-            mLabel1.setText( R.string.distance_flown );
-            addEditField( mEdit1, R.string.nm );
-            mLabel2.setText( R.string.time_flown );
-            addEditField( mEdit2, R.string.min );
-            mLabel3.setText( R.string.gs );
-            addReadOnlyField( mEdit3, R.string.kts );
-        } else if ( mMode == R.id.E6B_TSD_DISTANCE ) {
-            mLabel1.setText( R.string.gs );
-            addEditField( mEdit1, R.string.kts );
-            mLabel2.setText( R.string.time_flown );
-            addEditField( mEdit2, R.string.min );
-            mLabel3.setText( R.string.distance_flown );
-            addReadOnlyField( mEdit3, R.string.nm );
+    private fun setupUi() {
+        val mLabel1 = findViewById<TextView>(R.id.e6b_label_value1)
+        val mLabel2 = findViewById<TextView>(R.id.e6b_label_value2)
+        val mLabel3 = findViewById<TextView>(R.id.e6b_label_value3)
+        mEdit1 = findViewById(R.id.e6b_edit_value1)
+        mEdit2 = findViewById(R.id.e6b_edit_value2)
+        mEdit3 = findViewById(R.id.e6b_edit_value3)
+        when (mMode) {
+            R.id.E6B_TSD_TIME.toLong() -> {
+                mLabel1!!.setText(R.string.gs)
+                addEditField(mEdit1, R.string.kts)
+                mLabel2!!.setText(R.string.distance_flown)
+                addEditField(mEdit2, R.string.nm)
+                mLabel3!!.setText(R.string.time_flown)
+                addReadOnlyField(mEdit3!!, R.string.min)
+            }
+            R.id.E6B_TSD_SPEED.toLong() -> {
+                mLabel1!!.setText(R.string.distance_flown)
+                addEditField(mEdit1, R.string.nm)
+                mLabel2!!.setText(R.string.time_flown)
+                addEditField(mEdit2, R.string.min)
+                mLabel3!!.setText(R.string.gs)
+                addReadOnlyField(mEdit3!!, R.string.kts)
+            }
+            R.id.E6B_TSD_DISTANCE.toLong() -> {
+                mLabel1!!.setText(R.string.gs)
+                addEditField(mEdit1, R.string.kts)
+                mLabel2!!.setText(R.string.time_flown)
+                addEditField(mEdit2, R.string.min)
+                mLabel3!!.setText(R.string.distance_flown)
+                addReadOnlyField(mEdit3!!, R.string.nm)
+            }
         }
     }
-
 }
