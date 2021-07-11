@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,382 +16,333 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.library
 
-package com.nadmm.airports.library;
+import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.database.Cursor
+import android.database.MatrixCursor
+import android.database.sqlite.SQLiteQueryBuilder
+import android.os.Bundle
+import android.text.format.Formatter
+import android.view.*
+import android.view.ContextMenu.ContextMenuInfo
+import android.widget.*
+import androidx.lifecycle.lifecycleScope
+import com.nadmm.airports.Application
+import com.nadmm.airports.FragmentBase
+import com.nadmm.airports.R
+import com.nadmm.airports.data.DatabaseManager
+import com.nadmm.airports.data.DatabaseManager.Library
+import com.nadmm.airports.utils.NetworkUtils
+import com.nadmm.airports.utils.SystemUtils
+import com.nadmm.airports.utils.UiUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
 
-import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
-import android.os.Bundle;
-import android.text.format.Formatter;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+class LibraryPageFragment : FragmentBase() {
+    private var mIsOk = false
+    private lateinit var mReceiver: BroadcastReceiver
+    private var mOnClickListener: View.OnClickListener? = null
+    private var mCategory: String? = null
+    private var mContextMenuRow: View? = null
+    private val mBookRowMap = HashMap<String, View>()
+    private val mColumns = arrayOf(
+        Library.BOOK_NAME,
+        Library.BOOK_DESC,
+        Library.EDITION,
+        Library.AUTHOR,
+        Library.DOWNLOAD_SIZE,
+        Library.FLAG
+    )
 
-import androidx.annotation.NonNull;
-
-import com.nadmm.airports.Application;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.R;
-import com.nadmm.airports.data.DatabaseManager;
-import com.nadmm.airports.data.DatabaseManager.Library;
-import com.nadmm.airports.utils.CursorAsyncTask;
-import com.nadmm.airports.utils.NetworkUtils;
-import com.nadmm.airports.utils.SystemUtils;
-import com.nadmm.airports.utils.UiUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-public class LibraryPageFragment extends FragmentBase {
-
-    private boolean mIsOk;
-    private BroadcastReceiver mReceiver;
-    private OnClickListener mOnClickListener;
-    private String mCategory;
-    private HashMap<String, View> mBookRowMap = new HashMap<>();
-    private LibraryActivity mActivity;
-    private View mContextMenuRow;
-
-    private String[] mColumns = {
-            Library.BOOK_NAME,
-            Library.BOOK_DESC,
-            Library.EDITION,
-            Library.AUTHOR,
-            Library.DOWNLOAD_SIZE,
-            Library.FLAG
-    };
-
-    @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        Bundle args = getArguments();
-        mCategory = args.getString( Library.CATEGORY_CODE );
-
-        mReceiver = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                String action = intent.getAction();
-                if ( action != null && action.equals( LibraryService.ACTION_DOWNLOAD_PROGRESS ) ) {
-                    handleProgress( intent );
+    override fun onCreate(savedInstanceState: Bundle?) {
+        val args = arguments
+        mCategory = args?.getString(Library.CATEGORY_CODE)
+        mReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                val action = intent.action ?: ""
+                if (action == LibraryService.ACTION_DOWNLOAD_PROGRESS) {
+                    handleProgress(intent)
                 } else {
-                    handleBook( intent );
+                    handleBook(intent)
                 }
             }
-        };
-
-        mOnClickListener = v -> {
-            if ( !mActivity.isPending() ) {
-                String path = (String) v.getTag( R.id.LIBRARY_PDF_PATH );
-                if ( path == null ) {
-                    if ( mIsOk ) {
-                        mActivity.setPending( true );
-                        ProgressBar progressBar = v.findViewById( R.id.progress );
-                        progressBar.setIndeterminate( true );
-                        progressBar.setVisibility( View.VISIBLE );
-                        String name = (String) v.getTag( R.id.LIBRARY_PDF_NAME );
-                        getBook( name );
+        }
+        mOnClickListener = View.OnClickListener { v: View ->
+            val activity = requireActivity() as LibraryActivity
+            if (!activity.isPending) {
+                val path = v.getTag(R.id.LIBRARY_PDF_PATH) as String?
+                if (path == null) {
+                    if (mIsOk) {
+                        activity.isPending = true
+                        val progressBar = v.findViewById<ProgressBar>(R.id.progress)
+                        progressBar.visibility = View.VISIBLE
+                        val name = v.getTag(R.id.LIBRARY_PDF_NAME) as String
+                        getBook(name)
                     } else {
-                        UiUtils.showToast( getActivity(), "Cannot start download" );
+                        UiUtils.showToast(activity, "Cannot start download")
                     }
                 } else {
-                    SystemUtils.startPDFViewer( getActivity(), path );
+                    SystemUtils.startPDFViewer(activity, path)
                 }
             } else {
-                UiUtils.showToast( mActivity, "Please wait, another download is in progress",
-                        Toast.LENGTH_SHORT );
+                UiUtils.showToast(
+                    activity, "Please wait, another download is in progress",
+                    Toast.LENGTH_SHORT
+                )
             }
-        };
-
-        super.onCreate( savedInstanceState );
+        }
+        super.onCreate(savedInstanceState)
     }
 
-    @Override
-    public void onResume() {
-        mActivity.registerReceiver( mCategory, mReceiver );
-
-        super.onResume();
+    override fun onResume() {
+        val activity = requireActivity() as LibraryActivity
+        mCategory?.let { activity.registerReceiver(it, mReceiver) }
+        super.onResume()
     }
 
-    @Override
-    public void onPause() {
-        mActivity.unregisterReceiver( mCategory );
-
-        super.onPause();
+    override fun onPause() {
+        val activity = requireActivity() as LibraryActivity
+        mCategory?.let { activity.unregisterReceiver(it) }
+        super.onPause()
     }
 
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-
-        View view = inflate( R.layout.library_detail_view, container );
-        return createContentView( view );
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflate<View>(R.layout.library_detail_view, container!!)
+        return createContentView(view)
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        mActivity = (LibraryActivity) getActivity();
-
-        setBackgroundTask( new LibraryTask( this ) ).execute( mCategory );
+        mCategory?.let {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = withContext(Dispatchers.IO) {
+                    doQuery(it)
+                }
+                showBooks(result)
+            }
+        }
     }
 
-    private Cursor[] doQuery( String category ) {
-        SQLiteDatabase db = getDatabase( DatabaseManager.DB_LIBRARY );
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( Library.TABLE_NAME );
-        Cursor c = builder.query( db, new String[] { "DISTINCT "+Library.BOOK_DESC },
-                Library.CATEGORY_CODE+"=?", new String[] { category },
-                null, null, null );
-
-        Cursor[] result = new Cursor[ c.getCount() ];
-
-        if ( c.getCount() > 0 ) {
-            builder = new SQLiteQueryBuilder();
-            builder.setTables( Library.TABLE_NAME );
-            c = builder.query( db, mColumns,
-                    Library.CATEGORY_CODE+"=?", new String[] { category },
-                    null, null, Library._ID );
-            c.moveToFirst();
-            int i = 0;
-            String prevDesc = "";
-            MatrixCursor matrix = null;
+    private fun doQuery(category: String): Array<Cursor?> {
+        val db = getDatabase(DatabaseManager.DB_LIBRARY)
+        var builder = SQLiteQueryBuilder()
+        builder.tables = Library.TABLE_NAME
+        var c = builder.query(
+            db, arrayOf("DISTINCT " + Library.BOOK_DESC),
+            Library.CATEGORY_CODE + "=?", arrayOf(category),
+            null, null, null
+        )
+        val result = arrayOfNulls<Cursor>(c.count)
+        if (c.count > 0) {
+            builder = SQLiteQueryBuilder()
+            builder.tables = Library.TABLE_NAME
+            c = builder.query(
+                db, mColumns,
+                Library.CATEGORY_CODE + "=?", arrayOf(category),
+                null, null, Library._ID
+            )
+            c.moveToFirst()
+            var i = 0
+            var prevDesc = ""
+            var matrix: MatrixCursor? = null
             do {
-                String name = c.getString( c.getColumnIndex( Library.BOOK_NAME ) );
-                String desc = c.getString( c.getColumnIndex( Library.BOOK_DESC ) );
-                String edition = c.getString( c.getColumnIndex( Library.EDITION ) );
-                String author = c.getString( c.getColumnIndex( Library.AUTHOR ) );
-                long size = c.getLong( c.getColumnIndex( Library.DOWNLOAD_SIZE ) );
-                String flag = c.getString( c.getColumnIndex( Library.FLAG ) );
-
-                if ( !desc.equals( prevDesc ) ) {
-                    matrix = new MatrixCursor( mColumns );
-                    result[ i++ ] = matrix;
-                    prevDesc = desc;
+                val name = c.getString(c.getColumnIndex(Library.BOOK_NAME))
+                val desc = c.getString(c.getColumnIndex(Library.BOOK_DESC))
+                val edition = c.getString(c.getColumnIndex(Library.EDITION))
+                val author = c.getString(c.getColumnIndex(Library.AUTHOR))
+                val size = c.getLong(c.getColumnIndex(Library.DOWNLOAD_SIZE))
+                val flag = c.getString(c.getColumnIndex(Library.FLAG))
+                if (desc != prevDesc) {
+                    matrix = MatrixCursor(mColumns)
+                    result[i++] = matrix
+                    prevDesc = desc
                 }
-
-                if ( matrix != null ) {
-                    Object[] values = new Object[]{ name, desc, edition, author, size, flag };
-                    matrix.addRow( values );
+                if (matrix != null) {
+                    val values = arrayOf<Any?>(name, desc, edition, author, size, flag)
+                    matrix.addRow(values)
                 }
-            } while ( c.moveToNext() );
+            } while (c.moveToNext())
         }
-
-        return result;
+        return result
     }
 
-    private static class LibraryTask extends CursorAsyncTask<LibraryPageFragment> {
-
-        private LibraryTask( LibraryPageFragment fragment ) {
-            super( fragment );
+    private fun showBooks(result: Array<Cursor?>) {
+        if (activity == null) {
+            return
         }
-
-        @Override
-        protected Cursor[] onExecute( LibraryPageFragment fragment, String... params ) {
-            String category = params[ 0 ];
-            return fragment.doQuery( category );
-        }
-
-        @Override
-        protected boolean onResult( LibraryPageFragment fragment, Cursor[] result ) {
-            fragment.showBooks( result );
-            return true;
-        }
-    }
-
-    private void showBooks( Cursor[] result ) {
-        if ( getActivity() == null ) {
-            return;
-        }
-
-        String msg;
-        if ( !Application.sDonationDone ) {
-            msg = "This function is only available after a donation";
-            mIsOk = false;
-        } else if ( !NetworkUtils.isNetworkAvailable( getActivity() ) ) {
-            msg = "Not connected to the internet";
-            mIsOk = false;
-        } else if ( NetworkUtils.canDownloadData( getActivityBase() ) ) {
-            msg = "Connected to an unmetered network";
-            mIsOk = true;
+        val msg: String
+        if (!Application.sDonationDone) {
+            msg = "This function is only available after a donation"
+            mIsOk = false
+        } else if (!NetworkUtils.isNetworkAvailable(activity)) {
+            msg = "Not connected to the internet"
+            mIsOk = false
+        } else if (NetworkUtils.canDownloadData(activityBase)) {
+            msg = "Connected to an unmetered network"
+            mIsOk = true
         } else {
-            msg = "Connected to a metered network";
-            mIsOk = false;
+            msg = "Connected to a metered network"
+            mIsOk = false
         }
-
-        TextView tv = findViewById( R.id.msg_txt );
-        tv.setText( msg );
-        UiUtils.setTextViewDrawable( tv, mIsOk?
-                R.drawable.ic_check : R.drawable.ic_highlight_remove );
-
-        LinearLayout topLayout = findViewById( R.id.main_content );
-        for ( Cursor c : result ) {
-            if ( c.moveToFirst() ) {
-                LinearLayout layout = inflate( R.layout.library_detail_section,
-                        topLayout );
-                topLayout.addView( layout );
+        val tv = findViewById<TextView>(R.id.msg_txt)
+        tv!!.text = msg
+        UiUtils.setTextViewDrawable(
+            tv,
+            if (mIsOk) R.drawable.ic_check else R.drawable.ic_highlight_remove
+        )
+        val topLayout = findViewById<LinearLayout>(R.id.main_content)
+        for (c in result) {
+            if (c!!.moveToFirst()) {
+                val layout = inflate<LinearLayout>(
+                    R.layout.library_detail_section,
+                    topLayout!!
+                )
+                topLayout.addView(layout)
                 do {
-                    String name = c.getString( c.getColumnIndex( Library.BOOK_NAME ) );
-                    String desc = c.getString( c.getColumnIndex( Library.BOOK_DESC ) );
-                    String edition = c.getString( c.getColumnIndex( Library.EDITION ) );
-                    String author = c.getString( c.getColumnIndex( Library.AUTHOR ) );
-                    long size = c.getLong( c.getColumnIndex( Library.DOWNLOAD_SIZE ) );
-                    String flag = c.getString( c.getColumnIndex( Library.FLAG ) );
-                    addLibraryRow( layout, name, desc, edition, author, flag, size );
-                } while ( c.moveToNext() );
+                    val name = c.getString(c.getColumnIndex(Library.BOOK_NAME))
+                    val desc = c.getString(c.getColumnIndex(Library.BOOK_DESC))
+                    val edition = c.getString(c.getColumnIndex(Library.EDITION))
+                    val author = c.getString(c.getColumnIndex(Library.AUTHOR))
+                    val size = c.getLong(c.getColumnIndex(Library.DOWNLOAD_SIZE))
+                    val flag = c.getString(c.getColumnIndex(Library.FLAG))
+                    addLibraryRow(layout, name, desc, edition, author, flag, size)
+                } while (c.moveToNext())
             }
         }
-
-        setFragmentContentShown( true );
-
-        checkBooks();
+        setFragmentContentShown(true)
+        checkBooks()
     }
 
     @SuppressLint("InlinedApi")
-    private void addLibraryRow( LinearLayout layout, String name, String desc, String edition,
-            String author, String flag, long size ) {
-        if ( layout.getChildCount() > 0 ) {
-            addSeparator( layout );
+    private fun addLibraryRow(
+        layout: LinearLayout, name: String, desc: String, edition: String,
+        author: String, flag: String?, size: Long
+    ) {
+        if (layout.childCount > 0) {
+            addSeparator(layout)
         }
-        RelativeLayout row = inflate( R.layout.library_row_item );
-        TextView tv = row.findViewById( R.id.book_desc );
-        tv.setText( desc );
-        tv = row.findViewById( R.id.book_edition );
-        tv.setText( edition );
-        if ( flag != null && flag.equals( "N" ) ) {
-            UiUtils.setTextViewDrawable( tv, R.drawable.star );
+        val row = inflate<RelativeLayout>(R.layout.library_row_item)
+        var tv = row.findViewById<TextView>(R.id.book_desc)
+        tv.text = desc
+        tv = row.findViewById(R.id.book_edition)
+        tv.text = edition
+        if (flag != null && flag == "N") {
+            UiUtils.setTextViewDrawable(tv, R.drawable.star)
         }
-        tv = row.findViewById( R.id.book_author );
-        tv.setText( author );
-        tv = row.findViewById( R.id.book_size );
-        tv.setText( Formatter.formatShortFileSize( getActivity(), size ) );
-        row.setTag( R.id.LIBRARY_PDF_NAME, name );
-        row.setOnClickListener( mOnClickListener );
-        int background = UiUtils.getSelectableItemBackgroundResource( getActivity() );
-        row.setBackgroundResource( background );
-        showStatus( row, false );
-        mBookRowMap.put( name, row );
-        layout.addView( row, new LinearLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+        tv = row.findViewById(R.id.book_author)
+        tv.text = author
+        tv = row.findViewById(R.id.book_size)
+        tv.text = Formatter.formatShortFileSize(activity, size)
+        row.setTag(R.id.LIBRARY_PDF_NAME, name)
+        row.setOnClickListener(mOnClickListener)
+        val background = UiUtils.getSelectableItemBackgroundResource(activity)
+        row.setBackgroundResource(background)
+        showStatus(row, false)
+        mBookRowMap[name] = row
+        layout.addView(
+            row, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
     }
 
-    private void handleBook( Intent intent ) {
-        String pdfName = intent.getStringExtra( LibraryService.BOOK_NAME );
-        View row = mBookRowMap.get( pdfName );
-        if ( row != null ) {
-            String path = intent.getStringExtra( LibraryService.PDF_PATH );
-            showStatus( row, path != null );
-            row.setTag( R.id.LIBRARY_PDF_PATH, path );
-            if ( path != null ) {
-                registerForContextMenu( row );
+    private fun handleBook(intent: Intent) {
+        val pdfName = intent.getStringExtra(LibraryService.BOOK_NAME)
+        mBookRowMap[pdfName]?.let {
+            val path = intent.getStringExtra(LibraryService.PDF_PATH)
+            showStatus(it, path != null)
+            it.setTag(R.id.LIBRARY_PDF_PATH, path)
+            if (path != null) {
+                registerForContextMenu(it)
             } else {
-                unregisterForContextMenu( row );
+                unregisterForContextMenu(it)
             }
             // Hide the progressbar
-            ProgressBar progressBar = row.findViewById( R.id.progress );
-            progressBar.setVisibility( View.GONE );
+            val progressBar = it.findViewById<ProgressBar>(R.id.progress)
+            progressBar.visibility = View.GONE
         }
     }
 
-    private void handleProgress( Intent intent ) {
-        String name = intent.getStringExtra( NetworkUtils.CONTENT_NAME );
-        View row = mBookRowMap.get( name );
-        if ( row != null ) {
-            ProgressBar progressBar = row.findViewById( R.id.progress );
-            long length = intent.getLongExtra( NetworkUtils.CONTENT_LENGTH, 0 );
-            if ( !progressBar.isShown() ) {
-                progressBar.setVisibility( View.VISIBLE );
+    private fun handleProgress(intent: Intent) {
+        val name = intent.getStringExtra(NetworkUtils.CONTENT_NAME)
+        mBookRowMap[name]?.let {
+            val progressBar = it.findViewById<ProgressBar>(R.id.progress)
+            val length = intent.getLongExtra(NetworkUtils.CONTENT_LENGTH, 0)
+            if (!progressBar.isShown) {
+                progressBar.visibility = View.VISIBLE
             }
-            if ( progressBar.getMax() != length ) {
-                progressBar.setIndeterminate( false );
-                progressBar.setMax( (int) length );
+            progressBar.isIndeterminate = (length == 0L)
+            if (progressBar.max.toLong() != length) {
+                progressBar.max = length.toInt()
             }
-            long progress = intent.getLongExtra( NetworkUtils.CONTENT_PROGRESS, 0 );
-            progressBar.setProgress( (int) progress );
+            val progress = intent.getLongExtra(NetworkUtils.CONTENT_PROGRESS, 0)
+            progressBar.progress = progress.toInt()
         }
     }
 
-    private void showStatus( View row, boolean isAvailable ) {
-        TextView tv = row.findViewById( R.id.book_desc );
-        if ( isAvailable ) {
-            UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box );
+    private fun showStatus(row: View, isAvailable: Boolean) {
+        val tv = row.findViewById<TextView>(R.id.book_desc)
+        if (isAvailable) {
+            UiUtils.setTextViewDrawable(tv, R.drawable.ic_check_box)
         } else {
-            UiUtils.setTextViewDrawable( tv, R.drawable.ic_check_box_outline_blank );
+            UiUtils.setTextViewDrawable(tv, R.drawable.ic_check_box_outline_blank)
         }
     }
 
-    private void getBook( String name ) {
-        if ( getActivity() != null ) {
-            Intent service = makeServiceIntent( LibraryService.ACTION_GET_BOOK );
-            service.putExtra( LibraryService.BOOK_NAME, name );
-            getActivity().startService( service );
+    private fun getBook(name: String) {
+        val service = makeServiceIntent(LibraryService.ACTION_GET_BOOK)
+        service.putExtra(LibraryService.BOOK_NAME, name)
+        requireActivity().startService(service)
+    }
+
+    private fun deleteBook(name: String) {
+        val service = makeServiceIntent(LibraryService.ACTION_DELETE_BOOK)
+        service.putExtra(LibraryService.BOOK_NAME, name)
+        requireActivity().startService(service)
+    }
+
+    private fun checkBooks() {
+        val service = makeServiceIntent(LibraryService.ACTION_CHECK_BOOKS)
+        val books = ArrayList(mBookRowMap.keys)
+        service.putExtra(LibraryService.BOOK_NAMES, books)
+        requireActivity().startService(service)
+    }
+
+    private fun makeServiceIntent(action: String): Intent {
+        val service = Intent(activity, LibraryService::class.java)
+        service.action = action
+        service.putExtra(LibraryService.CATEGORY, mCategory)
+        return service
+    }
+
+    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo?) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        if (activity != null) {
+            val inflater = requireActivity().menuInflater
+            inflater.inflate(R.menu.library_context_menu, menu)
+            mContextMenuRow = v
         }
     }
 
-    private void deleteBook( String name ) {
-        if ( getActivity() != null ) {
-            Intent service = makeServiceIntent( LibraryService.ACTION_DELETE_BOOK );
-            service.putExtra( LibraryService.BOOK_NAME, name );
-            getActivity().startService( service );
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_delete -> if (mContextMenuRow != null) {
+                val name = mContextMenuRow!!.getTag(R.id.LIBRARY_PDF_NAME) as String
+                deleteBook(name)
+            }
+            else -> {
+            }
         }
+        return super.onContextItemSelected(item)
     }
-
-    private void checkBooks() {
-        if ( getActivity() != null ) {
-            Intent service = makeServiceIntent( LibraryService.ACTION_CHECK_BOOKS );
-            ArrayList<String> books = new ArrayList<>( mBookRowMap.keySet() );
-            service.putExtra( LibraryService.BOOK_NAMES, books );
-            getActivity().startService( service );
-        }
-    }
-
-    private Intent makeServiceIntent( String action ) {
-        Intent service = new Intent( getActivity(), LibraryService.class );
-        service.setAction( action );
-        service.putExtra( LibraryService.CATEGORY, mCategory );
-        return service;
-    }
-
-    @Override
-    public void onCreateContextMenu( @NonNull ContextMenu menu, View v, ContextMenuInfo menuInfo ) {
-        super.onCreateContextMenu( menu, v, menuInfo );
-
-        if ( getActivity() != null ) {
-            MenuInflater inflater = getActivity().getMenuInflater();
-            inflater.inflate( R.menu.library_context_menu, menu );
-            mContextMenuRow = v;
-        }
-    }
-
-    @Override
-    public boolean onContextItemSelected( MenuItem item ) {
-        switch ( item.getItemId() ) {
-            case R.id.menu_delete:
-                if ( mContextMenuRow != null ) {
-                    String name = (String) mContextMenuRow.getTag( R.id.LIBRARY_PDF_NAME );
-                    deleteBook( name );
-                }
-                break;
-            default:
-        }
-        return super.onContextItemSelected( item );
-    }
-
 }

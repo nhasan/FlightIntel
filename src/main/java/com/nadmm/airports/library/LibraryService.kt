@@ -16,170 +16,150 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.library
 
-package com.nadmm.airports.library;
+import android.app.IntentService
+import android.content.Intent
+import android.os.Bundle
+import android.os.ResultReceiver
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.nadmm.airports.utils.NetworkUtils
+import com.nadmm.airports.utils.SystemUtils
+import com.nadmm.airports.utils.UiUtils
+import java.io.File
+import java.util.*
+import java.util.zip.GZIPInputStream
 
-import android.app.IntentService;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.ResultReceiver;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+class LibraryService : IntentService(SERVICE_NAME) {
+    private var mDataDir: File? = null
 
-import com.nadmm.airports.utils.NetworkUtils;
-import com.nadmm.airports.utils.SystemUtils;
-import com.nadmm.airports.utils.UiUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.zip.GZIPInputStream;
-
-public class LibraryService extends IntentService {
-
-    private static final String SERVICE_NAME = "library";
-
-    public static final String LIBRARY_HOST = "commondatastorage.googleapis.com";
-    public static final String LIBRARY_PATH = "/flightintel/library";
-    public static final String ACTION_GET_BOOK = "flightintel.library.action.GET_BOOK";
-    public static final String ACTION_DELETE_BOOK = "flightintel.library.action.DELETE_BOOK";
-    public static final String ACTION_CHECK_BOOKS = "flightintel.library.action.CHECK_BOOKS";
-    public static final String ACTION_DOWNLOAD_PROGRESS = "flightintel.library.action.PROGRESS";
-    public static final String CATEGORY = "CATEGORY";
-    public static final String BOOK_NAME = "BOOK_NAME";
-    public static final String BOOK_NAMES = "BOOK_NAMES";
-    public static final String PDF_PATH = "PDF_PATH";
-
-    private File mDataDir;
-
-    public LibraryService() {
-        super( SERVICE_NAME );
+    override fun onCreate() {
+        super.onCreate()
+        mDataDir = SystemUtils.getExternalDir(this, SERVICE_NAME)
     }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        mDataDir = SystemUtils.getExternalDir( this, SERVICE_NAME );
-    }
-
-    @Override
-    protected void onHandleIntent( Intent intent ) {
-        String action = intent.getAction();
-        if ( action.equals( ACTION_CHECK_BOOKS ) ) {
-            checkBooks( intent );
-        } else if ( action.equals( ACTION_GET_BOOK ) ) {
-            getBook( intent );
-        } else if ( action.equals( ACTION_DELETE_BOOK ) ) {
-            deleteBook( intent );
+    override fun onHandleIntent(intent: Intent?) {
+        val action = intent!!.action
+        when (action) {
+            ACTION_CHECK_BOOKS -> {
+                checkBooks(intent)
+            }
+            ACTION_GET_BOOK -> {
+                getBook(intent)
+            }
+            ACTION_DELETE_BOOK -> {
+                deleteBook(intent)
+            }
         }
     }
 
-    private void checkBooks( Intent intent ) {
-        String category = intent.getStringExtra( CATEGORY );
-        ArrayList<String> books = intent.getStringArrayListExtra( BOOK_NAMES );
-
-        cleanupBooks( category, books );
-
-        File categoryDir = getCategoryDir( category );
-        for ( String book : books ) {
-            File pdfFile = new File( categoryDir, book );
-            sendResult( intent.getAction(), category, pdfFile );
+    private fun checkBooks(intent: Intent?) {
+        val category = intent!!.getStringExtra(CATEGORY)
+        val books = intent.getStringArrayListExtra(BOOK_NAMES)
+        cleanupBooks(category, books)
+        val categoryDir = getCategoryDir(category)
+        for (book in books!!) {
+            val pdfFile = File(categoryDir, book)
+            sendResult(intent.action, category, pdfFile)
         }
     }
 
-    private void getBook( Intent intent ) {
-        String category = intent.getStringExtra( CATEGORY );
-        String book = intent.getStringExtra( BOOK_NAME );
-        File categoryDir = getCategoryDir( category );
-
-        File pdfFile = new File( categoryDir, book );
-        if ( !pdfFile.exists() ) {
-            fetch( category, pdfFile );
+    private fun getBook(intent: Intent?) {
+        val category = intent!!.getStringExtra(CATEGORY)
+        val book = intent.getStringExtra(BOOK_NAME)
+        val categoryDir = getCategoryDir(category)
+        val pdfFile = File(categoryDir, book)
+        if (!pdfFile.exists()) {
+            fetch(category, pdfFile)
         }
-
-        sendResult( intent.getAction(), category, pdfFile );
+        sendResult(intent.action, category, pdfFile)
     }
 
-    private void deleteBook( Intent intent ) {
-        String category = intent.getStringExtra( CATEGORY );
-        String book = intent.getStringExtra( BOOK_NAME );
-        File categoryDir = getCategoryDir( category );
-
-        File pdfFile = new File( categoryDir, book );
-        if ( pdfFile.exists() ) {
-            pdfFile.delete();
+    private fun deleteBook(intent: Intent?) {
+        val category = intent!!.getStringExtra(CATEGORY)
+        val book = intent.getStringExtra(BOOK_NAME)
+        val categoryDir = getCategoryDir(category)
+        val pdfFile = File(categoryDir, book)
+        if (pdfFile.exists()) {
+            pdfFile.delete()
         }
-
-        sendResult( ACTION_CHECK_BOOKS, category, pdfFile );
+        sendResult(ACTION_CHECK_BOOKS, category, pdfFile)
     }
 
-    private boolean fetch( String category, File pdfFile ) {
+    private fun fetch(category: String?, pdfFile: File): Boolean {
         try {
-            ProgressReceiver receiver = new ProgressReceiver();
-            Bundle result = new Bundle();
-            result.putString( NetworkUtils.CONTENT_NAME, pdfFile.getName() );
-            result.putString( CATEGORY, category );
-
-            String path = LIBRARY_PATH+"/"+category+"/"+pdfFile.getName()+".gz";
-
-            return NetworkUtils.doHttpsGet( this, LIBRARY_HOST, path, null,
-                    pdfFile, receiver, result, GZIPInputStream.class );
-        } catch ( Exception e ) {
-            UiUtils.showToast( this, e.getMessage() );
+            val receiver = ProgressReceiver()
+            val result = Bundle()
+            result.putString(NetworkUtils.CONTENT_NAME, pdfFile.name)
+            result.putString(CATEGORY, category)
+            val path = LIBRARY_PATH + "/" + category + "/" + pdfFile.name + ".gz"
+            return NetworkUtils.doHttpsGet(
+                this, LIBRARY_HOST, path, null,
+                pdfFile, receiver, result, GZIPInputStream::class.java
+            )
+        } catch (e: Exception) {
+            UiUtils.showToast(this, e.message)
         }
-        return false;
+        return false
     }
 
-    protected void sendResult( String action, String category, File pdfFile ) {
-        Intent result = new Intent( action );
-        result.putExtra( CATEGORY, category );
-        result.putExtra( BOOK_NAME, pdfFile.getName() );
-        if ( pdfFile.exists() ) {
-            result.putExtra( PDF_PATH, pdfFile.getAbsolutePath() );
+    protected fun sendResult(action: String?, category: String?, pdfFile: File) {
+        val result = Intent(action)
+        result.putExtra(CATEGORY, category)
+        result.putExtra(BOOK_NAME, pdfFile.name)
+        if (pdfFile.exists()) {
+            result.putExtra(PDF_PATH, pdfFile.absolutePath)
         }
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
-        bm.sendBroadcast( result );
+        val bm = LocalBroadcastManager.getInstance(this)
+        bm.sendBroadcast(result)
     }
 
-    private void cleanupBooks( String category, ArrayList<String> books ) {
+    private fun cleanupBooks(category: String?, books: ArrayList<String>?) {
         // Delete all books that are no longer in the library list for a category
-        File categoryDir = getCategoryDir( category );
-        File[] list = categoryDir.listFiles();
-        if ( list != null ) {
-            for ( File pdfFile : list ) {
-                if ( !books.contains( pdfFile.getName() ) || pdfFile.length() == 0 ) {
-                    pdfFile.delete();
+        val categoryDir = getCategoryDir(category)
+        val list = categoryDir.listFiles()
+        if (list != null) {
+            for (pdfFile in list) {
+                if (!books!!.contains(pdfFile.name) || pdfFile.length() == 0L) {
+                    pdfFile.delete()
                 }
             }
         }
     }
 
-    private File getCategoryDir( String category ) {
-        File categoryDir = new File( mDataDir, category );
-        if ( !categoryDir.exists() ) {
-            categoryDir.mkdirs();
+    private fun getCategoryDir(category: String?): File {
+        val categoryDir = File(mDataDir, category)
+        if (!categoryDir.exists()) {
+            categoryDir.mkdirs()
         }
-        return categoryDir;
+        return categoryDir
     }
 
-    protected void handleProgress( int resultCode, Bundle resultData ) {
-        Intent intent = new Intent( ACTION_DOWNLOAD_PROGRESS );
-        intent.putExtras( resultData );
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
-        bm.sendBroadcast( intent );
+    protected fun handleProgress(resultCode: Int, resultData: Bundle?) {
+        val intent = Intent(ACTION_DOWNLOAD_PROGRESS)
+        intent.putExtras(resultData!!)
+        val bm = LocalBroadcastManager.getInstance(this)
+        bm.sendBroadcast(intent)
     }
 
-    private class ProgressReceiver extends ResultReceiver {
-
-        public ProgressReceiver() {
-            super( null );
-        }
-
-        @Override
-        public void send( int resultCode, Bundle resultData ) {
+    private inner class ProgressReceiver : ResultReceiver(null) {
+        override fun send(resultCode: Int, resultData: Bundle) {
             // We want to handle the result in the same thread synchronously
-            handleProgress( resultCode, resultData );
+            handleProgress(resultCode, resultData)
         }
-
     }
 
+    companion object {
+        private const val SERVICE_NAME = "library"
+        const val LIBRARY_HOST = "commondatastorage.googleapis.com"
+        const val LIBRARY_PATH = "/flightintel/library"
+        const val ACTION_GET_BOOK = "flightintel.library.action.GET_BOOK"
+        const val ACTION_DELETE_BOOK = "flightintel.library.action.DELETE_BOOK"
+        const val ACTION_CHECK_BOOKS = "flightintel.library.action.CHECK_BOOKS"
+        const val ACTION_DOWNLOAD_PROGRESS = "flightintel.library.action.PROGRESS"
+        const val CATEGORY = "CATEGORY"
+        const val BOOK_NAME = "BOOK_NAME"
+        const val BOOK_NAMES = "BOOK_NAMES"
+        const val PDF_PATH = "PDF_PATH"
+    }
 }

@@ -59,6 +59,7 @@ class ServicesFragment : FragmentBase() {
             }
         }
     }
+
     private fun showDetails(result: Array<Cursor?>) {
         val apt = result[0] ?: return
         showAirportTitle(apt)
