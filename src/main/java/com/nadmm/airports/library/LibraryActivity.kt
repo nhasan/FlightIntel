@@ -30,6 +30,7 @@ import com.nadmm.airports.R
 import com.nadmm.airports.TabPagerActivityBase
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.utils.SystemUtils
+import com.nadmm.airports.utils.forEach
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -89,18 +90,13 @@ class LibraryActivity : TabPagerActivityBase() {
         get() = R.id.navdrawer_library
 
     private fun populateTabs(c: Cursor) {
-        if (c.moveToFirst()) {
-            do {
-                val code =
-                    c.getString(c.getColumnIndex(DatabaseManager.BookCategories.CATEGORY_CODE))
-                val name =
-                    c.getString(c.getColumnIndex(DatabaseManager.BookCategories.CATEGORY_NAME))
-                val args = Bundle()
-                args.putString(DatabaseManager.BookCategories.CATEGORY_CODE, code)
-                addTab(name, LibraryPageFragment::class.java, args)
-            } while (c.moveToNext())
+        c.forEach {
+            val code = c.getString(c.getColumnIndex(DatabaseManager.BookCategories.CATEGORY_CODE))
+            val name = c.getString(c.getColumnIndex(DatabaseManager.BookCategories.CATEGORY_NAME))
+            val args = Bundle()
+            args.putString(DatabaseManager.BookCategories.CATEGORY_CODE, code)
+            addTab(name, LibraryPageFragment::class.java, args)
         }
-        c.close()
     }
 
     var isPending: Boolean
