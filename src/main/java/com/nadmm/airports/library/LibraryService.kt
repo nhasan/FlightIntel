@@ -31,7 +31,7 @@ import java.util.*
 import java.util.zip.GZIPInputStream
 
 class LibraryService : IntentService(SERVICE_NAME) {
-    private var mDataDir: File? = null
+    private lateinit var mDataDir: File
 
     override fun onCreate() {
         super.onCreate()
@@ -39,54 +39,65 @@ class LibraryService : IntentService(SERVICE_NAME) {
     }
 
     override fun onHandleIntent(intent: Intent?) {
-        val action = intent!!.action
-        when (action) {
-            ACTION_CHECK_BOOKS -> {
-                checkBooks(intent)
+        intent?.let {
+            when (intent.action) {
+                ACTION_CHECK_BOOKS -> {
+                    checkBooks(intent)
+                }
+                ACTION_GET_BOOK -> {
+                    getBook(intent)
+                }
+                ACTION_DELETE_BOOK -> {
+                    deleteBook(intent)
+                }
             }
-            ACTION_GET_BOOK -> {
-                getBook(intent)
+        }
+    }
+
+    private fun checkBooks(intent: Intent) {
+        intent.action?.let { action ->
+            intent.getStringExtra(CATEGORY)?.let { category ->
+                intent.getStringArrayListExtra(BOOK_NAMES)?.let { books ->
+                    cleanupBooks(category, books)
+                    val categoryDir = getCategoryDir(category)
+                    for (book in books) {
+                        val pdfFile = File(categoryDir, book)
+                        sendResult(action, category, pdfFile)
+                    }
+                }
             }
-            ACTION_DELETE_BOOK -> {
-                deleteBook(intent)
+        }
+    }
+
+    private fun getBook(intent: Intent) {
+        intent.action?.let { action ->
+            intent.getStringExtra(CATEGORY)?.let { category ->
+                intent.getStringExtra(BOOK_NAME)?.let { book ->
+                    val categoryDir = getCategoryDir(category)
+                    val pdfFile = File(categoryDir, book)
+                    if (!pdfFile.exists()) {
+                        fetch(category, pdfFile)
+                    }
+                    sendResult(action, category, pdfFile)
+                }
             }
         }
     }
 
-    private fun checkBooks(intent: Intent?) {
-        val category = intent!!.getStringExtra(CATEGORY)
-        val books = intent.getStringArrayListExtra(BOOK_NAMES)
-        cleanupBooks(category, books)
-        val categoryDir = getCategoryDir(category)
-        for (book in books!!) {
-            val pdfFile = File(categoryDir, book)
-            sendResult(intent.action, category, pdfFile)
+    private fun deleteBook(intent: Intent) {
+        intent.getStringExtra(CATEGORY)?.let { category ->
+            intent.getStringExtra(BOOK_NAME)?.let { book ->
+                val categoryDir = getCategoryDir(category)
+                val pdfFile = File(categoryDir, book)
+                if (pdfFile.exists()) {
+                    pdfFile.delete()
+                }
+                sendResult(ACTION_CHECK_BOOKS, category, pdfFile)
+            }
         }
     }
 
-    private fun getBook(intent: Intent?) {
-        val category = intent!!.getStringExtra(CATEGORY)
-        val book = intent.getStringExtra(BOOK_NAME)
-        val categoryDir = getCategoryDir(category)
-        val pdfFile = File(categoryDir, book)
-        if (!pdfFile.exists()) {
-            fetch(category, pdfFile)
-        }
-        sendResult(intent.action, category, pdfFile)
-    }
-
-    private fun deleteBook(intent: Intent?) {
-        val category = intent!!.getStringExtra(CATEGORY)
-        val book = intent.getStringExtra(BOOK_NAME)
-        val categoryDir = getCategoryDir(category)
-        val pdfFile = File(categoryDir, book)
-        if (pdfFile.exists()) {
-            pdfFile.delete()
-        }
-        sendResult(ACTION_CHECK_BOOKS, category, pdfFile)
-    }
-
-    private fun fetch(category: String?, pdfFile: File): Boolean {
+    private fun fetch(category: String, pdfFile: File): Boolean {
         try {
             val receiver = ProgressReceiver()
             val result = Bundle()
@@ -103,7 +114,7 @@ class LibraryService : IntentService(SERVICE_NAME) {
         return false
     }
 
-    protected fun sendResult(action: String?, category: String?, pdfFile: File) {
+    private fun sendResult(action: String, category: String, pdfFile: File) {
         val result = Intent(action)
         result.putExtra(CATEGORY, category)
         result.putExtra(BOOK_NAME, pdfFile.name)
@@ -114,20 +125,20 @@ class LibraryService : IntentService(SERVICE_NAME) {
         bm.sendBroadcast(result)
     }
 
-    private fun cleanupBooks(category: String?, books: ArrayList<String>?) {
+    private fun cleanupBooks(category: String, books: ArrayList<String>) {
         // Delete all books that are no longer in the library list for a category
         val categoryDir = getCategoryDir(category)
         val list = categoryDir.listFiles()
         if (list != null) {
             for (pdfFile in list) {
-                if (!books!!.contains(pdfFile.name) || pdfFile.length() == 0L) {
+                if (!books.contains(pdfFile.name) || pdfFile.length() == 0L) {
                     pdfFile.delete()
                 }
             }
         }
     }
 
-    private fun getCategoryDir(category: String?): File {
+    private fun getCategoryDir(category: String): File {
         val categoryDir = File(mDataDir, category)
         if (!categoryDir.exists()) {
             categoryDir.mkdirs()
@@ -135,9 +146,9 @@ class LibraryService : IntentService(SERVICE_NAME) {
         return categoryDir
     }
 
-    protected fun handleProgress(resultCode: Int, resultData: Bundle?) {
+    private fun handleProgress(resultData: Bundle) {
         val intent = Intent(ACTION_DOWNLOAD_PROGRESS)
-        intent.putExtras(resultData!!)
+        intent.putExtras(resultData)
         val bm = LocalBroadcastManager.getInstance(this)
         bm.sendBroadcast(intent)
     }
@@ -145,7 +156,7 @@ class LibraryService : IntentService(SERVICE_NAME) {
     private inner class ProgressReceiver : ResultReceiver(null) {
         override fun send(resultCode: Int, resultData: Bundle) {
             // We want to handle the result in the same thread synchronously
-            handleProgress(resultCode, resultData)
+            handleProgress(resultData)
         }
     }
 
