@@ -103,13 +103,17 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     fi
     DCS_FILE="${BASE_DIR}/afd_${DCS_CYCLE}.xml";
     if [ ! -f "${DCS_FILE}" ]; then
-	DCS_URL="https://aeronav.faa.gov/afd/${DCS_CYCLE}/afd_${DCS_CYCLE}.xml";
+	    DCS_URL="https://aeronav.faa.gov/afd/${DCS_CYCLE}/afd_${DCS_CYCLE}.xml";
         echo "${bold}Downloading d-CS ${DCS_CYCLE} file:${normal}";
         wget -O ${DCS_FILE} ${DCS_URL};
     fi
-    echo "${bold}Running load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE}:${normal}";
-    ./load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE};
-    gzip ${OUT_FILE};
+    if [ -s ${DCS_FILE} ]; then
+        echo "${bold}Running load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE}:${normal}";
+        ./load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE};
+        gzip ${OUT_FILE};
+    else
+        echo "Unable to download XML file for ${DCS_CYCLE} cycle.";
+    fi
     echo "--";
 fi
 
