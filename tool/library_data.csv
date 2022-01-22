@@ -1,5 +1,5 @@
 category,filename,description,edition,author
-handbooks,faa-h-8083-3b-2016.pdf,Airplane Flying Handbook,2016,FAA-H-8083-3B
+handbooks,faa-h-8083-3c-2021.pdf,Airplane Flying Handbook,2021,FAA-H-8083-3C
 handbooks,faa-h-8083-25b-2016.pdf,Pilot's Handbook of Aeronautical Knowledge,2016,FAA-H-8083-25B
 handbooks,faa-h-8083-15b-2012.pdf,Instrument Flying Handbook,2012,FAA-H-8083-15B
 handbooks,faa-h-8083-16b-2017.pdf,Instrument Procedures Handbook,2017,FAA-H-8083-16B
@@ -11,32 +11,32 @@ handbooks,faa-h-8083-21b-2019.pdf,Helicopter Flying Handbook,2019,FAA-H-8083-21B
 handbooks,faa-fs-i-8700-1-2003.pdf,Information for Banner Tow Operations,2003,FAA/FS-I-8799-1
 handbooks,fcm-h1-2017.pdf,Federal Meteorological Handbook No. 1,2017,NOAA
 handbooks,fcm-h2-1988.pdf,Federal Meteorological Handbook No. 2,1988,NOAA
-manuals,cug_20210617.pdf,Aeronautical Chart User's Guide,Jun 2021,FAA
+manuals,cug_20211202.pdf,Aeronautical Chart User's Guide,Dec 2021,FAA
 manuals,faa-h-8083-19a-2008.pdf,Plane Sense - General Aviation Information,2008,FAA-H-8083-19A
 manuals,ac-00-6b.pdf,Aviation Weather,2016,AC-00-6B
-manuals,ac-00-45h_chg_1.pdf,Aviation Weather Services,2016,AC-00-45H
+manuals,ac-00-45h_chg_2.pdf,Aviation Weather Services,2019,AC-00-45H Change 2
 manuals,00-80T-80.pdf,Aerodynamics for Naval Aviators,1965,H. H. Hurt Jr.
-periodicals,cb_498.pdf,Callback,Issue 498 (Jul 2021),NASA
-periodicals,cb_497.pdf,Callback,Issue 497 (Jun 2021),NASA
-periodicals,cb_496.pdf,Callback,Issue 496 (May 2021),NASA
-periodicals,cb_495.pdf,Callback,Issue 495 (Apr 2021),NASA
-periodicals,cb_494.pdf,Callback,Issue 494 (Mar 2021),NASA
+periodicals,cb_504.pdf,Callback,Issue 504 (Jan 2022),NASA
+periodicals,cb_503.pdf,Callback,Issue 503 (Dec 2021),NASA
+periodicals,cb_502.pdf,Callback,Issue 502 (Nov 2021),NASA
+periodicals,cb_501.pdf,Callback,Issue 501 (Oct 2021),NASA
+periodicals,cb_500.pdf,Callback,Issue 500 (Sep 2021),NASA
+periodicals,JanFeb2022.pdf,FAA Safety Briefing,Jan/Feb 2022,FAA
+periodicals,NovDec2021.pdf,FAA Safety Briefing,Nov/Dec 2021,FAA
+periodicals,SepOct2021.pdf,FAA Safety Briefing,Sep/Oct 2021,FAA
 periodicals,JulAug2021.pdf,FAA Safety Briefing,Jul/Aug 2021,FAA
 periodicals,MayJun2021.pdf,FAA Safety Briefing,May/Jun 2021,FAA
-periodicals,MarApr2021.pdf,FAA Safety Briefing,Mar/Apr 2021,FAA
-periodicals,JanFeb2021.pdf,FAA Safety Briefing,Jan/Feb 2021,FAA
-periodicals,NovDec2020.pdf,FAA Safety Briefing,Nov/Dec 2020,FAA
-regs,aim_210617.pdf,AIM,Jun 2021,Basic
-regs,CFR-2020-title14-vol1.pdf,FAR Volume 1,Parts 1-59,US GPO 2020
-regs,CFR-2020-title14-vol2.pdf,FAR Volume 2,Parts 60-109,US GPO 2020
-regs,CFR-2020-title14-vol3.pdf,FAR Volume 3,Parts 110-199,US GPO 2020
-regs,CFR-2020-title14-vol4.pdf,FAR Volume 4,Parts 200-1199,US GPO 2020
-regs,CFR-2020-title14-vol5.pdf,FAR Volume 5,Parts 1200-1399,US GPO 2020
-misc,aip_210617.pdf,AIP (26th Edition),Jun 2021,Basic with Amdts 1 & 2
-misc,nat_doc_007_200716.pdf,North Atlantic Operations Manual,V.2021-2,USA
-misc,pcg_210617.pdf,Pilot/Controller Glossary,Jun 2021,Basic
-misc,7110.10BB_fss_210617.pdf,Flight Services,Jun 2021,Basic
-misc,7110.65Z_atc_210617.pdf,Air Traffic Control,Jun 2021,Basic
+regs,aim_211202.pdf,AIM,Dec 2021,Change 1
+regs,CFR-2021-title14-vol1.pdf,FAR Volume 1 2021,Parts 1-59,US GPO
+regs,CFR-2021-title14-vol2.pdf,FAR Volume 2 2021,Parts 60-109,US GPO
+regs,CFR-2021-title14-vol3.pdf,FAR Volume 3 2021,Parts 110-199,US GPO
+regs,CFR-2021-title14-vol4.pdf,FAR Volume 4 2021,Parts 200-1199,US GPO
+regs,CFR-2021-title14-vol5.pdf,FAR Volume 5 2021,Parts 1200-1399,US GPO
+misc,aip_211202.pdf,AIP (26th Edition),Dec 2021,Amdt. 3
+misc,nat_doc_007_210716.pdf,North Atlantic Operations Manual,V.2021-2,USA
+misc,pcg_211202.pdf,Pilot/Controller Glossary,Dec 2021,Basic
+misc,7110.10BB_fss_211202.pdf,Flight Services,Dec 2021,Change 1
+misc,7110.65Z_atc_211202.pdf,Air Traffic Control,Dec 2021,Change 1
 misc,7110.118B_lahso_201115.pdf,Land and Hold Short Operations,Nov 2020,JO 7110.118B
 misc,faa_airspacecard_2014.pdf,Airspace Card,Jun 2014,FAA
 misc,Pilots_NOTAM_primer_for_2021.pdf,NOTAMs Primer for Pilots,Dec 2020,FAA
@@ -76,11 +76,12 @@ testguide,FAA-G-8082-5H_1702.pdf,Commercial Pilot Knowledge Test Guide,Feb 2017,
 testguide,FAA-G-8082-7I_1702.pdf,Flight Instructor Knowledge Test Guide,Feb 2017,FAA-G-8082-7I
 testguide,FAA-G-8082-4D_1702.pdf,Sport Pilot Knowledge Test Guide,Feb 2017,FAA-G-8082-4D
 testguide,IPC_Guidance_150909.pdf,Instrument Proficiency Check Guidance,Sep 2015,
-testguide,PARSampleExam_181015.pdf,Private Pilot Airplane Sample Questions,Oct 2018,PAR
-testguide,PRHSampleExam_190628.pdf,Private Pilot Helicopter Sample Questions,Jun 2019,PRH
-testguide,IRASampleExam_190628.pdf,Instrument Rating Airplane Sample Questions,Jun 2019,IRA
-testguide,CAXSampleExam_190628.pdf,Commercial Pilot Airplane Sample Questions,Jun 2019,CAX
-testguide,LSPSampleExam_181015.pdf,Light Sport Airplane Sample Questions,Oct 2018,LSP
+testguide,PARSampleExam_210812.pdf,Private Pilot Airplane Sample Questions,Aug 2021,PAR
+testguide,PRHSampleExam_210812.pdf,Private Pilot Helicopter Sample Questions,Aug 2021,PRH
+testguide,IRASampleExam_210812.pdf,Instrument Rating Airplane Sample Questions,Aug 2021,IRA
+testguide,IRHSampleExam_210812.pdf,Instrument Rating Helicopter Sample Questions,Aug 2021,IRH
+testguide,CAXSampleExam_210812.pdf,Commercial Pilot Airplane Sample Questions,Aug 2021,CAX
+testguide,SPASampleExam_210812.pdf,Light Sport Airplane Sample Questions,Aug 2021,SPA
 pts,FAA-S-ACS-7A_180611.pdf,Commercial Pilot ACS,Jun 2018,FAA-S-ACS-7A
 pts,FAA-S-ACS-6B_180611.pdf,Private Pilot ACS,Jun 2018,FAA-S-ACS-6B
 pts,faa-s-8081-29.pdf,Sport Pilot PTS,May 2014,FAA-S-8081-29
