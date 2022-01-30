@@ -37,8 +37,17 @@ class AfdMainActivity : TabPagerActivityBase() {
             BrowseAirportsFragment::class.java
     )
 
-    private val FAVORITES = mTabTitles.indexOf(R.string.favorites)
-    private val NEARBY = mTabTitles.indexOf(R.string.nearby)
+    private fun getIndex() : Int {
+        if (prefAlwaysShowNearby) {
+            return mTabTitles.indexOf(R.string.nearby)
+        }
+
+        val fav = dbManager.aptFavorites
+        return if (fav.isNotEmpty())
+            mTabTitles.indexOf(R.string.favorites)
+        else
+            mTabTitles.indexOf(R.string.nearby)
+    }
 
     override val selfNavDrawerItem = R.id.navdrawer_afd
 
@@ -53,13 +62,8 @@ class AfdMainActivity : TabPagerActivityBase() {
         }
     }
 
-    override fun getInitialTabIndex(): Int {
-        if (prefAlwaysShowNearby) {
-            return NEARBY
-        }
+    override val initialTabIndex: Int
+        get() = getIndex()
 
-        val fav = dbManager.aptFavorites
-        return if (fav.isNotEmpty()) FAVORITES else NEARBY
-    }
 
 }
