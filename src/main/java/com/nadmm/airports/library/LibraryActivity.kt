@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nadmm.airports.R
 import com.nadmm.airports.TabPagerActivityBase
 import com.nadmm.airports.data.DatabaseManager
+import com.nadmm.airports.data.DatabaseManager.BookCategories
 import com.nadmm.airports.utils.SystemUtils
 import com.nadmm.airports.utils.forEach
 import kotlinx.coroutines.*
@@ -40,6 +41,10 @@ class LibraryActivity : TabPagerActivityBase() {
     private lateinit var mReceivers: HashMap<String, BroadcastReceiver>
     private lateinit var mReceiver: BroadcastReceiver
     private lateinit var mFilter: IntentFilter
+    private val mColumns = arrayOf(
+        BookCategories.CATEGORY_CODE,
+        BookCategories.CATEGORY_NAME
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +75,7 @@ class LibraryActivity : TabPagerActivityBase() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val result = doQuery()
-            populateTabs(result)
+            postRunnable( Runnable { populateTabs(result) }, 0)
         }
     }
 
@@ -91,12 +96,13 @@ class LibraryActivity : TabPagerActivityBase() {
 
     private fun populateTabs(c: Cursor) {
         c.forEach {
-            val code = c.getString(c.getColumnIndex(DatabaseManager.BookCategories.CATEGORY_CODE))
-            val name = c.getString(c.getColumnIndex(DatabaseManager.BookCategories.CATEGORY_NAME))
+            val code = c.getString(mColumns.indexOf(BookCategories.CATEGORY_CODE))
+            val name = c.getString(mColumns.indexOf(BookCategories.CATEGORY_NAME))
             val args = Bundle()
-            args.putString(DatabaseManager.BookCategories.CATEGORY_CODE, code)
+            args.putString(BookCategories.CATEGORY_CODE, code)
             addTab(name, LibraryPageFragment::class.java, args)
         }
+        c.close()
     }
 
     var isPending: Boolean
@@ -118,10 +124,10 @@ class LibraryActivity : TabPagerActivityBase() {
     private fun doQuery(): Cursor {
         val db = getDatabase(DatabaseManager.DB_LIBRARY)
         val builder = SQLiteQueryBuilder()
-        builder.tables = DatabaseManager.BookCategories.TABLE_NAME
+        builder.tables = BookCategories.TABLE_NAME
         return builder.query(
-            db, arrayOf("*"), null, null, null, null,
-            DatabaseManager.BookCategories._ID
+            db, mColumns, null, null, null, null,
+            BookCategories._ID
         )
     }
 }

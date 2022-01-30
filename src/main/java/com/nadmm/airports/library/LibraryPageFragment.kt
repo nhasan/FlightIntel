@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,8 +47,8 @@ import java.util.*
 class LibraryPageFragment : FragmentBase() {
     private var mIsOk = false
     private lateinit var mReceiver: BroadcastReceiver
+    private lateinit var mCategory: String
     private var mOnClickListener: View.OnClickListener? = null
-    private var mCategory: String? = null
     private var mContextMenuRow: View? = null
     private val mBookRowMap = HashMap<String, View>()
     private val mColumns = arrayOf(
@@ -61,8 +61,7 @@ class LibraryPageFragment : FragmentBase() {
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val args = arguments
-        mCategory = args?.getString(Library.CATEGORY_CODE)
+        mCategory = arguments?.getString(Library.CATEGORY_CODE).toString()
         mReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 val action = intent.action ?: ""
@@ -102,13 +101,13 @@ class LibraryPageFragment : FragmentBase() {
 
     override fun onResume() {
         val activity = requireActivity() as LibraryActivity
-        mCategory?.let { activity.registerReceiver(it, mReceiver) }
+        activity.registerReceiver(mCategory, mReceiver)
         super.onResume()
     }
 
     override fun onPause() {
         val activity = requireActivity() as LibraryActivity
-        mCategory?.let { activity.unregisterReceiver(it) }
+        activity.unregisterReceiver(mCategory)
         super.onPause()
     }
 
@@ -123,13 +122,11 @@ class LibraryPageFragment : FragmentBase() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mCategory?.let {
-            viewLifecycleOwner.lifecycleScope.launch {
-                val result = withContext(Dispatchers.IO) {
-                    doQuery(it)
-                }
-                showBooks(result)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                doQuery(mCategory)
             }
+            showBooks(result)
         }
     }
 
@@ -156,12 +153,12 @@ class LibraryPageFragment : FragmentBase() {
             var prevDesc = ""
             var matrix: MatrixCursor? = null
             do {
-                val name = c.getString(c.getColumnIndex(Library.BOOK_NAME))
-                val desc = c.getString(c.getColumnIndex(Library.BOOK_DESC))
-                val edition = c.getString(c.getColumnIndex(Library.EDITION))
-                val author = c.getString(c.getColumnIndex(Library.AUTHOR))
-                val size = c.getLong(c.getColumnIndex(Library.DOWNLOAD_SIZE))
-                val flag = c.getString(c.getColumnIndex(Library.FLAG))
+                val name = c.getString(mColumns.indexOf(Library.BOOK_NAME))
+                val desc = c.getString(mColumns.indexOf(Library.BOOK_DESC))
+                val edition = c.getString(mColumns.indexOf(Library.EDITION))
+                val author = c.getString(mColumns.indexOf(Library.AUTHOR))
+                val size = c.getLong(mColumns.indexOf(Library.DOWNLOAD_SIZE))
+                val flag = c.getString(mColumns.indexOf(Library.FLAG))
                 if (desc != prevDesc) {
                     matrix = MatrixCursor(mColumns)
                     result[i++] = matrix
@@ -173,6 +170,7 @@ class LibraryPageFragment : FragmentBase() {
                 }
             } while (c.moveToNext())
         }
+        c.close()
         return result
     }
 
@@ -202,21 +200,24 @@ class LibraryPageFragment : FragmentBase() {
         )
         val topLayout = findViewById<LinearLayout>(R.id.main_content)
         for (c in result) {
-            if (c!!.moveToFirst()) {
-                val layout = inflate<LinearLayout>(
-                    R.layout.library_detail_section,
-                    topLayout!!
-                )
-                topLayout.addView(layout)
-                do {
-                    val name = c.getString(c.getColumnIndex(Library.BOOK_NAME))
-                    val desc = c.getString(c.getColumnIndex(Library.BOOK_DESC))
-                    val edition = c.getString(c.getColumnIndex(Library.EDITION))
-                    val author = c.getString(c.getColumnIndex(Library.AUTHOR))
-                    val size = c.getLong(c.getColumnIndex(Library.DOWNLOAD_SIZE))
-                    val flag = c.getString(c.getColumnIndex(Library.FLAG))
-                    addLibraryRow(layout, name, desc, edition, author, flag, size)
-                } while (c.moveToNext())
+            c?.let {
+                if (c.moveToFirst()) {
+                    val layout = inflate<LinearLayout>(
+                        R.layout.library_detail_section,
+                        topLayout!!
+                    )
+                    topLayout.addView(layout)
+                    do {
+                        val name = c.getString(mColumns.indexOf(Library.BOOK_NAME))
+                        val desc = c.getString(mColumns.indexOf(Library.BOOK_DESC))
+                        val edition = c.getString(mColumns.indexOf(Library.EDITION))
+                        val author = c.getString(mColumns.indexOf(Library.AUTHOR))
+                        val size = c.getLong(mColumns.indexOf(Library.DOWNLOAD_SIZE))
+                        val flag = c.getString(mColumns.indexOf(Library.FLAG))
+                        addLibraryRow(layout, name, desc, edition, author, flag, size)
+                    } while (c.moveToNext())
+                }
+                c.close()
             }
         }
         setFragmentContentShown(true)
