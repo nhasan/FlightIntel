@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ import com.nadmm.airports.Application
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.PreferencesActivity
 import com.nadmm.airports.R
+import com.nadmm.airports.aeronav.AeroNavService
 import com.nadmm.airports.aeronav.ClassBService
 import com.nadmm.airports.aeronav.DafdService
 import com.nadmm.airports.aeronav.DtppActivity
@@ -77,7 +78,7 @@ class AirportDetailsFragment : FragmentBase() {
     init {
         mBcastFilter.run {
             addAction(NoaaService.ACTION_GET_METAR)
-            addAction(DafdService.ACTION_GET_AFD)
+            addAction(AeroNavService.ACTION_GET_AFD)
             addAction(ClassBService.ACTION_GET_CLASSB_GRAPHIC)
         }
         mBcastReceiver = object : BroadcastReceiver() {
@@ -90,13 +91,12 @@ class AirportDetailsFragment : FragmentBase() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        mAwosViews.clear()
         val view = inflater.inflate(R.layout.airport_detail_view, container, false)
         return createContentView(view)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setActionBarTitle("Airport Details", "")
 
@@ -113,11 +113,16 @@ class AirportDetailsFragment : FragmentBase() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mAwosViews.clear()
+    }
+
     override fun onResume() {
         super.onResume()
 
-        if (activity != null) {
-            val bm = LocalBroadcastManager.getInstance(activity!!)
+        activity?.let {
+            val bm = LocalBroadcastManager.getInstance(it)
             bm.registerReceiver(mBcastReceiver, mBcastFilter)
         }
     }
@@ -125,8 +130,8 @@ class AirportDetailsFragment : FragmentBase() {
     override fun onPause() {
         super.onPause()
 
-        if (activity != null) {
-            val bm = LocalBroadcastManager.getInstance(activity!!)
+        activity?.let {
+            val bm = LocalBroadcastManager.getInstance(it)
             bm.unregisterReceiver(mBcastReceiver)
         }
     }
@@ -150,8 +155,8 @@ class AirportDetailsFragment : FragmentBase() {
                     }
                 }
             }
-            DafdService.ACTION_GET_AFD -> {
-                val path = intent.getStringExtra(DafdService.PDF_PATH)
+            AeroNavService.ACTION_GET_AFD -> {
+                val path = intent.getStringExtra(AeroNavService.PDF_PATH)
                 if (path != null) {
                     SystemUtils.startPDFViewer(activity, path)
                 }
@@ -167,9 +172,9 @@ class AirportDetailsFragment : FragmentBase() {
 
     private fun getAfdPage(afdCycle: String, pdfName: String) {
         val service = Intent(activity, DafdService::class.java)
-        service.action = DafdService.ACTION_GET_AFD
-        service.putExtra(DafdService.CYCLE_NAME, afdCycle)
-        service.putExtra(DafdService.PDF_NAME, pdfName)
+        service.action = AeroNavService.ACTION_GET_AFD
+        service.putExtra(AeroNavService.CYCLE_NAME, afdCycle)
+        service.putExtra(AeroNavService.PDF_NAME, pdfName)
         activityBase.startService(service)
     }
 
@@ -200,6 +205,8 @@ class AirportDetailsFragment : FragmentBase() {
 
         requestMetars(false)
 
+        result.forEach { it?.close() }
+
         setFragmentContentShown(true)
     }
 
@@ -208,9 +215,9 @@ class AirportDetailsFragment : FragmentBase() {
 
         val layout = findViewById<LinearLayout>(R.id.detail_comm_layout) ?: return
 
-        val ctaf = apt.getString(apt.getColumnIndex(Airports.CTAF_FREQ))
-        addRow(layout, "CTAF", if (ctaf.isNotEmpty()) ctaf else "None")
-        val unicom = apt.getString(apt.getColumnIndex(Airports.UNICOM_FREQS))
+        val ctaf = apt.getString(apt.getColumnIndexOrThrow(Airports.CTAF_FREQ))
+        addRow(layout, "CTAF", ctaf.ifEmpty { "None" })
+        val unicom = apt.getString(apt.getColumnIndexOrThrow(Airports.UNICOM_FREQS))
         if (unicom.isNotEmpty()) {
             addRow(layout, "Unicom", unicom)
         }
@@ -220,9 +227,9 @@ class AirportDetailsFragment : FragmentBase() {
             val freqMap = HashMap<String, ArrayList<Float>>()
             do {
                 val freqUse = twr3.getString(
-                        twr3.getColumnIndex(Tower3.MASTER_AIRPORT_FREQ_USE))
+                        twr3.getColumnIndexOrThrow(Tower3.MASTER_AIRPORT_FREQ_USE))
                 val value = twr3.getString(
-                        twr3.getColumnIndex(Tower3.MASTER_AIRPORT_FREQ))
+                        twr3.getColumnIndexOrThrow(Tower3.MASTER_AIRPORT_FREQ))
                 when {
                     freqUse.contains("LCL/P") -> addFrequencyToMap(freqMap, "Tower", value)
                     freqUse.contains("GND/P") -> addFrequencyToMap(freqMap, "Ground", value)
@@ -271,7 +278,7 @@ class AirportDetailsFragment : FragmentBase() {
         val rwy = result[1]
         if (rwy != null && rwy.moveToFirst()) {
             do {
-                val rwyId = rwy.getString(rwy.getColumnIndex(Runways.RUNWAY_ID))
+                val rwyId = rwy.getString(rwy.getColumnIndexOrThrow(Runways.RUNWAY_ID))
                 if (rwyId.startsWith("H")) {
                     // This is a helipad
                     addRunwayRow(heliLayout, rwy)
@@ -305,7 +312,7 @@ class AirportDetailsFragment : FragmentBase() {
         val rmk = result[2]
         if (rmk?.moveToFirst() == true) {
             do {
-                val remark = rmk.getString(rmk.getColumnIndex(Remarks.REMARK_TEXT))
+                val remark = rmk.getString(rmk.getColumnIndexOrThrow(Remarks.REMARK_TEXT))
                 addBulletedRow(layout!!, remark)
                 ++row
             } while (rmk.moveToNext())
@@ -314,13 +321,13 @@ class AirportDetailsFragment : FragmentBase() {
         val twr1 = result[3]
         val twr7 = result[5]
         if (twr1 != null && twr1.moveToFirst()) {
-            val facilityType = twr1.getString(twr1.getColumnIndex(Tower1.FACILITY_TYPE))
+            val facilityType = twr1.getString(twr1.getColumnIndexOrThrow(Tower1.FACILITY_TYPE))
             if (facilityType == "NON-ATCT" && twr7 != null && twr7.count == 0) {
                 // Show remarks, if any, since there are no frequencies listed
                 val twr6 = result[6]
                 if (twr6 != null && twr6.moveToFirst()) {
                     do {
-                        val remark = twr6.getString(twr6.getColumnIndex(Tower6.REMARK_TEXT))
+                        val remark = twr6.getString(twr6.getColumnIndexOrThrow(Tower6.REMARK_TEXT))
                         addBulletedRow(layout!!, remark)
                         ++row
                     } while (twr6.moveToNext())
@@ -342,20 +349,20 @@ class AirportDetailsFragment : FragmentBase() {
                 if (awos1.position == 5) {
                     break
                 }
-                var icaoCode = awos1.getString(awos1.getColumnIndex(Wxs.STATION_ID))
-                val sensorId = awos1.getString(awos1.getColumnIndex(Awos1.WX_SENSOR_IDENT))
+                var icaoCode = awos1.getString(awos1.getColumnIndexOrThrow(Wxs.STATION_ID))
+                val sensorId = awos1.getString(awos1.getColumnIndexOrThrow(Awos1.WX_SENSOR_IDENT))
                 if (icaoCode == null || icaoCode.isEmpty()) {
                     icaoCode = "K$sensorId"
                 }
-                val type = awos1.getString(awos1.getColumnIndex(Awos1.WX_SENSOR_TYPE))
-                var freq = awos1.getString(awos1.getColumnIndex(Awos1.STATION_FREQUENCY))
+                val type = awos1.getString(awos1.getColumnIndexOrThrow(Awos1.WX_SENSOR_TYPE))
+                var freq = awos1.getString(awos1.getColumnIndexOrThrow(Awos1.STATION_FREQUENCY))
                 if (freq.isNullOrBlank()) {
-                    freq = awos1.getString(awos1.getColumnIndex(Awos1.SECOND_STATION_FREQUENCY))
+                    freq = awos1.getString(awos1.getColumnIndexOrThrow(Awos1.SECOND_STATION_FREQUENCY))
                 }
-                val phone = awos1.getString(awos1.getColumnIndex(Awos1.STATION_PHONE_NUMBER)) ?: ""
-                val name = awos1.getString(awos1.getColumnIndex(Wxs.STATION_NAME)) ?: ""
-                val distance = awos1.getFloat(awos1.getColumnIndex("DISTANCE"))
-                val bearing = awos1.getFloat(awos1.getColumnIndex("BEARING"))
+                val phone = awos1.getString(awos1.getColumnIndexOrThrow(Awos1.STATION_PHONE_NUMBER)) ?: ""
+                val name = awos1.getString(awos1.getColumnIndexOrThrow(Wxs.STATION_NAME)) ?: ""
+                val distance = awos1.getFloat(awos1.getColumnIndexOrThrow("DISTANCE"))
+                val bearing = awos1.getFloat(awos1.getColumnIndexOrThrow("BEARING"))
 
                 val extras = Bundle().apply {
                     putString(NoaaService.STATION_ID, icaoCode)
@@ -397,13 +404,13 @@ class AirportDetailsFragment : FragmentBase() {
             }
             addClickableRow(layout, "Tap here to set home airport", runnable)
         } else if (home.moveToFirst()) {
-            val siteNumber = home.getString(home.getColumnIndex(Airports.SITE_NUMBER))
+            val siteNumber = home.getString(home.getColumnIndexOrThrow(Airports.SITE_NUMBER))
             if (siteNumber == mSiteNumber) {
                 addRow(layout, "This is your home airport")
             } else {
-                val lat = home.getDouble(home.getColumnIndex(
+                val lat = home.getDouble(home.getColumnIndexOrThrow(
                         Airports.REF_LATTITUDE_DEGREES))
-                val lon = home.getDouble(home.getColumnIndex(
+                val lon = home.getDouble(home.getColumnIndexOrThrow(
                         Airports.REF_LONGITUDE_DEGREES))
                 val results = FloatArray(3)
                 Location.distanceBetween(lat, lon,
@@ -450,12 +457,12 @@ class AirportDetailsFragment : FragmentBase() {
         val apt = result[0] ?: return
 
         val layout = findViewById<LinearLayout>(R.id.detail_charts_layout) ?: return
-        var sectional: String? = apt.getString(apt.getColumnIndex(Airports.SECTIONAL_CHART))
+        var sectional: String? = apt.getString(apt.getColumnIndexOrThrow(Airports.SECTIONAL_CHART))
         if (sectional == null || sectional.isEmpty()) {
             sectional = "N/A"
         }
-        val lat = apt.getString(apt.getColumnIndex(Airports.REF_LATTITUDE_DEGREES))
-        val lon = apt.getString(apt.getColumnIndex(Airports.REF_LONGITUDE_DEGREES))
+        val lat = apt.getString(apt.getColumnIndexOrThrow(Airports.REF_LATTITUDE_DEGREES))
+        val lon = apt.getString(apt.getColumnIndexOrThrow(Airports.REF_LONGITUDE_DEGREES))
         if (lat.isNotEmpty() && lon.isNotEmpty()) {
             // Link to the sectional at VFRMAP if location is available
             var uri = Uri.parse("http://vfrmap.com/?type=vfrc&lat=$lat&lon=$lon&zoom=10")
@@ -475,7 +482,7 @@ class AirportDetailsFragment : FragmentBase() {
         if (classb != null && classb.moveToFirst()) {
             val seen = HashSet<String>()
             do {
-                val faaCode = classb.getString(classb.getColumnIndex(Airports.FAA_CODE))
+                val faaCode = classb.getString(classb.getColumnIndexOrThrow(Airports.FAA_CODE))
                 val classBName = ClassBUtils.getClassBName(faaCode)
                 if (!seen.contains(classBName)) {
                     val row = addClickableRow(layout, "$classBName Class B airspace", "")
@@ -493,34 +500,34 @@ class AirportDetailsFragment : FragmentBase() {
     private fun showOperationsDetails(result: Array<Cursor?>) {
         val apt = result[0] ?: return
         val layout = findViewById<LinearLayout>(R.id.detail_operations_layout)
-        val use = apt.getString(apt.getColumnIndex(Airports.FACILITY_USE))
+        val use = apt.getString(apt.getColumnIndexOrThrow(Airports.FACILITY_USE))
         addRow(layout!!, "Operation", DataUtils.decodeFacilityUse(use))
-        val faaCode = apt.getString(apt.getColumnIndex(Airports.FAA_CODE))
+        val faaCode = apt.getString(apt.getColumnIndexOrThrow(Airports.FAA_CODE))
         addRow(layout, "FAA code", faaCode)
-        val timezoneId = apt.getString(apt.getColumnIndex(Airports.TIMEZONE_ID))
+        val timezoneId = apt.getString(apt.getColumnIndexOrThrow(Airports.TIMEZONE_ID))
         if (timezoneId.isNotBlank()) {
             val tz = TimeZone.getTimeZone(timezoneId)
             addRow(layout, "Local time zone", TimeUtils.getTimeZoneAsString(tz))
         }
-        val activation = apt.getString(apt.getColumnIndex(Airports.ACTIVATION_DATE))
+        val activation = apt.getString(apt.getColumnIndexOrThrow(Airports.ACTIVATION_DATE))
         if (activation.isNotBlank()) {
             addRow(layout, "Activation date", activation)
         }
         val twr8 = result[9]
         if (twr8 != null && twr8.moveToFirst()) {
-            val airspace = twr8.getString(twr8.getColumnIndex(Tower8.AIRSPACE_TYPES))
+            val airspace = twr8.getString(twr8.getColumnIndexOrThrow(Tower8.AIRSPACE_TYPES))
             val value = DataUtils.decodeAirspace(airspace)
-            val hours = twr8.getString(twr8.getColumnIndex(Tower8.AIRSPACE_HOURS))
+            val hours = twr8.getString(twr8.getColumnIndexOrThrow(Tower8.AIRSPACE_HOURS))
             addRow(layout, "Airspace", value, hours)
         }
-        val tower = apt.getString(apt.getColumnIndex(Airports.TOWER_ON_SITE))
+        val tower = apt.getString(apt.getColumnIndexOrThrow(Airports.TOWER_ON_SITE))
         addRow(layout, "Control tower", if (tower == "Y") "Yes" else "No")
 
         val twr5: Cursor? = result[16]
         if (twr5 != null && twr5.moveToFirst()) {
             val radarList = HashSet<String>()
             for (i: Int in 1..4) {
-                var towerRadar = twr5.getString(twr5.getColumnIndex("TOWER_RADAR_TYPE_$i"))
+                val towerRadar = twr5.getString(twr5.getColumnIndexOrThrow("TOWER_RADAR_TYPE_$i"))
                 if (towerRadar.isNotBlank()) {
                     radarList.add(towerRadar)
                 }
@@ -531,27 +538,27 @@ class AirportDetailsFragment : FragmentBase() {
             }
         }
 
-        val windIndicator = apt.getString(apt.getColumnIndex(Airports.WIND_INDICATOR))
+        val windIndicator = apt.getString(apt.getColumnIndexOrThrow(Airports.WIND_INDICATOR))
         addRow(layout, "Wind indicator", DataUtils.decodeWindIndicator(windIndicator))
-        val circle = apt.getString(apt.getColumnIndex(Airports.SEGMENTED_CIRCLE))
+        val circle = apt.getString(apt.getColumnIndexOrThrow(Airports.SEGMENTED_CIRCLE))
         addRow(layout, "Segmented circle", if (circle == "Y") "Yes" else "No")
-        val beacon = apt.getString(apt.getColumnIndex(Airports.BEACON_COLOR))
+        val beacon = apt.getString(apt.getColumnIndexOrThrow(Airports.BEACON_COLOR))
         addRow(layout, "Beacon", DataUtils.decodeBeacon(beacon))
-        var lighting = apt.getString(apt.getColumnIndex(Airports.LIGHTING_SCHEDULE))
+        var lighting = apt.getString(apt.getColumnIndexOrThrow(Airports.LIGHTING_SCHEDULE))
         if (lighting.isNotBlank()) {
             addRow(layout, "Airport lighting", lighting)
         }
-        lighting = apt.getString(apt.getColumnIndex(Airports.BEACON_LIGHTING_SCHEDULE))
+        lighting = apt.getString(apt.getColumnIndexOrThrow(Airports.BEACON_LIGHTING_SCHEDULE))
         if (lighting.isNotBlank()) {
             addRow(layout, "Beacon lighting", lighting)
         }
 
-        val landingFee = apt.getString(apt.getColumnIndex(Airports.LANDING_FEE))
+        val landingFee = apt.getString(apt.getColumnIndexOrThrow(Airports.LANDING_FEE))
         addRow(layout, "Landing fee", if (landingFee == "Y") "Yes" else "No")
-        var dir = apt.getString(apt.getColumnIndex(Airports.MAGNETIC_VARIATION_DIRECTION))
+        var dir = apt.getString(apt.getColumnIndexOrThrow(Airports.MAGNETIC_VARIATION_DIRECTION))
         if (dir.isNotBlank()) {
-            val variation = apt.getInt(apt.getColumnIndex(Airports.MAGNETIC_VARIATION_DEGREES))
-            val year = apt.getString(apt.getColumnIndex(Airports.MAGNETIC_VARIATION_YEAR))
+            val variation = apt.getInt(apt.getColumnIndexOrThrow(Airports.MAGNETIC_VARIATION_DEGREES))
+            val year = apt.getString(apt.getColumnIndexOrThrow(Airports.MAGNETIC_VARIATION_YEAR))
             if (year.isNotBlank()) {
                 addRow(layout, "Magnetic variation", "$variation\u00B0 $dir ($year)")
             } else {
@@ -562,23 +569,23 @@ class AirportDetailsFragment : FragmentBase() {
             dir = if (variation >= 0) "W" else "E"
             addRow(layout, "Magnetic variation", "${abs(variation)}\u00B0 $dir (actual)")
         }
-        val intlEntry = apt.getString(apt.getColumnIndex(Airports.INTL_ENTRY_AIRPORT))
+        val intlEntry = apt.getString(apt.getColumnIndexOrThrow(Airports.INTL_ENTRY_AIRPORT))
         if (intlEntry == "Y") {
             addRow(layout, "International entry", "Yes")
         }
-        val customs = apt.getString(apt.getColumnIndex(Airports.CUSTOMS_LANDING_RIGHTS_AIRPORT))
+        val customs = apt.getString(apt.getColumnIndexOrThrow(Airports.CUSTOMS_LANDING_RIGHTS_AIRPORT))
         if (customs == "Y") {
             addRow(layout, "Customs landing rights", "Yes")
         }
-        val jointUse = apt.getString(apt.getColumnIndex(Airports.CIVIL_MILITARY_JOINT_USE))
+        val jointUse = apt.getString(apt.getColumnIndexOrThrow(Airports.CIVIL_MILITARY_JOINT_USE))
         if (jointUse == "Y") {
             addRow(layout, "Civil/military joint use", "Yes")
         }
-        val militaryRights = apt.getString(apt.getColumnIndex(Airports.MILITARY_LANDING_RIGHTS))
+        val militaryRights = apt.getString(apt.getColumnIndexOrThrow(Airports.MILITARY_LANDING_RIGHTS))
         if (militaryRights != null && militaryRights == "Y") {
             addRow(layout, "Military landing rights", "Yes")
         }
-        val medical = apt.getString(apt.getColumnIndex(Airports.MEDICAL_USE))
+        val medical = apt.getString(apt.getColumnIndexOrThrow(Airports.MEDICAL_USE))
         if (medical == "Y") {
             addRow(layout, "Medical use", "Yes")
         }
@@ -588,13 +595,13 @@ class AirportDetailsFragment : FragmentBase() {
         val layout = findViewById<LinearLayout>(R.id.detail_aeronav_layout) ?: return
         if (Application.sDonationDone) {
             val apt = result[0] ?: return
-            val siteNumber = apt.getString(apt.getColumnIndex(Airports.SITE_NUMBER))
+            val siteNumber = apt.getString(apt.getColumnIndexOrThrow(Airports.SITE_NUMBER))
             val cycle = result[12]
             if (cycle != null && cycle.moveToFirst()) {
-                val afdCycle = cycle.getString(cycle.getColumnIndex(DafdCycle.AFD_CYCLE))
+                val afdCycle = cycle.getString(cycle.getColumnIndexOrThrow(DafdCycle.AFD_CYCLE))
                 val dafd = result[13]
                 if (dafd != null && dafd.moveToFirst()) {
-                    val pdfName = dafd.getString(dafd.getColumnIndex(Dafd.PDF_NAME))
+                    val pdfName = dafd.getString(dafd.getColumnIndexOrThrow(Dafd.PDF_NAME))
                     val row = addClickableRow(layout, "A/FD page", "")
                     row.setTag(R.id.DAFD_CYCLE, afdCycle)
                     row.setTag(R.id.DAFD_PDF_NAME, pdfName)
@@ -627,17 +634,17 @@ class AirportDetailsFragment : FragmentBase() {
         val apt = result[0] ?: return
         val layout = findViewById<LinearLayout>(R.id.detail_services_layout)
         var fuelTypes = DataUtils.decodeFuelTypes(
-                apt.getString(apt.getColumnIndex(Airports.FUEL_TYPES)))
+                apt.getString(apt.getColumnIndexOrThrow(Airports.FUEL_TYPES)))
         if (fuelTypes.isBlank()) {
             fuelTypes = "No"
         }
         addRow(layout!!, "Fuel available", fuelTypes)
-        var repair = apt.getString(apt.getColumnIndex(Airports.AIRFRAME_REPAIR_SERVICE)) ?: ""
+        var repair = apt.getString(apt.getColumnIndexOrThrow(Airports.AIRFRAME_REPAIR_SERVICE)) ?: ""
         if (repair.isBlank()) {
             repair = "No"
         }
         addRow(layout, "Airframe repair", repair)
-        repair = apt.getString(apt.getColumnIndex(Airports.POWER_PLANT_REPAIR_SERVICE)) ?: ""
+        repair = apt.getString(apt.getColumnIndexOrThrow(Airports.POWER_PLANT_REPAIR_SERVICE)) ?: ""
         if (repair.isBlank()) {
             repair = "No"
         }
@@ -689,16 +696,16 @@ class AirportDetailsFragment : FragmentBase() {
 
     @SuppressLint("SetTextI18n")
     private fun addRunwayRow(layout: LinearLayout, c: Cursor) {
-        val siteNumber = c.getString(c.getColumnIndex(Runways.SITE_NUMBER))
-        val runwayId = c.getString(c.getColumnIndex(Runways.RUNWAY_ID))
-        val length = c.getInt(c.getColumnIndex(Runways.RUNWAY_LENGTH))
-        val width = c.getInt(c.getColumnIndex(Runways.RUNWAY_WIDTH))
-        val surfaceType = c.getString(c.getColumnIndex(Runways.SURFACE_TYPE))
-        val baseId = c.getString(c.getColumnIndex(Runways.BASE_END_ID))
-        val reciprocalId = c.getString(c.getColumnIndex(Runways.RECIPROCAL_END_ID))
-        val baseRP = c.getString(c.getColumnIndex(Runways.BASE_END_RIGHT_TRAFFIC))
+        val siteNumber = c.getString(c.getColumnIndexOrThrow(Runways.SITE_NUMBER))
+        val runwayId = c.getString(c.getColumnIndexOrThrow(Runways.RUNWAY_ID))
+        val length = c.getInt(c.getColumnIndexOrThrow(Runways.RUNWAY_LENGTH))
+        val width = c.getInt(c.getColumnIndexOrThrow(Runways.RUNWAY_WIDTH))
+        val surfaceType = c.getString(c.getColumnIndexOrThrow(Runways.SURFACE_TYPE))
+        val baseId = c.getString(c.getColumnIndexOrThrow(Runways.BASE_END_ID))
+        val reciprocalId = c.getString(c.getColumnIndexOrThrow(Runways.RECIPROCAL_END_ID))
+        val baseRP = c.getString(c.getColumnIndexOrThrow(Runways.BASE_END_RIGHT_TRAFFIC))
         val reciprocalRP = c.getString(
-                c.getColumnIndex(Runways.RECIPROCAL_END_RIGHT_TRAFFIC))
+                c.getColumnIndexOrThrow(Runways.RECIPROCAL_END_RIGHT_TRAFFIC))
 
         var rp: String? = null
         if (baseRP == "Y" && reciprocalRP == "Y") {
@@ -709,7 +716,7 @@ class AirportDetailsFragment : FragmentBase() {
             rp = " (RP $reciprocalId)"
         }
 
-        var heading = c.getInt(c.getColumnIndex(Runways.BASE_END_HEADING))
+        var heading = c.getInt(c.getColumnIndexOrThrow(Runways.BASE_END_HEADING))
         heading = if (heading > 0) {
             GeoUtils.applyDeclination(heading.toLong(), mDeclination).toInt()
         } else {
@@ -768,23 +775,23 @@ class AirportDetailsFragment : FragmentBase() {
             return
         }
 
-        val stationIds = ArrayList<String>()
-        for (row in mAwosViews) {
-            val tv = row.findViewById<TextView>(R.id.item_label)
-            val stationId = tv.tag as String
-            stationIds.add(stationId)
-        }
-        val service = Intent(activity, MetarService::class.java)
-        service.action = action
-        service.putExtra(NoaaService.STATION_IDS, stationIds)
-        service.putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
-        if (force) {
-            service.putExtra(NoaaService.FORCE_REFRESH, true)
-        } else if (cacheOnly) {
-            service.putExtra(NoaaService.CACHE_ONLY, true)
-        }
-        if (activity != null) {
-            activity!!.startService(service)
+        activity?.let {
+            val stationIds = ArrayList<String>()
+            for (row in mAwosViews) {
+                val tv = row.findViewById<TextView>(R.id.item_label)
+                val stationId = tv.tag as String
+                stationIds.add(stationId)
+            }
+            val service = Intent(activity, MetarService::class.java)
+            service.action = action
+            service.putExtra(NoaaService.STATION_IDS, stationIds)
+            service.putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
+            if (force) {
+                service.putExtra(NoaaService.FORCE_REFRESH, true)
+            } else if (cacheOnly) {
+                service.putExtra(NoaaService.CACHE_ONLY, true)
+            }
+            it.startService(service)
         }
     }
 
@@ -814,7 +821,7 @@ class AirportDetailsFragment : FragmentBase() {
                     for (wx in metar.wxList) {
                         if (wx.symbol != "NSW") {
                             info.append(", ")
-                            info.append(wx.toString().toLowerCase(Locale.US))
+                            info.append(wx.toString().lowercase(Locale.US))
                         }
                     }
                 }
@@ -908,14 +915,14 @@ class AirportDetailsFragment : FragmentBase() {
         val apt = getAirportDetails(mSiteNumber) ?: return cursors
         cursors[0] = apt
 
-        val faaCode = apt.getString(apt.getColumnIndex(Airports.FAA_CODE))
-        val lat = apt.getDouble(apt.getColumnIndex(Airports.REF_LATTITUDE_DEGREES))
-        val lon = apt.getDouble(apt.getColumnIndex(Airports.REF_LONGITUDE_DEGREES))
-        val elevMsl = apt.getInt(apt.getColumnIndex(Airports.ELEVATION_MSL))
-        mFAACode = apt.getString(apt.getColumnIndex(Airports.FAA_CODE))
-        mIcaoCode = apt.getString(apt.getColumnIndex(Airports.ICAO_CODE)) ?: ""
+        val faaCode = apt.getString(apt.getColumnIndexOrThrow(Airports.FAA_CODE))
+        val lat = apt.getDouble(apt.getColumnIndexOrThrow(Airports.REF_LATTITUDE_DEGREES))
+        val lon = apt.getDouble(apt.getColumnIndexOrThrow(Airports.REF_LONGITUDE_DEGREES))
+        val elevMsl = apt.getInt(apt.getColumnIndexOrThrow(Airports.ELEVATION_MSL))
+        mFAACode = apt.getString(apt.getColumnIndexOrThrow(Airports.FAA_CODE))
+        mIcaoCode = apt.getString(apt.getColumnIndexOrThrow(Airports.ICAO_CODE)) ?: ""
         if (mIcaoCode.isEmpty()) {
-            mIcaoCode = "K" + apt.getString(apt.getColumnIndex(Airports.FAA_CODE))
+            mIcaoCode = "K" + apt.getString(apt.getColumnIndexOrThrow(Airports.FAA_CODE))
         }
 
         val location = Location("")

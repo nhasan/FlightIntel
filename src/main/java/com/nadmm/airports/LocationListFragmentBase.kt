@@ -40,10 +40,11 @@ abstract class LocationListFragmentBase : ListFragmentBase() {
 
     protected var isLocationUpdateEnabled = false
         private set
-    private var mRequestingLocationUpdates = false
-    private var mPermissionDenied = false
     protected var lastLocation: Location? = null
         private set
+
+    private var mRequestingLocationUpdates = false
+    private var mPermissionDenied = false
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private lateinit var mLocationRequest: LocationRequest
     private lateinit var mLocationCallback: LocationCallback
@@ -55,42 +56,12 @@ abstract class LocationListFragmentBase : ListFragmentBase() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val args = arguments
-        if (args != null && args.containsKey(LocationColumns.LOCATION)) {
-            lastLocation = args.getParcelable(LocationColumns.LOCATION)
-        }
+        lastLocation = arguments?.getParcelable(LocationColumns.LOCATION)
 
         isLocationUpdateEnabled = lastLocation == null
 
-        mRequestPermissionLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.RequestMultiplePermissions()
-            ) { permissions ->
-                when {
-                    permissions.getOrDefault(permission.ACCESS_FINE_LOCATION, false) -> {
-                        startLocationUpdates()
-                    }
-                    permissions.getOrDefault(permission.ACCESS_COARSE_LOCATION, false) -> {
-                        startLocationUpdates()
-                    } else -> {
-                        mPermissionDenied = true
-                        setEmptyText("Unable to show nearby facilities.\n"
-                                + "FlightIntel needs location permission.")
-                        setListShown(false)
-                        setFragmentContentShown(true)
-                    }
-                }
-            }
-    }
-
-    override fun onStart() {
-        super.onStart()
-
         if (isLocationUpdateEnabled) {
             setupFusedLocationProvider()
-        } else {
-            // Location was passed to us, so just run the task
-            startLocationTask()
         }
     }
 
@@ -119,6 +90,9 @@ abstract class LocationListFragmentBase : ListFragmentBase() {
                     resolvePermission { showApplicationSettings() }
                 }
             }
+        } else {
+            // Location was passed to us, so just run the task
+            startLocationTask()
         }
     }
 
@@ -158,6 +132,26 @@ abstract class LocationListFragmentBase : ListFragmentBase() {
                 updateLocation(p0.locations.lastOrNull())
             }
         }
+
+        mRequestPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestMultiplePermissions()
+            ) { permissions ->
+                when {
+                    permissions.getOrDefault(permission.ACCESS_FINE_LOCATION, false) -> {
+                        startLocationUpdates()
+                    }
+                    permissions.getOrDefault(permission.ACCESS_COARSE_LOCATION, false) -> {
+                        startLocationUpdates()
+                    } else -> {
+                        mPermissionDenied = true
+                        setEmptyText("Unable to show nearby facilities.\n"
+                                + "FlightIntel needs location permission.")
+                        setListShown(false)
+                        setFragmentContentShown(true)
+                    }
+                }
+            }
     }
 
     private fun startLocationUpdates() {
