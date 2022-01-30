@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,175 +16,145 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.scratchpad
 
-package com.nadmm.airports.scratchpad;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.util.AttributeSet
+import android.view.View
+import android.view.MotionEvent
+import com.nadmm.airports.utils.UiUtils
+import android.graphics.*
+import com.nadmm.airports.R
+import kotlin.math.abs
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BlurMaskFilter;
-import android.graphics.Canvas;
-import android.graphics.MaskFilter;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.view.MotionEvent;
-import android.view.View;
-
-import com.nadmm.airports.R;
-import com.nadmm.airports.utils.UiUtils;
-
-public class FreeHandDrawView extends View {
-
-    public interface EventListener {
-        void actionDown();
-        void actionUp();
+class FreeHandDrawView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+    interface EventListener {
+        fun actionDown()
+        fun actionUp()
     }
 
-    private int mPaperColor;
-    private int mPenColor;
-
-    private Bitmap mBitmap;
-    private Canvas mCanvas;
-    private Path mPath;
-    private Paint mFingerPaint;
-    private Paint mBitmapPaint;
-    private float mLastX;
-    private float mLastY;
-    private MaskFilter mBlurFilter;
-    private EventListener mEventListener;
-
-    private final int mStrokeWidth;
-    private final int mEraseWidth;
-
-    public FreeHandDrawView( Context context, AttributeSet attrs ) {
-        super( context, attrs );
-
-        TypedArray ta =  context.obtainStyledAttributes( attrs,
-                new int[] { android.R.attr.textColorPrimary, android.R.attr.colorBackground} );
-        mPenColor = ta.getColor( 0, 0 );
-        mPaperColor = ta.getColor( 1, 0  );
-
-        mPath = new Path();
-        mBitmapPaint = new Paint( Paint.DITHER_FLAG );
-        mBlurFilter = new BlurMaskFilter( 8, BlurMaskFilter.Blur.SOLID );
-
-        mStrokeWidth = UiUtils.convertDpToPx( context, 2 );
-        mEraseWidth = 10*mStrokeWidth;
-
-        mFingerPaint = new Paint();
-        mFingerPaint.setAntiAlias( true );
-        mFingerPaint.setDither( true );
-        mFingerPaint.setStyle( Paint.Style.STROKE );
-        mFingerPaint.setStrokeJoin( Paint.Join.ROUND );
-        mFingerPaint.setStrokeCap( Paint.Cap.ROUND );
-
-        setDrawMode();
-
-        Resources res = context.getResources();
-        DisplayMetrics dm = res.getDisplayMetrics();
-        int w = dm.widthPixels;
-        int h = dm.heightPixels;
-        int size = Math.max( w, h );
-        mBitmap = Bitmap.createBitmap( size, size, Bitmap.Config.ARGB_8888 );
-        mBitmap.eraseColor( mPaperColor );
-        mCanvas = new Canvas( mBitmap );
+    private val mPaperColor: Int
+    private val mPenColor: Int
+    private val mBitmap: Bitmap
+    private val mCanvas: Canvas
+    private val mPath: Path
+    private val mFingerPaint: Paint
+    private val mBitmapPaint: Paint
+    private var mLastX = 0f
+    private var mLastY = 0f
+    private val mBlurFilter: MaskFilter
+    private var mEventListener: EventListener? = null
+    private val mStrokeWidth: Int
+    private val mEraseWidth: Int
+    override fun onDraw(canvas: Canvas) {
+        canvas.drawBitmap(mBitmap, 0f, 0f, mBitmapPaint)
+        canvas.drawPath(mPath, mFingerPaint)
     }
 
-    @Override
-    protected void onDraw( Canvas canvas ) {
-        canvas.drawBitmap( mBitmap, 0, 0, mBitmapPaint );
-        canvas.drawPath( mPath, mFingerPaint );
-    }
-
-    @Override
-    public boolean onTouchEvent( MotionEvent event ) {
-        float x = event.getX();
-        float y = event.getY();
-
-        switch ( event.getAction() ) {
-            case MotionEvent.ACTION_DOWN:
-                touch_start( x, y );
-                invalidate();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                touch_move( x, y );
-                invalidate();
-                break;
-            case MotionEvent.ACTION_UP:
-                touch_up();
-                invalidate();
-                break;
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val x = event.x
+        val y = event.y
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                touchStart(x, y)
+                invalidate()
+            }
+            MotionEvent.ACTION_MOVE -> {
+                touchMove(x, y)
+                invalidate()
+            }
+            MotionEvent.ACTION_UP -> {
+                touchUp()
+                invalidate()
+            }
         }
-        return true;
+        return true
     }
 
-    private void touch_start( float x, float y ) {
-        if ( mEventListener != null ) {
-            mEventListener.actionDown();
-        }
-
-        mPath.reset();
-        mPath.moveTo( x, y );
-        mLastX = x;
-        mLastY = y;
+    private fun touchStart(x: Float, y: Float) {
+        mEventListener?.actionDown()
+        mPath.reset()
+        mPath.moveTo(x, y)
+        mLastX = x
+        mLastY = y
     }
 
-    private void touch_move( float x, float y ) {
-        float dx = Math.abs( x - mLastX );
-        float dy = Math.abs( y - mLastY );
-        if ( dx >= mStrokeWidth || dy >= mStrokeWidth ) {
-            mPath.quadTo( mLastX, mLastY, (x + mLastX)/2, (y + mLastY)/2 );
-            mLastX = x;
-            mLastY = y;
+    private fun touchMove(x: Float, y: Float) {
+        val dx = abs(x - mLastX)
+        val dy = abs(y - mLastY)
+        if (dx >= mStrokeWidth || dy >= mStrokeWidth) {
+            mPath.quadTo(mLastX, mLastY, (x + mLastX) / 2, (y + mLastY) / 2)
+            mLastX = x
+            mLastY = y
         }
     }
 
-    private void touch_up() {
-        if ( mEventListener != null ) {
-            mEventListener.actionUp();
-        }
-
-        if ( mPath.isEmpty() ) {
+    private fun touchUp() {
+        mEventListener?.actionUp()
+        if (mPath.isEmpty) {
             // If this was just a touch, make sure to draw a point
-            mPath.addCircle( mLastX, mLastY, mStrokeWidth /2, Path.Direction.CW );
+            mPath.addCircle(mLastX, mLastY, (mStrokeWidth / 2).toFloat(), Path.Direction.CW)
         } else {
             // Finish up the path
-            mPath.lineTo( mLastX, mLastY );
+            mPath.lineTo(mLastX, mLastY)
         }
-        mCanvas.drawPath( mPath, mFingerPaint );
-        mPath.reset();
+        mCanvas.drawPath(mPath, mFingerPaint)
+        mPath.reset()
     }
 
-    public Bitmap getBitmap() {
-        return mBitmap;
+    var bitmap: Bitmap?
+        get() = mBitmap
+        set(bitmap) {
+            mCanvas.drawBitmap(bitmap!!, 0f, 0f, mBitmapPaint)
+        }
+
+    fun discardBitmap() {
+        mBitmap.eraseColor(mPaperColor)
+        invalidate()
     }
 
-    public void setBitmap( Bitmap bitmap ) {
-        mCanvas.drawBitmap( bitmap, 0, 0, mBitmapPaint );
+    fun setDrawMode() {
+        mFingerPaint.color = mPenColor
+        mFingerPaint.maskFilter = null
+        mFingerPaint.strokeWidth = mStrokeWidth.toFloat()
     }
 
-    public void discardBitmap() {
-        mBitmap.eraseColor( mPaperColor );
-        invalidate();
+    fun setEraseMode() {
+        mFingerPaint.color = mPaperColor
+        mFingerPaint.maskFilter = mBlurFilter
+        mFingerPaint.strokeWidth = mEraseWidth.toFloat()
     }
 
-    public void setDrawMode() {
-        mFingerPaint.setColor( mPenColor );
-        mFingerPaint.setMaskFilter( null );
-        mFingerPaint.setStrokeWidth( mStrokeWidth );
+    fun setEventListener(listener: EventListener?) {
+        mEventListener = listener
     }
 
-    public void setEraseMode() {
-        mFingerPaint.setColor( mPaperColor );
-        mFingerPaint.setMaskFilter( mBlurFilter );
-        mFingerPaint.setStrokeWidth( mEraseWidth );
+    init {
+        val ta = context.obtainStyledAttributes(attrs, R.styleable.FreeHandDrawView)
+        mPenColor = ta.getColor(R.styleable.FreeHandDrawView_penColor, Color.WHITE)
+        mPaperColor = ta.getColor(R.styleable.FreeHandDrawView_paperColor, Color.DKGRAY)
+        ta.recycle()
+        mPath = Path()
+        mBitmapPaint = Paint(Paint.DITHER_FLAG)
+        mBlurFilter = BlurMaskFilter(8F, BlurMaskFilter.Blur.SOLID)
+        mStrokeWidth = UiUtils.convertDpToPx(context, 2f)
+        mEraseWidth = 10 * mStrokeWidth
+        mFingerPaint = Paint()
+        mFingerPaint.isAntiAlias = true
+        mFingerPaint.isDither = true
+        mFingerPaint.style = Paint.Style.STROKE
+        mFingerPaint.strokeJoin = Paint.Join.ROUND
+        mFingerPaint.strokeCap = Paint.Cap.ROUND
+        setDrawMode()
+        val res = context.resources
+        val dm = res.displayMetrics
+        val w = dm.widthPixels
+        val h = dm.heightPixels
+        val size = w.coerceAtLeast(h)
+        mBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        mBitmap.eraseColor(mPaperColor)
+        mCanvas = Canvas(mBitmap)
     }
-
-    public void setEventListener( EventListener listener ) {
-        mEventListener = listener;
-    }
-
 }
