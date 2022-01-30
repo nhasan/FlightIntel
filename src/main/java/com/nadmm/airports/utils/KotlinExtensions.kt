@@ -4,11 +4,11 @@ import android.database.Cursor
 
 fun Cursor?.forEach(runForEachRow: () -> Unit) {
     this?.let {
-        if (this.moveToFirst()) {
+        if (moveToFirst()) {
             do {
-                runForEachRow();
-            } while (this.moveToNext())
-            this.close()
+                runForEachRow()
+            } while (moveToNext())
         }
+        close()
     }
 }
