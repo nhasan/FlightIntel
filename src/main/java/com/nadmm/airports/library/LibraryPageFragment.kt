@@ -31,7 +31,6 @@ import android.view.*
 import android.view.ContextMenu.ContextMenuInfo
 import android.widget.*
 import androidx.lifecycle.lifecycleScope
-import com.nadmm.airports.Application
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
@@ -165,25 +164,28 @@ class LibraryPageFragment : FragmentBase() {
             return
         }
         val msg: String
-        if (!Application.sDonationDone) {
-            msg = "This function is only available after a donation"
-            mIsOk = false
-        } else if (!NetworkUtils.isNetworkAvailable(activity)) {
-            msg = "Not connected to the internet"
-            mIsOk = false
-        } else if (NetworkUtils.canDownloadData(activityBase)) {
-            msg = "Connected to an unmetered network"
-            mIsOk = true
-        } else {
-            msg = "Connected to a metered network"
-            mIsOk = false
+        mIsOk = when {
+            !NetworkUtils.isNetworkAvailable(activity) -> {
+                msg = "Not connected to the internet"
+                false
+            }
+            NetworkUtils.canDownloadData(activityBase) -> {
+                msg = "Connected to an unmetered network"
+                true
+            }
+            else -> {
+                msg = "Connected to a metered network"
+                false
+            }
         }
-        val tv = findViewById<TextView>(R.id.msg_txt)
-        tv!!.text = msg
-        UiUtils.setTextViewDrawable(
-            tv,
-            if (mIsOk) R.drawable.ic_check else R.drawable.ic_highlight_remove
-        )
+
+        findViewById<TextView>(R.id.msg_txt)?.let {
+            it.text = msg
+            UiUtils.setTextViewDrawable(
+                it,
+                if (mIsOk) R.drawable.ic_check else R.drawable.ic_highlight_remove
+            )
+        }
         val topLayout = findViewById<LinearLayout>(R.id.main_content)
         for (c in result) {
             c?.let {

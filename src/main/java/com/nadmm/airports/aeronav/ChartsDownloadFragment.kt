@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,20 +31,20 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.nadmm.airports.Application
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Dtpp
 import com.nadmm.airports.data.DatabaseManager.DtppCycle
-import com.nadmm.airports.utils.CursorAsyncTask
 import com.nadmm.airports.utils.NetworkUtils
 import com.nadmm.airports.utils.TimeUtils
 import com.nadmm.airports.utils.UiUtils
-import kotlinx.coroutines.CoroutineScope
+import com.nadmm.airports.utils.forEach
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -110,8 +110,10 @@ class ChartsDownloadFragment : FragmentBase() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = doQuery()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                doQuery()
+            }
             showChartInfo(result)
         }
     }
@@ -138,9 +140,7 @@ class ChartsDownloadFragment : FragmentBase() {
             val total = v.getTag(R.id.DTPP_CHART_TOTAL) as Int
             val avail = v.getTag(R.id.DTPP_CHART_AVAIL) as Int
             val tppVolume = v.getTag(R.id.DTPP_VOLUME_NAME) as String
-            val builder = AlertDialog.Builder(
-                activity
-            )
+            val builder = AlertDialog.Builder(activity)
             builder.setTitle("Start Download")
             builder.setMessage(
                 String.format(
@@ -160,9 +160,11 @@ class ChartsDownloadFragment : FragmentBase() {
     private fun startChartDownload(v: View) {
         mSelectedRow = v
         val tppVolume = v.getTag(R.id.DTPP_VOLUME_NAME) as String
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = doQueryVolume(tppVolume)
-            downloadCharts(result)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val c = withContext(Dispatchers.IO) {
+                doQueryVolume(tppVolume)
+            }
+            downloadCharts(c)
         }
     }
 
@@ -190,9 +192,11 @@ class ChartsDownloadFragment : FragmentBase() {
     private fun startChartDelete(v: View) {
         mSelectedRow = v
         val tppVolume = v.getTag(R.id.DTPP_VOLUME_NAME) as String
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = doQueryDelete(tppVolume)
-            deleteCharts(result)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val c = withContext(Dispatchers.IO) {
+                doQueryDelete(tppVolume)
+            }
+            deleteCharts(c)
         }
     }
 
@@ -232,88 +236,84 @@ class ChartsDownloadFragment : FragmentBase() {
 
     @SuppressLint("SetTextI18n")
     private fun showChartInfo(result: Array<Cursor>) {
-        val c = result[0]
-        if (!c.moveToFirst()) {
-            activity?.let { activity ->
-                UiUtils.showToast(activity, "d-TPP database is not installed")
-                activity.finish()
+        result[0].forEach { c ->
+            mTppCycle = c.getString(c.getColumnIndex(DtppCycle.TPP_CYCLE))
+            supportActionBar?.let { actionbar ->
+                actionbar.subtitle = String.format("AeroNav Cycle %s", mTppCycle)
             }
-            return
-        }
-        mTppCycle = c.getString(c.getColumnIndex(DtppCycle.TPP_CYCLE))
-        supportActionBar?.let { actionbar ->
-            actionbar.subtitle = String.format("AeroNav Cycle %s", mTppCycle)
-        }
-        val expiry = c.getString(c.getColumnIndex(DtppCycle.TO_DATE))
-        val df = SimpleDateFormat("HHmm'Z' MM/dd/yy", Locale.US)
-        df.timeZone = TimeZone.getTimeZone("UTC")
-        val endDate: Date? = try {
-            df.parse(expiry)
-        } catch (ignored: ParseException) {
-            Date()
+            val expiry = c.getString(c.getColumnIndex(DtppCycle.TO_DATE))
+            val df = SimpleDateFormat("HHmm'Z' MM/dd/yy", Locale.US)
+            df.timeZone = TimeZone.getTimeZone("UTC")
+            val endDate: Date = try {
+                df.parse(expiry) ?: Date()
+            } catch (ignored: ParseException) {
+                Date()
+            }
+
+            // Determine if chart cycle has expired
+            val now = Date()
+            if (now.time > endDate.time) {
+                mExpired = true
+            }
+            findViewById<TextView>(R.id.charts_cycle_expiry)?.let { tv ->
+                if (mExpired) {
+                    tv.text = String.format(
+                        Locale.US, "This chart cycle has expired on %s",
+                        TimeUtils.formatDateTime(activityBase, endDate.time)
+                    )
+                } else {
+                    tv.text = String.format(
+                        Locale.US, "This chart cycle expires on %s",
+                        TimeUtils.formatDateTime(activityBase, endDate.time)
+                    )
+                }
+            }
+            findViewById<TextView>(R.id.charts_download_msg)?.let { tv ->
+                tv.text = """
+                Each TPP volume is about 150-250MB in size. The Instrument Procedure charts are in PDF format and stored on the external SD card storage. These are not the sectional charts. Press 'Back' button to stop a running download.
+                
+                All charts for a cycle are automatically deleted at the end of that cycle
+                """.trimIndent()
+            }
+
+            findViewById<TextView>(R.id.charts_download_warning)?.let { tv ->
+                val msg: String
+                mIsOk = when {
+                    mExpired -> {
+                        msg = "Chart cycle has expired"
+                        false
+                    }
+                    !NetworkUtils.isNetworkAvailable(activity) -> {
+                        msg = "Not connected to the internet"
+                        false
+                    }
+                    NetworkUtils.canDownloadData(activityBase) -> {
+                        msg = "Connected to an unmetered network"
+                        true
+                    }
+                    else -> {
+                        msg = "Connected to a metered network"
+                        false
+                    }
+                }
+                tv.text = msg
+
+                val d = UiUtils.getDefaultTintedDrawable(
+                    activity,
+                    if (mIsOk) R.drawable.ic_check else R.drawable.ic_highlight_remove
+                )
+                UiUtils.setTextViewDrawable(tv, d)
+            }
         }
 
-        // Determine if chart cycle has expired
-        val now = Date()
-        if (now.time > endDate.time) {
-            mExpired = true
-        }
-        var tv = findViewById<TextView>(R.id.charts_cycle_expiry)
-        if (mExpired) {
-            tv!!.text = String.format(
-                Locale.US, "This chart cycle has expired on %s",
-                TimeUtils.formatDateTime(activityBase, endDate.time)
-            )
-        } else {
-            tv!!.text = String.format(
-                Locale.US, "This chart cycle expires on %s",
-                TimeUtils.formatDateTime(activityBase, endDate.time)
-            )
-        }
-        tv = findViewById(R.id.charts_download_msg)
-        tv!!.text = """
-            Each TPP volume is about 150-250MB in size and may take 15-30 mins to download. The Instrument Procedure charts are in PDF format and stored on the external SD card storage. These are not the sectional charts. Press 'Back' button to stop a running download.
-            
-            All charts for a cycle are automatically deleted at the end of that cycle
-            """.trimIndent()
-        val msg: String
-        if (!Application.sDonationDone) {
-            msg = "This function is only available after a donation"
-            mIsOk = false
-        } else if (mExpired) {
-            msg = "Chart cycle has expired"
-            mIsOk = false
-        } else if (!NetworkUtils.isNetworkAvailable(activity)) {
-            msg = "Not connected to the internet"
-            mIsOk = false
-        } else if (NetworkUtils.canDownloadData(activityBase)) {
-            msg = "Connected to an unmetered network"
-            mIsOk = true
-        } else {
-            msg = "Connected to a metered network"
-            mIsOk = false
-        }
-        tv = findViewById(R.id.charts_download_warning)
-        tv!!.text = msg
-        val d = UiUtils.getDefaultTintedDrawable(
-            activity,
-            if (mIsOk) R.drawable.ic_check else R.drawable.ic_highlight_remove
-        )
-        UiUtils.setTextViewDrawable(tv, d)
-        val layout = findViewById<LinearLayout>(R.id.vol_chart_details)
-        c = result[1]
-        if (c!!.moveToFirst()) {
-            do {
+        findViewById<LinearLayout>(R.id.vol_chart_details)?.let { layout ->
+            result[1].forEach { c ->
                 val tppVolume = c.getString(c.getColumnIndex(Dtpp.TPP_VOLUME))
                 val total = c.getInt(c.getColumnIndex("total"))
                 addTppVolumeRow(layout, tppVolume, total)
-            } while (c.moveToNext())
+            }
         }
 
-        // Close all cursors here
-        for (cursor in result) {
-            cursor!!.close()
-        }
         setFragmentContentShown(true)
     }
 
@@ -322,20 +322,19 @@ class ChartsDownloadFragment : FragmentBase() {
         val db = getDatabase(DatabaseManager.DB_DTPP)
         val builder = SQLiteQueryBuilder()
         builder.tables = Dtpp.TABLE_NAME
-        val c = builder.query(
+        return builder.query(
             db, arrayOf(Dtpp.PDF_NAME),
             Dtpp.TPP_VOLUME + "=? AND " + Dtpp.USER_ACTION + "!=?", arrayOf(mTppVolume, "D"),
             Dtpp.PDF_NAME + "," + Dtpp.TPP_VOLUME,
             null, null
         )
-        return c
     }
 
     private fun onChartDownload() {
         if (mCursor != null) {
             mProgressBar!!.progress = mCursor!!.position
             if (!mStop && mCursor!!.moveToNext()) {
-                nextChart
+                nextChart()
             } else {
                 getChartCount(mTppCycle, mTppVolume)
                 finishOperation()
@@ -343,43 +342,41 @@ class ChartsDownloadFragment : FragmentBase() {
         }
     }
 
-    private fun downloadCharts(c: Cursor?) {
+    private fun downloadCharts(c: Cursor) {
         mCursor = c
-        mCursor!!.moveToFirst()
-        mProgressBar = mSelectedRow!!.findViewById(R.id.progress)
-        mProgressBar.setMax(mCursor!!.count)
-        mProgressBar.setProgress(0)
-        mProgressBar.setVisibility(View.VISIBLE)
-        nextChart
+        c.moveToFirst()
+        mProgressBar = mSelectedRow?.findViewById(R.id.progress)
+        mProgressBar?.max = c.count
+        mProgressBar?.progress = 0
+        mProgressBar?.visibility = View.VISIBLE
+        nextChart()
     }
 
-    private val nextChart: Unit
-        get() {
-            if (activity != null) {
-                val pdfName = mCursor!!.getString(mCursor!!.getColumnIndex(Dtpp.PDF_NAME))
-                val pdfNames = ArrayList<String>()
-                pdfNames.add(pdfName)
-                val service = Intent(activity, DtppService::class.java)
-                service.action = AeroNavService.ACTION_GET_CHARTS
-                service.putExtra(AeroNavService.CYCLE_NAME, mTppCycle)
-                service.putExtra(AeroNavService.TPP_VOLUME, mTppVolume)
-                service.putExtra(AeroNavService.PDF_NAMES, pdfNames)
-                activity!!.startService(service)
-            }
+    private fun nextChart() {
+        activity?.let { activity ->
+            val pdfName = mCursor!!.getString(mCursor!!.getColumnIndex(Dtpp.PDF_NAME))
+            val pdfNames = ArrayList<String>()
+            pdfNames.add(pdfName)
+            val service = Intent(activity, DtppService::class.java)
+            service.action = AeroNavService.ACTION_GET_CHARTS
+            service.putExtra(AeroNavService.CYCLE_NAME, mTppCycle)
+            service.putExtra(AeroNavService.TPP_VOLUME, mTppVolume)
+            service.putExtra(AeroNavService.PDF_NAMES, pdfNames)
+            activity.startService(service)
         }
+    }
 
     private fun doQueryDelete(volume: String): Cursor {
         mTppVolume = volume
         val db = getDatabase(DatabaseManager.DB_DTPP)
         val builder = SQLiteQueryBuilder()
         builder.tables = Dtpp.TABLE_NAME
-        val c = builder.query(
+        return builder.query(
             db, arrayOf(Dtpp.PDF_NAME),
             Dtpp.TPP_VOLUME + "=? AND " + Dtpp.USER_ACTION + "!=?", arrayOf(mTppVolume, "D"),
             Dtpp.PDF_NAME + "," + Dtpp.TPP_VOLUME,
             null, null
         )
-        return c
     }
 
     private fun onChartDelete() {
@@ -394,18 +391,18 @@ class ChartsDownloadFragment : FragmentBase() {
         }
     }
 
-    private fun deleteCharts(c: Cursor?) {
+    private fun deleteCharts(c: Cursor) {
         mCursor = c
-        mCursor!!.moveToFirst()
-        mProgressBar = mSelectedRow!!.findViewById(R.id.progress)
-        mProgressBar.setMax(mCursor!!.count)
-        mProgressBar.setProgress(0)
-        mProgressBar.setVisibility(View.VISIBLE)
+        c.moveToFirst()
+        mProgressBar = mSelectedRow?.findViewById(R.id.progress)
+        mProgressBar?.max = c.count
+        mProgressBar?.progress = 0
+        mProgressBar?.visibility = View.VISIBLE
         deleteNextChart()
     }
 
     private fun deleteNextChart() {
-        if (activity != null) {
+        activity?.let { activity ->
             val pdfName = mCursor!!.getString(mCursor!!.getColumnIndex(Dtpp.PDF_NAME))
             val pdfNames = ArrayList<String>()
             pdfNames.add(pdfName)
@@ -414,7 +411,7 @@ class ChartsDownloadFragment : FragmentBase() {
             service.putExtra(AeroNavService.CYCLE_NAME, mTppCycle)
             service.putExtra(AeroNavService.TPP_VOLUME, mTppVolume)
             service.putExtra(AeroNavService.PDF_NAMES, pdfNames)
-            activity!!.startService(service)
+            activity.startService(service)
         }
     }
 
@@ -432,17 +429,17 @@ class ChartsDownloadFragment : FragmentBase() {
     }
 
     private fun getChartCount(tppCycle: String?, tppVolume: String?) {
-        if (activity != null) {
+        activity?.let { activity ->
             val service = Intent(activity, DtppService::class.java)
             service.action = AeroNavService.ACTION_COUNT_CHARTS
             service.putExtra(AeroNavService.CYCLE_NAME, tppCycle)
             service.putExtra(AeroNavService.TPP_VOLUME, tppVolume)
-            activity!!.startService(service)
+            activity.startService(service)
         }
     }
 
-    private fun addTppVolumeRow(layout: LinearLayout?, tppVolume: String, total: Int) {
-        if (layout!!.childCount > 0) {
+    private fun addTppVolumeRow(layout: LinearLayout, tppVolume: String, total: Int) {
+        if (layout.childCount > 0) {
             addSeparator(layout)
         }
         val row = inflate<RelativeLayout>(R.layout.list_item_with_progressbar)

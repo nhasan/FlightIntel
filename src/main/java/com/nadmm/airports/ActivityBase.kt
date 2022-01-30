@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,6 @@ import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.*
 import com.nadmm.airports.data.DownloadActivity
 import com.nadmm.airports.dof.NearbyObstaclesActivity
-import com.nadmm.airports.donate.DonateDatabase
 import com.nadmm.airports.e6b.E6bActivity
 import com.nadmm.airports.library.LibraryActivity
 import com.nadmm.airports.scratchpad.ScratchPadActivity
@@ -161,13 +160,6 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
 
         mHandler = Handler(Looper.getMainLooper())
-
-        if (Application.sDonationDone == null) {
-            val db = DonateDatabase(this)
-            val c = db.queryAllDonations()
-            Application.sDonationDone = c.moveToFirst()
-            db.close()
-        }
 
         val intent = intent
         if (intent.hasExtra(EXTRA_MSG)) {

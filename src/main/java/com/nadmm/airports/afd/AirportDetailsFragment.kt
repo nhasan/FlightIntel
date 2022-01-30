@@ -37,7 +37,6 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.nadmm.airports.Application
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.PreferencesActivity
 import com.nadmm.airports.R
@@ -47,7 +46,6 @@ import com.nadmm.airports.aeronav.DafdService
 import com.nadmm.airports.aeronav.DtppActivity
 import com.nadmm.airports.data.DatabaseManager.*
 import com.nadmm.airports.dof.NearbyObstaclesFragment
-import com.nadmm.airports.donate.DonateActivity
 import com.nadmm.airports.notams.AirportNotamActivity
 import com.nadmm.airports.tfr.TfrListActivity
 import com.nadmm.airports.utils.*
@@ -593,40 +591,35 @@ class AirportDetailsFragment : FragmentBase() {
 
     private fun showAeroNavDetails(result: Array<Cursor?>) {
         val layout = findViewById<LinearLayout>(R.id.detail_aeronav_layout) ?: return
-        if (Application.sDonationDone) {
-            val apt = result[0] ?: return
-            val siteNumber = apt.getString(apt.getColumnIndexOrThrow(Airports.SITE_NUMBER))
-            val cycle = result[12]
-            if (cycle != null && cycle.moveToFirst()) {
-                val afdCycle = cycle.getString(cycle.getColumnIndexOrThrow(DafdCycle.AFD_CYCLE))
-                val dafd = result[13]
-                if (dafd != null && dafd.moveToFirst()) {
-                    val pdfName = dafd.getString(dafd.getColumnIndexOrThrow(Dafd.PDF_NAME))
-                    val row = addClickableRow(layout, "A/FD page", "")
-                    row.setTag(R.id.DAFD_CYCLE, afdCycle)
-                    row.setTag(R.id.DAFD_PDF_NAME, pdfName)
-                    row.setOnClickListener { v ->
-                        val afdCycle1 = v.getTag(R.id.DAFD_CYCLE) as String
-                        val pdfName1 = v.getTag(R.id.DAFD_PDF_NAME) as String
-                        getAfdPage(afdCycle1, pdfName1)
-                    }
-                } else {
-                    addRow(layout, "A/FD page is not available for this airport")
+        val apt = result[0] ?: return
+        val siteNumber = apt.getString(apt.getColumnIndexOrThrow(Airports.SITE_NUMBER))
+        val cycle = result[12]
+        if (cycle != null && cycle.moveToFirst()) {
+            val afdCycle = cycle.getString(cycle.getColumnIndexOrThrow(DafdCycle.AFD_CYCLE))
+            val dafd = result[13]
+            if (dafd != null && dafd.moveToFirst()) {
+                val pdfName = dafd.getString(dafd.getColumnIndexOrThrow(Dafd.PDF_NAME))
+                val row = addClickableRow(layout, "A/FD page", "")
+                row.setTag(R.id.DAFD_CYCLE, afdCycle)
+                row.setTag(R.id.DAFD_PDF_NAME, pdfName)
+                row.setOnClickListener { v ->
+                    val afdCycle1 = v.getTag(R.id.DAFD_CYCLE) as String
+                    val pdfName1 = v.getTag(R.id.DAFD_PDF_NAME) as String
+                    getAfdPage(afdCycle1, pdfName1)
                 }
             } else {
-                addRow(layout, "d-A/FD data not found")
-            }
-            val dtpp: Cursor? = result[11]
-            if (dtpp != null && dtpp.moveToFirst()) {
-                val intent = Intent(activity, DtppActivity::class.java)
-                intent.putExtra(Airports.SITE_NUMBER, siteNumber)
-                addClickableRow(layout, "Instrument procedures", intent)
-            } else {
-                addRow(layout, "No instrument procedures available")
+                addRow(layout, "A/FD page is not available for this airport")
             }
         } else {
-            val intent = Intent(activity, DonateActivity::class.java)
-            addClickableRow(layout, "Please donate to enable this section", intent)
+            addRow(layout, "d-A/FD data not found")
+        }
+        val dtpp: Cursor? = result[11]
+        if (dtpp != null && dtpp.moveToFirst()) {
+            val intent = Intent(activity, DtppActivity::class.java)
+            intent.putExtra(Airports.SITE_NUMBER, siteNumber)
+            addClickableRow(layout, "Instrument procedures", intent)
+        } else {
+            addRow(layout, "No instrument procedures available")
         }
     }
 

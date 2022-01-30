@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@ import android.provider.BaseColumns
 import android.view.View
 import android.widget.ListView
 import androidx.collection.LongSparseArray
-import com.nadmm.airports.Application
 import com.nadmm.airports.ListMenuFragment
 import com.nadmm.airports.R
 import com.nadmm.airports.utils.UiUtils
@@ -96,7 +95,7 @@ class E6bMenuFragment : ListMenuFragment() {
         val c = listAdapter!!.getItem(position) as Cursor
         val id = c.getLong(c.getColumnIndex(BaseColumns._ID))
         val clss = getItemFragmentClass(id)
-        if (clss == E6bMenuFragment::class.java || Application.sDonationDone) {
+        if (clss == E6bMenuFragment::class.java) {
             super.onListItemClick(l, v, position)
         } else {
             UiUtils.showToast(activity, "This function is only available after a donation")
