@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,7 @@ import com.nadmm.airports.utils.UiUtils
 import java.io.File
 
 abstract class AeroNavService(private val mName: String) : IntentService(mName) {
-    private val AERONAV_HOST = "aeronav.faa.gov"
-    protected var serviceDataDir: File? = null
+    var serviceDataDir: File? = null
         private set
 
     override fun onCreate() {
@@ -38,7 +37,7 @@ abstract class AeroNavService(private val mName: String) : IntentService(mName) 
         serviceDataDir = SystemUtils.getExternalDir(this, mName)
     }
 
-    protected fun getCycleDir(cycle: String?): File {
+    protected fun getCycleDir(cycle: String): File {
         val dir = File(serviceDataDir, cycle)
         if (!dir.exists()) {
             cleanupOldCycles()
@@ -47,7 +46,7 @@ abstract class AeroNavService(private val mName: String) : IntentService(mName) 
         return dir
     }
 
-    protected fun fetch(path: String?, file: File?): Boolean {
+    protected fun fetch(path: String, file: File): Boolean {
         try {
             return NetworkUtils.doHttpsGet(this, AERONAV_HOST, path, file)
         } catch (e: Exception) {
@@ -56,7 +55,7 @@ abstract class AeroNavService(private val mName: String) : IntentService(mName) 
         return false
     }
 
-    protected fun sendResult(action: String?, cycle: String?, pdfFile: File) {
+    protected fun sendResult(action: String, cycle: String, pdfFile: File) {
         val extras = Bundle()
         extras.putString(CYCLE_NAME, cycle)
         extras.putString(PDF_NAME, pdfFile.name)
@@ -66,24 +65,23 @@ abstract class AeroNavService(private val mName: String) : IntentService(mName) 
         sendResult(action, extras)
     }
 
-    protected fun sendResult(action: String?, extras: Bundle?) {
+    protected fun sendResult(action: String, extras: Bundle) {
         val result = Intent()
         result.action = action
-        result.putExtras(extras!!)
+        result.putExtras(extras)
         val bm = LocalBroadcastManager.getInstance(this)
         bm.sendBroadcast(result)
     }
 
-    protected fun cleanupOldCycles() {
-        val cycles = serviceDataDir!!.listFiles()
-        if (cycles != null) {
-            for (cycle in cycles) {
-                FileUtils.removeDir(cycle)
-            }
+    private fun cleanupOldCycles() {
+        val cycles = serviceDataDir?.listFiles() ?: return
+        for (cycle in cycles) {
+            FileUtils.removeDir(cycle)
         }
     }
 
     companion object {
+        const val AERONAV_HOST = "aeronav.faa.gov"
         const val ACTION_GET_AFD = "flightintel.intent.action.GET_AFD"
         const val ACTION_CHECK_AFD = "flightintel.intent.action.CHECK_AFD"
         const val ACTION_GET_CHARTS = "flightintel.intent.action.GET_CHARTS"
