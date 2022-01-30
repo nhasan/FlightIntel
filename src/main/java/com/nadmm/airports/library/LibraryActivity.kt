@@ -25,6 +25,7 @@ import android.content.IntentFilter
 import android.database.Cursor
 import android.database.sqlite.SQLiteQueryBuilder
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nadmm.airports.R
 import com.nadmm.airports.TabPagerActivityBase
@@ -73,9 +74,10 @@ class LibraryActivity : TabPagerActivityBase() {
         mFilter.addAction(LibraryService.ACTION_GET_BOOK)
         mFilter.addAction(LibraryService.ACTION_DOWNLOAD_PROGRESS)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val result = doQuery()
-            postRunnable( Runnable { populateTabs(result) }, 0)
+        lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) { doQuery() }
+            populateTabs(result)
+
         }
     }
 
@@ -102,7 +104,6 @@ class LibraryActivity : TabPagerActivityBase() {
             args.putString(BookCategories.CATEGORY_CODE, code)
             addTab(name, LibraryPageFragment::class.java, args)
         }
-        c.close()
     }
 
     var isPending: Boolean
