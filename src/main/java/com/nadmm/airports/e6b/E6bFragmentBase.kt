@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2017-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2017-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ import java.util.*
 import kotlin.math.roundToInt
 
 abstract class E6bFragmentBase : FragmentBase() {
-    protected val mTextWatcher: TextWatcher = object : TextWatcher {
+    private val mTextWatcher: TextWatcher = object : TextWatcher {
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
         override fun afterTextChanged(s: Editable) {
@@ -86,7 +86,11 @@ abstract class E6bFragmentBase : FragmentBase() {
         val textView = getAutoCompleteTextView(textInputLayout)
         if (textView != null) {
             textView.onItemClickListener =
-                OnItemClickListener { parent: AdapterView<*>?, view: View?, position: Int, id: Long -> processInput() }
+                OnItemClickListener {
+                        _: AdapterView<*>?,
+                        _: View?,
+                        _: Int,
+                        _: Long -> processInput() }
         }
     }
 
@@ -217,7 +221,7 @@ abstract class E6bFragmentBase : FragmentBase() {
         showValue(textInputLayout, "")
     }
 
-    protected fun normalizeDir(radians: Double): Double {
+    private fun normalizeDir(radians: Double): Double {
         if (radians <= 0) {
             return radians + 2 * Math.PI
         } else if (radians > 2 * Math.PI) {
@@ -226,7 +230,7 @@ abstract class E6bFragmentBase : FragmentBase() {
         return radians
     }
 
-    fun hideKeyboard() {
+    private fun hideKeyboard() {
         val imm = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(requireView().rootView.windowToken, 0)
     }
