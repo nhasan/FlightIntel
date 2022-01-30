@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2016-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,30 +31,33 @@ import java.util.*
 class ClassBService : AeroNavService("classb") {
     override fun onCreate() {
         super.onCreate()
-        cleanupCache(serviceDataDir!!, DateUtils.DAY_IN_MILLIS)
+        serviceDataDir?.let { cleanupCache(it) }
     }
 
-    private fun cleanupCache(dir: File, maxAge: Long) {
+    private fun cleanupCache(dir: File) {
         // Delete all files that are older
         val now = Date()
-        val files = dir.listFiles()
-        for (file in files) {
-            val age = now.time - file.lastModified()
-            if (age > maxAge) {
-                file.delete()
+        dir.listFiles()?.let {
+            for (file in it) {
+                val age = now.time - file.lastModified()
+                if (age > DateUtils.DAY_IN_MILLIS) {
+                    file.delete()
+                }
             }
         }
     }
 
     override fun onHandleIntent(intent: Intent?) {
-        val action = intent!!.action
-        if (action == ACTION_GET_CLASSB_GRAPHIC) {
-            getClassBGraphic(intent)
+        intent?.let {
+            val action = intent.action
+            if (action == ACTION_GET_CLASSB_GRAPHIC) {
+                getClassBGraphic(intent)
+            }
         }
     }
 
-    private fun getClassBGraphic(intent: Intent?) {
-        val facility = intent!!.getStringExtra(Airports.FAA_CODE)
+    private fun getClassBGraphic(intent: Intent) {
+        val facility = intent.getStringExtra(Airports.FAA_CODE)
         val classBFilename = ClassBUtils.getClassBFilename(facility)
         val pdfFile = File(serviceDataDir, classBFilename)
         if (!pdfFile.exists()) {
@@ -62,7 +65,7 @@ class ClassBService : AeroNavService("classb") {
                 NetworkUtils.doHttpsGet(
                     this,
                     FAA_HOST,
-                    CLASS_B_PATH + "/" + classBFilename,
+                    "$CLASS_B_PATH/$classBFilename",
                     pdfFile
                 )
             } catch (e: Exception) {
