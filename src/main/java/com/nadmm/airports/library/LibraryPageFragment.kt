@@ -39,6 +39,7 @@ import com.nadmm.airports.data.DatabaseManager.Library
 import com.nadmm.airports.utils.NetworkUtils
 import com.nadmm.airports.utils.SystemUtils
 import com.nadmm.airports.utils.UiUtils
+import com.nadmm.airports.utils.forEach
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -132,46 +133,31 @@ class LibraryPageFragment : FragmentBase() {
 
     private fun doQuery(category: String): Array<Cursor?> {
         val db = getDatabase(DatabaseManager.DB_LIBRARY)
-        var builder = SQLiteQueryBuilder()
+        val result = ArrayList<MatrixCursor>()
+
+        val builder = SQLiteQueryBuilder()
         builder.tables = Library.TABLE_NAME
-        var c = builder.query(
-            db, arrayOf("DISTINCT " + Library.BOOK_DESC),
+        val c = builder.query(db, mColumns,
             Library.CATEGORY_CODE + "=?", arrayOf(category),
-            null, null, null
-        )
-        val result = arrayOfNulls<Cursor>(c.count)
-        if (c.count > 0) {
-            builder = SQLiteQueryBuilder()
-            builder.tables = Library.TABLE_NAME
-            c = builder.query(
-                db, mColumns,
-                Library.CATEGORY_CODE + "=?", arrayOf(category),
-                null, null, Library._ID
-            )
-            c.moveToFirst()
-            var i = 0
-            var prevDesc = ""
-            var matrix: MatrixCursor? = null
-            do {
-                val name = c.getString(mColumns.indexOf(Library.BOOK_NAME))
-                val desc = c.getString(mColumns.indexOf(Library.BOOK_DESC))
-                val edition = c.getString(mColumns.indexOf(Library.EDITION))
-                val author = c.getString(mColumns.indexOf(Library.AUTHOR))
-                val size = c.getLong(mColumns.indexOf(Library.DOWNLOAD_SIZE))
-                val flag = c.getString(mColumns.indexOf(Library.FLAG))
-                if (desc != prevDesc) {
-                    matrix = MatrixCursor(mColumns)
-                    result[i++] = matrix
-                    prevDesc = desc
-                }
-                if (matrix != null) {
-                    val values = arrayOf<Any?>(name, desc, edition, author, size, flag)
-                    matrix.addRow(values)
-                }
-            } while (c.moveToNext())
+            null, null, Library._ID)
+        var prevDesc = ""
+        c.forEach {
+            val name = c.getString(mColumns.indexOf(Library.BOOK_NAME))
+            val desc = c.getString(mColumns.indexOf(Library.BOOK_DESC))
+            val edition = c.getString(mColumns.indexOf(Library.EDITION))
+            val author = c.getString(mColumns.indexOf(Library.AUTHOR))
+            val size = c.getLong(mColumns.indexOf(Library.DOWNLOAD_SIZE))
+            val flag = c.getString(mColumns.indexOf(Library.FLAG))
+            if (desc != prevDesc) {
+                result.add(MatrixCursor(mColumns))
+                prevDesc = desc
+            }
+            if (result.isNotEmpty()) {
+                val values = arrayOf<Any?>(name, desc, edition, author, size, flag)
+                result.last().addRow(values)
+            }
         }
-        c.close()
-        return result
+        return result.toTypedArray()
     }
 
     private fun showBooks(result: Array<Cursor?>) {
