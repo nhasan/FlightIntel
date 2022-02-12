@@ -91,17 +91,6 @@ class E6bMenuFragment : ListMenuFragment() {
         return E6bMenuCursor(id)
     }
 
-    override fun onListItemClick(l: ListView, v: View, position: Int) {
-        val c = listAdapter!!.getItem(position) as Cursor
-        val id = c.getLong(c.getColumnIndex(BaseColumns._ID))
-        val clss = getItemFragmentClass(id)
-        if (clss == E6bMenuFragment::class.java) {
-            super.onListItemClick(l, v, position)
-        } else {
-            UiUtils.showToast(activity, "This function is only available after a donation")
-        }
-    }
-
     class E6bMenuCursor(id: Long) : ListMenuCursor(id) {
         override fun populateMenuItems(id: Long) {
             when (id) {
