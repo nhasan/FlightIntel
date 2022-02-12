@@ -16,16 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports
 
-package com.nadmm.airports;
+import android.app.Application
+import com.google.android.material.color.DynamicColors
 
-public class Application extends android.app.Application {
-
-    public static String version = "xx.yy";
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
+class Application : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        // Apply dynamic color
+        DynamicColors.applyToActivitiesIfAvailable(this)
     }
 
+    companion object {
+        @JvmField
+        var version = "xx.yy"
+    }
 }
