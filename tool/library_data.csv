@@ -11,35 +11,38 @@ handbooks,faa-h-8083-21b-2019.pdf,Helicopter Flying Handbook,2019,FAA-H-8083-21B
 handbooks,faa-fs-i-8700-1-2003.pdf,Information for Banner Tow Operations,2003,FAA/FS-I-8799-1
 handbooks,fcm-h1-2017.pdf,Federal Meteorological Handbook No. 1,2017,NOAA
 handbooks,fcm-h2-1988.pdf,Federal Meteorological Handbook No. 2,1988,NOAA
-manuals,cug_20220324.pdf,Aeronautical Chart User's Guide,Mar 2022,FAA
+manuals,cug_220519.pdf,Aeronautical Chart User's Guide,May 2022,FAA
 manuals,faa-h-8083-19a-2008.pdf,Plane Sense - General Aviation Information,2008,FAA-H-8083-19A
 manuals,ac-00-6b.pdf,Aviation Weather,2016,AC-00-6B
 manuals,ac-00-45h_chg_2.pdf,Aviation Weather Services,2019,AC-00-45H Change 2
 manuals,00-80T-80.pdf,Aerodynamics for Naval Aviators,1965,H. H. Hurt Jr.
+periodicals,cb_509.pdf,Callback,Issue 509 (Jun 2022),NASA
+periodicals,cb_508.pdf,Callback,Issue 508 (May 2022),NASA
+periodicals,cb_507.pdf,Callback,Issue 507 (Apr 2022),NASA
 periodicals,cb_506.pdf,Callback,Issue 506 (Mar 2022),NASA
 periodicals,cb_505.pdf,Callback,Issue 505 (Feb 2022),NASA
 periodicals,cb_504.pdf,Callback,Issue 504 (Jan 2022),NASA
-periodicals,cb_503.pdf,Callback,Issue 503 (Dec 2021),NASA
-periodicals,cb_502.pdf,Callback,Issue 502 (Nov 2021),NASA
+periodicals,MayJun2022.pdf,FAA Safety Briefing,May/Jun 2022,FAA
 periodicals,MarApr2022.pdf,FAA Safety Briefing,Mar/Apr 2022,FAA
 periodicals,JanFeb2022.pdf,FAA Safety Briefing,Jan/Feb 2022,FAA
 periodicals,NovDec2021.pdf,FAA Safety Briefing,Nov/Dec 2021,FAA
 periodicals,SepOct2021.pdf,FAA Safety Briefing,Sep/Oct 2021,FAA
 periodicals,JulAug2021.pdf,FAA Safety Briefing,Jul/Aug 2021,FAA
-regs,aim_211202.pdf,AIM,Dec 2021,Change 1
+regs,aim_220519.pdf,AIM,May 2022,Change 1 & 2
 regs,CFR-2021-title14-vol1.pdf,FAR Volume 1 2021,Parts 1-59,US GPO
 regs,CFR-2021-title14-vol2.pdf,FAR Volume 2 2021,Parts 60-109,US GPO
 regs,CFR-2021-title14-vol3.pdf,FAR Volume 3 2021,Parts 110-199,US GPO
 regs,CFR-2021-title14-vol4.pdf,FAR Volume 4 2021,Parts 200-1199,US GPO
 regs,CFR-2021-title14-vol5.pdf,FAR Volume 5 2021,Parts 1200-1399,US GPO
-misc,aip_211202.pdf,AIP (26th Edition),Dec 2021,Amdt. 3
+misc,aip_220519.pdf,AIP (27th Edition),May 2022,Basic
 misc,nat_doc_007_210716.pdf,North Atlantic Operations Manual,V.2021-2,USA
-misc,pcg_211202.pdf,Pilot/Controller Glossary,Dec 2021,Basic
-misc,7110.10BB_fss_211202.pdf,Flight Services,Dec 2021,Change 1
-misc,7110.65Z_atc_211202.pdf,Air Traffic Control,Dec 2021,Change 1
+misc,pcg_220519.pdf,Pilot/Controller Glossary,May 2022,Change 1 & 2
+misc,7110.10BB_fss_220519.pdf,Flight Services,May 2022,Change 1 & 2
+misc,7110.65Z_atc_220519.pdf,Air Traffic Control,May 2022,Change 1 & 2
 misc,7110.118B_lahso_201115.pdf,Land and Hold Short Operations,Nov 2020,JO 7110.118B
 misc,faa_airspacecard_2014.pdf,Airspace Card,Jun 2014,FAA
-misc,Pilots_NOTAM_primer_for_2021.pdf,NOTAMs Primer for Pilots,Dec 2020,FAA
+misc,Pilots_NOTAM_primer_for_2020.pdf,Pilots: NOTAM Primer,Dec 2020,FAA
+misc,Airports_NOTAM_primer_for_2020.pdf,Airports: NOTAM Primer,Dec 2020,FAA
 safety,ac_90-48d-chg_1.pdf,Pilots’ Role in Collision Avoidance,2016,FAA
 safety,safety_advisor_non-towered_airports.pdf,Operations at Nontowered Airports,2007,FAA
 safety,faa-p-8740-02-2008.pdf,Density Altitude,2008,FAA
