@@ -1,11 +1,12 @@
 {
   "name": "notam-api",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Notams Web API",
   "main": "app.js",
   "dependencies": {
     "config": "^3.3.3",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "pg": "^8.7.3"
   },
   "devDependencies": {},
   "scripts": {

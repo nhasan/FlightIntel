@@ -1,7 +1,7 @@
 /*
  * FlightIntel
  *
- * Copyright 2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2021-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ const express = require('express');
 const app = express();
 
 const config = require('config');
-const port = config.get("Notams.port");
+const port = config.get("port");
 
 const notams = require('./notams');
 app.use('/notams', notams);
