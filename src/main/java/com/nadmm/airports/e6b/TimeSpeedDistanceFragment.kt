@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,35 +80,35 @@ class TimeSpeedDistanceFragment : E6bFragmentBase() {
     }
 
     private fun setupUi() {
-        val mLabel1 = findViewById<TextView>(R.id.e6b_label_value1)
-        val mLabel2 = findViewById<TextView>(R.id.e6b_label_value2)
-        val mLabel3 = findViewById<TextView>(R.id.e6b_label_value3)
+        val label1 = findViewById<TextView>(R.id.e6b_label_value1)!!
+        val label2 = findViewById<TextView>(R.id.e6b_label_value2)!!
+        val label3 = findViewById<TextView>(R.id.e6b_label_value3)!!
         mEdit1 = findViewById(R.id.e6b_edit_value1)
         mEdit2 = findViewById(R.id.e6b_edit_value2)
         mEdit3 = findViewById(R.id.e6b_edit_value3)
         when (mMode) {
             R.id.E6B_TSD_TIME.toLong() -> {
-                mLabel1!!.setText(R.string.gs)
+                label1.setText(R.string.gs)
                 addEditField(mEdit1, R.string.kts)
-                mLabel2!!.setText(R.string.distance_flown)
+                label2.setText(R.string.distance_flown)
                 addEditField(mEdit2, R.string.nm)
-                mLabel3!!.setText(R.string.time_flown)
+                label3.setText(R.string.flight_time)
                 addReadOnlyField(mEdit3!!, R.string.min)
             }
             R.id.E6B_TSD_SPEED.toLong() -> {
-                mLabel1!!.setText(R.string.distance_flown)
+                label1.setText(R.string.distance_flown)
                 addEditField(mEdit1, R.string.nm)
-                mLabel2!!.setText(R.string.time_flown)
+                label2.setText(R.string.time_flown)
                 addEditField(mEdit2, R.string.min)
-                mLabel3!!.setText(R.string.gs)
+                label3.setText(R.string.gs)
                 addReadOnlyField(mEdit3!!, R.string.kts)
             }
             R.id.E6B_TSD_DISTANCE.toLong() -> {
-                mLabel1!!.setText(R.string.gs)
+                label1.setText(R.string.gs)
                 addEditField(mEdit1, R.string.kts)
-                mLabel2!!.setText(R.string.time_flown)
+                label2.setText(R.string.time_flown)
                 addEditField(mEdit2, R.string.min)
-                mLabel3!!.setText(R.string.distance_flown)
+                label3.setText(R.string.distance_flown)
                 addReadOnlyField(mEdit3!!, R.string.nm)
             }
         }
