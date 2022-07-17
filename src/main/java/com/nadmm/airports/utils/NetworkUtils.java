@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@ package com.nadmm.airports.utils;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -31,6 +30,8 @@ import androidx.core.net.ConnectivityManagerCompat;
 
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.Application;
+
+import org.apache.http.conn.ssl.StrictHostnameVerifier;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -43,6 +44,9 @@ import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 
 @SuppressWarnings( "BooleanMethodIsAlwaysInverted" )
 public class NetworkUtils {
@@ -86,17 +90,8 @@ public class NetworkUtils {
             AlertDialog.Builder builder = new AlertDialog.Builder( context );
             builder.setMessage( "You are connected to a metered network such as mobile data"
                     + " or tethered to mobile data.\nContinue download?" )
-                    .setPositiveButton( "Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick( DialogInterface dialog, int id ) {
-                            runnable.run();
-                        }
-                    } )
-                    .setNegativeButton( "No", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick( DialogInterface dialog, int id ) {
-                        }
-                    } );
+                    .setPositiveButton( "Yes", ( dialog, id ) -> runnable.run() )
+                    .setNegativeButton( "No", ( dialog, id ) -> {} );
             AlertDialog alert = builder.create();
             alert.show();
         } else {
@@ -187,7 +182,11 @@ public class NetworkUtils {
         OutputStream out = null;
 
         try {
+            HostnameVerifier hostnameVerifier = ( hostname, session ) -> true;
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            if (conn instanceof HttpsURLConnection ) {
+                ( (HttpsURLConnection) conn ).setHostnameVerifier( hostnameVerifier );
+            }
             conn.setRequestProperty( "User-Agent",
                     String.format( "FlightIntel/%s (Android; nhasan@nadmm.com)",
                             Application.version) );
