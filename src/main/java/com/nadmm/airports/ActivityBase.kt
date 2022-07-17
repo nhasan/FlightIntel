@@ -42,7 +42,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -230,8 +229,6 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         val selfItem = selfNavDrawerItem
 
         mDrawerLayout = findViewById(R.id.drawer_layout) ?: return
-        mDrawerLayout?.setStatusBarBackgroundColor(
-                ContextCompat.getColor(this, R.color.color_primary_dark))
 
         mNavigationView = mDrawerLayout?.findViewById(R.id.navdrawer)
         if (selfItem == NAVDRAWER_ITEM_INVALID) {
@@ -686,11 +683,11 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         val inflater = menuInflater
         inflater.inflate(R.menu.mainmenu, menu)
 
-        val searchItem = menu.findItem(R.id.menu_search)
-        val searchView = searchItem.actionView as SearchView
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
-        searchView.setIconifiedByDefault(false)
+        (menu.findItem(R.id.menu_search).actionView as SearchView).apply {
+            setSearchableInfo(searchManager.getSearchableInfo(componentName))
+            setIconifiedByDefault(false)
+        }
 
         return super.onCreateOptionsMenu(menu)
     }
