@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ class BrowseAirportsFragment : ListFragmentBase() {
         c.moveToPosition(curPos)
         if (mMode == BROWSE_STATE_MODE) {
             mMode = BROWSE_AIRPORTS_MODE
-            mListState = listView.onSaveInstanceState()
+            mListState = listView?.onSaveInstanceState()
             setAdapter(null)
             mStateCode = c.getString(c.getColumnIndex(Airports.ASSOC_STATE))
             mStateName = c.getString(c.getColumnIndex(States.STATE_NAME))
@@ -128,7 +128,7 @@ class BrowseAirportsFragment : ListFragmentBase() {
         val apt = result[0] ?: return
         setCursor(apt)
         if (mListState != null) {
-            listView.onRestoreInstanceState(mListState)
+            listView?.onRestoreInstanceState(mListState)
         }
     }
 
@@ -157,7 +157,7 @@ class BrowseAirportsFragment : ListFragmentBase() {
     private inner class CityCursorAdapter(context: Context?, c: Cursor?)
         : SectionedCursorAdapter(context, R.layout.airport_list_item, c, R.layout.list_item_header) {
 
-        internal var mAdapter: AirportsCursorAdapter = AirportsCursorAdapter(context, c)
+        var mAdapter: AirportsCursorAdapter = AirportsCursorAdapter(context, c)
 
         override fun bindView(view: View, context: Context, c: Cursor) {
             mAdapter.bindView(view, context, c)
