@@ -209,9 +209,11 @@ abstract class LocationListFragmentBase : ListFragmentBase() {
     }
 
     private fun showSnackbar(text: String, listener: View.OnClickListener) {
-        Snackbar.make(listView, text, Snackbar.LENGTH_INDEFINITE)
+        listView?.apply {
+            Snackbar.make(this, text, Snackbar.LENGTH_INDEFINITE)
                 .setAction(android.R.string.ok, listener)
                 .show()
+        }
     }
 
     private fun showLocationSettings() {
