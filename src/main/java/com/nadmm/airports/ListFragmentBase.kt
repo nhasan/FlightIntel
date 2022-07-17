@@ -35,11 +35,11 @@ import androidx.cursoradapter.widget.CursorAdapter
 
 abstract class ListFragmentBase : FragmentBase() {
 
-    lateinit var listView: ListView
+    var listView: ListView? = null
     private var mListViewState: Parcelable? = null
 
     val listAdapter: ListAdapter?
-        get() = listView.adapter
+        get() = listView?.adapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,19 +52,22 @@ abstract class ListFragmentBase : FragmentBase() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val layout = inflater.inflate(R.layout.list_view_layout, container, false)
-        listView = layout.findViewById(android.R.id.list) ?: return null
-        listView.setOnItemClickListener {
-            _, view, position, _ -> onListItemClick(listView, view, position)
-        }
-        listView.cacheColorHint = ContextCompat.getColor(activity!!, R.color.color_background)
+        listView = layout.findViewById(android.R.id.list)
+        return listView?.run {
+            setOnItemClickListener {
+                    _, view, position, _ -> onListItemClick(this, view, position)
+            }
+            cacheColorHint = ContextCompat.getColor(requireActivity(), R.color.color_background)
 
-        return createContentView(layout)
+            createContentView(layout)
+        }
     }
 
     override fun onDestroy() {
-        val adapter = listView.adapter
-        if (adapter is CursorAdapter) {
-            adapter.cursor.close()
+        listView?.run {
+            if (adapter is CursorAdapter) {
+                (adapter as CursorAdapter).cursor.close()
+            }
         }
 
         super.onDestroy()
@@ -77,8 +80,10 @@ abstract class ListFragmentBase : FragmentBase() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mListViewState = listView.onSaveInstanceState()
-        outState.putParcelable(LISTVIEW_STATE, mListViewState)
+        listView?.apply {
+            mListViewState = onSaveInstanceState()
+            outState.putParcelable(LISTVIEW_STATE, mListViewState)
+        }
     }
 
     protected open fun setCursor(c: Cursor?) {
@@ -87,19 +92,18 @@ abstract class ListFragmentBase : FragmentBase() {
     }
 
     fun setAdapter(adapter: ListAdapter?) {
-        listView.adapter = adapter
+        listView?.apply {
+            this.adapter = adapter
 
-        if (adapter != null) {
-            setListShown(adapter.count > 0)
-
-            if (mListViewState != null) {
-                listView.onRestoreInstanceState(mListViewState)
-                mListViewState = null
+            adapter?.apply {
+                if (mListViewState != null) {
+                    onRestoreInstanceState(mListViewState)
+                    mListViewState = null
+                }
             }
-        } else {
-            setListShown(false)
-        }
 
+            setListShown(adapter != null && adapter.count > 0)
+        }
         setFragmentContentShown(true)
     }
 
@@ -112,10 +116,10 @@ abstract class ListFragmentBase : FragmentBase() {
         val tv = findViewById<TextView>(android.R.id.empty)
         if (show) {
             tv!!.visibility = View.GONE
-            listView.visibility = View.VISIBLE
+            listView?.visibility = View.VISIBLE
         } else {
             tv!!.visibility = View.VISIBLE
-            listView.visibility = View.GONE
+            listView?.visibility = View.GONE
         }
     }
 

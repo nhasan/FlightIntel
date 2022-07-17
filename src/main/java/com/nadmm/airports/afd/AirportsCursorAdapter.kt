@@ -99,11 +99,12 @@ class AirportsCursorAdapter(context: Context?, c: Cursor?)
         }
         holder.other?.text = other.joinToString()
 
-        val distance = c.getFloat(c.getColumnIndex(LocationColumns.DISTANCE))
-        val bearing = c.getFloat(c.getColumnIndex(LocationColumns.BEARING))
-        if (distance >= 0 && bearing >= 0) {
-            // Check if we have distance information
-            holder.distance?.text = String.format(Locale.US,
+        if ( c.getColumnIndex( LocationColumns.DISTANCE ) >= 0
+                && c.getColumnIndex( LocationColumns.BEARING ) >= 0 ) {
+            val distance = c.getFloat(c.getColumnIndex(LocationColumns.DISTANCE))
+            val bearing = c.getFloat(c.getColumnIndex(LocationColumns.BEARING))
+                // Check if we have distance information
+                holder.distance?.text = String.format(Locale.US,
                     "%.1f NM %s, initial course %.0f\u00B0 M",
                     distance, GeoUtils.getCardinalDirection(bearing), bearing)
         } else {
