@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2015-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2015-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,5 +33,10 @@
     <declare-styleable name="DrawShadowFrameLayout">
         <attr name="shadowDrawable" format="reference" />
         <attr name="shadowVisible" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="FreeHandDrawView">
+        <attr name="penColor" format="color" />
+        <attr name="paperColor" format="color" />
     </declare-styleable>
 </resources>

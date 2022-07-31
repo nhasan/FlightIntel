@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,25 +20,5 @@
  */
  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="Widget.FlightIntel.Spinner" parent="Widget.FlightIntel.Spinner.Base">
-        <item name="android:theme">@style/ActionBarThemeOverlay</item>
-    </style>
-
-    <style name="TabIndicator">
-        <item name="android:theme">@style/ActionBarThemeOverlay</item>
-    </style>
-
-    <style name="HeaderBar">
-        <item name="android:background">?colorPrimary</item>
-        <item name="android:elevation">@dimen/headerbar_elevation</item>
-    </style>
-
-    <style name="Widget.FlightIntel.Spinner.Base" parent="Widget.AppCompat.Light.Spinner.DropDown.ActionBar">
-        <item name="android:background">?android:selectableItemBackground</item>
-        <item name="android:dropDownSelector">?android:selectableItemBackground</item>
-        <item name="android:divider">@null</item>
-        <item name="android:dividerHeight">0dp</item>
-        <item name="android:overlapAnchor">true</item>
-    </style>
 
 </resources>

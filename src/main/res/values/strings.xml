@@ -24,6 +24,8 @@
     <string name="downloads">Downloads</string>
     <string name="settings">Settings</string>
     <string name="favorites">Favorites</string>
+    <string name="nearby">Nearby</string>
+    <string name="browse">Browse</string>
     <string name="search">Search</string>
     <string name="nearby_wx">Nearby Weather</string>
     <string name="search_hint">Search airports</string>
@@ -191,6 +193,7 @@
     <string name="mach">Mach Number</string>
     <string name="recovery_factor">Recovery Factor</string>
     <string name="time_flown">Time Flown</string>
+    <string name="flight_time">Flight Time</string>
     <string name="distance_flown">Distance Flown</string>
     <string name="ground_speed">Ground Speed</string>
     <string name="station_altitude">Station Altitude</string>

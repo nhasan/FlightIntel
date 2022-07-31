@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,12 @@
  */
  -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/wx_title_layout"
         android:background="@drawable/title_background"
         android:paddingTop="@dimen/padding_top"
-        android:paddingLeft="@dimen/padding_left"
-        android:paddingRight="@dimen/padding_right"
+        android:paddingStart="@dimen/padding_left"
+        android:paddingEnd="@dimen/padding_right"
         android:paddingBottom="@dimen/padding_bottom"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -61,12 +62,13 @@
         </LinearLayout>
         <LinearLayout android:id="@+id/header_inner2_layout"
                 android:orientation="vertical"
-                android:paddingLeft="8dp"
+                android:paddingStart="8dp"
                 android:layout_gravity="bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
             <CheckBox android:id="@+id/airport_star"
-                    style="?android:attr/starStyle"
+                    android:button="@drawable/sl_favourite_24dp"
+                    app:buttonTint="?android:attr/textColorPrimary"
                     android:paddingBottom="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />

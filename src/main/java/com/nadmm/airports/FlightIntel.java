@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ public class FlightIntel extends ActivityBase {
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             Application.version = pInfo.versionName;
-        } catch ( PackageManager.NameNotFoundException e) {
+        } catch ( PackageManager.NameNotFoundException ignored ) {
         }
 
         new LaunchTask().execute();

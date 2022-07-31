@@ -1034,12 +1034,8 @@ public final class DataUtils {
         return sAtcIdToName.get( id );
     }
 
-    public static long metersToFeet( float meters ) {
+    public static long metersToFeet( long meters ) {
         return Math.round( 3.2808*meters );
-    }
-
-    public static float feetToMeters( long feet ) {
-        return (float) ( 0.3048*feet );
     }
 
     public static int getRunwayHeading( String runwayId ) {

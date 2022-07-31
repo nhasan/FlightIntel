@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         <Button android:id="@+id/btnViewGraphic"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/FlatButton"
                 android:text="@string/view_graphic"
                 android:gravity="center"
                 android:layout_gravity="center"

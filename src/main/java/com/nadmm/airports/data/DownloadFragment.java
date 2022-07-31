@@ -443,10 +443,6 @@ public class DownloadFragment extends FragmentBase {
         return mTrackers.get( type );
     }
 
-    public DatabaseManager getDbManager() {
-        return mDbManager;
-    }
-
     public Handler getHandler() {
         return mHandler;
     }

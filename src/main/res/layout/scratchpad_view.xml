@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,11 +22,14 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
+        xmlns:draw="http://schemas.android.com/apk/res-auto"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <com.nadmm.airports.scratchpad.FreeHandDrawView
             android:id="@+id/drawing"
+            draw:penColor="?android:attr/textColorSecondary"
+            draw:paperColor="?android:attr/colorBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     <RelativeLayout android:id="@+id/toolbar"
@@ -46,21 +49,21 @@
         <ImageButton android:id="@+id/action_erase"
                      android:src="@drawable/ic_erase"
                      style="?android:attr/actionButtonStyle"
-                     android:layout_toRightOf="@id/action_draw"
+                     android:layout_toEndOf="@id/action_draw"
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
                      tools:ignore="ContentDescription"/>
         <ImageButton android:id="@+id/action_discard"
                      android:src="@drawable/ic_delete"
                      style="?android:attr/actionButtonStyle"
-                     android:layout_alignParentRight="true"
+                     android:layout_alignParentEnd="true"
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
                      tools:ignore="ContentDescription"/>
         <ImageButton android:id="@+id/action_share"
                      android:src="@drawable/ic_share"
                      style="?android:attr/actionButtonStyle"
-                     android:layout_toLeftOf="@id/action_discard"
+                     android:layout_toStartOf="@id/action_discard"
                      android:layout_width="wrap_content"
                      android:layout_height="wrap_content"
                      tools:ignore="ContentDescription"/>

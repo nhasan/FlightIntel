@@ -54,6 +54,10 @@ public class FormatUtils {
         sDollarFormat = DecimalFormat.getCurrencyInstance();
     }
 
+    public static String formatFeet( long value ) {
+        return formatFeet( (float) value );
+    }
+
     public static String formatFeet( float value ) {
         return sFeetFormat.format( value );
     }

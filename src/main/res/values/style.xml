@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,12 @@
  */
  -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="FlatButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+    <style name="FlatButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">?attr/colorOnPrimaryContainer</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
-    <style name="TextSmall" parent="TextAppearance.AppCompat.Body1">
+    <style name="TextSmall" parent="TextAppearance.Material3.BodySmall">
         <item name="android:textSize">@dimen/small_text_size</item>
     </style>
 
@@ -32,11 +34,7 @@
     </style>
 
     <style name="TextSmall.Red">
-        <item name="android:textColor">@color/red_500</item>
-    </style>
-
-    <style name="TextSmall.White">
-        <item name="android:textColor">#ffffff</item>
+        <item name="android:textColor">?attr/colorError</item>
     </style>
 
     <style name="TextSmall.Light">
@@ -54,8 +52,7 @@
     <style name="TextSmall.Monospace">
         <item name="android:typeface">monospace</item>
     </style>
-
-    <style name="TextMedium" parent="TextAppearance.AppCompat.Subhead">
+    <style name="TextMedium" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:textSize">@dimen/medium_text_size</item>
     </style>
 
@@ -70,10 +67,10 @@
     <style name="TextLabel" parent="TextMedium">
     </style>
 
-    <style name="TextTitle" parent="TextAppearance.AppCompat.Title">
+    <style name="TextTitle" parent="TextAppearance.Material3.TitleMedium">
     </style>
 
-    <style name="TextNormal" parent="@style/TextAppearance.AppCompat.Body1" />
+    <style name="TextNormal" parent="@style/TextAppearance.Material3.BodySmall" />
 
     <style name="TextNormal.Bold">
         <item name="android:textStyle">bold</item>
@@ -93,38 +90,12 @@
         <item name="android:textSize">@dimen/clock_tenths_text_size</item>
     </style>
 
-    <style name="DrawerMenuText" parent="@style/TextSmall.Bold">
-        <item name="android:textSize">@dimen/navdrawer_text_size</item>
+    <style name="DetailPanel">
+        <item name="android:background">@drawable/rounded_rectangle</item>
+        <item name="android:textColor">?attr/colorOnTertiary</item>
     </style>
 
-    <style name="ActionBarThemeOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="ActionBarPopupThemeOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-    <style name="HeaderBar">
-        <item name="android:background">?colorPrimary</item>
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView.ActionBar">
+        <item name="colorControlNormal">?colorControlNormal</item>
     </style>
-
-    <style name="Widget.Flightintel.Toolbar" parent="Widget.AppCompat.Toolbar">
-        <item name="android:background">?attr/colorPrimary</item>
-        <item name="android:theme">@style/ActionBarThemeOverlay</item>
-        <item name="popupTheme">@style/ActionBarPopupThemeOverlay</item>
-    </style>
-
-    <style name="Widget.FlightIntel.Spinner.Base" parent="Widget.AppCompat.Light.Spinner.DropDown.ActionBar">
-        <item name="android:background">?android:selectableItemBackground</item>
-        <item name="android:dropDownSelector">?android:selectableItemBackground</item>
-        <item name="android:divider">@null</item>
-        <item name="android:dividerHeight">0dp</item>
-    </style>
-
-    <style name="Widget.FlightIntel.Spinner" parent="Widget.FlightIntel.Spinner.Base" />
-
-    <style name="TabIndicator" />
-
-    <style name="ActionDropDownStyle" parent="Base.Widget.AppCompat.DropDownItem.Spinner">
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:background">@color/color_primary</item>
-    </style>
-
 </resources>
