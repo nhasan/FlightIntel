@@ -107,7 +107,7 @@
 	                android:layout_height="wrap_content" />
 	        <ImageView
                     android:id="@+id/airport_map"
-	                android:src="@drawable/ic_map_black_36dp"
+	                android:src="@drawable/ic_baseline_map_36"
 					style="?android:attr/starStyle"
                     android:layout_gravity="end"
 					android:paddingTop="8dp"

@@ -599,7 +599,7 @@ class AirportDetailsFragment : FragmentBase() {
             val dafd = result[13]
             if (dafd != null && dafd.moveToFirst()) {
                 val pdfName = dafd.getString(dafd.getColumnIndexOrThrow(Dafd.PDF_NAME))
-                val row = addClickableRow(layout, "A/FD page", "")
+                val row = addClickableRow(layout, "d-CS page", "")
                 row.setTag(R.id.DAFD_CYCLE, afdCycle)
                 row.setTag(R.id.DAFD_PDF_NAME, pdfName)
                 row.setOnClickListener { v ->
@@ -608,10 +608,10 @@ class AirportDetailsFragment : FragmentBase() {
                     getAfdPage(afdCycle1, pdfName1)
                 }
             } else {
-                addRow(layout, "A/FD page is not available for this airport")
+                addRow(layout, "d-CS page is not available for this airport")
             }
         } else {
-            addRow(layout, "d-A/FD data not found")
+            addRow(layout, "d-CS data not found")
         }
         val dtpp: Cursor? = result[11]
         if (dtpp != null && dtpp.moveToFirst()) {

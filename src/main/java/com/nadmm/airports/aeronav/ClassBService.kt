@@ -72,10 +72,12 @@ class ClassBService : AeroNavService("classb") {
                 UiUtils.showToast(this, "Error: " + e.message)
             }
         }
-        val extras = Bundle()
-        extras.putString(Airports.FAA_CODE, facility)
-        extras.putString(PDF_PATH, pdfFile.absolutePath)
-        sendResult(intent.action!!, extras)
+        if (pdfFile.exists()) {
+            val extras = Bundle()
+            extras.putString(Airports.FAA_CODE, facility)
+            extras.putString(PDF_PATH, pdfFile.absolutePath)
+            sendResult(intent.action!!, extras)
+        }
     }
 
     companion object {

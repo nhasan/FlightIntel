@@ -31,7 +31,7 @@
         <include layout="@layout/wx_title_layout" />
         <include layout="@layout/wx_subtitle_layout" />
         <Button android:id="@+id/btnViewGraphic"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/FlatButton"
                 android:text="@string/view_graphic"
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/section_margin"

@@ -28,8 +28,8 @@ import com.nadmm.airports.utils.PagerAdapter
 abstract class TabPagerActivityBase : ActivityBase() {
     private var mCurrentTabIndex = -1
     private lateinit var mViewPager: ViewPager
-    private var mPagerAdapter: PagerAdapter? = null
-    private var mTabLayout: TabLayout? = null
+    private lateinit var mPagerAdapter: PagerAdapter
+    private lateinit var mTabLayout: TabLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tab_pager)
@@ -48,8 +48,8 @@ abstract class TabPagerActivityBase : ActivityBase() {
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        mTabLayout!!.setupWithViewPager(mViewPager)
-        mTabLayout!!.addOnTabSelectedListener(object : OnTabSelectedListener {
+        mTabLayout.setupWithViewPager(mViewPager)
+        mTabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 mCurrentTabIndex = tab.position
                 mViewPager.currentItem = mCurrentTabIndex
@@ -66,8 +66,8 @@ abstract class TabPagerActivityBase : ActivityBase() {
         })
         mCurrentTabIndex = savedInstanceState?.getInt(SAVED_TAB) ?: initialTabIndex
         postRunnable({
-            if (mCurrentTabIndex >= 0 && mCurrentTabIndex < mTabLayout!!.tabCount) {
-                mTabLayout!!.getTabAt(mCurrentTabIndex)!!.select()
+            if (mCurrentTabIndex >= 0 && mCurrentTabIndex < mTabLayout.tabCount) {
+                mTabLayout.getTabAt(mCurrentTabIndex)!!.select()
                 enableDisableSwipeRefresh(currentFragment.isRefreshable)
             }
         }, 0)
@@ -86,11 +86,11 @@ abstract class TabPagerActivityBase : ActivityBase() {
     }
 
     protected fun addTab(label: String?, clss: Class<*>?, args: Bundle?) {
-        mPagerAdapter!!.addTab(label, clss, args)
+        mPagerAdapter.addTab(label, clss, args)
     }
 
     private val currentFragment: FragmentBase
-        get() = mPagerAdapter!!.getItem(mCurrentTabIndex) as FragmentBase
+        get() = mPagerAdapter.getItem(mCurrentTabIndex) as FragmentBase
 
     protected open val initialTabIndex: Int
         get() = 0

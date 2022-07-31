@@ -127,19 +127,20 @@ sub location
 sub airport
 {
     my( $twig, $airport )= @_;
-    my $faa_code = $airport->child_text( 0, "aptid" );
-    my $pdf_name = $airport->child_text( 0, "pdf" );
+    my $faa_code = $airport->first_child_text( "aptid" );
+    my $pdf_name = $airport->first_child_text( "pdf" );
+
 
     if ( length( $faa_code ) > 0 )
     {
+        print "\rLoading # $count...";
+
         #STATE
         $sth_dafd->bind_param( 1, $state );
         #FAA_CODE
         $sth_dafd->bind_param( 2, $faa_code );
         #PDF_NAME
         $sth_dafd->bind_param( 3, $pdf_name );
-
-        print "\rLoading # $count...";
 
         $sth_dafd->execute;
 

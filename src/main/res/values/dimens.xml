@@ -34,7 +34,7 @@
     <dimen name="action_bar_auto_hide_min_y">64dp</dimen>
     <dimen name="action_bar_auto_hide_sensivity">16dp</dimen>
 
-    <dimen name="navdrawer_width">320dip</dimen>
+    <dimen name="navdrawer_width">300dip</dimen>
     <dimen name="navdrawer_image_height">180dip</dimen>
     <dimen name="navdrawer_item_height">48dip</dimen>
     <dimen name="navdrawer_text_size">14sp</dimen>

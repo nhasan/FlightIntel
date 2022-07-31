@@ -193,6 +193,7 @@
     <string name="mach">Mach Number</string>
     <string name="recovery_factor">Recovery Factor</string>
     <string name="time_flown">Time Flown</string>
+    <string name="flight_time">Flight Time</string>
     <string name="distance_flown">Distance Flown</string>
     <string name="ground_speed">Ground Speed</string>
     <string name="station_altitude">Station Altitude</string>

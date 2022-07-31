@@ -24,13 +24,11 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.Configuration
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteQueryBuilder
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -43,6 +41,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.core.view.MenuProvider
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -147,9 +146,9 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     override fun onCreate(savedInstanceState: Bundle?) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        val theme = mPreferences.getString(PreferencesActivity.KEY_THEME,
-                resources.getString(R.string.theme_default))
-        val mode = PreferencesActivity.getNighMode(theme!!)
+        val theme = mPreferences.getString(PreferencesActivity.KEY_THEME, null)
+            ?: resources.getString(R.string.theme_default)
+        val mode = PreferencesActivity.getNighMode(theme)
         AppCompatDelegate.setDefaultNightMode(mode)
 
         super.onCreate(savedInstanceState)
@@ -165,6 +164,34 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
             val msg = intent.getStringExtra(EXTRA_MSG)
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
         }
+
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.mainmenu, menu)
+
+                val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+                (menu.findItem(R.id.menu_search).actionView as SearchView).apply {
+                    setSearchableInfo(searchManager.getSearchableInfo(componentName))
+                    setIconifiedByDefault(false)
+                }
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                if (mDrawerToggle?.onOptionsItemSelected(menuItem) == true) {
+                    return true
+                }
+
+                return when (menuItem.itemId) {
+                    android.R.id.home -> {
+                        onBackPressed()
+                        true
+                    }
+                    R.id.menu_search -> true
+                    else -> true
+                }
+            }
+        })
     }
 
     override fun onPause() {
@@ -177,10 +204,6 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         super.onResume()
 
         mNavigationView?.setCheckedItem(selfNavDrawerItem)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        }
 
         // Whenever the fragment back stack changes, we may need to update the
         // action bar toggle: only top level screens show the hamburger-like icon, inner
@@ -204,9 +227,19 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         actionBarToolbar
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        mDrawerToggle?.onConfigurationChanged(newConfig)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (mDrawerToggle?.onOptionsItemSelected(item) == true) {
+            return true
+        }
+
+        return when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                true
+            }
+            R.id.menu_search -> true
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onBackPressed() {
@@ -233,8 +266,8 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         mNavigationView = mDrawerLayout?.findViewById(R.id.navdrawer)
         if (selfItem == NAVDRAWER_ITEM_INVALID) {
             // do not show a nav drawer
-            if (mNavigationView != null) {
-                (mNavigationView!!.parent as ViewGroup).removeView(mNavigationView)
+            mNavigationView?.apply {
+                (parent as ViewGroup).removeView(this)
             }
             mDrawerLayout = null
             return
@@ -253,9 +286,11 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
             }
         }
 
-        mDrawerToggle!!.setToolbarNavigationClickListener { onBackPressed() }
-        mDrawerToggle!!.isDrawerSlideAnimationEnabled = false
-        mDrawerLayout!!.addDrawerListener(mDrawerToggle!!)
+        mDrawerToggle?.apply {
+            setToolbarNavigationClickListener { onBackPressed() }
+            isDrawerSlideAnimationEnabled = false
+            mDrawerLayout?.addDrawerListener(this)
+        }
         updateDrawerToggle()
 
         // Initialize navigation drawer
@@ -275,18 +310,20 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     }
 
     private fun updateDrawerToggle() {
-        mDrawerToggle ?: return
-        val isRoot = supportFragmentManager.backStackEntryCount == 0
-        mDrawerToggle?.isDrawerIndicatorEnabled = isRoot
-        mDrawerLayout?.setDrawerLockMode(
+        mDrawerToggle?.apply {
+            val isRoot = supportFragmentManager.backStackEntryCount == 0
+            isDrawerIndicatorEnabled = isRoot
+            mDrawerLayout?.setDrawerLockMode(
                 if (isRoot) DrawerLayout.LOCK_MODE_UNLOCKED
                 else DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        val actionBar = supportActionBar
-        actionBar?.setDisplayShowHomeEnabled(!isRoot)
-        actionBar?.setDisplayHomeAsUpEnabled(!isRoot)
-        actionBar?.setHomeButtonEnabled(!isRoot)
-        if (isRoot) {
-            mDrawerToggle?.syncState()
+            supportActionBar?.apply {
+                setDisplayShowHomeEnabled(!isRoot)
+                setDisplayHomeAsUpEnabled(!isRoot)
+                setHomeButtonEnabled(!isRoot)
+            }
+            if (isRoot) {
+                syncState()
+            }
         }
     }
 
@@ -382,9 +419,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     protected open fun requestDataRefresh() {}
 
     protected fun showAppBar(show: Boolean) {
-        if (mAppBar != null) {
-            mAppBar!!.setExpanded(show, true)
-        }
+        mAppBar?.setExpanded(show, true)
     }
 
     open fun onFragmentStarted(fragment: FragmentBase) {
@@ -622,12 +657,8 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
             val siteNumber1 = cb1.tag as String
             if (cb1.isChecked) {
                 dbManager.addToFavoriteAirports(siteNumber1)
-                Toast.makeText(this@ActivityBase, "Added to favorites list",
-                        Toast.LENGTH_LONG).show()
             } else {
                 dbManager.removeFromFavoriteAirports(siteNumber1)
-                Toast.makeText(this@ActivityBase, "Removed from favorites list",
-                        Toast.LENGTH_LONG).show()
             }
         }
 
@@ -679,34 +710,6 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         mHandler.postDelayed(r, delayMillis)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.mainmenu, menu)
-
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
-        (menu.findItem(R.id.menu_search).actionView as SearchView).apply {
-            setSearchableInfo(searchManager.getSearchableInfo(componentName))
-            setIconifiedByDefault(false)
-        }
-
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (mDrawerToggle != null && mDrawerToggle!!.onOptionsItemSelected(item)) {
-            return true
-        }
-
-        return when (item.itemId) {
-            android.R.id.home -> {
-                onBackPressed()
-                true
-            }
-            R.id.menu_search -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     private fun dpToPx(dp: Float): Int {
         return UiUtils.convertDpToPx(this, dp)
     }
@@ -740,13 +743,17 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     }
 
     fun setActionBarTitle(title: String) {
-        supportActionBar?.title = title
-        supportActionBar?.subtitle = getTitle()
+        supportActionBar?.apply {
+            this.subtitle = getTitle()
+            this.title = title
+        }
     }
 
     fun setActionBarTitle(title: String, subtitle: String?) {
-        supportActionBar?.title = title
-        supportActionBar?.subtitle = subtitle
+        supportActionBar?.apply {
+            this.title = title
+            this.subtitle = subtitle
+        }
     }
 
     fun setActionBarSubtitle(subtitle: String) {

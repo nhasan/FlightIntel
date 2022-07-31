@@ -31,8 +31,6 @@ import androidx.core.net.ConnectivityManagerCompat;
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.Application;
 
-import org.apache.http.conn.ssl.StrictHostnameVerifier;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -141,14 +139,6 @@ public class NetworkUtils {
         return doHttpGet( context, "https", host, 443, path, null, file, null, null, null );
     }
 
-    public static boolean doHttpGet( Context context, String host, String path,
-                                     String query, File file, ResultReceiver receiver,
-                                     Bundle result, Class<? extends FilterInputStream> filter )
-            throws Exception {
-        URI uri = new URI( "http", null, host, 80, path, query, null );
-        return doHttpGet( context, uri.toURL(), file, receiver, result, filter );
-    }
-
     public static boolean doHttpsGet( Context context, String host, String path,
                                      String query, File file, ResultReceiver receiver,
                                      Bundle result, Class<? extends FilterInputStream> filter )
@@ -187,9 +177,12 @@ public class NetworkUtils {
             if (conn instanceof HttpsURLConnection ) {
                 ( (HttpsURLConnection) conn ).setHostnameVerifier( hostnameVerifier );
             }
-            conn.setRequestProperty( "User-Agent",
-                    String.format( "FlightIntel/%s (Android; nhasan@nadmm.com)",
-                            Application.version) );
+            if (!url.getHost().contains( "faa.gov" )) {
+                // Do not override for FAA websites
+                conn.setRequestProperty( "User-Agent",
+                        String.format( "FlightIntel/%s (Android; nhasan@nadmm.com)",
+                                Application.version ) );
+            }
             int status = conn.getResponseCode();
             if ( status != HttpURLConnection.HTTP_OK ) {
                 if ( receiver != null ) {

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,9 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuHost
 import androidx.fragment.app.Fragment
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.*
@@ -79,9 +79,10 @@ abstract class FragmentBase : Fragment(), IRefreshable {
     protected val supportActionBar: ActionBar?
         get() = activityBase.supportActionBar
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val menuHost : MenuHost = requireActivity();
     }
 
     override fun onAttach(context: Context) {
@@ -233,12 +234,8 @@ abstract class FragmentBase : Fragment(), IRefreshable {
             val icaoCode1 = cb1.tag as String
             if (cb1.isChecked) {
                 dbManager.addToFavoriteWx(icaoCode1)
-                Toast.makeText(activityBase, "Added to favorites list",
-                        Toast.LENGTH_SHORT).show()
             } else {
                 dbManager.removeFromFavoriteWx(icaoCode1)
-                Toast.makeText(activityBase, "Removed from favorites list",
-                        Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -447,7 +444,8 @@ abstract class FragmentBase : Fragment(), IRefreshable {
 
     protected fun addSeparator(layout: LinearLayout) {
         val separator = View(activityBase)
-        separator.setBackgroundColor(ContextCompat.getColor(activity!!, R.color.color_background))
+        separator.setBackgroundColor(
+            ContextCompat.getColor(activityBase, R.color.material_on_surface_stroke))
         layout.addView(separator, LayoutParams(LayoutParams.MATCH_PARENT, 1))
     }
 

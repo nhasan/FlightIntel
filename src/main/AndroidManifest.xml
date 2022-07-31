@@ -54,7 +54,8 @@
                 android:value=".afd.AfdMainActivity" />
         </activity>
 
-        <activity android:name=".afd.AfdMainActivity" />
+        <activity
+            android:name=".afd.AfdMainActivity" />
 
         <activity
             android:name=".afd.AirportActivity"
@@ -222,7 +223,6 @@
         </activity>
 
         <activity
-            android:theme="@style/Theme.AppCompat.Light"
             android:name=".DisclaimerActivity" />
 
         <activity

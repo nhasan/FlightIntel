@@ -57,14 +57,13 @@ abstract class ListFragmentBase : FragmentBase() {
             setOnItemClickListener {
                     _, view, position, _ -> onListItemClick(this, view, position)
             }
-            cacheColorHint = ContextCompat.getColor(requireActivity(), R.color.color_background)
 
             createContentView(layout)
         }
     }
 
     override fun onDestroy() {
-        listView?.run {
+        listView?.apply {
             if (adapter is CursorAdapter) {
                 (adapter as CursorAdapter).cursor.close()
             }
