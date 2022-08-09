@@ -129,6 +129,7 @@
     <string name="start">Start</string>
     <string name="pause">Pause</string>
     <string name="reset">Reset</string>
+    <string name="resume">Resume</string>
     <string name="restart">Restart</string>
     <string name="leg">Leg</string>
     <string name="colon">:</string>
