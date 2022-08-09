@@ -103,7 +103,7 @@ sub capitalize($$$)
 {
     my ( $string, $offset, $len ) = @_;
     $string = autoformat( substr( $string, $offset, $len ), { case => 'highlight' } );
-    $string =~ s/\s+(Ak|Al|Ar|As|Az|Ca|Co|Cq|Ct|Dc|De|Fl|Ga|Gu|Hi|Ia|Id|Il|In|Ks|Ky|La|Ma|Md|Me|Mi|Mn|Mo|Mq|Ms|Mt|Nc|Nd|Ne|Nh|Nj|Nm|Nv|Ny|Oh|Ok|Or|Pa|Pr|Ri|Sc|Sd|Tn|Tx|Ut|Va|Vi|Vt|Wa|Wi|Wv|Wy|Artcc|Llc|Norcal|Socal|Ifr|Vfr|Dot|Us|Usaf)\s+/ \U$1\E /g;
+    $string =~ s/\s+(Ak|Al|Ar|As|Az|Ca|Co|Cq|Ct|Dc|De|Fl|Ga|Gu|Hi|Ia|Id|Il|In|Ks|Ky|La|Ma|Md|Me|Mi|Mn|Mo|Mq|Ms|Mt|Nc|Nd|Ne|Nh|Nj|Nm|Nv|Ny|Oh|Ok|Or|Pa|Pr|Ri|Sc|Sd|Tn|Tx|Ut|Va|Vi|Vt|Wa|Wi|Wv|Wy|Artcc|Llc|Norcal|Socal|Ifr|Vfr|Dot|Us|Usaf|Jb)\s+/ \U$1\E /g;
     $string =~ s/$reTrim//g;
     return $string;
 }
