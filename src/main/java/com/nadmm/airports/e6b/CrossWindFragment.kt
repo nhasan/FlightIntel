@@ -80,24 +80,26 @@ class CrossWindFragment : E6bFragmentBase() {
             val crossWind = WxUtils.getCrossWindComponent(windSpeed, windDir, runwayId * 10)
             showValue(mHwndEdit, headWind.toDouble())
             showValue(mXwndEdit, crossWind.toDouble())
+            mTextMsg?.let {
             if (headWind > 0 && crossWind > 0) {
-                mTextMsg!!.text = "Right quartering cross wind with head wind"
+                it.text = "Right quartering cross wind with head wind"
             } else if (headWind > 0 && crossWind < 0) {
-                mTextMsg!!.text = "Left quartering cross wind with head wind"
+                it.text = "Left quartering cross wind with head wind"
             } else if (headWind > 0) {
-                mTextMsg!!.text = "Head wind only, no cross wind"
-            } else if (headWind == 0L && crossWind > 0) {
-                mTextMsg!!.text = "Right cross wind only, no head wind"
-            } else if (headWind == 0L && crossWind < 0) {
-                mTextMsg!!.text = "Left cross wind only, no head wind"
+                it.text = "Head wind only, no cross wind"
+            } else if (headWind == 0 && crossWind > 0) {
+                it.text = "Right cross wind only, no head wind"
+            } else if (headWind == 0 && crossWind < 0) {
+                it.text = "Left cross wind only, no head wind"
             } else if (headWind < 0 && crossWind < 0) {
-                mTextMsg!!.text = "Left quartering cross wind with tail wind"
+                it.text = "Left quartering cross wind with tail wind"
             } else if (headWind < 0 && crossWind > 0) {
-                mTextMsg!!.text = "Right quartering cross wind with tail wind"
+                it.text = "Right quartering cross wind with tail wind"
             } else if (headWind < 0) {
-                mTextMsg!!.text = "Tail wind only, no cross wind"
+                it.text = "Tail wind only, no cross wind"
             } else {
-                mTextMsg!!.text = "Winds calm"
+                it.text = "Winds calm"
+            }
             }
         } catch (ignored: NumberFormatException) {
             clearEditText(mHwndEdit)

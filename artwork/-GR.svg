@@ -2,22 +2,22 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="250"
+   height="250"
    id="svg4472"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    sodipodi:docname="-GR.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/-GR.png"
    inkscape:export-xdpi="288"
-   inkscape:export-ydpi="288">
+   inkscape:export-ydpi="288"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4474" />
   <sodipodi:namedview
@@ -28,18 +28,19 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="379.93445"
-     inkscape:cy="581.69473"
+     inkscape:cx="54.800775"
+     inkscape:cy="225.51655"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="846"
-     inkscape:window-x="0"
-     inkscape:window-y="-3"
+     inkscape:window-width="2560"
+     inkscape:window-height="1379"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      showguides="true"
-     inkscape:guide-bbox="true" />
+     inkscape:guide-bbox="true"
+     inkscape:pagecheckerboard="0" />
   <metadata
      id="metadata4477">
     <rdf:RDF>
@@ -48,16 +49,16 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-325.35872,-356.49386)">
     <rect
-       style="opacity:0.98000003999999996;fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+       style="opacity:0.98;fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1"
        id="rect2984"
        width="250"
        height="250.71428"
@@ -66,37 +67,41 @@
        inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/-GS.png"
        inkscape:export-xdpi="288"
        inkscape:export-ydpi="288" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:10.00000095;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       inkscape:transform-center-x="0.1668325"
-       inkscape:transform-center-y="13.29767"
-       d="m 416.42258,453.98595 -41.02277,130 -42.02383,-129.35101 z"
-       id="path3751"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccc"
-       inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/-GS.png"
-       inkscape:export-xdpi="288"
-       inkscape:export-ydpi="288" />
-    <path
-       sodipodi:type="star"
-       style="fill:#000000;stroke:#000000;stroke-width:7.75909519000000003;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;fill-opacity:1"
-       id="path4346"
-       sodipodi:sides="3"
-       sodipodi:cx="339.91632"
-       sodipodi:cy="465.96863"
-       sodipodi:r1="36.047264"
-       sodipodi:r2="9.5997715"
-       sodipodi:arg1="0.5181982"
-       sodipodi:arg2="1.5653958"
-       inkscape:flatsided="true"
-       inkscape:rounded="0"
-       inkscape:randomized="0"
-       d="m 371.23105,483.8234 -62.43478,0.33719 30.92538,-54.2387 z"
-       inkscape:transform-center-x="-0.73954674"
-       inkscape:transform-center-y="-5.546094"
-       transform="matrix(1.2857845,0,0,1.2918428,-62.089541,-190.12016)"
-       inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/-GS.png"
-       inkscape:export-xdpi="288"
-       inkscape:export-ydpi="288" />
+    <g
+       id="g42183"
+       transform="matrix(1.2802258,0,0,1.0097623,-29.881746,-0.98535045)">
+      <path
+         style="fill:none;stroke:#000000;stroke-width:10;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         inkscape:transform-center-x="0.1668325"
+         inkscape:transform-center-y="13.29767"
+         d="m 416.42258,453.98595 -41.02277,130 -42.02383,-129.35101 z"
+         id="path3751"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccc"
+         inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/-GS.png"
+         inkscape:export-xdpi="288"
+         inkscape:export-ydpi="288" />
+      <path
+         sodipodi:type="star"
+         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:7.7591;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="path4346"
+         sodipodi:sides="3"
+         sodipodi:cx="339.91632"
+         sodipodi:cy="465.96863"
+         sodipodi:r1="36.047264"
+         sodipodi:r2="9.5997715"
+         sodipodi:arg1="0.5181982"
+         sodipodi:arg2="1.5653958"
+         inkscape:flatsided="true"
+         inkscape:rounded="0"
+         inkscape:randomized="0"
+         d="m 371.23105,483.8234 -62.43478,0.33719 30.92538,-54.2387 z"
+         inkscape:transform-center-x="-0.73954674"
+         inkscape:transform-center-y="-5.546094"
+         transform="matrix(1.2857845,0,0,1.2918428,-62.089541,-190.12016)"
+         inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/-GS.png"
+         inkscape:export-xdpi="288"
+         inkscape:export-ydpi="288" />
+    </g>
   </g>
 </svg>

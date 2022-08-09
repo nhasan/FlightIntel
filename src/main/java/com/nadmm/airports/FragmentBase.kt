@@ -204,7 +204,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
             var freq = awos.getString(awos.getColumnIndex(Awos1.STATION_FREQUENCY))
             if (!freq.isNullOrBlank()) {
                 tv = root.findViewById(R.id.wx_station_freq)
-                UiUtils.setTextViewDrawable(tv, R.drawable.ic_antenna)
+                UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_antenna_16)
                 tv.text = freq
                 tv.visibility = View.VISIBLE
             }
@@ -212,7 +212,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
             freq = awos.getString(awos.getColumnIndex(Awos1.SECOND_STATION_FREQUENCY))
             if (!freq.isNullOrBlank()) {
                 tv = root.findViewById(R.id.wx_station_freq2)
-                UiUtils.setTextViewDrawable(tv, R.drawable.ic_antenna)
+                UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_antenna_16)
                 tv.text = freq
                 tv.visibility = View.VISIBLE
             }
@@ -253,7 +253,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
         val pm = activityBase.packageManager
         val hasTelephony = pm.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
         if (hasTelephony && tv.text.isNotEmpty()) {
-            UiUtils.setTextViewDrawable(tv, R.drawable.ic_phone)
+            UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_phone_16)
             tv.tag = Intent.ACTION_DIAL
             tv.setOnClickListener(mOnPhoneClickListener)
         } else {

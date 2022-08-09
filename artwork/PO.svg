@@ -2,22 +2,22 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="250"
+   height="250"
    id="svg4472"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    sodipodi:docname="PO.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/PO.png"
    inkscape:export-xdpi="288"
-   inkscape:export-ydpi="288">
+   inkscape:export-ydpi="288"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4474" />
   <sodipodi:namedview
@@ -28,16 +28,17 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="376.90388"
-     inkscape:cy="549.00391"
+     inkscape:cx="83.590123"
+     inkscape:cy="186.12061"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="846"
-     inkscape:window-x="0"
-     inkscape:window-y="-3"
-     inkscape:window-maximized="1" />
+     inkscape:window-width="2560"
+     inkscape:window-height="1379"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:pagecheckerboard="0" />
   <metadata
      id="metadata4477">
     <rdf:RDF>
@@ -46,16 +47,16 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-293.26155,-363.22867)">
     <rect
-       style="fill:none;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:none;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1"
        id="rect4482"
        width="250"
        height="250"
@@ -64,9 +65,8 @@
        inkscape:export-xdpi="287.75"
        inkscape:export-ydpi="287.75" />
     <path
-       transform="matrix(1.6215299,0,0,1.1037604,-207.28071,55.912396)"
-       style="fill:none;stroke:#000000;stroke-width:11.21221352;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:0;stroke-opacity:1"
-       d="m 392.11012,468.29119 c -21.01484,13.44598 -51.30764,10.33881 -67.66086,-6.94006 -16.35321,-17.27887 -12.57422,-42.18628 8.44062,-55.63225 17.6493,-11.2926 40.1352,-18.93949 59.53303,3.01564 -21.63911,21.54562 -51.62043,12.9473 -67.97365,-4.33157 -16.35321,-17.27887 -12.57422,-42.18628 8.44062,-55.63225 17.6493,-11.2926 41.49177,-19.36076 59.53303,3.33921 -18.83578,20.4964 -51.62043,13.27087 -67.97365,-4.008 -16.35321,-17.27887 -12.57422,-42.18628 8.44062,-55.63225 17.6493,-11.2926 42.42621,-11.12403 59.84582,0.40714"
+       style="fill:none;stroke:#000000;stroke-width:16.5797;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:0;stroke-opacity:1"
+       d="m 486.08931,595.39436 c -37.66493,16.40414 -91.95877,12.61338 -121.26867,-8.46689 -29.30988,-21.08028 -22.53679,-51.46739 15.12814,-67.87152 31.63287,-13.77701 71.93438,-23.10623 106.70114,3.67909 -38.78381,26.28572 -92.51938,15.79575 -121.82928,-5.28453 -29.30988,-21.08027 -22.53679,-51.46739 15.12814,-67.87151 31.63287,-13.77701 74.36576,-23.62019 106.70114,4.07384 -33.7594,25.00567 -92.51938,16.19051 -121.82928,-4.88977 -29.30988,-21.08027 -22.53679,-51.46739 15.12814,-67.87152 31.63287,-13.777 76.04056,-13.57135 107.26175,0.49672"
        id="path5099"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="csscsscssc" />

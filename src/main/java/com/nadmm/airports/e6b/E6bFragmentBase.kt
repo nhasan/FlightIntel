@@ -83,7 +83,7 @@ abstract class E6bFragmentBase : FragmentBase() {
     }
 
     protected fun addSpinnerField(textInputLayout: TextInputLayout) {
-        val textView = getAutoCompleteTextView(textInputLayout)
+        val textView = textInputLayout.editText as AutoCompleteTextView?
         if (textView != null) {
             textView.onItemClickListener =
                 OnItemClickListener {
@@ -98,7 +98,7 @@ abstract class E6bFragmentBase : FragmentBase() {
         textInputLayout: TextInputLayout, adapter: ArrayAdapter<*>?,
         selectedIndex: Int
     ) {
-        val textView = getAutoCompleteTextView(textInputLayout)
+        val textView = textInputLayout.editText as AutoCompleteTextView?
         if (textView != null) {
             if (adapter != null) {
                 textView.setAdapter(adapter)
@@ -108,21 +108,19 @@ abstract class E6bFragmentBase : FragmentBase() {
     }
 
     protected fun getSelectedItem(textInputLayout: TextInputLayout): Any? {
-        val textView = getAutoCompleteTextView(textInputLayout) ?: return null
-        val adapter = textView.adapter as ArrayAdapter<*>
-        val text = textView.text.toString()
-        if (text.isNotEmpty()) {
-            val count = adapter.count
-            for (i in 0 until count) {
-                val o = adapter.getItem(i)
-                if (o.toString() == text) return o
+        val textView = textInputLayout.editText as AutoCompleteTextView? ?: return null
+        textView.adapter?.let {
+            val adapter = it as ArrayAdapter<*>
+            val text = textView.text.toString()
+            if (text.isNotEmpty()) {
+                val count = adapter.count
+                for (i in 0 until count) {
+                    val o = adapter.getItem(i)
+                    if (o.toString() == text) return o
+                }
             }
         }
         return null
-    }
-
-    protected fun getAutoCompleteTextView(textInputLayout: TextInputLayout): AutoCompleteTextView? {
-        return textInputLayout.editText as AutoCompleteTextView?
     }
 
     protected fun addReadOnlyField(textInputLayout: TextInputLayout, textHintId: Int) {

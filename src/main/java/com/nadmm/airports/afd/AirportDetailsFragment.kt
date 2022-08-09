@@ -721,7 +721,7 @@ class AirportDetailsFragment : FragmentBase() {
 
         var tv = row.findViewById<TextView>(R.id.runway_id)
         tv?.text = runwayId
-        UiUtils.setRunwayDrawable(activity, tv, runwayId, length, heading)
+        activity?.let { UiUtils.setRunwayDrawable(it, tv, runwayId, length, heading) }
 
         if (rp != null) {
             tv = row.findViewById(R.id.runway_rp)

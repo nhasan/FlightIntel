@@ -2,29 +2,28 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="800"
-   height="400"
+   width="250"
+   height="125"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    sodipodi:docname="MVFR.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/mvfr.png"
    inkscape:export-xdpi="108"
-   inkscape:export-ydpi="108">
+   inkscape:export-ydpi="108"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4">
     <linearGradient
        id="linearGradient4138"
-       osb:paint="solid">
+       inkscape:swatch="solid">
       <stop
          style="stop-color:#0077b9;stop-opacity:1;"
          offset="0"
@@ -47,17 +46,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.49497475"
-     inkscape:cx="16.847314"
-     inkscape:cy="124.32107"
+     inkscape:zoom="2.6797024"
+     inkscape:cx="164.38393"
+     inkscape:cy="94.600058"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="841"
-     inkscape:window-x="-4"
+     inkscape:window-width="2560"
+     inkscape:window-height="1379"
+     inkscape:window-x="1920"
      inkscape:window-y="0"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     inkscape:pagecheckerboard="0" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -66,7 +66,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -74,25 +73,40 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-652.36218)">
-    <rect
-       style="fill:#0090e0;fill-opacity:1;stroke:#0073b9;stroke-width:20;stroke-linejoin:round;stroke-miterlimit:6;stroke-dasharray:none;stroke-opacity:1"
-       id="rect2985"
-       width="780"
-       height="380"
-       x="10"
-       y="663.79077" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:280px;line-height:125%;font-family:Roboto;-inkscape-font-specification:'Roboto, Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1"
-       x="16.367188"
-       y="953.32202"
-       id="text3755"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan3336"
-         x="16.367188"
-         y="953.32202"
-         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1">MVFR</tspan></text>
+     transform="translate(0,-653.79077)">
+    <g
+       id="g7480"
+       transform="matrix(0.31249987,0,0,0.31250943,4.8811689e-5,449.47495)">
+      <rect
+         style="fill:#0090e0;fill-opacity:1;stroke:#0073b9;stroke-width:20;stroke-linejoin:round;stroke-miterlimit:6;stroke-dasharray:none;stroke-opacity:1"
+         id="rect2985"
+         width="780"
+         height="380"
+         x="10"
+         y="663.79077"
+         rx="53.41687"
+         ry="53.41687" />
+      <g
+         aria-label="MVFR"
+         id="text3755"
+         style="font-weight:bold;font-size:11.3117px;line-height:0%;font-family:Roboto;-inkscape-font-specification:'Roboto, Bold';letter-spacing:0px;word-spacing:0px;fill:#ffffff;stroke-width:0.942646">
+        <path
+           d="M 121.80639,941.85577 76.40854,794.04881 h -1.055764 q 0.263941,5.27882 0.791823,15.83646 0.527883,10.55764 1.055765,22.69893 0.527882,11.87734 0.527882,21.64316 v 87.62841 H 42.096209 V 753.40189 h 54.371848 l 44.606033,144.11179 h 0.79182 l 47.24544,-144.11179 h 54.37185 v 188.45388 h -37.21568 v -89.21206 q 0,-8.97399 0.26394,-20.5874 0.52788,-11.6134 0.79182,-21.9071 0.52788,-10.55764 0.79182,-15.83646 h -1.05576 l -48.56515,147.54302 z"
+           style="font-size:263.941px;line-height:1.25"
+           id="path7447" />
+        <path
+           d="M 438.79925,753.40189 374.66158,941.85577 H 331.11132 L 267.23759,753.40189 h 40.38298 l 35.36809,112.17493 q 1.05576,2.90335 2.90335,10.82158 2.11153,7.65429 4.22306,16.36435 2.11153,8.44611 2.90335,14.25281 0.79182,-5.8067 2.63941,-14.25281 2.11153,-8.71006 4.22306,-16.36435 2.11152,-7.91823 2.90335,-10.82158 l 35.63203,-112.17493 z"
+           style="font-size:263.941px;line-height:1.25"
+           id="path7449" />
+        <path
+           d="M 501.88106,941.85577 H 462.55385 V 753.40189 h 107.95187 v 32.72869 h -68.62466 v 48.56514 h 63.87373 v 32.72869 h -63.87373 z"
+           style="font-size:263.941px;line-height:1.25"
+           id="path7451" />
+        <path
+           d="m 662.35715,753.40189 q 38.53538,0 56.74731,13.98888 18.47587,13.98887 18.47587,42.4945 0,12.93311 -5.01488,22.69893 -4.75093,9.50187 -12.93311,16.36434 -7.91823,6.59852 -17.15616,10.82158 l 55.42761,82.08565 H 713.5617 l -44.86997,-72.31983 h -21.37922 v 72.31983 H 607.45742 V 753.40189 Z m -2.90336,32.72869 h -12.14128 v 50.94061 h 12.93311 q 19.79557,0 28.24169,-6.59852 8.71005,-6.59853 8.71005,-19.53164 0,-13.46099 -9.23794,-19.00375 -8.97399,-5.8067 -28.50563,-5.8067 z"
+           style="font-size:263.941px;line-height:1.25"
+           id="path7453" />
+      </g>
+    </g>
   </g>
 </svg>

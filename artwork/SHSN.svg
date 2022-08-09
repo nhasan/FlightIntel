@@ -2,22 +2,22 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="250"
+   height="250"
    id="svg4472"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    sodipodi:docname="SHSN.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/SHSN.png"
    inkscape:export-xdpi="288"
-   inkscape:export-ydpi="288">
+   inkscape:export-ydpi="288"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4474" />
   <sodipodi:namedview
@@ -28,16 +28,17 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.5087106"
-     inkscape:cx="398.34157"
-     inkscape:cy="569.905"
+     inkscape:cx="150.47571"
+     inkscape:cy="108.22293"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="800"
-     inkscape:window-height="839"
-     inkscape:window-x="0"
+     inkscape:window-width="2560"
+     inkscape:window-height="1379"
+     inkscape:window-x="1920"
      inkscape:window-y="0"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="1"
+     inkscape:pagecheckerboard="0" />
   <metadata
      id="metadata4477">
     <rdf:RDF>
@@ -46,51 +47,51 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
-    <text
-       transform="matrix(0,1,-1,0,0,0)"
-       sodipodi:linespacing="125%"
-       id="use3801"
-       y="-308.40411"
-       x="352.19946"
-       style="font-size:132px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Verdana;-inkscape-font-specification:Verdana Bold"
-       xml:space="preserve"
-       inkscape:transform-center-x="46.972093"
-       inkscape:transform-center-y="6.5659915"><tspan
-         y="-308.40411"
-         x="352.19946"
-         id="tspan3824"
-         sodipodi:role="line">*</tspan></text>
+     id="layer1"
+     transform="translate(-323.67292,-354.29868)">
     <rect
-       style="opacity:0.98000003999999996;fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+       style="opacity:0.98;fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1"
        id="rect2984"
        width="250"
        height="250.71428"
-       x="250"
-       y="351.64789" />
+       x="323.68497"
+       y="356.3475" />
     <g
-       transform="translate(0.22437115,-7.462702)"
-       id="g2997">
-      <path
-         sodipodi:nodetypes="cccc"
-         inkscape:connector-curvature="0"
-         id="path3751-8"
-         d="m 416.42258,453.98595 -41.02277,130 -42.02383,-129.35101 z"
-         inkscape:transform-center-y="13.29767"
-         inkscape:transform-center-x="0.1668325"
-         style="fill:none;stroke:#000000;stroke-width:10.00000095;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path3014"
-         d="m 346.33679,485.16154 58.33421,0"
-         style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       id="g5919"
+       transform="matrix(1.0286109,0,0,1.0286109,65.981072,-7.8603482)">
+      <g
+         transform="translate(-2.8387696,-7.462702)"
+         id="g2997">
+        <path
+           sodipodi:nodetypes="cccc"
+           inkscape:connector-curvature="0"
+           id="path3751-8"
+           d="m 416.42258,453.98595 -41.02277,130 -42.02383,-129.35101 z"
+           inkscape:transform-center-y="13.29767"
+           inkscape:transform-center-x="0.1668325"
+           style="fill:none;stroke:#000000;stroke-width:10;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path3014"
+           d="M 346.33679,485.16154 H 404.671"
+           style="fill:none;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      </g>
+      <g
+         aria-label="*"
+         transform="matrix(-1.1126574,0,0,-1.1126574,-127.17207,-53.184384)"
+         id="text3006"
+         style="font-size:148.458px;line-height:0%;font-family:'DejaVu Math TeX Gyre';-inkscape-font-specification:'DejaVu Math TeX Gyre, Normal';letter-spacing:0px;word-spacing:0px;stroke-width:12.3715">
+        <path
+           d="m -415.41839,-387.30614 -5.93832,9.64977 -23.15944,-14.40042 1.78149,25.83169 h -11.87664 l 1.7815,-25.83169 -23.15945,14.40042 -5.93832,-9.64977 24.94094,-11.57972 -24.94094,-11.43126 5.93832,-9.64977 23.15945,14.40042 -1.7815,-25.98015 h 11.87664 l -1.78149,25.98015 23.15944,-14.40042 5.93832,9.64977 -24.94094,11.43126 z"
+           style="line-height:1.25"
+           id="path43898" />
+      </g>
     </g>
   </g>
 </svg>

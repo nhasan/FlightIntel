@@ -22,6 +22,7 @@ package com.nadmm.airports.notams;
 import android.app.IntentService;
 import android.content.Intent;
 import android.text.format.DateUtils;
+import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -67,7 +68,7 @@ public class NotamService extends IntentService {
             try {
                 fetchNotams( location, notamFile );
             } catch ( Exception e ) {
-                UiUtils.showToast( this, e.getMessage() );
+                UiUtils.showToast( this, e.getMessage(), Toast.LENGTH_LONG );
             }
         }
         sendResult( location, notamFile );

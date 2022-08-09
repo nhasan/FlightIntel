@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2013 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,11 @@
  -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:orientation="vertical"
-        android:paddingLeft="@dimen/padding_left"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/padding_left"
         android:paddingTop="@dimen/padding_top"
-        android:paddingRight="@dimen/padding_right"
+        android:paddingEnd="@dimen/padding_right"
         android:paddingBottom="@dimen/padding_bottom"
         android:layout_gravity="center_vertical"
         android:layout_width="match_parent"
@@ -35,21 +35,21 @@
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-               tools:ignore="ContentDescription"/>
+            tools:ignore="ContentDescription"/>
     <TextView android:id="@+id/item_title"
             style="@style/TextLabel"
-            android:gravity="left|center_vertical"
+            android:gravity="start|center_vertical"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
-            android:layout_toRightOf="@id/item_icon"
+            android:layout_toEndOf="@id/item_icon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     <TextView android:id="@+id/item_summary"
             style="@style/TextSmall.Light"
-            android:gravity="left|center_vertical"
+            android:gravity="start|center_vertical"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
-            android:layout_toRightOf="@id/item_icon"
+            android:layout_toEndOf="@id/item_icon"
             android:layout_below="@id/item_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

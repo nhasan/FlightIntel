@@ -23,42 +23,42 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@+id/main_group" android:checkableBehavior="single">
         <item android:id="@+id/navdrawer_afd"
-              android:icon="@drawable/ic_navdrawer_afd"
+              android:icon="@drawable/ic_outline_airplanemode_active_24"
               android:title="@string/title_navdrawer_afd" />
         <item android:id="@+id/navdrawer_wx"
-              android:icon="@drawable/ic_navdrawer_wx"
+              android:icon="@drawable/ic_outline_cloud_24"
               android:title="@string/title_navdrawer_wx" />
         <item android:id="@+id/navdrawer_dof"
-              android:icon="@drawable/ic_navdrawer_dof"
+              android:icon="@drawable/ic_outline_cell_tower_24"
               android:title="@string/title_navdrawer_dof" />
         <item android:id="@+id/navdrawer_tfr"
-              android:icon="@drawable/ic_navdrawer_tfr"
+              android:icon="@drawable/ic_outline_report_24"
               android:title="@string/title_navdrawer_tfr" />
         <item android:id="@+id/navdrawer_library"
-              android:icon="@drawable/ic_navdrawer_library"
+              android:icon="@drawable/ic_outline_local_library_24"
               android:title="@string/title_navdrawer_library" />
         <item android:id="@+id/navdrawer_charts"
-              android:icon="@drawable/ic_navdrawer_charts"
+              android:icon="@drawable/ic_outline_table_chart_24"
               android:title="@string/title_navdrawer_charts" />
         <item android:id="@+id/navdrawer_scratchpad"
-              android:icon="@drawable/ic_navdrawer_scratchpad"
+              android:icon="@drawable/ic_outline_draw_24"
               android:title="@string/title_navdrawer_scratchpad" />
         <item android:id="@+id/navdrawer_clocks"
-              android:icon="@drawable/ic_navdrawer_clocks"
+              android:icon="@drawable/ic_outline_access_time_24"
               android:title="@string/title_navdrawer_clocks" />
         <item android:id="@+id/navdrawer_e6b"
-              android:icon="@drawable/ic_navdrawer_e6b"
+              android:icon="@drawable/ic_outline_calculate_24"
               android:title="@string/title_navdrawer_e6b" />
     </group>
     <group android:id="@+id/misc_group" android:checkableBehavior="single">
         <item android:id="@+id/navdrawer_settings"
-              android:icon="@drawable/ic_navdrawer_settings"
+              android:icon="@drawable/ic_outline_settings_24"
               android:title="@string/title_navdrawer_settings" />
         <item android:id="@+id/navdrawer_download"
               android:title="@string/downloads"
-              android:icon="@drawable/ic_navdrawer_downloads" />
+              android:icon="@drawable/ic_outline_download_24" />
         <item android:id="@+id/navdrawer_about"
               android:title="@string/about"
-              android:icon="@drawable/ic_navdrawer_about" />
+              android:icon="@drawable/ic_outline_info_24" />
     </group>
 </menu>

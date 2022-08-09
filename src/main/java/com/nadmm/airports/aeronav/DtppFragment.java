@@ -35,6 +35,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -307,7 +308,7 @@ public class DtppFragment extends FragmentBase {
             }
         }
         UiUtils.showToast( getActivity(), String.format( Locale.US,
-                "Downloading %d charts in the background", pdfNames.size() ) );
+                "Downloading %d charts in the background", pdfNames.size() ), Toast.LENGTH_LONG );
         checkTppCharts( pdfNames, true );
     }
 
@@ -343,10 +344,10 @@ public class DtppFragment extends FragmentBase {
         TextView tv = view.findViewById( R.id.item_label );
         if ( available ) {
             UiUtils.setDefaultTintedTextViewDrawable(
-                    tv, R.drawable.ic_check_box );
+                    tv, R.drawable.ic_outline_check_box_24 );
         } else {
             UiUtils.setDefaultTintedTextViewDrawable(
-                    tv, R.drawable.ic_check_box_outline_blank );
+                    tv, R.drawable.ic_outline_check_box_outline_blank_24 );
         }
     }
 
@@ -390,7 +391,7 @@ public class DtppFragment extends FragmentBase {
 
     private void startPdfViewer( String path ) {
         if ( mExpired ) {
-            UiUtils.showToast( getActivity(), "WARNING: This chart has expired!" );
+            UiUtils.showToast( getActivity(), "WARNING: This chart has expired!", Toast.LENGTH_LONG );
         }
         SystemUtils.startPDFViewer( getActivity(), path );
     }

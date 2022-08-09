@@ -44,7 +44,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
                 <ImageButton android:id="@+id/countdown_mins_plus"
-                        android:src="@drawable/plus"
+                        android:src="@drawable/plus_16"
                         android:gravity="center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <ImageButton android:id="@+id/countdown_secs_plus"
-                        android:src="@drawable/plus"
+                        android:src="@drawable/plus_16"
                         android:gravity="center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
                 <ImageButton android:id="@+id/countdown_mins_minus"
-                        android:src="@drawable/minus"
+                        android:src="@drawable/minus_16"
                         android:gravity="center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 <ImageButton android:id="@+id/countdown_secs_minus"
-                        android:src="@drawable/minus"
+                        android:src="@drawable/minus_16"
                         android:gravity="center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

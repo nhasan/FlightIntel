@@ -19,224 +19,205 @@
 package com.nadmm.airports.e6b
 
 import android.database.Cursor
-import android.provider.BaseColumns
-import android.view.View
-import android.widget.ListView
-import androidx.collection.LongSparseArray
 import com.nadmm.airports.ListMenuFragment
 import com.nadmm.airports.R
-import com.nadmm.airports.utils.UiUtils
+import java.util.*
 
 class E6bMenuFragment : ListMenuFragment() {
     companion object {
-        private val mDispatchMap: LongSparseArray<Class<*>> = LongSparseArray(32)
+        private val mDispatchMap: HashMap<Int, Class<*>> = HashMap<Int, Class<*>>()
 
         init {
-            mDispatchMap.put(R.id.E6B_WIND_CALCS.toLong(), E6bMenuFragment::class.java)
-            mDispatchMap.put(R.id.E6B_CROSS_WIND.toLong(), CrossWindFragment::class.java)
-            mDispatchMap.put(R.id.E6B_WIND_TRIANGLE_WIND.toLong(), WindTriangleFragment::class.java)
-            mDispatchMap.put(
-                R.id.E6B_WIND_TRIANGLE_HDG_GS.toLong(),
-                WindTriangleFragment::class.java
-            )
-            mDispatchMap.put(
-                R.id.E6B_WIND_TRIANGLE_CRS_GS.toLong(),
-                WindTriangleFragment::class.java
-            )
-            mDispatchMap.put(R.id.E6B_ALTIMETRY.toLong(), E6bMenuFragment::class.java)
-            mDispatchMap.put(R.id.E6B_ALTIMETRY_ISA.toLong(), IsaFragment::class.java)
-            mDispatchMap.put(R.id.E6B_ALTIMETRY_ALTITUDES.toLong(), AltitudesFragment::class.java)
-            mDispatchMap.put(R.id.E6B_ALTIMETRY_TAS.toLong(), TrueAirspeedFragment::class.java)
-            mDispatchMap.put(
-                R.id.E6B_ALTIMETRY_OAT.toLong(),
-                OutsideAirTemperatureFragment::class.java
-            )
-            mDispatchMap.put(R.id.E6B_ALTIMETRY_MACH.toLong(), MachNumberFragment::class.java)
-            mDispatchMap.put(R.id.E6B_ALTIMETRY_TA.toLong(), TrueAltitudeFragment::class.java)
-            mDispatchMap.put(R.id.E6B_TIME_SPEED_DISTANCE.toLong(), E6bMenuFragment::class.java)
-            mDispatchMap.put(R.id.E6B_TSD_TIME.toLong(), TimeSpeedDistanceFragment::class.java)
-            mDispatchMap.put(R.id.E6B_TSD_SPEED.toLong(), TimeSpeedDistanceFragment::class.java)
-            mDispatchMap.put(R.id.E6B_TSD_DISTANCE.toLong(), TimeSpeedDistanceFragment::class.java)
-            mDispatchMap.put(R.id.E6B_FUEL_CALCS.toLong(), E6bMenuFragment::class.java)
-            mDispatchMap.put(R.id.E6B_FUEL_ENDURANCE.toLong(), FuelCalcsFragment::class.java)
-            mDispatchMap.put(R.id.E6B_FUEL_BURN_RATE.toLong(), FuelCalcsFragment::class.java)
-            mDispatchMap.put(R.id.E6B_FUEL_TOTAL_BURNED.toLong(), FuelCalcsFragment::class.java)
-            mDispatchMap.put(
-                R.id.E6B_FUEL_SPECIFIC_RANGE.toLong(),
-                SpecificRangeFragment::class.java
-            )
-            mDispatchMap.put(R.id.E6B_FUEL_WEIGHTS.toLong(), FuelWeightFragment::class.java)
-            mDispatchMap.put(R.id.E6B_CLIMB_DESCENT.toLong(), E6bMenuFragment::class.java)
-            mDispatchMap.put(
-                R.id.E6B_CLIMB_DESCENT_REQCLIMB.toLong(),
-                ClimbRateFragment::class.java
-            )
-            mDispatchMap.put(
-                R.id.E6B_CLIMB_DESCENT_REQDSCNT.toLong(),
-                DescentRateFragment::class.java
-            )
-            mDispatchMap.put(
-                R.id.E6B_CLIMB_DESCENT_TOPDSCNT.toLong(),
-                TopOfDescentFragment::class.java
-            )
-            mDispatchMap.put(R.id.E6B_UNIT_CONVERSIONS.toLong(), UnitConvertFragment::class.java)
+            mDispatchMap[R.id.E6B_WIND_CALCS] = E6bMenuFragment::class.java
+            mDispatchMap[R.id.E6B_CROSS_WIND] = CrossWindFragment::class.java
+            mDispatchMap[R.id.E6B_WIND_TRIANGLE_WIND] = WindTriangleFragment::class.java
+            mDispatchMap[R.id.E6B_WIND_TRIANGLE_HDG_GS] = WindTriangleFragment::class.java
+            mDispatchMap[R.id.E6B_WIND_TRIANGLE_CRS_GS] = WindTriangleFragment::class.java
+            mDispatchMap[R.id.E6B_ALTIMETRY] = E6bMenuFragment::class.java
+            mDispatchMap[R.id.E6B_ALTIMETRY_ISA] = IsaFragment::class.java
+            mDispatchMap[R.id.E6B_ALTIMETRY_ALTITUDES] = AltitudesFragment::class.java
+            mDispatchMap[R.id.E6B_ALTIMETRY_TAS] = TrueAirspeedFragment::class.java
+            mDispatchMap[R.id.E6B_ALTIMETRY_OAT] = OutsideAirTemperatureFragment::class.java
+            mDispatchMap[R.id.E6B_ALTIMETRY_MACH] = MachNumberFragment::class.java
+            mDispatchMap[R.id.E6B_ALTIMETRY_TA] = TrueAltitudeFragment::class.java
+            mDispatchMap[R.id.E6B_TIME_SPEED_DISTANCE] = E6bMenuFragment::class.java
+            mDispatchMap[R.id.E6B_TSD_TIME] = TimeSpeedDistanceFragment::class.java
+            mDispatchMap[R.id.E6B_TSD_SPEED] = TimeSpeedDistanceFragment::class.java
+            mDispatchMap[R.id.E6B_TSD_DISTANCE] = TimeSpeedDistanceFragment::class.java
+            mDispatchMap[R.id.E6B_FUEL_CALCS] = E6bMenuFragment::class.java
+            mDispatchMap[R.id.E6B_FUEL_ENDURANCE] = FuelCalcsFragment::class.java
+            mDispatchMap[R.id.E6B_FUEL_BURN_RATE] = FuelCalcsFragment::class.java
+            mDispatchMap[R.id.E6B_FUEL_TOTAL_BURNED] = FuelCalcsFragment::class.java
+            mDispatchMap[R.id.E6B_FUEL_SPECIFIC_RANGE] = SpecificRangeFragment::class.java
+            mDispatchMap[R.id.E6B_FUEL_WEIGHTS] = FuelWeightFragment::class.java
+            mDispatchMap[R.id.E6B_CLIMB_DESCENT] = E6bMenuFragment::class.java
+            mDispatchMap[R.id.E6B_CLIMB_DESCENT_REQCLIMB] = ClimbRateFragment::class.java
+            mDispatchMap[R.id.E6B_CLIMB_DESCENT_REQDSCNT] = DescentRateFragment::class.java
+            mDispatchMap[R.id.E6B_CLIMB_DESCENT_TOPDSCNT] = TopOfDescentFragment::class.java
+            mDispatchMap[R.id.E6B_UNIT_CONVERSIONS] = UnitConvertFragment::class.java
         }
     }
 
-    override fun getItemFragmentClass(id: Long): Class<*> {
-        return mDispatchMap[id]!!
+    override fun getItemFragmentClass(id: Int): Class<*>? {
+        return mDispatchMap[id]
     }
 
-    override fun getMenuCursor(id: Long): Cursor {
+    override fun getMenuCursor(id: Int): Cursor {
         return E6bMenuCursor(id)
     }
 
-    class E6bMenuCursor(id: Long) : ListMenuCursor(id) {
-        override fun populateMenuItems(id: Long) {
+    class E6bMenuCursor(id: Int) : ListMenuCursor(id) {
+        override fun populateMenuItems(id: Int) {
             when (id) {
-                R.id.CATEGORY_MAIN.toLong() -> {
+                R.id.CATEGORY_MAIN -> {
                     addRow(
-                        R.id.E6B_WIND_CALCS.toLong(),
+                        R.id.E6B_WIND_CALCS,
+                        R.drawable.ic_outline_air_40,
                         "Wind Calculations",
                         "Cross wind, head wind and wind triangle"
                     )
                     addRow(
-                        R.id.E6B_TIME_SPEED_DISTANCE.toLong(),
+                        R.id.E6B_TIME_SPEED_DISTANCE,
+                        R.drawable.ic_outline_access_time_40,
                         "Time, Speed and Distance",
                         "Solve for time, speed and distance"
                     )
                     addRow(
-                        R.id.E6B_FUEL_CALCS.toLong(),
+                        R.id.E6B_FUEL_CALCS,
+                        R.drawable.ic_outline_local_gas_station_40,
                         "Fuel Calculations",
                         "Find endurance, burn rate and fuel required"
                     )
                     addRow(
-                        R.id.E6B_ALTIMETRY.toLong(),
+                        R.id.E6B_ALTIMETRY,
+                        R.drawable.ic_outline_speed_40,
                         "Altimetry",
                         "Altimeter, altitude and the standard atmosphere"
                     )
                     addRow(
-                        R.id.E6B_CLIMB_DESCENT.toLong(),
+                        R.id.E6B_CLIMB_DESCENT,
+                        R.drawable.ic_outline_flight_takeoff_40,
                         "Climb and Descent",
                         "Climb and descent rates"
                     )
                     addRow(
-                        R.id.E6B_UNIT_CONVERSIONS.toLong(),
+                        R.id.E6B_UNIT_CONVERSIONS,
+                        R.drawable.ic_outline_measure_40,
                         "Unit Conversions",
                         "Convert between units of measurement"
                     )
                 }
-                R.id.E6B_WIND_CALCS.toLong() -> {
+                R.id.E6B_WIND_CALCS -> {
                     addRow(
-                        R.id.E6B_CROSS_WIND.toLong(),
+                        R.id.E6B_CROSS_WIND,
                         "Crosswind and Headwind",
                         "Cross wind and head wind for a runway"
                     )
                     addRow(
-                        R.id.E6B_WIND_TRIANGLE_WIND.toLong(),
+                        R.id.E6B_WIND_TRIANGLE_WIND,
                         "Find Wind Speed and Direction",
                         "WS and WDIR using Wind Triangle"
                     )
                     addRow(
-                        R.id.E6B_WIND_TRIANGLE_HDG_GS.toLong(),
+                        R.id.E6B_WIND_TRIANGLE_HDG_GS,
                         "Find Heading and Ground Speed",
                         "HDG and GS using Wind Triangle"
                     )
                     addRow(
-                        R.id.E6B_WIND_TRIANGLE_CRS_GS.toLong(),
+                        R.id.E6B_WIND_TRIANGLE_CRS_GS,
                         "Find Course and Ground Speed",
                         "CRS and GS using Wind Triangle"
                     )
                 }
-                R.id.E6B_ALTIMETRY.toLong() -> {
+                R.id.E6B_ALTIMETRY -> {
                     addRow(
-                        R.id.E6B_ALTIMETRY_ISA.toLong(),
+                        R.id.E6B_ALTIMETRY_ISA,
                         "Standard Atmosphere",
-                        "International Standard Atmosphere (ISA 1976 model)"
+                        "ISA 1976 model"
                     )
                     addRow(
-                        R.id.E6B_ALTIMETRY_ALTITUDES.toLong(),
+                        R.id.E6B_ALTIMETRY_ALTITUDES,
                         "Pressure & Density Altitude",
                         "Altimeter and temperature"
                     )
                     addRow(
-                        R.id.E6B_ALTIMETRY_TAS.toLong(),
+                        R.id.E6B_ALTIMETRY_TAS,
                         "True Airspeed",
                         "True airspeed at a given altitude and temperature"
                     )
                     addRow(
-                        R.id.E6B_ALTIMETRY_MACH.toLong(),
+                        R.id.E6B_ALTIMETRY_MACH,
                         "Mach Number",
                         "Supersonic or subsonic"
                     )
                     addRow(
-                        R.id.E6B_ALTIMETRY_OAT.toLong(),
+                        R.id.E6B_ALTIMETRY_OAT,
                         "Outside Air Temperature",
                         "Also known as True Air Temperature"
                     )
                     addRow(
-                        R.id.E6B_ALTIMETRY_TA.toLong(),
+                        R.id.E6B_ALTIMETRY_TA,
                         "True Altitude",
                         "True altitude at a given altitude and temperature"
                     )
                 }
-                R.id.E6B_TIME_SPEED_DISTANCE.toLong() -> {
+                R.id.E6B_TIME_SPEED_DISTANCE -> {
                     addRow(
-                        R.id.E6B_TSD_TIME.toLong(),
+                        R.id.E6B_TSD_TIME,
                         "Find Flight Time",
                         "Find flight time based on speed and distance"
                     )
                     addRow(
-                        R.id.E6B_TSD_SPEED.toLong(),
+                        R.id.E6B_TSD_SPEED,
                         "Find Ground Speed",
                         "Find ground speed based on time and distance"
                     )
                     addRow(
-                        R.id.E6B_TSD_DISTANCE.toLong(),
+                        R.id.E6B_TSD_DISTANCE,
                         "Find Distance Flown",
                         "Find distance flown based on time and speed"
                     )
                 }
-                R.id.E6B_FUEL_CALCS.toLong() -> {
+                R.id.E6B_FUEL_CALCS -> {
                     addRow(
-                        R.id.E6B_FUEL_ENDURANCE.toLong(),
+                        R.id.E6B_FUEL_ENDURANCE,
                         "Endurance",
                         "Find endurance in flight"
                     )
                     addRow(
-                        R.id.E6B_FUEL_TOTAL_BURNED.toLong(),
+                        R.id.E6B_FUEL_TOTAL_BURNED,
                         "Total Fuel Burn",
                         "Find total fuel burned during the flight"
                     )
                     addRow(
-                        R.id.E6B_FUEL_BURN_RATE.toLong(),
+                        R.id.E6B_FUEL_BURN_RATE,
                         "Fuel Burn Rate",
                         "Find rate of fuel burn during the flight"
                     )
                     addRow(
-                        R.id.E6B_FUEL_SPECIFIC_RANGE.toLong(),
+                        R.id.E6B_FUEL_SPECIFIC_RANGE,
                         "Specific Range",
                         "Find range based on ground speed and fuel burn"
                     )
                     addRow(
-                        R.id.E6B_FUEL_WEIGHTS.toLong(),
+                        R.id.E6B_FUEL_WEIGHTS,
                         "Fuel Weight",
                         "Find weight in Pounds from Gallons"
                     )
                 }
-                R.id.E6B_CLIMB_DESCENT.toLong() -> {
+                R.id.E6B_CLIMB_DESCENT -> {
                     addRow(
-                        R.id.E6B_CLIMB_DESCENT_REQCLIMB.toLong(),
+                        R.id.E6B_CLIMB_DESCENT_REQCLIMB,
                         "Required Rate of Climb",
                         "Minimum rate of climb on a departure procedures"
                     )
                     addRow(
-                        R.id.E6B_CLIMB_DESCENT_REQDSCNT.toLong(),
+                        R.id.E6B_CLIMB_DESCENT_REQDSCNT,
                         "Required Rate of Descent",
                         "Rate of descent or climb to cross a fix"
                     )
                     addRow(
-                        R.id.E6B_CLIMB_DESCENT_TOPDSCNT.toLong(),
+                        R.id.E6B_CLIMB_DESCENT_TOPDSCNT,
                         "Top of Descent",
                         "Calculate how far out to begin the descent"
                     )
@@ -244,11 +225,15 @@ class E6bMenuFragment : ListMenuFragment() {
             }
         }
 
-        private fun addRow(id: Long, title: String, subtitle: String) {
+        private fun addRow(id: Int, icon: Int, title: String, subtitle: String) {
             newRow().add(id)
-                .add(0)
+                .add(icon)
                 .add(title)
                 .add(subtitle)
+        }
+
+        private fun addRow(id: Int, title: String, subtitle: String) {
+            addRow(id, 0, title, subtitle)
         }
     }
 }

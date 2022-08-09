@@ -23,7 +23,7 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 		android:id="@+id/airport_title_layout"
-        android:background="@drawable/title_background"
+        android:background="?colorTertiary"
         android:paddingTop="@dimen/padding_top"
         android:paddingStart="@dimen/padding_left"
         android:paddingEnd="@dimen/padding_right"
@@ -84,7 +84,7 @@
 	        <TextView android:id="@+id/expired_label"
 	                style="@style/TextSmall.Bold"
 	                android:padding="0dp"
-	                android:textColor="#ff0000"
+	                android:textColor="?colorError"
 	                android:text="@string/download_expired"
 	                android:visibility="gone"
 	                android:layout_gravity="center_horizontal"
@@ -99,22 +99,18 @@
 	            android:layout_height="wrap_content">
 	        <CheckBox
                     android:id="@+id/airport_star"
-					android:button="@drawable/sl_favourite_24dp"
-					app:buttonTint="?android:attr/textColorPrimary"
-	                android:paddingBottom="4dp"
+					app:buttonCompat="@drawable/sl_favourite_24dp"
 					android:layout_gravity="end"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content" />
 	        <ImageView
                     android:id="@+id/airport_map"
-	                android:src="@drawable/ic_baseline_map_36"
-					style="?android:attr/starStyle"
-                    android:layout_gravity="end"
-					android:paddingTop="8dp"
+	                app:srcCompat="@drawable/ic_outline_map_24"
+					app:tint="?colorControlNormal"
+					android:layout_gravity="center_horizontal"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
-					tools:ignore="ContentDescription"
-					app:tint="?android:attr/textColorSecondary" />
+					tools:ignore="ContentDescription" />
 	    </LinearLayout>
 	</LinearLayout>
 </LinearLayout>

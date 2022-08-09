@@ -165,7 +165,7 @@ class LibraryPageFragment : FragmentBase() {
         }
         val msg: String
         mIsOk = when {
-            !NetworkUtils.isNetworkAvailable(activity) -> {
+            !NetworkUtils.isNetworkAvailable(activityBase) -> {
                 msg = "Not connected to the internet"
                 false
             }
@@ -183,7 +183,7 @@ class LibraryPageFragment : FragmentBase() {
             it.text = msg
             UiUtils.setTextViewDrawable(
                 it,
-                if (mIsOk) R.drawable.ic_check else R.drawable.ic_highlight_remove
+                if (mIsOk) R.drawable.ic_outline_check_circle_24 else R.drawable.ic_outline_cancel_24
             )
         }
         val topLayout = findViewById<LinearLayout>(R.id.main_content)
@@ -226,7 +226,7 @@ class LibraryPageFragment : FragmentBase() {
         tv = row.findViewById(R.id.book_edition)
         tv.text = edition
         if (flag != null && flag == "N") {
-            UiUtils.setTextViewDrawable(tv, R.drawable.star)
+            UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_new_releases_24)
         }
         tv = row.findViewById(R.id.book_author)
         tv.text = author
@@ -234,8 +234,9 @@ class LibraryPageFragment : FragmentBase() {
         tv.text = Formatter.formatShortFileSize(activity, size)
         row.setTag(R.id.LIBRARY_PDF_NAME, name)
         row.setOnClickListener(mOnClickListener)
-        val background = UiUtils.getSelectableItemBackgroundResource(activity)
-        row.setBackgroundResource(background)
+        activity?.let {
+            row.setBackgroundResource(UiUtils.getSelectableItemBackgroundResource(it))
+        }
         showStatus(row, false)
         mBookRowMap[name] = row
         layout.addView(
@@ -282,9 +283,9 @@ class LibraryPageFragment : FragmentBase() {
     private fun showStatus(row: View, isAvailable: Boolean) {
         val tv = row.findViewById<TextView>(R.id.book_desc)
         if (isAvailable) {
-            UiUtils.setTextViewDrawable(tv, R.drawable.ic_check_box)
+            UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_check_box_24)
         } else {
-            UiUtils.setTextViewDrawable(tv, R.drawable.ic_check_box_outline_blank)
+            UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_check_box_outline_blank_24)
         }
     }
 

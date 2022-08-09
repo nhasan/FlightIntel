@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="250"
    height="250"
    id="svg4472"
    version="1.1"
-   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    sodipodi:docname="helipad.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/helipad.png"
    inkscape:export-xdpi="288"
-   inkscape:export-ydpi="288">
+   inkscape:export-ydpi="288"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4474">
     <marker
@@ -55,21 +55,22 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.0925027"
-     inkscape:cx="83.448421"
-     inkscape:cy="132.89356"
+     inkscape:cx="83.392963"
+     inkscape:cy="133.09421"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="2560"
-     inkscape:window-height="1409"
-     inkscape:window-x="2560"
+     inkscape:window-height="1379"
+     inkscape:window-x="1920"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:document-rotation="0" />
+     inkscape:document-rotation="0"
+     inkscape:pagecheckerboard="0" />
   <metadata
      id="metadata4477">
     <rdf:RDF>
@@ -78,7 +79,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -88,24 +88,9 @@
      id="layer1"
      transform="translate(-250.00001,-352.36217)">
     <path
-       style="fill:#a0a0a0;fill-opacity:1;stroke:none"
-       d="m 500.00001,477.36217 c 0,69.0356 -55.9644,125 -125,125 -69.03559,0 -125,-55.9644 -125,-125 0,-69.03559 55.96441,-125 125,-125 69.0356,0 125,55.96441 125,125 z"
-       id="path3005"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="/home/nhasan/Android/workspace/FlightIntel/src/main/res/drawable-xxxhdpi/helipad.png"
-       inkscape:export-xdpi="49.150002"
-       inkscape:export-ydpi="49.150002" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:11.5634px;line-height:0%;font-family:'Droid Sans';-inkscape-font-specification:'Droid Sans Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:1.92724;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       x="308.25153"
-       y="535.46283"
-       id="text3007"
-       transform="scale(0.96316938,1.038239)"><tspan
-         sodipodi:role="line"
-         id="tspan3009"
-         x="308.25153"
-         y="535.46283"
-         style="font-size:211.995px;line-height:1.25;stroke-width:1.92724">H</tspan></text>
+       id="path23778"
+       style="fill:#020202;fill-opacity:1;stroke:none"
+       d="M 125 0 C 55.96441 0 0 55.96441 0 125 C 0 194.0356 55.96441 250 125 250 C 194.0356 250 250 194.0356 250 125 C 250 55.96441 194.0356 0 125 0 z M 65.275391 46.423828 L 96.107422 46.423828 L 96.107422 108.05273 L 153.89258 108.05273 L 153.89258 46.423828 L 184.72461 46.423828 L 184.72461 203.57617 L 153.89258 203.57617 L 153.89258 135.78516 L 96.107422 135.78516 L 96.107422 203.57617 L 65.275391 203.57617 L 65.275391 46.423828 z "
+       transform="translate(250.00001,352.36217)" />
   </g>
 </svg>

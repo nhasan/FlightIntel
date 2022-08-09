@@ -2,22 +2,22 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="744.09448819"
-   height="1052.3622047"
+   width="250"
+   height="250"
    id="svg4472"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    sodipodi:docname="-RA.svg"
-   inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/-RA.png"
+   inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/+RA.png"
    inkscape:export-xdpi="288"
-   inkscape:export-ydpi="288">
+   inkscape:export-ydpi="288"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4474" />
   <sodipodi:namedview
@@ -27,17 +27,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8"
-     inkscape:cx="376.89548"
-     inkscape:cy="581.73951"
+     inkscape:zoom="1.979899"
+     inkscape:cx="293.19677"
+     inkscape:cy="212.88965"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="846"
-     inkscape:window-x="0"
-     inkscape:window-y="-3"
-     inkscape:window-maximized="1" />
+     inkscape:window-width="2560"
+     inkscape:window-height="1379"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:pagecheckerboard="0" />
   <metadata
      id="metadata4477">
     <rdf:RDF>
@@ -46,7 +47,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -55,31 +55,25 @@
      inkscape:groupmode="layer"
      id="layer1">
     <rect
-       style="opacity:0.98000003999999996;fill:none;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+       style="opacity:0.98;fill:none;stroke:none"
        id="rect2984"
        width="250"
-       height="250.71428"
+       height="250"
        x="250"
-       y="351.64789" />
-    <path
-       sodipodi:type="arc"
-       style="fill:#000000;fill-opacity:1;stroke:none"
+       y="352.36215" />
+    <ellipse
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.86885"
        id="path2991-3"
-       sodipodi:cx="375.27167"
-       sodipodi:cy="477.08032"
-       sodipodi:rx="40.911179"
-       sodipodi:ry="40.911179"
-       d="m 416.18285,477.08032 a 40.911179,40.911179 0 1 1 -81.82236,0 40.911179,40.911179 0 1 1 81.82236,0 z"
-       transform="matrix(0.67090303,0,0,0.67090303,184.21146,156.88641)" />
-    <path
-       transform="matrix(0.67090303,0,0,0.67090303,63.70638,156.88641)"
-       d="m 416.18285,477.08032 a 40.911179,40.911179 0 1 1 -81.82236,0 40.911179,40.911179 0 1 1 81.82236,0 z"
-       sodipodi:ry="40.911179"
-       sodipodi:rx="40.911179"
-       sodipodi:cy="477.08032"
-       sodipodi:cx="375.27167"
+       cx="194.64992"
+       cy="128.04082"
+       rx="35.596409"
+       ry="35.494995" />
+    <ellipse
        id="path3918"
-       style="fill:#000000;fill-opacity:1;stroke:none"
-       sodipodi:type="arc" />
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.86885"
+       cx="55.350079"
+       cy="128.04082"
+       rx="35.596409"
+       ry="35.494995" />
   </g>
 </svg>

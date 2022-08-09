@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:drawable="@drawable/ic_outline_favorite_border_24"
         android:state_checked="false"
@@ -29,4 +29,4 @@
         android:state_checked="true"
         />
     <item android:drawable="@drawable/ic_outline_favorite_border_24" />
-</selector>
+</animated-selector>

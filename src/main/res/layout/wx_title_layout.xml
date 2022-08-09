@@ -22,7 +22,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/wx_title_layout"
-        android:background="@drawable/title_background"
+        android:background="?colorTertiary"
         android:paddingTop="@dimen/padding_top"
         android:paddingStart="@dimen/padding_left"
         android:paddingEnd="@dimen/padding_right"
@@ -60,18 +60,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
         </LinearLayout>
-        <LinearLayout android:id="@+id/header_inner2_layout"
-                android:orientation="vertical"
-                android:paddingStart="8dp"
-                android:layout_gravity="bottom"
+        <CheckBox android:id="@+id/airport_star"
+                app:buttonCompat="@drawable/sl_favourite_24dp"
+                android:gravity="end|bottom"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-            <CheckBox android:id="@+id/airport_star"
-                    android:button="@drawable/sl_favourite_24dp"
-                    app:buttonTint="?android:attr/textColorPrimary"
-                    android:paddingBottom="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-        </LinearLayout>
+                android:layout_height="wrap_content" />
     </LinearLayout>
 </LinearLayout>

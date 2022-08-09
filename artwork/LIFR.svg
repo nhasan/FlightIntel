@@ -2,22 +2,22 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="800"
-   height="400"
+   width="250"
+   height="125"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    sodipodi:docname="LIFR.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/lifr.png"
    inkscape:export-xdpi="108"
-   inkscape:export-ydpi="108">
+   inkscape:export-ydpi="108"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -27,17 +27,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.06"
-     inkscape:cx="419.42601"
-     inkscape:cy="131.30453"
+     inkscape:zoom="1.9542046"
+     inkscape:cx="170.14595"
+     inkscape:cy="83.154036"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="841"
-     inkscape:window-x="-4"
+     inkscape:window-width="2560"
+     inkscape:window-height="1379"
+     inkscape:window-x="1920"
      inkscape:window-y="0"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     inkscape:pagecheckerboard="0" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -46,7 +47,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -54,24 +54,43 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-652.36218)">
-    <rect
-       style="fill:#c800a0;fill-opacity:1;stroke:#98006e;stroke-width:20;stroke-linejoin:round;stroke-miterlimit:6;stroke-dasharray:none;stroke-opacity:1"
-       id="rect2985"
-       width="780"
-       height="380"
-       x="10"
-       y="663.79077" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:280px;line-height:125%;font-family:Roboto;-inkscape-font-specification:'Roboto, Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;"
-       x="108.51562"
-       y="951.89343"
-       id="text3755"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4887"
-         x="108.51562"
-         y="951.89343">LIFR</tspan></text>
+     transform="translate(0,-653.79077)">
+    <g
+       id="g6492"
+       transform="matrix(0.31249997,0,0,0.31249893,0.61980765,449.79175)">
+      <g
+         id="g6483">
+        <rect
+           style="fill:#c800a0;fill-opacity:1;stroke:#98006e;stroke-width:20;stroke-linejoin:round;stroke-miterlimit:6;stroke-dasharray:none;stroke-opacity:1"
+           id="rect2985"
+           width="780"
+           height="380"
+           x="10"
+           y="663.79077"
+           rx="53.524879"
+           ry="53.524879" />
+        <g
+           aria-label="LIFR"
+           id="text3755"
+           style="font-weight:bold;line-height:0%;font-family:Roboto;-inkscape-font-specification:'Roboto, Bold';letter-spacing:0px;word-spacing:0px;fill:#ffffff">
+          <path
+             d="m 133.71562,951.89343 v -199.92 h 42.28 v 164.92 h 81.2 v 35 z"
+             style="font-size:280px;line-height:1.25"
+             id="path6431" />
+          <path
+             d="m 366.67523,951.89343 h -91 v -24.08 l 24.36,-11.2 v -129.36 l -24.36,-11.2 v -24.08 h 91 v 24.08 l -24.36,11.2 v 129.36 l 24.36,11.2 z"
+             style="font-size:280px;line-height:1.25"
+             id="path6433" />
+          <path
+             d="m 442.55522,951.89343 h -41.72 v -199.92 h 114.52 v 34.72 h -72.8 v 51.52 h 67.76 v 34.72 h -67.76 z"
+             style="font-size:280px;line-height:1.25"
+             id="path6435" />
+          <path
+             d="m 612.79516,751.97343 q 40.88,0 60.2,14.84 19.6,14.84 19.6,45.08 0,13.72 -5.32,24.08 -5.04,10.08 -13.72,17.36 -8.4,7 -18.2,11.48 l 58.8,87.08 h -47.04 l -47.6,-76.72 h -22.68 v 76.72 h -42.28 v -199.92 z m -3.08,34.72 h -12.88 v 54.04 h 13.72 q 21,0 29.96,-7 9.24,-7 9.24,-20.72 0,-14.28 -9.8,-20.16 -9.52,-6.16 -30.24,-6.16 z"
+             style="font-size:280px;line-height:1.25"
+             id="path6437" />
+        </g>
+      </g>
+    </g>
   </g>
 </svg>

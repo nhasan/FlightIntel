@@ -88,7 +88,7 @@ class ChartsDownloadFragment : FragmentBase() {
                     if (mIsOk && !mExpired) {
                         confirmStartDownload(v)
                     } else {
-                        UiUtils.showToast(activity, "Cannot start download")
+                        activity?.let { UiUtils.showToast(it, "Cannot start download") }
                     }
                 } else {
                     confirmChartDelete(v)
@@ -283,7 +283,7 @@ class ChartsDownloadFragment : FragmentBase() {
                         msg = "Chart cycle has expired"
                         false
                     }
-                    !NetworkUtils.isNetworkAvailable(activity) -> {
+                    !NetworkUtils.isNetworkAvailable(activityBase) -> {
                         msg = "Not connected to the internet"
                         false
                     }
@@ -298,10 +298,12 @@ class ChartsDownloadFragment : FragmentBase() {
                 }
                 tv.text = msg
 
-                val d = UiUtils.getDefaultTintedDrawable(
-                    activity,
-                    if (mIsOk) R.drawable.ic_check else R.drawable.ic_highlight_remove
-                )
+                val d = activity?.let {
+                    UiUtils.getDefaultTintedDrawable(it,
+                        if (mIsOk) R.drawable.ic_outline_check_circle_24
+                        else R.drawable.ic_outline_cancel_24
+                    )
+                }
                 UiUtils.setTextViewDrawable(tv, d)
             }
         }
@@ -464,9 +466,9 @@ class ChartsDownloadFragment : FragmentBase() {
         val avail = intent.getIntExtra(AeroNavService.PDF_COUNT, 0)
         val row = mVolumeRowMap[tppVolume]
         if (row != null) {
-            if (activity != null) {
+            activity?.let {
                 row.setOnClickListener(mOnClickListener)
-                val background = UiUtils.getSelectableItemBackgroundResource(activity)
+                val background = UiUtils.getSelectableItemBackgroundResource(it)
                 row.setBackgroundResource(background)
                 row.setTag(R.id.DTPP_CHART_AVAIL, avail)
                 val total = row.getTag(R.id.DTPP_CHART_TOTAL) as Int
@@ -478,9 +480,9 @@ class ChartsDownloadFragment : FragmentBase() {
     private fun showStatus(row: View, avail: Int, total: Int) {
         val tv = row.findViewById<TextView>(R.id.item_label)
         if (avail == total) {
-            UiUtils.setTextViewDrawable(tv, R.drawable.ic_check_box)
+            UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_check_box_24)
         } else {
-            UiUtils.setTextViewDrawable(tv, R.drawable.ic_check_box_outline_blank)
+            UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_check_box_outline_blank_24)
         }
     }
 }

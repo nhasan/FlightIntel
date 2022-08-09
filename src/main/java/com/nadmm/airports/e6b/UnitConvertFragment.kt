@@ -26,6 +26,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
 import com.nadmm.airports.ListMenuFragment
 import com.nadmm.airports.R
@@ -104,14 +105,9 @@ class UnitConvertFragment : E6bFragmentBase(), OnItemClickListener {
         supportActionBar!!.subtitle = subTitle
 
         // Create the adapters for all unit types
-        for (type in mUnitTypeMap.keys) {
-            val objects = mUnitTypeMap[type]
-            if (objects != null ) {
-                val adapter = ArrayAdapter(
-                    requireActivity(),
-                    R.layout.list_item, objects
-                )
-                mUnitAdapters[type] = adapter
+        mUnitTypeMap.keys.forEach { type ->
+            mUnitTypeMap[type]?.let {
+                mUnitAdapters[type] = ArrayAdapter(requireActivity(), R.layout.list_item, it)
             }
         }
         mFormat = DecimalFormat("#,##0.###")
@@ -122,7 +118,7 @@ class UnitConvertFragment : E6bFragmentBase(), OnItemClickListener {
             R.layout.list_item, types
         )
         val unitTypeSpinner = findViewById<TextInputLayout>(R.id.e6b_unit_type_spinner)
-        val textView = getAutoCompleteTextView(unitTypeSpinner!!)
+        val textView = unitTypeSpinner?.editText as AutoCompleteTextView?
         textView?.setAdapter(adapter)
         textView?.onItemClickListener = this
         mFromUnitSpinner = findViewById(R.id.e6b_unit_from_spinner)

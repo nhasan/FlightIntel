@@ -2,22 +2,22 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="250"
    height="250"
    id="svg4472"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    sodipodi:docname="runway1.svg"
    inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/runway2.png"
    inkscape:export-xdpi="288"
-   inkscape:export-ydpi="288">
+   inkscape:export-ydpi="288"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs4474">
     <marker
@@ -57,20 +57,21 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.0925027"
-     inkscape:cx="-35.051909"
-     inkscape:cy="132.89356"
+     inkscape:cx="-35.125403"
+     inkscape:cy="133.09421"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="846"
-     inkscape:window-x="0"
-     inkscape:window-y="-3"
+     inkscape:window-width="2560"
+     inkscape:window-height="1379"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
-     fit-margin-bottom="0" />
+     fit-margin-bottom="0"
+     inkscape:pagecheckerboard="0" />
   <metadata
      id="metadata4477">
     <rdf:RDF>
@@ -79,7 +80,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -89,14 +89,8 @@
      id="layer1"
      transform="translate(-250.00001,-352.36217)">
     <path
-       style="fill:#a0a0a0;fill-opacity:1;stroke:none"
-       d="m 500.00001,477.36217 c 0,69.0356 -55.9644,125 -125,125 -69.03559,0 -125,-55.9644 -125,-125 0,-69.03559 55.96441,-125 125,-125 69.0356,0 125,55.96441 125,125 z"
-       id="path3005"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:#ffffff;fill-opacity:1;stroke:#808080;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 357.50001,430.36217 35,0 0,94 -35,0 z"
-       id="rect3787"
-       inkscape:connector-curvature="0" />
+       id="path18309"
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       d="m 375.00001,352.36217 c -69.03559,0 -125,55.96441 -125,125 0,69.0356 55.96441,125 125,125 69.0356,0 125,-55.9644 125,-125 0,-69.03559 -55.9644,-125 -125,-125 z m -17.5,78 h 35 v 94 h -35 z" />
   </g>
 </svg>

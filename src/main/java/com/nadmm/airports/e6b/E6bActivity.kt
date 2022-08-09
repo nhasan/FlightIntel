@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,7 @@ class E6bActivity : FragmentActivityBase() {
         super.onCreate(savedInstanceState)
         val args = Bundle()
         args.putString(FRAGMENT_TAG_EXTRA, R.id.CATEGORY_MAIN.toString())
-        args.putString(ListMenuFragment.SUBTITLE_TEXT, "No More Slide Rule")
-        args.putLong(ListMenuFragment.MENU_ID, R.id.CATEGORY_MAIN.toLong())
+        args.putInt(ListMenuFragment.MENU_ID, R.id.CATEGORY_MAIN)
         addFragment(E6bMenuFragment::class.java, args)
     }
 
