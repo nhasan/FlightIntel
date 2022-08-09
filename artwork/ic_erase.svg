@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="250mm"
+   height="250mm"
+   viewBox="0 0 250 250"
+   version="1.1"
+   id="svg4569"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="ic_erase.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview4571"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.26385148"
+     inkscape:cx="-77.695225"
+     inkscape:cy="953.18776"
+     inkscape:window-width="2560"
+     inkscape:window-height="1379"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs4566" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-63.350214,-135.99999)">
+    <g
+       id="g6139"
+       transform="rotate(-45,187.51603,275.69675)">
+      <rect
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:17.0797;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10.1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect5372"
+         width="142.80238"
+         height="58.787148"
+         x="152.52103"
+         y="246.06474"
+         transform="matrix(0.99999804,0.00198113,0.00150804,0.99999886,0,0)" />
+      <rect
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:19.8094;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10.1;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect5836"
+         width="40.028881"
+         height="57.244667"
+         x="80.073456"
+         y="246.94089"
+         transform="matrix(0.9999991,0.00134097,0.00222794,0.99999752,0,0)" />
+    </g>
+  </g>
+</svg>

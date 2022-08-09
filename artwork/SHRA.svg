@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="250"
+   height="250"
+   id="svg4472"
+   version="1.1"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="SHRA.svg"
+   inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/SH.png"
+   inkscape:export-xdpi="288"
+   inkscape:export-ydpi="288"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs4474" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2"
+     inkscape:cx="90.25"
+     inkscape:cy="148.25"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="2560"
+     inkscape:window-height="1379"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:pagecheckerboard="0" />
+  <metadata
+     id="metadata4477">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-330.72589,-308.51085)">
+    <g
+       id="g4658"
+       transform="translate(56.934281,0.97532987)">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3014"
+         d="M 357.08843,434.36734 H 439.8605"
+         style="fill:none;stroke:#000000;stroke-width:12.4069;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <ellipse
+         id="path3918-3"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.12852"
+         cx="398.79111"
+         cy="344.70694"
+         rx="35.742958"
+         ry="36.196087" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:12.5562;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         inkscape:transform-center-x="0.2104443"
+         inkscape:transform-center-y="13.050551"
+         d="M 457.55703,394.99483 399.52743,539.88567 340.08175,395.71816 Z"
+         id="path3751-4"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccc"
+         inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/-GS.png"
+         inkscape:export-xdpi="288"
+         inkscape:export-ydpi="288" />
+    </g>
+  </g>
+</svg>

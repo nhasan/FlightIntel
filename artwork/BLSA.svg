@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="250"
+   height="250"
+   id="svg4472"
+   version="1.1"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="BLSA.svg"
+   inkscape:export-filename="/home/nhasan/android/workspace/Airports/artwork/SA.png"
+   inkscape:export-xdpi="288"
+   inkscape:export-ydpi="288"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs4474" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="-24.642857"
+     inkscape:cy="281.07143"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="2560"
+     inkscape:window-height="1379"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:pagecheckerboard="0" />
+  <metadata
+     id="metadata4477">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-250.51784,-351.31631)">
+    <rect
+       style="fill:none;stroke:none;stroke-width:0.2;stroke-linecap:butt;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4482"
+       width="250"
+       height="250"
+       x="250.51784"
+       y="351.31631" />
+    <g
+       id="g2644">
+      <g
+         aria-label="S"
+         id="text5042"
+         style="line-height:0%;letter-spacing:0px;word-spacing:0px"
+         transform="matrix(1.1473418,0,0,1.1473418,-40.937252,-70.561736)">
+        <path
+           d="m 420.7269,520.58195 q 0,24.33054 -17.67166,37.90442 -17.67166,13.57389 -47.63665,13.57389 -15.36665,0 -28.42832,-2.305 -13.06166,-2.305 -21.76943,-6.40278 v -22.02554 q 9.22,4.09777 22.79388,7.42722 13.82999,3.32944 28.42832,3.32944 20.48888,0 30.73332,-7.93944 10.50055,-7.93944 10.50055,-21.51333 0,-8.96388 -3.84167,-15.11054 -3.84166,-6.14667 -13.31777,-11.26889 -9.21999,-5.37833 -25.86721,-11.26888 -23.3061,-8.45166 -35.34332,-20.74499 -11.7811,-12.29333 -11.7811,-33.55054 0,-14.59833 7.42722,-24.84277 7.42722,-10.50055 20.48888,-16.13499 13.31777,-5.63444 30.47721,-5.63444 15.11054,0 27.65998,2.81722 12.54944,2.81722 22.79388,7.42722 l -7.17111,19.72054 q -9.4761,-4.09777 -20.74499,-6.91499 -11.01277,-2.81722 -23.04999,-2.81722 -17.15943,0 -25.86721,7.42721 -8.70777,7.17111 -8.70777,19.20833 0,9.21999 3.84166,15.36666 3.84167,6.14666 12.54944,11.01277 8.70778,4.86611 23.56221,10.50055 16.135,5.89055 27.14777,12.80555 11.26888,6.65889 16.90333,16.13499 5.89055,9.47611 5.89055,23.81833 z"
+           style="font-size:256.111px;line-height:1.25"
+           id="path2606" />
+      </g>
+      <path
+         id="rect5065"
+         style="stroke:#000000;stroke-width:4.58937;stroke-linecap:square;stroke-miterlimit:0"
+         d="m 366.2978,355.08985 h 18.44008 V 597.54277 H 366.2978 Z" />
+    </g>
+  </g>
+</svg>
