@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,11 +60,12 @@ class CommunicationsFragment : FragmentBase() {
     }
 
     private fun showDetails(result: Array<Cursor?>) {
-        val apt = result[0]
-        showAirportTitle(apt!!)
+        val apt = result[0] ?: return
+        showAirportTitle(apt)
         showAirportFrequencies(result)
         showAtcHours(result)
         showAtcPhones(result)
+        showFssServices(apt)
         showRemarks(result)
         setFragmentContentShown(true)
     }
@@ -376,6 +377,28 @@ class CommunicationsFragment : FragmentBase() {
                     addPhoneRow(layout!!, "ATIS", atisPhone)
                 }
             } while (twr9.moveToNext())
+        }
+    }
+
+    private fun showFssServices(apt: Cursor) {
+        val layout = findViewById<LinearLayout>(R.id.fss_services_layout)
+        val fssId = apt.getString(apt.getColumnIndex(Airports.FSS_ID))
+        val fssName = apt.getString(apt.getColumnIndex(Airports.FSS_NAME))
+        addRow(layout!!, "Flight service", "$fssId ($fssName)")
+        var fssPhone = apt.getString(apt.getColumnIndex(Airports.FSS_LOCAL_PHONE))
+        if (fssPhone.isEmpty()) {
+            fssPhone = apt.getString(apt.getColumnIndex(Airports.FSS_TOLLFREE_PHONE))
+        }
+        addPhoneRow(layout, "FSS phone", fssPhone)
+        val state = apt.getString(apt.getColumnIndex(Airports.ASSOC_STATE))
+        if (state != "AK") {
+            addPhoneRow(layout, "TIBS", "1-877-4TIBS-WX")
+            addPhoneRow(layout, "Clearance delivery", "1-888-766-8287")
+            val faaRegion = apt.getString(apt.getColumnIndex(Airports.REGION_CODE))
+            if (faaRegion == "AEA") {
+                addPhoneRow(layout, "DC SFRA & FRZ", "1-866-225-7410")
+            }
+            addPhoneRow(layout, "Lifeguard flights", "1-877-LIF-GRD3")
         }
     }
 
