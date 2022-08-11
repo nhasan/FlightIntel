@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2018-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,80 +16,50 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.dof
 
-package com.nadmm.airports.dof;
+import android.content.Context
+import android.database.Cursor
+import android.os.Bundle
+import android.view.View
+import android.widget.ListView
+import androidx.cursoradapter.widget.CursorAdapter
+import androidx.lifecycle.lifecycleScope
+import com.nadmm.airports.LocationListFragmentBase
+import com.nadmm.airports.data.DatabaseManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ListView;
+class NearbyObstaclesFragment : LocationListFragmentBase() {
+    private val mRadius = 5
 
-import com.nadmm.airports.LocationListFragmentBase;
-import com.nadmm.airports.data.DatabaseManager;
-import com.nadmm.airports.utils.CursorAsyncTask;
-
-import java.util.Locale;
-
-import androidx.cursoradapter.widget.CursorAdapter;
-
-public class NearbyObstaclesFragment extends LocationListFragmentBase {
-
-    private int mRadius = 5;
-
-    @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        setEmptyText("No obstacles found nearby.")
+        setActionBarTitle("Nearby Obstacles", "")
+        setActionBarSubtitle(String.format(Locale.US, "Within %d NM radius", mRadius))
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
-
-        setEmptyText( "No obstacles found nearby." );
-        setActionBarTitle( "Nearby Obstacles", "" );
-        setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
-    }
-
-    @Override
-    protected void startLocationTask() {
-        setBackgroundTask( new NearbyObstaclesTask( this ) ).execute();
-    }
-
-    @Override
-    protected CursorAdapter newListAdapter( Context context, Cursor c ) {
-        return new DofCursorAdapter( context, c );
-    }
-
-    @Override
-    protected void onListItemClick( ListView l, View v, int position ) {
-
-    }
-
-    private Cursor[] doQuery() {
-        SQLiteDatabase db = getDatabase( DatabaseManager.DB_DOF );
-        Cursor c = new NearbyDofCursor( db, getLastLocation(), mRadius );
-        return new Cursor[] { c };
-    }
-
-    private static class NearbyObstaclesTask extends CursorAsyncTask<NearbyObstaclesFragment> {
-
-        private NearbyObstaclesTask( NearbyObstaclesFragment fragment ) {
-            super( fragment );
+    override fun startLocationTask() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                doQuery()
+            }
+            setCursor(result[0])
         }
-
-        @Override
-        protected Cursor[] onExecute( NearbyObstaclesFragment fragment, String... params ) {
-            return fragment.doQuery();
-        }
-
-        @Override
-        protected boolean onResult( NearbyObstaclesFragment fragment, Cursor[] result ) {
-            fragment.setCursor( result[ 0 ] );
-            return false;
-        }
-
     }
 
+    override fun newListAdapter(context: Context?, c: Cursor?): CursorAdapter {
+        return DofCursorAdapter(context, c)
+    }
+
+    override fun onListItemClick(l: ListView, v: View, position: Int) {}
+
+    private fun doQuery(): Array<Cursor?> {
+        val db = getDatabase(DatabaseManager.DB_DOF)
+        val c: Cursor = NearbyDofCursor(db, lastLocation!!, mRadius)
+        return arrayOf(c)
+    }
 }

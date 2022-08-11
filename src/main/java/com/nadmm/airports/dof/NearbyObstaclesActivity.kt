@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2018-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,27 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.dof
 
-package com.nadmm.airports.dof;
+import android.os.Bundle
+import com.nadmm.airports.FragmentActivityBase
+import com.nadmm.airports.R
 
-import android.os.Bundle;
-
-import com.nadmm.airports.FragmentActivityBase;
-import com.nadmm.airports.R;
-
-public class NearbyObstaclesActivity extends FragmentActivityBase {
-
-    @Override
-    protected void onPostCreate( Bundle savedInstanceState ) {
-        super.onPostCreate( savedInstanceState );
-
-        Bundle args = getIntent().getExtras();
-        addFragment( NearbyObstaclesFragment.class, args );
+class NearbyObstaclesActivity : FragmentActivityBase() {
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        val args = intent.extras
+        addFragment(NearbyObstaclesFragment::class.java, args)
     }
 
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return R.id.navdrawer_dof;
-    }
-
+    override val selfNavDrawerItem: Int
+        get() = R.id.navdrawer_dof
 }

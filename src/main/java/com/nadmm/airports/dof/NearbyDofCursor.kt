@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2018-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,25 +16,67 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.dof
 
-package com.nadmm.airports.dof;
+import android.database.Cursor
+import android.database.MatrixCursor
+import android.database.sqlite.SQLiteDatabase
+import android.location.Location
+import android.provider.BaseColumns
+import com.nadmm.airports.data.DatabaseManager.DOF
+import com.nadmm.airports.data.DatabaseManager.LocationColumns
+import com.nadmm.airports.utils.DbUtils
+import com.nadmm.airports.utils.GeoUtils
+import java.util.*
 
-import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.location.Location;
-import android.provider.BaseColumns;
+class NearbyDofCursor(db: SQLiteDatabase?, location: Location, radius: Int) : MatrixCursor(
+    sColumns
+) {
+    private inner class DOFData : Comparable<DOFData> {
+        var oasCode: String? = null
+        var verificationStatus: String? = null
+        var obstacleType: String? = null
+        var count = 0
+        var heightAgl = 0
+        var heightMsl = 0
+        var lightingType: String? = null
+        var markingType: String? = null
+        var bearing = 0f
+        var distance = 0f
 
-import com.nadmm.airports.data.DatabaseManager.DOF;
-import com.nadmm.airports.data.DatabaseManager.LocationColumns;
-import com.nadmm.airports.utils.DbUtils;
-import com.nadmm.airports.utils.GeoUtils;
+        fun setFromCursor(c: Cursor, location: Location, declination: Float) {
+            oasCode = c.getString(c.getColumnIndex(DOF.OAS_CODE))
+            verificationStatus = c.getString(c.getColumnIndex(DOF.VERIFICATION_STATUS))
+            obstacleType = c.getString(c.getColumnIndex(DOF.OBSTACLE_TYPE))
+            count = c.getInt(c.getColumnIndex(DOF.COUNT))
+            heightAgl = c.getInt(c.getColumnIndex(DOF.HEIGHT_AGL))
+            heightMsl = c.getInt(c.getColumnIndex(DOF.HEIGHT_MSL))
+            lightingType = c.getString(c.getColumnIndex(DOF.LIGHTING_TYPE))
+            markingType = c.getString(c.getColumnIndex(DOF.MARKING_TYPE))
+            val results = FloatArray(2)
+            Location.distanceBetween(
+                location.latitude,
+                location.longitude,
+                c.getDouble(c.getColumnIndex(DOF.LATITUDE_DEGREES)),
+                c.getDouble(c.getColumnIndex(DOF.LONGITUDE_DEGREES)),
+                results
+            )
+            distance = results[0] / GeoUtils.METERS_PER_NAUTICAL_MILE
+            bearing = (results[1] + declination + 360) % 360
+        }
 
-import java.util.Arrays;
+        override fun compareTo(other: DOFData): Int {
+            if (heightMsl > other.heightMsl) {
+                return -1
+            } else if (heightMsl < other.heightMsl) {
+                return 1
+            }
+            return 0
+        }
+    }
 
-public class NearbyDofCursor extends MatrixCursor {
-
-    private static final String[] sColumns = new String[] {
+    companion object {
+        private val sColumns = arrayOf(
             BaseColumns._ID,
             DOF.OAS_CODE,
             DOF.VERIFICATION_STATUS,
@@ -46,92 +88,44 @@ public class NearbyDofCursor extends MatrixCursor {
             DOF.MARKING_TYPE,
             LocationColumns.BEARING,
             LocationColumns.DISTANCE
-    };
+        )
+    }
 
-
-    public NearbyDofCursor( SQLiteDatabase db, Location location, int radius ) {
-        super( sColumns );
-
-        Cursor c = DbUtils.getBoundingBoxCursor( db, DOF.TABLE_NAME,
-                DOF.LATITUDE_DEGREES, DOF.LONGITUDE_DEGREES, location, radius );
-
-        if ( c.moveToFirst() ) {
-            float declination = GeoUtils.getMagneticDeclination( location );
-            DOFData[] dofList = new DOFData[ c.getCount() ];
+    init {
+        val c = DbUtils.getBoundingBoxCursor(
+            db, DOF.TABLE_NAME,
+            DOF.LATITUDE_DEGREES, DOF.LONGITUDE_DEGREES, location, radius
+        )
+        if (c.moveToFirst()) {
+            val declination = GeoUtils.getMagneticDeclination(location)
+            val dofList = arrayOfNulls<DOFData>(c.count)
             do {
-                DOFData obst = new DOFData();
-                obst.setFromCursor( c, location, declination );
-                dofList[ c.getPosition() ] = obst;
-            } while ( c.moveToNext() );
+                val obst = DOFData()
+                obst.setFromCursor(c, location, declination)
+                dofList[c.position] = obst
+            } while (c.moveToNext())
 
             // Sort the list based on distance from current location
-            Arrays.sort( dofList );
-
-            for ( DOFData dof : dofList ) {
-                if ( dof.DISTANCE <= radius ) {
-                    if ( !location.hasAltitude() || location.getAltitude()-100 <= dof.HEIGHT_MSL ) {
-                        MatrixCursor.RowBuilder row = newRow();
-                        row.add( getPosition() )
-                                .add( dof.OAS_CODE )
-                                .add( dof.VERIFICATION_STATUS )
-                                .add( dof.OBSTACLE_TYPE )
-                                .add( dof.COUNT )
-                                .add( dof.HEIGHT_AGL )
-                                .add( dof.HEIGHT_MSL )
-                                .add( dof.LIGHTING_TYPE )
-                                .add( dof.MARKING_TYPE )
-                                .add( dof.BEARING )
-                                .add( dof.DISTANCE );
+            Arrays.sort(dofList)
+            for (dof in dofList) {
+                if (dof!!.distance <= radius) {
+                    if (!location.hasAltitude() || location.altitude - 100 <= dof.heightMsl) {
+                        val row = newRow()
+                        row.add(position)
+                            .add(dof.oasCode)
+                            .add(dof.verificationStatus)
+                            .add(dof.obstacleType)
+                            .add(dof.count)
+                            .add(dof.heightAgl)
+                            .add(dof.heightMsl)
+                            .add(dof.lightingType)
+                            .add(dof.markingType)
+                            .add(dof.bearing)
+                            .add(dof.distance)
                     }
                 }
             }
         }
-
-        c.close();
+        c.close()
     }
-
-    private final class DOFData implements Comparable<DOFData> {
-        private String OAS_CODE;
-        private String VERIFICATION_STATUS;
-        private String OBSTACLE_TYPE;
-        private int COUNT;
-        private int HEIGHT_AGL;
-        private int HEIGHT_MSL;
-        private String LIGHTING_TYPE;
-        private String MARKING_TYPE;
-        private float BEARING;
-        private float DISTANCE;
-
-        private void setFromCursor( Cursor c, Location location, float declination ) {
-            OAS_CODE = c.getString( c.getColumnIndex( DOF.OAS_CODE ) );
-            VERIFICATION_STATUS = c.getString( c.getColumnIndex( DOF.VERIFICATION_STATUS ) );
-            OBSTACLE_TYPE = c.getString( c.getColumnIndex( DOF.OBSTACLE_TYPE ) );
-            COUNT = c.getInt( c.getColumnIndex( DOF.COUNT ) );
-            HEIGHT_AGL = c.getInt( c.getColumnIndex( DOF.HEIGHT_AGL ) );
-            HEIGHT_MSL = c.getInt( c.getColumnIndex( DOF.HEIGHT_MSL ) );
-            LIGHTING_TYPE = c.getString( c.getColumnIndex( DOF.LIGHTING_TYPE ) );
-            MARKING_TYPE = c.getString( c.getColumnIndex( DOF.MARKING_TYPE ) );
-
-            float[] results = new float[ 2 ];
-            Location.distanceBetween(
-                    location.getLatitude(),
-                    location.getLongitude(),
-                    c.getDouble( c.getColumnIndex( DOF.LATITUDE_DEGREES ) ),
-                    c.getDouble( c.getColumnIndex( DOF.LONGITUDE_DEGREES ) ),
-                    results );
-            DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
-            BEARING = ( results[ 1 ]+declination+360 )%360;
-        }
-
-        @Override
-        public int compareTo( DOFData another ) {
-            if ( this.HEIGHT_MSL > another.HEIGHT_MSL ) {
-                return -1;
-            } else if ( this.HEIGHT_MSL < another.HEIGHT_MSL ) {
-                return 1;
-            }
-            return 0;
-        }
-    }
-
 }

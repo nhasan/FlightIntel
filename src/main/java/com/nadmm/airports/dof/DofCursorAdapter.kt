@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2018-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,151 +16,97 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.dof
 
-package com.nadmm.airports.dof;
+import android.content.Context
+import android.database.Cursor
+import com.nadmm.airports.R
+import android.widget.TextView
+import android.view.View
+import androidx.cursoradapter.widget.ResourceCursorAdapter
+import com.nadmm.airports.data.DatabaseManager.DOF
+import com.nadmm.airports.data.DatabaseManager.LocationColumns
+import java.util.Locale
+import com.nadmm.airports.utils.FormatUtils
+import com.nadmm.airports.utils.GeoUtils
 
-import android.content.Context;
-import android.database.Cursor;
-import android.view.View;
-import android.widget.TextView;
-
-import com.nadmm.airports.R;
-import com.nadmm.airports.data.DatabaseManager.DOF;
-import com.nadmm.airports.data.DatabaseManager.LocationColumns;
-import com.nadmm.airports.utils.FormatUtils;
-import com.nadmm.airports.utils.GeoUtils;
-
-import java.util.Locale;
-
-import androidx.cursoradapter.widget.ResourceCursorAdapter;
-
-public class DofCursorAdapter extends ResourceCursorAdapter {
-
-    static class ViewHolder {
-        TextView obstacleType;
-        TextView mslHeight;
-        TextView aglHeight;
-        TextView markingType;
-        TextView lightingType;
-        TextView location;
+class DofCursorAdapter(context: Context?, c: Cursor?) :
+    ResourceCursorAdapter(context, R.layout.dof_list_item, c, 0) {
+    internal class ViewHolder {
+        var obstacleType: TextView? = null
+        var mslHeight: TextView? = null
+        var aglHeight: TextView? = null
+        var markingType: TextView? = null
+        var lightingType: TextView? = null
+        var location: TextView? = null
     }
 
-    public DofCursorAdapter( Context context, Cursor c ) {
-        super( context, R.layout.dof_list_item, c, 0 );
-    }
-
-    @Override
-    public void bindView( View view, Context context, Cursor c ) {
-        ViewHolder holder = (ViewHolder) view.getTag();
-        if ( holder == null ) {
-            holder = new ViewHolder();
-            holder.obstacleType = view.findViewById( R.id.obstacle_type );
-            holder.mslHeight = view.findViewById( R.id.height_msl );
-            holder.aglHeight = view.findViewById( R.id.height_agl );
-            holder.markingType = view.findViewById( R.id.marking_type );
-            holder.lightingType = view.findViewById( R.id.lighting_type );
-            holder.location = view.findViewById( R.id.location );
-            view.setTag( holder );
+    override fun bindView(view: View, context: Context, c: Cursor) {
+        var holder : ViewHolder? = null;
+        if (view.tag == null) {
+            holder = ViewHolder()
+            holder.obstacleType = view.findViewById(R.id.obstacle_type)
+            holder.mslHeight = view.findViewById(R.id.height_msl)
+            holder.aglHeight = view.findViewById(R.id.height_agl)
+            holder.markingType = view.findViewById(R.id.marking_type)
+            holder.lightingType = view.findViewById(R.id.lighting_type)
+            holder.location = view.findViewById(R.id.location)
+            view.tag = holder
+        } else {
+            holder = view.tag as ViewHolder
         }
-
-        String obstacleType = decodeObstacle( c.getString( c.getColumnIndex( DOF.OBSTACLE_TYPE ) ) );
-        int count = c.getInt( c.getColumnIndex( DOF.COUNT ) );
-        int mslHeight = c.getInt( c.getColumnIndex( DOF.HEIGHT_MSL ) );
-        int aglHeight = c.getInt( c.getColumnIndex( DOF.HEIGHT_AGL ) );
-        String marking = decodeMarking( c.getString( c.getColumnIndex( DOF.MARKING_TYPE ) ) );
-        String lighting = decodeLighting( c.getString( c.getColumnIndex( DOF.LIGHTING_TYPE ) ) );
-        float distance = c.getFloat( c.getColumnIndex( LocationColumns.DISTANCE ) );
-        float bearing = c.getFloat( c.getColumnIndex( LocationColumns.BEARING ) );
-
-        if ( count > 1 ) {
-            obstacleType = String.format( Locale.US, "%s (%d count)", obstacleType, count );
+        var obstacleType = decodeObstacle(c.getString(c.getColumnIndex(DOF.OBSTACLE_TYPE)))
+        val count = c.getInt(c.getColumnIndex(DOF.COUNT))
+        val mslHeight = c.getInt(c.getColumnIndex(DOF.HEIGHT_MSL))
+        val aglHeight = c.getInt(c.getColumnIndex(DOF.HEIGHT_AGL))
+        val marking = decodeMarking(c.getString(c.getColumnIndex(DOF.MARKING_TYPE)))
+        val lighting = decodeLighting(c.getString(c.getColumnIndex(DOF.LIGHTING_TYPE)))
+        val distance = c.getFloat(c.getColumnIndex(LocationColumns.DISTANCE))
+        val bearing = c.getFloat(c.getColumnIndex(LocationColumns.BEARING))
+        if (count > 1) {
+            obstacleType = String.format(Locale.US, "%s (%d count)", obstacleType, count)
         }
-
-        holder.obstacleType.setText( obstacleType );
-        holder.mslHeight.setText( FormatUtils.formatFeetMsl( mslHeight ) );
-        holder.aglHeight.setText( FormatUtils.formatFeetAgl( aglHeight ) );
-        holder.markingType.setText( marking );
-        holder.lightingType.setText( lighting );
-        holder.location.setText( String.format( Locale.US, "%.1f NM %s, heading %.0f\u00B0 M",
-                distance, GeoUtils.getCardinalDirection( bearing ), bearing ) );
+        holder.obstacleType!!.text = obstacleType
+        holder.mslHeight!!.text = FormatUtils.formatFeetMsl(mslHeight.toFloat())
+        holder.aglHeight!!.text = FormatUtils.formatFeetAgl(aglHeight.toFloat())
+        holder.markingType!!.text = marking
+        holder.lightingType!!.text = lighting
+        holder.location!!.text = String.format(
+            Locale.US, "%.1f NM %s, heading %.0f\u00B0 M",
+            distance, GeoUtils.getCardinalDirection(bearing), bearing
+        )
     }
 
-    private String decodeObstacle( String type ) {
-        return type.replace( "TWR", "TOWER" )
-                .replace( "BLDG", "BUILDING" );
+    private fun decodeObstacle(type: String): String {
+        return type.replace("TWR", "TOWER")
+            .replace("BLDG", "BUILDING")
     }
 
-    private String decodeMarking( String type ) {
-        String marking;
-
-        switch ( type ) {
-            case "P":
-                marking = "Orange/White paint marker";
-                break;
-            case "W":
-                marking = "White paint marker";
-                break;
-            case "M":
-                marking = "Marked";
-                break;
-            case "F":
-                marking = "Flag marker";
-                break;
-            case "S":
-                marking = "Spherical marker";
-                break;
-            case "N":
-                marking = "Not marked";
-                break;
-            default:
-                marking = "Unknown marking";
-                break;
+    private fun decodeMarking(type: String): String {
+        return when (type) {
+            "P" -> "Orange/White paint marker"
+            "W" -> "White paint marker"
+            "M" -> "Marked"
+            "F" -> "Flag marker"
+            "S" -> "Spherical marker"
+            "N" -> "Not marked"
+            else -> "Unknown marking"
         }
-
-        return marking;
     }
 
-    private String decodeLighting( String type ) {
-        String lighting;
-
-        switch ( type ) {
-            case "R":
-                lighting = "Red lighting";
-                break;
-            case "D":
-                lighting = "Medium intensity White Strobe & Red lighting";
-                break;
-            case "H":
-                lighting = "High intensity White Strobe & Red lighting";
-                break;
-            case "M":
-                lighting = "Medium intensity White Strobe lighting";
-                break;
-            case "S":
-                lighting = "High intensity White Strobe lighting";
-                break;
-            case "F":
-                lighting = "Flood lighting";
-                break;
-            case "C":
-                lighting = "Dual medium catenary lighting";
-                break;
-            case "W":
-                lighting = "Synchronized Red lighting";
-                break;
-            case "L":
-                lighting = "Lighted";
-                break;
-            case "N":
-                lighting = "Not lighted";
-                break;
-            default:
-                lighting = "Unknown lighting";
-                break;
+    private fun decodeLighting(type: String): String {
+        return when (type) {
+            "R" -> "Red lighting"
+            "D" -> "Medium intensity White Strobe & Red lighting"
+            "H" -> "High intensity White Strobe & Red lighting"
+            "M" -> "Medium intensity White Strobe lighting"
+            "S" -> "High intensity White Strobe lighting"
+            "F" -> "Flood lighting"
+            "C" -> "Dual medium catenary lighting"
+            "W" -> "Synchronized Red lighting"
+            "L" -> "Lighted"
+            "N" -> "Not lighted"
+            else -> "Unknown lighting"
         }
-
-        return lighting;
     }
-
 }
-
