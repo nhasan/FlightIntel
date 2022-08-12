@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -128,13 +128,12 @@ sub airport
 {
     my( $twig, $airport )= @_;
     my $faa_code = $airport->first_child_text( "aptid" );
-    my $pdf_name = $airport->first_child_text( "pdf" );
-
-
     if ( length( $faa_code ) > 0 )
     {
-        print "\rLoading # $count...";
+        my $pages = $airport->first_child( "pages" );
+        my $pdf_name = $pages->first_child_text( "pdf" );
 
+        print "\rLoading # $count...";
         #STATE
         $sth_dafd->bind_param( 1, $state );
         #FAA_CODE
@@ -143,7 +142,6 @@ sub airport
         $sth_dafd->bind_param( 3, $pdf_name );
 
         $sth_dafd->execute;
-
         $twig->purge;
         ++$count;
     }
