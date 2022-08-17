@@ -44,6 +44,7 @@ import com.nadmm.airports.utils.DataUtils
 import com.nadmm.airports.utils.FormatUtils
 import com.nadmm.airports.utils.UiUtils
 
+@SuppressLint("Range")
 abstract class FragmentBase : Fragment(), IRefreshable {
 
     lateinit var activityBase: ActivityBase
@@ -223,7 +224,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
 
         val s = wxs.getInt(wxs.getColumnIndex(Wxs.STATION_ELEVATOIN_METER))
         tv = root.findViewById(R.id.wx_station_info2)
-        val elev = FormatUtils.formatFeet(DataUtils.metersToFeet(s.toLong()).toFloat())
+        val elev = FormatUtils.formatFeet(DataUtils.metersToFeet(s).toFloat())
         tv.text = "Located at $elev MSL elevation"
 
         val cb = root.findViewById<CheckBox>(R.id.airport_star)
@@ -244,7 +245,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
         val tv = row.findViewById<TextView>(resid)
         makeClickToCall(tv)
         if (tv.isClickable) {
-            val backgroundResource = UiUtils.getSelectableItemBackgroundResource(activity!!)
+            val backgroundResource = UiUtils.getSelectableItemBackgroundResource(requireActivity())
             row.setBackgroundResource(backgroundResource)
         }
     }
@@ -270,7 +271,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
     private fun makeRowClickable(row: View, tag: Any) {
         row.tag = tag
         row.setOnClickListener(mOnRowClickListener)
-        val backgroundResource = UiUtils.getSelectableItemBackgroundResource(activity!!)
+        val backgroundResource = UiUtils.getSelectableItemBackgroundResource(requireActivity())
         row.setBackgroundResource(backgroundResource)
     }
 

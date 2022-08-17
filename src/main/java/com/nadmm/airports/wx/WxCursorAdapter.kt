@@ -35,7 +35,7 @@ import com.nadmm.airports.utils.WxUtils.getCeiling
 import com.nadmm.airports.utils.WxUtils.setColorizedWxDrawable
 import java.util.*
 
-
+@SuppressLint("Range")
 class WxCursorAdapter(context: Context?, c: Cursor?, private val mDelegate: WxDelegate) :
     ResourceCursorAdapter(context, R.layout.wx_list_item, c, 0) {
     private class ViewHolder {
@@ -50,7 +50,7 @@ class WxCursorAdapter(context: Context?, c: Cursor?, private val mDelegate: WxDe
         var reportAge: TextView? = null
     }
 
-    private fun getViewHolder(view: View): ViewHolder? {
+    private fun getViewHolder(view: View): ViewHolder {
         var holder = view.getTag(R.id.TAG_VIEW_HOLDER) as ViewHolder?
         if (holder == null) {
             holder = ViewHolder()
@@ -69,7 +69,7 @@ class WxCursorAdapter(context: Context?, c: Cursor?, private val mDelegate: WxDe
     }
 
     override fun bindView(view: View, context: Context, c: Cursor) {
-        val holder = getViewHolder(view)?: ViewHolder()
+        val holder = getViewHolder(view)
         val name = c.getString(c.getColumnIndex(Wxs.STATION_NAME))
         if (name != null && name.isNotEmpty()) {
             holder.stationName!!.text = name
@@ -124,7 +124,7 @@ class WxCursorAdapter(context: Context?, c: Cursor?, private val mDelegate: WxDe
         } else {
             info.append(", ")
             val elevation = c.getInt(c.getColumnIndex(Wxs.STATION_ELEVATOIN_METER))
-            info.append(FormatUtils.formatFeetMsl(DataUtils.metersToFeet(elevation.toLong()).toFloat()))
+            info.append(FormatUtils.formatFeetMsl(DataUtils.metersToFeet(elevation).toFloat()))
         }
         holder.stationInfo2!!.text = info.toString()
         info.setLength(0)
@@ -138,7 +138,7 @@ class WxCursorAdapter(context: Context?, c: Cursor?, private val mDelegate: WxDe
 
     @SuppressLint("SetTextI18n")
     fun showMetarInfo(view: View, c: Cursor, metar: Metar?) {
-        val holder = getViewHolder(view)?: return
+        val holder = getViewHolder(view)
         if (metar != null && metar.isValid) {
             // We have METAR for this station
             try {
@@ -200,7 +200,7 @@ class WxCursorAdapter(context: Context?, c: Cursor?, private val mDelegate: WxDe
                 info.append("Ceiling indefinite")
             } else if (skyCover != "NSC") {
                 info.append("Ceiling ")
-                info.append(FormatUtils.formatFeet(ceiling.toLong()))
+                info.append(FormatUtils.formatFeet(ceiling.toFloat()))
             } else {
                 if (metar.skyConditions.isNotEmpty()) {
                     sky = metar.skyConditions[0]
@@ -210,7 +210,7 @@ class WxCursorAdapter(context: Context?, c: Cursor?, private val mDelegate: WxDe
                     } else if (skyCover != "SKM") {
                         info.append(skyCover)
                         info.append(" ")
-                        info.append(FormatUtils.formatFeet(sky.cloudBaseAGL.toLong()))
+                        info.append(FormatUtils.formatFeet(sky.cloudBaseAGL.toFloat()))
                     }
                 }
             }

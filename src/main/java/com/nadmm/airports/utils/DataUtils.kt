@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,794 +16,543 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.utils
 
-package com.nadmm.airports.utils;
+import kotlin.math.roundToInt
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-public final class DataUtils {
-
-    private final static String DOT = "\u2022";
-    private final static String DASH = "\u2013";
-    private static HashMap<String, String> sMorseCodes = new HashMap<>();
-
-    private static final Map<String, String> sAtcIdToName = new HashMap<>();
-    private static final Map<String, String> sAtcNameToId = new HashMap<>();
-
-    private DataUtils() {}
-
-    static {
-        sMorseCodes.put( "A", DOT+DASH );
-        sMorseCodes.put( "B", DASH+DOT+DOT+DOT );
-        sMorseCodes.put( "C", DASH+DOT+DASH+DOT );
-        sMorseCodes.put( "D", DASH+DOT+DOT );
-        sMorseCodes.put( "E", DOT );
-        sMorseCodes.put( "F", DOT+DOT+DASH+DOT );
-        sMorseCodes.put( "G", DASH+DASH+DOT );
-        sMorseCodes.put( "H", DOT+DOT+DOT+DOT );
-        sMorseCodes.put( "I", DOT+DOT );
-        sMorseCodes.put( "J", DOT+DASH+DASH+DASH );
-        sMorseCodes.put( "K", DASH+DOT+DASH );
-        sMorseCodes.put( "L", DOT+DASH+DOT+DOT );
-        sMorseCodes.put( "M", DASH+DASH );
-        sMorseCodes.put( "N", DASH+DOT );
-        sMorseCodes.put( "O", DASH+DASH+DASH );
-        sMorseCodes.put( "P", DOT+DASH+DASH+DOT );
-        sMorseCodes.put( "Q", DASH+DASH+DOT+DASH );
-        sMorseCodes.put( "R", DOT+DASH+DOT );
-        sMorseCodes.put( "S", DOT+DOT+DOT );
-        sMorseCodes.put( "T", DASH );
-        sMorseCodes.put( "U", DOT+DOT+DASH );
-        sMorseCodes.put( "V", DOT+DOT+DOT+DASH );
-        sMorseCodes.put( "W", DOT+DASH+DASH );
-        sMorseCodes.put( "X", DASH+DOT+DOT+DASH );
-        sMorseCodes.put( "Y", DASH+DOT+DASH+DASH );
-        sMorseCodes.put( "Z", DASH+DASH+DOT+DOT );
-        sMorseCodes.put( "1", DOT+DASH+DASH+DASH+DASH );
-        sMorseCodes.put( "2", DOT+DOT+DASH+DASH+DASH );
-        sMorseCodes.put( "3", DOT+DOT+DOT+DASH+DASH );
-        sMorseCodes.put( "4", DOT+DOT+DOT+DOT+DASH );
-        sMorseCodes.put( "5", DOT+DOT+DOT+DOT+DOT );
-        sMorseCodes.put( "6", DASH+DOT+DOT+DOT+DOT );
-        sMorseCodes.put( "7", DASH+DASH+DOT+DOT+DOT );
-        sMorseCodes.put( "8", DASH+DASH+DASH+DOT+DOT );
-        sMorseCodes.put( "9", DASH+DASH+DASH+DASH+DOT );
-        sMorseCodes.put( "0", DASH+DASH+DASH+DASH+DASH );
-    }
-
-    public static String decodePhoneNumber( String phone ) {
-        int i = 0;
-        StringBuilder builder = new StringBuilder();
-        while ( i < phone.length() ) {
-            char c = phone.charAt( i++ );
-            if ( "ABC".indexOf( c ) >= 0 ) {
-                builder.append( '2' );
-            } else if ( "DEF".indexOf( c ) >= 0 ) {
-                builder.append( '3' );
-            } else if ( "GHI".indexOf( c ) >= 0 ) {
-                builder.append( '4' );
-            } else if ( "JKL".indexOf( c ) >= 0 ) {
-                builder.append( '5' );
-            } else if ( "MNO".indexOf( c ) >= 0 ) {
-                builder.append( '6' );
-            } else if ( "PQRS".indexOf( c ) >= 0 ) {
-                builder.append( '7' );
-            } else if ( "TUV".indexOf( c ) >= 0 ) {
-                builder.append( '8' );
-            } else if ( "WXYZ".indexOf( c ) >= 0 ) {
-                builder.append( '9' );
+object DataUtils {
+    private const val DOT = "\u2022"
+    private const val DASH = "\u2013"
+    private val sMorseCodes = HashMap<String, String>()
+    private val sAtcIdToName: MutableMap<String, String> = HashMap()
+    private val sAtcNameToId: MutableMap<String, String> = HashMap()
+    fun decodePhoneNumber(phone: String): String {
+        var i = 0
+        val builder = StringBuilder()
+        while (i < phone.length) {
+            val c = phone[i++]
+            if ("ABC".indexOf(c) >= 0) {
+                builder.append('2')
+            } else if ("DEF".indexOf(c) >= 0) {
+                builder.append('3')
+            } else if ("GHI".indexOf(c) >= 0) {
+                builder.append('4')
+            } else if ("JKL".indexOf(c) >= 0) {
+                builder.append('5')
+            } else if ("MNO".indexOf(c) >= 0) {
+                builder.append('6')
+            } else if ("PQRS".indexOf(c) >= 0) {
+                builder.append('7')
+            } else if ("TUV".indexOf(c) >= 0) {
+                builder.append('8')
+            } else if ("WXYZ".indexOf(c) >= 0) {
+                builder.append('9')
             } else {
-                builder.append( c );
+                builder.append(c)
             }
         }
-        return builder.toString();
+        return builder.toString()
     }
 
-    public static String getMorseCode( String text ) {
-        String morseCode = "";
-        int i = 0;
-        while ( i < text.length() ) {
-            if ( morseCode.length() > 0 ) {
-                morseCode += "  ";
+    @JvmStatic
+    fun getMorseCode(text: String): String {
+        val morseCode = StringBuilder()
+        var i = 0
+        while (i < text.length) {
+            if (morseCode.isNotEmpty()) {
+                morseCode.append("  ")
             }
-            morseCode += sMorseCodes.get( text.substring( i, i+1 ) );
-            ++i;
+            morseCode.append(sMorseCodes[text.substring(i, i + 1)])
+            ++i
         }
-        return morseCode;
+        return morseCode.toString()
     }
 
-    public static int calculateMagneticHeading( int trueHeading, int variation ) {
-        int magneticHeading = ( trueHeading+variation+360 )%360;
-        if ( magneticHeading == 0 ) {
-            magneticHeading = 360;
+    fun calculateMagneticHeading(trueHeading: Int, variation: Int): Int {
+        var magneticHeading = (trueHeading + variation + 360) % 360
+        if (magneticHeading == 0) {
+            magneticHeading = 360
         }
-        return magneticHeading;
+        return magneticHeading
     }
 
-    public static int calculateRadial( float dir, int var ) {
-        int heading = Math.round( dir+360 )%360;
-        heading = calculateMagneticHeading( heading, var );
-        return ( heading+180 )%360;
+    @JvmStatic
+    fun calculateRadial(dir: Float, variance: Int): Int {
+        var heading = (dir + 360).roundToInt() % 360
+        heading = calculateMagneticHeading(heading, variance)
+        return (heading + 180) % 360
     }
 
-    public static String decodeLandingFaclityType( String siteNumber ) {
-        char type = siteNumber.charAt( siteNumber.length()-1 );
-        if ( type == 'A') {
-            return "Airport";
-        } else if ( type == 'B' ) {
-            return "Balloonport";
-        } else if ( type == 'C' ) {
-            return "Seaplane base";
-        } else if ( type == 'G' ) {
-            return "Gliderport";
-        } else if ( type == 'H' ) {
-            return "Heliport";
-        } else if ( type == 'S' ) {
-            return "STOLport";
-        } else if ( type == 'U' ) {
-            return "Ultralight park";
+    fun decodeLandingFacilityType(siteNumber: String): String {
+        return when (siteNumber[siteNumber.length - 1]) {
+            'A' -> "Airport"
+            'B' -> "Balloonport"
+            'C' -> "Seaplane base"
+            'G' -> "Gliderport"
+            'H' -> "Heliport"
+            'S' -> "STOLport"
+            'U' -> "Ultralight park"
+            else -> ""
+        }
+    }
+
+    @JvmStatic
+    fun decodeOwnershipType(ownership: String): String {
+        return when (ownership) {
+            "PU" -> "Public owned"
+            "PR" -> "Private owned"
+            "MA" -> "Airforce owned"
+            "MN" -> "Navy owned"
+            "MR" -> "Army owned"
+            else -> "Unknown ownership"
+        }
+    }
+
+    @JvmStatic
+    fun decodeFacilityUse(use: String): String {
+        return when (use) {
+            "PU" -> "Public use"
+            "PR" -> "Private Use"
+            else -> "Unknown"
+        }
+    }
+
+    fun decodeFuelTypes(fuelTypes: String): String {
+        val decodedFuel = StringBuilder()
+        var start = 0
+        while (start < fuelTypes.length) {
+            val end = (start + 5).coerceAtMost(fuelTypes.length)
+            val type = fuelTypes.substring(start, end).trim { it <= ' ' }
+            if (decodedFuel.isNotEmpty()) {
+                decodedFuel.append(", ")
+            }
+            when (type) {
+                "A" -> decodedFuel.append("JET-A")
+                "A+" -> decodedFuel.append("JET-A+")
+                "A1" -> decodedFuel.append("JET-A1")
+                "A1+" -> decodedFuel.append("JET-A1+")
+                "B" -> decodedFuel.append("JET-B")
+                "B+" -> decodedFuel.append("JET-B+")
+                "MOGAS" -> decodedFuel.append("MOGAS")
+                else -> decodedFuel.append(type)
+            }
+            start = end
+        }
+        return decodedFuel.toString()
+    }
+
+    fun decodeStatus(status: String): String {
+        return when (status) {
+            "O" -> "Operational"
+            "CI" -> "Closed Indefinitely"
+            "CP" -> "Closed Permanently"
+            else -> "Unknown"
+        }
+    }
+
+    fun decodeStorage(s: String): ArrayList<String> {
+        val storages = ArrayList<String>()
+        var start = 0
+        while (start < s.length) {
+            var end = s.indexOf(",", start)
+            if (end == -1) {
+                end = s.length
+            }
+            when (val type = s.substring(start, end).trim { it <= ' ' }) {
+                "BUOY" -> storages.add("Buoy")
+                "HGR" -> storages.add("Hangar")
+                "TIE" -> storages.add("Tiedown")
+                else -> storages.add(type)
+            }
+            start = end + 1
+        }
+        return storages
+    }
+
+    fun decodeServices(s: String): ArrayList<String> {
+        val services = ArrayList<String>()
+        var start = 0
+        while (start < s.length) {
+            var end = s.indexOf(",", start)
+            if (end == -1) {
+                end = s.length
+            }
+            when (val type = s.substring(start, end).trim { it <= ' ' }) {
+                "AFRT" -> services.add("Air freight")
+                "AGRI" -> services.add("Crop dusting")
+                "AMB" -> services.add("Air ambulance")
+                "AVNCS" -> services.add("Avionics")
+                "BCHGR" -> services.add("Beaching gear")
+                "CARGO" -> services.add("Cargo")
+                "CHTR" -> services.add("Charter")
+                "GLD" -> services.add("Glider")
+                "INSTR" -> services.add("Flight instruction")
+                "PAJA" -> services.add("Parachute jump activity")
+                "RNTL" -> services.add("Rental")
+                "SALES" -> services.add("Sales")
+                "SURV" -> services.add("Survey")
+                "TOW" -> services.add("Glider towing")
+                else -> services.add(type)
+            }
+            start = end + 1
+        }
+        return services
+    }
+
+    fun decodeSurfaceType(surfaceType: String): String {
+        val decodedSurfaceType = StringBuilder()
+        var start = 0
+        while (start < surfaceType.length) {
+            var end = surfaceType.indexOf("-", start)
+            if (end == -1) {
+                end = surfaceType.length
+            }
+            val type = surfaceType.substring(start, end).trim { it <= ' ' }
+            if (decodedSurfaceType.isNotEmpty()) {
+                decodedSurfaceType.append(", ")
+            }
+            when (type) {
+                "CONC" -> decodedSurfaceType.append("Concrete")
+                "ASPH" -> decodedSurfaceType.append("Asphalt")
+                "SNOW" -> decodedSurfaceType.append("Snow")
+                "ICE" -> decodedSurfaceType.append("Ice")
+                "MATS" -> decodedSurfaceType.append("Landing mats")
+                "TREATED" -> decodedSurfaceType.append("Treated")
+                "GRAVEL" -> decodedSurfaceType.append("Gravel")
+                "TURF" -> decodedSurfaceType.append("Grass")
+                "DIRT" -> decodedSurfaceType.append("Soil")
+                "WATER" -> decodedSurfaceType.append("Water")
+                "E" -> decodedSurfaceType.append("Excellent")
+                "G" -> decodedSurfaceType.append("Good")
+                "F" -> decodedSurfaceType.append("Fair")
+                "P" -> decodedSurfaceType.append("Poor")
+                "L" -> decodedSurfaceType.append("Failed")
+            }
+            start = end + 1
+        }
+        return decodedSurfaceType.toString()
+    }
+
+    fun decodeSurfaceTreatment(treatment: String): String {
+        return when (treatment) {
+            "GRVD" -> "Grooved"
+            "PFC" -> "Porous friction course"
+            "AFSC" -> "Aggregate friction seal coat"
+            "RFSC" -> "Rubberized friction seal coat"
+            "WC" -> "Wire comb"
+            else -> "None"
+        }
+    }
+
+    fun decodeWindIndicator(windIndicator: String): String {
+        return when (windIndicator) {
+            "Y-L" -> "Lighted"
+            "Y" -> "Unlighted"
+            else -> "No"
+        }
+    }
+
+    fun decodeBeacon(beacon: String): String {
+        return when (beacon) {
+            "CG" -> "White-green"
+            "CY" -> "White-yellow"
+            "CGY" -> "White-Green-Yellow"
+            "SCG" -> "Split-white-green"
+            "C" -> "White"
+            "Y" -> "Yellow"
+            "G" -> "Green"
+            else -> "No"
+        }
+    }
+
+    fun decodeRunwayEdgeLights(edgeLights: String): String {
+        return when (edgeLights) {
+            "HIGH" -> "High intensity"
+            "MED" -> "Medium intensity"
+            "LOW" -> "Low intensity"
+            "NSTD" -> "Non-standard"
+            "PERI" -> "Perimeter"
+            "STRB" -> "Strobe"
+            "FLD" -> "Flood"
+            else -> "None"
+        }
+    }
+
+    fun decodeRunwayMarking(marking: String): String {
+        return when (marking) {
+            "PIR" -> "Precision"
+            "NPI" -> "Non-precision"
+            "BSC" -> "Basic"
+            "NRS" -> "Numbers only"
+            "NSTD" -> "Non-standard"
+            "BUOY" -> "Buoys"
+            "STOL" -> "STOL"
+            else -> "None"
+        }
+    }
+
+    fun decodeRunwayMarkingCondition(condition: String): String {
+        return when (condition) {
+            "G" -> "Good"
+            "F" -> "Fair"
+            "P" -> "Poor"
+            else -> ""
+        }
+    }
+
+    fun decodeGlideSlope(glideSlope: String): String {
+        return when (glideSlope) {
+            "S2L" -> "2-box SAVASI on left side"
+            "S2R" -> "2-box SAVASI on right side"
+            "V2L" -> "2-box VASI on left side"
+            "V2R" -> "2-box VASI on right side"
+            "V4L" -> "4-box VASI on left side"
+            "V4R" -> "4-box VASI on right side"
+            "V6L" -> "6-box VASI on left side"
+            "V6R" -> "6-box VASI on right side"
+            "V12" -> "12-box VASI on both sides"
+            "V16" -> "16-box VASI on both sides"
+            "P2L" -> "2-light PAPI on left side"
+            "P2R" -> "2-light PAPI on right side"
+            "P4L" -> "4-light PAPI on left side"
+            "P4R" -> "4-light PAPI on right side"
+            "NSTD" -> "Non-standars VASI"
+            "PVT" -> "Private use only"
+            "VAS" -> "Non-specific VASI"
+            "NONE" -> "None"
+            "N" -> "None"
+            "TRIL" -> "Tri-color VASI on left side"
+            "TRIR" -> "Tri-color VASI on right side"
+            "PSIL" -> "Pulsating VASI on left side"
+            "PSIR" -> "Pulsating VASI on right side"
+            "PNIL" -> "Panel system on left side"
+            "PNIR" -> "Panel system on right side"
+            else -> glideSlope
+        }
+    }
+
+    fun decodeControllingObjectLighted(lighted: String): String {
+        return when (lighted) {
+            "M" -> "MARKED"
+            "L" -> "LIGHTED"
+            "ML" -> "MARKED & LIGHTED"
+            else -> lighted
+        }
+    }
+
+    fun decodeControllingObjectOffset(offset: String): Int {
+        var end = 0
+        while (end < offset.length && offset[end] >= '0' && offset[end] <= '9') {
+            ++end
+        }
+        return try {
+            offset.substring(0, end).toInt()
+        } catch (e: NumberFormatException) {
+            0
+        }
+    }
+
+    fun decodeControllingObjectOffsetDirection(offset: String): String {
+        var end = 0
+        while (end < offset.length && offset[end] >= '0' && offset[end] <= '9') {
+            ++end
+        }
+        return when (offset.substring(end)) {
+            "R" -> "RIGHT"
+            "L" -> "LEFT"
+            "B", "L/R" -> "BOTH SIDES"
+            else -> "VICINITY"
+        }
+    }
+
+    fun decodeRVRLocations(rvr: String): String {
+        var decodedRvr = ""
+        var index = 0
+        while (index < rvr.length) {
+            if (decodedRvr.isNotEmpty()) {
+                decodedRvr += ", "
+            }
+            if (rvr[index] == 'T') {
+                decodedRvr += "TOUCHDOWN"
+            } else if (rvr[index] == 'M') {
+                decodedRvr += "MIDPOINT"
+            } else if (rvr[index] == 'R') {
+                decodedRvr += "ROLLOUT"
+            }
+            ++index
+        }
+        return decodedRvr
+    }
+
+    @JvmStatic
+    fun decodeNavProtectedAltitude(alt: String): String {
+        return when (alt) {
+            "T" -> "Terminal (25NM)"
+            "L" -> "Low altitude (40NM)"
+            "H" -> "High altitude (130NM)"
+            else -> alt
+        }
+    }
+
+    fun decodeArtcc(artcc: String): String {
+        return when (artcc) {
+            "ZAB" -> "Albuquerque Center"
+            "ZAN" -> "Anchorage Center"
+            "ZAP" -> "Anchorage Oceanic"
+            "ZAU" -> "Chicago Center"
+            "ZBW" -> "Boston Center"
+            "ZDC" -> "Washington Center"
+            "ZDV" -> "Denver Center"
+            "ZFW" -> "Fort Worth Center"
+            "ZHN" -> "Honolulu Control Facility"
+            "ZHU" -> "Houston Center"
+            "ZID" -> "Indianapolis Center"
+            "ZJX" -> "Jacksonville Center"
+            "ZKC" -> "Kansas City Center"
+            "ZLA" -> "Los Angeles Center"
+            "ZLC" -> "Salt Lake City Center"
+            "ZMA" -> "Miami Center"
+            "ZME" -> "Memphis Center"
+            "ZMP" -> "Minneapolis Center"
+            "ZNY" -> "New York Center"
+            "ZOA" -> "Oakland Center"
+            "ZOB" -> "Cleveland Center"
+            "ZSE" -> "Seattle Center"
+            "ZSU" -> "San Juan Center"
+            "ZTL" -> "Atlanta Center"
+            "ZUA" -> "Guam Center"
+            else -> ""
+        }
+
+    }
+
+    fun decodeFaaRegion(code: String): String {
+        return when (code) {
+            "AAL" -> "Alaska"
+            "ACE" -> "Central"
+            "AEA" -> "Eastern"
+            "AGL" -> "Great Lakes"
+            "AIN" -> "International"
+            "ANE" -> "New England"
+            "ANM" -> "Northwest Mountain"
+            "ASO" -> "Southern"
+            "ASW" -> "Southwest"
+            "AWP" -> "Western Pacific"
+            else -> ""
+        }
+
+    }
+
+    fun decodeAirspace(airspace: String): String {
+        var value = ""
+        if (airspace[0] == 'Y') {
+            value += "Class B"
+        }
+        if (airspace[1] == 'Y') {
+            if (value.isNotEmpty()) {
+                value += ", "
+            }
+            value += "Class C"
+        }
+        if (airspace[2] == 'Y') {
+            if (value.isNotEmpty()) {
+                value += ", "
+            }
+            value += "Class D"
+        }
+        if (airspace[3] == 'Y') {
+            if (value.isNotEmpty()) {
+                value += ", "
+            }
+            value += "Class E"
+        }
+        return value
+    }
+
+    @JvmStatic
+    fun decodeChartCode(chartCode: String): String {
+        return if (chartCode.equals("APD", ignoreCase = true)) {
+            "Airport Diagram (APD)"
+        } else if (chartCode.equals("MIN", ignoreCase = true)) {
+            "Minimums (MIN)"
+        } else if (chartCode.equals("STAR", ignoreCase = true)) {
+            "Terminal Arrivals (STAR)"
+        } else if (chartCode.equals("IAP", ignoreCase = true)) {
+            "Approach Procedures (IAP)"
+        } else if (chartCode.equals("DP", ignoreCase = true)) {
+            "Departure Procedures (DP)"
+        } else if (chartCode.equals("DPO", ignoreCase = true)) {
+            "Obstacle Departures (DPO)"
+        } else if (chartCode.equals("LAH", ignoreCase = true)) {
+            "LAHSO Operations (LAH)"
+        } else if (chartCode.equals("HOT", ignoreCase = true)) {
+            "Airport Hot Spots (HOT)"
         } else {
-            return "";
+            "Other"
         }
     }
 
-    public static String decodeOwnershipType( String ownership ) {
-        if ( ownership.equals( "PU" ) ) {
-            return "Public owned";
-        } else if ( ownership.equals( "PR" ) ) {
-            return "Private owned";
-        } else if ( ownership.equals( "MA" ) ) {
-            return "Airforce owned";
-        } else if ( ownership.equals( "MN" ) ) {
-            return "Navy owned";
-        } else if ( ownership.equals( "MR" ) ) {
-            return "Army owned";
-        } else {
-            return "Unknown ownership";
-        }
-    }
-
-    public static String decodeFacilityUse( String use ) {
-        if ( use.equals( "PU" ) ) {
-            return "Public use";
-        } else if ( use.equals( "PR" ) ) {
-            return "Private Use";
-        } else {
-            return "Unknown";
-        }
-    }
-
-    public static String decodeFuelTypes( String fuelTypes ) {
-        String decodedFuel = "";
-
-        int start = 0;
-        while ( start < fuelTypes.length() ) {
-            int end = Math.min( start+5, fuelTypes.length() );
-            String type = fuelTypes.substring( start, end ).trim();
-
-            if ( decodedFuel.length() > 0 ) {
-                decodedFuel += ", ";
-            }
-
-            if ( type.equals( "80" ) ) {
-                decodedFuel += "80";
-            } else if ( type.equals( "100" ) ) {
-                decodedFuel += "100";
-            } else if ( type.equals( "100LL" ) ) {
-                decodedFuel += "100LL";
-            } else if ( type.equals( "A" ) ) {
-                decodedFuel += "JET-A";
-            } else if ( type.equals( "A+" ) ) {
-                decodedFuel += "JET-A+";
-            } else if ( type.equals( "A1" ) ) {
-                decodedFuel += "JET-A1";
-            } else if ( type.equals( "A1+" ) ) {
-                decodedFuel += "JET-A1+";
-            } else if ( type.equals( "B" ) ) {
-                decodedFuel += "JET-B";
-            } else if ( type.equals( "B+" ) ) {
-                decodedFuel += "JET-B+";
-            } else if ( type.equals( "MOGAS" ) ) {
-                decodedFuel += "MOGAS";
-            } else {
-                decodedFuel += type;
-            }
-
-            start = end;
-        }
-
-        return decodedFuel;
-    }
-
-    public static String decodeStatus( String status ) {
-        if ( status.equals( "O" ) ) {
-            return "Operational";
-        } else if ( status.equals( "CI" ) ) {
-            return "Closed Indefinitely";
-        } else if ( status.equals( "CP" ) ) {
-            return "Closed Permanently";
-        }
-        return "Unknown";
-    }
-
-    public static ArrayList<String> decodeStorage( String s ) {
-        ArrayList<String> storages = new ArrayList<>();
-
-        int start = 0;
-        while ( start < s.length() ) {
-            int end = s.indexOf( ",", start );
-            if ( end == -1 ) {
-                end = s.length();
-            }
-            String type = s.substring( start, end ).trim();
-
-            if ( type.equals( "BUOY" ) ) {
-                storages.add( "Buoy" );
-            } else if ( type.equals( "HGR" ) ) {
-                storages.add( "Hangar" );
-            } else if ( type.equals( "TIE" ) ) {
-                storages.add( "Tiedown" );
-            } else {
-                storages.add( type );
-            }
-
-            start = end+1;
-        }
-
-        return storages;
-    }
-
-    public static ArrayList<String> decodeServices( String s ) {
-        ArrayList<String> services = new ArrayList<>();
-
-        int start = 0;
-        while ( start < s.length() ) {
-            int end = s.indexOf( ",", start );
-            if ( end == -1 ) {
-                end = s.length();
-            }
-            String type = s.substring( start, end ).trim();
-
-            if ( type.equals( "AFRT" ) ) {
-                services.add( "Air freight" );
-            } else if ( type.equals( "AGRI" ) ) {
-                services.add( "Crop dusting" );
-            } else if ( type.equals( "AMB" ) ) {
-                services.add( "Air ambulance" );
-            } else if ( type.equals( "AVNCS" ) ) {
-                services.add( "Avionics" );
-            } else if ( type.equals( "BCHGR" ) ) {
-                services.add( "Beaching gear" );
-            } else if ( type.equals( "CARGO" ) ) {
-                services.add( "Cargo" );
-            } else if ( type.equals( "CHTR" ) ) {
-                services.add( "Charter" );
-            } else if ( type.equals( "GLD" ) ) {
-                services.add( "Glider" );
-            } else if ( type.equals( "INSTR" ) ) {
-                services.add( "Flight instruction" );
-            } else if ( type.equals( "PAJA" ) ) {
-                services.add( "Parachute jump activity" );
-            } else if ( type.equals( "RNTL" ) ) {
-                services.add( "Rental" );
-            } else if ( type.equals( "SALES" ) ) {
-                services.add( "Sales" );
-            } else if ( type.equals( "SURV" ) ) {
-                services.add( "Survey" );
-            } else if ( type.equals( "TOW" ) ) {
-                services.add( "Glider towing" );
-            } else {
-                services.add( type );
-            }
-
-            start = end+1;
-        }
-
-        return services;
-    }
-
-    public static String decodeSurfaceType( String surfaceType ) {
-        String decodedSurfaceType = "";
-
-        int start = 0;
-        while ( start < surfaceType.length() ) {
-            int end = surfaceType.indexOf( "-", start );
-            if ( end == -1 ) {
-                end = surfaceType.length();
-            }
-            String type = surfaceType.substring( start, end ).trim();
-
-            if ( decodedSurfaceType.length() > 0 ) {
-                decodedSurfaceType += ", ";
-            }
-
-            if ( type.equals( "CONC" ) ) {
-                decodedSurfaceType += "Concrete";
-            } else if ( type.equals( "ASPH" ) ) {
-                decodedSurfaceType += "Asphalt";
-            } else if ( type.equals( "SNOW" ) ) {
-                decodedSurfaceType += "Snow";
-            } else if ( type.equals( "ICE" ) ) {
-                decodedSurfaceType += "Ice";
-            } else if ( type.equals( "MATS" ) ) {
-                decodedSurfaceType += "Landing mats";
-            } else if ( type.equals( "TREATED" ) ) {
-                decodedSurfaceType += "Treated";
-            } else if ( type.equals( "GRAVEL" ) ) {
-                decodedSurfaceType += "Gravel";
-            } else if ( type.equals( "TURF" ) ) {
-                decodedSurfaceType += "Grass";
-            } else if ( type.equals( "DIRT" ) ) {
-                decodedSurfaceType += "Soil";
-            } else if ( type.equals( "WATER" ) ) {
-                decodedSurfaceType += "Water";
-            } else if ( type.equals( "E" ) ) {
-                decodedSurfaceType += "Excellent";
-            } else if ( type.equals( "G" ) ) {
-                decodedSurfaceType += "Good";
-            } else if ( type.equals( "F" ) ) {
-                decodedSurfaceType += "Fair";
-            } else if ( type.equals( "P" ) ) {
-                decodedSurfaceType += "Poor";
-            } else if ( type.equals( "L" ) ) {
-                decodedSurfaceType += "Failed";
-            }
-
-            start = end+1;
-        }
-
-        return decodedSurfaceType;
-    }
-
-    public static String decodeSurfaceTreatment( String treatment ) {
-        if ( treatment.equals( "GRVD" ) ) {
-            return "Grooved";
-        } else if ( treatment.equals( "PFC" ) ) {
-            return "Porous friction course";
-        } else if ( treatment.equals( "AFSC" ) ) {
-            return "Aggregate friction seal coat";
-        } else if ( treatment.equals( "RFSC" ) ) {
-            return "Rubberized friction seal coat";
-        } else if ( treatment.equals( "WC" ) ) {
-            return "Wire comb";
-        } else {
-            return "None";
-        }
-    }
-
-    public static String decodeWindIndicator( String windIndicator ) {
-        if ( windIndicator.equals( "Y-L" ) ) {
-            return "Lighted";
-        } else if ( windIndicator.equals( "Y" ) ) {
-            return "Unlighted";
-        } else {
-            return "No";
-        }
-    }
-
-    public static String decodeBeacon( String beacon ) {
-        if ( beacon.equals( "CG" ) ) {
-            return "White-green";
-        } else if ( beacon.equals( "CY" ) ) {
-            return "White-yellow";
-        } else if ( beacon.equals( "CGY" ) ) {
-            return "White-Green-Yellow";
-        } else if ( beacon.equals( "SCG" ) ) {
-            return "Split-white-green";
-        } else if ( beacon.equals( "C" ) ) {
-            return "White";
-        } else if ( beacon.equals( "Y" ) ) {
-            return "Yellow";
-        } else if ( beacon.equals( "G" ) ) {
-            return "Green";
-        } else {
-            return "No";
-        }
-    }
-
-    public static String decodeRunwayEdgeLights( String edgeLights ) {
-        if ( edgeLights.equals( "HIGH" ) ) {
-            return "High intensity";
-        } else if ( edgeLights.equals( "MED" ) ) {
-            return "Medium intensity";
-        } else if ( edgeLights.equals( "LOW" ) ) {
-            return "Low intensity";
-        } else if ( edgeLights.equals( "NSTD" ) ) {
-            return "Non-standard";
-        } else if ( edgeLights.equals( "PERI" ) ) {
-            return "Perimeter";
-        } else if ( edgeLights.equals( "STRB" ) ) {
-            return "Strobe";
-        } else if ( edgeLights.equals( "FLD" ) ) {
-            return "Flood";
-        } else {
-            return "None";
-        }
-    }
-
-    public static String decodeRunwayMarking( String marking ) {
-        if ( marking.equals( "PIR" ) ) {
-            return "Precision";
-        } else if ( marking.equals( "NPI" ) ) {
-            return "Non-precision";
-        } else if ( marking.equals( "BSC" ) ) {
-            return "Basic";
-        } else if ( marking.equals( "NRS" ) ) {
-            return "Numbers only";
-        } else if ( marking.equals( "NSTD" ) ) {
-            return "Non-standard";
-        } else if ( marking.equals( "BUOY" ) ) {
-            return "Buoys";
-        } else if ( marking.equals( "STOL" ) ) {
-            return "STOL";
-        } else {
-            return "None";
-        }
-    }
-
-    public static String decodeRunwayMarkingCondition( String condition ) {
-        if ( condition.equals( "G" ) ) {
-            return "Good";
-        } else if ( condition.equals( "F" ) ) {
-            return "Fair";
-        } else if ( condition.equals( "P" ) ) {
-            return "Poor";
-        } else {
-            return "";
-        }
-    }
-
-    public static String decodeGlideSlope( String glideSlope ) {
-        if ( glideSlope.equals( "S2L" ) ) {
-            return "2-box SAVASI on left side";
-        } else if ( glideSlope.equals( "S2R" ) ) {
-            return "2-box SAVASI on right side";
-        } else if ( glideSlope.equals( "V2L" ) ) {
-            return "2-box VASI on left side";
-        } else if ( glideSlope.equals( "V2R" ) ) {
-            return "2-box VASI on right side";
-        } else if ( glideSlope.equals( "V4L" ) ) {
-            return "4-box VASI on left side";
-        } else if ( glideSlope.equals( "V4R" ) ) {
-            return "4-box VASI on right side";
-        } else if ( glideSlope.equals( "V6L" ) ) {
-            return "6-box VASI on left side";
-        } else if ( glideSlope.equals( "V6R" ) ) {
-            return "6-box VASI on right side";
-        } else if ( glideSlope.equals( "V12" ) ) {
-            return "12-box VASI on both sides";
-        } else if ( glideSlope.equals( "V16" ) ) {
-            return "16-box VASI on both sides";
-        } else if ( glideSlope.equals( "P2L" ) ) {
-            return "2-light PAPI on left side";
-        } else if ( glideSlope.equals( "P2R" ) ) {
-            return "2-light PAPI on right side";
-        } else if ( glideSlope.equals( "P4L" ) ) {
-            return "4-light PAPI on left side";
-        } else if ( glideSlope.equals( "P4R" ) ) {
-            return "4-light PAPI on right side";
-        } else if ( glideSlope.equals( "NSTD" ) ) {
-            return "Non-standars VASI";
-        } else if ( glideSlope.equals( "PVT" ) ) {
-            return "Private use only";
-        } else if ( glideSlope.equals( "VAS" ) ) {
-            return "Non-specific VASI";
-        } else if ( glideSlope.equals( "NONE" ) ) {
-            return "None";
-        } else if ( glideSlope.equals( "N" ) ) {
-            return "None";
-        } else if ( glideSlope.equals( "TRIL" ) ) {
-            return "Tri-color VASI on left side";
-        } else if ( glideSlope.equals( "TRIR" ) ) {
-            return "Tri-color VASI on right side";
-        } else if ( glideSlope.equals( "PSIL" ) ) {
-            return "Pulsating VASI on left side";
-        } else if ( glideSlope.equals( "PSIR" ) ) {
-            return "Pulsating VASI on right side";
-        } else if ( glideSlope.equals( "PNIL" ) ) {
-            return "Panel system on left side";
-        } else if ( glideSlope.equals( "PNIR" ) ) {
-            return "Panel system on right side";
-        } else {
-            return glideSlope;
-        }
-    }
-
-    public static String decodeControllingObjectLighted( String lighted ) {
-        if ( lighted.equals( "M" ) ) {
-            return "marked";
-        } else if ( lighted.equals( "L" ) ) {
-            return "lighted";
-        } else if ( lighted.equals( "ML" ) ) {
-            return "marked & lighted";
-        } else {
-            return lighted;
-        }
-    }
-
-    public static int decodeControllingObjectOffset( String offset ) {
-        int end = 0;
-        while ( end < offset.length()
-                && offset.charAt( end ) >= '0' && offset.charAt( end ) <= '9' ) {
-            ++end;
-        }
-        try {
-            return Integer.valueOf( offset.substring( 0, end ) );
-        } catch ( java.lang.NumberFormatException e ) {
-            return 0;
-        }
-    }
-
-    public static String decodeControllingObjectOffsetDirection( String offset ) {
-        int end = 0;
-        while ( end < offset.length()
-                && offset.charAt( end ) >= '0' && offset.charAt( end ) <= '9' ) {
-            ++end;
-        }
-        String direction = offset.substring( end );
-        if ( direction.equals( "R" ) ) {
-            return "right";
-        } else if ( direction.equals( "L" ) ) {
-            return "left";
-        } else if ( direction.equals( "B" ) ) {
-            return "both sides";
-        } else if ( direction.equals( "L/R" ) ) {
-            return "both sides";
-        } else {
-            return "vicinity";
-        }
-    }
-
-    public static String decodeRVRLocations( String rvr ) {
-        String decodedRvr = "";
-        int index = 0;
-        while ( index < rvr.length() ) {
-            if ( decodedRvr.length() > 0 ) {
-                decodedRvr += ", ";
-            }
-            if ( rvr.charAt( index ) == 'T' ) {
-                decodedRvr += "touchdown";
-            } else if ( rvr.charAt( index ) == 'M' ) {
-                decodedRvr += "midpoint";
-            } else if ( rvr.charAt( index ) == 'R' ) {
-                decodedRvr += "rollout";
-            }
-            ++index;
-        }
-        return decodedRvr;
-    }
-
-    public static String decodeNavProtectedAltitude( String alt ) {
-        if ( alt.equals( "T" ) ) {
-            return "Terminal (25NM)";
-        } else if ( alt.equals( "L" ) ) {
-            return "Low altitude (40NM)";
-        } else if ( alt.equals( "H" ) ) {
-            return "High altitude (130NM)";
-        } else {
-            return alt;
-        }
-    }
-
-    public static String decodeArtcc( String artcc ) {
-        if ( artcc.equals( "ZAB" ) ) {
-            return "Albuquerque Center";
-        } else if ( artcc.equals( "ZAN" ) ) {
-            return "Anchorage Center";
-        } else if ( artcc.equals( "ZAP" ) ) {
-            return "Anchorage Oceanic";
-        } else if ( artcc.equals( "ZAU" ) ) {
-            return "Chicago Center";
-        } else if ( artcc.equals( "ZBW" ) ) {
-            return "Boston Center";
-        } else if ( artcc.equals( "ZDC" ) ) {
-            return "Washington Center";
-        } else if ( artcc.equals( "ZDV" ) ) {
-            return "Denver Center";
-        } else if ( artcc.equals( "ZFW" ) ) {
-            return "Fort Worth Center";
-        } else if ( artcc.equals( "ZHN" ) ) {
-            return "Honolulu Control Facility";
-        } else if ( artcc.equals( "ZHU" ) ) {
-            return "Houston Center";
-        } else if ( artcc.equals( "ZID" ) ) {
-            return "Indianapolis Center";
-        } else if ( artcc.equals( "ZJX" ) ) {
-            return "Jacksonville Center";
-        } else if ( artcc.equals( "ZKC" ) ) {
-            return "Kansas City Center";
-        } else if ( artcc.equals( "ZLA" ) ) {
-            return "Los Angeles Center";
-        } else if ( artcc.equals( "ZLC" ) ) {
-            return "Salt Lake City Center";
-        } else if ( artcc.equals( "ZMA" ) ) {
-            return "Miami Center";
-        } else if ( artcc.equals( "ZME" ) ) {
-            return "Memphis Center";
-        } else if ( artcc.equals( "ZMP" ) ) {
-            return "Minneapolis Center";
-        } else if ( artcc.equals( "ZNY" ) ) {
-            return "New York Center";
-        } else if ( artcc.equals( "ZOA" ) ) {
-            return "Oakland Center";
-        } else if ( artcc.equals( "ZOB" ) ) {
-            return "Cleveland Center";
-        } else if ( artcc.equals( "ZSE" ) ) {
-            return "Seattle Center";
-        } else if ( artcc.equals( "ZSU" ) ) {
-            return "San Juan Center";
-        } else if ( artcc.equals( "ZTL" ) ) {
-            return "Atlanta Center";
-        } else if ( artcc.equals( "ZUA" ) ) {
-            return "Guam Center";
-        }
-
-        // Should never reach here
-        return "";
-    }
-
-    public static String decodeFaaRegion( String code ) {
-        if ( code.equals( "AAL" ) ) {
-            return "Alaska";
-        } else if ( code.equals( "ACE" ) ) {
-            return "Central";
-        } else if ( code.equals( "AEA" ) ) {
-            return "Eastern";
-        } else if ( code.equals( "AGL" ) ) {
-            return "Great Lakes";
-        } else if ( code.equals( "AIN" ) ) {
-            return "International";
-        } else if ( code.equals( "ANE" ) ) {
-            return "New England";
-        } else if ( code.equals( "ANM" ) ) {
-            return "Northwest Mountain";
-        } else if ( code.equals( "ASO" ) ) {
-            return "Southern";
-        } else if ( code.equals( "ASW" ) ) {
-            return "Southwest";
-        } else if ( code.equals( "AWP" ) ) {
-            return "Western Pacific";
-        }
-
-        // Should never reach here
-        return "";
-    }
-
-    public static String decodeAirspace( String airspace ) {
-        String value = "";
-        if ( airspace.charAt( 0 ) == 'Y' ) {
-            value += "Class B";
-        }
-        if ( airspace.charAt( 1 ) == 'Y' ) {
-            if ( value.length() > 0 ) {
-                value += ", ";
-            }
-            value += "Class C";
-        }
-        if ( airspace.charAt( 2 ) == 'Y' ) {
-            if ( value.length() > 0 ) {
-                value += ", ";
-            }
-            value += "Class D";
-        }
-        if ( airspace.charAt( 3 ) == 'Y' ) {
-            if ( value.length() > 0 ) {
-                value += ", ";
-            }
-            value += "Class E";
-        }
-        return value;
-    }
-
-    public static String decodeChartCode( String chartCode ) {
-        if ( chartCode.equalsIgnoreCase( "APD" ) ) {
-            return "Airport Diagram (APD)";
-        } else if ( chartCode.equalsIgnoreCase( "MIN" ) ) {
-            return "Minimums (MIN)";
-        } else if ( chartCode.equalsIgnoreCase( "STAR" ) ) {
-            return "Terminal Arrivals (STAR)";
-        } else if ( chartCode.equalsIgnoreCase( "IAP" ) ) {
-            return "Approach Procedures (IAP)";
-        } else if ( chartCode.equalsIgnoreCase( "DP" ) ) {
-            return "Departure Procedures (DP)";
-        } else if ( chartCode.equalsIgnoreCase( "DPO" ) ) {
-            return "Obstacle Departures (DPO)";
-        } else if ( chartCode.equalsIgnoreCase( "LAH" ) ) {
-            return "LAHSO Operations (LAH)";
-        } else if ( chartCode.equalsIgnoreCase( "HOT" ) ) {
-            return "Airport Hot Spots (HOT)";
-        } else {
-            return "Other";
-        }
-    }
-
-    public static String decodeUserAction( String userAction ) {
-        if ( userAction != null && userAction.length() > 0 ) {
-            char change = userAction.charAt( 0 );
-            if ( change == 'C' ) {
-                return "Changed";
-            } else if ( change == 'A' ) {
-                return "Added";
-            } else if ( change == 'D' ) {
-                return "Deleted";
+    @JvmStatic
+    fun decodeUserAction(userAction: String?): String {
+        if (userAction != null && userAction.isNotEmpty()) {
+            return when (userAction[0]) {
+                'C' -> "Changed"
+                'A' -> "Added"
+                'D' -> "Deleted"
+                else -> ""
             }
         }
-        return "";
+        return ""
     }
 
-    public static boolean isDirectionalNavaid( String type ) {
-        return type.equals( "VOR" )
-            || type.equals( "VOR/DME" )
-            || type.equals( "DME" )
-            || type.equals( "VORTAC" )
-            || type.equals( "VOT" )
-            || type.equals( "TACAN" );
+    @JvmStatic
+    fun isDirectionalNavaid(type: String): Boolean {
+        return type == "VOR" || type == "VOR/DME" || type == "DME"
+                || type == "VORTAC" || type == "VOT" || type == "TACAN"
     }
 
-    public static double getTacanChannelFrequency( String channel ) {
-        double freq = 0;
-        if ( channel.length() > 0 ) {
-            String type = channel.substring( channel.length()-1 );
-            int num = Integer.valueOf( channel.substring( 0, channel.length()-1 ) );
-
-            double offset = ((double)num)/10;
-            if ( type.equals( "Y" ) ) {
-                offset += 0.05;
+    @JvmStatic
+    fun getTacanChannelFrequency(channel: String): Double {
+        var freq = 0.0
+        if (channel.isNotEmpty()) {
+            val type = channel.substring(channel.length - 1)
+            val num = Integer.valueOf(channel.substring(0, channel.length - 1))
+            var offset = num.toDouble() / 10
+            if (type == "Y") {
+                offset += 0.05
             }
-
-            if ( num >= 17 && num <= 59 ) {
-                freq = 106.3+offset;
-            } else if ( num >= 70 && num <= 126 ) {
-                freq = 105.3+offset;
+            if (num in 17..59) {
+                freq = 106.3 + offset
+            } else if (num in 70..126) {
+                freq = 105.3 + offset
             }
         }
-
-        return freq;
+        return freq
     }
 
-    public static String getApproachLightSystemDescription( String als ) {
-        if ( als.equals( "ALSAF" ) ) {
-            return "3,000 ft high intensity approach lighting system with centerline "
-                    +"sequence flashers";
-        } else if ( als.equals( "ALSF1" ) ) {
-            return "Standard 2,400 ft high intensity approach lighting system with "
-                    +"sequenced flashers, CAT I";
-        } else if ( als.equals( "ALSF2" ) ) {
-            return "Standard 2,400 ft high intensity approach lighting system with "
-                    +"sequenced flashers, CAT II or III";
-        } else if ( als.equals( "MALS" ) ) {
-            return "1,400 ft medium intensity approach lighting system";
-        } else if ( als.equals( "MALSF" ) ) {
-            return "1,400 ft medium intensity approach lighting system with sequenced flashers";
-        } else if ( als.equals( "MALSR" ) ) {
-            return "1,400 ft medium intensity approach lighting system with runway alignment "
-                    +"indicator lights";
-        } else if ( als.equals( "SSALS" ) ) {
-            return "Simplified short approach lighting system";
-        } else if ( als.equals( "SSALF" ) ) {
-            return "Simplified short approach lighting system with sequenced flashers";
-        } else if ( als.equals( "SSALR" ) ) {
-            return "Simplified short approach lighting system with runway alignment "
-                    +"indicator lights";
-        } else if ( als.equals( "NEON" ) ) {
-            return "Neon ladder approach lighting system";
-        } else if ( als.equals( "ODALS" ) ) {
-            return "Omni-directional approach lighting system";
-        } else if ( als.equals( "LDIN" ) ) {
-            return "Lead-in approach lighting system";
-        } else if ( als.equals( "MIL OVRN" ) ) {
-            return "Military overrun approach lighting system";
-        } else {
-            return "";
+    fun getApproachLightSystemDescription(als: String): String {
+        return when (als) {
+            "ALSAF" -> "3,000 ft high intst apch lighting system with cntrln sequenced flashers"
+            "ALSF1" -> "std 2,400 ft high intst apch lighting system with sequenced flashers, CAT I"
+            "ALSF2" -> "std 2,400 ft high intst apch lighting system with sequenced flashers, CAT II"
+            "MALS" -> "1,400 ft med intst apch lighting system"
+            "MALSF" -> "1,400 ft med intst apch lighting system with sequenced flashers"
+            "MALSR" -> "1,400 ft med intst apch lighting system with rwy alignment indicator lights"
+            "SSALS" -> "Simplified short apch lighting system"
+            "SSALF" -> "Simplified short apch lighting system with sequenced flashers"
+            "SSALR" -> "Simplified short apch lighting system with rwy alignment indicator lights"
+            "NEON" -> "Neon ladder apch lighting system"
+            "ODALS" -> "Omni-directional apch lighting system"
+            "LDIN" -> "Lead-in apch lighting system"
+            "MIL OVRN" -> "Military overrun apch lighting system"
+            else -> ""
         }
     }
 
-    public static String[] getNotamSubjects() {
-        // Defines the order in which NOTAMs will be displayed by subject
-        return new String[] {
+    // Defines the order in which NOTAMs will be displayed by subject
+    val notamSubjects: Array<String>
+        get() =// Defines the order in which NOTAMs will be displayed by subject
+            arrayOf(
                 "Aerodrome",
                 "Obstructions",
                 "Movement and Landing Area",
@@ -813,247 +562,311 @@ public final class DataUtils {
                 "Services",
                 "Flight Data Center",
                 "Other"
-        };
-    }
+            )
 
-    public static String getNotamSubjectFromKeyword( String keyword ) {
-        if ( keyword.equals( "RWY" ) ) {
-            return "Movement and Landing Area";
-        } else if ( keyword.equals( "TWY" ) ) {
-            return "Movement and Landing Area";
-        } else if ( keyword.equals( "APRON" ) ) {
-            return "Movement and Landing Area";
-        } else if ( keyword.equals( "RAMP" ) ) {
-            return "Movement and Landing Area";
-        } else if ( keyword.equals( "AD" ) ) {
-            return "Aerodrome";
-        } else if ( keyword.equals( "AIRSPACE" ) ) {
-            return "Airspace";
-        } else if ( keyword.equals( "OBST" ) ) {
-            return "Obstructions";
-        } else if ( keyword.equals( "NAV" ) ) {
-            return "Navigation";
-        } else if ( keyword.equals( "COM" ) ) {
-            return "Communications";
-        } else if ( keyword.equals( "SVC" ) ) {
-            return "Services";
-        } else if ( keyword.equals( "FDC" ) ) {
-            return "Flight Data Center";
+    fun getNotamSubjectFromKeyword(keyword: String): String {
+        return if (keyword == "RWY") {
+            "Movement and Landing Area"
+        } else if (keyword == "TWY") {
+            "Movement and Landing Area"
+        } else if (keyword == "APRON") {
+            "Movement and Landing Area"
+        } else if (keyword == "RAMP") {
+            "Movement and Landing Area"
+        } else if (keyword == "AD") {
+            "Aerodrome"
+        } else if (keyword == "AIRSPACE") {
+            "Airspace"
+        } else if (keyword == "OBST") {
+            "Obstructions"
+        } else if (keyword == "NAV") {
+            "Navigation"
+        } else if (keyword == "COM") {
+            "Communications"
+        } else if (keyword == "SVC") {
+            "Services"
+        } else if (keyword == "FDC") {
+            "Flight Data Center"
         } else {
-            return "Other";
+            "Other"
         }
     }
 
-    static {
-        sAtcIdToName.put( "A11:TRACON", "Anchorage" );
-        sAtcIdToName.put( "A80:TRACON", "Atlanta" );
-        sAtcIdToName.put( "A90:TRACON", "Boston" );
-        sAtcIdToName.put( "C90:TRACON", "Chicago" );
-        sAtcIdToName.put( "D01:TRACON", "Denver" );
-        sAtcIdToName.put( "D10:TRACON", "Dallas-Ft Worth" );
-        sAtcIdToName.put( "D21:TRACON", "Detroit" );
-        sAtcIdToName.put( "F11:TRACON", "Central Florida" );
-        sAtcIdToName.put( "I90:TRACON", "Houston" );
-        sAtcIdToName.put( "K90:TRACON", "Cape" );
-        sAtcIdToName.put( "L30:TRACON", "Las Vegas" );
-        sAtcIdToName.put( "M03:TRACON", "Memphis" );
-        sAtcIdToName.put( "M98:TRACON", "Minneapolis" );
-        sAtcIdToName.put( "N90:TRACON", "New York" );
-        sAtcIdToName.put( "NCT:TRACON", "Norcal" );
-        sAtcIdToName.put( "NMM:TRACON", "Meridian" );
-        sAtcIdToName.put( "P31:TRACON", "Pensacola" );
-        sAtcIdToName.put( "P50:TRACON", "Phoenix" );
-        sAtcIdToName.put( "P80:TRACON", "Portland" );
-        sAtcIdToName.put( "PCT:TRACON", "Potomac" );
-        sAtcIdToName.put( "R90:TRACON", "Omaha" );
-        sAtcIdToName.put( "S46:TRACON", "Seattle" );
-        sAtcIdToName.put( "S56:TRACON", "Salt Lake City" );
-        sAtcIdToName.put( "SCT:TRACON", "Socal" );
-        sAtcIdToName.put( "T75:TRACON", "St Louis" );
-        sAtcIdToName.put( "U90:TRACON", "Tucson" );
-        sAtcIdToName.put( "Y90:TRACON", "Yankee" );
-
-        sAtcIdToName.put( "BOI:TRACON", "Big Sky" );
-        sAtcIdToName.put( "BTR:TRACON", "Baton Rouge" );
-        sAtcIdToName.put( "FSM:TRACON", "Razorback" );
-        sAtcIdToName.put( "IND:TRACON", "Indianapolis" );
-        sAtcIdToName.put( "LIT:TRACON", "Little Rock" );
-        sAtcIdToName.put( "MCI:TRACON", "Kansas City" );
-        sAtcIdToName.put( "MDT:TRACON", "Harrisburg" );
-        sAtcIdToName.put( "MGM:TRACON", "Montgomery" );
-        sAtcIdToName.put( "OKC:TRACON", "Oke City" );
-        sAtcIdToName.put( "PSC:TRACON", "Chinook" );
-
-        sAtcIdToName.put( "ABE:ATCT", "Allentown" );
-        sAtcIdToName.put( "ABI:ATCT", "Abilene" );
-        sAtcIdToName.put( "ABQ:ATCT", "Albuquerque" );
-        sAtcIdToName.put( "ACT:ATCT", "Waco" );
-        sAtcIdToName.put( "ACY:ATCT", "Atlantic City" );
-        sAtcIdToName.put( "AGS:ATCT", "Augusta" );
-        sAtcIdToName.put( "ALB:ATCT", "Albany" );
-        sAtcIdToName.put( "ALO:ATCT", "Waterloo" );
-        sAtcIdToName.put( "AMA:ATCT", "Amarillo" );
-        sAtcIdToName.put( "ASE:ATCT", "Aspen" );
-        sAtcIdToName.put( "AUS:ATCT", "Austin" );
-        sAtcIdToName.put( "AVL:ATCT", "Asheville" );
-        sAtcIdToName.put( "AVP:ATCT", "Wilkes-Barre" );
-        sAtcIdToName.put( "AZO:ATCT", "Kalamazoo" );
-        sAtcIdToName.put( "BFL:ATCT", "Bakersfield" );
-        sAtcIdToName.put( "BGM:ATCT", "Binghamton" );
-        sAtcIdToName.put( "BGR:ATCT", "Bangor" );
-        sAtcIdToName.put( "BHM:ATCT", "Birmingham" );
-        sAtcIdToName.put( "BIL:ATCT", "Billings" );
-        sAtcIdToName.put( "BIS:ATCT", "Bismarck" );
-        sAtcIdToName.put( "BNA:ATCT", "Nashville" );
-        sAtcIdToName.put( "BOI:ATCT", "Boise" );
-        sAtcIdToName.put( "BTR:ATCT", "Ryan" );
-        sAtcIdToName.put( "BTV:ATCT", "Burlington" );
-        sAtcIdToName.put( "BUF:ATCT", "Buffalo" );
-        sAtcIdToName.put( "CAE:ATCT", "Columbia" );
-        sAtcIdToName.put( "CAK:ATCT", "Akron-Canton" );
-        sAtcIdToName.put( "CHA:ATCT", "Chattanooga" );
-        sAtcIdToName.put( "CHS:ATCT", "Charlston" );
-        sAtcIdToName.put( "CID:ATCT", "Cedar Rapids" );
-        sAtcIdToName.put( "CKB:ATCT", "Clarksburg" );
-        sAtcIdToName.put( "CLE:ATCT", "Cleveland" );
-        sAtcIdToName.put( "CLT:ATCT", "Charlotte" );
-        sAtcIdToName.put( "CMH:ATCT", "Columbus" );
-        sAtcIdToName.put( "CMI:ATCT", "Champaign" );
-        sAtcIdToName.put( "COS:ATCT", "Springs" );
-        sAtcIdToName.put( "CPR:ATCT", "Casper" );
-        sAtcIdToName.put( "CRP:ATCT", "Corpus Christi" );
-        sAtcIdToName.put( "CRW:ATCT", "Charlston" );
-        sAtcIdToName.put( "CVG:ATCT", "Cincinnati" );
-        sAtcIdToName.put( "DAB:ATCT", "Daytona Beach" );
-        sAtcIdToName.put( "DAY:ATCT", "Dayton" );
-        sAtcIdToName.put( "DLH:ATCT", "Duluth" );
-        sAtcIdToName.put( "DMA:ATCT", "D-M" );
-        sAtcIdToName.put( "DSM:ATCT", "Des Moines" );
-        sAtcIdToName.put( "ELM:ATCT", "Elmira" );
-        sAtcIdToName.put( "ELP:ATCT", "El Paso" );
-        sAtcIdToName.put( "ERI:ATCT", "Erie" );
-        sAtcIdToName.put( "EUG:ATCT", "Eugene" );
-        sAtcIdToName.put( "EVV:ATCT", "Evansville" );
-        sAtcIdToName.put( "FAI:ATCT", "Fairbanks" );
-        sAtcIdToName.put( "FAR:ATCT", "Fargo" );
-        sAtcIdToName.put( "FAT:ATCT", "Fresno" );
-        sAtcIdToName.put( "FAY:ATCT", "Fayetteville" );
-        sAtcIdToName.put( "FLO:ATCT", "Florence" );
-        sAtcIdToName.put( "FNT:ATCT", "Flint" );
-        sAtcIdToName.put( "FSD:ATCT", "Sioux Falls" );
-        sAtcIdToName.put( "FSM:ATCT", "Fort Smith" );
-        sAtcIdToName.put( "FWA:ATCT", "Fort Wayne" );
-        sAtcIdToName.put( "GEG:ATCT", "Spokane" );
-        sAtcIdToName.put( "GGG:ATCT", "Eastex" );
-        sAtcIdToName.put( "GPT:ATCT", "Gulfport" );
-        sAtcIdToName.put( "GRB:ATCT", "Greenbay" );
-        sAtcIdToName.put( "GRR:ATCT", "Grand Rapids" );
-        sAtcIdToName.put( "GSO:ATCT", "Greensboro" );
-        sAtcIdToName.put( "GSP:ATCT", "Greer" );
-        sAtcIdToName.put( "GTF:ATCT", "Great Falls" );
-        sAtcIdToName.put( "HLN:ATCT", "Helena" );
-        sAtcIdToName.put( "HSV:ATCT", "Huntsville" );
-        sAtcIdToName.put( "HTS:ATCT", "Huntington" );
-        sAtcIdToName.put( "HUF:ATCT", "Hulman" );
-        sAtcIdToName.put( "ICT:ATCT", "Wichita" );
-        sAtcIdToName.put( "ILM:ATCT", "Wilmington" );
-        sAtcIdToName.put( "IND:ATCT", "Indy" );
-        sAtcIdToName.put( "ITO:ATCT", "Hilo" );
-        sAtcIdToName.put( "JAN:ATCT", "Jackson" );
-        sAtcIdToName.put( "JAX:ATCT", "Jacksonville" );
-        sAtcIdToName.put( "LAN:ATCT", "Lansing" );
-        sAtcIdToName.put( "LBB:ATCT", "Lubbock" );
-        sAtcIdToName.put( "LCH:ATCT", "Lake Charles" );
-        sAtcIdToName.put( "LEX:ATCT", "Lexington" );
-        sAtcIdToName.put( "LFT:ATCT", "Lafayette" );
-        sAtcIdToName.put( "LIT:ATCT", "Adams" );
-        sAtcIdToName.put( "MAF:ATCT", "Midland" );
-        sAtcIdToName.put( "MBS:ATCT", "Saginaw" );
-        sAtcIdToName.put( "MCI:ATCT", "International" );
-        sAtcIdToName.put( "MDT:ATCT", "Harrisburg Intl" );
-        sAtcIdToName.put( "MFD:ATCT", "Mansfield" );
-        sAtcIdToName.put( "MGM:ATCT", "Dannelly" );
-        sAtcIdToName.put( "MIA:ATCT", "Miami" );
-        sAtcIdToName.put( "MKE:ATCT", "Milwaukee" );
-        sAtcIdToName.put( "MKG:ATCT", "Muskegon" );
-        sAtcIdToName.put( "MLI:ATCT", "Quad City" );
-        sAtcIdToName.put( "MLU:ATCT", "Monroe" );
-        sAtcIdToName.put( "MOB:ATCT", "Mobile" );
-        sAtcIdToName.put( "MSN:ATCT", "Madison" );
-        sAtcIdToName.put( "MSY:ATCT", "New Orleans" );
-        sAtcIdToName.put( "MWH:ATCT", "Grant County" );
-        sAtcIdToName.put( "MYR:ATCT", "Myrtle Beach" );
-        sAtcIdToName.put( "OKC:ATCT", "Rogers" );
-        sAtcIdToName.put( "ORF:ATCT", "Norfolk" );
-        sAtcIdToName.put( "PBI:ATCT", "Palm Beach" );
-        sAtcIdToName.put( "PHL:ATCT", "Philadelphia" );
-        sAtcIdToName.put( "PIA:ATCT", "Peoria" );
-        sAtcIdToName.put( "PIT:ATCT", "Pittsburgh" );
-        sAtcIdToName.put( "PSC:ATCT", "Tri-Cities" );
-        sAtcIdToName.put( "PVD:ATCT", "Providence" );
-        sAtcIdToName.put( "PWM:ATCT", "Portland" );
-        sAtcIdToName.put( "RDG:ATCT", "Reading" );
-        sAtcIdToName.put( "RDU:ATCT", "Raleigh-Durham" );
-        sAtcIdToName.put( "RFD:ATCT", "Rockford" );
-        sAtcIdToName.put( "RNO:ATCT", "Reno" );
-        sAtcIdToName.put( "ROA:ATCT", "Roanoke" );
-        sAtcIdToName.put( "ROC:ATCT", "Rochester" );
-        sAtcIdToName.put( "ROW:ATCT", "Roswell" );
-        sAtcIdToName.put( "RST:ATCT", "Rochester" );
-        sAtcIdToName.put( "RSW:ATCT", "Fort Meyers" );
-        sAtcIdToName.put( "SAT:ATCT", "San Antonio" );
-        sAtcIdToName.put( "SAV:ATCT", "Savannah" );
-        sAtcIdToName.put( "SBA:ATCT", "Santa Barbara" );
-        sAtcIdToName.put( "SBN:ATCT", "South Bend" );
-        sAtcIdToName.put( "SDF:ATCT", "Standiford" );
-        sAtcIdToName.put( "SGF:ATCT", "Springfield" );
-        sAtcIdToName.put( "SHV:ATCT", "Shreveport" );
-        sAtcIdToName.put( "SPI:ATCT", "Springfield" );
-        sAtcIdToName.put( "SUX:ATCT", "Sioux City" );
-        sAtcIdToName.put( "SYR:ATCT", "Syracuse" );
-        sAtcIdToName.put( "TLH:ATCT", "Tallahassee" );
-        sAtcIdToName.put( "TOL:ATCT", "Toledo" );
-        sAtcIdToName.put( "TPA:ATCT", "Tampa" );
-        sAtcIdToName.put( "TRI:ATCT", "Tri City" );
-        sAtcIdToName.put( "TUL:ATCT", "Tulsa" );
-        sAtcIdToName.put( "TWF:ATCT", "Twin Falls" );
-        sAtcIdToName.put( "TYS:ATCT", "Knoxville" );
-        sAtcIdToName.put( "YNG:ATCT", "Youngstown" );
-
-        for ( Entry<String, String> entry : sAtcIdToName.entrySet() ) {
-            sAtcNameToId.put( entry.getValue(), entry.getKey() );
-        }
-
+    fun getAtcFacilityId(name: String): Array<String>? {
+        return if (sAtcNameToId.containsKey(name)) sAtcNameToId[name]!!
+            .split(":").toTypedArray() else null
     }
 
-    public static String[] getAtcFacilityId( String name ) {
-        return sAtcNameToId.containsKey( name )? sAtcNameToId.get( name ).split( ":" ) : null;
+    fun getAtcFacilityName(id: String): String? {
+        return sAtcIdToName[id]
     }
 
-    public static String getAtcFacilityName( String id ) {
-        return sAtcIdToName.get( id );
+    fun metersToFeet(meters: Int): Int {
+        return (3.2808 * meters).roundToInt()
     }
 
-    public static long metersToFeet( long meters ) {
-        return Math.round( 3.2808*meters );
-    }
-
-    public static int getRunwayHeading( String runwayId ) {
-        int index = 0;
-        while ( index < runwayId.length() ) {
-            if ( !Character.isDigit( runwayId.charAt( index ) ) ) {
-                break;
+    fun getRunwayHeading(runwayId: String): Int {
+        var index = 0
+        while (index < runwayId.length) {
+            if (!Character.isDigit(runwayId[index])) {
+                break
             }
-            ++index;
+            ++index
         }
-
-        int heading = 0;
+        var heading = 0
         try {
-            heading = Integer.valueOf( runwayId.substring( 0, index ) )*10;
-        } catch ( Exception ignored ) {
+            heading = Integer.valueOf(runwayId.substring(0, index)) * 10
+        } catch (ignored: Exception) {
         }
-
-        return heading;
+        return heading
     }
 
+    init {
+        sMorseCodes["A"] = DOT + DASH
+        sMorseCodes["B"] =
+            DASH + DOT + DOT + DOT
+        sMorseCodes["C"] =
+            DASH + DOT + DASH + DOT
+        sMorseCodes["D"] =
+            DASH + DOT + DOT
+        sMorseCodes["E"] = DOT
+        sMorseCodes["F"] =
+            DOT + DOT + DASH + DOT
+        sMorseCodes["G"] =
+            DASH + DASH + DOT
+        sMorseCodes["H"] =
+            DOT + DOT + DOT + DOT
+        sMorseCodes["I"] =
+            DOT + DOT
+        sMorseCodes["J"] =
+            DOT + DASH + DASH + DASH
+        sMorseCodes["K"] =
+            DASH + DOT + DASH
+        sMorseCodes["L"] =
+            DOT + DASH + DOT + DOT
+        sMorseCodes["M"] = DASH + DASH
+        sMorseCodes["N"] =
+            DASH + DOT
+        sMorseCodes["O"] =
+            DASH + DASH + DASH
+        sMorseCodes["P"] =
+            DOT + DASH + DASH + DOT
+        sMorseCodes["Q"] =
+            DASH + DASH + DOT + DASH
+        sMorseCodes["R"] =
+            DOT + DASH + DOT
+        sMorseCodes["S"] =
+            DOT + DOT + DOT
+        sMorseCodes["T"] = DASH
+        sMorseCodes["U"] =
+            DOT + DOT + DASH
+        sMorseCodes["V"] =
+            DOT + DOT + DOT + DASH
+        sMorseCodes["W"] =
+            DOT + DASH + DASH
+        sMorseCodes["X"] =
+            DASH + DOT + DOT + DASH
+        sMorseCodes["Y"] =
+            DASH + DOT + DASH + DASH
+        sMorseCodes["Z"] =
+            DASH + DASH + DOT + DOT
+        sMorseCodes["1"] =
+            DOT + DASH + DASH + DASH + DASH
+        sMorseCodes["2"] =
+            DOT + DOT + DASH + DASH + DASH
+        sMorseCodes["3"] =
+            DOT + DOT + DOT + DASH + DASH
+        sMorseCodes["4"] =
+            DOT + DOT + DOT + DOT + DASH
+        sMorseCodes["5"] =
+            DOT + DOT + DOT + DOT + DOT
+        sMorseCodes["6"] =
+            DASH + DOT + DOT + DOT + DOT
+        sMorseCodes["7"] =
+            DASH + DASH + DOT + DOT + DOT
+        sMorseCodes["8"] =
+            DASH + DASH + DASH + DOT + DOT
+        sMorseCodes["9"] =
+            DASH + DASH + DASH + DASH + DOT
+        sMorseCodes["0"] =
+            DASH + DASH + DASH + DASH + DASH
+    }
+
+    init {
+        sAtcIdToName["A11:TRACON"] = "Anchorage"
+        sAtcIdToName["A80:TRACON"] = "Atlanta"
+        sAtcIdToName["A90:TRACON"] = "Boston"
+        sAtcIdToName["C90:TRACON"] = "Chicago"
+        sAtcIdToName["D01:TRACON"] = "Denver"
+        sAtcIdToName["D10:TRACON"] = "Dallas-Ft Worth"
+        sAtcIdToName["D21:TRACON"] = "Detroit"
+        sAtcIdToName["F11:TRACON"] = "Central Florida"
+        sAtcIdToName["I90:TRACON"] = "Houston"
+        sAtcIdToName["K90:TRACON"] = "Cape"
+        sAtcIdToName["L30:TRACON"] = "Las Vegas"
+        sAtcIdToName["M03:TRACON"] = "Memphis"
+        sAtcIdToName["M98:TRACON"] = "Minneapolis"
+        sAtcIdToName["N90:TRACON"] = "New York"
+        sAtcIdToName["NCT:TRACON"] = "Norcal"
+        sAtcIdToName["NMM:TRACON"] = "Meridian"
+        sAtcIdToName["P31:TRACON"] = "Pensacola"
+        sAtcIdToName["P50:TRACON"] = "Phoenix"
+        sAtcIdToName["P80:TRACON"] = "Portland"
+        sAtcIdToName["PCT:TRACON"] = "Potomac"
+        sAtcIdToName["R90:TRACON"] = "Omaha"
+        sAtcIdToName["S46:TRACON"] = "Seattle"
+        sAtcIdToName["S56:TRACON"] = "Salt Lake City"
+        sAtcIdToName["SCT:TRACON"] = "Socal"
+        sAtcIdToName["T75:TRACON"] = "St Louis"
+        sAtcIdToName["U90:TRACON"] = "Tucson"
+        sAtcIdToName["Y90:TRACON"] = "Yankee"
+        sAtcIdToName["BOI:TRACON"] = "Big Sky"
+        sAtcIdToName["BTR:TRACON"] = "Baton Rouge"
+        sAtcIdToName["FSM:TRACON"] = "Razorback"
+        sAtcIdToName["IND:TRACON"] = "Indianapolis"
+        sAtcIdToName["LIT:TRACON"] = "Little Rock"
+        sAtcIdToName["MCI:TRACON"] = "Kansas City"
+        sAtcIdToName["MDT:TRACON"] = "Harrisburg"
+        sAtcIdToName["MGM:TRACON"] = "Montgomery"
+        sAtcIdToName["OKC:TRACON"] = "Oke City"
+        sAtcIdToName["PSC:TRACON"] = "Chinook"
+        sAtcIdToName["ABE:ATCT"] = "Allentown"
+        sAtcIdToName["ABI:ATCT"] = "Abilene"
+        sAtcIdToName["ABQ:ATCT"] = "Albuquerque"
+        sAtcIdToName["ACT:ATCT"] = "Waco"
+        sAtcIdToName["ACY:ATCT"] = "Atlantic City"
+        sAtcIdToName["AGS:ATCT"] = "Augusta"
+        sAtcIdToName["ALB:ATCT"] = "Albany"
+        sAtcIdToName["ALO:ATCT"] = "Waterloo"
+        sAtcIdToName["AMA:ATCT"] = "Amarillo"
+        sAtcIdToName["ASE:ATCT"] = "Aspen"
+        sAtcIdToName["AUS:ATCT"] = "Austin"
+        sAtcIdToName["AVL:ATCT"] = "Asheville"
+        sAtcIdToName["AVP:ATCT"] = "Wilkes-Barre"
+        sAtcIdToName["AZO:ATCT"] = "Kalamazoo"
+        sAtcIdToName["BFL:ATCT"] = "Bakersfield"
+        sAtcIdToName["BGM:ATCT"] = "Binghamton"
+        sAtcIdToName["BGR:ATCT"] = "Bangor"
+        sAtcIdToName["BHM:ATCT"] = "Birmingham"
+        sAtcIdToName["BIL:ATCT"] = "Billings"
+        sAtcIdToName["BIS:ATCT"] = "Bismarck"
+        sAtcIdToName["BNA:ATCT"] = "Nashville"
+        sAtcIdToName["BOI:ATCT"] = "Boise"
+        sAtcIdToName["BTR:ATCT"] = "Ryan"
+        sAtcIdToName["BTV:ATCT"] = "Burlington"
+        sAtcIdToName["BUF:ATCT"] = "Buffalo"
+        sAtcIdToName["CAE:ATCT"] = "Columbia"
+        sAtcIdToName["CAK:ATCT"] = "Akron-Canton"
+        sAtcIdToName["CHA:ATCT"] = "Chattanooga"
+        sAtcIdToName["CHS:ATCT"] = "Charlston"
+        sAtcIdToName["CID:ATCT"] = "Cedar Rapids"
+        sAtcIdToName["CKB:ATCT"] = "Clarksburg"
+        sAtcIdToName["CLE:ATCT"] = "Cleveland"
+        sAtcIdToName["CLT:ATCT"] = "Charlotte"
+        sAtcIdToName["CMH:ATCT"] = "Columbus"
+        sAtcIdToName["CMI:ATCT"] = "Champaign"
+        sAtcIdToName["COS:ATCT"] = "Springs"
+        sAtcIdToName["CPR:ATCT"] = "Casper"
+        sAtcIdToName["CRP:ATCT"] = "Corpus Christi"
+        sAtcIdToName["CRW:ATCT"] = "Charlston"
+        sAtcIdToName["CVG:ATCT"] = "Cincinnati"
+        sAtcIdToName["DAB:ATCT"] = "Daytona Beach"
+        sAtcIdToName["DAY:ATCT"] = "Dayton"
+        sAtcIdToName["DLH:ATCT"] = "Duluth"
+        sAtcIdToName["DMA:ATCT"] = "D-M"
+        sAtcIdToName["DSM:ATCT"] = "Des Moines"
+        sAtcIdToName["ELM:ATCT"] = "Elmira"
+        sAtcIdToName["ELP:ATCT"] = "El Paso"
+        sAtcIdToName["ERI:ATCT"] = "Erie"
+        sAtcIdToName["EUG:ATCT"] = "Eugene"
+        sAtcIdToName["EVV:ATCT"] = "Evansville"
+        sAtcIdToName["FAI:ATCT"] = "Fairbanks"
+        sAtcIdToName["FAR:ATCT"] = "Fargo"
+        sAtcIdToName["FAT:ATCT"] = "Fresno"
+        sAtcIdToName["FAY:ATCT"] = "Fayetteville"
+        sAtcIdToName["FLO:ATCT"] = "Florence"
+        sAtcIdToName["FNT:ATCT"] = "Flint"
+        sAtcIdToName["FSD:ATCT"] = "Sioux Falls"
+        sAtcIdToName["FSM:ATCT"] = "Fort Smith"
+        sAtcIdToName["FWA:ATCT"] = "Fort Wayne"
+        sAtcIdToName["GEG:ATCT"] = "Spokane"
+        sAtcIdToName["GGG:ATCT"] = "Eastex"
+        sAtcIdToName["GPT:ATCT"] = "Gulfport"
+        sAtcIdToName["GRB:ATCT"] = "Greenbay"
+        sAtcIdToName["GRR:ATCT"] = "Grand Rapids"
+        sAtcIdToName["GSO:ATCT"] = "Greensboro"
+        sAtcIdToName["GSP:ATCT"] = "Greer"
+        sAtcIdToName["GTF:ATCT"] = "Great Falls"
+        sAtcIdToName["HLN:ATCT"] = "Helena"
+        sAtcIdToName["HSV:ATCT"] = "Huntsville"
+        sAtcIdToName["HTS:ATCT"] = "Huntington"
+        sAtcIdToName["HUF:ATCT"] = "Hulman"
+        sAtcIdToName["ICT:ATCT"] = "Wichita"
+        sAtcIdToName["ILM:ATCT"] = "Wilmington"
+        sAtcIdToName["IND:ATCT"] = "Indy"
+        sAtcIdToName["ITO:ATCT"] = "Hilo"
+        sAtcIdToName["JAN:ATCT"] = "Jackson"
+        sAtcIdToName["JAX:ATCT"] = "Jacksonville"
+        sAtcIdToName["LAN:ATCT"] = "Lansing"
+        sAtcIdToName["LBB:ATCT"] = "Lubbock"
+        sAtcIdToName["LCH:ATCT"] = "Lake Charles"
+        sAtcIdToName["LEX:ATCT"] = "Lexington"
+        sAtcIdToName["LFT:ATCT"] = "Lafayette"
+        sAtcIdToName["LIT:ATCT"] = "Adams"
+        sAtcIdToName["MAF:ATCT"] = "Midland"
+        sAtcIdToName["MBS:ATCT"] = "Saginaw"
+        sAtcIdToName["MCI:ATCT"] = "International"
+        sAtcIdToName["MDT:ATCT"] = "Harrisburg Intl"
+        sAtcIdToName["MFD:ATCT"] = "Mansfield"
+        sAtcIdToName["MGM:ATCT"] = "Dannelly"
+        sAtcIdToName["MIA:ATCT"] = "Miami"
+        sAtcIdToName["MKE:ATCT"] = "Milwaukee"
+        sAtcIdToName["MKG:ATCT"] = "Muskegon"
+        sAtcIdToName["MLI:ATCT"] = "Quad City"
+        sAtcIdToName["MLU:ATCT"] = "Monroe"
+        sAtcIdToName["MOB:ATCT"] = "Mobile"
+        sAtcIdToName["MSN:ATCT"] = "Madison"
+        sAtcIdToName["MSY:ATCT"] = "New Orleans"
+        sAtcIdToName["MWH:ATCT"] = "Grant County"
+        sAtcIdToName["MYR:ATCT"] = "Myrtle Beach"
+        sAtcIdToName["OKC:ATCT"] = "Rogers"
+        sAtcIdToName["ORF:ATCT"] = "Norfolk"
+        sAtcIdToName["PBI:ATCT"] = "Palm Beach"
+        sAtcIdToName["PHL:ATCT"] = "Philadelphia"
+        sAtcIdToName["PIA:ATCT"] = "Peoria"
+        sAtcIdToName["PIT:ATCT"] = "Pittsburgh"
+        sAtcIdToName["PSC:ATCT"] = "Tri-Cities"
+        sAtcIdToName["PVD:ATCT"] = "Providence"
+        sAtcIdToName["PWM:ATCT"] = "Portland"
+        sAtcIdToName["RDG:ATCT"] = "Reading"
+        sAtcIdToName["RDU:ATCT"] = "Raleigh-Durham"
+        sAtcIdToName["RFD:ATCT"] = "Rockford"
+        sAtcIdToName["RNO:ATCT"] = "Reno"
+        sAtcIdToName["ROA:ATCT"] = "Roanoke"
+        sAtcIdToName["ROC:ATCT"] = "Rochester"
+        sAtcIdToName["ROW:ATCT"] = "Roswell"
+        sAtcIdToName["RST:ATCT"] = "Rochester"
+        sAtcIdToName["RSW:ATCT"] = "Fort Meyers"
+        sAtcIdToName["SAT:ATCT"] = "San Antonio"
+        sAtcIdToName["SAV:ATCT"] = "Savannah"
+        sAtcIdToName["SBA:ATCT"] = "Santa Barbara"
+        sAtcIdToName["SBN:ATCT"] = "South Bend"
+        sAtcIdToName["SDF:ATCT"] = "Standiford"
+        sAtcIdToName["SGF:ATCT"] = "Springfield"
+        sAtcIdToName["SHV:ATCT"] = "Shreveport"
+        sAtcIdToName["SPI:ATCT"] = "Springfield"
+        sAtcIdToName["SUX:ATCT"] = "Sioux City"
+        sAtcIdToName["SYR:ATCT"] = "Syracuse"
+        sAtcIdToName["TLH:ATCT"] = "Tallahassee"
+        sAtcIdToName["TOL:ATCT"] = "Toledo"
+        sAtcIdToName["TPA:ATCT"] = "Tampa"
+        sAtcIdToName["TRI:ATCT"] = "Tri City"
+        sAtcIdToName["TUL:ATCT"] = "Tulsa"
+        sAtcIdToName["TWF:ATCT"] = "Twin Falls"
+        sAtcIdToName["TYS:ATCT"] = "Knoxville"
+        sAtcIdToName["YNG:ATCT"] = "Youngstown"
+        for ((key, value) in sAtcIdToName) {
+            sAtcNameToId[value] = key
+        }
+    }
 }

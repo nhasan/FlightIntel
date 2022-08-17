@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,144 +16,136 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.utils
 
-package com.nadmm.airports.utils;
+import com.nadmm.airports.utils.WxUtils.celsiusToFahrenheit
+import com.nadmm.airports.utils.WxUtils.hgToMillibar
+import java.text.DecimalFormat
+import java.util.*
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
+object FormatUtils {
+    private val sFeetFormat: DecimalFormat = DecimalFormat()
+    private val sFeetFormatMsl: DecimalFormat = DecimalFormat()
+    private val sFeetFormatAgl: DecimalFormat = DecimalFormat()
+    private val sNumberFormat: DecimalFormat = DecimalFormat()
+    private val sFreqFormat: DecimalFormat = DecimalFormat()
+    private val sSMFormat: DecimalFormat = DecimalFormat()
+    private val sNMFormat: DecimalFormat = DecimalFormat()
 
-public class FormatUtils {
-
-    private final static DecimalFormat sFeetFormat;
-    private final static DecimalFormat sFeetFormatMsl;
-    private final static DecimalFormat sFeetFormatAgl;
-    private final static DecimalFormat sNumberFormat;
-    private final static DecimalFormat sFreqFormat;
-    private final static DecimalFormat sSMFormat;
-    private final static DecimalFormat sNMFormat;
-    private final static NumberFormat sDollarFormat;
-
-    private FormatUtils() {}
-
-    static {
-        sFeetFormat = new DecimalFormat();
-        sFeetFormat.applyPattern( "#,##0.# ft" );
-        sFeetFormatMsl = new DecimalFormat();
-        sFeetFormatMsl.applyPattern( "#,##0.# ft MSL" );
-        sFeetFormatAgl = new DecimalFormat();
-        sFeetFormatAgl.applyPattern( "#,##0.# ft AGL" );
-        sNumberFormat = new DecimalFormat();
-        sNumberFormat.applyPattern( "#,##0.##" );
-        sFreqFormat = new DecimalFormat();
-        sFreqFormat.applyPattern( "##0.000" );
-        sSMFormat = new DecimalFormat();
-        sSMFormat.applyPattern( "#0.## SM" );
-        sNMFormat = new DecimalFormat();
-        sNMFormat.applyPattern( "#0.# NM" );
-        sDollarFormat = DecimalFormat.getCurrencyInstance();
+    init {
+        sFeetFormat.applyPattern("#,##0.# ft")
+        sFeetFormatMsl.applyPattern("#,##0.# ft MSL")
+        sFeetFormatAgl.applyPattern("#,##0.# ft AGL")
+        sNumberFormat.applyPattern("#,##0.##")
+        sFreqFormat.applyPattern("##0.000")
+        sSMFormat.applyPattern("#0.## SM")
+        sNMFormat.applyPattern("#0.# NM")
     }
 
-    public static String formatFeet( long value ) {
-        return formatFeet( (float) value );
+    @JvmStatic
+    fun formatFeet(value: Float): String {
+        return sFeetFormat.format(value.toDouble())
     }
 
-    public static String formatFeet( float value ) {
-        return sFeetFormat.format( value );
+    @JvmStatic
+    fun formatFeetMsl(value: Float): String {
+        return sFeetFormatMsl.format(value.toDouble())
     }
 
-    public static String formatFeetMsl( float value ) {
-        return sFeetFormatMsl.format( value );
-    }
-
-    public static String formatFeetRangeMsl( int base, int top ) {
-        if ( base == 0 && top < Integer.MAX_VALUE ) {
-            return String.format( "Surface to %s ft MSL", sNumberFormat.format( top ) );
-        } else if ( base < Integer.MAX_VALUE && top < Integer.MAX_VALUE ) {
-            return String.format( "%s to %s ft MSL",
-                    sNumberFormat.format( base ), sNumberFormat.format( top ) );
-        } else if ( base < Integer.MAX_VALUE ) {
-            return String.format( "%s ft MSL and above", sNumberFormat.format( base ) );
-        } else if ( top < Integer.MAX_VALUE ) {
-            return String.format( "%s ft MSL and below", sNumberFormat.format( top ) );
+    @JvmStatic
+    fun formatFeetRangeMsl(base: Int, top: Int): String {
+        return if (base == 0 && top < Int.MAX_VALUE) {
+            String.format("Surface to %s ft MSL", sNumberFormat.format(top.toLong()))
+        } else if (base < Int.MAX_VALUE && top < Int.MAX_VALUE) {
+            String.format("%s to %s ft MSL", sNumberFormat.format(base.toLong()),
+                sNumberFormat.format(top.toLong()))
+        } else if (base < Int.MAX_VALUE) {
+            String.format("%s ft MSL and above", sNumberFormat.format(base.toLong()))
+        } else if (top < Int.MAX_VALUE) {
+            String.format("%s ft MSL and below", sNumberFormat.format(top.toLong()))
         } else {
-            return "";
+            ""
         }
     }
 
-    public static String formatFeetAgl( float value ) {
-        return sFeetFormatAgl.format( value );
+    @JvmStatic
+    fun formatFeetAgl(value: Float): String {
+        return sFeetFormatAgl.format(value.toDouble())
     }
 
-    public static String formatFeetRangeAgl( int base, int top ) {
-        if ( base == 0 && top < Integer.MAX_VALUE ) {
-            return String.format( "Surface to %s ft AGL", sNumberFormat.format( top ) );
-        } else if ( base < Integer.MAX_VALUE && top < Integer.MAX_VALUE ) {
-            return String.format( "%s to %s ft AGL",
-                    sNumberFormat.format( base ), sNumberFormat.format( top ) );
-        } else if ( base < Integer.MAX_VALUE ) {
-            return String.format( "%s ft AGL and above", sNumberFormat.format( top ) );
-        } else if ( top < Integer.MAX_VALUE ) {
-            return String.format( "%s ft AGL and below", sNumberFormat.format( top ) );
+    @JvmStatic
+    fun formatFeetRangeAgl(base: Int, top: Int): String {
+        return if (base == 0 && top < Int.MAX_VALUE) {
+            String.format("Surface to %s ft AGL", sNumberFormat.format(top.toLong()))
+        } else if (base < Int.MAX_VALUE && top < Int.MAX_VALUE) {
+            String.format("%s to %s ft AGL", sNumberFormat.format(base.toLong()),
+                sNumberFormat.format(top.toLong()))
+        } else if (base < Int.MAX_VALUE) {
+            String.format("%s ft AGL and above", sNumberFormat.format(top.toLong()))
+        } else if (top < Int.MAX_VALUE) {
+            String.format("%s ft AGL and below", sNumberFormat.format(top.toLong()))
         } else {
-            return "";
+            ""
         }
     }
 
-    public static String formatNumber( float value ) {
-        return sNumberFormat.format( value );
+    @JvmStatic
+    fun formatNumber(value: Float): String {
+        return sNumberFormat.format(value.toDouble())
     }
 
-    public static String formatFreq( float value ) {
-        return sFreqFormat.format( value );
+    fun formatFreq(value: Float): String {
+        return sFreqFormat.format(value.toDouble())
     }
 
-    public static String formatStatuteMiles( float value ) {
-        return sSMFormat.format( value );
+    @JvmStatic
+    fun formatStatuteMiles(value: Float): String {
+        return sSMFormat.format(value.toDouble())
     }
 
-    public static String formatNauticalMiles( float value ) {
-        return sNMFormat.format( value );
+    fun formatNauticalMiles(value: Float): String {
+        return sNMFormat.format(value.toDouble())
     }
 
-    public static String formatTemperature( float tempC ) {
-        return String.format( Locale.US, "%s (%s)",
-                formatTemperatureC( tempC ), formatTemperatureF( tempC ) );
+    @JvmStatic
+    fun formatTemperature(tempC: Float): String {
+        return String.format(Locale.US, "%s (%s)",
+            formatTemperatureC(tempC), formatTemperatureF(tempC))
     }
 
-    public static String formatTemperatureC( float tempC ) {
-        return String.format( Locale.US, "%.1f\u00B0C", tempC );
+    private fun formatTemperatureC(tempC: Float): String {
+        return String.format(Locale.US, "%.1f\u00B0C", tempC)
     }
 
-    public static String formatTemperatureF( float tempC ) {
-        return String.format( Locale.US, "%.0f\u00B0F", WxUtils.celsiusToFahrenheit( tempC ) );
+    fun formatTemperatureF(tempC: Float): String {
+        return String.format(Locale.US, "%.0f\u00B0F", celsiusToFahrenheit(tempC))
     }
 
-    public static String formatAltimeter( float altimeterHg ) {
-        float altimeterMb = WxUtils.hgToMillibar( altimeterHg );
-        return String.format( Locale.US, "%.2f\" Hg (%s mb)",
-                altimeterHg, FormatUtils.formatNumber( altimeterMb ) );
+    @JvmStatic
+    fun formatAltimeter(altimeterHg: Float): String {
+        val altimeterMb = hgToMillibar(altimeterHg)
+        return String.format(Locale.US, "%.2f\" Hg (%s mb)",
+            altimeterHg, formatNumber(altimeterMb)
+        )
     }
 
-    public static String formatAltimeterHg( float altimeterHg ) {
-        return String.format( Locale.US, "%.2f\" Hg", altimeterHg );
+    fun formatAltimeterHg(altimeterHg: Float): String {
+        return String.format(Locale.US, "%.2f\" Hg", altimeterHg)
     }
 
-    public static String formatAltimeterMb( float altimeterHg ) {
-        float altimeterMb = WxUtils.hgToMillibar( altimeterHg );
-        return String.format( Locale.US, "%s mb", FormatUtils.formatNumber( altimeterMb ) );
+    fun formatDegrees(degrees: Float): String {
+        return String.format(Locale.US, "%.02f\u00B0", degrees)
     }
 
-    public static String formatDegrees( float degrees ) {
-        return String.format( Locale.US, "%.02f\u00B0", degrees );
+    @JvmStatic
+    fun formatDegrees(degrees: Int): String {
+        return String.format(Locale.US, "%03d\u00B0", degrees)
     }
 
-    public static String formatDegrees( int degrees ) {
-        return String.format( Locale.US, "%03d\u00B0", degrees );
-    }
-
-    public static String formatCurrency( double amount ) {
-        return sDollarFormat.format( amount );
+    fun formatRunway(width: Int, length: Int): String {
+        return String.format(Locale.US, "%s x %s",
+            formatFeet(length.toFloat()), formatFeet(width.toFloat())
+        )
     }
 
 }

@@ -606,7 +606,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         tv.setTextColor(color)
         val name = c.getString(c.getColumnIndex(Airports.FACILITY_NAME))
         val siteNumber = c.getString(c.getColumnIndex(Airports.SITE_NUMBER))
-        val type = DataUtils.decodeLandingFaclityType(siteNumber)
+        val type = DataUtils.decodeLandingFacilityType(siteNumber)
         tv.text = "$name $type"
         tv = root.findViewById(R.id.facility_id)
         tv.setTextColor(color)
@@ -716,7 +716,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     fun setActionBarTitle(c: Cursor) {
         val siteNumber = c.getString(c.getColumnIndex(Airports.SITE_NUMBER))
-        val type = DataUtils.decodeLandingFaclityType(siteNumber)
+        val type = DataUtils.decodeLandingFacilityType(siteNumber)
         val name = c.getString(c.getColumnIndex(Airports.FACILITY_NAME))
         var code: String? = c.getString(c.getColumnIndex(Airports.ICAO_CODE))
         if (code.isNullOrBlank()) {
@@ -734,7 +734,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         val isScreenWide = resources.getBoolean(R.bool.IsScreenWide)
         if (isScreenWide) {
             val siteNumber = c.getString(c.getColumnIndex(Airports.SITE_NUMBER))
-            val type = DataUtils.decodeLandingFaclityType(siteNumber)
+            val type = DataUtils.decodeLandingFacilityType(siteNumber)
             val name = c.getString(c.getColumnIndex(Airports.FACILITY_NAME))
             title = "$code - $name $type"
         }

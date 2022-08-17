@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ class AirportsCursorAdapter(context: Context?, c: Cursor?)
 
         val name = c.getString(c.getColumnIndex(Airports.FACILITY_NAME))
         val siteNumber = c.getString(c.getColumnIndex(Airports.SITE_NUMBER))
-        val type = DataUtils.decodeLandingFaclityType(siteNumber)
+        val type = DataUtils.decodeLandingFacilityType(siteNumber)
         holder.name?.text = "$name $type"
         var id: String? = c.getString(c.getColumnIndex(Airports.ICAO_CODE))
         if (id == null || id.trim().isEmpty()) {
