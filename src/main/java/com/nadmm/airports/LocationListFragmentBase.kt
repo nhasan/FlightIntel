@@ -122,9 +122,9 @@ abstract class LocationListFragmentBase : ListFragmentBase() {
             interval = 9000
             fastestInterval = 5000
             priority = if (activityBase.prefUseGps)
-                LocationRequest.PRIORITY_HIGH_ACCURACY
+                Priority.PRIORITY_HIGH_ACCURACY
             else
-                LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+                Priority.PRIORITY_BALANCED_POWER_ACCURACY
         }
 
         mLocationCallback = object : LocationCallback() {
@@ -200,8 +200,8 @@ abstract class LocationListFragmentBase : ListFragmentBase() {
 
     private fun updateLocation(location: Location?) {
         location?.let {
-            if (lastLocation == null || it.distanceTo(lastLocation) > 300) {
-                // Preserve battery. Only update the list of we have moved more than 300 meters.
+            if (lastLocation == null || it.distanceTo(lastLocation!!) > 500) {
+                // Preserve battery. Only update the list of we have moved more than 500 meters.
                 lastLocation = it
                 startLocationTask()
             }
