@@ -4,4 +4,5 @@
     <external-files-path name="dtpp" path="dtpp" />
     <external-files-path name="dafd" path="dafd" />
     <external-files-path name="classb" path="classb" />
+    <external-files-path name="tmp" path="tmp" />
 </paths>
