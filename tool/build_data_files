@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2019 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2019-2022 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -83,11 +83,11 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     if [ ! -d "${BASE_DIR}" ]; then
         mkdir -p ${BASE_DIR};
     fi
-    DTPP_FILE="${BASE_DIR}/d-TPP_Metafile.xml";
-    if [ ! -f "${DTPP_FILE}" ]; then
+    DTPP_PATH="${BASE_DIR}/d-TPP_Metafile.xml";
+    if [ ! -f "${DTPP_PATH}" ]; then
         DTPP_URL="https://aeronav.faa.gov/d-tpp/${DTPP_CYCLE}/xml_data/d-TPP_Metafile.xml";
         echo "${bold}Downloading d-TPP ${DTPP_CYCLE} file:${normal}";
-        wget -O ${DTPP_FILE} ${DTPP_URL};
+        wget -O ${DTPP_PATH} ${DTPP_URL};
     fi
     echo "${bold}Running load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
     ./load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE};
@@ -101,18 +101,19 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     if [ ! -d "${BASE_DIR}" ]; then
         mkdir -p ${BASE_DIR};
     fi
-    DCS_FILE="${BASE_DIR}/afd_${DCS_CYCLE}.xml";
-    if [ ! -f "${DCS_FILE}" ]; then
-	    DCS_URL="https://aeronav.faa.gov/afd/${DCS_CYCLE}/afd_${DCS_CYCLE}.xml";
+    DCS_FILE="afd_${DCS_CYCLE}.xml";
+    DCS_PATH="${BASE_DIR}/${DCS_FILE}";
+    if [ ! -f "${DCS_PATH}" ]; then
+	    DCS_URL="https://aeronav.faa.gov/afd/${DCS_CYCLE}/${DCS_FILE}";
         echo "${bold}Downloading d-CS ${DCS_CYCLE} file:${normal}";
-        wget -O ${DCS_FILE} ${DCS_URL};
+        wget -O ${DCS_PATH} ${DCS_URL};
     fi
-    if [ -s ${DCS_FILE} ]; then
+    if [ -s ${DCS_PATH} ]; then
         echo "${bold}Running load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE}:${normal}";
         ./load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE};
         gzip ${OUT_FILE};
     else
-        echo "Unable to download XML file for ${DCS_CYCLE} cycle.";
+        echo "Unable to download d-CS file ${DCS_FILE}";
     fi
     echo "--";
 fi
@@ -123,12 +124,13 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     if [ ! -d "${BASE_DIR}" ]; then
         mkdir -p ${BASE_DIR};
     fi
-    DOF_FILE="${BASE_DIR}/DAILY_DOF_DAT.ZIP";
-    if [ ! -f "${DOF_FILE}" ]; then
-        DOF_URL="https://aeronav.faa.gov/Obst_Data/DAILY_DOF_DAT.ZIP"
+    DOF_FILE="DAILY_DOF_DAT.ZIP";
+    DOF_PATH="${BASE_DIR}/${DOF_FILE}";
+    if [ ! -f "${DOF_PATH}" ]; then
+        DOF_URL="https://aeronav.faa.gov/Obst_Data/${DOF_FILE}"
         echo "${bold}Downloading DDOF file:${normal}";
-        wget -O ${DOF_FILE} ${DOF_URL};
-        unzip -o -d ${BASE_DIR} ${DOF_FILE};
+        wget -O ${DOF_PATH} ${DOF_URL};
+        unzip -o -d ${BASE_DIR} ${DOF_PATH};
     fi
     echo "${bold}Running load_dof.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
     ./load_dof.pl ${BASE_DIR} ${OUT_FILE};
