@@ -49,11 +49,10 @@ class IlsFragment : FragmentBase() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setActionBarTitle("ILS details", "")
-        val args = arguments
-        args?.let {
-            val siteNumber = args.getString(Ils1.SITE_NUMBER)
-            val runwayId = args.getString(Ils1.RUNWAY_ID)
-            val ilsType = args.getString(Ils1.ILS_TYPE)
+        arguments?.let {
+            val siteNumber = it.getString(Ils1.SITE_NUMBER)
+            val runwayId = it.getString(Ils1.RUNWAY_ID)
+            val ilsType = it.getString(Ils1.ILS_TYPE)
             viewLifecycleOwner.lifecycleScope.launch {
                 val result = withContext(Dispatchers.IO) {
                     doQuery(siteNumber!!, runwayId!!, ilsType!!)
