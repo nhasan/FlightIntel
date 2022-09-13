@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
                     style="@style/TextLabel"
                     android:layout_marginTop="@dimen/section_margin"
                     android:paddingBottom="@dimen/label_padding"
-                    android:text="@string/airport_remarks"
+                    android:text="@string/remarks"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             <LinearLayout android:id="@+id/detail_remarks_layout"

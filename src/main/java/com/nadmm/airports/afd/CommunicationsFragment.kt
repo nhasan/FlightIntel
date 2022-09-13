@@ -76,56 +76,54 @@ class CommunicationsFragment : FragmentBase() {
         var depRadioCall = ""
         val map: MutableMap<String, ArrayList<Pair<String, String>>> = TreeMap()
         val apt = result[0]
-        val ctaf = apt!!.getString(apt.getColumnIndex(Airports.CTAF_FREQ))
+        val ctaf = apt!!.getString(apt.getColumnIndexOrThrow(Airports.CTAF_FREQ))
         if (ctaf.isNotEmpty()) {
             addFrequencyToMap(map, "CTAF", ctaf, "")
         }
-        val unicom = apt.getString(apt.getColumnIndex(Airports.UNICOM_FREQS))
+        val unicom = apt.getString(apt.getColumnIndexOrThrow(Airports.UNICOM_FREQS))
         if (unicom.isNotEmpty()) {
             addFrequencyToMap(map, "Unicom", unicom, "")
         }
         val twr1 = result[1]
-        if (twr1!!.moveToFirst()) {
-            towerRadioCall = twr1.getString(twr1.getColumnIndex(Tower1.RADIO_CALL_TOWER))
+        if (twr1 != null && twr1.moveToFirst()) {
+            towerRadioCall = twr1.getString(twr1.getColumnIndexOrThrow(Tower1.RADIO_CALL_TOWER))
             apchRadioCall = try {
-                twr1.getString(twr1.getColumnIndex(
-                        Tower1.RADIO_CALL_APCH_PRIMARY))
+                twr1.getString(twr1.getColumnIndexOrThrow(Tower1.RADIO_CALL_APCH_PRIMARY))
             } catch (e: Exception) {
-                twr1.getString(twr1.getColumnIndex(Tower1.RADIO_CALL_APCH))
+                twr1.getString(twr1.getColumnIndexOrThrow(Tower1.RADIO_CALL_APCH))
             }
             depRadioCall = try {
-                twr1.getString(twr1.getColumnIndex(
-                        Tower1.RADIO_CALL_DEP_PRIMARY))
+                twr1.getString(twr1.getColumnIndexOrThrow(Tower1.RADIO_CALL_DEP_PRIMARY))
             } catch (e: Exception) {
-                twr1.getString(twr1.getColumnIndex(Tower1.RADIO_CALL_DEP))
+                twr1.getString(twr1.getColumnIndexOrThrow(Tower1.RADIO_CALL_DEP))
             }
         }
         val twr3 = result[2]
-        if (twr3!!.moveToFirst()) {
+        if (twr3 != null && twr3.moveToFirst()) {
             do {
-                val freqUse = twr3.getString(twr3.getColumnIndex(Tower3.MASTER_AIRPORT_FREQ_USE))
-                val freq = twr3.getString(twr3.getColumnIndex(Tower3.MASTER_AIRPORT_FREQ))
+                val freqUse = twr3.getString(twr3.getColumnIndexOrThrow(Tower3.MASTER_AIRPORT_FREQ_USE))
+                val freq = twr3.getString(twr3.getColumnIndexOrThrow(Tower3.MASTER_AIRPORT_FREQ))
                 processFrequency(map, towerRadioCall, apchRadioCall, depRadioCall, freqUse, freq)
             } while (twr3.moveToNext())
         }
         val twr7 = result[4]
-        if (twr7!!.moveToFirst()) {
+        if (twr7 != null && twr7.moveToFirst()) {
             do {
-                val freqUse = twr7.getString(twr7.getColumnIndex(Tower7.SATELLITE_AIRPORT_FREQ_USE))
-                val freq = twr7.getString(twr7.getColumnIndex(Tower7.SATELLITE_AIRPORT_FREQ))
+                val freqUse = twr7.getString(twr7.getColumnIndexOrThrow(Tower7.SATELLITE_AIRPORT_FREQ_USE))
+                val freq = twr7.getString(twr7.getColumnIndexOrThrow(Tower7.SATELLITE_AIRPORT_FREQ))
                 processFrequency(map, towerRadioCall, apchRadioCall, depRadioCall, freqUse, freq)
             } while (twr7.moveToNext())
         }
         val aff3 = result[5]
-        if (aff3!!.moveToFirst()) {
+        if (aff3 != null && aff3.moveToFirst()) {
             do {
-                val artcc = aff3.getString(aff3.getColumnIndex(Aff3.ARTCC_ID))
-                val freq = aff3.getString(aff3.getColumnIndex(Aff3.SITE_FREQUENCY))
-                val alt = aff3.getString(aff3.getColumnIndex(Aff3.FREQ_ALTITUDE))
+                val artcc = aff3.getString(aff3.getColumnIndexOrThrow(Aff3.ARTCC_ID))
+                val freq = aff3.getString(aff3.getColumnIndexOrThrow(Aff3.SITE_FREQUENCY))
+                val alt = aff3.getString(aff3.getColumnIndexOrThrow(Aff3.FREQ_ALTITUDE))
                 var extra = "($alt altitude)"
-                val type = aff3.getString(aff3.getColumnIndex(Aff3.FACILITY_TYPE))
+                val type = aff3.getString(aff3.getColumnIndexOrThrow(Aff3.FACILITY_TYPE))
                 if (type != "ARTCC") {
-                    extra = (aff3.getString(aff3.getColumnIndex(Aff3.SITE_LOCATION))
+                    extra = (aff3.getString(aff3.getColumnIndexOrThrow(Aff3.SITE_LOCATION))
                             + " " + type + " " + extra)
                 }
                 addFrequencyToMap(map, DataUtils.decodeArtcc(artcc), freq, extra)
@@ -264,38 +262,38 @@ class CommunicationsFragment : FragmentBase() {
     private fun showAtcHours(result: Array<Cursor?>) {
         val hoursMap = TreeMap<String, String>()
         val twr2 = result[13]
-        if (twr2!!.moveToFirst()) {
+        if (twr2 != null && twr2.moveToFirst()) {
             do {
                 val primaryAppHours = twr2.getString(
-                        twr2.getColumnIndex(Tower2.PRIMARY_APPROACH_HOURS))
+                        twr2.getColumnIndexOrThrow(Tower2.PRIMARY_APPROACH_HOURS))
                 if (primaryAppHours.isNotEmpty()) {
                     hoursMap["Primary approach"] = primaryAppHours
                 }
                 val secondaryAppHours = twr2.getString(
-                        twr2.getColumnIndex(Tower2.SECONDARY_APPROACH_HOURS))
+                        twr2.getColumnIndexOrThrow(Tower2.SECONDARY_APPROACH_HOURS))
                 if (secondaryAppHours.isNotEmpty()) {
                     hoursMap["Secondary approach"] = secondaryAppHours
                 }
                 val primaryDepHours = twr2.getString(
-                        twr2.getColumnIndex(Tower2.PRIMARY_DEPARTURE_HOURS))
+                        twr2.getColumnIndexOrThrow(Tower2.PRIMARY_DEPARTURE_HOURS))
                 if (primaryDepHours.isNotEmpty()) {
                     hoursMap["Primary departure"] = primaryDepHours
                 }
                 val secondaryDepHours = twr2.getString(
-                        twr2.getColumnIndex(Tower2.SECONDARY_DEPARTURE_HOURS))
+                        twr2.getColumnIndexOrThrow(Tower2.SECONDARY_DEPARTURE_HOURS))
                 if (secondaryDepHours.isNotEmpty()) {
                     hoursMap["Secondary departure"] = secondaryDepHours
                 }
                 val towerHours = twr2.getString(
-                        twr2.getColumnIndex(Tower2.CONTROL_TOWER_HOURS))
+                        twr2.getColumnIndexOrThrow(Tower2.CONTROL_TOWER_HOURS))
                 if (towerHours.isNotEmpty()) {
                     hoursMap["Control tower"] = towerHours
                 }
             } while (twr2.moveToNext())
         }
         val twr9 = result[12]
-        if (twr9!!.moveToFirst()) {
-            val atisHours = twr9.getString(twr9.getColumnIndex(Tower9.ATIS_HOURS))
+        if (twr9 != null && twr9.moveToFirst()) {
+            val atisHours = twr9.getString(twr9.getColumnIndexOrThrow(Tower9.ATIS_HOURS))
             if (atisHours != null && atisHours.isNotEmpty()) {
                 hoursMap["ATIS"] = atisHours
             }
@@ -314,65 +312,65 @@ class CommunicationsFragment : FragmentBase() {
     private fun showAtcPhones(result: Array<Cursor?>) {
         val layout = findViewById<LinearLayout>(R.id.atc_phones_details)
         val main = result[6]
-        if (main!!.moveToFirst()) {
-            val phone = main.getString(main.getColumnIndex(AtcPhones.DUTY_OFFICE_PHONE))
+        if (main != null && main.moveToFirst()) {
+            val phone = main.getString(main.getColumnIndexOrThrow(AtcPhones.DUTY_OFFICE_PHONE))
             addPhoneRow(layout!!, "Command center", phone)
         }
         val region = result[7]
-        if (region!!.moveToFirst()) {
-            val facility = region.getString(region.getColumnIndex(AtcPhones.FACILITY_ID))
-            val phone = region.getString(region.getColumnIndex(AtcPhones.DUTY_OFFICE_PHONE))
+        if (region != null && region.moveToFirst()) {
+            val facility = region.getString(region.getColumnIndexOrThrow(AtcPhones.FACILITY_ID))
+            val phone = region.getString(region.getColumnIndexOrThrow(AtcPhones.DUTY_OFFICE_PHONE))
             addPhoneRow(layout!!, DataUtils.decodeFaaRegion(facility) + " region", phone)
         }
         val artcc = result[8]
-        if (artcc!!.moveToFirst()) {
-            val facility = artcc.getString(artcc.getColumnIndex(AtcPhones.FACILITY_ID))
-            var phone = artcc.getString(artcc.getColumnIndex(AtcPhones.DUTY_OFFICE_PHONE))
+        if (artcc != null && artcc.moveToFirst()) {
+            val facility = artcc.getString(artcc.getColumnIndexOrThrow(AtcPhones.FACILITY_ID))
+            var phone = artcc.getString(artcc.getColumnIndexOrThrow(AtcPhones.DUTY_OFFICE_PHONE))
             addPhoneRow(layout!!, DataUtils.decodeArtcc(facility), phone!!)
-            phone = artcc.getString(artcc.getColumnIndex(AtcPhones.BUSINESS_PHONE))
+            phone = artcc.getString(artcc.getColumnIndexOrThrow(AtcPhones.BUSINESS_PHONE))
             if (phone != null && phone.isNotEmpty()) {
                 addPhoneRow(layout, "", phone)
             }
         }
         var tracon = result[9]
         if (tracon != null && tracon.moveToFirst()) {
-            val faaCode = tracon.getString(tracon.getColumnIndex(AtcPhones.FACILITY_ID))
-            val type = tracon.getString(tracon.getColumnIndex(AtcPhones.FACILITY_TYPE))
+            val faaCode = tracon.getString(tracon.getColumnIndexOrThrow(AtcPhones.FACILITY_ID))
+            val type = tracon.getString(tracon.getColumnIndexOrThrow(AtcPhones.FACILITY_TYPE))
             val name = DataUtils.getAtcFacilityName("$faaCode:$type")
-            var phone = tracon.getString(tracon.getColumnIndex(AtcPhones.DUTY_OFFICE_PHONE))
+            var phone = tracon.getString(tracon.getColumnIndexOrThrow(AtcPhones.DUTY_OFFICE_PHONE))
             addPhoneRow(layout!!, "$name TRACON", phone!!)
-            phone = tracon.getString(tracon.getColumnIndex(AtcPhones.BUSINESS_PHONE))
+            phone = tracon.getString(tracon.getColumnIndexOrThrow(AtcPhones.BUSINESS_PHONE))
             if (phone != null && phone.isNotEmpty()) {
                 addPhoneRow(layout, "", phone)
             }
         }
         tracon = result[10]
         if (tracon != null && tracon.moveToFirst()) {
-            val faaCode = tracon.getString(tracon.getColumnIndex(AtcPhones.FACILITY_ID))
-            val type = tracon.getString(tracon.getColumnIndex(AtcPhones.FACILITY_TYPE))
+            val faaCode = tracon.getString(tracon.getColumnIndexOrThrow(AtcPhones.FACILITY_ID))
+            val type = tracon.getString(tracon.getColumnIndexOrThrow(AtcPhones.FACILITY_TYPE))
             val name = DataUtils.getAtcFacilityName("$faaCode:$type")
-            var phone = tracon.getString(tracon.getColumnIndex(AtcPhones.DUTY_OFFICE_PHONE))
+            var phone = tracon.getString(tracon.getColumnIndexOrThrow(AtcPhones.DUTY_OFFICE_PHONE))
             addPhoneRow(layout!!, "$name TRACON", phone!!)
-            phone = tracon.getString(tracon.getColumnIndex(AtcPhones.BUSINESS_PHONE))
+            phone = tracon.getString(tracon.getColumnIndexOrThrow(AtcPhones.BUSINESS_PHONE))
             if (phone != null && phone.isNotEmpty()) {
                 addPhoneRow(layout, "", phone)
             }
         }
         val atct = result[11]
-        if (atct!!.moveToFirst()) {
+        if (atct != null && atct.moveToFirst()) {
             val tower1 = result[1]
-            val name = tower1!!.getString(tower1.getColumnIndex(Tower1.RADIO_CALL_TOWER))
-            var phone = atct.getString(atct.getColumnIndex(AtcPhones.DUTY_OFFICE_PHONE))
+            val name = tower1!!.getString(tower1.getColumnIndexOrThrow(Tower1.RADIO_CALL_TOWER))
+            var phone = atct.getString(atct.getColumnIndexOrThrow(AtcPhones.DUTY_OFFICE_PHONE))
             addPhoneRow(layout!!, "$name Tower", phone!!)
-            phone = atct.getString(atct.getColumnIndex(AtcPhones.BUSINESS_PHONE))
+            phone = atct.getString(atct.getColumnIndexOrThrow(AtcPhones.BUSINESS_PHONE))
             if (phone != null && phone.isNotEmpty()) {
                 addPhoneRow(layout, "", phone)
             }
         }
         val twr9 = result[12]
-        if (twr9!!.moveToFirst()) {
+        if (twr9 != null && twr9.moveToFirst()) {
             do {
-                val atisPhone = twr9.getString(twr9.getColumnIndex(Tower9.ATIS_PHONE))
+                val atisPhone = twr9.getString(twr9.getColumnIndexOrThrow(Tower9.ATIS_PHONE))
                 if (atisPhone.isNotEmpty()) {
                     addPhoneRow(layout!!, "ATIS", atisPhone)
                 }
@@ -382,19 +380,19 @@ class CommunicationsFragment : FragmentBase() {
 
     private fun showFssServices(apt: Cursor) {
         val layout = findViewById<LinearLayout>(R.id.fss_services_layout)
-        val fssId = apt.getString(apt.getColumnIndex(Airports.FSS_ID))
-        val fssName = apt.getString(apt.getColumnIndex(Airports.FSS_NAME))
+        val fssId = apt.getString(apt.getColumnIndexOrThrow(Airports.FSS_ID))
+        val fssName = apt.getString(apt.getColumnIndexOrThrow(Airports.FSS_NAME))
         addRow(layout!!, "Flight service", "$fssId ($fssName)")
-        var fssPhone = apt.getString(apt.getColumnIndex(Airports.FSS_LOCAL_PHONE))
+        var fssPhone = apt.getString(apt.getColumnIndexOrThrow(Airports.FSS_LOCAL_PHONE))
         if (fssPhone.isEmpty()) {
-            fssPhone = apt.getString(apt.getColumnIndex(Airports.FSS_TOLLFREE_PHONE))
+            fssPhone = apt.getString(apt.getColumnIndexOrThrow(Airports.FSS_TOLLFREE_PHONE))
         }
         addPhoneRow(layout, "FSS phone", fssPhone)
-        val state = apt.getString(apt.getColumnIndex(Airports.ASSOC_STATE))
+        val state = apt.getString(apt.getColumnIndexOrThrow(Airports.ASSOC_STATE))
         if (state != "AK") {
             addPhoneRow(layout, "TIBS", "1-877-4TIBS-WX")
             addPhoneRow(layout, "Clearance delivery", "1-888-766-8287")
-            val faaRegion = apt.getString(apt.getColumnIndex(Airports.REGION_CODE))
+            val faaRegion = apt.getString(apt.getColumnIndexOrThrow(Airports.REGION_CODE))
             if (faaRegion == "AEA") {
                 addPhoneRow(layout, "DC SFRA & FRZ", "1-866-225-7410")
             }
@@ -405,30 +403,30 @@ class CommunicationsFragment : FragmentBase() {
     private fun showRemarks(result: Array<Cursor?>) {
         val layout = findViewById<LinearLayout>(R.id.comm_remarks_layout)
         val twr6 = result[3]
-        if (twr6!!.moveToFirst()) {
+        if (twr6 != null && twr6.moveToFirst()) {
             do {
-                val remark = twr6.getString(twr6.getColumnIndex(Tower6.REMARK_TEXT))
+                val remark = twr6.getString(twr6.getColumnIndexOrThrow(Tower6.REMARK_TEXT))
                 addBulletedRow(layout!!, remark)
             } while (twr6.moveToNext())
         }
         val twr9 = result[12]
-        if (twr9!!.moveToFirst()) {
+        if (twr9 != null && twr9.moveToFirst()) {
             do {
-                val remark = twr9.getString(twr9.getColumnIndex(Tower9.ATIS_PURPOSE))
+                val remark = twr9.getString(twr9.getColumnIndexOrThrow(Tower9.ATIS_PURPOSE))
                 if (remark.isNotEmpty()) {
                     addBulletedRow(layout!!, remark)
                 }
             } while (twr9.moveToNext())
         }
         val twr4 = result[14]
-        if (twr4!!.moveToFirst()) {
+        if (twr4 != null && twr4.moveToFirst()) {
             var services = ""
             do {
                 if (services.isNotEmpty()) {
                     services = "$services, "
                 }
                 services += twr4.getString(
-                        twr4.getColumnIndex(Tower4.MASTER_AIRPORT_SERVICES)).trim { it <= ' ' }
+                        twr4.getColumnIndexOrThrow(Tower4.MASTER_AIRPORT_SERVICES)).trim { it <= ' ' }
             } while (twr4.moveToNext())
             addBulletedRow(layout!!, "Services to satellite airports: $services")
         }
@@ -455,98 +453,85 @@ class CommunicationsFragment : FragmentBase() {
         val apt = getAirportDetails(siteNumber)
         cursors[0] = apt
         val db = getDatabase(DB_FADDS)
-        var builder = SQLiteQueryBuilder()
+        val builder = SQLiteQueryBuilder()
         builder.tables = Tower1.TABLE_NAME
         var c = builder.query(db, arrayOf("*"),
                 Tower1.SITE_NUMBER + "=?", arrayOf(siteNumber), null, null, null, null)
         cursors[1] = c
-        val faaCode = apt!!.getString(apt.getColumnIndex(Airports.FAA_CODE))
-        builder = SQLiteQueryBuilder()
+        val faaCode = apt!!.getString(apt.getColumnIndexOrThrow(Airports.FAA_CODE))
         builder.tables = Tower3.TABLE_NAME
         c = builder.query(db, arrayOf("*"),
                 Tower3.FACILITY_ID + "=?", arrayOf(faaCode), null, null, Tower3.MASTER_AIRPORT_FREQ_USE, null)
         cursors[2] = c
-        builder = SQLiteQueryBuilder()
         builder.tables = Tower6.TABLE_NAME
         c = builder.query(db, arrayOf("*"),
                 Tower3.FACILITY_ID + "=?", arrayOf(faaCode), null, null, null, null)
         cursors[3] = c
-        builder = SQLiteQueryBuilder()
         builder.tables = Tower7.TABLE_NAME
         c = builder.query(db, arrayOf("*"),
                 Tower7.SATELLITE_AIRPORT_SITE_NUMBER + "=?", arrayOf(siteNumber), null, null, null, null)
         cursors[4] = c
-        builder = SQLiteQueryBuilder()
         builder.tables = Aff3.TABLE_NAME
         c = builder.query(db, arrayOf("*"),
                 Aff3.IFR_FACILITY_ID + "=?", arrayOf(faaCode), null, null, null, null)
         cursors[5] = c
-        builder = SQLiteQueryBuilder()
         builder.tables = AtcPhones.TABLE_NAME
         c = builder.query(db, arrayOf("*"),
                 "(" + AtcPhones.FACILITY_TYPE + "=? AND " + AtcPhones.FACILITY_ID + "=?)", arrayOf("MAIN", "MAIN"), null, null, null, null)
         cursors[6] = c
-        val faaRegion = apt.getString(apt.getColumnIndex(Airports.REGION_CODE))
-        builder = SQLiteQueryBuilder()
+        val faaRegion = apt.getString(apt.getColumnIndexOrThrow(Airports.REGION_CODE))
         builder.tables = AtcPhones.TABLE_NAME
         c = builder.query(db, arrayOf("*"),
                 "(" + AtcPhones.FACILITY_TYPE + "=? AND " + AtcPhones.FACILITY_ID + "=?)", arrayOf("REGION", faaRegion), null, null, null, null)
         cursors[7] = c
-        val artccId = apt.getString(apt.getColumnIndex(Airports.BOUNDARY_ARTCC_ID))
-        builder = SQLiteQueryBuilder()
+        val artccId = apt.getString(apt.getColumnIndexOrThrow(Airports.BOUNDARY_ARTCC_ID))
         builder.tables = AtcPhones.TABLE_NAME
         c = builder.query(db, arrayOf("*"),
                 "(" + AtcPhones.FACILITY_TYPE + "=? AND " + AtcPhones.FACILITY_ID + "=?)", arrayOf("ARTCC", artccId), null, null, null, null)
         cursors[8] = c
         val twr1 = cursors[1]
         if (twr1!!.moveToFirst()) {
-            var apchName = twr1.getString(twr1.getColumnIndex(
+            var apchName = twr1.getString(twr1.getColumnIndexOrThrow(
                     Tower1.RADIO_CALL_APCH_PRIMARY))
             var apchId = DataUtils.getAtcFacilityId(apchName)
             if (apchId == null) {
-                apchName = twr1.getString(twr1.getColumnIndex(
+                apchName = twr1.getString(twr1.getColumnIndexOrThrow(
                         Tower1.RADIO_CALL_APCH_SECONDARY))
                 apchId = DataUtils.getAtcFacilityId(apchName)
             }
             if (apchId != null) {
-                builder = SQLiteQueryBuilder()
                 builder.tables = AtcPhones.TABLE_NAME
                 c = builder.query(db, arrayOf("*"),
                         "(" + AtcPhones.FACILITY_TYPE + "=? AND " + AtcPhones.FACILITY_ID + "=?)", arrayOf(apchId[1], apchId[0]), null, null, null, null)
                 cursors[9] = c
             }
-            var depName = twr1.getString(twr1.getColumnIndex(
+            var depName = twr1.getString(twr1.getColumnIndexOrThrow(
                     Tower1.RADIO_CALL_DEP_PRIMARY))
             var depId = DataUtils.getAtcFacilityId(depName)
             if (depId == null) {
-                depName = twr1.getString(twr1.getColumnIndex(
+                depName = twr1.getString(twr1.getColumnIndexOrThrow(
                         Tower1.RADIO_CALL_DEP_SECONDARY))
                 depId = DataUtils.getAtcFacilityId(depName)
             }
             if (depId != null) {
-                builder = SQLiteQueryBuilder()
                 builder.tables = AtcPhones.TABLE_NAME
                 c = builder.query(db, arrayOf("*"),
                         "(" + AtcPhones.FACILITY_TYPE + "=? AND " + AtcPhones.FACILITY_ID + "=?)", arrayOf(depId[0], depId[1]), null, null, null, null)
                 cursors[10] = c
             }
         }
-        builder = SQLiteQueryBuilder()
         builder.tables = AtcPhones.TABLE_NAME
         c = builder.query(db, arrayOf("*"),
                 "(" + AtcPhones.FACILITY_TYPE + "=? AND " + AtcPhones.FACILITY_ID + "=?)", arrayOf("ATCT", faaCode), null, null, null, null)
         cursors[11] = c
-        builder = SQLiteQueryBuilder()
         builder.tables = Tower9.TABLE_NAME
         c = builder.query(db, arrayOf("*"),
                 Tower9.FACILITY_ID + "=?", arrayOf(faaCode), null, null, Tower9.ATIS_SERIAL_NO, null)
         cursors[12] = c
-        builder = SQLiteQueryBuilder()
         builder.tables = Tower2.TABLE_NAME
         c = builder.query(db, arrayOf("*"),
                 Tower2.FACILITY_ID + "=?", arrayOf(faaCode), null, null, null, null)
         cursors[13] = c
-        builder = SQLiteQueryBuilder()
         builder.tables = Tower4.TABLE_NAME
         c = builder.query(db, arrayOf("*"),
                 Tower4.FACILITY_ID + "=?", arrayOf(faaCode), null, null, null, null)

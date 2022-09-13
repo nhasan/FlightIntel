@@ -60,7 +60,6 @@ import kotlin.math.round
 import kotlin.math.roundToInt
 
 class AirportDetailsFragment : FragmentBase() {
-
     private val mAwosViews = HashSet<LinearLayout>()
     private val mRunwayViews = HashSet<TextView>()
     private val mBcastReceiver: BroadcastReceiver
@@ -308,7 +307,7 @@ class AirportDetailsFragment : FragmentBase() {
         val label = findViewById<TextView>(R.id.detail_remarks_label)
         val layout = findViewById<LinearLayout>(R.id.detail_remarks_layout)
         val rmk = result[2]
-        if (rmk?.moveToFirst() == true) {
+        if (rmk != null && rmk.moveToFirst()) {
             do {
                 val remark = rmk.getString(rmk.getColumnIndexOrThrow(Remarks.REMARK_TEXT))
                 addBulletedRow(layout!!, remark)
@@ -926,7 +925,7 @@ class AirportDetailsFragment : FragmentBase() {
         mDeclination = GeoUtils.getMagneticDeclination(location)
         mLocation = location
 
-        var builder = SQLiteQueryBuilder()
+        val builder = SQLiteQueryBuilder()
         builder.tables = Runways.TABLE_NAME
         cursors[1] = builder.query(db, arrayOf(Runways.SITE_NUMBER, Runways.RUNWAY_ID,
                 Runways.RUNWAY_LENGTH, Runways.RUNWAY_WIDTH, Runways.SURFACE_TYPE,
@@ -935,26 +934,22 @@ class AirportDetailsFragment : FragmentBase() {
                 "${Runways.SITE_NUMBER} = ? AND ${Runways.RUNWAY_LENGTH} > 0",
                 arrayOf(mSiteNumber), null, null, null, null)
 
-        builder = SQLiteQueryBuilder()
         builder.tables = Remarks.TABLE_NAME
         cursors[2] = builder.query(db, arrayOf(Remarks.REMARK_TEXT),
                 "${Runways.SITE_NUMBER} = ? AND ${Remarks.REMARK_NAME} " +
                         "in ('E147', 'A3', 'A24', 'A70', 'A75', 'A82')",
                 arrayOf(mSiteNumber), null, null, null, null)
 
-        builder = SQLiteQueryBuilder()
         builder.tables = Tower1.TABLE_NAME
         cursors[3] = builder.query(db, arrayOf("*"),
                 "${Tower1.SITE_NUMBER} = ?",
                 arrayOf(mSiteNumber), null, null, null, null)
 
-        builder = SQLiteQueryBuilder()
         builder.tables = Tower3.TABLE_NAME
         cursors[4] = builder.query(db, arrayOf("*"),
                 "${Tower3.FACILITY_ID} = ?",
                 arrayOf(faaCode), null, null, null, null)
 
-        builder = SQLiteQueryBuilder()
         builder.tables = Tower7.TABLE_NAME
         val c = builder.query(db, arrayOf("*"),
                 "${Tower7.SATELLITE_AIRPORT_SITE_NUMBER} = ?",
@@ -962,7 +957,6 @@ class AirportDetailsFragment : FragmentBase() {
         cursors[5] = c
 
         if (!c.moveToFirst()) {
-            builder = SQLiteQueryBuilder()
             builder.tables = Tower6.TABLE_NAME
             cursors[6] = builder.query(db, arrayOf("*"),
                     "${Tower6.FACILITY_ID} = ?",
@@ -971,19 +965,16 @@ class AirportDetailsFragment : FragmentBase() {
 
         cursors[7] = NearbyWxCursor(db, mLocation, mRadius)
 
-        builder = SQLiteQueryBuilder()
         builder.tables = Aff3.TABLE_NAME
         cursors[8] = builder.query(db, arrayOf("*"),
                 "${Aff3.IFR_FACILITY_ID} = ?",
                 arrayOf(faaCode), null, null, null, null)
 
-        builder = SQLiteQueryBuilder()
         builder.tables = Tower8.TABLE_NAME
         cursors[9] = builder.query(db, arrayOf("*"),
                 "${Tower8.FACILITY_ID} = ?",
                 arrayOf(faaCode), null, null, null, null)
 
-        builder = SQLiteQueryBuilder()
         builder.tables = Attendance.TABLE_NAME
         cursors[10] = builder.query(db,
                 arrayOf(Attendance.ATTENDANCE_SCHEDULE),
@@ -991,19 +982,16 @@ class AirportDetailsFragment : FragmentBase() {
                 arrayOf(mSiteNumber), null, null, Attendance.SEQUENCE_NUMBER, null)
 
         db = getDatabase(DB_DTPP)
-        builder = SQLiteQueryBuilder()
         builder.tables = Dtpp.TABLE_NAME
         cursors[11] = builder.query(db, arrayOf("*"),
                 "${Dtpp.FAA_CODE} = ?",
                 arrayOf(faaCode), null, null, null, null)
 
         db = getDatabase(DB_DAFD)
-        builder = SQLiteQueryBuilder()
         builder.tables = DafdCycle.TABLE_NAME
         cursors[12] = builder.query(db, arrayOf("*"),
                 null, null, null, null, null, null)
 
-        builder = SQLiteQueryBuilder()
         builder.tables = Dafd.TABLE_NAME
         cursors[13] = builder.query(db, arrayOf("*"),
                 "${Dafd.FAA_CODE} = ?",
@@ -1011,7 +999,6 @@ class AirportDetailsFragment : FragmentBase() {
 
         db = getDatabase(DB_FADDS)
         if (mHome.isNotEmpty()) {
-            builder = SQLiteQueryBuilder()
             builder.tables = Airports.TABLE_NAME
             cursors[14] = builder.query(db,
                     arrayOf(Airports.SITE_NUMBER,
@@ -1025,7 +1012,6 @@ class AirportDetailsFragment : FragmentBase() {
         val selection = " AND ${Airports.FAA_CODE} IN (${ClassBUtils.getClassBFacilityList()})"
         cursors[15] = NearbyAirportsCursor(db, mLocation, 50, selection)
 
-        builder = SQLiteQueryBuilder()
         builder.tables = Tower5.TABLE_NAME
         cursors[16] = builder.query(db, arrayOf("*"),
                 "${Tower5.FACILITY_ID} = ?", arrayOf(faaCode),

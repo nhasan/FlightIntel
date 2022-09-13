@@ -42,7 +42,6 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.math.roundToInt
 
-@SuppressLint("Range")
 class RunwaysFragment : FragmentBase() {
     private var mDeclination = 0f
     override fun onCreateView(
@@ -69,10 +68,10 @@ class RunwaysFragment : FragmentBase() {
     }
 
     private fun showDetails(result: Array<Cursor?>) {
-        val apt = result[0]
-        showAirportTitle(apt!!)
+        val apt = result[0] ?: return
+        showAirportTitle(apt)
         val rwy = result[1]
-        val runwayId = rwy!!.getString(rwy.getColumnIndex(Runways.RUNWAY_ID))
+        val runwayId = rwy!!.getString(rwy.getColumnIndexOrThrow(Runways.RUNWAY_ID))
         val isHelipad = runwayId.startsWith("H")
         if (isHelipad) {
             showHelipadInformation(result)
@@ -90,10 +89,10 @@ class RunwaysFragment : FragmentBase() {
         val layout = findViewById<LinearLayout>(R.id.rwy_common_details) ?: return
         val tv = findViewById<TextView>(R.id.rwy_common_label) ?: return
         val rwy = result[1]
-        val runwayId = rwy!!.getString(rwy.getColumnIndex(Runways.RUNWAY_ID))
-        val length = rwy.getInt(rwy.getColumnIndex(Runways.RUNWAY_LENGTH))
-        val width = rwy.getInt(rwy.getColumnIndex(Runways.RUNWAY_WIDTH))
-        var heading = rwy.getInt(rwy.getColumnIndex(Runways.BASE_END_HEADING))
+        val runwayId = rwy!!.getString(rwy.getColumnIndexOrThrow(Runways.RUNWAY_ID))
+        val length = rwy.getInt(rwy.getColumnIndexOrThrow(Runways.RUNWAY_LENGTH))
+        val width = rwy.getInt(rwy.getColumnIndexOrThrow(Runways.RUNWAY_WIDTH))
+        var heading = rwy.getInt(rwy.getColumnIndexOrThrow(Runways.BASE_END_HEADING))
         heading = if (heading > 0) {
             DataUtils.calculateMagneticHeading(heading, mDeclination.roundToInt())
         } else {
@@ -103,11 +102,11 @@ class RunwaysFragment : FragmentBase() {
         tv.text = "Runway $runwayId"
         setRunwayDrawable(requireActivity(), tv, runwayId, length, heading)
         addRow(layout, "Dimensions", FormatUtils.formatRunway(width, length))
-        val surfaceType = rwy.getString(rwy.getColumnIndex(Runways.SURFACE_TYPE))
+        val surfaceType = rwy.getString(rwy.getColumnIndexOrThrow(Runways.SURFACE_TYPE))
         addRow(layout, "Surface type", DataUtils.decodeSurfaceType(surfaceType))
-        val surfaceTreat = rwy.getString(rwy.getColumnIndex(Runways.SURFACE_TREATMENT))
+        val surfaceTreat = rwy.getString(rwy.getColumnIndexOrThrow(Runways.SURFACE_TREATMENT))
         addRow(layout, "Surface treatment", DataUtils.decodeSurfaceTreatment(surfaceTreat))
-        val edgeLights = rwy.getString(rwy.getColumnIndex(Runways.EDGE_LIGHTS_INTENSITY))
+        val edgeLights = rwy.getString(rwy.getColumnIndexOrThrow(Runways.EDGE_LIGHTS_INTENSITY))
         addRow(layout, "Edge lights", DataUtils.decodeRunwayEdgeLights(edgeLights))
     }
 
@@ -116,10 +115,10 @@ class RunwaysFragment : FragmentBase() {
         val apt = result[0] ?: return
         val rwy = result[1] ?: return
         val sb = StringBuilder()
-        val icaoCode = apt.getString(apt.getColumnIndex(Airports.ICAO_CODE))
-        val endId = rwy.getString(rwy.getColumnIndex(
+        val icaoCode = apt.getString(apt.getColumnIndexOrThrow(Airports.ICAO_CODE))
+        val endId = rwy.getString(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_ID else Runways.RECIPROCAL_END_ID))
-        var heading = rwy.getInt(rwy.getColumnIndex(
+        var heading = rwy.getInt(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_HEADING else Runways.RECIPROCAL_END_HEADING))
         heading = if (heading > 0) {
             DataUtils.calculateMagneticHeading(heading, mDeclination.roundToInt())
@@ -133,10 +132,10 @@ class RunwaysFragment : FragmentBase() {
         val layout = findViewById<LinearLayout>(
             if (base) R.id.rwy_base_end_details else R.id.rwy_reciprocal_end_details)
         addRow(layout!!, "Magnetic heading", FormatUtils.formatDegrees(heading))
-        val ilsType = rwy.getString(rwy.getColumnIndex(
+        val ilsType = rwy.getString(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_ILS_TYPE else Runways.RECIPROCAL_END_ILS_TYPE))
         if (ilsType.isNotEmpty()) {
-            val siteNumber = apt.getString(apt.getColumnIndex(Airports.SITE_NUMBER))
+            val siteNumber = apt.getString(apt.getColumnIndexOrThrow(Airports.SITE_NUMBER))
             val args = Bundle()
             args.putString(Ils1.SITE_NUMBER, siteNumber)
             args.putString(Ils1.RUNWAY_ID, endId)
@@ -144,20 +143,20 @@ class RunwaysFragment : FragmentBase() {
             args.putString(Airports.ICAO_CODE, icaoCode)
             addClickableRow(layout, "ILS type...", ilsType, IlsFragment::class.java, args)
         }
-        val elevation = rwy.getFloat(rwy.getColumnIndex(
+        val elevation = rwy.getFloat(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_RUNWAY_ELEVATION else Runways.RECIPROCAL_END_RUNWAY_ELEVATION))
         if (elevation > 0) {
             addRow(layout, "Elevation", FormatUtils.formatFeet(elevation))
         }
-        val rhPattern = rwy.getString(rwy.getColumnIndex(
+        val rhPattern = rwy.getString(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_RIGHT_TRAFFIC else Runways.RECIPROCAL_END_RIGHT_TRAFFIC))
         addRow(layout, "Traffic pattern", if (rhPattern.equals("Y")) "Right" else "Left")
-        val gradient = rwy.getDouble(rwy.getColumnIndex(
+        val gradient = rwy.getDouble(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_GRADIENT else Runways.RECIPROCAL_END_GRADIENT))
         if (gradient > 0) {
             sb.setLength(0)
             sb.append(String.format(Locale.US, "%.1f%%", gradient))
-            val gradientDir = rwy.getString(rwy.getColumnIndex(
+            val gradientDir = rwy.getString(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_GRADIENT_DIRECTION
                 else Runways.RECIPROCAL_END_GRADIENT_DIRECTION))
             if (gradientDir.isNotEmpty()) {
@@ -169,24 +168,24 @@ class RunwaysFragment : FragmentBase() {
         val ars = result[if (base) 2 else 3]
         if (ars != null && ars.moveToFirst()) {
             do {
-                val arrestingDevice = ars.getString(ars.getColumnIndex(Ars.ARRESTING_DEVICE))
+                val arrestingDevice = ars.getString(ars.getColumnIndexOrThrow(Ars.ARRESTING_DEVICE))
                 if (arrestingDevice.isNotEmpty()) {
                     addRow(layout, "Arresting device", arrestingDevice)
                 }
             } while (ars.moveToNext())
         }
-        val apchLights = rwy.getString(rwy.getColumnIndex(
+        val apchLights = rwy.getString(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_APCH_LIGHT_SYSTEM
             else Runways.RECIPROCAL_END_APCH_LIGHT_SYSTEM))
         if (apchLights.isNotEmpty()) {
             addRow(layout, "Approach lights", apchLights)
         }
-        val markings = rwy.getString(rwy.getColumnIndex(
+        val markings = rwy.getString(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_MARKING_TYPE else Runways.RECIPROCAL_END_MARKING_TYPE))
         if (markings.isNotEmpty()) {
             sb.setLength(0)
             sb.append(DataUtils.decodeRunwayMarking(markings))
-            val condition = rwy.getString(rwy.getColumnIndex(
+            val condition = rwy.getString(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_MARKING_CONDITION
                 else Runways.RECIPROCAL_END_MARKING_CONDITION))
             if (condition.isNotEmpty()) {
@@ -195,21 +194,21 @@ class RunwaysFragment : FragmentBase() {
             }
             addRow(layout, "Markings", sb.toString())
         }
-        val glideSlope = rwy.getString(rwy.getColumnIndex(
+        val glideSlope = rwy.getString(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_VISUAL_GLIDE_SLOPE
             else Runways.RECIPROCAL_END_VISUAL_GLIDE_SLOPE))
         if (glideSlope.isNotEmpty()) {
             addRow(layout, "Glideslope", DataUtils.decodeGlideSlope(glideSlope))
         }
-        val glideAngle = rwy.getFloat(rwy.getColumnIndex(
+        val glideAngle = rwy.getFloat(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_GLIDE_ANGLE else Runways.RECIPROCAL_END_GLIDE_ANGLE))
         if (glideAngle > 0) {
             addRow(layout, "Glide angle", FormatUtils.formatDegrees(glideAngle))
         }
-        val reil = rwy.getString(rwy.getColumnIndex(
+        val reil = rwy.getString(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_REIL_AVAILABLE else Runways.RECIPROCAL_END_REIL_AVAILABLE))
         addRow(layout, "REIL", if (reil.equals("Y")) "Yes" else "No")
-        val displacedThreshold = rwy.getInt(rwy.getColumnIndex(
+        val displacedThreshold = rwy.getInt(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_DISPLACED_THRESHOLD_LENGTH
                 else Runways.RECIPROCAL_END_DISPLACED_THRESHOLD_LENGTH))
         if (displacedThreshold > 0) {
@@ -218,50 +217,50 @@ class RunwaysFragment : FragmentBase() {
         }
         val showExtra = activityBase.prefShowExtraRunwayData
         if (showExtra) {
-            val centerline = rwy.getString(rwy.getColumnIndex(
+            val centerline = rwy.getString(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_CENTERLINE_LIGHTS_AVAILABLE
                 else Runways.RECIPROCAL_END_CENTERLINE_LIGHTS_AVAILABLE))
             addRow(layout, "Centerline lights", if (centerline == "Y") "Yes" else "No")
-            val touchdown = rwy.getString(rwy.getColumnIndex(
+            val touchdown = rwy.getString(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_TOUCHDOWN_LIGHTS_AVAILABLE
                 else Runways.RECIPROCAL_END_TOUCHDOWN_LIGHTS_AVAILABLE))
             addRow(layout, "Touchdown lights", if (touchdown == "Y") "Yes" else "No")
-            val tora = rwy.getInt(rwy.getColumnIndex(
+            val tora = rwy.getInt(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_TORA else Runways.RECIPROCAL_END_TORA))
             if (tora > 0) {
                 addRow(layout, "TORA", FormatUtils.formatFeet(tora.toFloat()))
             }
-            val toda = rwy.getInt(rwy.getColumnIndex(
+            val toda = rwy.getInt(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_TODA else Runways.RECIPROCAL_END_TODA))
             if (toda > 0) {
                 addRow(layout, "TODA", FormatUtils.formatFeet(toda.toFloat()))
             }
-            val lda = rwy.getInt(rwy.getColumnIndex(
+            val lda = rwy.getInt(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_LDA else Runways.RECIPROCAL_END_LDA))
             if (lda > 0) {
                 addRow(layout, "LDA", FormatUtils.formatFeet(lda.toFloat()))
             }
-            val asda = rwy.getInt(rwy.getColumnIndex(
+            val asda = rwy.getInt(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_ASDA else Runways.RECIPROCAL_END_ASDA))
             if (asda > 0) {
                 addRow(layout, "ASDA", FormatUtils.formatFeet(asda.toFloat()))
             }
-            val tch = rwy.getInt(rwy.getColumnIndex(
+            val tch = rwy.getInt(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_THRESHOLD_CROSSING_HEIGHT
                 else Runways.RECIPROCAL_END_THRESHOLD_CROSSING_HEIGHT))
             if (tch > 0) {
                 addRow(layout, "TCH", FormatUtils.formatFeet(tch.toFloat()))
             }
-            val tdz = rwy.getInt(rwy.getColumnIndex(
+            val tdz = rwy.getInt(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_TDZ_ELEVATION
                 else Runways.RECIPROCAL_END_TDZ_ELEVATION))
             if (tdz > 0) {
                 addRow(layout, "TDZ elevation", FormatUtils.formatFeet(tdz.toFloat()))
             }
-            val lahso = rwy.getInt(rwy.getColumnIndex(
+            val lahso = rwy.getInt(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_LAHSO_DISTANCE
                 else Runways.RECIPROCAL_END_LAHSO_DISTANCE))
-            val lahsoRunway = rwy.getString(rwy.getColumnIndex(
+            val lahsoRunway = rwy.getString(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_LAHSO_RUNWAY else Runways.RECIPROCAL_END_LAHSO_RUNWAY))
             if (lahso > 0) {
                 if (lahsoRunway.isNotEmpty()) {
@@ -287,21 +286,21 @@ class RunwaysFragment : FragmentBase() {
         layout = findViewById(R.id.rwy_reciprocal_end_details)
         layout!!.visibility = View.GONE
         val rwy = result[1]
-        val helipadId = rwy!!.getString(rwy.getColumnIndex(Runways.RUNWAY_ID))
+        val helipadId = rwy!!.getString(rwy.getColumnIndexOrThrow(Runways.RUNWAY_ID))
         tv = findViewById(R.id.rwy_common_label)
         tv!!.text = "Helipad $helipadId"
         layout = findViewById(R.id.rwy_common_details)
-        val length = rwy.getInt(rwy.getColumnIndex(Runways.RUNWAY_LENGTH))
-        val width = rwy.getInt(rwy.getColumnIndex(Runways.RUNWAY_WIDTH))
+        val length = rwy.getInt(rwy.getColumnIndexOrThrow(Runways.RUNWAY_LENGTH))
+        val width = rwy.getInt(rwy.getColumnIndexOrThrow(Runways.RUNWAY_WIDTH))
         addRow(layout!!, "Dimensions", String.format("%s x %s",
                 FormatUtils.formatFeet(length.toFloat()), FormatUtils.formatFeet(width.toFloat())))
-        val surfaceType = rwy.getString(rwy.getColumnIndex(Runways.SURFACE_TYPE))
+        val surfaceType = rwy.getString(rwy.getColumnIndexOrThrow(Runways.SURFACE_TYPE))
         addRow(layout, "Surface type", DataUtils.decodeSurfaceType(surfaceType))
-        val surfaceTreat = rwy.getString(rwy.getColumnIndex(Runways.SURFACE_TREATMENT))
+        val surfaceTreat = rwy.getString(rwy.getColumnIndexOrThrow(Runways.SURFACE_TREATMENT))
         addRow(layout, "Surface treatment", DataUtils.decodeSurfaceTreatment(surfaceTreat))
-        val markings = rwy.getString(rwy.getColumnIndex(Runways.BASE_END_MARKING_TYPE))
+        val markings = rwy.getString(rwy.getColumnIndexOrThrow(Runways.BASE_END_MARKING_TYPE))
         val condition = rwy.getString(
-            rwy.getColumnIndex(
+            rwy.getColumnIndexOrThrow(
                 Runways.BASE_END_MARKING_CONDITION
             )
         )
@@ -311,9 +310,9 @@ class RunwaysFragment : FragmentBase() {
                         + ", " + DataUtils.decodeRunwayMarkingCondition(condition)
             )
         }
-        val edgeLights = rwy.getString(rwy.getColumnIndex(Runways.EDGE_LIGHTS_INTENSITY))
+        val edgeLights = rwy.getString(rwy.getColumnIndexOrThrow(Runways.EDGE_LIGHTS_INTENSITY))
         addRow(layout, "Edge lights", DataUtils.decodeRunwayEdgeLights(edgeLights))
-        val rhPattern = rwy.getString(rwy.getColumnIndex(Runways.BASE_END_RIGHT_TRAFFIC))
+        val rhPattern = rwy.getString(rwy.getColumnIndexOrThrow(Runways.BASE_END_RIGHT_TRAFFIC))
         addRow(layout, "Traffic pattern", if (rhPattern == "Y") "Right" else "Left")
 
         // Show remarks
@@ -327,10 +326,10 @@ class RunwaysFragment : FragmentBase() {
         var count = 0
         if (rmk.moveToFirst()) {
             do {
-                val rmkName = rmk.getString(rmk.getColumnIndex(Remarks.REMARK_NAME))
+                val rmkName = rmk.getString(rmk.getColumnIndexOrThrow(Remarks.REMARK_NAME))
                 if (rmkName.startsWith("A81")) {
                     ++count
-                    val rmkText = rmk.getString(rmk.getColumnIndex(Remarks.REMARK_TEXT))
+                    val rmkText = rmk.getString(rmk.getColumnIndexOrThrow(Remarks.REMARK_TEXT))
                     addBulletedRow(layout, rmkText)
                 }
             } while (rmk.moveToNext())
@@ -346,7 +345,7 @@ class RunwaysFragment : FragmentBase() {
         val rwy = result[1] ?: return
         val layout = findViewById<LinearLayout>(if (base) R.id.rwy_base_end_remarks
             else R.id.rwy_reciprocal_end_remarks) ?: return
-        val als = rwy.getString(rwy.getColumnIndex(
+        val als = rwy.getString(rwy.getColumnIndexOrThrow(
                 if (base) Runways.BASE_END_APCH_LIGHT_SYSTEM
                 else Runways.RECIPROCAL_END_APCH_LIGHT_SYSTEM))
         val apchLights = DataUtils.getApproachLightSystemDescription(als).uppercase()
@@ -356,7 +355,7 @@ class RunwaysFragment : FragmentBase() {
         }
 
         // Show RVR information
-        val rvr = rwy.getString(rwy.getColumnIndex(
+        val rvr = rwy.getString(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_RVR_LOCATIONS else Runways.RECIPROCAL_END_RVR_LOCATIONS))
         if (rvr.isNotEmpty()) {
             addBulletedRow(layout, "RVR EQUIP LCTD  AT ${DataUtils.decodeRVRLocations(rvr)}")
@@ -365,7 +364,7 @@ class RunwaysFragment : FragmentBase() {
 
         // Show obstructions
         count += showObstructions(layout, result, base)
-        val runwayId = rwy.getString(rwy.getColumnIndex(
+        val runwayId = rwy.getString(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_ID else Runways.RECIPROCAL_END_ID))
         showRemarks(layout, result, runwayId)
         if (count > 0) {
@@ -378,10 +377,10 @@ class RunwaysFragment : FragmentBase() {
         val rmk = result[4] ?: return count
         if (rmk.moveToFirst()) {
             do {
-                val rmkName = rmk.getString(rmk.getColumnIndex(Remarks.REMARK_NAME))
+                val rmkName = rmk.getString(rmk.getColumnIndexOrThrow(Remarks.REMARK_NAME))
                 if (rmkName.endsWith("-$runwayId")) {
                     ++count
-                    val rmkText = rmk.getString(rmk.getColumnIndex(Remarks.REMARK_TEXT))
+                    val rmkText = rmk.getString(rmk.getColumnIndexOrThrow(Remarks.REMARK_TEXT))
                     addBulletedRow(layout, rmkText)
                 }
             } while (rmk.moveToNext())
@@ -393,24 +392,24 @@ class RunwaysFragment : FragmentBase() {
         val rwy = result[1] ?: return 0
         var count = 0
         val sb = StringBuilder()
-        val obstruction = rwy.getString(rwy.getColumnIndex(
+        val obstruction = rwy.getString(rwy.getColumnIndexOrThrow(
             if (base) Runways.BASE_END_CONTROLLING_OBJECT
             else Runways.RECIPROCAL_END_CONTROLLING_OBJECT))
         if (obstruction.isNotEmpty()) {
             val height = rwy.getInt(
-                if (base) rwy.getColumnIndex(Runways.BASE_END_CONTROLLING_OBJECT_HEIGHT)
-                else rwy.getColumnIndex(Runways.RECIPROCAL_END_CONTROLLING_OBJECT_HEIGHT))
+                if (base) rwy.getColumnIndexOrThrow(Runways.BASE_END_CONTROLLING_OBJECT_HEIGHT)
+                else rwy.getColumnIndexOrThrow(Runways.RECIPROCAL_END_CONTROLLING_OBJECT_HEIGHT))
             if (height > 0) {
-                val distance = rwy.getInt(rwy.getColumnIndex(
+                val distance = rwy.getInt(rwy.getColumnIndexOrThrow(
                     if (base) Runways.BASE_END_CONTROLLING_OBJECT_DISTANCE
                     else Runways.RECIPROCAL_END_CONTROLLING_OBJECT_DISTANCE))
-                val lighted = rwy.getString(rwy.getColumnIndex(
+                val lighted = rwy.getString(rwy.getColumnIndexOrThrow(
                     if (base) Runways.BASE_END_CONTROLLING_OBJECT_LIGHTED
                     else Runways.RECIPROCAL_END_CONTROLLING_OBJECT_LIGHTED))
-                val offset = rwy.getString(rwy.getColumnIndex(
+                val offset = rwy.getString(rwy.getColumnIndexOrThrow(
                     if (base) Runways.BASE_END_CONTROLLING_OBJECT_OFFSET
                     else Runways.RECIPROCAL_END_CONTROLLING_OBJECT_OFFSET))
-                val slope = rwy.getInt(rwy.getColumnIndex(
+                val slope = rwy.getInt(rwy.getColumnIndexOrThrow(
                     if (base) Runways.BASE_END_CONTROLLING_OBJECT_SLOPE
                     else Runways.RECIPROCAL_END_CONTROLLING_OBJECT_SLOPE))
                 sb.append(String.format("%s %s, ",
@@ -443,14 +442,14 @@ class RunwaysFragment : FragmentBase() {
         val cursors = arrayOfNulls<Cursor>(5)
         cursors[0] = getAirportDetails(siteNumber)
         val apt = cursors[0]
-        val lat = apt!!.getDouble(apt.getColumnIndex(Airports.REF_LATTITUDE_DEGREES))
-        val lon = apt.getDouble(apt.getColumnIndex(Airports.REF_LONGITUDE_DEGREES))
+        val lat = apt!!.getDouble(apt.getColumnIndexOrThrow(Airports.REF_LATTITUDE_DEGREES))
+        val lon = apt.getDouble(apt.getColumnIndexOrThrow(Airports.REF_LONGITUDE_DEGREES))
         val loc = Location("")
         loc.latitude = lat
         loc.longitude = lon
         mDeclination = GeoUtils.getMagneticDeclination(loc)
         val db = getDatabase(DB_FADDS)
-        var builder = SQLiteQueryBuilder()
+        val builder = SQLiteQueryBuilder()
         builder.tables = Runways.TABLE_NAME
         var c = builder.query(
             db,
@@ -465,8 +464,7 @@ class RunwaysFragment : FragmentBase() {
         c.moveToFirst()
         cursors[1] = c
         try {
-            var endId = c.getString(c.getColumnIndex(Runways.BASE_END_ID))
-            builder = SQLiteQueryBuilder()
+            var endId = c.getString(c.getColumnIndexOrThrow(Runways.BASE_END_ID))
             builder.tables = Ars.TABLE_NAME
             c = builder.query(
                 db,
@@ -479,8 +477,7 @@ class RunwaysFragment : FragmentBase() {
                 null
             )
             cursors[2] = c
-            endId = c.getString(c.getColumnIndex(Runways.RECIPROCAL_END_ID))
-            builder = SQLiteQueryBuilder()
+            endId = c.getString(c.getColumnIndexOrThrow(Runways.RECIPROCAL_END_ID))
             builder.tables = Ars.TABLE_NAME
             c = builder.query(
                 db,
@@ -495,7 +492,6 @@ class RunwaysFragment : FragmentBase() {
             cursors[3] = c
         } catch (ignored: Exception) {
         }
-        builder = SQLiteQueryBuilder()
         builder.tables = Remarks.TABLE_NAME
         c = builder.query(
             db,
