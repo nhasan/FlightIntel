@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,142 +16,121 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.tfr
 
-package com.nadmm.airports.tfr;
+import com.nadmm.airports.tfr.TfrList.AltitudeType
+import com.nadmm.airports.tfr.TfrList.Tfr
+import org.xml.sax.Attributes
+import org.xml.sax.InputSource
+import org.xml.sax.helpers.DefaultHandler
+import java.io.File
+import java.io.FileReader
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
+import javax.xml.parsers.SAXParserFactory
 
-import com.nadmm.airports.tfr.TfrList.AltitudeType;
-import com.nadmm.airports.tfr.TfrList.Tfr;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-
-import java.io.File;
-import java.io.FileReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-public class TfrParser {
-
-    public void parse( File xml, TfrList tfrList ) {
+class TfrParser {
+    fun parse(xml: File, tfrList: TfrList) {
         try {
-            tfrList.fetchTime = xml.lastModified();
-            InputSource input = new InputSource( new FileReader( xml ) );
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = factory.newSAXParser();
-            TfrHandler handler = new TfrHandler( tfrList );
-            XMLReader xmlReader = parser.getXMLReader();
-            xmlReader.setContentHandler( handler );
-            xmlReader.parse( input );
-            Collections.sort( tfrList.entries );
-        } catch ( Exception ignored ) {
+            tfrList.fetchTime = xml.lastModified()
+            val input = InputSource(FileReader(xml))
+            val factory = SAXParserFactory.newInstance()
+            val parser = factory.newSAXParser()
+            val handler = TfrHandler(tfrList)
+            val xmlReader = parser.xmlReader
+            xmlReader.contentHandler = handler
+            xmlReader.parse(input)
+            tfrList.entries.sort()
+        } catch (ignored: Exception) {
         }
     }
 
-    protected final class TfrHandler extends DefaultHandler {
-
-        private final TfrList tfrList;
-        private Tfr tfr;
-        private final StringBuilder text;
-        private final SimpleDateFormat sdf;
-
-        public TfrHandler( TfrList tfrList ) {
-            this.tfrList = tfrList;
-            sdf = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US );
-            sdf.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
-            text = new StringBuilder();
+    private inner class TfrHandler(private val tfrList: TfrList) : DefaultHandler() {
+        private var tfr: Tfr = Tfr()
+        private val text: StringBuilder
+        private val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US)
+        override fun characters(ch: CharArray, start: Int, length: Int) {
+            text.append(ch, start, length)
         }
 
-        @Override
-        public void characters( char[] ch, int start, int length ) {
-            text.append( ch, start, length );
-        }
-
-        @Override
-        public void startElement( String uri, String localName, String qName,
-                Attributes attributes ) {
-            if ( qName.toUpperCase( Locale.US ).matches( "TFRLIST" ) ) {
-                tfrList.fetchTime = parseDateTime( attributes.getValue( "timestamp" ) );
-            } else if ( qName.toUpperCase( Locale.US ).matches( "TFR" ) ) {
-                tfr = new Tfr();
+        override fun startElement(
+            uri: String, localName: String, qName: String,
+            attributes: Attributes
+        ) {
+            if (qName.uppercase() == "TFRLIST") {
+                tfrList.fetchTime = parseDateTime(attributes.getValue("timestamp"))
+            } else if (qName.uppercase() == "TFR") {
+                tfr = Tfr()
             }
-
-            text.setLength( 0 );
+            text.setLength(0)
         }
 
-        @Override
-        public void endElement( String uri, String localName, String qName ) {
-            if ( qName.equalsIgnoreCase( "NID" ) ) {
-                tfr.notamId = text.toString().trim();
-            } else if ( qName.equalsIgnoreCase( "NAME" ) ) {
-                tfr.name = text.toString().trim();
-            } else if ( qName.equalsIgnoreCase( "CITY" ) ) {
-                tfr.city = text.toString().trim();
-            } else if ( qName.equalsIgnoreCase( "STATE" ) ) {
-                tfr.state = text.toString().trim();
-            } else if ( qName.equalsIgnoreCase( "FACILITY" ) ) {
-                tfr.facility = text.toString().trim();
-            } else if ( qName.equalsIgnoreCase( "FACILITYTYPE" ) ) {
-                tfr.facilityType = text.toString().trim();
-            } else if ( qName.equalsIgnoreCase( "SRC" ) ) {
-                tfr.text = text.toString().trim();
-            } else if ( qName.equalsIgnoreCase( "TYPE" ) ) {
-                tfr.type = text.toString().trim();
-            } else if ( qName.equalsIgnoreCase( "MINALT" ) ) {
-                parseMinAlt( text.toString() );
-            } else if ( qName.equalsIgnoreCase( "MAXALT" ) ) {
-                parseMaxAlt( text.toString() );
-            } else if ( qName.equals( "CREATED" ) ) {
-                tfr.createTime = parseDateTime( text.toString() );
-            } else if ( qName.equals( "MODIFIED" ) ) {
-                tfr.modifyTime = parseDateTime( text.toString() );
-            } else if ( qName.equals( "ACTIVE" ) ) {
-                tfr.activeTime = parseDateTime( text.toString() );
-            } else if ( qName.equals( "EXPIRES" ) ) {
-                tfr.expireTime = parseDateTime(text.toString());
-            } else if ( qName.equals( "TYPE" ) ) {
-                tfr.type = text.toString().trim();
-            } else if ( qName.toUpperCase( Locale.US ).matches( "TFR" ) ) {
-                if ( !tfr.name.equalsIgnoreCase( "Latest Update" ) ) {
-                    if ( tfr.modifyTime == 0 )
-                    {
-                        tfr.modifyTime = tfr.createTime;
+        override fun endElement(uri: String, localName: String, qName: String) {
+            if (qName.equals("NID", ignoreCase = true)) {
+                tfr.notamId = text.toString().trim { it <= ' ' }
+            } else if (qName.equals("NAME", ignoreCase = true)) {
+                tfr.name = text.toString().trim { it <= ' ' }
+            } else if (qName.equals("CITY", ignoreCase = true)) {
+                tfr.city = text.toString().trim { it <= ' ' }
+            } else if (qName.equals("STATE", ignoreCase = true)) {
+                tfr.state = text.toString().trim { it <= ' ' }
+            } else if (qName.equals("FACILITY", ignoreCase = true)) {
+                tfr.facility = text.toString().trim { it <= ' ' }
+            } else if (qName.equals("FACILITYTYPE", ignoreCase = true)) {
+                tfr.facilityType = text.toString().trim { it <= ' ' }
+            } else if (qName.equals("SRC", ignoreCase = true)) {
+                tfr.text = text.toString().trim { it <= ' ' }
+            } else if (qName.equals("TYPE", ignoreCase = true)) {
+                tfr.type = text.toString().trim { it <= ' ' }
+            } else if (qName.equals("MINALT", ignoreCase = true)) {
+                parseMinAlt(text.toString())
+            } else if (qName.equals("MAXALT", ignoreCase = true)) {
+                parseMaxAlt(text.toString())
+            } else if (qName == "CREATED") {
+                tfr.createTime = parseDateTime(text.toString())
+            } else if (qName == "MODIFIED") {
+                tfr.modifyTime = parseDateTime(text.toString())
+            } else if (qName == "ACTIVE") {
+                tfr.activeTime = parseDateTime(text.toString())
+            } else if (qName == "EXPIRES") {
+                tfr.expireTime = parseDateTime(text.toString())
+            } else if (qName == "TYPE") {
+                tfr.type = text.toString().trim { it <= ' ' }
+            } else if (qName.uppercase() == "TFR") {
+                if (!tfr.name.equals("Latest Update", ignoreCase = true)) {
+                    if (tfr.modifyTime == 0L) {
+                        tfr.modifyTime = tfr.createTime
                     }
-                    tfrList.entries.add( tfr );
+                    tfrList.entries.add(tfr)
                 }
             }
         }
 
-        private long parseDateTime( String text )
-        {
-            long dt = Long.MAX_VALUE;
+        private fun parseDateTime(text: String): Long {
+            var dt = Long.MAX_VALUE
             try {
-                dt = sdf.parse( text.trim() ).getTime();
-            } catch ( ParseException ignored ) {
-                String msg = ignored.getMessage();
+                dt = sdf.parse(text.trim { it <= ' ' })?.time ?: Long.MAX_VALUE
+            } catch (ignored: ParseException) {
             }
-            return dt;
+            return dt
         }
 
-        private void parseMinAlt( String alt ) {
-            tfr.minAltitudeFeet = Integer.parseInt( alt.substring( 0, alt.length()-1 ) );
-            tfr.minAltitudeType = alt.startsWith( "A", alt.length()-1 ) ?
-                    AltitudeType.AGL : AltitudeType.MSL;
+        private fun parseMinAlt(alt: String) {
+            tfr.minAltitudeFeet = alt.substring(0, alt.length - 1).toInt()
+            tfr.minAltitudeType =
+                if (alt.startsWith("A", alt.length - 1)) AltitudeType.AGL else AltitudeType.MSL
         }
 
-        private void parseMaxAlt( String alt ) {
-            tfr.maxAltitudeFeet = Integer.parseInt( alt.substring( 0, alt.length()-1 ) );
-            tfr.maxAltitudeType = alt.startsWith( "A", alt.length()-1 ) ?
-                    AltitudeType.AGL : AltitudeType.MSL;
+        private fun parseMaxAlt(alt: String) {
+            tfr.maxAltitudeFeet = alt.substring(0, alt.length - 1).toInt()
+            tfr.maxAltitudeType =
+                if (alt.startsWith("A", alt.length - 1)) AltitudeType.AGL else AltitudeType.MSL
         }
 
+        init {
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
+            text = StringBuilder()
+        }
     }
-
 }

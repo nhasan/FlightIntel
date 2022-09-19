@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,179 +16,165 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.tfr
 
-package com.nadmm.airports.tfr;
+import android.location.Location
+import com.nadmm.airports.ActivityBase
+import com.nadmm.airports.utils.FormatUtils.formatFeetAgl
+import com.nadmm.airports.utils.FormatUtils.formatFeetMsl
+import com.nadmm.airports.utils.TimeUtils
+import java.io.Serializable
+import java.util.*
 
-import android.location.Location;
+class TfrList : Serializable {
+    var isValid = false
+    @JvmField
+    var fetchTime: Long = Long.MAX_VALUE
 
-import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.utils.FormatUtils;
-import com.nadmm.airports.utils.TimeUtils;
+    @JvmField
+    var entries: ArrayList<Tfr> = ArrayList()
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-
-public class TfrList implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    public boolean isValid;
-    public long fetchTime;
-    public ArrayList<Tfr> entries;
-
-    public enum AltitudeType {
+    enum class AltitudeType {
         AGL {
-            @Override
-            public String toString() {
-                return "AGL";
+            override fun toString(): String {
+                return "AGL"
             }
         },
         MSL {
-            @Override
-            public String toString() {
-                return "MSL";
+            override fun toString(): String {
+                return "MSL"
             }
         },
         Unknown {
-            @Override
-            public String toString() {
-                return "???";
+            override fun toString(): String {
+                return "???"
             }
         }
     }
 
-    public static class Tfr implements Serializable, Comparable<Tfr> {
+    class Tfr : Serializable, Comparable<Tfr> {
+        @JvmField
+        var notamId: String? = null
+        @JvmField
+        var name: String? = null
+        var city: String? = null
+        var state: String? = null
+        @JvmField
+        var facility: String? = null
+        @JvmField
+        var facilityType: String? = null
+        @JvmField
+        var type: String? = null
+        @JvmField
+        var text: String? = null
+        var minAltitudeFeet: Int = Int.MAX_VALUE
+        var minAltitudeType: AltitudeType = AltitudeType.Unknown
+        var maxAltitudeFeet: Int = Int.MAX_VALUE
+        var maxAltitudeType: AltitudeType = AltitudeType.Unknown
+        var location: Location? = null
+        @JvmField
+        var createTime: Long = Long.MAX_VALUE
+        @JvmField
+        var modifyTime: Long = Long.MAX_VALUE
+        var activeTime: Long = Long.MAX_VALUE
+        var expireTime: Long = Long.MAX_VALUE
 
-        private static final long serialVersionUID = 1L;
-
-        public String notamId;
-        public String name;
-        public String city;
-        public String state;
-        public String facility;
-        public String facilityType;
-        public String type;
-        public String text;
-        public int minAltitudeFeet;
-        public AltitudeType minAltitudeType;
-        public int maxAltitudeFeet;
-        public AltitudeType maxAltitudeType;
-        public Location location;
-        public long createTime;
-        public long modifyTime;
-        public long activeTime;
-        public long expireTime;
-
-        public Tfr() {
-            minAltitudeFeet = Integer.MAX_VALUE;
-            minAltitudeType = AltitudeType.Unknown;
-            maxAltitudeFeet = Integer.MAX_VALUE;
-            maxAltitudeType = AltitudeType.Unknown;
-            createTime = Long.MAX_VALUE;
-            modifyTime = Long.MAX_VALUE;
-            activeTime = Long.MAX_VALUE;
-            expireTime = Long.MAX_VALUE;
-        }
-
-        public String formatAltitudeRange() {
-            StringBuilder sb = new StringBuilder();
-            if ( minAltitudeFeet < Integer.MAX_VALUE && maxAltitudeFeet < Integer.MAX_VALUE
-                    && maxAltitudeFeet > 0 ) {
-                if ( minAltitudeFeet == 0 ) {
-                    sb.append( "Surface" );
+        fun formatAltitudeRange(): String {
+            val sb = StringBuilder()
+            if (minAltitudeFeet < Int.MAX_VALUE && maxAltitudeFeet < Int.MAX_VALUE && maxAltitudeFeet > 0) {
+                if (minAltitudeFeet == 0) {
+                    sb.append("Surface")
                 } else {
-                    sb.append( formatAltitude( minAltitudeFeet, minAltitudeType ) );
+                    sb.append(formatAltitude(minAltitudeFeet, minAltitudeType))
                 }
-                sb.append( " up to " );
-                if ( maxAltitudeFeet >= 91000 ) {
-                    sb.append( "unlimited" );
+                sb.append(" up to ")
+                if (maxAltitudeFeet >= 91000) {
+                    sb.append("unlimited")
                 } else {
-                    sb.append( formatAltitude( maxAltitudeFeet, maxAltitudeType ) );
+                    sb.append(formatAltitude(maxAltitudeFeet, maxAltitudeType))
                 }
-            } else if ( minAltitudeFeet < Integer.MAX_VALUE
-                    && maxAltitudeFeet == Integer.MAX_VALUE ) {
-                if ( minAltitudeFeet == 0 ) {
-                    sb.append( "Surface" );
+            } else if (minAltitudeFeet < Int.MAX_VALUE
+                && maxAltitudeFeet == Int.MAX_VALUE
+            ) {
+                if (minAltitudeFeet == 0) {
+                    sb.append("Surface")
                 } else {
-                    sb.append( formatAltitude( minAltitudeFeet, minAltitudeType ) );
+                    sb.append(formatAltitude(minAltitudeFeet, minAltitudeType))
                 }
-                sb.append( " and above" );
-            } else if ( minAltitudeFeet == Integer.MAX_VALUE
-                    && maxAltitudeFeet < Integer.MAX_VALUE ) {
-                sb.append( formatAltitude( maxAltitudeFeet, maxAltitudeType ) );
-                sb.append( " and below" );
+                sb.append(" and above")
+            } else if (minAltitudeFeet == Int.MAX_VALUE
+                && maxAltitudeFeet < Int.MAX_VALUE
+            ) {
+                sb.append(formatAltitude(maxAltitudeFeet, maxAltitudeType))
+                sb.append(" and below")
             } else {
-                sb.append( "Altitude not specified" );
+                sb.append("Altitude not specified")
             }
-
-            return sb.toString();
+            return sb.toString()
         }
 
-        private String formatAltitude( int altitude, AltitudeType type ) {
-            if ( type == AltitudeType.AGL ) {
-                return FormatUtils.formatFeetAgl( altitude );
+        private fun formatAltitude(altitude: Int, type: AltitudeType): String {
+            return if (type === AltitudeType.AGL) {
+                formatFeetAgl(altitude.toFloat())
             } else {
-                return FormatUtils.formatFeetMsl( altitude );
+                formatFeetMsl(altitude.toFloat())
             }
         }
 
-        public String formatTimeRange( ActivityBase context ) {
-            StringBuilder sb = new StringBuilder();
-            if ( activeTime < Long.MAX_VALUE && expireTime < Long.MAX_VALUE ) {
-                sb.append( TimeUtils.formatDateRange( context, activeTime, expireTime ) );
-            } else if ( activeTime < Long.MAX_VALUE ) {
-                sb.append( TimeUtils.formatDateTimeYear( context, activeTime ) );
-                sb.append( " onwards" );
+        fun formatTimeRange(context: ActivityBase?): String {
+            val sb = StringBuilder()
+            if (activeTime < Long.MAX_VALUE && expireTime < Long.MAX_VALUE) {
+                sb.append(TimeUtils.formatDateRange(context, activeTime, expireTime))
+            } else if (activeTime < Long.MAX_VALUE) {
+                sb.append(TimeUtils.formatDateTimeYear(context, activeTime))
+                sb.append(" onwards")
             } else {
-                sb.append( "Until further notice" );
+                sb.append("Until further notice")
             }
-
-            return sb.toString();
+            return sb.toString()
         }
 
-        public boolean isActive() {
-            Long now = new Date().getTime();
-            if ( activeTime < Long.MAX_VALUE && expireTime < Long.MAX_VALUE ) {
-                return now >= activeTime && now < expireTime;
-            } else if ( activeTime < Long.MAX_VALUE ) {
-                return now >= activeTime;
-            } else {
-                return true;
+        val isActive: Boolean
+            get() {
+                val now = Date().time
+                return if (activeTime < Long.MAX_VALUE) {
+                    now in activeTime until expireTime
+                } else {
+                    true
+                }
             }
+        val isExpired: Boolean
+            get() {
+                val now = Date().time
+                return if (expireTime < Long.MAX_VALUE) {
+                    now >= expireTime
+                } else {
+                    false
+                }
+            }
+
+        fun formatLocation(): String {
+            val location = StringBuilder()
+            if (city != null) {
+                location.append(city)
+                location.append(", ")
+            }
+            location.append(state)
+            return location.toString()
         }
 
-        public boolean isExpired() {
-            Long now = new Date().getTime();
-            if ( expireTime < Long.MAX_VALUE ) {
-                return now >= expireTime;
-            } else {
-                return false;
-            }
+        override fun compareTo(other: Tfr): Int {
+            return other.modifyTime.compareTo(modifyTime)
         }
 
-        public String formatLocation()
-        {
-            StringBuilder location = new StringBuilder();
-            if ( city != null ) {
-                location.append( city );
-                location.append( ", " );
-            }
-            location.append( state );
-            return location.toString();
-        }
-
-        @Override
-        public int compareTo( Tfr another ) {
-            return modifyTime == another.modifyTime? 0 : modifyTime < another.modifyTime? 1 : -1;
+        companion object {
+            private const val serialVersionUID = 1L
         }
 
     }
 
-    public TfrList() {
-        isValid = false;
-        fetchTime = Long.MAX_VALUE;
-        entries = new ArrayList<Tfr>();
+    companion object {
+        private const val serialVersionUID = 1L
     }
 
 }

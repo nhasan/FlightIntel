@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,66 +16,55 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.tfr
 
-package com.nadmm.airports.tfr;
+import android.app.IntentService
+import java.io.File
+import android.text.format.DateUtils
+import com.nadmm.airports.utils.SystemUtils
+import android.content.Intent
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import java.util.*
 
-import android.app.IntentService;
-import android.content.Intent;
-import android.text.format.DateUtils;
+abstract class TfrServiceBase : IntentService(SERVICE_NAME) {
+    private var mDataDir: File? = null
 
-import com.nadmm.airports.utils.SystemUtils;
-
-import java.io.File;
-import java.util.Date;
-
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-public abstract class TfrServiceBase extends IntentService {
-
-    private  static final String SERVICE_NAME = "tfr";
-
-    private File mDataDir;
-    private final long TFR_CACHE_MAX_AGE = 15*DateUtils.MINUTE_IN_MILLIS;
-
-    public TfrServiceBase() {
-        super( SERVICE_NAME );
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        mDataDir = SystemUtils.getExternalDir( this, SERVICE_NAME );
+    override fun onCreate() {
+        super.onCreate()
+        mDataDir = SystemUtils.getExternalDir(this, SERVICE_NAME)
 
         // Remove any old files from cache first
-        cleanupCache( mDataDir, TFR_CACHE_MAX_AGE );
+        cleanupCache(mDataDir)
     }
 
-    protected void cleanupCache( File dir, long maxAge ) {
+    private fun cleanupCache(dir: File?) {
         // Delete all files that are older
-        Date now = new Date();
-        File[] files = dir.listFiles();
-        for ( File file : files ) {
-            long age = now.getTime()-file.lastModified();
-            if ( age > maxAge ) {
-                file.delete();
+        val now = Date()
+        val files = dir!!.listFiles()
+        for (file in files!!) {
+            val age = now.time - file.lastModified()
+            if (age > 5 * DateUtils.MINUTE_IN_MILLIS) {
+                file.delete()
             }
         }
     }
 
-    protected File getFile( String name ) {
-        return new File( mDataDir, name );
+    protected fun getFile(name: String): File {
+        return File(mDataDir, name)
     }
 
-    protected Intent makeResultIntent( String action ) {
-        Intent intent = new Intent();
-        intent.setAction( action );
-        return intent;
+    protected fun makeResultIntent(action: String?): Intent {
+        val intent = Intent()
+        intent.action = action
+        return intent
     }
 
-    protected void sendResultIntent( Intent intent ) {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( this );
-        bm.sendBroadcast( intent );
+    protected fun sendResultIntent(intent: Intent?) {
+        val bm = LocalBroadcastManager.getInstance(this)
+        bm.sendBroadcast(intent!!)
     }
 
+    companion object {
+        private const val SERVICE_NAME = "tfr"
+    }
 }
