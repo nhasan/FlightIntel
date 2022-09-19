@@ -18,7 +18,6 @@
  */
 package com.nadmm.airports.utils
 
-import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
@@ -35,13 +34,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.collection.LruCache
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.nadmm.airports.R
 import java.util.*
-
 
 object UiUtils {
     private val sDrawableCache = LruCache<String, Drawable?>(100)
@@ -79,10 +76,9 @@ object UiUtils {
 
     @JvmStatic
     fun showToast(context: Context, msg: String?, duration: Int) {
-        if (msg == null) {
-            return
+        msg?.let {
+            sHandler?.post { Toast.makeText(context.applicationContext, it, duration).show() }
         }
-        sHandler!!.post { Toast.makeText(context.applicationContext, msg, duration).show() }
     }
 
     @JvmStatic
@@ -113,7 +109,7 @@ object UiUtils {
     @JvmStatic
     fun getRotatedDrawable(context: Context, resid: Int, rotation: Float): Drawable {
         val rotate = RotateDrawable()
-        rotate.drawable = getDefaultTintedDrawable(context, resid);
+        rotate.drawable = getDefaultTintedDrawable(context, resid)
         rotate.fromDegrees = rotation
         rotate.toDegrees = rotation
         rotate.pivotX = .5f
