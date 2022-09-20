@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath 'com.android.tools.build:gradle:7.3.0'
         classpath 'com.google.gms:google-services:4.3.14'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -45,6 +45,7 @@ dependencies {
 android {
     compileSdkVersion 33
     buildToolsVersion "33.0.0"
+    namespace 'com.nadmm.airports'
 
     defaultConfig {
         applicationId "com.nadmm.airports"
