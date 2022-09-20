@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,29 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.tfr
 
-package com.nadmm.airports.tfr;
+import android.os.Bundle
+import com.nadmm.airports.FragmentActivityBase
+import com.nadmm.airports.R
 
-import android.os.Bundle;
-
-import com.nadmm.airports.FragmentActivityBase;
-import com.nadmm.airports.R;
-
-public class TfrListActivity extends FragmentActivityBase {
-
-    public static final String EXTRA_TFR = "TFR";
-
-    @Override
-    protected void onPostCreate( Bundle savedInstanceState ) {
-        super.onPostCreate( savedInstanceState );
-
-        Bundle args = getIntent().getExtras();
-        addFragment( TfrListFragment.class, args );
+class TfrListActivity : FragmentActivityBase() {
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        val args = intent.extras
+        addFragment(TfrListFragment::class.java, args)
     }
 
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return R.id.navdrawer_tfr;
-    }
+    override val selfNavDrawerItem: Int
+        get() = R.id.navdrawer_tfr
 
+    companion object {
+        const val EXTRA_TFR = "TFR"
+    }
 }

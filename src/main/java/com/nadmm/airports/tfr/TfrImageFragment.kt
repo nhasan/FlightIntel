@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,104 +16,88 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.tfr
 
-package com.nadmm.airports.tfr;
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.ActionBar
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.nadmm.airports.FragmentBase
+import com.nadmm.airports.R
+import com.nadmm.airports.tfr.TfrList.Tfr
+import com.nadmm.airports.utils.UiUtils.showToast
+import com.nadmm.airports.views.ImageZoomView
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.R;
-import com.nadmm.airports.tfr.TfrList.Tfr;
-import com.nadmm.airports.utils.UiUtils;
-import com.nadmm.airports.views.ImageZoomView;
-
-import androidx.appcompat.app.ActionBar.LayoutParams;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-public class TfrImageFragment extends FragmentBase {
-
-    private Tfr mTfr;
-    private BroadcastReceiver mReceiver;
-    private IntentFilter mFilter;
-    private ImageZoomView mImageView;
-
-    @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        mReceiver = new TfrReceiver();
-        mFilter = new IntentFilter();
-        mFilter.addAction( TfrImageService.ACTION_GET_TFR_IMAGE );
-
-        Bundle args = getArguments();
-        mTfr = (Tfr) args.getSerializable( TfrListActivity.EXTRA_TFR );
-
-        Intent service = new Intent( getActivity(), TfrImageService.class );
-        service.setAction( TfrImageService.ACTION_GET_TFR_IMAGE );
-        service.putExtra( TfrImageService.TFR_ENTRY, mTfr );
-        getActivity().startService( service );
+class TfrImageFragment : FragmentBase() {
+    private var mTfr: Tfr? = null
+    private var mReceiver: BroadcastReceiver? = null
+    private var mFilter: IntentFilter? = null
+    private var mImageView: ImageZoomView? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mReceiver = TfrReceiver()
+        mFilter = IntentFilter()
+        mFilter!!.addAction(TfrImageService.ACTION_GET_TFR_IMAGE)
+        val args = arguments
+        mTfr = args!!.getSerializable(TfrListActivity.EXTRA_TFR) as Tfr?
+        val service = Intent(activity, TfrImageService::class.java)
+        service.action = TfrImageService.ACTION_GET_TFR_IMAGE
+        service.putExtra(TfrImageService.TFR_ENTRY, mTfr)
+        requireActivity().startService(service)
     }
 
-    @Override
-    public void onResume() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mReceiver, mFilter );
-
-        super.onResume();
+    override fun onResume() {
+        val bm = LocalBroadcastManager.getInstance(requireActivity())
+        bm.registerReceiver(mReceiver!!, mFilter!!)
+        super.onResume()
     }
 
-    @Override
-    public void onPause() {
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mReceiver );
-
-        super.onPause();
+    override fun onPause() {
+        val bm = LocalBroadcastManager.getInstance(requireActivity())
+        bm.unregisterReceiver(mReceiver!!)
+        super.onPause()
     }
 
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        mImageView = new ImageZoomView( getActivity(), null );
-        mImageView.setId( R.id.main_content );
-        mImageView.setLayoutParams( new ViewGroup.LayoutParams(
-                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT ) );
-
-        return createContentView( mImageView );
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        mImageView = ImageZoomView(activity, null)
+        mImageView!!.id = R.id.main_content
+        mImageView!!.layoutParams = ViewGroup.LayoutParams(
+            ActionBar.LayoutParams.MATCH_PARENT,
+            ActionBar.LayoutParams.MATCH_PARENT
+        )
+        return createContentView(mImageView!!)
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
-
-        setActionBarTitle( mTfr.name );
-        setActionBarSubtitle( "TFR Graphic" );
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        setActionBarTitle(mTfr!!.name!!)
+        setActionBarSubtitle("TFR Graphic")
     }
 
-    private final class TfrReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive( Context context, Intent intent ) {
-            String path = (String) intent.getSerializableExtra( TfrImageService.TFR_IMAGE_PATH );
-            Bitmap bitmap = null;
-            if ( path != null ) {
-                bitmap = BitmapFactory.decodeFile( path );
+    private inner class TfrReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val path = intent.getSerializableExtra(TfrImageService.TFR_IMAGE_PATH) as String?
+            var bitmap: Bitmap? = null
+            if (path != null) {
+                bitmap = BitmapFactory.decodeFile(path)
             }
-            if ( bitmap != null ) {
-                mImageView.setImage( bitmap );
-                setFragmentContentShown( true );
+            if (bitmap != null) {
+                mImageView!!.setImage(bitmap)
+                setFragmentContentShown(true)
             } else {
-                UiUtils.showToast( getActivity(), "Unable to show image" );
+                showToast(activity!!, "Unable to show image")
             }
         }
     }
-
 }
