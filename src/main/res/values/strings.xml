@@ -27,7 +27,7 @@
     <string name="nearby">Nearby</string>
     <string name="browse">Browse</string>
     <string name="search">Search</string>
-    <string name="nearby_wx">Nearby Weather</string>
+    <string name="nearby_wx">Nearby Wx Stations</string>
     <string name="search_hint">Search airports</string>
     <string name="download_installed">Currently installed</string>
     <string name="download_available">Available for download</string>
