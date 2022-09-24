@@ -48,7 +48,7 @@ class TfrListAdapter(private val mContext: ActivityBase, tfrList: TfrList) : Bas
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view  = convertView ?: mInflater.inflate(R.layout.tfr_list_item, null)
+        val view  = convertView ?: mInflater.inflate(R.layout.tfr_list_item, parent, false)
         val tfr = getItem(position) as Tfr
         var tv: TextView
         val index = tfr.notamId!!.indexOf(' ')
