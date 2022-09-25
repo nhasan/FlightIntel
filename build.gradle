@@ -51,8 +51,8 @@ android {
         applicationId "com.nadmm.airports"
         minSdkVersion 24
         targetSdkVersion 33
-        versionName "6.30.2"
-        versionCode 63002
+        versionName "6.30.3"
+        versionCode 63003
 
         vectorDrawables.useSupportLibrary = true
     }
