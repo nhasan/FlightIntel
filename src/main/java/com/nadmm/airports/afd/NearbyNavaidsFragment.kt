@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,281 +16,256 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.afd
 
-package com.nadmm.airports.afd;
+import android.database.Cursor
+import android.database.MatrixCursor
+import android.location.Location
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
+import com.nadmm.airports.FragmentBase
+import com.nadmm.airports.R
+import com.nadmm.airports.data.DatabaseManager.*
+import com.nadmm.airports.utils.DataUtils.calculateRadial
+import com.nadmm.airports.utils.DataUtils.getMorseCode
+import com.nadmm.airports.utils.DataUtils.isDirectionalNavaid
+import com.nadmm.airports.utils.DbUtils
+import com.nadmm.airports.utils.GeoUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
 
-import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.location.Location;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+class NearbyNavaidsFragment : FragmentBase() {
+    private val mNavColumns = arrayOf(
+        Nav1.NAVAID_ID,
+        Nav1.NAVAID_TYPE,
+        Nav1.NAVAID_NAME,
+        Nav1.NAVAID_FREQUENCY,
+        Nav1.TACAN_CHANNEL,
+        LocationColumns.RADIAL,
+        LocationColumns.DISTANCE
+    )
+    private var mRadius = 0
 
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.R;
-import com.nadmm.airports.data.DatabaseManager;
-import com.nadmm.airports.data.DatabaseManager.Airports;
-import com.nadmm.airports.data.DatabaseManager.LocationColumns;
-import com.nadmm.airports.data.DatabaseManager.Nav1;
-import com.nadmm.airports.utils.CursorAsyncTask;
-import com.nadmm.airports.utils.DataUtils;
-import com.nadmm.airports.utils.DbUtils;
-import com.nadmm.airports.utils.GeoUtils;
+    private class NavaidData : Comparable<NavaidData> {
+        var navaidId: String? = null
+        var navaidType: String? = null
+        var navaidName: String? = null
+        var navaidFreq: String? = null
+        var tacanChannel: String? = null
+        var radial = 0
+        var distance = 0f
 
-import java.util.Arrays;
-import java.util.Locale;
-
-public final class NearbyNavaidsFragment extends FragmentBase {
-
-    private final String[] mNavColumns = new String[] {
-            Nav1.NAVAID_ID,
-            Nav1.NAVAID_TYPE,
-            Nav1.NAVAID_NAME,
-            Nav1.NAVAID_FREQUENCY,
-            Nav1.TACAN_CHANNEL,
-            LocationColumns.RADIAL,
-            LocationColumns.DISTANCE
-    };
-    private int mRadius;
-
-    private static class NavaidData implements Comparable<NavaidData> {
-        private String NAVAID_ID;
-        private String NAVAID_TYPE;
-        private String NAVAID_NAME;
-        private String NAVAID_FREQ;
-        private String TACAN_CHANNEL;
-        private int RADIAL;
-        private float DISTANCE;
-
-        private void setFromCursor( Cursor c, Location location ) {
+        fun setFromCursor(c: Cursor, location: Location) {
             // Calculate the distance and bearing to this navaid from this airport
-            NAVAID_ID = c.getString( c.getColumnIndex( Nav1.NAVAID_ID ) );
-            NAVAID_TYPE= c.getString( c.getColumnIndex( Nav1.NAVAID_TYPE ) );
-            NAVAID_NAME = c.getString( c.getColumnIndex( Nav1.NAVAID_NAME ) );
-            NAVAID_FREQ = c.getString( c.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
-            TACAN_CHANNEL = c.getString( c.getColumnIndex( Nav1.TACAN_CHANNEL ) );
-
-            int var = c.getInt( c.getColumnIndex( Nav1.MAGNETIC_VARIATION_DEGREES ) );
-            String dir = c.getString( c.getColumnIndex( Nav1.MAGNETIC_VARIATION_DIRECTION ) );
-            if ( dir.equals( "E" ) ) {
-                var *= -1;
+            navaidId = c.getString(c.getColumnIndexOrThrow(Nav1.NAVAID_ID))
+            navaidType = c.getString(c.getColumnIndexOrThrow(Nav1.NAVAID_TYPE))
+            navaidName = c.getString(c.getColumnIndexOrThrow(Nav1.NAVAID_NAME))
+            navaidFreq = c.getString(c.getColumnIndexOrThrow(Nav1.NAVAID_FREQUENCY))
+            tacanChannel = c.getString(c.getColumnIndexOrThrow(Nav1.TACAN_CHANNEL))
+            var variation = c.getInt(c.getColumnIndexOrThrow(Nav1.MAGNETIC_VARIATION_DEGREES))
+            val dir = c.getString(c.getColumnIndexOrThrow(Nav1.MAGNETIC_VARIATION_DIRECTION))
+            if (dir == "E") {
+                variation *= -1
             }
-
-            float[] results = new float[ 2 ];
+            val results = FloatArray(2)
             Location.distanceBetween(
-                    location.getLatitude(),
-                    location.getLongitude(),
-                    c.getDouble( c.getColumnIndex( Nav1.REF_LATTITUDE_DEGREES ) ),
-                    c.getDouble( c.getColumnIndex( Nav1.REF_LONGITUDE_DEGREES ) ),
-                    results );
-            DISTANCE = results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE;
-            RADIAL = DataUtils.calculateRadial( results[ 1 ], var );
+                location.latitude,
+                location.longitude,
+                c.getDouble(c.getColumnIndexOrThrow(Nav1.REF_LATTITUDE_DEGREES)),
+                c.getDouble(c.getColumnIndexOrThrow(Nav1.REF_LONGITUDE_DEGREES)),
+                results)
+            distance = results[0] / GeoUtils.METERS_PER_NAUTICAL_MILE
+            radial = calculateRadial(results[1], variation)
         }
 
-        @Override
-        public int compareTo( NavaidData another ) {
-            if ( this.DISTANCE > another.DISTANCE ) {
-                return 1;
-            } else if ( this.DISTANCE < another.DISTANCE ) {
-                return -1;
+        override fun compareTo(other: NavaidData): Int {
+            if (distance > other.distance) {
+                return 1
+            } else if (distance < other.distance) {
+                return -1
             }
-            return 0;
+            return 0
         }
     }
 
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.airport_navaids_view, container, false );
-        return createContentView( view );
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.airport_navaids_view, container, false)
+        return createContentView(view)
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
-
-        mRadius = getActivityBase().getPrefNearbyRadius();
-
-        setActionBarTitle( "Nearby Navaids", "" );
-        setActionBarSubtitle( String.format( Locale.US, "Within %d NM radius", mRadius ) );
-
-        Bundle args = getArguments();
-        if ( args != null ) {
-            String siteNumber = args.getString( Airports.SITE_NUMBER );
-            setBackgroundTask( new NavaidDetailsTask( this ) ).execute( siteNumber );
-        }
-    }
-
-    protected void showDetails( Cursor[] result ) {
-        Cursor apt = result[ 0 ];
-
-        Cursor vor = result[ 1 ];
-        Cursor ndb = result[ 2 ];
-        if ( vor != null || ndb != null ) {
-            showAirportTitle( apt );
-            showNavaidDetails( result );
-        } else {
-            setContentMsg( String.format( Locale.US, "No navaids found within %d NM radius",
-                    mRadius ) );
-        }
-
-        setFragmentContentShown( true );
-    }
-
-    private void showNavaidDetails( Cursor[] result ) {
-        Cursor vor = result[ 1 ];
-        if ( vor != null && vor.moveToFirst() ) {
-            LinearLayout layout = findViewById( R.id.detail_navaids_vor_layout );
-            do {
-                String navaidId = vor.getString( vor.getColumnIndex( Nav1.NAVAID_ID ) );
-                String freq = vor.getString( vor.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
-                if ( freq.length() == 0 ) {
-                    freq = vor.getString( vor.getColumnIndex( Nav1.TACAN_CHANNEL ) );
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        mRadius = activityBase.prefNearbyRadius
+        setActionBarTitle("Nearby Navaids", "")
+        setActionBarSubtitle(String.format(Locale.US, "Within %d NM radius", mRadius))
+        arguments?.getString(Airports.SITE_NUMBER)?.let {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = withContext(Dispatchers.IO) {
+                    doQuery(it)
                 }
-                String name = vor.getString( vor.getColumnIndex( Nav1.NAVAID_NAME ) );
-                String type = vor.getString( vor.getColumnIndex( Nav1.NAVAID_TYPE ) );
-                int radial = vor.getInt( vor.getColumnIndex( "RADIAL" ) );
-                float distance = vor.getFloat( vor.getColumnIndex( "DISTANCE" ) );
-                addDirectionalNavaidRow( layout, navaidId, name, type, freq, radial,
-                        distance );
-            } while ( vor.moveToNext() );
-        } else {
-            LinearLayout layout = findViewById( R.id.detail_navaids_vor_layout );
-            layout.setVisibility( View.GONE );
-            TextView tv = findViewById( R.id.detail_navaids_vor_label );
-            tv.setVisibility( View.GONE );
-        }
-
-        Cursor ndb = result[ 2 ];
-        if ( ndb != null && ndb.moveToFirst() ) {
-            LinearLayout layout = findViewById( R.id.detail_navaids_ndb_layout );
-            do {
-                String navaidId = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_ID ) );
-                String freq = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_FREQUENCY ) );
-                String name = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_NAME ) );
-                String type = ndb.getString( ndb.getColumnIndex( Nav1.NAVAID_TYPE ) );
-                int heading = ndb.getInt( ndb.getColumnIndex( "RADIAL" ) );
-                float distance = ndb.getFloat( ndb.getColumnIndex( "DISTANCE" ) );
-                addNonDirectionalNavaidRow( layout, navaidId, name, type, freq, heading,
-                        distance );
-            } while ( ndb.moveToNext() );
-        } else {
-            LinearLayout layout = findViewById( R.id.detail_navaids_ndb_layout );
-            layout.setVisibility( View.GONE );
-            TextView tv = findViewById( R.id.detail_navaids_ndb_label );
-            tv.setVisibility( View.GONE );
+                showDetails(result)
+            }
         }
     }
 
-    private void addDirectionalNavaidRow( LinearLayout table, String navaidId,
-            String name, String type, String freq, int radial, float distance ) {
-        String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
-        String label2 = name+" "+type;
-        String value2 = String.format( Locale.US, "r%03d/%.1fNM", radial, distance );
-
-        Bundle args = new Bundle();
-        args.putString( Nav1.NAVAID_ID, navaidId );
-        args.putString( Nav1.NAVAID_TYPE, type );
-        addClickableRow( table, label1, freq, label2, value2, NavaidDetailsFragment.class, args );
+    private fun showDetails(result: Array<Cursor?>) {
+        val apt = result[0]
+        val vor = result[1]
+        val ndb = result[2]
+        if (vor != null || ndb != null) {
+            showAirportTitle(apt!!)
+            showNavaidDetails(result)
+        } else {
+            setContentMsg(String.format(Locale.US, "No navaids found within %d NM radius",
+                mRadius))
+        }
+        setFragmentContentShown(true)
     }
 
-    private void addNonDirectionalNavaidRow( LinearLayout table, String navaidId,
-            String name, String type, String freq, int heading, float distance ) {
-        String label1 = navaidId+"      "+DataUtils.getMorseCode( navaidId );
-        String label2 = name+" "+type;
-        String value2 = String.format( Locale.US, "%03d\u00B0M/%.1fNM", heading, distance );
-
-        Bundle args = new Bundle();
-        args.putString( Nav1.NAVAID_ID, navaidId );
-        args.putString( Nav1.NAVAID_TYPE, type );
-        addClickableRow( table, label1, freq, label2, value2, NavaidDetailsFragment.class, args );
-    }
-
-    private Cursor[] queryData( String siteNumber ) {
-        SQLiteDatabase db = getDatabase( DatabaseManager.DB_FADDS );
-        Cursor[] cursors = new Cursor[ 3 ];
-
-        Cursor apt = getAirportDetails( siteNumber );
-        cursors[ 0 ] = apt;
-
-        double lat = apt.getDouble( apt.getColumnIndex( Airports.REF_LATTITUDE_DEGREES ) );
-        double lon = apt.getDouble( apt.getColumnIndex( Airports.REF_LONGITUDE_DEGREES ) );
-        Location location = new Location( "" );
-        location.setLatitude( lat );
-        location.setLongitude( lon );
-
-        Cursor c = DbUtils.getBoundingBoxCursor( db, Nav1.TABLE_NAME,
-                Nav1.REF_LATTITUDE_DEGREES, Nav1.REF_LONGITUDE_DEGREES,
-                location, mRadius );
-
-        if ( c.moveToFirst() ) {
-            NavaidData[] navaids = new NavaidData[ c.getCount() ];
+    private fun showNavaidDetails(result: Array<Cursor?>) {
+        val vor = result[1]
+        if (vor != null && vor.moveToFirst()) {
+            val layout = findViewById<LinearLayout>(R.id.detail_navaids_vor_layout)
             do {
-                NavaidData navaid = new NavaidData();
-                navaid.setFromCursor( c, location );
-                navaids[ c.getPosition() ] = navaid;
-            } while ( c.moveToNext() );
+                val navaidId = vor.getString(vor.getColumnIndexOrThrow(Nav1.NAVAID_ID))
+                var freq = vor.getString(vor.getColumnIndexOrThrow(Nav1.NAVAID_FREQUENCY))
+                if (freq.isEmpty()) {
+                    freq = vor.getString(vor.getColumnIndexOrThrow(Nav1.TACAN_CHANNEL))
+                }
+                val name = vor.getString(vor.getColumnIndexOrThrow(Nav1.NAVAID_NAME))
+                val type = vor.getString(vor.getColumnIndexOrThrow(Nav1.NAVAID_TYPE))
+                val radial = vor.getInt(vor.getColumnIndexOrThrow("RADIAL"))
+                val distance = vor.getFloat(vor.getColumnIndexOrThrow("DISTANCE"))
+                addDirectionalNavaidRow(layout, navaidId, name, type, freq, radial,
+                    distance)
+            } while (vor.moveToNext())
+        } else {
+            val layout = findViewById<LinearLayout>(R.id.detail_navaids_vor_layout)
+            layout!!.visibility = View.GONE
+            val tv = findViewById<TextView>(R.id.detail_navaids_vor_label)
+            tv!!.visibility = View.GONE
+        }
+        val ndb = result[2]
+        if (ndb != null && ndb.moveToFirst()) {
+            val layout = findViewById<LinearLayout>(R.id.detail_navaids_ndb_layout)
+            do {
+                val navaidId = ndb.getString(ndb.getColumnIndexOrThrow(Nav1.NAVAID_ID))
+                val freq = ndb.getString(ndb.getColumnIndexOrThrow(Nav1.NAVAID_FREQUENCY))
+                val name = ndb.getString(ndb.getColumnIndexOrThrow(Nav1.NAVAID_NAME))
+                val type = ndb.getString(ndb.getColumnIndexOrThrow(Nav1.NAVAID_TYPE))
+                val heading = ndb.getInt(ndb.getColumnIndexOrThrow("RADIAL"))
+                val distance = ndb.getFloat(ndb.getColumnIndexOrThrow("DISTANCE"))
+                addNonDirectionalNavaidRow(layout, navaidId, name, type, freq, heading,
+                    distance)
+            } while (ndb.moveToNext())
+        } else {
+            val layout = findViewById<LinearLayout>(R.id.detail_navaids_ndb_layout)
+            layout!!.visibility = View.GONE
+            val tv = findViewById<TextView>(R.id.detail_navaids_ndb_label)
+            tv!!.visibility = View.GONE
+        }
+    }
+
+    private fun addDirectionalNavaidRow(
+        table: LinearLayout?, navaidId: String,
+        name: String, type: String, freq: String, radial: Int, distance: Float
+    ) {
+        val label1 = navaidId + "      " + getMorseCode(navaidId)
+        val label2 = "$name $type"
+        val value2 = String.format(Locale.US, "r%03d/%.1fNM", radial, distance)
+        val args = Bundle()
+        args.putString(Nav1.NAVAID_ID, navaidId)
+        args.putString(Nav1.NAVAID_TYPE, type)
+        addClickableRow(table!!,
+            label1,
+            freq,
+            label2,
+            value2,
+            NavaidDetailsFragment::class.java,
+            args)
+    }
+
+    private fun addNonDirectionalNavaidRow(
+        table: LinearLayout?, navaidId: String,
+        name: String, type: String, freq: String, heading: Int, distance: Float
+    ) {
+        val label1 = navaidId + "      " + getMorseCode(navaidId)
+        val label2 = "$name $type"
+        val value2 = String.format(Locale.US, "%03d\u00B0M/%.1fNM", heading, distance)
+        val args = Bundle()
+        args.putString(Nav1.NAVAID_ID, navaidId)
+        args.putString(Nav1.NAVAID_TYPE, type)
+        addClickableRow(table!!,
+            label1,
+            freq,
+            label2,
+            value2,
+            NavaidDetailsFragment::class.java,
+            args)
+    }
+
+    private fun doQuery(siteNumber: String): Array<Cursor?> {
+        val db = getDatabase(DB_FADDS)
+        val cursors = arrayOfNulls<Cursor>(3)
+        val apt = getAirportDetails(siteNumber)
+        cursors[0] = apt
+        val lat = apt!!.getDouble(apt.getColumnIndexOrThrow(Airports.REF_LATTITUDE_DEGREES))
+        val lon = apt.getDouble(apt.getColumnIndexOrThrow(Airports.REF_LONGITUDE_DEGREES))
+        val location = Location("")
+        location.latitude = lat
+        location.longitude = lon
+        val c = DbUtils.getBoundingBoxCursor(db, Nav1.TABLE_NAME,
+            Nav1.REF_LATTITUDE_DEGREES, Nav1.REF_LONGITUDE_DEGREES,
+            location, mRadius)
+        if (c.moveToFirst()) {
+            val navaids = arrayOfNulls<NavaidData>(c.count)
+            do {
+                val navaid = NavaidData()
+                navaid.setFromCursor(c, location)
+                navaids[c.position] = navaid
+            } while (c.moveToNext())
 
             // Sort the navaids list by distance from current location
-            Arrays.sort( navaids );
-
-            @SuppressWarnings("resource")
-            MatrixCursor vor = new MatrixCursor( mNavColumns );
-            @SuppressWarnings("resource")
-            MatrixCursor ndb = new MatrixCursor( mNavColumns );
-            for ( NavaidData navaid : navaids ) {
-                if ( navaid.DISTANCE <= mRadius ) {
-                    if ( DataUtils.isDirectionalNavaid( navaid.NAVAID_TYPE ) ) {
-                        MatrixCursor.RowBuilder row = vor.newRow();
-                        row.add( navaid.NAVAID_ID )
-                                .add( navaid.NAVAID_TYPE )
-                                .add( navaid.NAVAID_NAME )
-                                .add( navaid.NAVAID_FREQ )
-                                .add( navaid.TACAN_CHANNEL )
-                                .add( navaid.RADIAL )
-                                .add( navaid.DISTANCE );
+            Arrays.sort(navaids)
+            val vor = MatrixCursor(mNavColumns)
+            val ndb = MatrixCursor(mNavColumns)
+            for (navaid in navaids) {
+                if (navaid!!.distance <= mRadius) {
+                    if (isDirectionalNavaid(navaid.navaidType!!)) {
+                        val row = vor.newRow()
+                        row.add(navaid.navaidId)
+                            .add(navaid.navaidType)
+                            .add(navaid.navaidName)
+                            .add(navaid.navaidFreq)
+                            .add(navaid.tacanChannel)
+                            .add(navaid.radial)
+                            .add(navaid.distance)
                     } else {
-                        MatrixCursor.RowBuilder row = ndb.newRow();
-                        row.add( navaid.NAVAID_ID )
-                                .add( navaid.NAVAID_TYPE )
-                                .add( navaid.NAVAID_NAME )
-                                .add( navaid.NAVAID_FREQ )
-                                .add( navaid.TACAN_CHANNEL )
-                                .add( navaid.RADIAL )
-                                .add( navaid.DISTANCE );
+                        val row = ndb.newRow()
+                        row.add(navaid.navaidId)
+                            .add(navaid.navaidType)
+                            .add(navaid.navaidName)
+                            .add(navaid.navaidFreq)
+                            .add(navaid.tacanChannel)
+                            .add(navaid.radial)
+                            .add(navaid.distance)
                     }
                 }
             }
-            cursors[ 1 ] = vor;
-            cursors[ 2 ] = ndb;
+            cursors[1] = vor
+            cursors[2] = ndb
         }
-
-        c.close();
-        return cursors;
+        c.close()
+        return cursors
     }
-
-    private static class NavaidDetailsTask extends CursorAsyncTask<NearbyNavaidsFragment> {
-
-        private NavaidDetailsTask( NearbyNavaidsFragment fragment ) {
-            super( fragment );
-        }
-
-        @Override
-        protected Cursor[] onExecute( NearbyNavaidsFragment fragment, String... params ) {
-            String siteNumber = params[ 0 ];
-            return fragment.queryData( siteNumber );
-       }
-
-       @Override
-       protected boolean onResult( NearbyNavaidsFragment fragment, Cursor[] result ) {
-           fragment.showDetails( result );
-           return true;
-       }
-
-    }
-
 }
