@@ -16,37 +16,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.notams
 
-package com.nadmm.airports.notams;
+import java.time.OffsetDateTime
 
-import java.time.OffsetDateTime;
-
-public class Notam {
-    String id;
-    String notamID;
-    String series;
-    int number;
-    int year;
-    String type;
-    String category;
-    OffsetDateTime issued;
-    OffsetDateTime lastUpdated;
-    OffsetDateTime effectiveStart;
-    OffsetDateTime effectiveEnd;
-    String estimatedEnd;
-    String location;
-    String affectedFIR;
-    String selectionCode;
-    String traffic;
-    String purpose;
-    String scope;
-    int minimumFL;
-    int maximumFL;
-    String latitude;
-    String longitude;
-    int radius;
-    String classification;
-    String schedule;
-    String xovernotamID;
-    String text;
+class Notam {
+    var id: String? = null
+    var notamID: String? = null
+    var series: String? = null
+    var number = 0
+    var year = 0
+    var type: String? = null
+    var category: String? = null
+    var issued: OffsetDateTime? = null
+    var lastUpdated: OffsetDateTime? = null
+    var effectiveStart: OffsetDateTime? = null
+    var effectiveEnd: OffsetDateTime? = null
+    var estimatedEnd: String? = null
+    var location: String? = null
+    var affectedFIR: String? = null
+    var selectionCode: String? = null
+    var traffic: String? = null
+    var purpose: String? = null
+    var scope: String? = null
+    var minimumFL = 0
+    var maximumFL = 0
+    var latitude: String? = null
+    var longitude: String? = null
+    var radius = 0
+    var classification: String? = null
+    var schedule: String? = null
+    var xovernotamID: String? = null
+    var text: String? = null
 }

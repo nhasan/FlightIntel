@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,74 +16,59 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.notams
 
-package com.nadmm.airports.notams;
+import android.database.Cursor
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
+import com.nadmm.airports.R
+import com.nadmm.airports.data.DatabaseManager.Airports
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-import android.database.Cursor;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.nadmm.airports.R;
-import com.nadmm.airports.data.DatabaseManager.Airports;
-import com.nadmm.airports.utils.CursorAsyncTask;
-
-public class AirportNotamFragment extends NotamFragmentBase {
-
-    private String mfaaCode;
-
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-                              Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.airport_notam_view, container, false );
-        return createContentView( view );
+class AirportNotamFragment : NotamFragmentBase() {
+    private var mfaaCode: String? = null
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.airport_notam_view, container, false)
+        return createContentView(view)
     }
 
-    @Override
-    public void onActivityCreated( Bundle savedInstanceState ) {
-        super.onActivityCreated( savedInstanceState );
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
-        Bundle args = getArguments();
-        String siteNumber = args.getString( Airports.SITE_NUMBER );
-        setBackgroundTask( new AirportNotamTask( this ) ).execute( siteNumber );
-    }
-
-    private void requestNotams( Cursor c ) {
-        mfaaCode = c.getString( c.getColumnIndex( Airports.FAA_CODE ) );
-        setActionBarTitle( mfaaCode+" - NOTAMs" );
-        getNotams( mfaaCode, false );
-    }
-
-    @Override
-    public boolean isRefreshable() {
-        return true;
-    }
-
-    @Override
-    public void requestDataRefresh() {
-        getNotams( mfaaCode, true );
-    }
-
-    private static class AirportNotamTask extends CursorAsyncTask<AirportNotamFragment> {
-
-        private AirportNotamTask( AirportNotamFragment fragment ) {
-            super( fragment );
+        arguments?.getString(Airports.SITE_NUMBER)?.let {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = withContext(Dispatchers.IO) {
+                    doQuery(it)
+                }
+                requestNotams(result[0])
+            }
         }
-
-        @Override
-        protected Cursor[] onExecute( AirportNotamFragment fragment, String... params ) {
-            String siteNumber = params[ 0 ];
-            Cursor c = fragment.getAirportDetails( siteNumber );
-            return new Cursor[] { c };
-        }
-
-        @Override
-        protected boolean onResult( AirportNotamFragment fragment, Cursor[] result ) {
-            fragment.requestNotams( result[ 0 ] );
-            return true;
-        }
-
     }
 
+    private fun requestNotams(c: Cursor?) {
+        mfaaCode = c!!.getString(c.getColumnIndexOrThrow(Airports.FAA_CODE))
+        setActionBarTitle("$mfaaCode - NOTAMs")
+        getNotams(mfaaCode, false)
+    }
+
+    override fun isRefreshable(): Boolean {
+        return true
+    }
+
+    override fun requestDataRefresh() {
+        getNotams(mfaaCode, true)
+    }
+
+    private fun doQuery(siteNumber: String): Array<Cursor?> {
+        val c = getAirportDetails(siteNumber)
+        return arrayOf(c)
+    }
 }

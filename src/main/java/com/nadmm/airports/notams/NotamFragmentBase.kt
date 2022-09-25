@@ -74,13 +74,13 @@ open class NotamFragmentBase : FragmentBase() {
     }
 
     override fun onResume() {
-        val bm = LocalBroadcastManager.getInstance(activity!!)
+        val bm = LocalBroadcastManager.getInstance(requireActivity())
         bm.registerReceiver(mReceiver, mFilter)
         super.onResume()
     }
 
     override fun onPause() {
-        val bm = LocalBroadcastManager.getInstance(activity!!)
+        val bm = LocalBroadcastManager.getInstance(requireActivity())
         bm.unregisterReceiver(mReceiver)
         super.onPause()
     }
@@ -90,7 +90,7 @@ open class NotamFragmentBase : FragmentBase() {
         service.action = NotamService.ACTION_GET_NOTAM
         service.putExtra(NotamService.LOCATION, location)
         service.putExtra(NotamService.FORCE_REFRESH, force)
-        activity!!.startService(service)
+        requireActivity().startService(service)
     }
 
     protected fun addCategory(type: String) {
@@ -126,7 +126,7 @@ open class NotamFragmentBase : FragmentBase() {
             sb.append("FDC ")
         }
         sb.append(notam.notamID)
-        if (notam.xovernotamID?.trim()?.isNotEmpty() == true) {
+        if (notam.xovernotamID?.trim()?.isEmpty() == false) {
             sb.append(" (")
             sb.append(notam.xovernotamID)
             sb.append(")")
@@ -137,7 +137,7 @@ open class NotamFragmentBase : FragmentBase() {
             sb.append(" ")
         }
         sb.append(notam.text)
-        if (!notam.text.endsWith(".")) {
+        if (notam.text?.endsWith(".") == false) {
             sb.append(".")
         }
         sb.append(" ")
@@ -153,23 +153,28 @@ open class NotamFragmentBase : FragmentBase() {
         }
         sb.append(". CREATED: ")
         sb.append(dtf.format(notam.issued).uppercase(Locale.getDefault()))
+        if (notam.lastUpdated != null) {
+            sb.append(" UPDATED: ")
+            sb.append(dtf.format(notam.lastUpdated).uppercase(Locale.getDefault()))
+        }
         return sb.toString()
     }
 
     private fun parseNotams(notamFile: File): ArrayList<Notam> {
-        var `in`: FileInputStream? = null
+        var input: FileInputStream? = null
         val notams = ArrayList<Notam>()
         try {
             val gson = GsonBuilder()
                 .registerTypeAdapter(Int::class.javaPrimitiveType, IntTypeAdapter())
                 .registerTypeAdapter(OffsetDateTime::class.java, DateTypeAdapter())
                 .create()
-            `in` = FileInputStream(notamFile)
-            val reader = JsonReader(InputStreamReader(`in`, StandardCharsets.UTF_8))
+            input = FileInputStream(notamFile)
+            val reader = JsonReader(InputStreamReader(input, StandardCharsets.UTF_8))
             reader.beginArray()
             while (reader.hasNext()) {
                 val notam = gson.fromJson<Notam>(reader, Notam::class.java)
-                notam.category = notam.text.substring(0, notam.text.indexOf(" ")).trim { it <= ' ' }
+                val text = notam.text ?: ""
+                notam.category = text.substring(0, text.indexOf(" ")).trim { it <= ' ' }
                 if (mCategories.isEmpty() || mCategories.contains(notam.category)) {
                     notams.add(notam)
                 }
@@ -180,7 +185,7 @@ open class NotamFragmentBase : FragmentBase() {
             e.printStackTrace()
         } finally {
             try {
-                `in`?.close()
+                input?.close()
             } catch (ignored: IOException) {
             }
         }
@@ -189,13 +194,13 @@ open class NotamFragmentBase : FragmentBase() {
 
     class IntTypeAdapter : TypeAdapter<Int?>() {
         @Throws(IOException::class)
-        override fun read(`in`: JsonReader): Int? {
+        override fun read(reader: JsonReader): Int? {
             // Allows to parse empty strings
-            if (`in`.peek() == JsonToken.NULL) {
-                `in`.nextNull()
+            if (reader.peek() == JsonToken.NULL) {
+                reader.nextNull()
                 return null
             }
-            val stringValue = `in`.nextString()
+            val stringValue = reader.nextString()
             return try {
                 stringValue.toInt()
             } catch (e: NumberFormatException) {
@@ -208,13 +213,13 @@ open class NotamFragmentBase : FragmentBase() {
 
     class DateTypeAdapter : TypeAdapter<OffsetDateTime?>() {
         @Throws(IOException::class)
-        override fun read(`in`: JsonReader): OffsetDateTime? {
+        override fun read(reader: JsonReader): OffsetDateTime? {
             // Allows to parse empty strings
-            if (`in`.peek() == JsonToken.NULL) {
-                `in`.nextNull()
+            if (reader.peek() == JsonToken.NULL) {
+                reader.nextNull()
                 return null
             }
-            val stringValue = `in`.nextString()
+            val stringValue = reader.nextString()
             return try {
                 OffsetDateTime.parse(stringValue)
             } catch (e: DateTimeParseException) {

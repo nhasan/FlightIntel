@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,21 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.notams
 
-package com.nadmm.airports.notams;
+import android.os.Bundle
+import com.nadmm.airports.FragmentActivityBase
 
-import android.os.Bundle;
-
-import com.nadmm.airports.FragmentActivityBase;
-
-public class AirportNotamActivity extends FragmentActivityBase {
-
-    @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        Bundle args = getIntent().getExtras();
-        addFragment( AirportNotamFragment.class, args );
+class AirportNotamActivity : FragmentActivityBase() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val args = intent.extras
+        addFragment(AirportNotamFragment::class.java, args)
     }
-
 }
