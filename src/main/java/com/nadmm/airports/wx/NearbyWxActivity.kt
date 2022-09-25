@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,22 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.afd;
+import android.os.Bundle
+import com.nadmm.airports.FragmentActivityBase
 
-import android.os.Bundle;
-
-import com.nadmm.airports.FragmentActivityBase;
-import com.nadmm.airports.wx.NearbyWxFragment;
-
-public class NearbyWxActivity extends FragmentActivityBase {
-
-    @Override
-    protected void onPostCreate( Bundle savedInstanceState ) {
-        super.onPostCreate( savedInstanceState );
-
-        Bundle args = getIntent().getExtras();
-        addFragment( NearbyWxFragment.class, args );
+class NearbyWxActivity : FragmentActivityBase() {
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        val args = intent.extras
+        addFragment(NearbyWxFragment::class.java, args)
     }
-
 }
