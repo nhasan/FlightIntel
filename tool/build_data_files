@@ -19,15 +19,25 @@
 # * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # */
 
-bold=$(tput bold)
+bold=$(tput bold; tput setaf 185)
+error=$(tput bold; tput setaf 125)
 normal=$(tput sgr0)
 
-echo "${bold}Checking for updates to gcloud tool:${normal}";
+function error {
+    echo "${error}$1${normal}"
+}
+
+function bold {
+    echo "${bold}$1${normal}"
+}
+
+bold "Checking for updates to gcloud tool:";
 gcloud components update
 
 source build_data_config
 
-echo ${bold}Using config:${normal}
+echo
+bold "Using config:"
 echo "DATA_CYCLE=${DATA_CYCLE}"
 echo "FADDS_CYCLE=${FADDS_CYCLE}"
 echo "DTPP_CYCLE=${DTPP_CYCLE}"
@@ -57,23 +67,27 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     FADDS_FILE="${BASE_DIR}/28DaySubscription_Effective_${FADDS_CYCLE}.zip";
     if [ ! -f "${FADDS_FILE}" ]; then
         FADDS_URL="https://nfdc.faa.gov/webContent/28DaySub/28DaySubscription_Effective_${FADDS_CYCLE}.zip";
-        echo "${bold}Downloading FADDS ${FADDS_CYCLE} file:${normal}";
+        bold "Downloading FADDS ${FADDS_CYCLE} file:";
         wget -O ${FADDS_FILE} ${FADDS_URL};
         unzip -o -d ${BASE_DIR} ${FADDS_FILE};
     fi
-    echo "${bold}Running load_fadds.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
-    ./load_fadds.pl ${BASE_DIR} ${OUT_FILE}
-    echo "${bold}Running load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
-    ./load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}
-    echo "${bold}Running load_atc_phones.pl ${OUT_FILE}:${normal}";
-    ./load_atc_phones.pl ${OUT_FILE}
-    echo "${bold}Running cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db:${normal}";
-    ./cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
-    echo "${bold}Running geonames_tz_lookup.pl ${OUT_FILE}:${normal}";
-    ./geonames_tz_lookup.pl ${OUT_FILE}
-    echo "${bold}Making a copy of FADDS file:${normal}";
-    cp ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
-    gzip ${OUT_FILE};
+    if [ -d ${BASE_DIR} ]; then
+        bold "Running load_fadds.pl ${BASE_DIR} ${OUT_FILE}:";
+        ./load_fadds.pl ${BASE_DIR} ${OUT_FILE}
+        bold "Running load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}:";
+        ./load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}
+        bold "Running load_atc_phones.pl ${OUT_FILE}:";
+        ./load_atc_phones.pl ${OUT_FILE}
+        bold "Running cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db:";
+        ./cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
+        bold "Running geonames_tz_lookup.pl ${OUT_FILE}:";
+        ./geonames_tz_lookup.pl ${OUT_FILE}
+        bold "Making a copy of FADDS file:";
+        cp ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
+        gzip ${OUT_FILE};
+    else
+        error "Unable to download FADDS file";
+    fi
     echo "--"
 fi
 
@@ -86,12 +100,16 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     DTPP_PATH="${BASE_DIR}/d-TPP_Metafile.xml";
     if [ ! -f "${DTPP_PATH}" ]; then
         DTPP_URL="https://aeronav.faa.gov/d-tpp/${DTPP_CYCLE}/xml_data/d-TPP_Metafile.xml";
-        echo "${bold}Downloading d-TPP ${DTPP_CYCLE} file:${normal}";
+        bold "Downloading d-TPP ${DTPP_CYCLE} file:";
         wget -O ${DTPP_PATH} ${DTPP_URL};
     fi
-    echo "${bold}Running load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
-    ./load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE};
-    gzip ${OUT_FILE};
+    if [ -s ${DTPP_PATH} ]; then
+        bold "Running load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE}:";
+        ./load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE};
+        gzip ${OUT_FILE};
+    else
+        error "Unable to download d-TPP file ${DCS_FILE}";
+    fi
     echo "--";
 fi
 
@@ -105,15 +123,15 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     DCS_PATH="${BASE_DIR}/${DCS_FILE}";
     if [ ! -f "${DCS_PATH}" ]; then
 	    DCS_URL="https://aeronav.faa.gov/afd/${DCS_CYCLE}/${DCS_FILE}";
-        echo "${bold}Downloading d-CS ${DCS_CYCLE} file:${normal}";
+        bold "Downloading d-CS ${DCS_CYCLE} file:";
         wget -O ${DCS_PATH} ${DCS_URL};
     fi
     if [ -s ${DCS_PATH} ]; then
-        echo "${bold}Running load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE}:${normal}";
+        bold "Running load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE}:";
         ./load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE};
         gzip ${OUT_FILE};
     else
-        echo "Unable to download d-CS file ${DCS_FILE}";
+        error "Unable to download d-CS file ${DCS_FILE}";
     fi
     echo "--";
 fi
@@ -128,38 +146,38 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     DOF_PATH="${BASE_DIR}/${DOF_FILE}";
     if [ ! -f "${DOF_PATH}" ]; then
         DOF_URL="https://aeronav.faa.gov/Obst_Data/${DOF_FILE}"
-        echo "${bold}Downloading DDOF file:${normal}";
+        bold "Downloading DDOF file:";
         wget -O ${DOF_PATH} ${DOF_URL};
         unzip -o -d ${BASE_DIR} ${DOF_PATH};
     fi
-    echo "${bold}Running load_dof.pl ${BASE_DIR} ${OUT_FILE}:${normal}";
+    bold "Running load_dof.pl ${BASE_DIR} ${OUT_FILE}:";
     ./load_dof.pl ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
 fi
 
 BASE_DIR="${DATA_DIR}/library";
-echo "${bold}Zipping library files:${normal}"
+bold "Zipping library files:"
 find ${BASE_DIR} -name *.pdf -print -exec gzip {} \;
 echo "--";
 
 OUT_FILE="${OUT_DIR}/library_${DATA_CYCLE}.db";
 if [ ! -f "${OUT_FILE}.gz" ]; then
-    echo "${bold}Running load_library.pl ${BASE_DIR} ${OUT_FILE}:${normal}"
+    bold "Running load_library.pl ${BASE_DIR} ${OUT_FILE}:"
     ./load_library.pl ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
 fi
 
-echo "${bold}Syncing data files with Google Storage:${normal}"
+bold "Syncing data files with Google Storage:"
 gsutil -m rsync -d -r -x fadds_prev.db -d ${OUT_DIR} ${GS_DATA_URL}
 gsutil -m acl -r ch -u Allusers:R ${GS_DATA_URL} 2>&1 | grep -v "No changes"
 echo "--";
 
-echo "${bold}Syncing library files with Google Storage:${normal}"
+bold "Syncing library files with Google Storage:"
 gsutil -m rsync -d -r ${LIBRARY_DIR} ${GS_LIBRARY_URL}
 gsutil -m acl -r ch -u Allusers:R ${GS_LIBRARY_URL} 2>&1 | grep -v "No changes"
 echo "--";
 
-echo "${bold}Done!${normal}"
+bold "Done!"
 
