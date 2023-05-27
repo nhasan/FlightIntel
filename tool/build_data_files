@@ -89,6 +89,8 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
         error "Unable to download FADDS file";
     fi
     echo "--"
+else
+    bold "FADDS file ${OUT_FILE}.gz found.";
 fi
 
 OUT_FILE="${OUT_DIR}/dtpp_${DATA_CYCLE}.db";
@@ -111,6 +113,8 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
         error "Unable to download d-TPP file ${DCS_FILE}";
     fi
     echo "--";
+else
+    bold "d-TPP file ${OUT_FILE}.gz found.";
 fi
 
 OUT_FILE="${OUT_DIR}/dcs_${DATA_CYCLE}.db";
@@ -134,6 +138,8 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
         error "Unable to download d-CS file ${DCS_FILE}";
     fi
     echo "--";
+else
+    bold "d-CS file ${OUT_FILE}.gz found.";
 fi
 
 OUT_FILE="${OUT_DIR}/dof_${DATA_CYCLE}.db";
@@ -154,6 +160,8 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     ./load_dof.pl ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
+else
+    bold "DOF file ${OUT_FILE}.gz found.";
 fi
 
 BASE_DIR="${DATA_DIR}/library";
@@ -167,6 +175,8 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     ./load_library.pl ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
+else
+    bold "Library file ${OUT_FILE}.gz found.";
 fi
 
 bold "Syncing data files with Google Storage:"
