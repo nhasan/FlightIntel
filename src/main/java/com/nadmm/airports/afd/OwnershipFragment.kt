@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,74 +61,70 @@ class OwnershipFragment : FragmentBase() {
     }
 
     private fun showDetails(result: Array<Cursor?>) {
-        val apt = result[0]
-        showAirportTitle(apt!!)
-        showOwnershipType(result)
-        showOwnerInfo(result)
-        showManagerInfo(result)
-        showRemarks(result)
+        val apt = result[0] ?: return
+        showAirportTitle(apt)
+        showOwnershipType(apt)
+        showOwnerInfo(apt)
+        showManagerInfo(apt)
+        val rmk = result[1] ?: return
+        showRemarks(rmk)
         setFragmentContentShown(true)
     }
 
-    private fun showOwnershipType(result: Array<Cursor?>) {
-        val apt = result[0] ?: return
-        val layout = findViewById<LinearLayout>(R.id.detail_ownership_type_layout)
+    private fun showOwnershipType(apt: Cursor) {
+        val layout = findViewById<LinearLayout>(R.id.detail_ownership_type_layout) ?: return
         val ownership = decodeOwnershipType(
-            apt.getString(apt.getColumnIndex(Airports.OWNERSHIP_TYPE))
+            apt.getString(apt.getColumnIndexOrThrow(Airports.OWNERSHIP_TYPE))
         )
         val use = decodeFacilityUse(
-            apt.getString(apt.getColumnIndex(Airports.FACILITY_USE))
+            apt.getString(apt.getColumnIndexOrThrow(Airports.FACILITY_USE))
         )
-        addSimpleRow(layout!!, "$ownership / $use")
+        addSimpleRow(layout, "$ownership / $use")
     }
 
-    private fun showOwnerInfo(result: Array<Cursor?>) {
-        val apt = result[0]
-        var layout = findViewById<LinearLayout>(R.id.detail_owner_layout)
-        var text: String = apt!!.getString(apt.getColumnIndex(Airports.OWNER_NAME))
-        addSimpleRow(layout!!, text)
-        text = apt.getString(apt.getColumnIndex(Airports.OWNER_ADDRESS))
+    private fun showOwnerInfo(apt: Cursor) {
+        var layout = findViewById<LinearLayout>(R.id.detail_owner_layout) ?: return
+        var text: String = apt.getString(apt.getColumnIndexOrThrow(Airports.OWNER_NAME))
         addSimpleRow(layout, text)
-        text = apt.getString(apt.getColumnIndex(Airports.OWNER_CITY_STATE_ZIP))
+        text = apt.getString(apt.getColumnIndexOrThrow(Airports.OWNER_ADDRESS))
         addSimpleRow(layout, text)
-        layout = findViewById(R.id.detail_owner_phone_layout)
-        text = apt.getString(apt.getColumnIndex(Airports.OWNER_PHONE))
+        text = apt.getString(apt.getColumnIndexOrThrow(Airports.OWNER_CITY_STATE_ZIP))
+        addSimpleRow(layout, text)
+        layout = findViewById(R.id.detail_owner_phone_layout) ?: return
+        text = apt.getString(apt.getColumnIndexOrThrow(Airports.OWNER_PHONE))
         if (text.isNotEmpty()) {
-            addPhoneRow(layout!!, text)
+            addPhoneRow(layout, text)
         } else {
-            layout!!.visibility = View.GONE
+            layout.visibility = View.GONE
             findViewById<View>(R.id.detail_owner_phone_label)!!.visibility = View.GONE
         }
     }
 
-    private fun showManagerInfo(result: Array<Cursor?>) {
-        val apt = result[0]
-        var layout = findViewById<LinearLayout>(R.id.detail_manager_layout)
-        var text: String = apt!!.getString(apt.getColumnIndex(Airports.MANAGER_NAME))
-        addSimpleRow(layout!!, text)
-        text = apt.getString(apt.getColumnIndex(Airports.MANAGER_ADDRESS))
+    private fun showManagerInfo(apt: Cursor) {
+        var layout = findViewById<LinearLayout>(R.id.detail_manager_layout) ?: return
+        var text: String = apt.getString(apt.getColumnIndexOrThrow(Airports.MANAGER_NAME))
         addSimpleRow(layout, text)
-        text = apt.getString(apt.getColumnIndex(Airports.MANAGER_CITY_STATE_ZIP))
+        text = apt.getString(apt.getColumnIndexOrThrow(Airports.MANAGER_ADDRESS))
         addSimpleRow(layout, text)
-        layout = findViewById(R.id.detail_manager_phone_layout)
-        text = apt.getString(apt.getColumnIndex(Airports.MANAGER_PHONE))
-        if (text.isNotEmpty()) {
-            addPhoneRow(layout!!, text)
+        text = apt.getString(apt.getColumnIndexOrThrow(Airports.MANAGER_CITY_STATE_ZIP))
+        addSimpleRow(layout, text)
+        layout = findViewById(R.id.detail_manager_phone_layout) ?: return
+        text = apt.getString(apt.getColumnIndexOrThrow(Airports.MANAGER_PHONE))
+        if (text.isNotBlank()) {
+            addPhoneRow(layout, text)
         } else {
-            layout!!.visibility = View.GONE
+            layout.visibility = View.GONE
             findViewById<View>(R.id.detail_manager_phone_label)!!.visibility = View.GONE
         }
     }
 
-    private fun showRemarks(result: Array<Cursor?>) {
-        val rmk = result[1]
-        if (rmk == null || !rmk.moveToFirst()) {
+    private fun showRemarks(rmk: Cursor) {
+        if (!rmk.moveToFirst())
             return
-        }
-        val layout = findViewById<LinearLayout>(R.id.detail_remarks_layout)
-        layout!!.visibility = View.VISIBLE
+        val layout = findViewById<LinearLayout>(R.id.detail_remarks_layout) ?: return
+        layout.visibility = View.VISIBLE
         do {
-            val remark = rmk.getString(rmk.getColumnIndex(Remarks.REMARK_TEXT))
+            val remark = rmk.getString(rmk.getColumnIndexOrThrow(Remarks.REMARK_TEXT))
             addBulletedRow(layout, remark)
         } while (rmk.moveToNext())
     }
