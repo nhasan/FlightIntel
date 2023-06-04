@@ -153,7 +153,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
         super.onCreate(savedInstanceState)
 
-        dbManager = instance(this)
+        dbManager = DatabaseManager.instance(this)
         mInflater = layoutInflater
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
 
@@ -590,42 +590,42 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
             startActivity(intent)
             finish()
         }
-        return db
+        return db!!
     }
 
     @SuppressLint("SetTextI18n")
     fun showAirportTitle(c: Cursor) {
         val root = findViewById<View>(R.id.airport_title_layout)
         var tv = root.findViewById<TextView>(R.id.facility_name)
-        var code: String? = c.getString(c.getColumnIndex(Airports.ICAO_CODE))
+        var code: String? = c.getString(c.getColumnIndexOrThrow(Airports.ICAO_CODE))
         if (code.isNullOrBlank()) {
-            code = c.getString(c.getColumnIndex(Airports.FAA_CODE))
+            code = c.getString(c.getColumnIndexOrThrow(Airports.FAA_CODE))
         }
-        val tower = c.getString(c.getColumnIndex(Airports.TOWER_ON_SITE))
+        val tower = c.getString(c.getColumnIndexOrThrow(Airports.TOWER_ON_SITE))
         val color = if (tower == "Y") Color.rgb(64, 128, 192) else Color.rgb(160, 48, 92)
         tv.setTextColor(color)
-        val name = c.getString(c.getColumnIndex(Airports.FACILITY_NAME))
-        val siteNumber = c.getString(c.getColumnIndex(Airports.SITE_NUMBER))
+        val name = c.getString(c.getColumnIndexOrThrow(Airports.FACILITY_NAME))
+        val siteNumber = c.getString(c.getColumnIndexOrThrow(Airports.SITE_NUMBER))
         val type = DataUtils.decodeLandingFacilityType(siteNumber)
         tv.text = "$name $type"
         tv = root.findViewById(R.id.facility_id)
         tv.setTextColor(color)
         tv.text = code
         tv = root.findViewById(R.id.facility_info)
-        val city = c.getString(c.getColumnIndex(Airports.ASSOC_CITY))
-        var state: String? = c.getString(c.getColumnIndex(States.STATE_NAME))
+        val city = c.getString(c.getColumnIndexOrThrow(Airports.ASSOC_CITY))
+        var state: String? = c.getString(c.getColumnIndexOrThrow(States.STATE_NAME))
         if (state.isNullOrBlank()) {
-            state = c.getString(c.getColumnIndex(Airports.ASSOC_COUNTY))
+            state = c.getString(c.getColumnIndexOrThrow(Airports.ASSOC_COUNTY))
         }
         tv.text = "$city, $state"
         tv = root.findViewById(R.id.facility_info2)
-        val distance = c.getInt(c.getColumnIndex(Airports.DISTANCE_FROM_CITY_NM))
-        val dir = c.getString(c.getColumnIndex(Airports.DIRECTION_FROM_CITY))
-        val status = c.getString(c.getColumnIndex(Airports.STATUS_CODE))
+        val distance = c.getInt(c.getColumnIndexOrThrow(Airports.DISTANCE_FROM_CITY_NM))
+        val dir = c.getString(c.getColumnIndexOrThrow(Airports.DIRECTION_FROM_CITY))
+        val status = c.getString(c.getColumnIndexOrThrow(Airports.STATUS_CODE))
         tv.text = "${DataUtils.decodeStatus(status)}, $distance miles $dir of city center"
         tv = root.findViewById(R.id.facility_info3)
-        val elevMsl = c.getFloat(c.getColumnIndex(Airports.ELEVATION_MSL))
-        var tpaAgl = c.getInt(c.getColumnIndex(Airports.PATTERN_ALTITUDE_AGL))
+        val elevMsl = c.getFloat(c.getColumnIndexOrThrow(Airports.ELEVATION_MSL))
+        var tpaAgl = c.getInt(c.getColumnIndexOrThrow(Airports.PATTERN_ALTITUDE_AGL))
         var est = ""
         if (tpaAgl == 0) {
             tpaAgl = 1000
@@ -634,7 +634,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         tv.text = "${FormatUtils.formatFeet(elevMsl)} MSL elev. - " +
                 "${FormatUtils.formatFeet(elevMsl + tpaAgl)} MSL TPA $est"
 
-        val s = c.getString(c.getColumnIndex(Airports.EFFECTIVE_DATE))
+        val s = c.getString(c.getColumnIndexOrThrow(Airports.EFFECTIVE_DATE))
         val endDate = GregorianCalendar(TimeZone.getTimeZone("UTC"))
         val year = s.substring(6).toInt()
         val month = s.substring(0, 2).toInt() - 1
@@ -650,7 +650,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         }
 
         val cb = root.findViewById<CheckBox>(R.id.airport_star)
-        cb.isChecked = dbManager.isFavoriteAirport(siteNumber)!!
+        cb.isChecked = dbManager.isFavoriteAirport(siteNumber)
         cb.tag = siteNumber
         cb.setOnClickListener { v ->
             val cb1 = v as CheckBox
@@ -663,8 +663,8 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         }
 
         val iv = root.findViewById<ImageView>(R.id.airport_map)
-        val lat = c.getString(c.getColumnIndex(Airports.REF_LATTITUDE_DEGREES))
-        val lon = c.getString(c.getColumnIndex(Airports.REF_LONGITUDE_DEGREES))
+        val lat = c.getString(c.getColumnIndexOrThrow(Airports.REF_LATTITUDE_DEGREES))
+        val lon = c.getString(c.getColumnIndexOrThrow(Airports.REF_LONGITUDE_DEGREES))
         if (lat.isNotBlank() && lon.isNotBlank()) {
             iv.tag = "geo:$lat,$lon?z=16"
             iv.setOnClickListener { v ->
@@ -679,17 +679,17 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     fun showNavaidTitle(c: Cursor) {
         val root = findViewById<View>(R.id.navaid_title_layout)
-        val id = c.getString(c.getColumnIndex(Nav1.NAVAID_ID))
-        val name = c.getString(c.getColumnIndex(Nav1.NAVAID_NAME))
-        val type = c.getString(c.getColumnIndex(Nav1.NAVAID_TYPE))
+        val id = c.getString(c.getColumnIndexOrThrow(Nav1.NAVAID_ID))
+        val name = c.getString(c.getColumnIndexOrThrow(Nav1.NAVAID_NAME))
+        val type = c.getString(c.getColumnIndexOrThrow(Nav1.NAVAID_TYPE))
         var tv = root.findViewById<TextView>(R.id.navaid_name)
         tv.text = String.format(Locale.US, "%s - %s %s", id, name, type)
-        val city = c.getString(c.getColumnIndex(Nav1.ASSOC_CITY))
-        val state = c.getString(c.getColumnIndex(States.STATE_NAME))
+        val city = c.getString(c.getColumnIndexOrThrow(Nav1.ASSOC_CITY))
+        val state = c.getString(c.getColumnIndexOrThrow(States.STATE_NAME))
         tv = root.findViewById(R.id.navaid_info)
         tv.text = String.format(Locale.US, "%s, %s", city, state)
-        val use = c.getString(c.getColumnIndex(Nav1.PUBLIC_USE))
-        val elevMsl = c.getFloat(c.getColumnIndex(Nav1.ELEVATION_MSL))
+        val use = c.getString(c.getColumnIndexOrThrow(Nav1.PUBLIC_USE))
+        val elevMsl = c.getFloat(c.getColumnIndexOrThrow(Nav1.ELEVATION_MSL))
         tv = root.findViewById(R.id.navaid_info2)
         tv.text = String.format(Locale.US, "%s, %s elevation",
                 if (use == "Y") "Public use" else "Private use",
@@ -715,27 +715,27 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     }
 
     fun setActionBarTitle(c: Cursor) {
-        val siteNumber = c.getString(c.getColumnIndex(Airports.SITE_NUMBER))
+        val siteNumber = c.getString(c.getColumnIndexOrThrow(Airports.SITE_NUMBER))
         val type = DataUtils.decodeLandingFacilityType(siteNumber)
-        val name = c.getString(c.getColumnIndex(Airports.FACILITY_NAME))
-        var code: String? = c.getString(c.getColumnIndex(Airports.ICAO_CODE))
+        val name = c.getString(c.getColumnIndexOrThrow(Airports.FACILITY_NAME))
+        var code: String? = c.getString(c.getColumnIndexOrThrow(Airports.ICAO_CODE))
         if (code.isNullOrBlank()) {
-            code = c.getString(c.getColumnIndex(Airports.FAA_CODE))
+            code = c.getString(c.getColumnIndexOrThrow(Airports.FAA_CODE))
         }
         supportActionBar?.title = "$code - $name $type"
     }
 
     fun setActionBarTitle(c: Cursor, subtitle: String) {
-        var code: String? = c.getString(c.getColumnIndex(Airports.ICAO_CODE))
+        var code: String? = c.getString(c.getColumnIndexOrThrow(Airports.ICAO_CODE))
         if (code.isNullOrBlank()) {
-            code = c.getString(c.getColumnIndex(Airports.FAA_CODE)) ?: ""
+            code = c.getString(c.getColumnIndexOrThrow(Airports.FAA_CODE)) ?: ""
         }
         var title = code
         val isScreenWide = resources.getBoolean(R.bool.IsScreenWide)
         if (isScreenWide) {
-            val siteNumber = c.getString(c.getColumnIndex(Airports.SITE_NUMBER))
+            val siteNumber = c.getString(c.getColumnIndexOrThrow(Airports.SITE_NUMBER))
             val type = DataUtils.decodeLandingFacilityType(siteNumber)
-            val name = c.getString(c.getColumnIndex(Airports.FACILITY_NAME))
+            val name = c.getString(c.getColumnIndexOrThrow(Airports.FACILITY_NAME))
             title = "$code - $name $type"
         }
 
@@ -762,7 +762,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     fun showFaddsEffectiveDate(c: Cursor) {
         val tv = findViewById<TextView>(R.id.effective_date) ?: return
-        var s = c.getString(c.getColumnIndex(Airports.EFFECTIVE_DATE))
+        var s = c.getString(c.getColumnIndexOrThrow(Airports.EFFECTIVE_DATE))
         val date = TimeUtils.parseFaaDate(s) ?: return
         val start = Calendar.getInstance()
         start.timeZone = TimeZone.getTimeZone("UTC")
