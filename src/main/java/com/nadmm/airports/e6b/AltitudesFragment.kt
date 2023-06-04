@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,22 +74,17 @@ class AltitudesFragment : E6bFragmentBase() {
             val temperatureK = temperatureC + 273.16
 
             // Source: https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
-            val pa =
-                elevation + ((1 - Math.pow(
-                    altimeterMb / 1013.25,
-                    0.190284
-                )) * 145366.45).roundToInt()
+            val pa = elevation + ((1 - (altimeterMb / 1013.25).pow(0.190284)) * 145366.45).roundToInt()
             showValue(mPressureAltitudeEdit, pa.toDouble())
 
             // Source: https://www.weather.gov/media/epz/wxcalc/densityAltitude.pdf
             // Calculate vapor pressure first
             val e = 6.11 * 10.0.pow(7.5 * dewPointC / (237.7 + dewPointC))
             // Next, calculate virtual temperature in Kelvin
-            var tv = temperatureK / (1 - e / altimeterMb * (1 - 0.622))
+            var tv = temperatureK / (1 - (e / altimeterMb) * (1 - 0.622))
             // Convert Kelvin to Rankin to use in the next step
             tv = 9 * (tv - 273.16) / 5 + 32 + 459.69
-            val da =
-                elevation + (145366 * (1 - Math.pow(17.326 * altimeterHg / tv, 0.235))).roundToInt()
+            val da = elevation + (145366 * (1 - (17.326 * altimeterHg / tv).pow(0.235))).roundToInt()
             showValue(mDensityAltitudeEdit, da.toDouble())
         } catch (ignored: NumberFormatException) {
             clearEditText(mPressureAltitudeEdit)

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,14 +24,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.google.android.material.textfield.TextInputLayout
-import com.nadmm.airports.ListMenuFragment
 import com.nadmm.airports.R
 
 class FuelCalcsFragment : E6bFragmentBase() {
     private var mEdit1: TextInputLayout? = null
     private var mEdit2: TextInputLayout? = null
     private var mEdit3: TextInputLayout? = null
-    private var mMenuId: Long = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,7 +42,6 @@ class FuelCalcsFragment : E6bFragmentBase() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mMenuId = requireArguments().getLong(ListMenuFragment.MENU_ID)
         setupUi()
         setFragmentContentShown(true)
     }
@@ -54,20 +51,20 @@ class FuelCalcsFragment : E6bFragmentBase() {
 
     override fun processInput() {
         try {
-            when (mMenuId) {
-                R.id.E6B_FUEL_ENDURANCE.toLong() -> {
+            when (menuId) {
+                R.id.E6B_FUEL_ENDURANCE -> {
                     val fuelTotal = parseDouble(mEdit1)
                     val fuelRate = parseDouble(mEdit2)
                     val endurance = fuelTotal / (fuelRate / 60)
                     showValue(mEdit3, endurance)
                 }
-                R.id.E6B_FUEL_TOTAL_BURNED.toLong() -> {
+                R.id.E6B_FUEL_TOTAL_BURNED -> {
                     val fuelRate = parseDouble(mEdit1)
                     val endurance = parseDouble(mEdit2)
                     val fuelTotal = endurance / 60 * fuelRate
                     showValue(mEdit3, fuelTotal)
                 }
-                R.id.E6B_FUEL_BURN_RATE.toLong() -> {
+                R.id.E6B_FUEL_BURN_RATE -> {
                     val fuelTotal = parseDouble(mEdit1)
                     val endurance = parseDouble(mEdit2)
                     val fuelRate = fuelTotal / (endurance / 60)
@@ -86,30 +83,30 @@ class FuelCalcsFragment : E6bFragmentBase() {
         mEdit1 = findViewById(R.id.e6b_edit_value1)
         mEdit2 = findViewById(R.id.e6b_edit_value2)
         mEdit3 = findViewById(R.id.e6b_edit_value3)
-        when (mMenuId) {
-            R.id.E6B_FUEL_ENDURANCE.toLong() -> {
+        when (menuId) {
+            R.id.E6B_FUEL_ENDURANCE -> {
                 label1!!.setText(R.string.total_fuel)
                 addEditField(mEdit1, R.string.gal)
                 label2!!.setText(R.string.burn_rate)
                 addEditField(mEdit2, R.string.gph)
                 label3!!.setText(R.string.endurance)
-                addReadOnlyField(mEdit3!!, R.string.min)
+                addReadOnlyField(mEdit3, R.string.min)
             }
-            R.id.E6B_FUEL_BURN_RATE.toLong() -> {
+            R.id.E6B_FUEL_BURN_RATE -> {
                 label1!!.setText(R.string.total_fuel)
                 addEditField(mEdit1, R.string.gal)
                 label2!!.setText(R.string.endurance)
                 addEditField(mEdit2, R.string.min)
                 label3!!.setText(R.string.burn_rate)
-                addReadOnlyField(mEdit3!!, R.string.gph)
+                addReadOnlyField(mEdit3, R.string.gph)
             }
-            R.id.E6B_FUEL_TOTAL_BURNED.toLong() -> {
+            R.id.E6B_FUEL_TOTAL_BURNED -> {
                 label1!!.setText(R.string.burn_rate)
                 addEditField(mEdit1, R.string.gph)
                 label2!!.setText(R.string.endurance)
                 addEditField(mEdit2, R.string.min)
                 label3!!.setText(R.string.total_fuel)
-                addReadOnlyField(mEdit3!!, R.string.gal)
+                addReadOnlyField(mEdit3, R.string.gal)
             }
         }
     }

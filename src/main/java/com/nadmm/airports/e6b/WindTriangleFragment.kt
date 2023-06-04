@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,15 +29,14 @@ import com.nadmm.airports.R
 import kotlin.math.*
 
 class WindTriangleFragment : E6bFragmentBase() {
-    private var mEdit1: TextInputLayout? = null
-    private var mEdit2: TextInputLayout? = null
-    private var mEdit3: TextInputLayout? = null
-    private var mEdit4: TextInputLayout? = null
-    private var mEdit5: TextInputLayout? = null
-    private var mEdit6: TextInputLayout? = null
-    private var mEdit7: TextInputLayout? = null
-    private var mTextMsg: TextView? = null
-    private var mMode: Long = 0
+    private lateinit var mEdit1: TextInputLayout
+    private lateinit var mEdit2: TextInputLayout
+    private lateinit var mEdit3: TextInputLayout
+    private lateinit var mEdit4: TextInputLayout
+    private lateinit var mEdit5: TextInputLayout
+    private lateinit var mEdit6: TextInputLayout
+    private lateinit var mEdit7: TextInputLayout
+    private lateinit var mTextMsg: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,7 +49,6 @@ class WindTriangleFragment : E6bFragmentBase() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mMode = R.id.E6B_WIND_TRIANGLE_WIND.toLong()
         setupUi()
         setFragmentContentShown(true)
     }
@@ -60,10 +58,10 @@ class WindTriangleFragment : E6bFragmentBase() {
 
     @SuppressLint("SetTextI18n")
     override fun processInput() {
-        mTextMsg?.text = ""
+        mTextMsg.text = ""
         try {
-            when (mMode) {
-                R.id.E6B_WIND_TRIANGLE_WIND.toLong() -> {
+            when (menuId) {
+                R.id.E6B_WIND_TRIANGLE_WIND -> {
                     val tas = parseDouble(mEdit1)
                     val gs = parseDouble(mEdit2)
                     val hdg = parseDirection(mEdit3)
@@ -77,10 +75,10 @@ class WindTriangleFragment : E6bFragmentBase() {
                         tas * cos(hdg - crs) - gs
                     )
                     showValue(mEdit5, ws)
-                    showDirection(mEdit6!!, wdir)
-                    showDirection(mEdit7!!, hdg - crs)
+                    showDirection(mEdit6, wdir)
+                    showDirectionOffset(mEdit7, hdg - crs)
                 }
-                R.id.E6B_WIND_TRIANGLE_HDG_GS.toLong() -> {
+                R.id.E6B_WIND_TRIANGLE_HDG_GS -> {
                     val tas = parseDouble(mEdit1)
                     val ws = parseDouble(mEdit2)
                     val wdir = parseDirection(mEdit3)
@@ -89,13 +87,13 @@ class WindTriangleFragment : E6bFragmentBase() {
                     val hdg = crs + asin(swc)
                     val gs = tas * sqrt(1.0 - swc.pow(2.0)) - ws * cos(wdir - crs)
                     if (gs <= 0 || abs(swc) > 1) {
-                        mTextMsg?.text = "Course cannot be flown, wind is too strong."
+                        mTextMsg.text = "Course cannot be flown, wind is too strong."
                     }
                     showValue(mEdit5, gs)
-                    showDirection(mEdit6!!, hdg)
-                    showDirection(mEdit7!!, hdg - crs)
+                    showDirection(mEdit6, hdg)
+                    showDirectionOffset(mEdit7, hdg - crs)
                 }
-                R.id.E6B_WIND_TRIANGLE_CRS_GS.toLong() -> {
+                R.id.E6B_WIND_TRIANGLE_CRS_GS -> {
                     val tas = parseDouble(mEdit1)
                     val ws = parseDouble(mEdit2)
                     val wdir = parseDirection(mEdit3)
@@ -110,13 +108,14 @@ class WindTriangleFragment : E6bFragmentBase() {
                     )
                     val crs = (hdg + wca) % (2 * Math.PI)
                     showValue(mEdit5, gs)
-                    showDirection(mEdit6!!, crs)
-                    showDirection(mEdit7!!, hdg - crs)
+                    showDirection(mEdit6, crs)
+                    showDirectionOffset(mEdit7, hdg - crs)
                 }
             }
         } catch (ignored: NumberFormatException) {
             clearEditText(mEdit5)
             clearEditText(mEdit6)
+            clearEditText(mEdit7)
         }
     }
 
@@ -127,61 +126,61 @@ class WindTriangleFragment : E6bFragmentBase() {
         val mLabel4 = findViewById<TextView>(R.id.e6b_label_value4)
         val mLabel5 = findViewById<TextView>(R.id.e6b_label_value5)
         val mLabel6 = findViewById<TextView>(R.id.e6b_label_value6)
-        mEdit1 = findViewById(R.id.e6b_edit_value1)
-        mEdit2 = findViewById(R.id.e6b_edit_value2)
-        mEdit3 = findViewById(R.id.e6b_edit_value3)
-        mEdit4 = findViewById(R.id.e6b_edit_value4)
-        mEdit5 = findViewById(R.id.e6b_edit_value5)
-        mEdit6 = findViewById(R.id.e6b_edit_value6)
-        mEdit7 = findViewById(R.id.e6b_edit_value7)
-        mTextMsg = findViewById(R.id.e6b_msg)
+        mEdit1 = findViewById(R.id.e6b_edit_value1)!!
+        mEdit2 = findViewById(R.id.e6b_edit_value2)!!
+        mEdit3 = findViewById(R.id.e6b_edit_value3)!!
+        mEdit4 = findViewById(R.id.e6b_edit_value4)!!
+        mEdit5 = findViewById(R.id.e6b_edit_value5)!!
+        mEdit6 = findViewById(R.id.e6b_edit_value6)!!
+        mEdit7 = findViewById(R.id.e6b_edit_value7)!!
+        mTextMsg = findViewById(R.id.e6b_msg)!!
         addReadOnlyField(mEdit7)
-        when (mMode) {
-            R.id.E6B_WIND_TRIANGLE_WIND.toLong() -> {
+        when (menuId) {
+            R.id.E6B_WIND_TRIANGLE_WIND -> {
                 // Find wind speed and direction
-                mLabel1!!.setText(R.string.tas)
+                mLabel1?.setText(R.string.tas)
                 addEditField(mEdit1, R.string.kts)
-                mLabel2!!.setText(R.string.gs)
+                mLabel2?.setText(R.string.gs)
                 addEditField(mEdit2, R.string.kts)
-                mLabel3!!.setText(R.string.hdg)
+                mLabel3?.setText(R.string.hdg)
                 addEditField(mEdit3, R.string.deg)
-                mLabel4!!.setText(R.string.crs)
+                mLabel4?.setText(R.string.crs)
                 addEditField(mEdit4, R.string.deg)
-                mEdit4!!.setHint(R.string.deg)
-                mLabel5!!.setText(R.string.ws)
-                addReadOnlyField(mEdit5!!, R.string.kts)
-                mLabel6!!.setText(R.string.wdir)
-                addReadOnlyField(mEdit6!!, R.string.deg)
+                mEdit4.setHint(R.string.deg)
+                mLabel5?.setText(R.string.ws)
+                addReadOnlyField(mEdit5, R.string.kts)
+                mLabel6?.setText(R.string.wdir)
+                addReadOnlyField(mEdit6, R.string.deg)
             }
-            R.id.E6B_WIND_TRIANGLE_HDG_GS.toLong() -> {
+            R.id.E6B_WIND_TRIANGLE_HDG_GS -> {
                 // Find HDG and GS
-                mLabel1!!.setText(R.string.tas)
+                mLabel1?.setText(R.string.tas)
                 addEditField(mEdit1, R.string.kts)
-                mLabel2!!.setText(R.string.ws)
+                mLabel2?.setText(R.string.ws)
                 addEditField(mEdit2, R.string.kts)
-                mLabel3!!.setText(R.string.wdir)
+                mLabel3?.setText(R.string.wdir)
                 addEditField(mEdit3, R.string.deg)
-                mLabel4!!.setText(R.string.crs)
+                mLabel4?.setText(R.string.crs)
                 addEditField(mEdit4, R.string.deg)
-                mLabel5!!.setText(R.string.gs)
-                addReadOnlyField(mEdit5!!, R.string.kts)
-                mLabel6!!.setText(R.string.hdg)
-                addReadOnlyField(mEdit6!!, R.string.deg)
+                mLabel5?.setText(R.string.gs)
+                addReadOnlyField(mEdit5, R.string.kts)
+                mLabel6?.setText(R.string.hdg)
+                addReadOnlyField(mEdit6, R.string.deg)
             }
-            R.id.E6B_WIND_TRIANGLE_CRS_GS.toLong() -> {
+            R.id.E6B_WIND_TRIANGLE_CRS_GS -> {
                 // Find CRS and GS
-                mLabel1!!.setText(R.string.tas)
+                mLabel1?.setText(R.string.tas)
                 addEditField(mEdit1, R.string.kts)
-                mLabel2!!.setText(R.string.ws)
+                mLabel2?.setText(R.string.ws)
                 addEditField(mEdit2, R.string.kts)
-                mLabel3!!.setText(R.string.wdir)
+                mLabel3?.setText(R.string.wdir)
                 addEditField(mEdit3, R.string.deg)
-                mLabel4!!.setText(R.string.hdg)
+                mLabel4?.setText(R.string.hdg)
                 addEditField(mEdit4, R.string.deg)
-                mLabel5!!.setText(R.string.gs)
-                addReadOnlyField(mEdit5!!, R.string.kts)
-                mLabel6!!.setText(R.string.crs)
-                addReadOnlyField(mEdit6!!, R.string.deg)
+                mLabel5?.setText(R.string.gs)
+                addReadOnlyField(mEdit5, R.string.kts)
+                mLabel6?.setText(R.string.crs)
+                addReadOnlyField(mEdit6, R.string.deg)
             }
         }
     }

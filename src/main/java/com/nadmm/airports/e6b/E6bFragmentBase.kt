@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2017-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2017-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,8 @@ import java.util.*
 import kotlin.math.roundToInt
 
 abstract class E6bFragmentBase : FragmentBase() {
+    protected var menuId: Int = -1
+        private set
     private val mTextWatcher: TextWatcher = object : TextWatcher {
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -48,6 +50,8 @@ abstract class E6bFragmentBase : FragmentBase() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        menuId = requireArguments().getInt(ListMenuFragment.MENU_ID)
 
         val label = findViewById<TextView>(R.id.e6b_label)
         val args = arguments
@@ -123,9 +127,9 @@ abstract class E6bFragmentBase : FragmentBase() {
         return null
     }
 
-    protected fun addReadOnlyField(textInputLayout: TextInputLayout, textHintId: Int) {
+    protected fun addReadOnlyField(textInputLayout: TextInputLayout?, textHintId: Int) {
         addReadOnlyField(textInputLayout)
-        textInputLayout.setHint(textHintId)
+        textInputLayout?.setHint(textHintId)
     }
 
     protected fun addReadOnlyField(textInputLayout: TextInputLayout?) {
@@ -212,6 +216,11 @@ abstract class E6bFragmentBase : FragmentBase() {
 
     protected fun showDirection(textInputLayout: TextInputLayout, dirRadians: Double) {
         val dirDegrees = Math.toDegrees(normalizeDir(dirRadians))
+        showValue(textInputLayout, dirDegrees.roundToInt().toDouble())
+    }
+
+    protected fun showDirectionOffset(textInputLayout: TextInputLayout?, dirRadians: Double) {
+        val dirDegrees = Math.toDegrees(normalizeDir(dirRadians - 2 * Math.PI))
         showValue(textInputLayout, dirDegrees.roundToInt().toDouble())
     }
 

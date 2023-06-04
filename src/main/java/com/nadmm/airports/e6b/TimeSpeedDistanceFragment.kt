@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,14 +24,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.google.android.material.textfield.TextInputLayout
-import com.nadmm.airports.ListMenuFragment
 import com.nadmm.airports.R
 
 class TimeSpeedDistanceFragment : E6bFragmentBase() {
     private var mEdit1: TextInputLayout? = null
     private var mEdit2: TextInputLayout? = null
     private var mEdit3: TextInputLayout? = null
-    private var mMode: Long = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,7 +42,6 @@ class TimeSpeedDistanceFragment : E6bFragmentBase() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mMode = requireArguments().getLong(ListMenuFragment.MENU_ID)
         setupUi()
         setFragmentContentShown(true)
     }
@@ -54,20 +51,20 @@ class TimeSpeedDistanceFragment : E6bFragmentBase() {
 
     override fun processInput() {
         try {
-            when (mMode) {
-                R.id.E6B_TSD_TIME.toLong() -> {
+            when (menuId) {
+                R.id.E6B_TSD_TIME -> {
                     val speed = parseDouble(mEdit1)
                     val distance = parseDouble(mEdit2)
                     val time = distance * 60 / speed
                     showValue(mEdit3, time)
                 }
-                R.id.E6B_TSD_SPEED.toLong() -> {
+                R.id.E6B_TSD_SPEED -> {
                     val distance = parseDouble(mEdit1)
                     val time = parseDouble(mEdit2)
                     val speed = distance / (time / 60)
                     showValue(mEdit3, speed)
                 }
-                R.id.E6B_TSD_DISTANCE.toLong() -> {
+                R.id.E6B_TSD_DISTANCE -> {
                     val speed = parseDouble(mEdit1)
                     val time = parseDouble(mEdit2)
                     val distance = time / 60 * speed
@@ -86,30 +83,30 @@ class TimeSpeedDistanceFragment : E6bFragmentBase() {
         mEdit1 = findViewById(R.id.e6b_edit_value1)
         mEdit2 = findViewById(R.id.e6b_edit_value2)
         mEdit3 = findViewById(R.id.e6b_edit_value3)
-        when (mMode) {
-            R.id.E6B_TSD_TIME.toLong() -> {
+        when (menuId) {
+            R.id.E6B_TSD_TIME -> {
                 label1.setText(R.string.gs)
                 addEditField(mEdit1, R.string.kts)
                 label2.setText(R.string.distance_flown)
                 addEditField(mEdit2, R.string.nm)
                 label3.setText(R.string.flight_time)
-                addReadOnlyField(mEdit3!!, R.string.min)
+                addReadOnlyField(mEdit3, R.string.min)
             }
-            R.id.E6B_TSD_SPEED.toLong() -> {
+            R.id.E6B_TSD_SPEED -> {
                 label1.setText(R.string.distance_flown)
                 addEditField(mEdit1, R.string.nm)
                 label2.setText(R.string.time_flown)
                 addEditField(mEdit2, R.string.min)
                 label3.setText(R.string.gs)
-                addReadOnlyField(mEdit3!!, R.string.kts)
+                addReadOnlyField(mEdit3, R.string.kts)
             }
-            R.id.E6B_TSD_DISTANCE.toLong() -> {
+            R.id.E6B_TSD_DISTANCE -> {
                 label1.setText(R.string.gs)
                 addEditField(mEdit1, R.string.kts)
                 label2.setText(R.string.time_flown)
                 addEditField(mEdit2, R.string.min)
                 label3.setText(R.string.distance_flown)
-                addReadOnlyField(mEdit3!!, R.string.nm)
+                addReadOnlyField(mEdit3, R.string.nm)
             }
         }
     }

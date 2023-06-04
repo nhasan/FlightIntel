@@ -164,7 +164,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="numberDecimal" />
+                            android:inputType="numberDecimal|numberSigned" />
                 </com.google.android.material.textfield.TextInputLayout>
             </TableRow>
             <TableRow
@@ -192,7 +192,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="numberDecimal" />
+                        android:inputType="numberDecimal|numberSigned" />
                 </com.google.android.material.textfield.TextInputLayout>
             </TableRow>
         </TableLayout>
