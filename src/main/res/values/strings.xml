@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@
     <string name="atc_communications">ATC Communications</string>
     <string name="atc_hours">ATC Hours</string>
     <string name="atc_phones">ATC Phone Numbers</string>
+    <string name="apt_phones">Airport Phone Numbers</string>
     <string name="sunrise_sunset">Sunrise and Sunset</string>
     <string name="runways">Runways</string>
     <string name="helipads">Helipads</string>
@@ -168,7 +169,7 @@
     <string name="degC">deg C</string>
     <string name="degF">deg F</string>
     <string name="deg">deg</string>
-    <string name="inHg">inHg</string>
+    <string name="inHg">in Hg</string>
     <string name="mbar">mBar</string>
     <string name="kts">kts</string>
     <string name="nm">nm</string>
