@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.database.Cursor
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ListView
 import androidx.cursoradapter.widget.CursorAdapter
@@ -60,7 +61,7 @@ class WxDelegate(private val mFragment: ListFragmentBase) {
         }
     }
 
-    fun requestMetars(action: String?, force: Boolean, showAnim: Boolean) {
+    fun requestMetars(action: String, force: Boolean, showAnim: Boolean) {
         val activity = mFragment.activityBase
         if (mStationWx.isEmpty()) {
             activity.isRefreshing = false
@@ -75,12 +76,13 @@ class WxDelegate(private val mFragment: ListFragmentBase) {
         service.action = action
         service.putExtra(NoaaService.STATION_IDS, stationIds)
         service.putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
-        if (force) {
-            service.putExtra(NoaaService.FORCE_REFRESH, true)
-        } else if (cacheOnly) {
-            service.putExtra(NoaaService.CACHE_ONLY, true)
+        service.putExtra(NoaaService.FORCE_REFRESH, force)
+        service.putExtra(NoaaService.CACHE_ONLY, cacheOnly)
+        try {
+            activity.startService(service)
+        } catch (e: Exception) {
+            Log.i("WxDelegate","Exception: $e")
         }
-        activity.startService(service)
     }
 
     fun newListAdapter(context: Context?, c: Cursor?): CursorAdapter {
@@ -101,34 +103,35 @@ class WxDelegate(private val mFragment: ListFragmentBase) {
         } catch (_: Exception) {
         }
 
-    fun getMetar(statidId: String): Metar? {
-        return mStationWx[statidId]
+    fun getMetar(stationId: String): Metar? {
+        return mStationWx[stationId]
     }
 
     private inner class WxReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val metar = intent.getSerializableExtra(NoaaService.RESULT) as Metar? ?: return
-            mStationWx[metar.stationId] = metar
-            val l = mFragment.findViewById<ListView>(android.R.id.list) ?: return
-            val first = l.firstVisiblePosition
-            var pos = 0
-            while (pos <= l.childCount) {
-                val view = l.getChildAt(pos)
-                if (view != null) {
-                    val icaoCode = view.getTag(R.id.TAG_STATION_ID) as String
-                    if (icaoCode == metar.stationId) {
-                        val adapter = mFragment.listAdapter as WxCursorAdapter?
-                        val c = adapter!!.getItem(pos + first) as Cursor
+            try {
+                val metar = intent.getSerializableExtra(NoaaService.RESULT) as? Metar ?: return
+                val stationId = metar.stationId ?: return
+                mStationWx[stationId] = metar
+                val l = mFragment.findViewById<ListView>(android.R.id.list) ?: return
+                val first = l.firstVisiblePosition
+                for (pos in 0 until l.childCount) {
+                    val view = l.getChildAt(pos)
+                    val icaoCode = view.getTag(R.id.TAG_STATION_ID) as? String ?: continue
+                    if (icaoCode == stationId) {
+                        val adapter = mFragment.listAdapter as? WxCursorAdapter ?: continue
+                        val c = adapter.getItem(pos + first) as Cursor
                         if (c.position >= 0) {
                             adapter.showMetarInfo(view, c, metar)
                         }
                         break
                     }
                 }
-                ++pos
-            }
-            if (mFragment.isRefreshing) {
-                mFragment.isRefreshing = false
+                if (mFragment.isRefreshing) {
+                    mFragment.isRefreshing = false
+                }
+            } catch (e: Exception) {
+                Log.i("WxDelegate","Exception: ${e.message}")
             }
         }
     }
