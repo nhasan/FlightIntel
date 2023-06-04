@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,8 +48,8 @@ abstract class ListMenuFragment : ListFragmentBase() {
 
     override fun onListItemClick(l: ListView, v: View, position: Int) {
         val c = listAdapter!!.getItem(position) as Cursor
-        val id = c.getInt(c.getColumnIndex(BaseColumns._ID))
-        val title = c.getString(c.getColumnIndex(ListMenuCursor.ITEM_TITLE))
+        val id = c.getInt(c.getColumnIndexOrThrow(BaseColumns._ID))
+        val title = c.getString(c.getColumnIndexOrThrow(ListMenuCursor.ITEM_TITLE))
         val clss = getItemFragmentClass(id)
         if (clss != null) {
             val args = Bundle()
@@ -66,9 +66,9 @@ abstract class ListMenuFragment : ListFragmentBase() {
     private class ListMenuAdapter(context: Context?, c: Cursor?) :
         ResourceCursorAdapter(context, R.layout.list_menu_item, c, 0) {
         override fun bindView(view: View, context: Context, c: Cursor) {
-            val icon = c.getInt(c.getColumnIndex(ListMenuCursor.ITEM_ICON))
-            val title = c.getString(c.getColumnIndex(ListMenuCursor.ITEM_TITLE))
-            val summary = c.getString(c.getColumnIndex(ListMenuCursor.ITEM_SUMMARY))
+            val icon = c.getInt(c.getColumnIndexOrThrow(ListMenuCursor.ITEM_ICON))
+            val title = c.getString(c.getColumnIndexOrThrow(ListMenuCursor.ITEM_TITLE))
+            val summary = c.getString(c.getColumnIndexOrThrow(ListMenuCursor.ITEM_SUMMARY))
             val iv = view.findViewById<ImageView>(R.id.item_icon)
             if (icon != 0) {
                 iv.setImageDrawable(UiUtils.getDefaultTintedDrawable(context, icon))
