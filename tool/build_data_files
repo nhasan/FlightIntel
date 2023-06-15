@@ -72,15 +72,15 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
         unzip -o -d ${BASE_DIR} ${FADDS_FILE};
     fi
     if [ -d ${BASE_DIR} ]; then
-        bold "Running load_fadds.pl ${BASE_DIR} ${OUT_FILE}:";
+        bold "Running: load_fadds.pl ${BASE_DIR} ${OUT_FILE}";
         ./load_fadds.pl ${BASE_DIR} ${OUT_FILE}
-        bold "Running load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}:";
+        bold "Running: load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}";
         ./load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}
-        bold "Running load_atc_phones.pl ${OUT_FILE}:";
+        bold "Running: load_atc_phones.pl ${OUT_FILE}";
         ./load_atc_phones.pl ${OUT_FILE}
-        bold "Running cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db:";
+        bold "Running: cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db";
         ./cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
-        bold "Running geonames_tz_lookup.pl ${OUT_FILE}:";
+        bold "Running: geonames_tz_lookup.pl ${OUT_FILE}";
         ./geonames_tz_lookup.pl ${OUT_FILE}
         bold "Making a copy of FADDS file:";
         cp ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
@@ -106,7 +106,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
         wget -O ${DTPP_PATH} ${DTPP_URL};
     fi
     if [ -s ${DTPP_PATH} ]; then
-        bold "Running load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE}:";
+        bold "Running: load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE}";
         ./load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE};
         gzip ${OUT_FILE};
     else
@@ -131,7 +131,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
         wget -O ${DCS_PATH} ${DCS_URL};
     fi
     if [ -s ${DCS_PATH} ]; then
-        bold "Running load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE}:";
+        bold "Running: load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE}";
         ./load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE};
         gzip ${OUT_FILE};
     else
@@ -156,7 +156,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
         wget -O ${DOF_PATH} ${DOF_URL};
         unzip -o -d ${BASE_DIR} ${DOF_PATH};
     fi
-    bold "Running load_dof.pl ${BASE_DIR} ${OUT_FILE}:";
+    bold "Running: load_dof.pl ${BASE_DIR} ${OUT_FILE}";
     ./load_dof.pl ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
@@ -170,13 +170,20 @@ find ${BASE_DIR} -name *.pdf -print -exec gzip {} \;
 echo "--";
 
 OUT_FILE="${OUT_DIR}/library_${DATA_CYCLE}.db";
-if [ ! -f "${OUT_FILE}.gz" ]; then
-    bold "Running load_library.pl ${BASE_DIR} ${OUT_FILE}:"
+OUT_FILE_GZIP="${OUT_FILE}.gz"
+LIBRARY_CONFIG=library_data.csv
+# If library config is newer, delete the data file
+if [ ${LIBRARY_CONFIG} -nt ${OUT_FILE_GZIP} ]; then
+    bold "Removing stale library data file ${OUT_FILE_GZIP}"
+    rm -f ${OUT_FILE_GZIP}
+fi
+if [ ! -f ${OUT_FILE_GZIP} ]; then
+    bold "Running: load_library.pl ${BASE_DIR} ${OUT_FILE}"
     ./load_library.pl ${BASE_DIR} ${OUT_FILE};
     gzip ${OUT_FILE};
     echo "--";
 else
-    bold "Library file ${OUT_FILE}.gz found.";
+    bold "Library file ${OUT_FILE_GZIP} found.";
 fi
 
 bold "Syncing data files with Google Storage:"
