@@ -20,3 +20,4 @@ proguard.cfg
 google-services.json
 tool/tfr_list.xml
 release/
+.project
