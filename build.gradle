@@ -27,7 +27,7 @@ dependencies {
     implementation fileTree(include: '*.jar', dir: 'libs')
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation 'androidx.activity:activity-ktx:1.7.2'
-    implementation 'androidx.fragment:fragment-ktx:1.5.7'
+    implementation 'androidx.fragment:fragment-ktx:1.6.0'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
@@ -43,7 +43,7 @@ dependencies {
 
 android {
     compileSdkVersion 33
-    buildToolsVersion "33.0.1"
+    buildToolsVersion "33.0.2"
     namespace 'com.nadmm.airports'
 
     defaultConfig {
@@ -89,10 +89,6 @@ android {
 
     kotlin {
         jvmToolchain(11)
-    }
-
-    buildFeatures {
-        aidl true
     }
 }
 
