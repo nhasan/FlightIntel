@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ class MachNumberFragment : E6bFragmentBase() {
     }
 
     override val message: String
-        get() = "Speed of sound and hence Mach number varies directly with OAT"
+        get() = "Speed of sound and hence Mach number varies directly with OAT."
 
     override fun processInput() {
         try {
