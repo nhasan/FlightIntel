@@ -24,6 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.textfield.TextInputLayout
 import com.nadmm.airports.R
+import com.nadmm.airports.utils.WxUtils
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -62,19 +63,20 @@ class AltitudesFragment : E6bFragmentBase() {
 
     override val message: String
         get() =  "At sea level on a standard day, temperature is 15\u00B0C or 59\u00B0F" +
-                " and pressure is 29.92126 inHg or 1013.25 mB"
+                " and pressure is 29.92126 inHg or 1013.25 mB."
 
     override fun processInput() {
         try {
             val elevation = parseLong(mElevationEdit)
             val altimeterHg = parseDouble(mAltimeterEdit)
-            val altimeterMb = 33.8639 * altimeterHg
+            val altimeterMb = WxUtils.HG_TO_MBAR * altimeterHg
             val temperatureC = parseDouble(mTemperatureEdit)
             val dewPointC = parseDouble(mDewpointEdit)
             val temperatureK = temperatureC + 273.16
 
             // Source: https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
-            val pa = elevation + ((1 - (altimeterMb / 1013.25).pow(0.190284)) * 145366.45).roundToInt()
+            val pa = elevation + ((1 - (altimeterMb / WxUtils.ISA_PRESSURE_MBAR)
+                .pow(0.190284)) * 145366.45).roundToInt()
             showValue(mPressureAltitudeEdit, pa.toDouble())
 
             // Source: https://www.weather.gov/media/epz/wxcalc/densityAltitude.pdf
@@ -84,7 +86,7 @@ class AltitudesFragment : E6bFragmentBase() {
             var tv = temperatureK / (1 - (e / altimeterMb) * (1 - 0.622))
             // Convert Kelvin to Rankin to use in the next step
             tv = 9 * (tv - 273.16) / 5 + 32 + 459.69
-            val da = elevation + (145366 * (1 - (17.326 * altimeterHg / tv).pow(0.235))).roundToInt()
+            val da = elevation + (145366.45 * (1 - (17.326 * altimeterHg / tv).pow(0.235))).roundToInt()
             showValue(mDensityAltitudeEdit, da.toDouble())
         } catch (ignored: NumberFormatException) {
             clearEditText(mPressureAltitudeEdit)

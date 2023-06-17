@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,11 @@ object WxUtils {
     private const val CATEGORY_MVFR = "MVFR"
     private const val CATEGORY_IFR = "IFR"
     private const val CATEGORY_LIFR = "LIFR"
+
+    const val ISA_PRESSURE_HG = 29.9212
+    const val ISA_PRESSURE_MBAR = 1013.25
+    const val HG_TO_MBAR = ISA_PRESSURE_MBAR/ISA_PRESSURE_HG
+    const val TROPOPAUSE_FT = 36089
 
     private fun getFlightCategoryColor(flightCategory: String): Int {
         return when (flightCategory) {
