@@ -30,6 +30,7 @@ import android.content.Context
 import android.widget.ListView
 import android.view.View
 import androidx.cursoradapter.widget.CursorAdapter
+import com.nadmm.airports.utils.makeAirportBundle
 
 class SearchActivity : FragmentActivityBase() {
     private var mFragment: SearchFragment? = null
@@ -49,7 +50,7 @@ class SearchActivity : FragmentActivityBase() {
     private fun handleIntent() {
         if (Intent.ACTION_SEARCH == intent.action) {
             // Perform the search using user provided query string
-            intent.getStringExtra(SearchManager.QUERY)?.also { query ->
+            intent.getStringExtra(SearchManager.QUERY)?.let { query ->
                 showResults(query)
             }
         } else if (Intent.ACTION_VIEW == intent.action) {
@@ -81,9 +82,9 @@ class SearchActivity : FragmentActivityBase() {
         }
 
         override fun onListItemClick(l: ListView, v: View, position: Int) {
-            val siteNumber = mCursor!!.getString(mCursor!!.getColumnIndex(Airports.SITE_NUMBER))
-            val apt = Intent(activity, AirportActivity::class.java)
-            apt.putExtra(Airports.SITE_NUMBER, siteNumber)
+            val apt = Intent(activity, AirportActivity::class.java).apply {
+                putExtras(mCursor!!.makeAirportBundle())
+            }
             startActivity(apt)
         }
 
