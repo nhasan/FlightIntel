@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,12 +79,6 @@ abstract class FragmentBase : Fragment(), IRefreshable {
 
     protected val supportActionBar: ActionBar?
         get() = activityBase.supportActionBar
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val menuHost : MenuHost = requireActivity();
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -439,6 +433,20 @@ abstract class FragmentBase : Fragment(), IRefreshable {
             addSeparator(layout)
         }
 
+        layout.addView(row, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
+        return row
+    }
+
+    protected fun addTwoLineRow(layout: LinearLayout, line1: String, line2: String): View {
+        if (layout.childCount > 0) {
+            addSeparator(layout)
+        }
+
+        val row = inflate<LinearLayout>(R.layout.detail_row_twoline)
+        var tv = row.findViewById<TextView>(R.id.item_value)
+        tv.text = line1
+        tv = row.findViewById<TextView>(R.id.item_extra_value)
+        tv.text = line2
         layout.addView(row, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
         return row
     }
