@@ -19,7 +19,6 @@
 
 package com.nadmm.airports.datis
 
-import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
 import com.google.gson.annotations.SerializedName
@@ -35,14 +34,13 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeParseException
 
 object DatisParser {
-    fun parse(datisPath: String): ArrayList<Datis> {
-        var input: FileInputStream? = null
+    fun parse(datisfile: File): ArrayList<Datis> {
+        val input = FileInputStream(datisfile)
         val datisList = ArrayList<Datis>()
         try {
             val gson = GsonBuilder()
                 .registerTypeAdapter(OffsetDateTime::class.java, DateTypeAdapter())
                 .create()
-            input = FileInputStream(File(datisPath))
             val reader = JsonReader(InputStreamReader(input, StandardCharsets.UTF_8))
             reader.beginArray()
             while (reader.hasNext()) {
@@ -55,7 +53,7 @@ object DatisParser {
             e.printStackTrace()
         } finally {
             try {
-                input?.close()
+                input.close()
             } catch (ignored: IOException) {
             }
         }

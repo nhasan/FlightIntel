@@ -72,18 +72,17 @@ class DatisFragment : FragmentBase() {
     }
 
     override fun requestDataRefresh() {
-        fetchDatis()
+        fetchDatis(true)
     }
 
-    private fun fetchDatis() {
+    private fun fetchDatis(force: Boolean = false) {
         val icaoCode = arguments?.getString(DatabaseManager.Airports.ICAO_CODE) ?: return
         val appContext = activityBase.applicationContext
-        val workRequest = DatisWorker.enqueueWork(appContext, icaoCode)
+        val workRequest = DatisWorker.enqueueWork(appContext, icaoCode, force)
         WorkManager.getInstance(appContext).getWorkInfoByIdLiveData(workRequest.id)
             .observe(viewLifecycleOwner) { workInfo ->
                 if (workInfo != null && workInfo.state == WorkInfo.State.SUCCEEDED) {
-                    val datisPath = workInfo.outputData.getString(DatisWorker.DATIS_PATH)
-                    val datisList = DatisParser.parse(datisPath!!)
+                    val datisList = DatisParser.parse(DatisWorker.getDatisFile(workInfo))
                     showDatis(datisList)
                 }
             }
@@ -94,19 +93,16 @@ class DatisFragment : FragmentBase() {
             if (datis.atisType == COMBINED) {
                 findViewById<TextView>(R.id.datis_combined_label)?.visibility = View.VISIBLE
                 findViewById<LinearLayout>(R.id.datis_combined_details)?.let { layout ->
-                    layout.removeAllViews()
                     showDatisEntry(layout, datis)
                 }
             } else if (datis.atisType == ARRIVAL) {
                 findViewById<TextView>(R.id.datis_arrival_label)?.visibility = View.VISIBLE
                 findViewById<LinearLayout>(R.id.datis_arrival_details)?.let { layout ->
-                    layout.removeAllViews()
                     showDatisEntry(layout, datis)
                 }
             } else if (datis.atisType == DEPARTURE) {
                 findViewById<TextView>(R.id.datis_departure_label)?.visibility = View.VISIBLE
                 findViewById<LinearLayout>(R.id.datis_departure_details)?.let { layout ->
-                    layout.removeAllViews()
                     showDatisEntry(layout, datis)
                 }
             }
@@ -116,13 +112,14 @@ class DatisFragment : FragmentBase() {
     }
 
     private fun showDatisEntry(layout: LinearLayout, datis: Datis) {
+        layout.removeAllViews()
         val code = DataUtils.getPhoneticAlphabet(datis.atisCode).uppercase()
         val issued = TimeUtils.formatDateTime(
             activityBase, datis.issuedTimestamp.toEpochSecond() * 1000)
-        addTwoLineRow(layout, "Information $code is current", "Issued at $issued")
-        addRow(layout, datis.atisBody)
+        if (code.isNotBlank())
+            addTwoLineRow(layout, "Information $code is current", "Issued at $issued")
+        addRow(layout, datis.atisBody.dropWhile { !it.isLetter() })
         layout.visibility = View.VISIBLE
-        android.R.layout.simple_list_item_1
     }
 
     private fun doQuery(siteNumber: String): Array<Cursor?> {

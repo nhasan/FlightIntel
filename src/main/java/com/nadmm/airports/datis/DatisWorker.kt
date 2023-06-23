@@ -26,6 +26,7 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
@@ -35,6 +36,7 @@ import com.nadmm.airports.utils.NetworkUtils
 import com.nadmm.airports.utils.UiUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.net.URL
 
 class DatisWorker(appContext: Context, workerParams: WorkerParameters)
@@ -69,21 +71,25 @@ class DatisWorker(appContext: Context, workerParams: WorkerParameters)
     }
 
     companion object {
-        const val ICAO_LOCATION = "ICAO_LOCATION"
-        const val FORCE_REFRESH = "FORCE_REFRESH"
-        const val DATIS_PATH = "DATIS_PATH"
+        private const val ICAO_LOCATION = "ICAO_LOCATION"
+        private const val FORCE_REFRESH = "FORCE_REFRESH"
+        private const val DATIS_PATH = "DATIS_PATH"
         private const val WORKER_NAME = "datis"
         private const val CACHE_MAX_AGE = 5 * DateUtils.MINUTE_IN_MILLIS
+        private val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
 
-        fun enqueueWork(appContext: Context, icaoLocation: String, force: Boolean = false)
+        fun getDatisFile(workInfo: WorkInfo): File {
+            return File(workInfo.outputData.getString(DATIS_PATH)!!)
+        }
+
+        fun enqueueWork(appContext: Context, icaoLocation: String, force: Boolean)
                 : WorkRequest {
             val workData = workDataOf(
                 ICAO_LOCATION to icaoLocation,
                 FORCE_REFRESH to force
             )
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
             val workRequest = OneTimeWorkRequestBuilder<DatisWorker>()
                 .setInputData(workData)
                 .setConstraints(constraints)
