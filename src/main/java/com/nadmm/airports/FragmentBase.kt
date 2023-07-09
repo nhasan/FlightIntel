@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -174,9 +174,9 @@ abstract class FragmentBase : Fragment(), IRefreshable {
     }
 
     @SuppressLint("SetTextI18n")
-    fun showWxTitle(cursors: Array<Cursor>) {
-        val wxs = cursors[0]
-        val awos = cursors[1]
+    fun showWxTitle(cursors: Array<Cursor?>) {
+        val wxs = cursors[0] ?: return
+        val awos = cursors[1] ?: return
 
         val root = view ?: return
 
