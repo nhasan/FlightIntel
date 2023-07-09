@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,7 +143,7 @@ class AirportDetailsFragment : FragmentBase() {
 
     private fun handleBroadcast(intent: Intent) {
         when (intent.action) {
-            MetarService.ACTION_GET_METAR -> {
+            NoaaService.ACTION_GET_METAR -> {
                 val metar = intent.getSerializableExtra(NoaaService.RESULT) as? Metar
                 if (metar?.rawText != null) {
                     showWxInfo(metar)
@@ -455,7 +455,7 @@ class AirportDetailsFragment : FragmentBase() {
 
         val layout = findViewById<LinearLayout>(R.id.detail_charts_layout) ?: return
         var sectional: String? = apt.getString(apt.getColumnIndexOrThrow(Airports.SECTIONAL_CHART))
-        if (sectional == null || sectional.isEmpty()) {
+        if (sectional.isNullOrEmpty()) {
             sectional = "N/A"
         }
         val lat = apt.getString(apt.getColumnIndexOrThrow(Airports.REF_LATTITUDE_DEGREES))

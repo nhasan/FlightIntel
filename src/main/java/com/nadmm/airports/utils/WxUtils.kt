@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,40 +29,47 @@ import androidx.core.graphics.BlendModeCompat
 import com.nadmm.airports.R
 import com.nadmm.airports.wx.Metar
 import com.nadmm.airports.wx.SkyCondition
-import java.util.*
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.exp
+import kotlin.math.pow
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
 object WxUtils {
-    private const val CATEGORY_VFR = "VFR"
-    private const val CATEGORY_MVFR = "MVFR"
-    private const val CATEGORY_IFR = "IFR"
-    private const val CATEGORY_LIFR = "LIFR"
+    private const val FLIGHT_CATEGORY_VFR = "VFR"
+    private const val FLIGHT_CATEGORY_MVFR = "MVFR"
+    private const val FLIGHT_CATEGORY_IFR = "IFR"
+    private const val FLIGHT_CATEGORY_LIFR = "LIFR"
+    const val FLIGHT_CATEGORY_UNKN = "UNKN"
 
     private fun getFlightCategoryColor(flightCategory: String): Int {
         return when (flightCategory) {
-            CATEGORY_VFR -> Color.argb(255, 0, 160, 32)
-            CATEGORY_MVFR -> Color.argb(255, 0, 144, 224)
-            CATEGORY_IFR -> Color.argb(255, 192, 32, 0)
-            CATEGORY_LIFR -> Color.argb(255, 200, 0, 160)
-            else -> 0
+            FLIGHT_CATEGORY_VFR -> Color.argb(255, 0, 160, 32)
+            FLIGHT_CATEGORY_MVFR -> Color.argb(255, 0, 144, 224)
+            FLIGHT_CATEGORY_IFR -> Color.argb(255, 192, 32, 0)
+            FLIGHT_CATEGORY_LIFR -> Color.argb(255, 200, 0, 160)
+            else -> Color.GRAY
         }
     }
 
     @JvmStatic
     fun showColorizedDrawable(tv: TextView?, flightCategory: String, resid: Int) {
-        val color = getFlightCategoryColor(flightCategory)
-        UiUtils.setTintedTextViewDrawable(tv!!, resid, ColorStateList.valueOf(color))
+        tv?.let {
+            val color = getFlightCategoryColor(flightCategory)
+            UiUtils.setTintedTextViewDrawable(it, resid, ColorStateList.valueOf(color))
+        }
     }
 
     @JvmStatic
-    fun setFlightCategoryDrawable(tv: TextView, flightCategory: String?) {
-        var d = UiUtils.getDrawableFromCache(flightCategory!!)
+    fun setFlightCategoryDrawable(tv: TextView, flightCategory: String) {
+        var d = UiUtils.getDrawableFromCache(flightCategory)
         if (d == null) {
-            when (flightCategory) {
-                CATEGORY_VFR -> d = AppCompatResources.getDrawable(tv.context, R.drawable.wx_vfr_32)
-                CATEGORY_MVFR -> d = AppCompatResources.getDrawable(tv.context, R.drawable.wx_mvfr_32)
-                CATEGORY_IFR -> d = AppCompatResources.getDrawable(tv.context, R.drawable.wx_ifr_32)
-                CATEGORY_LIFR -> d = AppCompatResources.getDrawable(tv.context, R.drawable.wx_lifr_32)
+            d = when (flightCategory) {
+                FLIGHT_CATEGORY_VFR -> AppCompatResources.getDrawable(tv.context, R.drawable.wx_vfr_32)
+                FLIGHT_CATEGORY_MVFR -> AppCompatResources.getDrawable(tv.context, R.drawable.wx_mvfr_32)
+                FLIGHT_CATEGORY_IFR -> AppCompatResources.getDrawable(tv.context, R.drawable.wx_ifr_32)
+                FLIGHT_CATEGORY_LIFR -> AppCompatResources.getDrawable(tv.context, R.drawable.wx_lifr_32)
+                else -> null
             }
         }
         d?.let {
@@ -87,10 +94,7 @@ object WxUtils {
         var d: Drawable? = null
         if (isWindAvailable(metar)) {
             val dir = GeoUtils.applyDeclination(metar.windDirDegrees.toLong(), declination)
-            val key = String.format(
-                Locale.US, "Wind-%s-%d-%d",
-                metar.flightCategory, metar.windSpeedKnots, dir
-            )
+            val key = "Wind-${metar.flightCategory}-${metar.windSpeedKnots}-$dir"
             d = UiUtils.getDrawableFromCache(key)
             if (d == null) {
                 val resid: Int = if (metar.windSpeedKnots >= 48) {
@@ -261,35 +265,25 @@ object WxUtils {
     }
 
     @JvmStatic
-    fun getCeiling(skyConditions: ArrayList<SkyCondition>): SkyCondition {
-        for (sky in skyConditions) {
-            // Ceiling is defined as the lowest layer aloft reported as broken or overcast;
+    fun getCeiling(layers: ArrayList<SkyCondition>): SkyCondition {
+        return try {
+            // Ceiling is defined as the lowest cloud layer reported as broken or overcast;
             // or the vertical visibility into an indefinite ceiling
-            if (sky.skyCover == "BKN" || sky.skyCover == "OVC" || sky.skyCover == "OVX") {
-                return sky
-            }
+            layers.first { layer -> listOf("BKN", "OVC", "OVX").contains(layer.skyCover) }
+        } catch (e: NoSuchElementException) {
+            SkyCondition.create("NSC", 12000)
         }
-        return SkyCondition.create("NSC", 12000)
     }
 
     @JvmStatic
-    fun computeFlightCategory(
-        skyConditions: ArrayList<SkyCondition>,
-        visibilitySM: Float
-    ): String {
-        val flightCategory: String
-        val sky = getCeiling(skyConditions)
-        val ceiling = sky.cloudBaseAGL
-        flightCategory = if (ceiling < 500 || visibilitySM < 1.0) {
-            "LIFR"
-        } else if (ceiling < 1000 || visibilitySM < 3.0) {
-            "IFR"
-        } else if (ceiling <= 3000 || visibilitySM <= 5.0) {
-            "MVFR"
-        } else {
-            "VFR"
+    fun computeFlightCategory(skyConditions: ArrayList<SkyCondition>, visibilitySM: Float): String {
+        val ceiling = getCeiling(skyConditions).cloudBaseAGL
+        return when {
+            (ceiling < 500 || visibilitySM < 1.0) -> "LIFR"
+            (ceiling < 1000 || visibilitySM < 3.0) -> "IFR"
+            (ceiling <= 3000 || visibilitySM <= 5.0) -> "MVFR"
+            else -> "VFR"
         }
-        return flightCategory
     }
 
     @JvmStatic
