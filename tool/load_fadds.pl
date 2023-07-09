@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -2342,15 +2342,15 @@ while ( my $line = <WXL_FILE> )
     }
     $sth_wxl->bind_param( 3, $longitude );
     #ASSOC_CITY
-    $sth_wxl->bind_param( 4, capitalize( $line, 22, 26 ) );
+    $sth_wxl->bind_param( 4, capitalize( $line, 22, 40 ) );
     #ASSOC_STATE
-    $sth_wxl->bind_param( 5, substrim( $line, 48,  2 ) );
+    $sth_wxl->bind_param( 5, substrim( $line, 62,  2 ) );
     #LOC_ELEVATION_FEET
-    $sth_wxl->bind_param( 6, substrim( $line, 53,  5 ) );
+    $sth_wxl->bind_param( 6, substrim( $line, 67,  5 ) );
     #LOC_ELEVATION_ACCURACY
-    $sth_wxl->bind_param( 7, substrim( $line, 58,  1 ) );
+    $sth_wxl->bind_param( 7, substrim( $line, 72,  1 ) );
     #WX_SERICES_TYPES
-    $sth_wxl->bind_param( 8, substrim( $line, 59, 60 ) );
+    $sth_wxl->bind_param( 8, substrim( $line, 73, 60 ) );
 
     $sth_wxl->execute();
 
