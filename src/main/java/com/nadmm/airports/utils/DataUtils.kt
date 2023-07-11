@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,9 @@ object DataUtils {
     private val sMorseCodes = HashMap<String, String>()
     private val sAtcIdToName: MutableMap<String, String> = HashMap()
     private val sAtcNameToId: MutableMap<String, String> = HashMap()
+    private val sDatisApts: MutableSet<String> = HashSet()
+    private val sPhoneticAlphabets: MutableMap<String, String> = HashMap()
+
     fun decodePhoneNumber(phone: String): String {
         var i = 0
         val builder = StringBuilder()
@@ -494,7 +497,7 @@ object DataUtils {
 
     @JvmStatic
     fun decodeUserAction(userAction: String?): String {
-        if (userAction != null && userAction.isNotEmpty()) {
+        if (!userAction.isNullOrEmpty()) {
             return when (userAction[0]) {
                 'C' -> "Changed"
                 'A' -> "Added"
@@ -565,30 +568,43 @@ object DataUtils {
             )
 
     fun getNotamSubjectFromKeyword(keyword: String): String {
-        return if (keyword == "RWY") {
-            "Movement and Landing Area"
-        } else if (keyword == "TWY") {
-            "Movement and Landing Area"
-        } else if (keyword == "APRON") {
-            "Movement and Landing Area"
-        } else if (keyword == "RAMP") {
-            "Movement and Landing Area"
-        } else if (keyword == "AD") {
-            "Aerodrome"
-        } else if (keyword == "AIRSPACE") {
-            "Airspace"
-        } else if (keyword == "OBST") {
-            "Obstructions"
-        } else if (keyword == "NAV") {
-            "Navigation"
-        } else if (keyword == "COM") {
-            "Communications"
-        } else if (keyword == "SVC") {
-            "Services"
-        } else if (keyword == "FDC") {
-            "Flight Data Center"
-        } else {
-            "Other"
+        return when (keyword) {
+            "RWY" -> {
+                "Movement and Landing Area"
+            }
+            "TWY" -> {
+                "Movement and Landing Area"
+            }
+            "APRON" -> {
+                "Movement and Landing Area"
+            }
+            "RAMP" -> {
+                "Movement and Landing Area"
+            }
+            "AD" -> {
+                "Aerodrome"
+            }
+            "AIRSPACE" -> {
+                "Airspace"
+            }
+            "OBST" -> {
+                "Obstructions"
+            }
+            "NAV" -> {
+                "Navigation"
+            }
+            "COM" -> {
+                "Communications"
+            }
+            "SVC" -> {
+                "Services"
+            }
+            "FDC" -> {
+                "Flight Data Center"
+            }
+            else -> {
+                "Other"
+            }
         }
     }
 
@@ -619,6 +635,14 @@ object DataUtils {
         } catch (ignored: Exception) {
         }
         return heading
+    }
+
+    fun isDatisAvailable(icaoCode: String): Boolean {
+        return sDatisApts.contains(icaoCode)
+    }
+
+    fun getPhoneticAlphabet(letter: String): String {
+        return sPhoneticAlphabets.getOrDefault(letter, "")
     }
 
     init {
@@ -868,5 +892,113 @@ object DataUtils {
         for ((key, value) in sAtcIdToName) {
             sAtcNameToId[value] = key
         }
+    }
+
+    init {
+        sDatisApts.add("KABQ")
+        sDatisApts.add("KADW")
+        sDatisApts.add("KALB")
+        sDatisApts.add("KATL")
+        sDatisApts.add("KAUS")
+        sDatisApts.add("KBDL")
+        sDatisApts.add("KBNA")
+        sDatisApts.add("KBOI")
+        sDatisApts.add("KBOS")
+        sDatisApts.add("KBUF")
+        sDatisApts.add("KBUR")
+        sDatisApts.add("KBWI")
+        sDatisApts.add("KCHS")
+        sDatisApts.add("KCLE")
+        sDatisApts.add("KCLT")
+        sDatisApts.add("KCMH")
+        sDatisApts.add("KCVG")
+        sDatisApts.add("KDAL")
+        sDatisApts.add("KDCA")
+        sDatisApts.add("KDEN")
+        sDatisApts.add("KDFW")
+        sDatisApts.add("KDTW")
+        sDatisApts.add("KELP")
+        sDatisApts.add("KEWR")
+        sDatisApts.add("KFLL")
+        sDatisApts.add("KGSO")
+        sDatisApts.add("KHOU")
+        sDatisApts.add("KHPN")
+        sDatisApts.add("KIAD")
+        sDatisApts.add("KIAH")
+        sDatisApts.add("KIND")
+        sDatisApts.add("KJAX")
+        sDatisApts.add("KJFK")
+        sDatisApts.add("KLAS")
+        sDatisApts.add("KLAX")
+        sDatisApts.add("KLGA")
+        sDatisApts.add("KLIT")
+        sDatisApts.add("KMCI")
+        sDatisApts.add("KMCO")
+        sDatisApts.add("KMDW")
+        sDatisApts.add("KMEM")
+        sDatisApts.add("KMIA")
+        sDatisApts.add("KMKE")
+        sDatisApts.add("KMSP")
+        sDatisApts.add("KMSY")
+        sDatisApts.add("KOAK")
+        sDatisApts.add("KOKC")
+        sDatisApts.add("KOMA")
+        sDatisApts.add("KONT")
+        sDatisApts.add("KORD")
+        sDatisApts.add("KPBI")
+        sDatisApts.add("KPDX")
+        sDatisApts.add("KPHL")
+        sDatisApts.add("KPHX")
+        sDatisApts.add("KPIT")
+        sDatisApts.add("KPVD")
+        sDatisApts.add("KRDU")
+        sDatisApts.add("KRNO")
+        sDatisApts.add("KRSW")
+        sDatisApts.add("KSAN")
+        sDatisApts.add("KSAT")
+        sDatisApts.add("KSDF")
+        sDatisApts.add("KSEA")
+        sDatisApts.add("KSFO")
+        sDatisApts.add("KSJC")
+        sDatisApts.add("KSLC")
+        sDatisApts.add("KSMF")
+        sDatisApts.add("KSNA")
+        sDatisApts.add("KSTL")
+        sDatisApts.add("KTEB")
+        sDatisApts.add("KTPA")
+        sDatisApts.add("KTUL")
+        sDatisApts.add("KVNY")
+        sDatisApts.add("PANC")
+        sDatisApts.add("PHNL")
+        sDatisApts.add("TJSJ")
+    }
+
+    init {
+        sPhoneticAlphabets["A"] = "Alpha"
+        sPhoneticAlphabets["B"] = "Bravo"
+        sPhoneticAlphabets["C"] = "Charlie"
+        sPhoneticAlphabets["D"] = "Delta"
+        sPhoneticAlphabets["E"] = "Echo"
+        sPhoneticAlphabets["F"] = "Foxtrot"
+        sPhoneticAlphabets["G"] = "Golf"
+        sPhoneticAlphabets["H"] = "Hotel"
+        sPhoneticAlphabets["I"] = "India"
+        sPhoneticAlphabets["J"] = "Juliet"
+        sPhoneticAlphabets["K"] = "Kilo"
+        sPhoneticAlphabets["L"] = "Lima"
+        sPhoneticAlphabets["M"] = "Mike"
+        sPhoneticAlphabets["N"] = "November"
+        sPhoneticAlphabets["O"] = "Oscar"
+        sPhoneticAlphabets["P"] = "Papa"
+        sPhoneticAlphabets["Q"] = "Quebec"
+        sPhoneticAlphabets["R"] = "Romeo"
+        sPhoneticAlphabets["S"] = "Sierra"
+        sPhoneticAlphabets["T"] = "Tango"
+        sPhoneticAlphabets["U"] = "Uniform"
+        sPhoneticAlphabets["V"] = "Victor"
+        sPhoneticAlphabets["W"] = "Whiskey"
+        sPhoneticAlphabets["X"] = "Xray"
+        sPhoneticAlphabets["Y"] = "Yankee"
+        sPhoneticAlphabets["Z"] = "Zulu"
     }
 }

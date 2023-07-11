@@ -30,6 +30,7 @@ import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.LocationListFragmentBase
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
+import com.nadmm.airports.utils.makeAirportBundle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -61,12 +62,11 @@ class NearbyAirportsFragment : LocationListFragmentBase() {
     }
 
     override fun onListItemClick(l: ListView, v: View, position: Int) {
-        val c = l.getItemAtPosition(position) as Cursor
-        val siteNumber = c.getString(c.getColumnIndex(Airports.SITE_NUMBER))
-        val intent = Intent(activity, AirportActivity::class.java).apply {
-            putExtra(Airports.SITE_NUMBER, siteNumber)
+        Intent(activity, AirportActivity::class.java).apply {
+            val c = l.getItemAtPosition(position) as Cursor
+            putExtras(c.makeAirportBundle())
+            startActivity(this)
         }
-        startActivity(intent)
     }
 
     private fun doQuery(): Array<Cursor?> {

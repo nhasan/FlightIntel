@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ import com.nadmm.airports.data.DatabaseManager.Airports
 import com.nadmm.airports.data.DatabaseManager.States
 import com.nadmm.airports.utils.CursorAsyncTask
 import com.nadmm.airports.utils.SectionedCursorAdapter
+import com.nadmm.airports.utils.makeAirportBundle
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -113,14 +114,14 @@ class BrowseAirportsFragment : ListFragmentBase() {
             mMode = BROWSE_AIRPORTS_MODE
             mListState = listView?.onSaveInstanceState()
             setAdapter(null)
-            mStateCode = c.getString(c.getColumnIndex(Airports.ASSOC_STATE))
-            mStateName = c.getString(c.getColumnIndex(States.STATE_NAME))
+            mStateCode = c.getString(c.getColumnIndexOrThrow(Airports.ASSOC_STATE))
+            mStateName = c.getString(c.getColumnIndexOrThrow(States.STATE_NAME))
             setBackgroundTask(BrowseAirportsTask(this)).execute(mStateCode, mStateName)
         } else {
-            val siteNumber = c.getString(c.getColumnIndex(Airports.SITE_NUMBER))
-            val intent = Intent(activity, AirportActivity::class.java)
-            intent.putExtra(Airports.SITE_NUMBER, siteNumber)
-            startActivity(intent)
+            Intent(activity, AirportActivity::class.java).apply {
+                putExtras(c.makeAirportBundle())
+                startActivity(this)
+            }
         }
     }
 
@@ -142,15 +143,15 @@ class BrowseAirportsFragment : ListFragmentBase() {
 
         override fun bindView(view: View, context: Context, c: Cursor) {
             // Browsing all states
-            val stateName = c.getString(c.getColumnIndex(States.STATE_NAME))
-            val count = c.getInt(c.getColumnIndex(BaseColumns._COUNT))
+            val stateName = c.getString(c.getColumnIndexOrThrow(States.STATE_NAME))
+            val count = c.getInt(c.getColumnIndexOrThrow(BaseColumns._COUNT))
             val tv = view.findViewById<TextView>(R.id.browse_state_name)
             tv.text = String.format(Locale.US, "%s (%d)", stateName, count)
         }
 
         override fun getSectionName(): String {
             val c = cursor
-            return c.getString(c.getColumnIndex(States.STATE_NAME)).substring(0, 1)
+            return c.getString(c.getColumnIndexOrThrow(States.STATE_NAME)).substring(0, 1)
         }
     }
 
@@ -165,7 +166,7 @@ class BrowseAirportsFragment : ListFragmentBase() {
 
         override fun getSectionName(): String {
             val c = cursor
-            return c.getString(c.getColumnIndex(Airports.ASSOC_CITY))
+            return c.getString(c.getColumnIndexOrThrow(Airports.ASSOC_CITY))
         }
     }
 

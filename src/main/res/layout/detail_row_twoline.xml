@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
-<searchable xmlns:android="http://schemas.android.com/apk/res/android"
-    android:label="@string/app_name"
-    android:hint="@string/search_hint"
-    android:voiceSearchMode="showVoiceSearchButton|launchRecognizer"
-    android:searchSettingsDescription="@string/search_hint" >
-</searchable>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="@dimen/item_padding"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView android:id="@+id/item_value"
+        style="@style/TextSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <TextView android:id="@+id/item_extra_value"
+        style="@style/TextSmaller.Light"
+        android:paddingTop="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

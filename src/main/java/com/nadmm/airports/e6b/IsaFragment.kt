@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.textfield.TextInputLayout
 import com.nadmm.airports.R
+import com.nadmm.airports.utils.WxUtils
 import kotlin.math.exp
 import kotlin.math.pow
 
@@ -60,27 +61,27 @@ class IsaFragment : E6bFragmentBase() {
 
     override val message: String
         get() = "ISA temperature lapse rate is 1.9812\u00B0C/1,000 ft" +
-                " or 3.56\u00B0F/1,000 ft upto 36,090 ft, then constant at" +
-                " -56.5\u00B0C or -69.7\u00B0F upto 65,620 ft"
+                " or 3.56\u00B0F/1,000 ft up to tropopause (36,089 ft, 11km), then constant at" +
+                " -56.5\u00B0C or -69.7\u00B0F up to 65,620 ft (20km)."
 
     override fun processInput() {
         try {
             var altitude = parseAltitude(mAltitudeEdit)
-            var isaTempC = -56.5
-            if (altitude <= 36089.24) {
-                isaTempC = 15.0 - 0.0019812 * altitude
+            var isaTempC = -56.5f
+            if (altitude <= WxUtils.TROPOPAUSE_FT) {
+                isaTempC = (15.0 - 0.0019812 * altitude).toFloat()
             }
-            val isaTempF = isaTempC * 9 / 5 + 32
+            val isaTempF = WxUtils.celsiusToFahrenheit(isaTempC)
             showDecimalValue(mTemperatureCEdit!!, isaTempC)
             showDecimalValue(mTemperatureFEdit!!, isaTempF)
             val isaPressureInHg: Double
-            if (altitude < 36089.24) {
-                isaPressureInHg = 29.92126 * (1 - 6.8755856e-6 * altitude).pow(5.2558797)
+            if (altitude < WxUtils.TROPOPAUSE_FT) {
+                isaPressureInHg = WxUtils.ISA_PRESSURE_HG * (1 - 6.8755856e-6 * altitude).pow(5.2558797)
             } else {
-                altitude -= 36089.24
-                isaPressureInHg = 29.92126 * 0.2233609 * exp(-4.806346 * 10e-5 * altitude)
+                altitude -= WxUtils.TROPOPAUSE_FT
+                isaPressureInHg = WxUtils.ISA_PRESSURE_HG * 0.2233609 * exp(-4.806346 * 10e-5 * altitude)
             }
-            val isaPressureMbar = isaPressureInHg * 33.863753
+            val isaPressureMbar = isaPressureInHg * WxUtils.HG_TO_MBAR
             showDecimalValue(mPressureInEdit!!, isaPressureInHg, 2)
             showDecimalValue(mPressureMbEdit!!, isaPressureMbar)
         } catch (ignored: NumberFormatException) {

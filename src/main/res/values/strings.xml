@@ -68,6 +68,7 @@
     <string name="airport_notams">Airport NOTAMs</string>
     <string name="vor">Directional Navaids</string>
     <string name="ndb">Non-directional Navaids</string>
+    <string name="ils_details">ILS details</string>
     <string name="localizer">Localizer</string>
     <string name="glideslope">Glideslope</string>
     <string name="innermarker">Inner Marker</string>
@@ -226,6 +227,10 @@
     <string name="title_navdrawer_e6b">E6B</string>
     <string name="title_navdrawer_charts">Charts</string>
     <string name="title_navdrawer_settings">Settings</string>
+    <string name="datis_details">D-ATIS details</string>
+    <string name="combined_atis">Combined ATIS</string>
+    <string name="arrival_atis">Arrival ATIS</string>
+    <string name="departure_atis">Departure ATIS</string>
     <string name="bullet">\u2022</string>
     <plurals name="airports_found">
         <item quantity="zero">No airports found</item>

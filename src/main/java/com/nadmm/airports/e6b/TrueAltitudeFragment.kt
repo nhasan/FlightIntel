@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ class TrueAltitudeFragment : E6bFragmentBase() {
     }
 
     override val message: String
-        get() = "Use altitude of the wx station whose altimeter setting is being used"
+        get() = "Use altitude of the wx station whose altimeter setting is being used."
 
     override fun processInput() {
         try {

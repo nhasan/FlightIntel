@@ -174,8 +174,8 @@ abstract class E6bFragmentBase : FragmentBase() {
         return declination
     }
 
-    protected fun parseAltitude(textInputLayout: TextInputLayout?): Double {
-        val altitude = parseDouble(textInputLayout)
+    protected fun parseAltitude(textInputLayout: TextInputLayout?): Long {
+        val altitude = parseLong(textInputLayout)
         if (altitude < 0 || altitude > 65620) {
             textInputLayout?.error = "Valid values: 0 to 65,620"
             throw NumberFormatException()
@@ -205,13 +205,15 @@ abstract class E6bFragmentBase : FragmentBase() {
         showValue(textInputLayout, value.roundToInt().toString())
     }
 
-    protected fun showDecimalValue(
-        textInputLayout: TextInputLayout,
-        value: Double,
-        decimals: Int = 1
-    ) {
+    protected fun showDecimalValue(textInputLayout: TextInputLayout, value: Float,
+                                   decimals: Int = 1) {
         val fmt = String.format(Locale.US, "%%.%df", decimals)
         showValue(textInputLayout, String.format(Locale.US, fmt, value))
+    }
+
+    protected fun showDecimalValue(textInputLayout: TextInputLayout, value: Double,
+                                   decimals: Int = 1) {
+        showDecimalValue(textInputLayout, value.toFloat(), decimals)
     }
 
     protected fun showDirection(textInputLayout: TextInputLayout, dirRadians: Double) {

@@ -41,6 +41,7 @@ import com.nadmm.airports.data.DatabaseManager.Tower4
 import com.nadmm.airports.data.DatabaseManager.Tower6
 import com.nadmm.airports.data.DatabaseManager.Tower7
 import com.nadmm.airports.data.DatabaseManager.Tower9
+import com.nadmm.airports.datis.DatisFragment
 import com.nadmm.airports.utils.DataUtils
 import com.nadmm.airports.utils.FormatUtils
 import kotlinx.coroutines.Dispatchers
@@ -82,12 +83,17 @@ class CommunicationsFragment : FragmentBase() {
     }
 
     private fun showAirportFrequencies(result: Array<Cursor?>) {
+        val apt = result[0] ?: return
+        val layout = findViewById<LinearLayout>(R.id.airport_comm_details) ?: return
         var towerRadioCall = ""
         var apchRadioCall = ""
         var depRadioCall = ""
         val map: MutableMap<String, ArrayList<Pair<String, String>>> = TreeMap()
-        val apt = result[0]
-        val ctaf = apt!!.getString(apt.getColumnIndexOrThrow(Airports.CTAF_FREQ))
+        val icaoCode = apt.getString(apt.getColumnIndexOrThrow(Airports.ICAO_CODE))
+        if (!icaoCode.isNullOrBlank() && DataUtils.isDatisAvailable(icaoCode)) {
+            addClickableRow(layout, "View D-ATIS", DatisFragment::class.java, arguments)
+        }
+        val ctaf = apt.getString(apt.getColumnIndexOrThrow(Airports.CTAF_FREQ))
         if (ctaf.isNotEmpty()) {
             addFrequencyToMap(map, "CTAF", ctaf, "")
         }
@@ -143,7 +149,6 @@ class CommunicationsFragment : FragmentBase() {
         if (map.isNotEmpty()) {
             val tv = findViewById<TextView>(R.id.airport_comm_label)
             tv!!.visibility = View.VISIBLE
-            val layout = findViewById<LinearLayout>(R.id.airport_comm_details)
             layout!!.visibility = View.VISIBLE
             var lastKey: String? = null
             for (key in map.keys) {

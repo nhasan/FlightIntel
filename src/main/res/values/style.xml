@@ -46,7 +46,7 @@
     </style>
 
     <style name="TextSmaller.Light">
-        <item name="android:textColor">?android:attr/textColorSecondary</item>
+        <item name="android:textColor">?android:attr/textColorHint</item>
     </style>
 
     <style name="TextSmall.Monospace">

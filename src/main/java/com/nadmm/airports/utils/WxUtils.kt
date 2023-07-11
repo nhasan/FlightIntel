@@ -42,6 +42,11 @@ object WxUtils {
     private const val FLIGHT_CATEGORY_LIFR = "LIFR"
     const val FLIGHT_CATEGORY_UNKN = "UNKN"
 
+    const val ISA_PRESSURE_HG = 29.9212
+    const val ISA_PRESSURE_MBAR = 1013.25
+    const val HG_TO_MBAR = ISA_PRESSURE_MBAR/ISA_PRESSURE_HG
+    const val TROPOPAUSE_FT = 36089
+
     private fun getFlightCategoryColor(flightCategory: String): Int {
         return when (flightCategory) {
             FLIGHT_CATEGORY_VFR -> Color.argb(255, 0, 160, 32)
