@@ -12,7 +12,7 @@ handbooks,faa-h-8083-21b-2019.pdf,Helicopter Flying Handbook,2019,FAA-H-8083-21B
 handbooks,faa-fs-i-8700-1-2003.pdf,Information for Banner Tow Operations,2003,FAA/FS-I-8799-1
 handbooks,fcm-h1-2017.pdf,Federal Meteorological Handbook No. 1,2017,NOAA
 handbooks,fcm-h2-1988.pdf,Federal Meteorological Handbook No. 2,1988,NOAA
-manuals,cug_230420.pdf,Aeronautical Chart User's Guide,Apr 2023,FAA
+manuals,cug_230615.pdf,Aeronautical Chart User's Guide,Jun 2023,FAA
 manuals,faa-h-8083-19a-2008.pdf,Plane Sense - General Aviation Information,2008,FAA-H-8083-19A
 manuals,ac-00-6b.pdf,Aviation Weather,2016,AC-00-6B
 manuals,ac-00-45h_chg_2.pdf,Aviation Weather Services,2019,AC-00-45H Change 2
@@ -23,12 +23,12 @@ periodicals,cb_519.pdf,Callback,Issue 519 (Apr 2023),NASA
 periodicals,cb_518.pdf,Callback,Issue 518 (Mar 2023),NASA
 periodicals,cb_517.pdf,Callback,Issue 517 (Feb 2023),NASA
 periodicals,cb_516.pdf,Callback,Issue 516 (Jan 2023),NASA
+periodicals,JulAug2023.pdf,FAA Safety Briefing,Jul/Aug 2023,FAA
 periodicals,MayJun2023.pdf,FAA Safety Briefing,May/Jun 2023,FAA
 periodicals,MarApr2023.pdf,FAA Safety Briefing,Mar/Apr 2023,FAA
 periodicals,JanFeb2023.pdf,FAA Safety Briefing,Jan/Feb 2023,FAA
 periodicals,NovDec2022.pdf,FAA Safety Briefing,Nov/Dec 2022,FAA
 periodicals,SepOct2022.pdf,FAA Safety Briefing,Sep/Oct 2022,FAA
-periodicals,JulAug2022.pdf,FAA Safety Briefing,Jul/Aug 2022,FAA
 periodicals,hindsight_34.pdf,HindSight 34,Dec 2022,EuroControl
 regs,aim_230420.pdf,AIM,Apr 2023,Basic
 regs,CFR-2022-title14-vol1.pdf,FAR Volume 1 2022,Parts 1-59,US GPO
@@ -47,7 +47,6 @@ misc,Pilots_NOTAM_primer_for_2021.pdf,Pilots: NOTAM Primer,2021,FAA
 misc,Airports_NOTAM_primer_for_2020.pdf,Airports: NOTAM Primer,2020,FAA
 misc,atpb_feb_2023.pdf,Air Traffic Procedures Bulletins,Feb 2023,FAA
 safety,ac_90-48d-chg_1.pdf,Pilots’ Role in Collision Avoidance,2016,FAA
-safety,safety_advisor_non-towered_airports.pdf,Operations at Nontowered Airports,2007,FAA
 safety,faa-p-8740-02-2008.pdf,Density Altitude,2008,FAA
 safety,faa-p-8740-12-2008.pdf,Thunderstorms,2008,FAA
 safety,faa-p-8740-30-2008.pdf,How to Obtain a Good Weather Briefing,2008,FAA
@@ -66,6 +65,7 @@ risk,local_vfr.pdf,Local VFR Flying,2012,FAA
 risk,night_vfr.pdf,Night VFR Flying,2012,FAA
 risk,pract_riskman.pdf,Practical Risk Management,2012,FAA
 risk,vfr_xc.pdf,VFR XC Flying,2012,FAA
+circular,ac-90-66c-2023.pdf,Non-Towered Airport Flight Operations,2023,AC-90-66C
 circular,ac-60-22-1991.pdf,Aeronautical Decision Making,1991,AC-60-22
 circular,ac-120-100-2010.pdf,Basics of Aviation Fatigue,2010,AC-120-100
 circular,ac-91-74b-2015.pdf,Flight In Icing Conditions,2015,AC-91-74B
