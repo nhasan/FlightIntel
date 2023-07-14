@@ -35,7 +35,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     implementation 'com.google.firebase:firebase-messaging-ktx:23.1.2'
     implementation 'androidx.core:core-ktx:1.10.1'
-    implementation("androidx.work:work-runtime-ktx:2.8.1")
+    implementation 'androidx.work:work-runtime-ktx:2.8.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
     implementation 'com.google.code.gson:gson:2.9.0'
@@ -44,15 +44,15 @@ dependencies {
 
 android {
     compileSdkVersion 33
-    buildToolsVersion "33.0.2"
+    buildToolsVersion "34.0.0"
     namespace 'com.nadmm.airports'
 
     defaultConfig {
         applicationId "com.nadmm.airports"
         minSdkVersion 24
         targetSdkVersion 33
-        versionName "6.30.4"
-        versionCode 63004
+        versionName "6.30.6"
+        versionCode 63006
 
         vectorDrawables.useSupportLibrary = true
     }
