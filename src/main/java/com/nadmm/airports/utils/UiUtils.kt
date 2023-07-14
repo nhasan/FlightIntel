@@ -251,7 +251,7 @@ object UiUtils {
 
     @JvmStatic
     fun getSelectableItemBackgroundResource(context: Context): Int {
-        val attrs = intArrayOf(R.attr.selectableItemBackground)
+        val attrs = intArrayOf(androidx.appcompat.R.attr.selectableItemBackground)
         val typedArray = context.obtainStyledAttributes(attrs)
         val res = typedArray.getResourceId(0, 0)
         typedArray.recycle()
