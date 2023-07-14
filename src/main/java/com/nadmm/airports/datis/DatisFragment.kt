@@ -27,8 +27,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
@@ -77,33 +75,35 @@ class DatisFragment : FragmentBase() {
 
     private fun fetchDatis(force: Boolean = false) {
         val icaoCode = arguments?.getString(DatabaseManager.Airports.ICAO_CODE) ?: return
-        val appContext = activityBase.applicationContext
-        val workRequest = DatisWorker.enqueueWork(appContext, icaoCode, force)
-        WorkManager.getInstance(appContext).getWorkInfoByIdLiveData(workRequest.id)
-            .observe(viewLifecycleOwner) { workInfo ->
-                if (workInfo != null && workInfo.state == WorkInfo.State.SUCCEEDED) {
-                    val datisList = DatisParser.parse(DatisWorker.getDatisFile(workInfo))
-                    showDatis(datisList)
+        DatisWorker.enqueueWork(applicationContext, icaoCode, force).also { work ->
+            onWorkCompletion(work) { workInfo ->
+                DatisWorker.getDatis(workInfo)?.let { datis ->
+                    showDatis(datis)
                 }
             }
+        }
     }
 
-    private fun showDatis(datisList: ArrayList<Datis>) {
+    private fun showDatis(datisList: DatisList) {
         for (datis in datisList) {
-            if (datis.atisType == COMBINED) {
-                findViewById<TextView>(R.id.datis_combined_label)?.visibility = View.VISIBLE
-                findViewById<LinearLayout>(R.id.datis_combined_details)?.let { layout ->
-                    showDatisEntry(layout, datis)
+            when (datis.atisType) {
+                COMBINED -> {
+                    findViewById<TextView>(R.id.datis_combined_label)?.visibility = View.VISIBLE
+                    findViewById<LinearLayout>(R.id.datis_combined_details)?.let { layout ->
+                        showDatisEntry(layout, datis)
+                    }
                 }
-            } else if (datis.atisType == ARRIVAL) {
-                findViewById<TextView>(R.id.datis_arrival_label)?.visibility = View.VISIBLE
-                findViewById<LinearLayout>(R.id.datis_arrival_details)?.let { layout ->
-                    showDatisEntry(layout, datis)
+                ARRIVAL -> {
+                    findViewById<TextView>(R.id.datis_arrival_label)?.visibility = View.VISIBLE
+                    findViewById<LinearLayout>(R.id.datis_arrival_details)?.let { layout ->
+                        showDatisEntry(layout, datis)
+                    }
                 }
-            } else if (datis.atisType == DEPARTURE) {
-                findViewById<TextView>(R.id.datis_departure_label)?.visibility = View.VISIBLE
-                findViewById<LinearLayout>(R.id.datis_departure_details)?.let { layout ->
-                    showDatisEntry(layout, datis)
+                DEPARTURE -> {
+                    findViewById<TextView>(R.id.datis_departure_label)?.visibility = View.VISIBLE
+                    findViewById<LinearLayout>(R.id.datis_departure_details)?.let { layout ->
+                        showDatisEntry(layout, datis)
+                    }
                 }
             }
         }

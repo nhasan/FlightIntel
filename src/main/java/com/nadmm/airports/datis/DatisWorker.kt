@@ -22,12 +22,7 @@ package com.nadmm.airports.datis
 import android.content.Context
 import android.text.format.DateUtils
 import android.widget.Toast
-import androidx.work.Constraints
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
@@ -48,7 +43,7 @@ class DatisWorker(appContext: Context, workerParams: WorkerParameters)
         return try {
             val icaoLocation = inputData.getString(ICAO_LOCATION)
             val force = inputData.getBoolean(FORCE_REFRESH, false)
-            val datisFile = dataFile("$icaoLocation.json")
+            val datisFile = getDataFile("$icaoLocation.json")
 
             if (force || !datisFile.exists()) {
                 val url = URL("https://api.flightintel.com/datis/${icaoLocation}")
@@ -76,12 +71,10 @@ class DatisWorker(appContext: Context, workerParams: WorkerParameters)
         private const val DATIS_PATH = "DATIS_PATH"
         private const val WORKER_NAME = "datis"
         private const val CACHE_MAX_AGE = 5 * DateUtils.MINUTE_IN_MILLIS
-        private val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
 
-        fun getDatisFile(workInfo: WorkInfo): File {
-            return File(workInfo.outputData.getString(DATIS_PATH)!!)
+        fun getDatis(workInfo: WorkInfo): DatisList? {
+            val path = workInfo.outputData.getString(DATIS_PATH) ?: return null
+            return DatisParser.parse(File(path))
         }
 
         fun enqueueWork(appContext: Context, icaoLocation: String, force: Boolean)
@@ -90,13 +83,7 @@ class DatisWorker(appContext: Context, workerParams: WorkerParameters)
                 ICAO_LOCATION to icaoLocation,
                 FORCE_REFRESH to force
             )
-            val workRequest = OneTimeWorkRequestBuilder<DatisWorker>()
-                .setInputData(workData)
-                .setConstraints(constraints)
-                .setExpedited(OutOfQuotaPolicy.DROP_WORK_REQUEST)
-                .build()
-            WorkManager.getInstance(appContext).enqueue(workRequest)
-            return workRequest
+            return enqueueWork<DatisWorker>(appContext, workData)
         }
     }
 }

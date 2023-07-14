@@ -34,9 +34,9 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeParseException
 
 object DatisParser {
-    fun parse(datisfile: File): ArrayList<Datis> {
+    fun parse(datisfile: File): DatisList {
         val input = FileInputStream(datisfile)
-        val datisList = ArrayList<Datis>()
+        val datisList = DatisList()
         try {
             val gson = GsonBuilder()
                 .registerTypeAdapter(OffsetDateTime::class.java, DateTypeAdapter())
@@ -93,5 +93,6 @@ data class Datis(
     var atisHeader: String,
     @SerializedName("atisbody")
     var atisBody: String
-    ) {
-}
+    )
+
+typealias DatisList = ArrayList<Datis>

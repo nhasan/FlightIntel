@@ -35,14 +35,17 @@ import android.widget.LinearLayout.LayoutParams
 import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.core.content.ContextCompat
-import androidx.core.view.MenuHost
 import androidx.fragment.app.Fragment
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.*
 import com.nadmm.airports.utils.CursorAsyncTask
 import com.nadmm.airports.utils.DataUtils
 import com.nadmm.airports.utils.FormatUtils
 import com.nadmm.airports.utils.UiUtils
+import com.nadmm.airports.utils.addRow
 
 @SuppressLint("Range")
 abstract class FragmentBase : Fragment(), IRefreshable {
@@ -67,6 +70,9 @@ abstract class FragmentBase : Fragment(), IRefreshable {
         val intent = Intent(action, Uri.parse("tel:$phone"))
         startActivity(intent)
     }
+
+    val applicationContext : Context
+        get() = activityBase.applicationContext
 
     var isRefreshing: Boolean
         get() = activityBase.isRefreshing
@@ -438,23 +444,17 @@ abstract class FragmentBase : Fragment(), IRefreshable {
     }
 
     protected fun addTwoLineRow(layout: LinearLayout, line1: String, line2: String): View {
-        if (layout.childCount > 0) {
-            addSeparator(layout)
+        return inflate<LinearLayout>(R.layout.detail_row_twoline).also {
+            it.findViewById<TextView>(R.id.item_value)?.let { tv -> tv.text = line1 }
+            it.findViewById<TextView>(R.id.item_extra_value)?.let { tv -> tv.text = line2 }
+            layout.addRow(requireContext(), it)
         }
-
-        val row = inflate<LinearLayout>(R.layout.detail_row_twoline)
-        var tv = row.findViewById<TextView>(R.id.item_value)
-        tv.text = line1
-        tv = row.findViewById<TextView>(R.id.item_extra_value)
-        tv.text = line2
-        layout.addView(row, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
-        return row
     }
 
     protected fun addSeparator(layout: LinearLayout) {
         val separator = View(activityBase)
         separator.setBackgroundColor(
-            ContextCompat.getColor(activityBase, R.color.material_on_surface_stroke))
+            ContextCompat.getColor(activityBase, com.google.android.material.R.color.material_on_surface_stroke))
         layout.addView(separator, LayoutParams(LayoutParams.MATCH_PARENT, 1))
     }
 
@@ -468,6 +468,15 @@ abstract class FragmentBase : Fragment(), IRefreshable {
 
     protected fun <T : View> inflate(id: Int, root: ViewGroup): T {
         return activityBase.inflate(id, root)
+    }
+
+    protected fun onWorkCompletion(workRequest: WorkRequest, action: (WorkInfo) -> Unit) {
+        WorkManager.getInstance(activityBase.applicationContext)
+            .getWorkInfoByIdLiveData(workRequest.id)
+            .observe(viewLifecycleOwner) { workInfo ->
+                if (workInfo != null && workInfo.state == WorkInfo.State.SUCCEEDED)
+                    action(workInfo)
+            }
     }
 
 }
