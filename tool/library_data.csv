@@ -1,6 +1,6 @@
 category,filename,description,edition,author
 handbooks,faa-h-8083-3c-2021.pdf,Airplane Flying Handbook,2021,FAA-H-8083-3C
-handbooks,faa-h-8083-25b-2016.pdf,Pilot's Handbook of Aeronautical Knowledge,2016,FAA-H-8083-25B
+handbooks,faa-h-8083-25c-2023.pdf,Pilot's Handbook of Aeronautical Knowledge,2023,FAA-H-8083-25C
 handbooks,faa-h-8083-15b-2012.pdf,Instrument Flying Handbook,2012,FAA-H-8083-15B
 handbooks,faa-h-8083-16b-2017.pdf,Instrument Procedures Handbook,2017,FAA-H-8083-16B
 handbooks,faa-h-8083-2a-2022.pdf,Risk Management Handbook,2022,FAA-H-8083-2A
@@ -17,12 +17,12 @@ manuals,faa-h-8083-19a-2008.pdf,Plane Sense - General Aviation Information,2008,
 manuals,ac-00-6b.pdf,Aviation Weather,2016,AC-00-6B
 manuals,ac-00-45h_chg_2.pdf,Aviation Weather Services,2019,AC-00-45H Change 2
 manuals,00-80T-80.pdf,Aerodynamics for Naval Aviators,1965,H. H. Hurt Jr.
+periodicals,cb_522.pdf,Callback,Issue 522 (Jul 2023),NASA
 periodicals,cb_521.pdf,Callback,Issue 521 (Jun 2023),NASA
 periodicals,cb_520.pdf,Callback,Issue 520 (May 2023),NASA
 periodicals,cb_519.pdf,Callback,Issue 519 (Apr 2023),NASA
 periodicals,cb_518.pdf,Callback,Issue 518 (Mar 2023),NASA
 periodicals,cb_517.pdf,Callback,Issue 517 (Feb 2023),NASA
-periodicals,cb_516.pdf,Callback,Issue 516 (Jan 2023),NASA
 periodicals,JulAug2023.pdf,FAA Safety Briefing,Jul/Aug 2023,FAA
 periodicals,MayJun2023.pdf,FAA Safety Briefing,May/Jun 2023,FAA
 periodicals,MarApr2023.pdf,FAA Safety Briefing,Mar/Apr 2023,FAA
