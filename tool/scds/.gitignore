@@ -1,7 +1,0 @@
-*.cfg
-*.db
-*.gz
-*.xml
-.classpath
-.project
-db/
