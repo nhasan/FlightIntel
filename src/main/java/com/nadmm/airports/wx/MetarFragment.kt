@@ -368,8 +368,8 @@ class MetarFragment : WxFragmentBase() {
             if (metar.altimeterHg < Float.MAX_VALUE) {
                 addRow(layout, "Altimeter", formatAltimeter(metar.altimeterHg))
                 if (metar.seaLevelPressureMb < Float.MAX_VALUE) {
-                    addRow(layout, "Sea level pressure",
-                        String.format("%s mb", formatNumber(metar.seaLevelPressureMb)))
+                    val slp = formatNumber(metar.seaLevelPressureMb)
+                    addRow(layout, "Sea level pressure", "$slp mb")
                 }
                 val presAlt = getPressureAltitude(metar).toLong()
                 addRow(layout, "Pressure altitude", formatFeet(presAlt.toFloat()))
@@ -439,8 +439,8 @@ class MetarFragment : WxFragmentBase() {
 
         // Fetch time
         findViewById<TextView>(R.id.wx_fetch_time)?.let { tv ->
-            tv.text = String.format(Locale.US, "Fetched on %s",
-                TimeUtils.formatDateTime(activityBase, metar.fetchTime))
+            val fetched = TimeUtils.formatDateTime(activityBase, metar.fetchTime)
+            tv.text = "Fetched on $fetched"
             tv.visibility = View.VISIBLE
         }
         setFragmentContentShown(true)
@@ -450,29 +450,18 @@ class MetarFragment : WxFragmentBase() {
         val s = StringBuilder()
         if (metar.windDirDegrees == 0 && metar.windSpeedKnots == 0) {
             s.append("Winds are calm")
-        } else if (metar.windDirDegrees == 0) {
-            s.append(
-                String.format(
-                    Locale.US, "Winds variable at %d knots",
-                    metar.windSpeedKnots
-                )
-            )
         } else {
-            s.append(
-                String.format(
-                    Locale.US, "From %s (%s true) at %d knots",
-                    GeoUtils.getCardinalDirection(metar.windDirDegrees.toFloat()),
-                    formatDegrees(metar.windDirDegrees), metar.windSpeedKnots
-                )
-            )
-            if (metar.windGustKnots < Int.MAX_VALUE) {
-                s.append(String.format(Locale.US, " gusting to %d knots", metar.windGustKnots))
+            if (metar.windDirDegrees == 0) {
+                s.append("Winds variable at ${metar.windSpeedKnots} knots")
+            } else {
+                val card = GeoUtils.getCardinalDirection(metar.windDirDegrees.toFloat())
+                val dir = formatDegrees(metar.windDirDegrees)
+                s.append("From $card ($dir true) at ${metar.windSpeedKnots} knots")
             }
-            if (metar.windPeakKnots < Int.MAX_VALUE
-                && metar.windPeakKnots != metar.windGustKnots
-            ) {
-                s.append(String.format(Locale.US, ", peak at %d knots", metar.windPeakKnots))
-            }
+            if (metar.windGustKnots < Int.MAX_VALUE)
+                s.append(" gusting to ${metar.windGustKnots} knots")
+            if (metar.windPeakKnots < Int.MAX_VALUE && metar.windPeakKnots > metar.windGustKnots)
+                s.append(", peak at ${metar.windPeakKnots} knots")
         }
         return s.toString()
     }
@@ -481,14 +470,13 @@ class MetarFragment : WxFragmentBase() {
         val row = addRow(layout!!, getWindsDescription(metar))
         val tv = row.findViewById<TextView>(R.id.item_label)
         if (metar.windDirDegrees > 0) {
-            val declination = GeoUtils.getMagneticDeclination(location)
+            val declination = location?.let { GeoUtils.getMagneticDeclination(it) } ?: 0F
             val wind = getWindBarbDrawable(tv.context, metar, declination)
             setTextViewDrawable(tv, wind)
         }
         if (metar.windGustKnots < Int.MAX_VALUE) {
             val gustFactor = (metar.windGustKnots - metar.windSpeedKnots).toDouble()
-            addRow(layout, String.format(Locale.US, "Add %d knots to your normal approach speed",
-                    (gustFactor / 2).roundToInt()))
+            addRow(layout, "Add ${(gustFactor / 2).roundToInt()} knots to your normal approach speed")
         }
         if (metar.wshft) {
             val sb = StringBuilder()
