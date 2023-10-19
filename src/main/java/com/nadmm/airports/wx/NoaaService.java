@@ -42,7 +42,7 @@ public abstract class NoaaService extends IntentService {
     protected final String RADAR_HOST = "radar.weather.gov";
     protected final String AWC_HOST = "aviationweather.gov";
 
-    protected final String ADDS_DATASERVER_PATH = "/adds/dataserver_current/httpparam";
+    protected final String ADDS_DATASERVER_PATH = "/cgi-bin/data/dataserver.php";
 
     public static final int METAR_HOURS_BEFORE = 3;
     public static final int TAF_HOURS_BEFORE = 3;

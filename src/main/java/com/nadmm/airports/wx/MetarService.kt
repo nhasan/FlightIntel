@@ -53,7 +53,7 @@ class MetarService : NoaaService(name, METAR_CACHE_MAX_AGE) {
                         try {
                             tmpFile = File.createTempFile(name, null)
                             val query = String.format(Locale.US, METAR_TEXT_QUERY, hours, param)
-                            fetchFromNoaa(query, tmpFile, true)
+                            fetchFromNoaa(query, tmpFile, false)
                             parseMetars(tmpFile, missing)
                         } catch (e: Exception) {
                             showToast(this, "Unable to fetch METAR: " + e.message)
@@ -111,7 +111,7 @@ class MetarService : NoaaService(name, METAR_CACHE_MAX_AGE) {
         private const val METAR_IMAGE_NAME = "metars_%s.gif"
         private const val METAR_TEXT_QUERY = ("datasource=metars&requesttype=retrieve"
                 + "&hoursBeforeNow=%d&mostRecentForEachStation=constraint"
-                + "&format=xml&compression=gzip&stationString=%s")
+                + "&format=xml&stationString=%s")
         private const val METAR_IMAGE_PATH = "/data/obs/metar"
     }
 }

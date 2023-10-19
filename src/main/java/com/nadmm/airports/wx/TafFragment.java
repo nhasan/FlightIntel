@@ -74,6 +74,7 @@ public class TafFragment extends WxFragmentBase {
             Intent intent = new Intent( getActivity(), TafMapActivity.class );
             startActivity( intent );
         } );
+        btnGraphic.setVisibility( View.GONE );
         return createContentView( view );
     }
 

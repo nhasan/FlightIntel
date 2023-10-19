@@ -58,10 +58,9 @@ public class TafService extends NoaaService {
                     try {
                         tmpFile = File.createTempFile( "taf", null );
                         String TAF_TEXT_QUERY = "dataSource=tafs&requestType=retrieve"
-                                + "&format=xml&compression=gzip&hoursBeforeNow=%d"
-                                +"&mostRecent=true&stationString=%s";
+                                + "&format=xml&hoursBeforeNow=%d&mostRecent=true&stationString=%s";
                         String query = String.format( Locale.US, TAF_TEXT_QUERY, hours, stationId );
-                        fetchFromNoaa( query, tmpFile, true );
+                        fetchFromNoaa( query, tmpFile, false );
                         taf = mParser.parse( tmpFile );
                         writeObject( taf, objFile );
                     } catch ( Exception e ) {

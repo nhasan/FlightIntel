@@ -49,8 +49,8 @@ public class RadarService extends NoaaService {
                 File imageFile = getDataFile( imageName );
                 if ( !imageFile.exists() ) {
                     try {
-                        String path = "/data/obs/radar/" +imageName;
-                        NetworkUtils.doHttpsGet( this, AWC_HOST, path, imageFile );
+                        String path = "/ridge/standard/" +imageName;
+                        NetworkUtils.doHttpsGet( this, RADAR_HOST, path, imageFile );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch RADAR image: "+e.getMessage() );
                     }

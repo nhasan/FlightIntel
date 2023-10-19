@@ -57,12 +57,12 @@ public class AirSigmetService extends NoaaService {
                 if ( forceRefresh || ( !cacheOnly && !xmlFile.exists() ) ) {
                     try {
                         String AIRSIGMET_TEXT_QUERY = "datasource=airsigmets"
-                                + "&requesttype=retrieve&format=xml&compression=gzip"
+                                + "&requesttype=retrieve&format=xml"
                                 + "&hoursBeforeNow=%d&minLat=%.2f&maxLat=%.2f"
                                 + "&minLon=%.2f&maxLon=%.2f";
                         String query = String.format( Locale.US, AIRSIGMET_TEXT_QUERY,
                                 hours, box[ 0 ], box[ 1 ], box[ 2 ], box[ 3 ] );
-                        fetchFromNoaa( query, xmlFile, true );
+                        fetchFromNoaa( query, xmlFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch AirSigmet: "
                                 +e.getMessage() );

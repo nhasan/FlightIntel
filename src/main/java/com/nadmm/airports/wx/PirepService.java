@@ -33,7 +33,7 @@ public class PirepService extends NoaaService {
 
     private final String PIREP_IMAGE_NAME = "pireps_%s_%s.gif";
     private final String PIREP_TEXT_QUERY =
-            "dataSource=aircraftreports&requestType=retrieve&format=xml&compression=gzip"
+            "dataSource=aircraftreports&requestType=retrieve&format=xml"
             + "&hoursBeforeNow=%d&radialDistance=%.0f;%.2f,%.2f";
     private final String PIREP_IMAGE_PATH = "/data/obs/pirep/";
 
@@ -69,7 +69,7 @@ public class PirepService extends NoaaService {
                         String query = String.format( Locale.US, PIREP_TEXT_QUERY, hours,
                                 radiusNM*GeoUtils.STATUTE_MILES_PER_NAUTICAL_MILES,
                                 location.getLongitude(), location.getLatitude() );
-                        fetchFromNoaa( query, xmlFile, true );
+                        fetchFromNoaa( query, xmlFile, false );
                     } catch ( Exception e ) {
                         UiUtils.showToast( this, "Unable to fetch PIREP: "+e.getMessage() );
                     }

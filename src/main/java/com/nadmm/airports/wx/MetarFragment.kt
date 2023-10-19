@@ -80,6 +80,7 @@ class MetarFragment : WxFragmentBase() {
             val intent = Intent(activity, MetarMapActivity::class.java)
             startActivity(intent)
         }
+        btnGraphic.visibility = View.GONE
         return createContentView(view)
     }
 
@@ -272,7 +273,7 @@ class MetarFragment : WxFragmentBase() {
             layout.removeAllViews()
             var visibility = View.GONE
             if (metar.visibilitySM < Float.MAX_VALUE) {
-                if (metar.flags.contains(Metar.Flags.Auto) && metar.visibilitySM == 10f) {
+                if (metar.flags.contains(Metar.Flags.Auto) && metar.visibilitySM >= 10f) {
                     addRow(layout, "10+ statute miles horizontal")
                 } else {
                     addRow(layout, String.format("%s statute miles horizontal",

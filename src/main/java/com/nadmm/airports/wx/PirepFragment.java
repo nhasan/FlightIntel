@@ -77,6 +77,7 @@ public class PirepFragment extends WxFragmentBase {
             Intent intent = new Intent( getActivity(), PirepMapActivity.class );
             startActivity( intent );
         } );
+        btnGraphic.setVisibility( View.GONE );
         return createContentView( view );
     }
 

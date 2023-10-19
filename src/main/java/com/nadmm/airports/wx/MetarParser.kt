@@ -62,7 +62,7 @@ class MetarParser {
         private lateinit var metar: Metar
         private val text = StringBuilder()
         override fun characters(ch: CharArray, start: Int, length: Int) {
-            text.append(ch, start, length)
+            text.appendRange(ch, start, start + length)
         }
 
         override fun startElement(
@@ -105,13 +105,13 @@ class MetarParser {
             } else if (qName.equals("dewpoint_c", ignoreCase = true)) {
                 metar.dewpointCelsius = text.toString().toFloat()
             } else if (qName.equals("wind_dir_degrees", ignoreCase = true)) {
-                metar.windDirDegrees = text.toString().toInt()
+                metar.windDirDegrees = text.toString().toIntOrNull() ?: 0
             } else if (qName.equals("wind_speed_kt", ignoreCase = true)) {
                 metar.windSpeedKnots = text.toString().toInt()
             } else if (qName.equals("wind_gust_kt", ignoreCase = true)) {
                 metar.windGustKnots = text.toString().toInt()
             } else if (qName.equals("visibility_statute_mi", ignoreCase = true)) {
-                metar.visibilitySM = text.toString().toFloat()
+                metar.visibilitySM = text.toString().toFloatOrNull() ?: 10.1F
             } else if (qName.equals("altim_in_hg", ignoreCase = true)) {
                 metar.altimeterHg = text.toString().toFloat()
             } else if (qName.equals("sea_level_pressure_mb", ignoreCase = true)) {
