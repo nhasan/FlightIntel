@@ -10,37 +10,39 @@ handbooks,faa-h-8083-9b-2020.pdf,Aviation Instructor's Handbook,2020,FAA-H-8083-
 handbooks,faa-h-8083-1b-2016.pdf,Weight and Balance Handbook,2016,FAA-H-8083-1B
 handbooks,faa-h-8083-21b-2019.pdf,Helicopter Flying Handbook,2019,FAA-H-8083-21B
 handbooks,faa-fs-i-8700-1-2003.pdf,Information for Banner Tow Operations,2003,FAA/FS-I-8799-1
-handbooks,fcm-h1-2017.pdf,Federal Meteorological Handbook No. 1,2017,NOAA
+handbooks,faa-h-8083-28-2022.pdf,Aviation Weather Handbook,2022,FAA-H-8083-28
+handbooks,fcm-h1-2019.pdf,Federal Meteorological Handbook No. 1,2019,NOAA
 handbooks,fcm-h2-1988.pdf,Federal Meteorological Handbook No. 2,1988,NOAA
-manuals,cug_230615.pdf,Aeronautical Chart User's Guide,Jun 2023,FAA
+manuals,cug_230810.pdf,Aeronautical Chart User's Guide,Aug 2023,FAA
 manuals,faa-h-8083-19a-2008.pdf,Plane Sense - General Aviation Information,2008,FAA-H-8083-19A
 manuals,ac-00-6b.pdf,Aviation Weather,2016,AC-00-6B
 manuals,ac-00-45h_chg_2.pdf,Aviation Weather Services,2019,AC-00-45H Change 2
 manuals,00-80T-80.pdf,Aerodynamics for Naval Aviators,1965,H. H. Hurt Jr.
+periodicals,cb_525.pdf,Callback,Issue 525 (Oct 2023),NASA
+periodicals,cb_524.pdf,Callback,Issue 524 (Sep 2023),NASA
+periodicals,cb_523.pdf,Callback,Issue 523 (Aug 2023),NASA
 periodicals,cb_522.pdf,Callback,Issue 522 (Jul 2023),NASA
 periodicals,cb_521.pdf,Callback,Issue 521 (Jun 2023),NASA
 periodicals,cb_520.pdf,Callback,Issue 520 (May 2023),NASA
-periodicals,cb_519.pdf,Callback,Issue 519 (Apr 2023),NASA
-periodicals,cb_518.pdf,Callback,Issue 518 (Mar 2023),NASA
-periodicals,cb_517.pdf,Callback,Issue 517 (Feb 2023),NASA
+periodicals,NovDec2023.pdf,FAA Safety Briefing,Nov/Dec 2023,FAA
+periodicals,SepOct2023.pdf,FAA Safety Briefing,Sep/Oct 2023,FAA
 periodicals,JulAug2023.pdf,FAA Safety Briefing,Jul/Aug 2023,FAA
 periodicals,MayJun2023.pdf,FAA Safety Briefing,May/Jun 2023,FAA
 periodicals,MarApr2023.pdf,FAA Safety Briefing,Mar/Apr 2023,FAA
 periodicals,JanFeb2023.pdf,FAA Safety Briefing,Jan/Feb 2023,FAA
-periodicals,NovDec2022.pdf,FAA Safety Briefing,Nov/Dec 2022,FAA
-periodicals,SepOct2022.pdf,FAA Safety Briefing,Sep/Oct 2022,FAA
+periodicals,hindsight_35.pdf,HindSight 35,Sep 2023,EuroControl
 periodicals,hindsight_34.pdf,HindSight 34,Dec 2022,EuroControl
-regs,aim_230420.pdf,AIM,Apr 2023,Basic
-regs,CFR-2022-title14-vol1.pdf,FAR Volume 1 2022,Parts 1-59,US GPO
-regs,CFR-2022-title14-vol2.pdf,FAR Volume 2 2022,Parts 60-109,US GPO
+regs,aim_231005.pdf,AIM,Oct 2023,Basic with Change 1
+regs,CFR-2023-title14-vol1.pdf,FAR Volume 1 2023,Parts 1-59,US GPO
+regs,CFR-2023-title14-vol2.pdf,FAR Volume 2 2023,Parts 60-109,US GPO
 regs,CFR-2022-title14-vol3.pdf,FAR Volume 3 2022,Parts 110-199,US GPO
-regs,CFR-2022-title14-vol4.pdf,FAR Volume 4 2022,Parts 200-1199,US GPO
-regs,CFR-2022-title14-vol5.pdf,FAR Volume 5 2022,Parts 1200-1399,US GPO
-misc,aip_230420.pdf,AIP (27th Ed.),Apr 2023,Amdt. 1 & 2
+regs,CFR-2023-title14-vol4.pdf,FAR Volume 4 2023,Parts 200-1199,US GPO
+regs,CFR-2023-title14-vol5.pdf,FAR Volume 5 2023,Parts 1200-1399,US GPO
+misc,aip_231005.pdf,AIP (27th Ed.),Oct 2023,Amdt. 1-3
 misc,nat_doc_007_210716.pdf,North Atlantic Operations Manual,V.2021-2,USA
-misc,pcg_230420.pdf,Pilot/Controller Glossary,Apr 2023,Basic
-misc,7110.10CC_fss_230420.pdf,Flight Services,Apr 2023,Basic
-misc,7110.65AA_atc_230420.pdf,Air Traffic Control,Apr 2023,Basic
+misc,pcg_231005.pdf,Pilot/Controller Glossary,Oct 2023,Basic with Change 1
+misc,7110.10DD_fss_231005.pdf,Flight Services,Oct 2023,JO 7110.10DD
+misc,7110.65AA_atc_231005.pdf,Air Traffic Control,Apr 2023,JO 7110.65AA
 misc,7110.118B_lahso_201115.pdf,Land and Hold Short Operations,Nov 2020,JO 7110.118B
 misc,faa_airspacecard_2014.pdf,Airspace Card,Jun 2014,FAA
 misc,Pilots_NOTAM_primer_for_2021.pdf,Pilots: NOTAM Primer,2021,FAA

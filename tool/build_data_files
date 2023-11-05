@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2019-2022 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2019-2023 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,10 @@
 # * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # */
 
+# Ubuntu package dependencies:
+#   sudo apt install libdbi-perl, libdbd-sqlite3-perl, libtext-autoformat-perl, libtext-csv-perl, libjson-perl
+#
+ 
 bold=$(tput bold; tput setaf 185)
 error=$(tput bold; tput setaf 125)
 normal=$(tput sgr0)
@@ -197,4 +201,3 @@ gsutil -m acl -r ch -u Allusers:R ${GS_LIBRARY_URL} 2>&1 | grep -v "No changes"
 echo "--";
 
 bold "Done!"
-
