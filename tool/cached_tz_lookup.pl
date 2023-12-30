@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ my $dbh2 = DBI->connect( "dbi:SQLite:dbname=$dbfile2", "", "" );
 
 my $sth_upd = $dbh1->prepare( "update airports set TIMEZONE_ID=? where SITE_NUMBER=?" );
 
-my $row = 0;
+my $count = 0;
 my $site_number;
 my $tz;
 
@@ -41,12 +41,13 @@ $sth->execute or die "Can't execute statement: $DBI::errstr\n";
 
 while ( ( $site_number, $tz ) = $sth->fetchrow_array )
 {
-    print "Cached row=[$row], site=[$site_number], tz=[$tz]\n";
+    ++$count;
+    print "\rApplying cached timezone: # $count...";
     $sth_upd->bind_param( 1, $tz );
     $sth_upd->bind_param( 2, $site_number );
     $sth_upd->execute();
-    ++$row;
 }
+print "\rDone applying cached timezone for $count airports\n";
 
 $dbh1->disconnect();
 $dbh2->disconnect();
