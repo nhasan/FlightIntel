@@ -24,6 +24,7 @@ use DBI;
 use LWP::Simple;
 use XML::Twig;
 use Text::Autoformat;
+use IO::Uncompress::Gunzip ();
 
 my $reTrim = qr/^\s+|\s+$/;
 
@@ -38,9 +39,8 @@ sub capitalize($)
 my $BASE_DIR = shift @ARGV;
 my $dbfile = shift @ARGV;
 
-my $STATIONS_FILE = $BASE_DIR."/wx_stations.txt";
-my $wx_url = "http://aviationweather.gov/adds/dataserver_current/httpparam?"
-        ."dataSource=stations&requestType=retrieve&format=xml&stationString=~us,~ca";
+my $STATIONS_FILE = $BASE_DIR."/wx_stations.xml.gz";
+my $wx_url = "https://aviationweather.gov/data/cache/stations.cache.xml.gz";
 my $count = 0;
 
 print "Downloading wx station data...";
@@ -90,13 +90,16 @@ $dbh->do( $create_wxs_table );
 $dbh->do( "CREATE INDEX idx_wxs_station_id on wxs ( STATION_ID );" );
 my $sth_wxs = $dbh->prepare( $insert_wxs_record );
 
+my $z = IO::Uncompress::Gunzip->new( $STATIONS_FILE )
+    or die "gunzip failed: $IO::Uncompress::Gunzip::GunzipError\n";
 my $twig= new XML::Twig( twig_handlers =>
                     { errors => \&errors,
                       warnings => \&warnings,
                       Station => \&station } );
-$twig->parsefile( $STATIONS_FILE );
+$twig->parse( $z );
+$z->close();
 
-print "\rDone loading $count stations\n";
+print "\rDone loading $count wx stations\n";
 
 exit;
 
@@ -123,6 +126,9 @@ sub warnings
 sub station
 {
     my( $twig, $station ) = @_;
+
+    my $country = $station->child_text( 0, "country" );
+    return if ($country ne "US" && $country ne "CA");
 
     my $site_type = $station->child( 0, "site_type" );
     my $site_types = "";
@@ -154,7 +160,7 @@ sub station
 
         ++$count;
 
-        print "\rLoading # $count...";
+        print "\rLoading wx station # $count...";
 
         #STATION_ID
         $sth_wxs->bind_param( 1, $station_id );
