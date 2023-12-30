@@ -13,17 +13,17 @@ handbooks,faa-fs-i-8700-1-2003.pdf,Information for Banner Tow Operations,2003,FA
 handbooks,faa-h-8083-28-2022.pdf,Aviation Weather Handbook,2022,FAA-H-8083-28
 handbooks,fcm-h1-2019.pdf,Federal Meteorological Handbook No. 1,2019,NOAA
 handbooks,fcm-h2-1988.pdf,Federal Meteorological Handbook No. 2,1988,NOAA
-manuals,cug_230810.pdf,Aeronautical Chart User's Guide,Aug 2023,FAA
+manuals,cug_231130.pdf,Aeronautical Chart User's Guide,Nov 2023,FAA
 manuals,faa-h-8083-19a-2008.pdf,Plane Sense - General Aviation Information,2008,FAA-H-8083-19A
 manuals,ac-00-6b.pdf,Aviation Weather,2016,AC-00-6B
 manuals,ac-00-45h_chg_2.pdf,Aviation Weather Services,2019,AC-00-45H Change 2
 manuals,00-80T-80.pdf,Aerodynamics for Naval Aviators,1965,H. H. Hurt Jr.
+periodicals,cb_527.pdf,Callback,Issue 527 (Dec 2023),NASA
+periodicals,cb_526.pdf,Callback,Issue 526 (Nov 2023),NASA
 periodicals,cb_525.pdf,Callback,Issue 525 (Oct 2023),NASA
 periodicals,cb_524.pdf,Callback,Issue 524 (Sep 2023),NASA
 periodicals,cb_523.pdf,Callback,Issue 523 (Aug 2023),NASA
 periodicals,cb_522.pdf,Callback,Issue 522 (Jul 2023),NASA
-periodicals,cb_521.pdf,Callback,Issue 521 (Jun 2023),NASA
-periodicals,cb_520.pdf,Callback,Issue 520 (May 2023),NASA
 periodicals,NovDec2023.pdf,FAA Safety Briefing,Nov/Dec 2023,FAA
 periodicals,SepOct2023.pdf,FAA Safety Briefing,Sep/Oct 2023,FAA
 periodicals,JulAug2023.pdf,FAA Safety Briefing,Jul/Aug 2023,FAA
@@ -35,7 +35,7 @@ periodicals,hindsight_34.pdf,HindSight 34,Dec 2022,EuroControl
 regs,aim_231005.pdf,AIM,Oct 2023,Basic with Change 1
 regs,CFR-2023-title14-vol1.pdf,FAR Volume 1 2023,Parts 1-59,US GPO
 regs,CFR-2023-title14-vol2.pdf,FAR Volume 2 2023,Parts 60-109,US GPO
-regs,CFR-2022-title14-vol3.pdf,FAR Volume 3 2022,Parts 110-199,US GPO
+regs,CFR-2023-title14-vol3.pdf,FAR Volume 3 2023,Parts 110-199,US GPO
 regs,CFR-2023-title14-vol4.pdf,FAR Volume 4 2023,Parts 200-1199,US GPO
 regs,CFR-2023-title14-vol5.pdf,FAR Volume 5 2023,Parts 1200-1399,US GPO
 misc,aip_231005.pdf,AIP (27th Ed.),Oct 2023,Amdt. 1-3
@@ -44,6 +44,7 @@ misc,pcg_231005.pdf,Pilot/Controller Glossary,Oct 2023,Basic with Change 1
 misc,7110.10DD_fss_231005.pdf,Flight Services,Oct 2023,JO 7110.10DD
 misc,7110.65AA_atc_231005.pdf,Air Traffic Control,Apr 2023,JO 7110.65AA
 misc,7110.118B_lahso_201115.pdf,Land and Hold Short Operations,Nov 2020,JO 7110.118B
+misc,7930.2T_231214.pdf,Notice to Air Missions (NOTAM),Dec 2023,7930.2T
 misc,faa_airspacecard_2014.pdf,Airspace Card,Jun 2014,FAA
 misc,Pilots_NOTAM_primer_for_2021.pdf,Pilots: NOTAM Primer,2021,FAA
 misc,Airports_NOTAM_primer_for_2020.pdf,Airports: NOTAM Primer,2020,FAA
@@ -71,9 +72,7 @@ circular,ac-90-66c-2023.pdf,Non-Towered Airport Flight Operations,2023,AC-90-66C
 circular,ac-60-22-1991.pdf,Aeronautical Decision Making,1991,AC-60-22
 circular,ac-120-100-2010.pdf,Basics of Aviation Fatigue,2010,AC-120-100
 circular,ac-91-74b-2015.pdf,Flight In Icing Conditions,2015,AC-91-74B
-circular,ac-00-24c-2013.pdf,Thunderstorms,2013,AC-00-24C
-circular,ac-00-54-1988.pdf,Pilot Windshear Guide,1988,AC-00-54
-circular,ac-00-46e-2011.pdf,Aviation Safety Reporting Program,2011,AC-00-46E
+circular,ac-00-46f-2021.pdf,Aviation Safety Reporting Program,2011,AC-00-46F
 circular,ac-61-134-2003.pdf,Controlled Flight Into Terrain Awareness,2003,AC-61-134
 circular,ac-61-65h-2018.pdf,Pilots and Flight and Ground Instructors,2018,AC-61-65H
 circular,ac-120-76d-2017.pdf,Use of Electronics Flight Bags,2017,AC-120-76D
@@ -98,13 +97,13 @@ pts,FAA-S-ACS-8B_180611.pdf,Instrument Rating ACS,Jun 2018,FAA-S-ACS-8B
 pts,faa-s-8081-5f.pdf,Airline Transport Pilot PTS,Jul 2014,FAA-S-8081-5F
 pts,FAA-S-8081-6D_180419.pdf,Flight Instructor PTS,Apr 2018,FAA-S-8081-6D
 pts,faa-s-8081-9d.pdf,Flight Instructor Instrument PTS,Jul 2010,FAA-S-8081-9D
-canada,TC_AIM_EN_221006.pdf,Aeronautical Information Manual (TC AIM),Oct 2022,Nav Canada
-canada,AWS-Guide-EN_1705.pdf,Aviation Weather Service Guide,May 2017,Nav Canada
+canada,TC_AIM_EN_230323.pdf,Aeronautical Information Manual (TC AIM),Mar 2023,Nav Canada
+canada,AWS-Guide-EN_1705.pdf,Aviation Weather Services Guide,May 2017,Nav Canada
 canada,Customer-Guide-Charges-EN_2009.pdf,Customer Guide to Charges,Sep 2020,Nav Canada
 canada,VFR_Phraseology_2204.pdf,VFR Phraseology,Apr 2022,Nav Canada
 canada,IFR_Phraseology_2204.pdf,IFR Phraseology,Apr 2022,Nav Canada
 canada,RNAV_Phraseology_2009.pdf,RNAV Phraseology,Jun 2020,Nav Canada
-canada,NOTAM-Manual-EN_221103.pdf,Canadian NOTAM Procedures Manual,Nov 2022,Nav Canada
+canada,cnop-7.0-30-231130.pdf,Canadian NOTAM Operating Procedures,Nov 2023,Nav Canada
 canada,DAH_EN_201231.pdf,Designated Airspace Handbook,Dec 2020,Nav Canada
 canada,A34E-W.pdf,The Weather of Atlantic Canada and Eastern Quebec,Nov 2005,Nav Canada
 canada,BC31E-W.pdf,The Weather of British Columbia,Nov 2005,Nav Canada
