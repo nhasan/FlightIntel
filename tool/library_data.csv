@@ -13,25 +13,27 @@ handbooks,faa-fs-i-8700-1-2003.pdf,Information for Banner Tow Operations,2003,FA
 handbooks,faa-h-8083-28-2022.pdf,Aviation Weather Handbook,2022,FAA-H-8083-28
 handbooks,fcm-h1-2019.pdf,Federal Meteorological Handbook No. 1,2019,NOAA
 handbooks,fcm-h2-1988.pdf,Federal Meteorological Handbook No. 2,1988,NOAA
-manuals,cug_231130.pdf,Aeronautical Chart User's Guide,Nov 2023,FAA
+manuals,cug_240125.pdf,Aeronautical Chart User's Guide,Jan 2024,FAA
 manuals,faa-h-8083-19a-2008.pdf,Plane Sense - General Aviation Information,2008,FAA-H-8083-19A
 manuals,ac-00-6b.pdf,Aviation Weather,2016,AC-00-6B
 manuals,ac-00-45h_chg_2.pdf,Aviation Weather Services,2019,AC-00-45H Change 2
 manuals,00-80T-80.pdf,Aerodynamics for Naval Aviators,1965,H. H. Hurt Jr.
+periodicals,cb_530.pdf,Callback,Issue 529 (Mar 2024),NASA
+periodicals,cb_529.pdf,Callback,Issue 529 (Feb 2024),NASA
+periodicals,cb_528.pdf,Callback,Issue 528 (Jan 2024),NASA
 periodicals,cb_527.pdf,Callback,Issue 527 (Dec 2023),NASA
 periodicals,cb_526.pdf,Callback,Issue 526 (Nov 2023),NASA
 periodicals,cb_525.pdf,Callback,Issue 525 (Oct 2023),NASA
-periodicals,cb_524.pdf,Callback,Issue 524 (Sep 2023),NASA
-periodicals,cb_523.pdf,Callback,Issue 523 (Aug 2023),NASA
-periodicals,cb_522.pdf,Callback,Issue 522 (Jul 2023),NASA
+periodicals,MarApr2024.pdf,FAA Safety Briefing,Mar/Apr 2023,FAA
+periodicals,JanFeb2024.pdf,FAA Safety Briefing,Jan/Feb 2024,FAA
 periodicals,NovDec2023.pdf,FAA Safety Briefing,Nov/Dec 2023,FAA
 periodicals,SepOct2023.pdf,FAA Safety Briefing,Sep/Oct 2023,FAA
 periodicals,JulAug2023.pdf,FAA Safety Briefing,Jul/Aug 2023,FAA
 periodicals,MayJun2023.pdf,FAA Safety Briefing,May/Jun 2023,FAA
-periodicals,MarApr2023.pdf,FAA Safety Briefing,Mar/Apr 2023,FAA
-periodicals,JanFeb2023.pdf,FAA Safety Briefing,Jan/Feb 2023,FAA
 periodicals,hindsight_35.pdf,HindSight 35,Sep 2023,EuroControl
 periodicals,hindsight_34.pdf,HindSight 34,Dec 2022,EuroControl
+periodicals,hindsight_33.pdf,HindSight 33,Dec 2021,EuroControl
+periodicals,hindsight_32.pdf,HindSight 32,Jul 2021,EuroControl
 regs,aim_231005.pdf,AIM,Oct 2023,Basic with Change 1
 regs,CFR-2023-title14-vol1.pdf,FAR Volume 1 2023,Parts 1-59,US GPO
 regs,CFR-2023-title14-vol2.pdf,FAR Volume 2 2023,Parts 60-109,US GPO
@@ -105,6 +107,7 @@ canada,IFR_Phraseology_2204.pdf,IFR Phraseology,Apr 2022,Nav Canada
 canada,RNAV_Phraseology_2009.pdf,RNAV Phraseology,Jun 2020,Nav Canada
 canada,cnop-7.0-30-231130.pdf,Canadian NOTAM Operating Procedures,Nov 2023,Nav Canada
 canada,DAH_EN_201231.pdf,Designated Airspace Handbook,Dec 2020,Nav Canada
+canada,cac_240125.pdf,Canadian Airport Charts,Jan 2024,Nav Canada
 canada,A34E-W.pdf,The Weather of Atlantic Canada and Eastern Quebec,Nov 2005,Nav Canada
 canada,BC31E-W.pdf,The Weather of British Columbia,Nov 2005,Nav Canada
 canada,N3637E-W.pdf,The Weather of Nunavut and the Arctic,Oct 2005,Nav Canada
