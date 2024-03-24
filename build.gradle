@@ -1,14 +1,14 @@
 
 buildscript {
-    ext.kotlin_version = '1.8.20'
+    ext.kotlin_version = '1.9.22'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.2.0'
-        classpath 'com.google.gms:google-services:4.4.0'
+        classpath 'com.android.tools.build:gradle:8.2.2'
+        classpath 'com.google.gms:google-services:4.4.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -32,8 +32,8 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
-    implementation 'com.google.android.gms:play-services-location:21.0.1'
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.4.0'
+    implementation 'com.google.android.gms:play-services-location:21.1.0'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.4.1'
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.work:work-runtime-ktx:2.9.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1'
