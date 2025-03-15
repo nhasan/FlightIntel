@@ -41,10 +41,10 @@ import com.nadmm.airports.R
 import java.util.*
 
 object UiUtils {
-    private val sDrawableCache = LruCache<String, Drawable?>(100)
+    private val sDrawableCache = LruCache<String, Drawable>(100)
     private var sHandler: Handler? = null
-    private val sPaint = Paint(Paint.FILTER_BITMAP_FLAG)
     @JvmStatic
+
     fun getDrawableFromCache(key: String): Drawable? {
         return sDrawableCache[key]
     }
@@ -118,7 +118,7 @@ object UiUtils {
         return rotate
     }
 
-    fun getBitmap(context: Context?, drawable: VectorDrawable): Bitmap {
+    fun getBitmap(drawable: VectorDrawable): Bitmap {
         drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
         val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight,
             Bitmap.Config.ARGB_8888

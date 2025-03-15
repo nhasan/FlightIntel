@@ -20,7 +20,7 @@
 # */
 
 # Ubuntu package dependencies:
-#   sudo apt install libdatetime-perl, libxml-simple-perl
+#   sudo apt install libdatetime-perl libxml-simple-perl
 
 use strict;
 use warnings;

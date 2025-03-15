@@ -20,10 +20,10 @@
 # */
 
 # Ubuntu package dependencies:
-#   sudo apt install libdbi-perl, libdbd-sqlite3-perl, libtext-autoformat-perl, libtext-csv-perl, libjson-perl
+#   sudo apt install libdbi-perl libdbd-sqlite3-perl libtext-autoformat-perl libtext-csv-perl libjson-perl
 #
  
-bold=$(tput bold; tput setaf 185)
+bold=$(tput bold; tput setaf 39)
 error=$(tput bold; tput setaf 125)
 normal=$(tput sgr0)
 
@@ -38,7 +38,7 @@ function bold {
 bold "Checking for updates to gcloud tool:";
 gcloud components update
 
-source build_data_config
+source build_data.conf
 
 echo
 bold "Using config:"
