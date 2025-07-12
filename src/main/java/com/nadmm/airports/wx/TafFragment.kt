@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,12 +31,12 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
 import com.nadmm.airports.data.DatabaseManager.Awos1
 import com.nadmm.airports.data.DatabaseManager.Wxs
-import com.nadmm.airports.utils.CursorAsyncTask
 import com.nadmm.airports.utils.DbUtils
 import com.nadmm.airports.utils.FormatUtils.formatAltimeter
 import com.nadmm.airports.utils.FormatUtils.formatDegrees
@@ -51,6 +51,9 @@ import com.nadmm.airports.utils.WxUtils.decodeIcingIntensity
 import com.nadmm.airports.utils.WxUtils.decodeTurbulenceIntensity
 import com.nadmm.airports.utils.WxUtils.setFlightCategoryDrawable
 import com.nadmm.airports.wx.Taf.Forecast
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class TafFragment : WxFragmentBase() {
@@ -82,10 +85,14 @@ class TafFragment : WxFragmentBase() {
     override fun onResume() {
         super.onResume()
 
-        val args = arguments
-        if (args != null) {
-            val stationId = args.getString(NoaaService.STATION_ID)
-            setBackgroundTask(TafTask(this)).execute(stationId)
+        arguments?.let {
+            val stationId = it.getString(NoaaService.STATION_ID) ?: return
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = withContext(Dispatchers.IO) {
+                    doQuery(stationId)
+                }
+                setCursor(result)
+            }
         }
     }
 
@@ -110,7 +117,6 @@ class TafFragment : WxFragmentBase() {
     }
 
     private fun doQuery(stationId: String): Array<Cursor?> {
-        var stationId = stationId
         val cursors = arrayOfNulls<Cursor>(2)
         val db = dbManager.getDatabase(DatabaseManager.DB_FADDS)
 
@@ -122,11 +128,15 @@ class TafFragment : WxFragmentBase() {
             arrayOf(stationId), null, null, null, null
         )
         c.moveToFirst()
-        var siteTypes = c.getString(c.getColumnIndex(Wxs.STATION_SITE_TYPES))
-        if (!siteTypes.contains("TAF")) {
+        var taf = "";
+        var siteTypes = c.getString(c.getColumnIndexOrThrow(Wxs.STATION_SITE_TYPES))
+        if (siteTypes.contains("TAF")) {
+            // There is a TAF available at this station
+            taf = stationId;
+        } else {
             // There is no TAF available at this station, search for the nearest
-            val lat = c.getDouble(c.getColumnIndex(Wxs.STATION_LATITUDE_DEGREES))
-            val lon = c.getDouble(c.getColumnIndex(Wxs.STATION_LONGITUDE_DEGREES))
+            val lat = c.getDouble(c.getColumnIndexOrThrow(Wxs.STATION_LATITUDE_DEGREES))
+            val lon = c.getDouble(c.getColumnIndexOrThrow(Wxs.STATION_LONGITUDE_DEGREES))
             val location = Location("")
             location.latitude = lat
             location.longitude = lon
@@ -138,11 +148,10 @@ class TafFragment : WxFragmentBase() {
                 location, NoaaService.TAF_RADIUS
             )
 
-            stationId = ""
             if (c.moveToFirst()) {
                 var distance = Float.MAX_VALUE
                 do {
-                    siteTypes = c.getString(c.getColumnIndex(Wxs.STATION_SITE_TYPES))
+                    siteTypes = c.getString(c.getColumnIndexOrThrow(Wxs.STATION_SITE_TYPES))
                     if (!siteTypes.contains("TAF")) {
                         continue
                     }
@@ -151,13 +160,13 @@ class TafFragment : WxFragmentBase() {
                     Location.distanceBetween(
                         location.latitude,
                         location.longitude,
-                        c.getDouble(c.getColumnIndex(Wxs.STATION_LATITUDE_DEGREES)),
-                        c.getDouble(c.getColumnIndex(Wxs.STATION_LONGITUDE_DEGREES)),
+                        c.getDouble(c.getColumnIndexOrThrow(Wxs.STATION_LATITUDE_DEGREES)),
+                        c.getDouble(c.getColumnIndexOrThrow(Wxs.STATION_LONGITUDE_DEGREES)),
                         results
                     )
                     results[0] /= GeoUtils.METERS_PER_NAUTICAL_MILE
                     if (results[0] <= NoaaService.TAF_RADIUS && results[0] < distance) {
-                        stationId = c.getString(c.getColumnIndex(Wxs.STATION_ID))
+                        taf = c.getString(c.getColumnIndexOrThrow(Wxs.STATION_ID))
                         distance = results[0]
                     }
                 } while (c.moveToNext())
@@ -165,14 +174,14 @@ class TafFragment : WxFragmentBase() {
         }
         c.close()
 
-        if (stationId.length > 0) {
+        if (!taf.isEmpty()) {
             // We have the station with TAF
             builder = SQLiteQueryBuilder()
             builder.tables = Wxs.TABLE_NAME
             selection = Wxs.STATION_ID + "=?"
             c = builder.query(
                 db, arrayOf("*"), selection,
-                arrayOf(stationId), null, null, null, null
+                arrayOf(taf), null, null, null, null
             )
             cursors[0] = c
 
@@ -191,7 +200,7 @@ class TafFragment : WxFragmentBase() {
                     + " ON a." + Airports.FAA_CODE + " = w." + Awos1.WX_SENSOR_IDENT)
             selection = "a." + Airports.ICAO_CODE + "=?"
             c = builder.query(
-                db, wxColumns, selection, arrayOf(stationId),
+                db, wxColumns, selection, arrayOf(taf),
                 null, null, null, null
             )
             cursors[1] = c
@@ -203,9 +212,9 @@ class TafFragment : WxFragmentBase() {
     private fun setCursor(result: Array<Cursor?>) {
         val wxs = result[0]
         if (wxs == null || !wxs.moveToFirst()) {
-            if (arguments != null) {
+            arguments?.let {
                 // No station with TAF was found nearby
-                val stationId = arguments!!.getString(NoaaService.STATION_ID)
+                val stationId = it.getString(NoaaService.STATION_ID)
 
                 val detail = findViewById<View>(R.id.wx_detail_layout)
                 detail!!.visibility = View.GONE
@@ -228,32 +237,20 @@ class TafFragment : WxFragmentBase() {
             // Show the weather station info
             showWxTitle(result)
             // Now request the weather
-            mStationId = wxs.getString(wxs.getColumnIndex(Wxs.STATION_ID))
+            mStationId = wxs.getString(wxs.getColumnIndexOrThrow(Wxs.STATION_ID))
             requestTaf(mStationId, false)
         }
     }
 
-    private class TafTask(fragment: TafFragment) : CursorAsyncTask<TafFragment?>(fragment) {
-        override fun onExecute(fragment: TafFragment, vararg params: String): Array<Cursor?> {
-            val stationId = params[0]
-            return fragment.doQuery(stationId)
-        }
-
-        override fun onResult(fragment: TafFragment, result: Array<Cursor?>): Boolean {
-            fragment.setCursor(result)
-            return true
-        }
-    }
-
     private fun requestTaf(stationId: String?, refresh: Boolean) {
-        if (activity != null) {
+        activity?.let {
             val service = Intent(activity, TafService::class.java)
-            service.setAction(mAction)
+            service.action = mAction
             service.putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
             service.putExtra(NoaaService.STATION_ID, stationId)
             service.putExtra(NoaaService.HOURS_BEFORE, NoaaService.TAF_HOURS_BEFORE)
             service.putExtra(NoaaService.FORCE_REFRESH, refresh)
-            activity!!.startService(service)
+            it.startService(service)
         }
     }
 
