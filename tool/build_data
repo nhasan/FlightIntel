@@ -104,7 +104,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
         mkdir -p ${BASE_DIR};
     fi
     DTPP_PATH="${BASE_DIR}/d-TPP_Metafile.xml";
-    if [ ! -f "${DTPP_PATH}" ]; then
+    if [ ! -s "${DTPP_PATH}" ]; then
         DTPP_URL="https://aeronav.faa.gov/d-tpp/${DTPP_CYCLE}/xml_data/d-TPP_Metafile.xml";
         bold "Downloading d-TPP ${DTPP_CYCLE} file:";
         wget -O ${DTPP_PATH} ${DTPP_URL};
@@ -129,7 +129,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     fi
     DCS_FILE="afd_${DCS_CYCLE}.xml";
     DCS_PATH="${BASE_DIR}/${DCS_FILE}";
-    if [ ! -f "${DCS_PATH}" ]; then
+    if [ ! -s "${DCS_PATH}" ]; then
 	    DCS_URL="https://aeronav.faa.gov/afd/${DCS_CYCLE}/${DCS_FILE}";
         bold "Downloading d-CS ${DCS_CYCLE} file:";
         wget -O ${DCS_PATH} ${DCS_URL};
