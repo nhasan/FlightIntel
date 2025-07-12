@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,8 +102,13 @@ class AircraftOpsFragment : FragmentBase() {
     }
 
     private fun doQuery(siteNumber: String): Array<Cursor?> {
-        val c = getAirportDetails(siteNumber)
-        return arrayOf(c)
+        return try {
+            val c = getAirportDetails(siteNumber)
+            arrayOf(c)
+        } catch (e: Exception) {
+            // Handle exception
+            arrayOfNulls(1)
+        }
     }
 
 }
