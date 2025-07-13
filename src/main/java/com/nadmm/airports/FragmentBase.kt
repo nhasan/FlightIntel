@@ -25,7 +25,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +34,8 @@ import android.widget.LinearLayout.LayoutParams
 import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
+import androidx.core.view.isNotEmpty
 import androidx.fragment.app.Fragment
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -70,7 +71,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
         val tv = v as TextView
         val action = tv.tag as String
         val phone = DataUtils.decodePhoneNumber(tv.text.toString())
-        val intent = Intent(action, Uri.parse("tel:$phone"))
+        val intent = Intent(action, "tel:$phone".toUri())
         startActivity(intent)
     }
 
@@ -283,22 +284,28 @@ abstract class FragmentBase : Fragment(), IRefreshable {
         row.setBackgroundResource(backgroundResource)
     }
 
-    protected fun addClickableRow(layout: LinearLayout, label: String, value: String?,
-                                  clss: Class<*>, args: Bundle): View {
+    protected fun addClickableRow(
+        layout: LinearLayout, label: String, value: String?,
+        clss: Class<*>, args: Bundle,
+    ): View {
         val row = addRow(layout, label, value)
         makeRowClickable(row, clss, args)
         return row
     }
 
-    protected fun addClickableRow(layout: LinearLayout, label: String, clss: Class<*>,
-                                  args: Bundle?): View {
+    protected fun addClickableRow(
+        layout: LinearLayout, label: String, clss: Class<*>,
+        args: Bundle?,
+    ): View {
         val row = addRow(layout, label)
         makeRowClickable(row, clss, args)
         return row
     }
 
-    protected fun addClickableRow(layout: LinearLayout, row: View, clss: Class<*>,
-                                  args: Bundle?): View {
+    protected fun addClickableRow(
+        layout: LinearLayout, row: View, clss: Class<*>,
+        args: Bundle?,
+    ): View {
         addRow(layout, row)
         makeRowClickable(row, clss, args)
         return row
@@ -308,23 +315,29 @@ abstract class FragmentBase : Fragment(), IRefreshable {
         return addClickableRow(layout, label, null, tag)
     }
 
-    protected fun addClickableRow(layout: LinearLayout, label: String, value: String?,
-                                  tag: Any): View {
+    protected fun addClickableRow(
+        layout: LinearLayout, label: String, value: String?,
+        tag: Any,
+    ): View {
         val row = addRow(layout, label, value)
         makeRowClickable(row, tag)
         return row
     }
 
-    protected fun addClickableRow(layout: LinearLayout, label1: String, value1: String,
-                                  label2: String, value2: String, tag: Any): View {
+    protected fun addClickableRow(
+        layout: LinearLayout, label1: String, value1: String,
+        label2: String, value2: String, tag: Any,
+    ): View {
         val row = addRow(layout, label1, value1, label2, value2)
         makeRowClickable(row, tag)
         return row
     }
 
-    protected fun addClickableRow(layout: LinearLayout, label1: String, value1: String,
-                                  label2: String, value2: String, clss: Class<*>,
-                                  args: Bundle): View {
+    protected fun addClickableRow(
+        layout: LinearLayout, label1: String, value1: String,
+        label2: String, value2: String, clss: Class<*>,
+        args: Bundle,
+    ): View {
         val row = addRow(layout, label1, value1, label2, value2)
         makeRowClickable(row, clss, args)
         return row
@@ -343,7 +356,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
     }
 
     protected fun addProgressRow(layout: LinearLayout, label: String): View {
-        if (layout.childCount > 0) {
+        if (layout.isNotEmpty()) {
             addSeparator(layout)
         }
         val row = inflate<LinearLayout>(R.layout.list_item_text1)
@@ -362,7 +375,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
 
     @JvmOverloads
     protected fun addRow(layout: LinearLayout, label: String, value: String? = null): View {
-        if (layout.childCount > 0) {
+        if (layout.isNotEmpty()) {
             addSeparator(layout)
         }
 
@@ -381,7 +394,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
 
     protected fun addRow(layout: LinearLayout, label: String, value1: String?, value2: String?)
             : View {
-        if (layout.childCount > 0) {
+        if (layout.isNotEmpty()) {
             addSeparator(layout)
         }
 
@@ -404,9 +417,11 @@ abstract class FragmentBase : Fragment(), IRefreshable {
         return row
     }
 
-    protected fun addRow(layout: LinearLayout, label1: String, value1: String?,
-                         label2: String?, value2: String?): View {
-        if (layout.childCount > 0) {
+    protected fun addRow(
+        layout: LinearLayout, label1: String, value1: String?,
+        label2: String?, value2: String?,
+    ): View {
+        if (layout.isNotEmpty()) {
             addSeparator(layout)
         }
 
@@ -443,7 +458,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
     }
 
     protected fun addRow(layout: LinearLayout, row: View): View {
-        if (layout.childCount > 0) {
+        if (layout.isNotEmpty()) {
             addSeparator(layout)
         }
 
