@@ -35,7 +35,7 @@ import kotlinx.coroutines.withContext
 
 class AircraftOpsFragment : FragmentBase() {
 
-    private var _binding: AircraftOpsViewBinding? = null;
+    private var _binding: AircraftOpsViewBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -45,8 +45,8 @@ class AircraftOpsFragment : FragmentBase() {
         return createContentView(view)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setActionBarTitle("Operations", "")
 
