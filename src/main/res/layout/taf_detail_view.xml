@@ -28,8 +28,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-        <include layout="@layout/wx_title_layout" />
-        <include layout="@layout/wx_subtitle_layout" />
+        <include
+            android:id="@+id/title"
+            layout="@layout/wx_title_layout" />
+
+        <include
+            android:id="@+id/subtitle"
+            layout="@layout/wx_subtitle_layout" />
         <Button android:id="@+id/btnViewGraphic"
                 style="@style/FlatButton"
                 android:text="@string/view_graphic"

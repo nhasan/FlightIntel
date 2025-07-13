@@ -27,7 +27,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -37,6 +36,8 @@ import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
 import com.nadmm.airports.data.DatabaseManager.Awos1
 import com.nadmm.airports.data.DatabaseManager.Wxs
+import com.nadmm.airports.databinding.GroupedDetailItemBinding
+import com.nadmm.airports.databinding.TafDetailViewBinding
 import com.nadmm.airports.utils.DbUtils
 import com.nadmm.airports.utils.FormatUtils.formatAltimeter
 import com.nadmm.airports.utils.FormatUtils.formatDegrees
@@ -62,6 +63,9 @@ class TafFragment : WxFragmentBase() {
     private var mStationId: String? = null
     private var mLastForecast: Forecast? = null
 
+    private var _binding: TafDetailViewBinding? = null;
+    private val binding get() = _binding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -72,13 +76,13 @@ class TafFragment : WxFragmentBase() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.taf_detail_view, container, false)
-        val btnGraphic = view.findViewById<Button>(R.id.btnViewGraphic)
-        btnGraphic.setOnClickListener { v: View? ->
+        _binding = TafDetailViewBinding.inflate(inflater, container, false)
+        binding.btnViewGraphic.setOnClickListener { v: View? ->
             val intent = Intent(activity, TafMapActivity::class.java)
             startActivity(intent)
         }
-        btnGraphic.visibility = View.GONE
+        binding.btnViewGraphic.visibility = View.GONE
+        val view = binding.root
         return createContentView(view)
     }
 
@@ -128,11 +132,11 @@ class TafFragment : WxFragmentBase() {
             arrayOf(stationId), null, null, null, null
         )
         c.moveToFirst()
-        var taf = "";
+        var taf = ""
         var siteTypes = c.getString(c.getColumnIndexOrThrow(Wxs.STATION_SITE_TYPES))
         if (siteTypes.contains("TAF")) {
             // There is a TAF available at this station
-            taf = stationId;
+            taf = stationId
         } else {
             // There is no TAF available at this station, search for the nearest
             val lat = c.getDouble(c.getColumnIndexOrThrow(Wxs.STATION_LATITUDE_DEGREES))
@@ -256,44 +260,36 @@ class TafFragment : WxFragmentBase() {
 
     @SuppressLint("SetTextI18n")
     private fun showTaf(intent: Intent) {
-        if (activity == null) {
-            return
-        }
+        activity ?: return
 
         val taf = intent.getSerializableExtra(NoaaService.RESULT) as Taf? ?: return
-
-        val detail = findViewById<View>(R.id.wx_detail_layout)
-        var layout = findViewById<LinearLayout>(R.id.wx_status_layout)
-        var tv = findViewById<TextView>(R.id.status_msg)
-        layout!!.removeAllViews()
+        binding.wxStatusLayout.removeAllViews()
         if (!taf.isValid) {
-            tv!!.visibility = View.VISIBLE
-            layout.visibility = View.VISIBLE
-            tv.text = "Unable to get TAF for this location."
-            addRow(layout, "This could be due to the following reasons:")
-            addBulletedRow(layout, "Network connection is not available")
-            addBulletedRow(layout, "ADDS does not publish TAF for this station")
-            addBulletedRow(layout, "Station is currently out of service")
-            addBulletedRow(layout, "Station has not updated the TAF for more than 12 hours")
-            detail!!.visibility = View.GONE
+            binding.statusMsg.text = "Unable to get TAF for this location."
+            with (binding.wxStatusLayout) {
+                addRow(this, "This could be due to the following reasons:")
+                addBulletedRow(this, "Network connection is not available")
+                addBulletedRow(this, "ADDS does not publish TAF for this station")
+                addBulletedRow(this, "Station is currently out of service")
+                addBulletedRow(this, "Station has not updated the TAF for more than 12 hours")
+            }
+            binding.statusMsg.visibility = View.VISIBLE
+            binding.wxStatusLayout.visibility = View.VISIBLE
+            binding.wxDetailLayout.visibility = View.GONE
             setFragmentContentShown(true)
             return
         } else {
-            tv!!.text = ""
-            tv.visibility = View.GONE
-            layout.visibility = View.GONE
-            detail!!.visibility = View.VISIBLE
+            binding.statusMsg.text = ""
+            binding.statusMsg.visibility = View.GONE
+            binding.wxStatusLayout.visibility = View.GONE
+            binding.wxDetailLayout.visibility = View.VISIBLE
         }
 
-        tv = findViewById(R.id.wx_age)
-        tv!!.text = TimeUtils.formatElapsedTime(taf.issueTime)
-
+        binding.subtitle.wxAge.text = TimeUtils.formatElapsedTime(taf.issueTime)
         // Raw Text
-        tv = findViewById(R.id.wx_raw_taf)
-        tv!!.text = taf.rawText!!.replace("(FM|BECMG|TEMPO)".toRegex(), "\n    $1")
+        binding.wxRawTaf.text = taf.rawText!!.replace("(FM|BECMG|TEMPO)".toRegex(), "\n    $1")
 
-        layout = findViewById(R.id.taf_summary_layout)
-        layout!!.removeAllViews()
+        binding.tafSummaryLayout.removeAllViews()
         val fcstType = if (taf.rawText!!.startsWith("TAF AMD ")) {
             "Amendment"
         } else if (taf.rawText!!.startsWith("TAF COR ")) {
@@ -301,30 +297,24 @@ class TafFragment : WxFragmentBase() {
         } else {
             "Normal"
         }
-        addRow(layout, "Forecast type", fcstType)
-        addRow(
-            layout, "Issued at",
+        addRow(binding.tafSummaryLayout, "Forecast type", fcstType)
+        addRow(binding.tafSummaryLayout, "Issued at",
             TimeUtils.formatDateTime(activityBase, taf.issueTime)
         )
-        addRow(
-            layout, "Valid from",
+        addRow(binding.tafSummaryLayout, "Valid from",
             TimeUtils.formatDateTime(activityBase, taf.validTimeFrom)
         )
-        addRow(
-            layout, "Valid to",
+        addRow(binding.tafSummaryLayout, "Valid to",
             TimeUtils.formatDateTime(activityBase, taf.validTimeTo)
         )
-        if (taf.remarks != null && taf.remarks!!.length > 0 && (taf.remarks != "AMD")) {
-            addRow(layout, "\u2022 " + taf.remarks)
+        taf.remarks?.let {
+            if (it.isNotEmpty() && it != "AMD") {
+                addRow(binding.tafSummaryLayout, "\u2022 $it")
+            }
         }
-
-        val topLayout = findViewById<LinearLayout>(R.id.taf_forecasts_layout)
-        topLayout!!.removeAllViews()
 
         val sb = StringBuilder()
         for (forecast in taf.forecasts) {
-            val grp_layout = inflate<RelativeLayout>(R.layout.grouped_detail_item)
-
             // Keep track of forecast conditions across all change groups
             if (mLastForecast == null || forecast.changeIndicator == null || forecast.changeIndicator == "FM") {
                 mLastForecast = forecast
@@ -348,132 +338,133 @@ class TafFragment : WxFragmentBase() {
                     forecast.timeFrom, forecast.timeTo
                 )
             )
-            tv = grp_layout.findViewById(R.id.group_extra)
-            tv.visibility = View.GONE
-            tv = grp_layout.findViewById(R.id.group_name)
-            tv.text = sb.toString()
-            val flightCategory = computeFlightCategory(
-                mLastForecast!!.skyConditions, mLastForecast!!.visibilitySM
-            )
-            setFlightCategoryDrawable(tv, flightCategory)
+            val layout = inflate<RelativeLayout>(R.layout.grouped_detail_item)
+            with (GroupedDetailItemBinding.bind(layout)) {
+                ;
+                groupExtra.visibility = View.GONE
+                groupName.text = sb.toString()
 
-            val fcst_layout = grp_layout.findViewById<LinearLayout>(R.id.group_details)
-
-            if (forecast.probability < Int.MAX_VALUE) {
-                addRow(
-                    fcst_layout, "Probability", String.format(
-                        Locale.US,
-                        "%d%%", forecast.probability
-                    )
+                val flightCategory = computeFlightCategory(
+                    mLastForecast!!.skyConditions, mLastForecast!!.visibilitySM
                 )
-            }
+                setFlightCategoryDrawable(groupName, flightCategory)
 
-            if (forecast.changeIndicator != null
-                && forecast.changeIndicator == "BECMG"
-            ) {
-                addRow(
-                    fcst_layout, "Becoming at", TimeUtils.formatDateTime(
-                        activityBase, forecast.timeBecoming
+                if (forecast.probability < Int.MAX_VALUE) {
+                    addRow(
+                        groupDetails, "Probability", String.format(
+                            Locale.US,
+                            "%d%%", forecast.probability
+                        )
                     )
-                )
-            }
+                }
 
-            if (forecast.windSpeedKnots < Int.MAX_VALUE) {
-                val wind = if (forecast.windDirDegrees == 0 && forecast.windSpeedKnots == 0) {
-                    "Calm"
-                } else if (forecast.windDirDegrees == 0) {
-                    String.format(
-                        Locale.US, "Variable at %d knots",
-                        forecast.windSpeedKnots
+                if ((forecast.changeIndicator ?: "") == "BECMG") {
+                    addRow(
+                        groupDetails, "Becoming at", TimeUtils.formatDateTime(
+                            activityBase, forecast.timeBecoming
+                        )
                     )
-                } else {
-                    String.format(
+                }
+
+                if (forecast.windSpeedKnots < Int.MAX_VALUE) {
+                    val wind = if (forecast.windDirDegrees == 0 && forecast.windSpeedKnots == 0) {
+                        "Calm"
+                    } else if (forecast.windDirDegrees == 0) {
+                        String.format(
+                            Locale.US, "Variable at %d knots",
+                            forecast.windSpeedKnots
+                        )
+                    } else {
+                        String.format(
+                            Locale.US, "%s (%s true) at %d knots",
+                            getCardinalDirection(forecast.windDirDegrees.toFloat()),
+                            formatDegrees(forecast.windDirDegrees),
+                            forecast.windSpeedKnots
+                        )
+                    }
+                    var gust = ""
+                    if (forecast.windGustKnots < Int.MAX_VALUE) {
+                        gust = String.format(
+                            Locale.US,
+                            "Gusting to %d knots", forecast.windGustKnots
+                        )
+                    }
+                    addRow(groupDetails, "Winds", wind, gust)
+                }
+
+                if (forecast.visibilitySM < Float.MAX_VALUE) {
+                    val value = if (forecast.visibilitySM > 6)
+                        "6+ SM"
+                    else
+                        formatStatuteMiles(forecast.visibilitySM)
+                    addRow(groupDetails, "Visibility", value)
+                }
+
+                if (forecast.vertVisibilityFeet < Int.MAX_VALUE) {
+                    addRow(
+                        groupDetails, "Visibility",
+                        formatFeetAgl(forecast.vertVisibilityFeet.toFloat())
+                    )
+                }
+
+                for (wx in forecast.wxList) {
+                    addRow(groupDetails, "Weather", wx.toString())
+                }
+
+                for (sky in forecast.skyConditions) {
+                    addRow(groupDetails, "Clouds", sky.toString())
+                }
+
+                if (forecast.windShearSpeedKnots < Int.MAX_VALUE) {
+                    val shear = String.format(
                         Locale.US, "%s (%s true) at %d knots",
-                        getCardinalDirection(forecast.windDirDegrees.toFloat()),
-                        formatDegrees(forecast.windDirDegrees),
-                        forecast.windSpeedKnots
+                        getCardinalDirection(forecast.windShearDirDegrees.toFloat()),
+                        formatDegrees(forecast.windShearDirDegrees),
+                        forecast.windShearSpeedKnots
+                    )
+                    val height = formatFeetAgl(forecast.windShearHeightFeetAGL.toFloat())
+                    addRow(groupDetails, "Wind shear", shear, height)
+                }
+
+                if (forecast.altimeterHg < Float.MAX_VALUE) {
+                    addRow(
+                        groupDetails, "Altimeter",
+                        formatAltimeter(forecast.altimeterHg)
                     )
                 }
-                var gust = ""
-                if (forecast.windGustKnots < Int.MAX_VALUE) {
-                    gust = String.format(
-                        Locale.US,
-                        "Gusting to %d knots", forecast.windGustKnots
+
+                for (turbulence in forecast.turbulenceConditions) {
+                    val value = decodeTurbulenceIntensity(turbulence.intensity)
+                    val height = formatFeetRangeAgl(
+                        turbulence.minAltitudeFeetAGL, turbulence.maxAltitudeFeetAGL
                     )
+                    addRow(groupDetails, "Turbulence", value, height)
                 }
-                addRow(fcst_layout, "Winds", wind, gust)
+
+                for (icing in forecast.icingConditions) {
+                    val value = decodeIcingIntensity(icing.intensity)
+                    val height = formatFeetRangeAgl(
+                        icing.minAltitudeFeetAGL, icing.maxAltitudeFeetAGL
+                    )
+                    addRow(groupDetails, "Icing", value, height)
+                }
             }
 
-            if (forecast.visibilitySM < Float.MAX_VALUE) {
-                val value = if (forecast.visibilitySM > 6)
-                    "6+ SM"
-                else
-                    formatStatuteMiles(forecast.visibilitySM)
-                addRow(fcst_layout, "Visibility", value)
-            }
-
-            if (forecast.vertVisibilityFeet < Int.MAX_VALUE) {
-                addRow(
-                    fcst_layout, "Visibility",
-                    formatFeetAgl(forecast.vertVisibilityFeet.toFloat())
-                )
-            }
-
-            for (wx in forecast.wxList) {
-                addRow(fcst_layout, "Weather", wx.toString())
-            }
-
-            for (sky in forecast.skyConditions) {
-                addRow(fcst_layout, "Clouds", sky.toString())
-            }
-
-            if (forecast.windShearSpeedKnots < Int.MAX_VALUE) {
-                val shear = String.format(
-                    Locale.US, "%s (%s true) at %d knots",
-                    getCardinalDirection(forecast.windShearDirDegrees.toFloat()),
-                    formatDegrees(forecast.windShearDirDegrees),
-                    forecast.windShearSpeedKnots
-                )
-                val height = formatFeetAgl(forecast.windShearHeightFeetAGL.toFloat())
-                addRow(fcst_layout, "Wind shear", shear, height)
-            }
-
-            if (forecast.altimeterHg < Float.MAX_VALUE) {
-                addRow(
-                    fcst_layout, "Altimeter",
-                    formatAltimeter(forecast.altimeterHg)
-                )
-            }
-
-            for (turbulence in forecast.turbulenceConditions) {
-                val value = decodeTurbulenceIntensity(turbulence.intensity)
-                val height = formatFeetRangeAgl(
-                    turbulence.minAltitudeFeetAGL, turbulence.maxAltitudeFeetAGL
-                )
-                addRow(fcst_layout, "Turbulence", value, height)
-            }
-
-            for (icing in forecast.icingConditions) {
-                val value = decodeIcingIntensity(icing.intensity)
-                val height = formatFeetRangeAgl(
-                    icing.minAltitudeFeetAGL, icing.maxAltitudeFeetAGL
-                )
-                addRow(fcst_layout, "Icing", value, height)
-            }
-
-            topLayout.addView(
-                grp_layout,
+            binding.tafForecastsLayout.removeAllViews()
+            binding.tafForecastsLayout.addView(
+                layout,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
         }
 
-        tv = findViewById(R.id.wx_fetch_time)
-        tv!!.text = String.format(
-            Locale.US, "Fetched on %s",
-            TimeUtils.formatDateTime(activityBase, taf.fetchTime)
-        )
-        tv.visibility = View.VISIBLE
+        with (binding.wxFetchTime) {
+            text = String.format(
+                Locale.US, "Fetched on %s",
+                TimeUtils.formatDateTime(activityBase, taf.fetchTime)
+            )
+            visibility = View.VISIBLE
+        }
 
         setFragmentContentShown(true)
     }
