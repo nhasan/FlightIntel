@@ -50,6 +50,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
@@ -179,7 +180,6 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
         dbManager = instance(this)
         mInflater = layoutInflater
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
 
         mHandler = Handler(Looper.getMainLooper())
 
@@ -219,7 +219,6 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     }
 
     override fun onPause() {
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         supportFragmentManager.removeOnBackStackChangedListener(mBackStackChangedListener)
         super.onPause()
     }
@@ -349,6 +348,15 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
                 syncState()
             }
         }
+    }
+
+    override fun startActivity(intent: Intent?) {
+        val options = ActivityOptionsCompat.makeCustomAnimation(
+            this,
+            R.anim.fade_in, // Animation for the new Activity entering
+            R.anim.fade_out  // Animation for the current Activity exiting
+        )
+        startActivity(intent, options.toBundle())
     }
 
     private fun goToNavDrawerItem(id: Int) {
