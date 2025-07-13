@@ -35,8 +35,8 @@
             layout="@layout/airport_title_layout" />
         <LinearLayout
                 android:orientation="vertical"
-                android:paddingLeft="@dimen/padding_left"
-                android:paddingRight="@dimen/padding_right"
+                android:paddingStart="@dimen/padding_left"
+                android:paddingEnd="@dimen/padding_right"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
             <TextView android:id="@+id/based_aircraft_label"
