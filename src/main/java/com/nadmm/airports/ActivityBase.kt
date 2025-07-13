@@ -21,25 +21,36 @@ package com.nadmm.airports
 
 import android.annotation.SuppressLint
 import android.app.SearchManager
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteQueryBuilder
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.*
+import android.widget.CheckBox
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.drawerlayout.widget.DrawerLayout
@@ -53,17 +64,30 @@ import com.nadmm.airports.aeronav.ChartsDownloadActivity
 import com.nadmm.airports.afd.AfdMainActivity
 import com.nadmm.airports.clocks.ClocksActivity
 import com.nadmm.airports.data.DatabaseManager
-import com.nadmm.airports.data.DatabaseManager.*
+import com.nadmm.airports.data.DatabaseManager.Airports
+import com.nadmm.airports.data.DatabaseManager.DB_FADDS
+import com.nadmm.airports.data.DatabaseManager.Nav1
+import com.nadmm.airports.data.DatabaseManager.States
+import com.nadmm.airports.data.DatabaseManager.instance
 import com.nadmm.airports.data.DownloadActivity
+import com.nadmm.airports.databinding.AirportTitleLayoutBinding
 import com.nadmm.airports.dof.NearbyObstaclesActivity
 import com.nadmm.airports.e6b.E6bActivity
 import com.nadmm.airports.library.LibraryActivity
 import com.nadmm.airports.scratchpad.ScratchPadActivity
 import com.nadmm.airports.tfr.TfrListActivity
-import com.nadmm.airports.utils.*
+import com.nadmm.airports.utils.DataUtils
+import com.nadmm.airports.utils.ExternalStorageActivity
+import com.nadmm.airports.utils.FormatUtils
+import com.nadmm.airports.utils.SystemUtils
+import com.nadmm.airports.utils.TimeUtils
+import com.nadmm.airports.utils.UiUtils
 import com.nadmm.airports.views.MultiSwipeRefreshLayout
 import com.nadmm.airports.wx.WxMainActivity
-import java.util.*
+import java.util.Calendar
+import java.util.GregorianCalendar
+import java.util.Locale
+import java.util.TimeZone
 
 abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanChildScrollUpCallback {
 
@@ -153,7 +177,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
         super.onCreate(savedInstanceState)
 
-        dbManager = DatabaseManager.instance(this)
+        dbManager = instance(this)
         mInflater = layoutInflater
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
 
@@ -170,7 +194,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
                 // Add menu items here
                 menuInflater.inflate(R.menu.mainmenu, menu)
 
-                val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+                val searchManager = getSystemService(SEARCH_SERVICE) as SearchManager
                 (menu.findItem(R.id.menu_search).actionView as SearchView).apply {
                     setSearchableInfo(searchManager.getSearchableInfo(componentName))
                     setIconifiedByDefault(false)
@@ -518,8 +542,10 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     }
 
     @JvmOverloads
-    fun replaceFragment(clss: Class<*>, args: Bundle?, id: Int = R.id.fragment_container,
-                        addToStack: Boolean = true): Fragment {
+    fun replaceFragment(
+        clss: Class<*>, args: Bundle?, id: Int = R.id.fragment_container,
+        addToStack: Boolean = true,
+    ): Fragment {
         var tag = clss.simpleName
         if (args != null && args.containsKey(FRAGMENT_TAG_EXTRA)) {
             val extra = args.getString(FRAGMENT_TAG_EXTRA)
@@ -544,8 +570,10 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     @Suppress("DEPRECATION")
     @JvmOverloads
-    protected fun addFragment(clss: Class<*>, args: Bundle?,
-                              id: Int = R.id.fragment_container): Fragment {
+    protected fun addFragment(
+        clss: Class<*>, args: Bundle?,
+        id: Int = R.id.fragment_container,
+    ): Fragment {
         val tag = clss.simpleName
         val fm = supportFragmentManager
         var f = fm.findFragmentByTag(tag)
@@ -591,6 +619,80 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
             finish()
         }
         return db!!
+    }
+
+    @SuppressLint("SetTextI18n")
+    fun showAirportTitle(c: Cursor, binding: AirportTitleLayoutBinding) {
+        with (binding) {
+            val tower = c.getString(c.getColumnIndexOrThrow(Airports.TOWER_ON_SITE))
+            val color = if (tower == "Y") Color.rgb(64, 128, 192) else Color.rgb(160, 48, 92)
+            facilityName.setTextColor(color)
+            val name = c.getString(c.getColumnIndexOrThrow(Airports.FACILITY_NAME))
+            val siteNumber = c.getString(c.getColumnIndexOrThrow(Airports.SITE_NUMBER))
+            val type = DataUtils.decodeLandingFacilityType(siteNumber)
+            facilityName.text = "$name $type"
+            facilityId.setTextColor(color)
+            var code: String? = c.getString(c.getColumnIndexOrThrow(Airports.ICAO_CODE))
+            if (code.isNullOrBlank()) {
+                code = c.getString(c.getColumnIndexOrThrow(Airports.FAA_CODE))
+            }
+            facilityId.text = code
+            val city = c.getString(c.getColumnIndexOrThrow(Airports.ASSOC_CITY))
+            var state: String? = c.getString(c.getColumnIndexOrThrow(States.STATE_NAME))
+            if (state.isNullOrBlank()) {
+                state = c.getString(c.getColumnIndexOrThrow(Airports.ASSOC_COUNTY))
+            }
+            facilityInfo.text = "$city, $state"
+            val distance = c.getInt(c.getColumnIndexOrThrow(Airports.DISTANCE_FROM_CITY_NM))
+            val dir = c.getString(c.getColumnIndexOrThrow(Airports.DIRECTION_FROM_CITY))
+            val status = c.getString(c.getColumnIndexOrThrow(Airports.STATUS_CODE))
+            facilityInfo2.text = "${DataUtils.decodeStatus(status)}, $distance miles $dir of city center"
+            val elevMsl = c.getFloat(c.getColumnIndexOrThrow(Airports.ELEVATION_MSL))
+            var tpaAgl = c.getInt(c.getColumnIndexOrThrow(Airports.PATTERN_ALTITUDE_AGL))
+            var est = ""
+            if (tpaAgl == 0) {
+                tpaAgl = 1000
+                est = " (est.)"
+            }
+            facilityInfo3.text = "${FormatUtils.formatFeet(elevMsl)} MSL elev. - " +
+                    "${FormatUtils.formatFeet(elevMsl + tpaAgl)} MSL TPA $est"
+
+            val s = c.getString(c.getColumnIndexOrThrow(Airports.EFFECTIVE_DATE))
+            val endDate = GregorianCalendar(TimeZone.getTimeZone("UTC"))
+            val year = s.substring(6).toInt()
+            val month = s.substring(0, 2).toInt() - 1
+            val day = s.substring(3, 5).toInt()
+            endDate.set(year, month, day, 9, 1, 0)
+            // Calculate end date of the 28-day cycle
+            endDate.add(GregorianCalendar.DAY_OF_MONTH, 28)
+            val now = Calendar.getInstance()
+            if (!now.before(endDate)) {
+                // Show the expired warning
+                expiredLabel.visibility = View.VISIBLE
+            }
+
+            airportStar.isChecked = dbManager.isFavoriteAirport(siteNumber)
+            airportStar.setOnClickListener { v ->
+                if (airportStar.isChecked) {
+                    dbManager.addToFavoriteAirports(siteNumber)
+                } else {
+                    dbManager.removeFromFavoriteAirports(siteNumber)
+                }
+            }
+
+            val lat = c.getString(c.getColumnIndexOrThrow(Airports.REF_LATTITUDE_DEGREES))
+            val lon = c.getString(c.getColumnIndexOrThrow(Airports.REF_LONGITUDE_DEGREES))
+            if (lat.isNotBlank() && lon.isNotBlank()) {
+                airportMap.tag = "geo:$lat,$lon?z=16"
+                airportMap.setOnClickListener { v ->
+                    val tag = v.tag as String
+                    val intent = Intent(Intent.ACTION_VIEW, tag.toUri())
+                    startActivity(intent)
+                }
+            } else {
+                airportMap.visibility = View.GONE
+            }
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -669,7 +771,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
             iv.tag = "geo:$lat,$lon?z=16"
             iv.setOnClickListener { v ->
                 val tag = v.tag as String
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(tag))
+                val intent = Intent(Intent.ACTION_VIEW, tag.toUri())
                 startActivity(intent)
             }
         } else {

@@ -40,7 +40,10 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import com.nadmm.airports.data.DatabaseManager
-import com.nadmm.airports.data.DatabaseManager.*
+import com.nadmm.airports.data.DatabaseManager.Airports
+import com.nadmm.airports.data.DatabaseManager.Awos1
+import com.nadmm.airports.data.DatabaseManager.Wxs
+import com.nadmm.airports.databinding.AirportTitleLayoutBinding
 import com.nadmm.airports.utils.CursorAsyncTask
 import com.nadmm.airports.utils.DataUtils
 import com.nadmm.airports.utils.FormatUtils
@@ -162,6 +165,11 @@ abstract class FragmentBase : Fragment(), IRefreshable {
 
     fun getAirportDetails(siteNumber: String): Cursor? {
         return activityBase.getAirportDetails(siteNumber)
+    }
+
+    fun showAirportTitle(c: Cursor, binding: AirportTitleLayoutBinding) {
+        activityBase.showAirportTitle(c, binding)
+        activityBase.showFaddsEffectiveDate(c)
     }
 
     fun showAirportTitle(c: Cursor) {
