@@ -63,7 +63,7 @@ class TafFragment : WxFragmentBase() {
     private var mStationId: String? = null
     private var mLastForecast: Forecast? = null
 
-    private var _binding: TafDetailViewBinding? = null;
+    private var _binding: TafDetailViewBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -340,7 +340,6 @@ class TafFragment : WxFragmentBase() {
             )
             val layout = inflate<RelativeLayout>(R.layout.grouped_detail_item)
             with (GroupedDetailItemBinding.bind(layout)) {
-                ;
                 groupExtra.visibility = View.GONE
                 groupName.text = sb.toString()
 
