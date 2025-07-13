@@ -24,21 +24,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.FragmentBase
-import com.nadmm.airports.R
-import com.nadmm.airports.R.layout
 import com.nadmm.airports.data.DatabaseManager.Airports
+import com.nadmm.airports.databinding.AircraftOpsViewBinding
 import com.nadmm.airports.utils.FormatUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AircraftOpsFragment : FragmentBase() {
+
+    private var _binding: AircraftOpsViewBinding? = null;
+    private val binding get() = _binding!!
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(layout.aircraft_ops_view, container, false)
+        _binding = AircraftOpsViewBinding.inflate(inflater, container, false)
+        val view = binding.root
         return createContentView(view)
     }
 
@@ -59,53 +62,55 @@ class AircraftOpsFragment : FragmentBase() {
 
     private fun showDetails(result: Array<Cursor?>) {
         val apt = result[0]?: return
-        showAirportTitle(apt)
+        showAirportTitle(apt, binding.airportTitle)
         showBasedAircraft(apt)
         showAnnualOps(apt)
         setFragmentContentShown(true)
     }
 
     private fun showBasedAircraft(apt: Cursor) {
-        val layout: LinearLayout = findViewById(R.id.based_aircraft_layout) ?: return
-        var count = apt.getInt(apt.getColumnIndex(Airports.SINGLE_ENGINE_COUNT))
-        addRow(layout, "Single engine", FormatUtils.formatNumber(count.toFloat()))
-        count = apt.getInt(apt.getColumnIndex(Airports.MULTI_ENGINE_COUNT))
-        addRow(layout, "Multi engine", FormatUtils.formatNumber(count.toFloat()))
-        count = apt.getInt(apt.getColumnIndex(Airports.JET_ENGINE_COUNT))
-        addRow(layout, "Jet engine", FormatUtils.formatNumber(count.toFloat()))
-        count = apt.getInt(apt.getColumnIndex(Airports.HELI_COUNT))
-        addRow(layout, "Helicopters", FormatUtils.formatNumber(count.toFloat()))
-        count = apt.getInt(apt.getColumnIndex(Airports.GLIDERS_COUNT))
-        addRow(layout, "Gliders", FormatUtils.formatNumber(count.toFloat()))
-        count = apt.getInt(apt.getColumnIndex(Airports.ULTRA_LIGHT_COUNT))
-        addRow(layout, "Ultra light", FormatUtils.formatNumber(count.toFloat()))
-        count = apt.getInt(apt.getColumnIndex(Airports.MILITARY_COUNT))
-        addRow(layout, "Military", FormatUtils.formatNumber(count.toFloat()))
+        with (binding.basedAircraftLayout) {
+            var count = apt.getInt(apt.getColumnIndexOrThrow(Airports.SINGLE_ENGINE_COUNT))
+            addRow(this, "Single engine", FormatUtils.formatNumber(count.toFloat()))
+            count = apt.getInt(apt.getColumnIndexOrThrow(Airports.MULTI_ENGINE_COUNT))
+            addRow(this, "Multi engine", FormatUtils.formatNumber(count.toFloat()))
+            count = apt.getInt(apt.getColumnIndexOrThrow(Airports.JET_ENGINE_COUNT))
+            addRow(this, "Jet engine", FormatUtils.formatNumber(count.toFloat()))
+            count = apt.getInt(apt.getColumnIndexOrThrow(Airports.HELI_COUNT))
+            addRow(this, "Helicopters", FormatUtils.formatNumber(count.toFloat()))
+            count = apt.getInt(apt.getColumnIndexOrThrow(Airports.GLIDERS_COUNT))
+            addRow(this, "Gliders", FormatUtils.formatNumber(count.toFloat()))
+            count = apt.getInt(apt.getColumnIndexOrThrow(Airports.ULTRA_LIGHT_COUNT))
+            addRow(this, "Ultra light", FormatUtils.formatNumber(count.toFloat()))
+            count = apt.getInt(apt.getColumnIndexOrThrow(Airports.MILITARY_COUNT))
+            addRow(this, "Military", FormatUtils.formatNumber(count.toFloat()))
+        }
     }
 
     private fun showAnnualOps(apt: Cursor) {
-        val layout: LinearLayout = findViewById(R.id.aircraft_ops_layout) ?: return
-        var count = apt.getInt(apt.getColumnIndex(Airports.ANNUAL_COMMERCIAL_OPS))
-        addRow(layout, "Commercial", FormatUtils.formatNumber(count.toFloat()))
-        count = apt.getInt(apt.getColumnIndex(Airports.ANNUAL_COMMUTER_OPS))
-        addRow(layout, "Commuter", FormatUtils.formatNumber(count.toFloat()))
-        count = apt.getInt(apt.getColumnIndex(Airports.ANNUAL_AIRTAXI_OPS))
-        addRow(layout, "Air taxi", FormatUtils.formatNumber(count.toFloat()))
-        count = apt.getInt(apt.getColumnIndex(Airports.ANNUAL_GA_LOCAL_OPS))
-        addRow(layout, "GA local", FormatUtils.formatNumber(count.toFloat()))
-        count = apt.getInt(apt.getColumnIndex(Airports.ANNUAL_GA_ININERANT_OPS))
-        addRow(layout, "GA other", FormatUtils.formatNumber(count.toFloat()))
-        count = apt.getInt(apt.getColumnIndex(Airports.ANNUAL_MILITARY_OPS))
-        addRow(layout, "Military", FormatUtils.formatNumber(count.toFloat()))
-        val date: String? = apt.getString(apt.getColumnIndex(Airports.OPS_REFERENCE_DATE))
-        addRow(layout, "As-of", date)
+        with (binding.aircraftOpsLayout) {
+            var count = apt.getInt(apt.getColumnIndexOrThrow(Airports.ANNUAL_COMMERCIAL_OPS))
+            addRow(this, "Commercial", FormatUtils.formatNumber(count.toFloat()))
+            count = apt.getInt(apt.getColumnIndexOrThrow(Airports.ANNUAL_COMMUTER_OPS))
+            addRow(this, "Commuter", FormatUtils.formatNumber(count.toFloat()))
+            count = apt.getInt(apt.getColumnIndexOrThrow(Airports.ANNUAL_AIRTAXI_OPS))
+            addRow(this, "Air taxi", FormatUtils.formatNumber(count.toFloat()))
+            count = apt.getInt(apt.getColumnIndexOrThrow(Airports.ANNUAL_GA_LOCAL_OPS))
+            addRow(this, "GA local", FormatUtils.formatNumber(count.toFloat()))
+            count = apt.getInt(apt.getColumnIndexOrThrow(Airports.ANNUAL_GA_ININERANT_OPS))
+            addRow(this, "GA other", FormatUtils.formatNumber(count.toFloat()))
+            count = apt.getInt(apt.getColumnIndexOrThrow(Airports.ANNUAL_MILITARY_OPS))
+            addRow(this, "Military", FormatUtils.formatNumber(count.toFloat()))
+            val date: String? = apt.getString(apt.getColumnIndexOrThrow(Airports.OPS_REFERENCE_DATE))
+            addRow(this, "As-of", date)
+        }
     }
 
     private fun doQuery(siteNumber: String): Array<Cursor?> {
         return try {
             val c = getAirportDetails(siteNumber)
             arrayOf(c)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Handle exception
             arrayOfNulls(1)
         }
