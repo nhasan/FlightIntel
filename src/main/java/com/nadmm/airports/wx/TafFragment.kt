@@ -23,6 +23,7 @@ import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteQueryBuilder
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -74,7 +75,7 @@ class TafFragment : WxFragmentBase() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         _binding = TafDetailViewBinding.inflate(inflater, container, false)
         binding.btnViewGraphic.setOnClickListener { v: View? ->
@@ -262,9 +263,14 @@ class TafFragment : WxFragmentBase() {
     private fun showTaf(intent: Intent) {
         activity ?: return
 
-        val taf = intent.getSerializableExtra(NoaaService.RESULT) as Taf? ?: return
+        val taf: Taf? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra(NoaaService.RESULT, Taf::class.java)
+        } else {
+            @Suppress("DEPRECATION") // Suppress for older versions
+            intent.getSerializableExtra(NoaaService.RESULT) as? Taf
+        }
         binding.wxStatusLayout.removeAllViews()
-        if (!taf.isValid) {
+        if (taf == null || !taf.isValid) {
             binding.statusMsg.text = "Unable to get TAF for this location."
             with (binding.wxStatusLayout) {
                 addRow(this, "This could be due to the following reasons:")
