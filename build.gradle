@@ -74,6 +74,10 @@ android {
         }
     }
 
+    buildFeatures {
+        viewBinding true
+    }
+
     android.applicationVariants.configureEach { variant ->
         variant.outputs.configureEach {
             outputFileName = "flightintel-${variant.name}-${variant.versionName}.apk"
