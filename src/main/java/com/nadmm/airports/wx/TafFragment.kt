@@ -319,6 +319,7 @@ class TafFragment : WxFragmentBase() {
             }
         }
 
+        binding.tafForecastsLayout.removeAllViews()
         val sb = StringBuilder()
         for (forecast in taf.forecasts) {
             // Keep track of forecast conditions across all change groups
@@ -455,7 +456,6 @@ class TafFragment : WxFragmentBase() {
                 }
             }
 
-            binding.tafForecastsLayout.removeAllViews()
             binding.tafForecastsLayout.addView(
                 layout,
                 ViewGroup.LayoutParams.MATCH_PARENT,
