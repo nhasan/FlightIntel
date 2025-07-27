@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2019-2023 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2019-2025 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 # Ubuntu package dependencies:
 #   sudo apt install libdbi-perl libdbd-sqlite3-perl libtext-autoformat-perl libtext-csv-perl libjson-perl
-#
+#   sudo apt install python3 pyenv
  
 bold=$(tput bold; tput setaf 39)
 error=$(tput bold; tput setaf 125)
@@ -88,6 +88,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
         ./geonames_tz_lookup.pl ${OUT_FILE}
         bold "Making a copy of FADDS file:";
         cp ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
+        bold "Zipping ${OUT_FILE}"
         gzip ${OUT_FILE};
     else
         error "Unable to download FADDS file";
@@ -112,6 +113,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     if [ -s ${DTPP_PATH} ]; then
         bold "Running: load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE}";
         ./load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE};
+        bold "Zipping ${OUT_FILE}"
         gzip ${OUT_FILE};
     else
         error "Unable to download d-TPP file ${DCS_FILE}";
@@ -137,6 +139,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     if [ -s ${DCS_PATH} ]; then
         bold "Running: load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE}";
         ./load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE};
+        bold "Zipping ${OUT_FILE}"
         gzip ${OUT_FILE};
     else
         error "Unable to download d-CS file ${DCS_FILE}";
@@ -162,6 +165,7 @@ if [ ! -f "${OUT_FILE}.gz" ]; then
     fi
     bold "Running: load_dof.pl ${BASE_DIR} ${OUT_FILE}";
     ./load_dof.pl ${BASE_DIR} ${OUT_FILE};
+    bold "Zipping ${OUT_FILE}"
     gzip ${OUT_FILE};
     echo "--";
 else
@@ -184,6 +188,7 @@ fi
 if [ ! -f ${OUT_FILE_GZIP} ]; then
     bold "Running: load_library.pl ${BASE_DIR} ${OUT_FILE}"
     ./load_library.pl ${BASE_DIR} ${OUT_FILE};
+    bold "Zipping ${OUT_FILE}"
     gzip ${OUT_FILE};
     echo "--";
 else
