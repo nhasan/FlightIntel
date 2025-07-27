@@ -84,9 +84,11 @@ class MetarParser {
 
         override fun endElement(uri: String, localName: String, qName: String) {
             if (qName.equals("metar", ignoreCase = true)) {
-                metar.isValid = true
-                parseRemarks(metar)
-                setMissingFields(metar)
+                metar.isValid = metar.rawText != null
+                if (metar.isValid) {
+                    parseRemarks(metar)
+                    setMissingFields(metar)
+                }
                 mMetars[metar.stationId] = metar
             } else if (qName.equals("raw_text", ignoreCase = true)) {
                 metar.rawText = text.toString()
