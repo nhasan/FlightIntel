@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ListView
+import androidx.core.content.IntentCompat
 import androidx.cursoradapter.widget.CursorAdapter
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nadmm.airports.ListFragmentBase
@@ -110,7 +111,7 @@ class WxDelegate(private val mFragment: ListFragmentBase) {
     private inner class WxReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             try {
-                val metar = intent.getSerializableExtra(NoaaService.RESULT) as? Metar ?: return
+                val metar = IntentCompat.getParcelableExtra(intent, NoaaService.RESULT, Metar::class.java) ?: return
                 val stationId = metar.stationId ?: return
                 mStationWx[stationId] = metar
                 val l = mFragment.findViewById<ListView>(android.R.id.list) ?: return
