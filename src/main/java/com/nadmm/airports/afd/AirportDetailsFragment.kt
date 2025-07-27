@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@ import android.content.IntentFilter
 import android.database.Cursor
 import android.database.sqlite.SQLiteQueryBuilder
 import android.location.Location
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +34,8 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.content.IntentCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nadmm.airports.FragmentBase
@@ -45,6 +46,7 @@ import com.nadmm.airports.aeronav.ClassBService
 import com.nadmm.airports.aeronav.DafdService
 import com.nadmm.airports.aeronav.DtppActivity
 import com.nadmm.airports.data.DatabaseManager.*
+import com.nadmm.airports.databinding.AirportDetailViewBinding
 import com.nadmm.airports.dof.NearbyObstaclesFragment
 import com.nadmm.airports.notams.AirportNotamActivity
 import com.nadmm.airports.tfr.TfrListActivity
@@ -53,8 +55,8 @@ import com.nadmm.airports.wx.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Locale
+import java.util.TimeZone
 import kotlin.math.abs
 import kotlin.math.round
 import kotlin.math.roundToInt
@@ -72,6 +74,9 @@ class AirportDetailsFragment : FragmentBase() {
     private lateinit var mHome: String
     private lateinit var mSiteNumber: String
 
+    private var _binding: AirportDetailViewBinding? = null;
+    private val binding get() = _binding!!
+
     init {
         mBcastFilter.run {
             addAction(NoaaService.ACTION_GET_METAR)
@@ -88,7 +93,8 @@ class AirportDetailsFragment : FragmentBase() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.airport_detail_view, container, false)
+        _binding = AirportDetailViewBinding.inflate(inflater, container, false)
+        val view = binding.root
         return createContentView(view)
     }
 
@@ -144,23 +150,19 @@ class AirportDetailsFragment : FragmentBase() {
     private fun handleBroadcast(intent: Intent) {
         when (intent.action) {
             NoaaService.ACTION_GET_METAR -> {
-                val metar = intent.getSerializableExtra(NoaaService.RESULT) as? Metar
-                if (metar?.rawText != null) {
+                val metar = IntentCompat.getSerializableExtra(intent, NoaaService.RESULT, Metar::class.java)
+                if (metar?.isValid == true) {
                     showWxInfo(metar)
-                    if (isRefreshing) {
-                        isRefreshing = false
-                    }
+                    isRefreshing = false
                 }
             }
             AeroNavService.ACTION_GET_AFD -> {
-                val path = intent.getStringExtra(AeroNavService.PDF_PATH)
-                if (path != null) {
+                intent.getStringExtra(AeroNavService.PDF_PATH)?.let { path ->
                     SystemUtils.startPDFViewer(activity, path)
                 }
             }
             ClassBService.ACTION_GET_CLASSB_GRAPHIC -> {
-                val path = intent.getStringExtra(ClassBService.PDF_PATH)
-                if (path != null) {
+                intent.getStringExtra(ClassBService.PDF_PATH)?.let { path ->
                     SystemUtils.startPDFViewer(activity, path)
                 }
             }
@@ -185,7 +187,7 @@ class AirportDetailsFragment : FragmentBase() {
     private fun showDetails(result: Array<Cursor?>) {
         val apt = result[0] ?: return
 
-        showAirportTitle(apt)
+        showAirportTitle(apt, binding.airportTitle)
 
         showCommunicationsDetails(result)
         showRunwayDetails(result)
@@ -462,13 +464,13 @@ class AirportDetailsFragment : FragmentBase() {
         val lon = apt.getString(apt.getColumnIndexOrThrow(Airports.REF_LONGITUDE_DEGREES))
         if (lat.isNotEmpty() && lon.isNotEmpty()) {
             // Link to the sectional at VFRMAP if location is available
-            var uri = Uri.parse("http://vfrmap.com/?type=vfrc&lat=$lat&lon=$lon&zoom=10")
+            var uri = "http://vfrmap.com/?type=vfrc&lat=$lat&lon=$lon&zoom=10".toUri()
             var intent = Intent(Intent.ACTION_VIEW, uri)
             addClickableRow(layout, "$sectional Sectional VFR", null, intent)
-            uri = Uri.parse("http://vfrmap.com/?type=ifrlc&lat=$lat&lon=$lon&zoom=10")
+            uri = "http://vfrmap.com/?type=ifrlc&lat=$lat&lon=$lon&zoom=10".toUri()
             intent = Intent(Intent.ACTION_VIEW, uri)
             addClickableRow(layout, "Low-altitude IFR", intent)
-            uri = Uri.parse("http://vfrmap.com/?type=ehc&lat=$lat&lon=$lon&zoom=10")
+            uri = "http://vfrmap.com/?type=ehc&lat=$lat&lon=$lon&zoom=10".toUri()
             intent = Intent(Intent.ACTION_VIEW, uri)
             addClickableRow(layout, "High-altitude IFR", intent)
         } else {
