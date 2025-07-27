@@ -225,7 +225,7 @@ abstract class LocationListFragmentBase : ListFragmentBase() {
     private fun showApplicationSettings() {
         val intent = Intent()
         intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-        val uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+        val uri = Uri.fromParts("package", activity?.packageName, null)
         intent.data = uri
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
