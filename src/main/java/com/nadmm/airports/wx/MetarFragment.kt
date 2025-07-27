@@ -30,6 +30,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.IntentCompat
 import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
@@ -59,6 +60,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.math.roundToInt
+import androidx.core.view.isNotEmpty
 
 class MetarFragment : WxFragmentBase() {
     private val action = NoaaService.ACTION_GET_METAR
@@ -218,7 +220,7 @@ class MetarFragment : WxFragmentBase() {
 
     @SuppressLint("SetTextI18n")
     private fun showMetar(intent: Intent) {
-        val metar = intent.getSerializableExtra(NoaaService.RESULT) as Metar? ?: return
+        val metar = IntentCompat.getSerializableExtra(intent, NoaaService.RESULT, Metar::class.java) ?: return
         findViewById<LinearLayout>(R.id.wx_status_layout)?.let { layout ->
             layout.removeAllViews()
             if (!metar.isValid) {
@@ -229,7 +231,7 @@ class MetarFragment : WxFragmentBase() {
                 }
                 addRow(layout, "This could be due to the following reasons:")
                 addBulletedRow(layout, "Network connection is not available")
-                addBulletedRow(layout, "ADDS does not publish METAR for this station")
+                addBulletedRow(layout, "AWS does not publish METAR for this station")
                 addBulletedRow(layout, "Station is currently out of service")
                 addBulletedRow(layout, "Station has not updated the METAR for more than 3 hours")
                 findViewById<View>(R.id.wx_detail_layout)?.visibility = View.GONE
@@ -300,7 +302,7 @@ class MetarFragment : WxFragmentBase() {
             if (metar.ltg) {
                 addRow(layout, "Lightning in the vicinity")
             }
-            val visibility = if (layout.childCount > 0) View.VISIBLE else View.GONE
+            val visibility = if (layout.isNotEmpty()) View.VISIBLE else View.GONE
             layout.visibility = visibility
             findViewById<TextView>(R.id.wx_weather_label)?.let { tv ->
                 tv.visibility = visibility
@@ -417,7 +419,7 @@ class MetarFragment : WxFragmentBase() {
             if (metar.snincr) {
                 addRow(layout, "Snow is increasing rapidly")
             }
-            val visibility = if (layout.childCount > 0) View.VISIBLE else View.GONE
+            val visibility = if (layout.isNotEmpty()) View.VISIBLE else View.GONE
             layout.visibility = visibility
             findViewById<TextView>(R.id.wx_precip_label)?.let { tv ->
                 tv.visibility = visibility
@@ -433,7 +435,7 @@ class MetarFragment : WxFragmentBase() {
             for (remark in remarks) {
                 addBulletedRow(layout, remark)
             }
-            val visibility = if (layout.childCount > 0) View.VISIBLE else View.GONE
+            val visibility = if (layout.isNotEmpty()) View.VISIBLE else View.GONE
             layout.visibility = visibility
             findViewById<View>(R.id.wx_remarks_label)?.visibility = visibility
         }
