@@ -21,3 +21,4 @@ google-services.json
 tool/tfr_list.xml
 release/
 .project
+/keystore.properties
