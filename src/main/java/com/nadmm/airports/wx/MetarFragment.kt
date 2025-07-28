@@ -203,18 +203,10 @@ class MetarFragment : WxFragmentBase() {
     }
 
     private fun requestMetar(refresh: Boolean) {
-        val args = arguments
-        if (activity != null && args != null) {
-            val stationId = args.getString(NoaaService.STATION_ID)
-            val service = Intent(activity, MetarService::class.java)
-            service.action = action
-            val stationIds = ArrayList<String?>()
-            stationIds.add(stationId)
-            service.putExtra(NoaaService.STATION_IDS, stationIds)
-            service.putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
-            service.putExtra(NoaaService.HOURS_BEFORE, NoaaService.METAR_HOURS_BEFORE)
-            service.putExtra(NoaaService.FORCE_REFRESH, refresh)
-            requireActivity().startService(service)
+        arguments?.let { args ->
+            args.getString(NoaaService.STATION_ID)?.let { stationId ->
+                MetarService.startMetarService(requireActivity(), stationId, refresh)
+            }
         }
     }
 

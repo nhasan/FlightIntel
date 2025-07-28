@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,77 +18,100 @@
  */
 package com.nadmm.airports.wx
 
+import android.content.Context
 import android.content.Intent
 import android.text.format.DateUtils
+import android.util.Log
 import com.nadmm.airports.utils.UiUtils.showToast
+import kotlinx.coroutines.launch
 import org.xml.sax.SAXException
 import java.io.File
 import java.io.IOException
 import java.util.Locale
 import javax.xml.parsers.ParserConfigurationException
 
-class MetarService : NoaaService(name, METAR_CACHE_MAX_AGE) {
+class MetarService : NoaaService2(name, METAR_CACHE_MAX_AGE) {
     private val mParser: MetarParser = MetarParser()
 
-    @Deprecated("Deprecated in Java")
-    override fun onHandleIntent(intent: Intent?) {
-        val action = intent?.action ?: return
-        if (action == ACTION_GET_METAR || action == ACTION_CACHE_METAR) {
-            val type = intent.getStringExtra(TYPE)
-            if (type == TYPE_TEXT) {
-                // Get request parameters
-                val stationIds = intent.getStringArrayListExtra(STATION_IDS) ?: return
-                val hours = intent.getIntExtra(HOURS_BEFORE, 3)
-                var cacheOnly = intent.getBooleanExtra(CACHE_ONLY, false)
-                val forceRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
-                if (action == ACTION_CACHE_METAR) {
-                    // Do not try to use the cache. We are populating the cache.
-                    cacheOnly = false
-                }
-                if (forceRefresh || !cacheOnly) {
-                    val missing = stationIds.filter { forceRefresh || !getObjFile(it).exists() }
-                    if (missing.isNotEmpty()) {
-                        val param = stationIds.joinToString()
-                        var tmpFile: File? = null
-                        try {
-                            tmpFile = File.createTempFile(name, null)
-                            val query = String.format(Locale.US, METAR_TEXT_QUERY, hours, param)
-                            fetchFromNoaa(query, tmpFile, false)
-                            parseMetars(tmpFile, missing)
-                        } catch (e: Exception) {
-                            showToast(this, "Unable to fetch METAR: " + e.message)
-                        } finally {
-                            tmpFile?.delete()
-                        }
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.let {
+            val action = intent.action
+
+            serviceScope.launch {
+                if (action == ACTION_GET_METAR || action == ACTION_CACHE_METAR) {
+                    val type = intent.getStringExtra(TYPE)
+                    if (type == TYPE_TEXT) {
+                        getMetarText(intent)
+                    } else if (type == TYPE_IMAGE) {
+                        getMetarImage(intent)
                     }
                 }
-                if (action == ACTION_GET_METAR) {
-                    for (stationId in stationIds) {
-                        val objFile = getObjFile(stationId)
-                        val metar: Metar = if (objFile.exists()) {
-                            readObject(objFile) as Metar
-                        } else {
-                            Metar()
-                        }
-                        // Broadcast the result
-                        sendSerializableResultIntent(action, stationId, metar)
-                    }
-                }
-            } else if (type == TYPE_IMAGE) {
-                val code = intent.getStringExtra(IMAGE_CODE) ?: return
-                val imageName = String.format(METAR_IMAGE_NAME, code.lowercase(Locale.getDefault()))
-                val imageFile = getDataFile(imageName)
-                if (!imageFile.exists()) {
-                    try {
-                        val path = "$METAR_IMAGE_PATH/$imageName"
-                        fetchFromNoaa(path, null, imageFile, false)
-                    } catch (e: Exception) {
-                        showToast(this, "Unable to fetch METAR image: " + e.message)
-                    }
-                }
-                // Broadcast the result
-                sendImageResultIntent(action, code, imageFile)
             }
+        }
+
+        return START_NOT_STICKY
+    }
+
+    private fun getMetarText(intent: Intent) {
+        // Get request parameters
+        intent.getStringArrayListExtra(STATION_IDS)?.let { stationIds ->
+            val hours = intent.getIntExtra(HOURS_BEFORE, 3)
+            var cacheOnly = intent.getBooleanExtra(CACHE_ONLY, false)
+            val forceRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
+            val action = intent.action
+            Log.d(TAG, "getMetarText: action=$action, stationIds=$stationIds, hours=$hours")
+            if (action == ACTION_CACHE_METAR) {
+                // Do not try to use the cache. We are populating the cache.
+                cacheOnly = false
+            }
+            if (forceRefresh || !cacheOnly) {
+                val missing = stationIds.filter { forceRefresh || !getObjFile(it).exists() }
+                if (missing.isNotEmpty()) {
+                    val param = stationIds.joinToString()
+                    var tmpFile: File? = null
+                    try {
+                        tmpFile = File.createTempFile(name, null)
+                        val query = String.format(Locale.US, METAR_TEXT_QUERY, hours, param)
+                        fetchFromNoaa(query, tmpFile, false)
+                        parseMetars(tmpFile, missing)
+                    } catch (e: Exception) {
+                        showToast(this, "Unable to fetch METAR: " + e.message)
+                    } finally {
+                        tmpFile?.delete()
+                    }
+                }
+            }
+            if (action == ACTION_GET_METAR) {
+                for (stationId in stationIds) {
+                    val objFile = getObjFile(stationId)
+                    val metar: Metar = if (objFile.exists()) {
+                        readObject(objFile) as Metar
+                    } else {
+                        Metar()
+                    }
+                    // Broadcast the result
+                    sendSerializableResultIntent(action, stationId, metar)
+                }
+            }
+        }
+    }
+
+    private fun getMetarImage(intent: Intent) {
+        intent.getStringExtra(IMAGE_CODE)?.let { code ->
+            val imageName = String.format(METAR_IMAGE_NAME, code.lowercase(Locale.getDefault()))
+            val imageFile = getDataFile(imageName)
+            val action = intent.action
+            Log.d(TAG, "getMetarImage: action=$action, code=$code, imageName=$imageName")
+            if (!imageFile.exists()) {
+                try {
+                    val path = "$METAR_IMAGE_PATH/$imageName"
+                    fetchFromNoaa(path, null, imageFile, false)
+                } catch (e: Exception) {
+                    showToast(this@MetarService, "Unable to fetch METAR image: " + e.message)
+                }
+            }
+            // Broadcast the result
+            sendImageResultIntent(action, code, imageFile)
         }
     }
 
@@ -106,6 +129,7 @@ class MetarService : NoaaService(name, METAR_CACHE_MAX_AGE) {
     }
 
     companion object {
+        private val TAG = MetarService::class.java.simpleName
         private const val name = "metar"
         private const val METAR_CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
         private const val METAR_IMAGE_NAME = "metars_%s.gif"
@@ -113,5 +137,17 @@ class MetarService : NoaaService(name, METAR_CACHE_MAX_AGE) {
                 + "&hoursBeforeNow=%d&mostRecentForEachStation=constraint"
                 + "&format=xml&stationString=%s")
         private const val METAR_IMAGE_PATH = "/data/obs/metar"
+
+        // Helper function to start the service
+        fun startMetarService(context: Context, stationId: String, refresh: Boolean) {
+            val intent = Intent(context, MetarService::class.java).apply {
+                action = ACTION_GET_METAR
+                putExtra(NoaaService.STATION_IDS, arrayListOf(stationId))
+                putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
+                putExtra(NoaaService.HOURS_BEFORE, NoaaService.METAR_HOURS_BEFORE)
+                putExtra(NoaaService.FORCE_REFRESH, refresh)
+            }
+            context.startService(intent)
+        }
     }
 }

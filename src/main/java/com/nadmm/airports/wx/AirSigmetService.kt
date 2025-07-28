@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,90 +16,110 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.content.Intent
+import android.text.format.DateUtils
+import android.util.Log
+import com.nadmm.airports.utils.UiUtils.showToast
+import kotlinx.coroutines.launch
+import java.util.Locale
 
-import android.content.Intent;
-import android.text.format.DateUtils;
+class AirSigmetService : NoaaService2("airsigmet", AIRSIGMET_CACHE_MAX_AGE) {
+    private val mParser: AirSigmetParser = AirSigmetParser()
 
-import com.nadmm.airports.utils.UiUtils;
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.let {
+            val action = intent.action
 
-import java.io.File;
-import java.util.Locale;
-
-public class AirSigmetService extends NoaaService {
-
-    private static final long AIRSIGMET_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
-
-    private final AirSigmetParser mParser;
-
-    public AirSigmetService() {
-        super( "airsigmet", AIRSIGMET_CACHE_MAX_AGE );
-        mParser = new AirSigmetParser();
-    }
-
-    @Override
-    protected void onHandleIntent( Intent intent ) {
-        String action = intent.getAction();
-        if ( action.equals( ACTION_GET_AIRSIGMET ) ) {
-            String type = intent.getStringExtra( TYPE );
-            if ( type.equals( TYPE_TEXT ) ) {
-                String stationId = intent.getStringExtra( STATION_ID );
-                double[] box = intent.getDoubleArrayExtra( COORDS_BOX );
-                int hours = intent.getIntExtra( HOURS_BEFORE, 3 );
-                boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
-                boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
-
-                File xmlFile = getDataFile( "AIRSIGMET_"+stationId+".xml" );
-                File objFile = getDataFile( "AIRSIGMET_"+stationId+".obj" );
-                AirSigmet airSigmet;
-
-                if ( forceRefresh || ( !cacheOnly && !xmlFile.exists() ) ) {
-                    try {
-                        String AIRSIGMET_TEXT_QUERY = "datasource=airsigmets"
-                                + "&requesttype=retrieve&format=xml"
-                                + "&hoursBeforeNow=%d&minLat=%.2f&maxLat=%.2f"
-                                + "&minLon=%.2f&maxLon=%.2f";
-                        String query = String.format( Locale.US, AIRSIGMET_TEXT_QUERY,
-                                hours, box[ 0 ], box[ 1 ], box[ 2 ], box[ 3 ] );
-                        fetchFromNoaa( query, xmlFile, false );
-                    } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch AirSigmet: "
-                                +e.getMessage() );
+            serviceScope.launch {
+                if (action == ACTION_GET_AIRSIGMET) {
+                    val type = intent.getStringExtra(TYPE)
+                    if (type == TYPE_TEXT) {
+                        getAirSigmetText(intent)
+                    } else if (type == TYPE_IMAGE) {
+                        getAirSigmetImage(intent)
                     }
                 }
-
-                if ( objFile.exists() ) {
-                    airSigmet = (AirSigmet) readObject( objFile );
-                } else if ( xmlFile.exists() ) {
-                    airSigmet = new AirSigmet();
-                    mParser.parse( xmlFile, airSigmet );
-                    writeObject( airSigmet, objFile );
-                } else {
-                    airSigmet = new AirSigmet();
-                }
-
-                // Broadcast the result
-                sendSerializableResultIntent( action, stationId, airSigmet );
-            } else if ( type.equals( TYPE_IMAGE ) ) {
-                String code = intent.getStringExtra( IMAGE_CODE );
-                 String imageName = String.format( "sigmet_%s.gif", code );
-                File imageFile = getDataFile( imageName );
-                if ( !imageFile.exists() ) {
-                    try {
-                        String path = "/data/products/sigmet/";
-                        path += imageName;
-                        fetchFromNoaa( path, null, imageFile, false );
-                    } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch AirSigmet image: "
-                                +e.getMessage() );
-                    }
-                }
-
-                // Broadcast the result
-                sendImageResultIntent( action, code, imageFile );
             }
         }
+
+        return START_NOT_STICKY
     }
 
+    private fun getAirSigmetText(intent: Intent) {
+        val action = intent.action
+        val stationId = intent.getStringExtra(STATION_ID)
+        val box = intent.getDoubleArrayExtra(COORDS_BOX)
+        val hours = intent.getIntExtra(HOURS_BEFORE, 3)
+        val cacheOnly = intent.getBooleanExtra(CACHE_ONLY, false)
+        val forceRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
+
+        val xmlFile = getDataFile("AIRSIGMET_$stationId.xml")
+        val objFile = getDataFile("AIRSIGMET_$stationId.obj")
+        val airSigmet: AirSigmet
+
+        Log.d(TAG, "getAirSigmetText: action=$action, stationId=$stationId")
+
+        if (forceRefresh || (!cacheOnly && !xmlFile.exists())) {
+            try {
+                val rawQuery = ("datasource=airsigmets"
+                        + "&requesttype=retrieve&format=xml"
+                        + "&hoursBeforeNow=%d&minLat=%.2f&maxLat=%.2f"
+                        + "&minLon=%.2f&maxLon=%.2f")
+                val query = String.format(
+                    Locale.US, rawQuery,
+                    hours, box!![0], box[1], box[2], box[3]
+                )
+                fetchFromNoaa(query, xmlFile, false)
+            } catch (e: Exception) {
+                showToast(
+                    this@AirSigmetService, "Unable to fetch AirSigmet: "
+                            + e.message
+                )
+            }
+        }
+
+        if (objFile.exists()) {
+            airSigmet = readObject(objFile) as AirSigmet? ?: AirSigmet()
+        } else if (xmlFile.exists()) {
+            airSigmet = AirSigmet()
+            mParser.parse(xmlFile, airSigmet)
+            writeObject(airSigmet, objFile)
+        } else {
+            airSigmet = AirSigmet()
+        }
+
+        // Broadcast the result
+        sendSerializableResultIntent(action, stationId, airSigmet)
+    }
+
+    private fun getAirSigmetImage(intent: Intent) {
+        val action = intent.action
+        val code = intent.getStringExtra(IMAGE_CODE)
+        val imageName = "sigmet_$code.gif"
+
+        Log.d(TAG, "getAirSigmetImage: action=$action, imageName=$imageName")
+
+        val imageFile = getDataFile(imageName)
+        if (!imageFile.exists()) {
+            try {
+                val path = "/data/products/sigmet/$imageName"
+                fetchFromNoaa(path, null, imageFile, false)
+            } catch (e: Exception) {
+                showToast(
+                    this@AirSigmetService, "Unable to fetch AirSigmet image: "
+                            + e.message
+                )
+            }
+        }
+
+        // Broadcast the result
+        sendImageResultIntent(action, code, imageFile)
+    }
+
+    companion object {
+        private val TAG = AirSigmetService::class.java.simpleName
+        private const val AIRSIGMET_CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
+    }
 }
