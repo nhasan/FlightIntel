@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,17 +27,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.content.IntentCompat
+import androidx.core.view.isNotEmpty
 import androidx.lifecycle.lifecycleScope
-import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
 import com.nadmm.airports.data.DatabaseManager.Awos1
 import com.nadmm.airports.data.DatabaseManager.Awos2
 import com.nadmm.airports.data.DatabaseManager.Wxs
+import com.nadmm.airports.databinding.DetailRowItem2Binding
+import com.nadmm.airports.databinding.MetarDetailViewBinding
 import com.nadmm.airports.utils.FormatUtils.formatAltimeter
 import com.nadmm.airports.utils.FormatUtils.formatDegrees
 import com.nadmm.airports.utils.FormatUtils.formatFeet
@@ -60,12 +60,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.math.roundToInt
-import androidx.core.view.isNotEmpty
 
 class MetarFragment : WxFragmentBase() {
     private val action = NoaaService.ACTION_GET_METAR
     private var location: Location? = null
-    private var remarks: ArrayList<String> = ArrayList()
+    private var _binding: MetarDetailViewBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,27 +76,20 @@ class MetarFragment : WxFragmentBase() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.metar_detail_view, container, false)
-        val btnGraphic = view.findViewById<Button>(R.id.btnViewGraphic)
-        btnGraphic.setOnClickListener { _: View? ->
+        _binding = MetarDetailViewBinding.inflate(inflater, container, false)
+        val view = binding.root
+        binding.btnViewGraphic.setOnClickListener { _: View? ->
             val intent = Intent(activity, MetarMapActivity::class.java)
             startActivity(intent)
         }
-        btnGraphic.visibility = View.GONE
+        binding.btnViewGraphic.visibility = View.GONE
         return createContentView(view)
     }
 
     override fun onResume() {
         super.onResume()
-        arguments?.let {
-            val stationId = it.getString(NoaaService.STATION_ID) ?: return
-            viewLifecycleOwner.lifecycleScope.launch {
-                val result = withContext(Dispatchers.IO) {
-                    doQuery(stationId)
-                }
-                showDetails(result)
-            }
-        }
+
+        run()
     }
 
     override fun handleBroadcast(intent: Intent) {
@@ -120,7 +113,19 @@ class MetarFragment : WxFragmentBase() {
     }
 
     override fun requestDataRefresh() {
-        requestMetar(true)
+        run(true)
+    }
+
+    private fun run(refresh: Boolean = false) {
+        arguments?.let {
+            val stationId = it.getString(NoaaService.STATION_ID) ?: return
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = withContext(Dispatchers.IO) {
+                    doQuery(stationId)
+                }
+                fetchMetar(result, refresh)
+            }
+        }
     }
 
     private fun doQuery(stationId: String): Array<Cursor?> {
@@ -177,28 +182,34 @@ class MetarFragment : WxFragmentBase() {
         return cursors
     }
 
-    private fun showDetails(result: Array<Cursor?>) {
-        val wxs = result[0] ?: return
-        if (wxs.moveToFirst()) {
+    private fun fetchMetar(result: Array<Cursor?>, refresh: Boolean) {
+        val wxs = result[0]
+        if (wxs?.moveToFirst() == true) {
             location = Location("").apply {
                 latitude = wxs.getDouble(wxs.getColumnIndexOrThrow(Wxs.STATION_LATITUDE_DEGREES))
                 longitude = wxs.getDouble(wxs.getColumnIndexOrThrow(Wxs.STATION_LONGITUDE_DEGREES))
             }
-            val rmk = result[2]
-            if (rmk?.moveToFirst() == true) {
-                remarks.clear()
-                do {
-                    remarks.add(rmk.getString(rmk.getColumnIndexOrThrow(Awos2.WX_STATION_REMARKS)))
-                } while (rmk.moveToNext())
-            }
+
             showWxTitle(result)
-            requestMetar(false)
-        } else {
-            if (activity != null) {
-                showToast(requireActivity().applicationContext,
-                    "Unable to get weather station info")
-                requireActivity().finish()
+
+            // Remarks
+            binding.wxRemarksLayout.removeAllViews()
+            result[2]?.let { rmk ->
+                if (rmk.moveToFirst()) {
+                    do {
+                        val remark = rmk.getString(rmk.getColumnIndexOrThrow(Awos2.WX_STATION_REMARKS))
+                        addBulletedRow(binding.wxRemarksLayout, remark)
+                    } while (rmk.moveToNext())
+                }
             }
+
+            requestMetar(refresh)
+        } else {
+            showToast(
+                requireActivity().applicationContext,
+                "Unable to get weather station info"
+            )
+            requireActivity().finish()
         }
     }
 
@@ -213,230 +224,190 @@ class MetarFragment : WxFragmentBase() {
     @SuppressLint("SetTextI18n")
     private fun showMetar(intent: Intent) {
         val metar = IntentCompat.getSerializableExtra(intent, NoaaService.RESULT, Metar::class.java) ?: return
-        findViewById<LinearLayout>(R.id.wx_status_layout)?.let { layout ->
-            layout.removeAllViews()
+        binding.apply {
+            wxStatusLayout.removeAllViews()
             if (!metar.isValid) {
-                layout.visibility = View.VISIBLE
-                findViewById<TextView>(R.id.status_msg)?.let { tv ->
-                    tv.visibility = View.VISIBLE
-                    tv.text = "Unable to get METAR for this location"
-                }
-                addRow(layout, "This could be due to the following reasons:")
-                addBulletedRow(layout, "Network connection is not available")
-                addBulletedRow(layout, "AWS does not publish METAR for this station")
-                addBulletedRow(layout, "Station is currently out of service")
-                addBulletedRow(layout, "Station has not updated the METAR for more than 3 hours")
-                findViewById<View>(R.id.wx_detail_layout)?.visibility = View.GONE
+                wxStatusLayout.visibility = View.VISIBLE
+                statusMsg.visibility = View.VISIBLE
+                statusMsg.text = "Unable to get METAR for this location"
+                addRow(wxStatusLayout, "This could be due to the following reasons:")
+                addBulletedRow(wxStatusLayout, "Network connection is not available")
+                addBulletedRow(wxStatusLayout, "AWS does not publish METAR for this station")
+                addBulletedRow(wxStatusLayout, "Station is currently out of service")
+                addBulletedRow(wxStatusLayout, "Station has not updated the METAR for more than 3 hours")
+                wxDetailLayout.visibility = View.GONE
                 setFragmentContentShown(true)
                 return
             } else {
-                findViewById<TextView>(R.id.status_msg)?.let { tv ->
-                    tv.visibility = View.GONE
-                }
-                layout.visibility = View.GONE
-                findViewById<View>(R.id.wx_detail_layout)?.visibility = View.VISIBLE
+                statusMsg.visibility = View.GONE
+                wxStatusLayout.visibility = View.GONE
+                wxDetailLayout.visibility = View.VISIBLE
             }
-        }
-        findViewById<TextView>(R.id.wx_station_info)?.let { tv ->
-            setFlightCategoryDrawable(tv, metar.flightCategory)
-        }
-        findViewById<TextView>(R.id.wx_age)?.let { tv ->
-            tv.text = TimeUtils.formatElapsedTime(metar.observationTime)
-        }
-        // Raw Text
-        findViewById<TextView>(R.id.wx_raw_metar)?.let { tv ->
-            tv.text = metar.rawText
-        }
+            setFlightCategoryDrawable(wxTitle.wxStationInfo, metar.flightCategory)
+            wxSubtitle.wxAge.text = TimeUtils.formatElapsedTime(metar.observationTime)
+            wxRawMetar.text = metar.rawText
 
-        // Winds
-        findViewById<LinearLayout>(R.id.wx_wind_layout)?.let { layout ->
-            layout.removeAllViews()
-            var visibility = View.GONE
+            // Winds
+            wxWindLayout.removeAllViews()
             if (metar.windSpeedKnots < Int.MAX_VALUE) {
-                showWindInfo(layout, metar)
-                visibility = View.VISIBLE
+                showWindInfo(wxWindLayout, metar)
             }
-            layout.visibility = visibility
-            findViewById<TextView>(R.id.wx_wind_label)?.let { tv ->
-                tv.visibility = visibility
-            }
-        }
+            wxWindLayout.visibility = if (wxWindLayout.isNotEmpty()) View.VISIBLE else View.GONE
+            wxWindLabel.visibility = wxWindLayout.visibility
 
-        // Visibility
-        findViewById<LinearLayout>(R.id.wx_vis_layout)?.let { layout ->
-            layout.removeAllViews()
-            var visibility = View.GONE
+            // Visibility
+            wxVisLayout.removeAllViews()
             if (metar.visibilitySM < Float.MAX_VALUE) {
                 if (metar.flags.contains(Metar.Flags.Auto) && metar.visibilitySM >= 10f) {
-                    addRow(layout, "10+ statute miles horizontal")
+                    addRow(wxVisLayout, "10+ statute miles horizontal")
                 } else {
-                    addRow(layout, String.format("%s statute miles horizontal",
-                            formatNumber(metar.visibilitySM)))
+                    addRow(
+                        wxVisLayout, String.format(
+                            "%s statute miles horizontal",
+                            formatNumber(metar.visibilitySM)
+                        )
+                    )
                 }
                 if (metar.vertVisibilityFeet < Int.MAX_VALUE) {
-                    addRow(layout, String.format("%s vertical",
-                            formatFeetAgl(metar.vertVisibilityFeet.toFloat())))
+                    addRow(
+                        wxVisLayout, String.format(
+                            "%s vertical",
+                            formatFeetAgl(metar.vertVisibilityFeet.toFloat())
+                        )
+                    )
                 }
-                visibility = View.VISIBLE
             }
-            layout.visibility = visibility
-            findViewById<TextView>(R.id.wx_vis_label)?.let { tv ->
-                tv.visibility = visibility
-            }
-        }
+            wxVisLabel.visibility = if (wxVisLayout.isNotEmpty()) View.VISIBLE else View.GONE
+            wxVisLayout.visibility = wxVisLabel.visibility
 
-        // Weather
-        findViewById<LinearLayout>(R.id.wx_weather_layout)?.let { layout ->
-            layout.removeAllViews()
+            // Weather
+            wxWeatherLayout.removeAllViews()
             for (wx in metar.wxList) {
-                addWeatherRow(layout, wx, metar.flightCategory)
+                addWeatherRow(wxWeatherLayout, wx, metar.flightCategory)
             }
             if (metar.ltg) {
-                addRow(layout, "Lightning in the vicinity")
+                addRow(wxWeatherLayout, "Lightning in the vicinity")
             }
-            val visibility = if (layout.isNotEmpty()) View.VISIBLE else View.GONE
-            layout.visibility = visibility
-            findViewById<TextView>(R.id.wx_weather_label)?.let { tv ->
-                tv.visibility = visibility
-            }
-        }
+            wxWeatherLayout.visibility = if (wxWeatherLayout.isNotEmpty()) View.VISIBLE else View.GONE
+            wxWeatherLabel.visibility = wxWeatherLayout.visibility
 
-        // Sky Condition
-        findViewById<LinearLayout>(R.id.wx_sky_cond_layout)?.let { layout ->
-            layout.removeAllViews()
-            var visibility = View.GONE
+            // Sky Condition
+            wxSkyCondLayout.removeAllViews()
             if (metar.skyConditions.isNotEmpty()) {
                 val ceiling = getCeiling(metar.skyConditions)
                 if (!listOf("NSC", "OVX").contains(ceiling.skyCover)) {
-                    addRow(layout, "Ceiling is " + formatFeetAgl(ceiling.cloudBaseAGL.toFloat()))
+                    addRow(wxSkyCondLayout, "Ceiling is " + formatFeetAgl(ceiling.cloudBaseAGL.toFloat()))
                 }
                 for (sky in metar.skyConditions) {
-                    addSkyConditionRow(layout, sky, metar.flightCategory)
+                    addSkyConditionRow(wxSkyCondLayout, sky, metar.flightCategory)
                 }
-                visibility = View.VISIBLE
             }
-            layout.visibility = visibility
-            findViewById<TextView>(R.id.wx_sky_cond_label)?.let { tv ->
-                tv.visibility = visibility
-            }
-        }
+            wxSkyCondLayout.visibility = if (wxSkyCondLayout.isNotEmpty()) View.VISIBLE else View.GONE
+            wxSkyCondLabel.visibility = wxSkyCondLayout.visibility
 
-        // Temperature
-        findViewById<LinearLayout>(R.id.wx_temp_layout)?.let { layout ->
-            layout.removeAllViews()
-            var visibility = View.GONE
+            // Temperature
+            wxTempLayout.removeAllViews()
             if (metar.tempCelsius < Float.MAX_VALUE && metar.dewpointCelsius < Float.MAX_VALUE) {
-                addRow(layout, "Temperature", formatTemperature(metar.tempCelsius))
+                addRow(wxTempLayout, "Temperature", formatTemperature(metar.tempCelsius))
                 if (metar.dewpointCelsius < Float.MAX_VALUE) {
-                    addRow(layout, "Dew point", formatTemperature(metar.dewpointCelsius))
-                    addRow(layout, "Relative humidity",
-                        String.format(Locale.US, "%.0f%%", getRelativeHumidity(metar)))
+                    addRow(wxTempLayout, "Dew point", formatTemperature(metar.dewpointCelsius))
+                    addRow(
+                        wxTempLayout, "Relative humidity",
+                        String.format(Locale.US, "%.0f%%", getRelativeHumidity(metar))
+                    )
                     val denAlt = getDensityAltitude(metar).toLong()
-                    addRow(layout, "Density altitude", formatFeet(denAlt.toFloat()))
+                    addRow(wxTempLayout, "Density altitude", formatFeet(denAlt.toFloat()))
                 } else {
-                    addRow(layout, "Dew point", "n/a")
+                    addRow(wxTempLayout, "Dew point", "n/a")
                 }
                 if (metar.maxTemp6HrCentigrade < Float.MAX_VALUE) {
-                    addRow(layout, "6-hr max", formatTemperature(metar.maxTemp6HrCentigrade))
+                    addRow(wxTempLayout, "6-hr max", formatTemperature(metar.maxTemp6HrCentigrade))
                 }
                 if (metar.minTemp6HrCentigrade < Float.MAX_VALUE) {
-                    addRow(layout, "6-hr min", formatTemperature(metar.minTemp6HrCentigrade))
+                    addRow(wxTempLayout, "6-hr min", formatTemperature(metar.minTemp6HrCentigrade))
                 }
                 if (metar.maxTemp24HrCentigrade < Float.MAX_VALUE) {
-                    addRow(layout, "24-hr max", formatTemperature(metar.maxTemp24HrCentigrade))
+                    addRow(wxTempLayout, "24-hr max", formatTemperature(metar.maxTemp24HrCentigrade))
                 }
                 if (metar.minTemp24HrCentigrade < Float.MAX_VALUE) {
-                    addRow(layout, "24-hr min", formatTemperature(metar.minTemp24HrCentigrade))
+                    addRow(wxTempLayout, "24-hr min", formatTemperature(metar.minTemp24HrCentigrade))
                 }
-                visibility = View.VISIBLE
             }
-            layout.visibility = visibility
-            findViewById<TextView>(R.id.wx_temp_label)?.let { tv ->
-                tv.visibility = visibility
-            }
-        }
+            wxTempLayout.visibility = if (wxTempLayout.isNotEmpty()) View.VISIBLE else View.GONE
+            wxTempLabel.visibility = wxTempLayout.visibility
 
-        // Pressure
-        findViewById<LinearLayout>(R.id.wx_pressure_layout)?.let { layout ->
-            layout.removeAllViews()
-            var visibility = View.GONE
+            // Pressure
+            wxPressureLayout.removeAllViews()
             if (metar.altimeterHg < Float.MAX_VALUE) {
-                addRow(layout, "Altimeter", formatAltimeter(metar.altimeterHg))
+                addRow(wxPressureLayout, "Altimeter", formatAltimeter(metar.altimeterHg))
                 if (metar.seaLevelPressureMb < Float.MAX_VALUE) {
                     val slp = formatNumber(metar.seaLevelPressureMb)
-                    addRow(layout, "Sea level pressure", "$slp mb")
+                    addRow(wxPressureLayout, "Sea level pressure", "$slp mb")
                 }
                 val presAlt = getPressureAltitude(metar).toLong()
-                addRow(layout, "Pressure altitude", formatFeet(presAlt.toFloat()))
+                addRow(wxPressureLayout, "Pressure altitude", formatFeet(presAlt.toFloat()))
                 if (metar.pressureTend3HrMb < Float.MAX_VALUE) {
-                    addRow(layout, "3-hr tendency",
-                        String.format(Locale.US, "%+.2f mb", metar.pressureTend3HrMb))
+                    addRow(
+                        wxPressureLayout, "3-hr tendency",
+                        String.format(Locale.US, "%+.2f mb", metar.pressureTend3HrMb)
+                    )
                 }
                 if (metar.presfr) {
-                    addRow(layout, "Pressure is falling rapidly")
+                    addRow(wxPressureLayout, "Pressure is falling rapidly")
                 }
                 if (metar.presrr) {
-                    addRow(layout, "Pressure is rising rapidly")
+                    addRow(wxPressureLayout, "Pressure is rising rapidly")
                 }
-                visibility = View.VISIBLE
             }
-            layout.visibility = visibility
-            findViewById<TextView>(R.id.wx_pressure_label)?.let { tv ->
-                tv.visibility = visibility
-            }
-        }
+            wxPressureLayout.visibility = if (wxPressureLayout.isNotEmpty()) View.VISIBLE else View.GONE
+            wxPressureLabel.visibility = wxPressureLayout.visibility
 
-        // Precipitation
-        findViewById<LinearLayout>(R.id.wx_precip_layout)?.let { layout ->
-            layout.removeAllViews()
+            // Precipitation
+            wxPrecipLayout.removeAllViews()
             if (metar.precipInches < Float.MAX_VALUE) {
-                addRow(layout, "1-hr precipitation",
-                    String.format(Locale.US, "%.2f\"", metar.precipInches))
+                addRow(
+                    wxPrecipLayout, "1-hr precipitation",
+                    String.format(Locale.US, "%.2f\"", metar.precipInches)
+                )
             }
             if (metar.precip3HrInches < Float.MAX_VALUE) {
-                addRow(layout, "3-hr precipitation",
-                    String.format(Locale.US, "%.2f\"", metar.precip3HrInches))
+                addRow(
+                    wxPrecipLayout, "3-hr precipitation",
+                    String.format(Locale.US, "%.2f\"", metar.precip3HrInches)
+                )
             }
             if (metar.precip6HrInches < Float.MAX_VALUE) {
-                addRow(layout, "6-hr precipitation",
-                    String.format(Locale.US, "%.2f\"", metar.precip6HrInches))
+                addRow(
+                    wxPrecipLayout, "6-hr precipitation",
+                    String.format(Locale.US, "%.2f\"", metar.precip6HrInches)
+                )
             }
             if (metar.precip24HrInches < Float.MAX_VALUE) {
-                addRow(layout, "24-hr precipitation",
-                    String.format(Locale.US, "%.2f\"", metar.precip24HrInches))
+                addRow(
+                    wxPrecipLayout, "24-hr precipitation",
+                    String.format(Locale.US, "%.2f\"", metar.precip24HrInches)
+                )
             }
             if (metar.snowInches < Float.MAX_VALUE) {
-                addRow(layout, "Snow depth", String.format(Locale.US, "%.0f\"", metar.snowInches))
+                addRow(wxPrecipLayout, "Snow depth", String.format(Locale.US, "%.0f\"", metar.snowInches))
             }
             if (metar.snincr) {
-                addRow(layout, "Snow is increasing rapidly")
+                addRow(wxPrecipLayout, "Snow is increasing rapidly")
             }
-            val visibility = if (layout.isNotEmpty()) View.VISIBLE else View.GONE
-            layout.visibility = visibility
-            findViewById<TextView>(R.id.wx_precip_label)?.let { tv ->
-                tv.visibility = visibility
-            }
-        }
+            wxPrecipLayout.visibility = if (wxPrecipLayout.isNotEmpty()) View.VISIBLE else View.GONE
+            wxPrecipLabel.visibility = wxPrecipLayout.visibility
 
-        // Remarks
-        findViewById<LinearLayout>(R.id.wx_remarks_layout)?.let { layout ->
-            layout.removeAllViews()
+            // Remarks
             for (flag in metar.flags) {
-                addBulletedRow(layout, flag.toString())
+                addBulletedRow(wxRemarksLayout, flag.toString())
             }
-            for (remark in remarks) {
-                addBulletedRow(layout, remark)
-            }
-            val visibility = if (layout.isNotEmpty()) View.VISIBLE else View.GONE
-            layout.visibility = visibility
-            findViewById<View>(R.id.wx_remarks_label)?.visibility = visibility
-        }
+            wxRemarksLayout.visibility = if (wxRemarksLayout.isNotEmpty()) View.VISIBLE else View.GONE
+            wxRemarksLabel.visibility = wxRemarksLayout.visibility
 
-        // Fetch time
-        findViewById<TextView>(R.id.wx_fetch_time)?.let { tv ->
+            // Fetch time
             val fetched = TimeUtils.formatDateTime(activityBase, metar.fetchTime)
-            tv.text = "Fetched on $fetched"
-            tv.visibility = View.VISIBLE
+            wxFetchTime.text = "Fetched on $fetched"
+            wxFetchTime.visibility = View.VISIBLE
         }
         setFragmentContentShown(true)
     }
@@ -447,53 +418,55 @@ class MetarFragment : WxFragmentBase() {
             s.append("Winds are calm")
         } else {
             if (metar.windDirDegrees == 0) {
-                s.append("Winds variable at ${metar.windSpeedKnots} knots")
+                s.append("Winds variable at ${metar.windSpeedKnots} kt")
             } else {
                 val card = GeoUtils.getCardinalDirection(metar.windDirDegrees.toFloat())
                 val dir = formatDegrees(metar.windDirDegrees)
-                s.append("From $card ($dir true) at ${metar.windSpeedKnots} knots")
+                s.append("From $card ($dir true) at ${metar.windSpeedKnots} kt")
             }
             if (metar.windGustKnots < Int.MAX_VALUE)
-                s.append(" gusting to ${metar.windGustKnots} knots")
+                s.append(" gusting to ${metar.windGustKnots} kt")
             if (metar.windPeakKnots < Int.MAX_VALUE && metar.windPeakKnots > metar.windGustKnots)
-                s.append(", peak at ${metar.windPeakKnots} knots")
+                s.append(", peak at ${metar.windPeakKnots} kt")
         }
         return s.toString()
     }
 
-    private fun showWindInfo(layout: LinearLayout?, metar: Metar) {
-        val row = addRow(layout!!, getWindsDescription(metar))
-        val tv = row.findViewById<TextView>(R.id.item_label)
-        if (metar.windDirDegrees > 0) {
-            val declination = location?.let { GeoUtils.getMagneticDeclination(it) } ?: 0F
-            val wind = getWindBarbDrawable(tv.context, metar, declination)
-            setTextViewDrawable(tv, wind)
-        }
-        if (metar.windGustKnots < Int.MAX_VALUE) {
-            val gustFactor = (metar.windGustKnots - metar.windSpeedKnots).toDouble()
-            addRow(layout, "Add ${(gustFactor / 2).roundToInt()} knots to your normal approach speed")
-        }
-        if (metar.wshft) {
-            val sb = StringBuilder()
-            sb.append("Wind shift of 45\u00B0 or more detected during past hour")
-            if (metar.fropa) {
-                sb.append(" due to frontal passage")
+    private fun showWindInfo(layout: LinearLayout, metar: Metar) {
+        val row = addRow(layout, getWindsDescription(metar))
+        DetailRowItem2Binding.bind(row).apply {
+            if (metar.windDirDegrees > 0) {
+                val declination = location?.let { GeoUtils.getMagneticDeclination(it) } ?: 0F
+                val wind = getWindBarbDrawable(requireContext(), metar, declination)
+                setTextViewDrawable(itemLabel, wind)
             }
-            addRow(layout, sb.toString())
+            if (metar.windGustKnots < Int.MAX_VALUE) {
+                val gustFactor = (metar.windGustKnots - metar.windSpeedKnots).toDouble()
+                addRow(layout, "Add ${(gustFactor / 2).roundToInt()} kt to your normal approach speed")
+            }
+            if (metar.wshft) {
+                val sb = StringBuilder()
+                sb.append("Wind shift of 45\u00B0 or more detected during past hour")
+                if (metar.fropa) {
+                    sb.append(" due to frontal passage")
+                }
+                addRow(layout, sb.toString())
+            }
         }
     }
 
     private fun addSkyConditionRow(layout: LinearLayout, sky: SkyCondition, flightCategory: String) {
         val row = addRow(layout, sky.toString())
-        val tv = row.findViewById<TextView>(R.id.item_label)
-        showColorizedDrawable(tv, flightCategory, sky.drawable)
+        DetailRowItem2Binding.bind(row).apply {
+            showColorizedDrawable(itemLabel, flightCategory, sky.drawable)
+        }
     }
 
     private fun addWeatherRow(layout: LinearLayout, wx: WxSymbol, flightCategory: String) {
         val row = addRow(layout, wx.toString())
         if (wx.drawable != 0) {
-            row.findViewById<TextView>(R.id.item_label)?.let { tv ->
-                showColorizedDrawable(tv, flightCategory, wx.drawable)
+            DetailRowItem2Binding.bind(row).apply {
+                showColorizedDrawable(itemLabel, flightCategory, wx.drawable)
             }
         }
     }
