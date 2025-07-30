@@ -1,4 +1,3 @@
-import java.io.File
 import java.util.Properties
 import java.io.FileInputStream
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
@@ -12,7 +11,6 @@ buildscript {
 }
 
 plugins {
-    // id 'kotlin-kapt'
     id ("com.android.application") version "8.11.1"
     id ("org.jetbrains.kotlin.android") version "2.2.0"
     id ("org.jetbrains.kotlin.plugin.parcelize") version "2.2.0"
@@ -23,6 +21,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
 }
 
