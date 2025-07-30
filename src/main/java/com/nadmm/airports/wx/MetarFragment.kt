@@ -77,13 +77,17 @@ class MetarFragment : WxFragmentBase() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = MetarDetailViewBinding.inflate(inflater, container, false)
-        val view = binding.root
         binding.btnViewGraphic.setOnClickListener { _: View? ->
             val intent = Intent(activity, MetarMapActivity::class.java)
             startActivity(intent)
         }
         binding.btnViewGraphic.visibility = View.GONE
-        return createContentView(view)
+        return createContentView(binding.root)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onResume() {
