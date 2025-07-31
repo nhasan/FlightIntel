@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,233 +16,212 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.database.Cursor
+import android.database.sqlite.SQLiteQueryBuilder
+import android.location.Location
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.core.content.IntentCompat
+import androidx.lifecycle.lifecycleScope
+import com.nadmm.airports.data.DatabaseManager
+import com.nadmm.airports.data.DatabaseManager.Wxs
+import com.nadmm.airports.databinding.AirsigmetDetailItemBinding
+import com.nadmm.airports.databinding.AirsigmetDetailViewBinding
+import com.nadmm.airports.utils.FormatUtils.formatDegrees
+import com.nadmm.airports.utils.FormatUtils.formatFeetRangeMsl
+import com.nadmm.airports.utils.GeoUtils.getCardinalDirection
+import com.nadmm.airports.utils.TimeUtils
+import com.nadmm.airports.wx.AirSigmet.AirSigmetEntry
+import com.nadmm.airports.wx.AirSigmetService.Companion.ACTION
+import com.nadmm.airports.wx.AirSigmetService.Companion.AIRSIGMET_HOURS_BEFORE
+import com.nadmm.airports.wx.AirSigmetService.Companion.AIRSIGMET_RADIUS_NM
+import com.nadmm.airports.wx.AirSigmetService.Companion.startAirSigmetService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.Locale
 
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
-import android.location.Location;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+class AirSigmetFragment : WxFragmentBase() {
+    private var location: Location = Location("")
+    private var stationId: String = ""
 
-import com.nadmm.airports.R;
-import com.nadmm.airports.data.DatabaseManager;
-import com.nadmm.airports.data.DatabaseManager.Wxs;
-import com.nadmm.airports.utils.CursorAsyncTask;
-import com.nadmm.airports.utils.FormatUtils;
-import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.utils.TimeUtils;
-import com.nadmm.airports.wx.AirSigmet.AirSigmetEntry;
+    private var _binding: AirsigmetDetailViewBinding? = null
+    private val binding get() = _binding!!
 
-import java.util.Locale;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-public class AirSigmetFragment extends WxFragmentBase {
-
-    private final String mAction = NoaaService.ACTION_GET_AIRSIGMET;
-
-    private final int AIRSIGMET_RADIUS_NM = 50;
-    private final int AIRSIGMET_HOURS_BEFORE = 3;
-
-    private Location mLocation;
-    private String mStationId;
-
-    @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        setupBroadcastFilter( mAction );
+        setupBroadcastFilter(ACTION)
     }
 
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-                              Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.airsigmet_detail_view, container, false );
-        Button btnGraphic = view.findViewById( R.id.btnViewGraphic );
-        btnGraphic.setOnClickListener( v -> {
-            Intent intent = new Intent( getActivity(), AirSigmetMapActivity.class );
-            startActivity( intent );
-        } );
-
-        return createContentView( view );
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        Bundle args = getArguments();
-        String stationId = args.getString( NoaaService.STATION_ID );
-        setBackgroundTask( new AirSigmetTask( this ) ).execute( stationId );
-    }
-
-    @Override
-    protected void handleBroadcast( Intent intent ) {
-        if ( mLocation == null ) {
-            // This was probably intended for wx list view
-            return;
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = AirsigmetDetailViewBinding.inflate(inflater, container, false)
+        binding.btnViewGraphic.setOnClickListener { v: View? ->
+            val intent = Intent(activity, AirSigmetMapActivity::class.java)
+            startActivity(intent)
         }
 
-        String type = intent.getStringExtra( NoaaService.TYPE );
-        if ( type.equals( NoaaService.TYPE_TEXT ) ) {
-            showAirSigmetText( intent );
-            setRefreshing( false );
+        return createContentView(binding.root)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        run()
+    }
+
+    override fun handleBroadcast(intent: Intent) {
+        val type = intent.getStringExtra(NoaaService.TYPE)
+        if (type == NoaaService.TYPE_TEXT) {
+            showAirSigmetText(intent)
+            isRefreshing = false
         }
     }
 
-    @Override
-    protected String getProduct() {
-        return "airsigmet";
+    override fun getProduct(): String {
+        return "airsigmet"
     }
 
-    @Override
-    public boolean isRefreshable() {
-        return true;
+    override fun isRefreshable(): Boolean {
+        return true
     }
 
-    @Override
-    public void requestDataRefresh() {
-        requestAirSigmetText( true );
+    override fun requestDataRefresh() {
+        run(true)
     }
 
-    private Cursor[] doQuery( String stationId ) {
-        SQLiteDatabase db = getDbManager().getDatabase( DatabaseManager.DB_FADDS );
-
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( Wxs.TABLE_NAME );
-        String selection = Wxs.STATION_ID+"=?";
-        Cursor c = builder.query( db, new String[]{ "*" }, selection,
-                new String[] { stationId }, null, null, null, null );
-        return new Cursor[] { c };
+    private fun run(refresh: Boolean = false) {
+        arguments?.let {
+            val stationId = it.getString(NoaaService.STATION_ID) ?: return
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = withContext(Dispatchers.IO) {
+                    doQuery(stationId)
+                }
+                result[0]?.let { c ->
+                    setCursor(c, refresh)
+                }
+            }
+        }
     }
 
-    private void setCursor( Cursor c ) {
-        if ( c.moveToFirst() ) {
-            mStationId = c.getString( c.getColumnIndex( Wxs.STATION_ID ) );
-            mLocation = new Location( "" );
-            float lat = c.getFloat( c.getColumnIndex( Wxs.STATION_LATITUDE_DEGREES ) );
-            float lon = c.getFloat( c.getColumnIndex( Wxs.STATION_LONGITUDE_DEGREES ) );
-            mLocation.setLatitude( lat );
-            mLocation.setLongitude( lon );
+    private fun doQuery(stationId: String?): Array<Cursor?> {
+        val db = dbManager.getDatabase(DatabaseManager.DB_FADDS)
+
+        val builder = SQLiteQueryBuilder()
+        builder.tables = Wxs.TABLE_NAME
+        val selection = "${Wxs.STATION_ID}=?"
+        val c = builder.query(
+            db, arrayOf("*"), selection, arrayOf(stationId),
+            null, null, null, null
+        )
+        return arrayOf(c)
+    }
+
+    private fun setCursor(c: Cursor, refresh: Boolean) {
+        if (c.moveToFirst()) {
+            stationId = c.getString(c.getColumnIndexOrThrow(Wxs.STATION_ID))
+            location = Location("").apply {
+                val lat = c.getFloat(c.getColumnIndexOrThrow(Wxs.STATION_LATITUDE_DEGREES))
+                val lon = c.getFloat(c.getColumnIndexOrThrow(Wxs.STATION_LONGITUDE_DEGREES))
+                latitude = lat.toDouble()
+                longitude = lon.toDouble()
+            }
             // Now request the airmet/sigmet
-            requestAirSigmetText( false );
-        }
-    }
-
-    private static class AirSigmetTask extends CursorAsyncTask<AirSigmetFragment> {
-
-        private AirSigmetTask( AirSigmetFragment fragment ) {
-            super( fragment );
-        }
-
-        @Override
-        protected Cursor[] onExecute( AirSigmetFragment fragment, String... params ) {
-            String stationId = params[ 0 ];
-            return fragment.doQuery( stationId );
-        }
-
-        @Override
-        protected boolean onResult( AirSigmetFragment fragment, Cursor[] result ) {
-            fragment.setCursor( result[ 0 ] );
-            return true;
-        }
-
-    }
-
-    private void requestAirSigmetText( boolean refresh ) {
-        double[] box = GeoUtils.getBoundingBoxDegrees( mLocation, AIRSIGMET_RADIUS_NM );
-        Intent service = new Intent( getActivity(), AirSigmetService.class );
-        service.setAction( mAction );
-        service.putExtra( NoaaService.STATION_ID, mStationId );
-        service.putExtra( NoaaService.TYPE, NoaaService.TYPE_TEXT );
-        service.putExtra( NoaaService.COORDS_BOX, box );
-        service.putExtra( NoaaService.HOURS_BEFORE, AIRSIGMET_HOURS_BEFORE );
-        service.putExtra( NoaaService.FORCE_REFRESH, refresh );
-        if ( getActivity() != null ) {
-            getActivity().startService(service);
-        }
-    }
-
-    private void showAirSigmetText( Intent intent ) {
-        if ( getActivity() == null ) {
-            return;
-        }
-
-        LinearLayout layout = findViewById( R.id.airsigmet_entries_layout );
-        if ( layout == null ) {
-            return;
-        }
-        layout.removeAllViews();
-
-        AirSigmet airSigmet = (AirSigmet) intent.getSerializableExtra(NoaaService.RESULT );
-
-        TextView tv = findViewById( R.id.airsigmet_title_msg );
-        if ( !airSigmet.entries.isEmpty() ) {
-            tv.setText( String.format( Locale.US, "%d AIR/SIGMETs reported within %d NM of %s in"
-                    +" last %d hours", airSigmet.entries.size(), AIRSIGMET_RADIUS_NM,
-                    mStationId, AIRSIGMET_HOURS_BEFORE ) );
-            for ( AirSigmetEntry entry : airSigmet.entries ) {
-                showAirSigmetEntry( layout, entry );
+            if (stationId.isNotEmpty() && location.latitude != 0.0 && location.longitude != 0.0) {
+                startAirSigmetService(requireActivity(), stationId, location, refresh)
             }
-        } else {
-            tv.setText( String.format( Locale.US, "No AIR/SIGMETs reported within %d NM of %s in"
-                    +" last %d hours",
-                    AIRSIGMET_RADIUS_NM, mStationId, AIRSIGMET_HOURS_BEFORE ) );
         }
-
-        tv = findViewById( R.id.wx_fetch_time );
-        tv.setText( String.format( Locale.US, "Fetched on %s",
-                TimeUtils.formatDateTime( getActivityBase(), airSigmet.fetchTime ) ) );
-        tv.setVisibility( View.VISIBLE );
-
-        setFragmentContentShown( true );
     }
 
-    private void showAirSigmetEntry( LinearLayout layout, AirSigmetEntry entry ) {
-        RelativeLayout item = inflate( R.layout.airsigmet_detail_item );
-        TextView tv = item.findViewById( R.id.airsigmet_type );
-        tv.setText( entry.type );
-        tv = item.findViewById( R.id.wx_raw_airsigmet );
-        tv.setText( entry.rawText );
-        tv = item.findViewById( R.id.airsigmet_time );
-        tv.setText( TimeUtils.formatDateRange( getActivityBase(), entry.fromTime, entry.toTime ) );
+    @SuppressLint("SetTextI18n")
+    private fun showAirSigmetText(intent: Intent) {
+        activity ?: return
+        binding.apply {
+            airsigmetEntriesLayout.removeAllViews()
+            wxFetchTime.visibility = View.GONE
 
-        LinearLayout details = item.findViewById( R.id.airsigmet_details );
+            val airSigmet = IntentCompat.getSerializableExtra(intent, NoaaService.RESULT, AirSigmet::class.java)
+            if (airSigmet != null) {
+                val numEntries = airSigmet.entries.size
+                val baseMessage = "within $AIRSIGMET_RADIUS_NM NM of $stationId in last $AIRSIGMET_HOURS_BEFORE hours"
 
-        if ( entry.hazardType != null && entry.hazardType.length() > 0 ) {
-            addRow( details, "Type", entry.hazardType );
-        }
+                airsigmetTitleMsg.text = if (airSigmet.entries.isNotEmpty()) {
+                    "$numEntries AIR/SIGMETs reported $baseMessage"
+                } else {
+                    "No AIR/SIGMETs reported $baseMessage"
+                }
 
-        if ( entry.hazardSeverity != null && entry.hazardSeverity.length() > 0 ) {
-            addRow( details, "Severity", entry.hazardSeverity );
-        }
-
-        if ( entry.minAltitudeFeet < Integer.MAX_VALUE
-                || entry.maxAltitudeFeet < Integer.MAX_VALUE ) {
-            addRow( details, "Altitude", FormatUtils.formatFeetRangeMsl(
-                    entry.minAltitudeFeet, entry.maxAltitudeFeet ) );
-        }
-
-        if ( entry.movementDirDegrees < Integer.MAX_VALUE ) {
-            StringBuilder sb = new StringBuilder();
-            sb.append( String.format( "%s (%s)",
-                    FormatUtils.formatDegrees( entry.movementDirDegrees ),
-                    GeoUtils.getCardinalDirection( entry.movementDirDegrees ) ) );
-            if ( entry.movementSpeedKnots < Integer.MAX_VALUE ) {
-                sb.append( String.format( Locale.US, " at %d knots", entry.movementSpeedKnots ) );
+                if (airSigmet.entries.isNotEmpty()) {
+                    airSigmet.entries.forEach { entry ->
+                        showAirSigmetEntry(airsigmetEntriesLayout, entry)
+                    }
+                    // Set fetch time only once after the loop if there are entries
+                    wxFetchTime.text = "Fetched on ${TimeUtils.formatDateTime(activityBase, airSigmet.fetchTime)}"
+                    wxFetchTime.visibility = View.VISIBLE
+                }
+            } else {
+                airsigmetTitleMsg.text = "Unknown technical error occurred."
             }
-            addRow( details, "Movement", sb.toString() );
         }
 
-        layout.addView( item, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
+        setFragmentContentShown(true)
     }
 
+    private fun showAirSigmetEntry(layout: LinearLayout, entry: AirSigmetEntry) {
+        AirsigmetDetailItemBinding.inflate(layoutInflater).apply {
+            airsigmetType.text = entry.type
+            wxRawAirsigmet.text = entry.rawText
+            airsigmetTime.text = TimeUtils.formatDateRange(activityBase, entry.fromTime, entry.toTime)
+
+            if (entry.hazardType?.isNotEmpty() == true) {
+                addRow(airsigmetDetails, "Type", entry.hazardType)
+            }
+
+            if (entry.hazardSeverity?.isNotEmpty() == true) {
+                addRow(airsigmetDetails, "Severity", entry.hazardSeverity)
+            }
+
+            if (entry.minAltitudeFeet < Int.Companion.MAX_VALUE
+                || entry.maxAltitudeFeet < Int.Companion.MAX_VALUE
+            ) {
+                addRow(
+                    airsigmetDetails, "Altitude", formatFeetRangeMsl(
+                        entry.minAltitudeFeet, entry.maxAltitudeFeet
+                    )
+                )
+            }
+
+            if (entry.movementDirDegrees < Int.Companion.MAX_VALUE) {
+                val sb = StringBuilder()
+                sb.append(
+                    String.format(
+                        "%s (%s)",
+                        formatDegrees(entry.movementDirDegrees),
+                        getCardinalDirection(entry.movementDirDegrees.toFloat())
+                    )
+                )
+                if (entry.movementSpeedKnots < Int.Companion.MAX_VALUE) {
+                    sb.append(String.format(Locale.US, " at %d knots", entry.movementSpeedKnots))
+                }
+                addRow(airsigmetDetails, "Movement", sb.toString())
+            }
+
+            layout.addView(root, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
+    }
 }
