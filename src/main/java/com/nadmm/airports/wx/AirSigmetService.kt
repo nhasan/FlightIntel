@@ -39,7 +39,7 @@ class AirSigmetService : NoaaService2("airsigmet", AIRSIGMET_CACHE_MAX_AGE) {
                     val type = intent.getStringExtra(TYPE)
                     if (type == TYPE_TEXT) {
                         getAirSigmetText(intent)
-                    } else if (type == TYPE_IMAGE) {
+                    } else if (type == TYPE_GRAPHIC) {
                         getAirSigmetImage(intent)
                     }
                 }

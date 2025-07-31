@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,7 +112,7 @@ abstract class NoaaService2(private val mName: String, private val mAge: Long) :
     }
 
     protected fun sendImageResultIntent(action: String?, code: String?, result: File) {
-        val intent = makeResultIntent(action, TYPE_IMAGE)
+        val intent = makeResultIntent(action, TYPE_GRAPHIC)
         intent.putExtra(IMAGE_CODE, code)
         if (result.exists()) {
             intent.putExtra(RESULT, result.getAbsolutePath())
@@ -190,7 +190,7 @@ abstract class NoaaService2(private val mName: String, private val mAge: Long) :
 
         const val TYPE: String = "TYPE"
         const val TYPE_TEXT: String = "TYPE_TEXT"
-        const val TYPE_IMAGE: String = "TYPE_IMAGE"
+        const val TYPE_GRAPHIC: String = "TYPE_GRAPHIC"
 
         const val ACTION_GET_METAR: String = "flightintel.intent.wx.action.GET_METAR"
         const val ACTION_CACHE_METAR: String = "flightintel.intent.wx.action.CACHE_METAR"

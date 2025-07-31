@@ -79,7 +79,7 @@ class TafFragment : WxFragmentBase() {
     ): View? {
         _binding = TafDetailViewBinding.inflate(inflater, container, false)
         binding.btnViewGraphic.setOnClickListener { v: View? ->
-            val intent = Intent(activity, TafMapActivity::class.java)
+            val intent = Intent(activity, TafGraphicActivity::class.java)
             startActivity(intent)
         }
         binding.btnViewGraphic.visibility = View.GONE

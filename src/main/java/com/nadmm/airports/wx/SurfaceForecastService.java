@@ -40,7 +40,7 @@ public class SurfaceForecastService extends NoaaService {
         String action = intent.getAction();
         if ( action.equals( ACTION_GET_GFA ) ) {
             String type = intent.getStringExtra( TYPE );
-            if ( type.equals( TYPE_IMAGE ) ) {
+            if ( type.equals(TYPE_GRAPHIC) ) {
                 String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );
 

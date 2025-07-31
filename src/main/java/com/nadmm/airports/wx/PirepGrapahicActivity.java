@@ -26,7 +26,7 @@ import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 
-public class PirepMapActivity extends ActivityBase {
+public class PirepGrapahicActivity extends ActivityBase {
 
     private static final String[] sTypeCodes = {
         "ice",

@@ -26,7 +26,7 @@ import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 
-public class MetarMapActivity extends ActivityBase {
+public class MetarGraphicActivity extends ActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {

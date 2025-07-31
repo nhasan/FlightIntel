@@ -41,7 +41,7 @@ class MetarService : NoaaService2(name, METAR_CACHE_MAX_AGE) {
                     val type = intent.getStringExtra(TYPE)
                     if (type == TYPE_TEXT) {
                         getMetarText(intent)
-                    } else if (type == TYPE_IMAGE) {
+                    } else if (type == TYPE_GRAPHIC) {
                         getMetarImage(intent)
                     }
                 }

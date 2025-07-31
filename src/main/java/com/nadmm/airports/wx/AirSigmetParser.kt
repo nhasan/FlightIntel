@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,11 +41,11 @@ class AirSigmetParser {
             val xmlReader = parser.xmlReader
             xmlReader.contentHandler = handler
             xmlReader.parse(input)
-        } catch (ignored: Exception) {
+        } catch (_: Exception) {
         }
     }
 
-    private inner class AirSigmetHandler constructor(private val airSigmet: AirSigmet) :
+    private inner class AirSigmetHandler(private val airSigmet: AirSigmet) :
         DefaultHandler() {
         private lateinit var entry: AirSigmetEntry
         private lateinit var point: AirSigmetPoint
@@ -60,16 +60,13 @@ class AirSigmetParser {
             uri: String, localName: String, qName: String,
             attributes: Attributes
         ) {
-            var attr: String?
             if (qName.equals("AIRSIGMET", ignoreCase = true)) {
                 entry = AirSigmetEntry()
             } else if (qName.equals("altitude", ignoreCase = true)) {
-                attr = attributes.getValue("min_ft_msl")
-                if (attr != null) {
+                attributes.getValue("min_ft_msl")?.let { attr ->
                     entry.minAltitudeFeet = attr.toInt()
                 }
-                attr = attributes.getValue("max_ft_msl")
-                if (attr != null) {
+                attributes.getValue("max_ft_msl")?.let { attr ->
                     entry.maxAltitudeFeet = attr.toInt()
                 }
             } else if (qName.equals("hazard", ignoreCase = true)) {
@@ -89,13 +86,13 @@ class AirSigmetParser {
                 try {
                     val instant = Instant.parse(text.toString())
                     entry.fromTime = instant.toEpochMilli()
-                } catch (ignored: DateTimeParseException) {
+                } catch (_: DateTimeParseException) {
                 }
             } else if (qName.equals("valid_time_to", ignoreCase = true)) {
                 try {
                     val instant = Instant.parse(text.toString())
                     entry.toTime = instant.toEpochMilli()
-                } catch (ignored: DateTimeParseException) {
+                } catch (_: DateTimeParseException) {
                 }
             } else if (qName.equals("airsigmet_type", ignoreCase = true)) {
                 entry.type = text.toString()

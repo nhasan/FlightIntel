@@ -32,16 +32,16 @@
     <screenName name="com.nadmm.airports.wx.WxDetailActivity" >
         Wx Details
     </screenName>
-    <screenName name="com.nadmm.airports.wx.MetarMapActivity" >
+    <screenName name="com.nadmm.airports.wx.MetarGraphicActivity" >
         METAR Graphics
     </screenName>
-    <screenName name="com.nadmm.airports.wx.TafMapActivity" >
+    <screenName name="com.nadmm.airports.wx.TafGraphicActivity" >
         TAF Graphics
     </screenName>
-    <screenName name="com.nadmm.airports.wx.PirepMapActivity" >
+    <screenName name="com.nadmm.airports.wx.PirepGrapahicActivity" >
         PIREP Graphics
     </screenName>
-    <screenName name="com.nadmm.airports.wx.AirSigmetMapActivity" >
+    <screenName name="com.nadmm.airports.wx.AirSigmetGraphicActivity" >
         AirSigmet Graphics
     </screenName>
     <screenName name="com.nadmm.airports.wx.NearbyWxActivity" >

@@ -138,7 +138,7 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
     @Override
     protected void handleBroadcast( Intent intent ) {
         String type = intent.getStringExtra( NoaaService.TYPE );
-        if ( type.equals( NoaaService.TYPE_IMAGE ) ) {
+        if ( type.equals( NoaaService.TYPE_GRAPHIC) ) {
             showWxMap( intent );
         }
     }
@@ -148,7 +148,7 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
 
         Intent service = getServiceIntent();
         service.setAction( mAction );
-        service.putExtra( NoaaService.TYPE, NoaaService.TYPE_IMAGE );
+        service.putExtra( NoaaService.TYPE, NoaaService.TYPE_GRAPHIC);
         service.putExtra( NoaaService.IMAGE_CODE, code );
         if ( mSpinner != null && mWxTypeCodes != null) {
             int pos = getSelectedItemPos( mSpinner );

@@ -39,7 +39,7 @@ public class IcingService extends NoaaService {
         String action = intent.getAction();
         if ( action.equals( ACTION_GET_ICING ) ) {
             String type = intent.getStringExtra( TYPE );
-            if ( type.equals( TYPE_IMAGE ) ) {
+            if ( type.equals(TYPE_GRAPHIC) ) {
                 String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );
                 String imageName = String.format( "%s_%s_sev.gif", imgType, code );

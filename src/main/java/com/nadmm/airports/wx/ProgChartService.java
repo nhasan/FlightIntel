@@ -41,7 +41,7 @@ public class ProgChartService extends NoaaService {
         String action = intent.getAction();
         if ( action.equals( ACTION_GET_PROGCHART ) ) {
             String type = intent.getStringExtra( TYPE );
-            if ( type.equals( TYPE_IMAGE ) ) {
+            if ( type.equals(TYPE_GRAPHIC) ) {
                 String code = intent.getStringExtra( IMAGE_CODE );
                 String imageName = String.format( PROGCHART_IMAGE_NAME, code );
                 File imageFile = getDataFile( imageName );

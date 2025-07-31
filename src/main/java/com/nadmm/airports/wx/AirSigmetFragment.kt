@@ -67,7 +67,7 @@ class AirSigmetFragment : WxFragmentBase() {
     ): View? {
         _binding = AirsigmetDetailViewBinding.inflate(inflater, container, false)
         binding.btnViewGraphic.setOnClickListener { v: View? ->
-            val intent = Intent(activity, AirSigmetMapActivity::class.java)
+            val intent = Intent(activity, AirSigmetGraphicActivity::class.java)
             startActivity(intent)
         }
 

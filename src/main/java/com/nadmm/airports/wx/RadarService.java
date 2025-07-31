@@ -41,7 +41,7 @@ public class RadarService extends NoaaService {
         String action = intent.getAction();
         if ( action.equals( ACTION_GET_RADAR ) ) {
             String type = intent.getStringExtra( TYPE );
-            if ( type.equals( TYPE_IMAGE ) ) {
+            if ( type.equals(TYPE_GRAPHIC) ) {
                 String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );
                 String imageName = String.format( Locale.US, "rad_%s_%s.gif",

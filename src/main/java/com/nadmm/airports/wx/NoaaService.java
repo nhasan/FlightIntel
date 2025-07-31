@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ public abstract class NoaaService extends IntentService {
 
     public static final String TYPE = "TYPE";
     public static final String TYPE_TEXT = "TYPE_TEXT";
-    public static final String TYPE_IMAGE = "TYPE_IMAGE";
+    public static final String TYPE_GRAPHIC = "TYPE_GRAPHIC";
 
     public static final String ACTION_GET_METAR = "flightintel.intent.wx.action.GET_METAR";
     public static final String ACTION_CACHE_METAR = "flightintel.intent.wx.action.CACHE_METAR";
@@ -145,7 +145,7 @@ public abstract class NoaaService extends IntentService {
     }
 
     protected void sendImageResultIntent( String action, String code, File result ) {
-        Intent intent = makeResultIntent( action, TYPE_IMAGE );
+        Intent intent = makeResultIntent( action, TYPE_GRAPHIC);
         intent.putExtra( IMAGE_CODE, code );
         if ( result.exists() ) {
             intent.putExtra( RESULT, result.getAbsolutePath() );

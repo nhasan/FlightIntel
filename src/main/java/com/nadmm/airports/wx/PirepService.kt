@@ -74,7 +74,7 @@ class PirepService : NoaaService("pirep", PIREP_CACHE_MAX_AGE) {
 
                 // Broadcast the result
                 sendSerializableResultIntent(action, stationId, pirep)
-            } else if (type == TYPE_IMAGE) {
+            } else if (type == TYPE_GRAPHIC) {
                 val imgType = intent.getStringExtra(IMAGE_TYPE)
                 val code = intent.getStringExtra(IMAGE_CODE)
                 val imageName = String.format("pireps_%s_%s.gif", imgType, code)

@@ -74,7 +74,7 @@ public class PirepFragment extends WxFragmentBase {
         View view = inflater.inflate( R.layout.pirep_detail_view, container, false );
         Button btnGraphic = view.findViewById( R.id.btnViewGraphic );
         btnGraphic.setOnClickListener( v -> {
-            Intent intent = new Intent( getActivity(), PirepMapActivity.class );
+            Intent intent = new Intent( getActivity(), PirepGrapahicActivity.class );
             startActivity( intent );
         } );
         btnGraphic.setVisibility( View.GONE );

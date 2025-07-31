@@ -26,7 +26,7 @@ import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 
-public class TafMapActivity extends ActivityBase {
+public class TafGraphicActivity extends ActivityBase {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
