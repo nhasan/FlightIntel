@@ -67,6 +67,9 @@ class MetarFragment : WxFragmentBase() {
     private var _binding: MetarDetailViewBinding? = null
     private val binding get() = _binding!!
 
+    override val product: String?
+        get() = "metar"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupBroadcastFilter(action)
@@ -106,10 +109,6 @@ class MetarFragment : WxFragmentBase() {
             showMetar(intent)
             isRefreshing = false
         }
-    }
-
-    override fun getProduct(): String {
-        return "metar"
     }
 
     override fun isRefreshable(): Boolean {

@@ -21,7 +21,7 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
-public class SatelliteFragment extends WxMapFragmentBase {
+public class SatelliteFragment extends WxGraphicFragmentBase {
 
     private static final String[] sSatTypeCodes = new String[]{
             "vis",

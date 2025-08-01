@@ -21,7 +21,7 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
-public class IcingFragment extends WxMapFragmentBase {
+public class IcingFragment extends WxGraphicFragmentBase {
 
     private static final String[] sTypeCodes = {
         "F00_cip",

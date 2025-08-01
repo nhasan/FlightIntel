@@ -55,6 +55,9 @@ class AirSigmetFragment : WxFragmentBase() {
     private var _binding: AirsigmetDetailViewBinding? = null
     private val binding get() = _binding!!
 
+    override val product: String?
+        get() = "airsigmet"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -91,10 +94,6 @@ class AirSigmetFragment : WxFragmentBase() {
             showAirSigmetText(intent)
             isRefreshing = false
         }
-    }
-
-    override fun getProduct(): String {
-        return "airsigmet"
     }
 
     override fun isRefreshable(): Boolean {

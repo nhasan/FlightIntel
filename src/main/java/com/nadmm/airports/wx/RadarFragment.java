@@ -21,7 +21,7 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
-public class RadarFragment extends WxMapFragmentBase {
+public class RadarFragment extends WxGraphicFragmentBase {
 
     private static final String[] sTypeCodes = new String[]{
             "cref",

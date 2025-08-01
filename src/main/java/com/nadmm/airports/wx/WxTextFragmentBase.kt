@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,164 +16,135 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import com.google.android.material.textfield.TextInputLayout
+import com.nadmm.airports.R
+import com.nadmm.airports.databinding.ListItemText1Binding
+import com.nadmm.airports.databinding.WxMapDetailViewBinding
+import com.nadmm.airports.utils.TextFileViewActivity
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+abstract class WxTextFragmentBase : WxFragmentBase {
+    private val mAction: String
+    private val mWxAreas: Map<String, String>
+    private val mWxTypes: Map<String, String>
+    private var mSpinner: TextInputLayout? = null
+    private var mPendingRow: View? = null
+    private var _binding: WxMapDetailViewBinding? = null
+    private val binding get() = _binding!!
 
-import com.google.android.material.textfield.TextInputLayout;
-import com.nadmm.airports.R;
-import com.nadmm.airports.utils.TextFileViewActivity;
-
-public abstract class WxTextFragmentBase extends WxFragmentBase {
-
-    private final String mAction;
-    private final String[] mWxTypeCodes;
-    private final String[] mWxTypeNames;
-    private final String[] mWxAreaCodes;
-    private final String[] mWxAreaNames;
-    private TextInputLayout mSpinner;
-    private String mHelpText;
-
-    private View mPendingRow;
-
-    public WxTextFragmentBase( String action, String[] areaCodes, String[] areaNames ) {
-        mAction = action;
-        mWxAreaCodes = areaCodes;
-        mWxAreaNames = areaNames;
-        mWxTypeCodes = null;
-        mWxTypeNames = null;
+    constructor(action: String, areas: Map<String, String>, types: Map<String, String> = mapOf()) {
+        mAction = action
+        mWxAreas = areas
+        mWxTypes = types
     }
 
-    public WxTextFragmentBase( String action, String[] areaCodes, String[] areaNames,
-                               String[] typeCodes, String[] typeNames) {
-        mAction = action;
-        mWxAreaCodes = areaCodes;
-        mWxAreaNames = areaNames;
-        mWxTypeCodes = typeCodes;
-        mWxTypeNames = typeNames;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setupBroadcastFilter(mAction)
     }
 
-    @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        setupBroadcastFilter( mAction );
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = WxMapDetailViewBinding.inflate(inflater)
+        return createContentView(binding.root)
     }
 
-    @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState ) {
-        View view = inflate( R.layout.wx_map_detail_view );
-        return createContentView( view );
-    }
+    @SuppressLint("SetTextI18n")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    @Override
-    public void onViewCreated( View view, Bundle savedInstanceState ) {
-        super.onViewCreated( view, savedInstanceState );
+        binding.apply {
+            wxMapLabel.text = "Select Area"
+            wxMapLabel.visibility = View.VISIBLE
 
-        TextView tv = view.findViewById( R.id.wx_map_label );
-        tv.setText( "Select Area" );
-        tv.setVisibility( View.VISIBLE );
-
-        OnClickListener listener = v -> {
-            if ( mPendingRow == null ) {
-                mPendingRow = v;
-                String code = (String) v.getTag();
-                requestWxText( code );
+            val listener = View.OnClickListener { v: View? ->
+                if (mPendingRow == null && v != null) {
+                    mPendingRow = v
+                    val code = v.tag as String
+                    requestWxText(code)
+                }
             }
-        };
 
-        LinearLayout layout = view.findViewById( R.id.wx_map_layout );
-        for ( int i = 0; i < mWxAreaNames.length; ++i ) {
-            View row = addWxRow( layout, mWxAreaNames[ i ], mWxAreaCodes[ i ] );
-            row.setOnClickListener( listener );
-        }
-
-        if ( mHelpText != null && mHelpText.length() > 0 ) {
-            tv = view.findViewById( R.id.help_text );
-            tv.setText( mHelpText );
-            tv.setVisibility( View.VISIBLE );
-        }
-
-        if ( mWxTypeCodes != null && mWxTypeNames != null ) {
-            tv = view.findViewById( R.id.wx_map_type_label );
-            tv.setVisibility( View.VISIBLE );
-            layout = view.findViewById( R.id.wx_map_type_layout );
-            layout.setVisibility( View.VISIBLE );
-            mSpinner = view.findViewById( R.id.map_type );
-            ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
-                    R.layout.list_item, mWxTypeNames );
-            AutoCompleteTextView textView = getAutoCompleteTextView( mSpinner );
-            textView.setAdapter( adapter );
-            textView.setText( mWxTypeNames[0], false);
-        }
-
-        setFragmentContentShown( true );
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        mPendingRow = null;
-    }
-
-    @Override
-    protected void handleBroadcast( Intent intent ) {
-        if ( mPendingRow != null ) {
-            TextView tv = mPendingRow.findViewById( R.id.text );
-            String label = tv.getText().toString();
-            String path = intent.getStringExtra( NoaaService.RESULT );
-            Intent viewer = new Intent( getActivity(), TextFileViewActivity.class );
-            viewer.putExtra( TextFileViewActivity.FILE_PATH, path );
-            viewer.putExtra( TextFileViewActivity.TITLE_TEXT, getTitle() );
-            viewer.putExtra( TextFileViewActivity.LABEL_TEXT, label );
-            if ( getActivity() != null ) {
-                getActivity().startActivity( viewer );
+            for (area in mWxAreas) {
+                val row = addWxRow(wxMapLayout, area.value, area.key)
+                row.setOnClickListener(listener)
             }
-            setProgressBarVisible( false );
-            mPendingRow = null;
+
+            if (helpText.isNotEmpty()) {
+                wxHelpText.text = helpText
+                wxHelpText.visibility = View.VISIBLE
+            }
+
+            if (mWxTypes.isNotEmpty()) {
+                wxMapTypeLabel.visibility = View.VISIBLE
+                wxMapTypeLayout.visibility = View.VISIBLE
+                mSpinner = wxMapType
+                val adapter = ArrayAdapter(
+                    requireActivity(),
+                    R.layout.list_item, mWxTypes.values.toTypedArray()
+                )
+                val textView = getAutoCompleteTextView(mSpinner!!)
+                textView?.setAdapter<ArrayAdapter<String?>?>(adapter)
+                textView?.setText(mWxTypes.keys.first(), false)
+            }
+        }
+
+        setFragmentContentShown(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        mPendingRow = null
+    }
+
+    override fun handleBroadcast(intent: Intent) {
+        if (mPendingRow != null && intent.action == mAction) {
+            val item = ListItemText1Binding.bind(mPendingRow!!)
+            val label = item.text.text.toString()
+            val path = intent.getStringExtra(NoaaService.RESULT)
+            val viewer = Intent(activity, TextFileViewActivity::class.java)
+            viewer.putExtra(TextFileViewActivity.FILE_PATH, path)
+            viewer.putExtra(TextFileViewActivity.TITLE_TEXT, title)
+            viewer.putExtra(TextFileViewActivity.LABEL_TEXT, label)
+            activity?.startActivity(viewer)
+            setProgressBarVisible(false)
+            mPendingRow = null
         }
     }
 
-    private void requestWxText( String code ) {
-        setProgressBarVisible( true );
+    private fun requestWxText(code: String?) {
+        setProgressBarVisible(true)
 
-        Intent service = getServiceIntent();
-        service.setAction( mAction );
-        service.putExtra( NoaaService.TEXT_CODE, code );
-        if ( mSpinner != null && mWxTypeCodes != null ) {
-            int pos = getSelectedItemPos( mSpinner );
-            service.putExtra( NoaaService.TEXT_TYPE, mWxTypeCodes[ pos ] );
+        val service = this.serviceIntent
+        service.setAction(mAction)
+        service.putExtra(NoaaService.TEXT_CODE, code)
+        if (mSpinner != null && mWxTypes.isNotEmpty()) {
+            val code = getSelectedItemText(mSpinner!!)
+            service.putExtra(NoaaService.TEXT_TYPE, code)
         }
-        if ( getActivity() != null ) {
-            getActivity().startService( service );
-        }
+        activity?.startService(service)
     }
 
-    private void setProgressBarVisible( boolean visible ) {
-        if ( mPendingRow != null ) {
-            View view = mPendingRow.findViewById( R.id.progress );
-            view.setVisibility( visible? View.VISIBLE : View.INVISIBLE );
+    private fun setProgressBarVisible(visible: Boolean) {
+        if (mPendingRow != null) {
+            val view = mPendingRow!!.findViewById<View>(R.id.progress)
+            view.visibility = if (visible) View.VISIBLE else View.INVISIBLE
         }
     }
 
-    protected void setHelpText( String text ) {
-        mHelpText = text;
-    }
-
-    protected abstract String getTitle();
-
-    protected abstract Intent getServiceIntent();
-
+    protected abstract val title: String
+    protected abstract val serviceIntent: Intent
+    protected abstract val helpText: String
 }

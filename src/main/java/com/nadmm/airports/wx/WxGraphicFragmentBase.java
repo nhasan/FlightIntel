@@ -34,7 +34,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.nadmm.airports.ImageViewActivity;
 import com.nadmm.airports.R;
 
-public abstract class WxMapFragmentBase extends WxFragmentBase {
+public abstract class WxGraphicFragmentBase extends WxFragmentBase {
 
     private final String mAction;
     private final String[] mWxTypeCodes;
@@ -48,7 +48,7 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
     private View mPendingRow;
     private TextInputLayout mSpinner;
 
-    public WxMapFragmentBase( String action, String[] mapCodes, String[] mapNames ) {
+    public WxGraphicFragmentBase(String action, String[] mapCodes, String[] mapNames ) {
         mAction = action;
         mWxMapCodes = mapCodes;
         mWxMapNames = mapNames;
@@ -56,8 +56,8 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
         mWxTypeNames = null;
     }
 
-    public WxMapFragmentBase( String action, String[] mapCodes, String[] mapNames,
-            String[] typeCodes, String[] typeNames ) {
+    public WxGraphicFragmentBase(String action, String[] mapCodes, String[] mapNames,
+                                 String[] typeCodes, String[] typeNames ) {
         mAction = action;
         mWxMapCodes = mapCodes;
         mWxMapNames = mapNames;
@@ -90,7 +90,7 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
         }
 
         if ( mHelpText != null && mHelpText.length() > 0 ) {
-            TextView tv = view.findViewById( R.id.help_text );
+            TextView tv = view.findViewById( R.id.wx_help_text);
             tv.setText( mHelpText );
             tv.setVisibility( View.VISIBLE );
         }
@@ -117,7 +117,7 @@ public abstract class WxMapFragmentBase extends WxFragmentBase {
             }
             layout = view.findViewById( R.id.wx_map_type_layout );
             layout.setVisibility( View.VISIBLE );
-            mSpinner = view.findViewById( R.id.map_type );
+            mSpinner = view.findViewById( R.id.wx_map_type);
             ArrayAdapter<String> adapter = new ArrayAdapter<>( getActivity(),
                     R.layout.list_item, mWxTypeNames );
             AutoCompleteTextView textView = getAutoCompleteTextView( mSpinner );

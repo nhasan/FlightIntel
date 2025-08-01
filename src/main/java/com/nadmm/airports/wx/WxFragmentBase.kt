@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,101 +16,93 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Bundle
+import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.LinearLayout
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.android.material.textfield.TextInputLayout
+import com.nadmm.airports.FragmentBase
+import com.nadmm.airports.utils.UiUtils
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.LinearLayout;
+abstract class WxFragmentBase : FragmentBase() {
+    private val filter = IntentFilter()
+    private var mReceiver: BroadcastReceiver? = null
+    protected abstract val product: String?
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import com.google.android.material.textfield.TextInputLayout;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.utils.UiUtils;
-
-public abstract class WxFragmentBase extends FragmentBase {
-    private IntentFilter mFilter;
-    private BroadcastReceiver mReceiver;
-
-    @Override
-    public void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-        setHasOptionsMenu( true );
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    public override fun onResume() {
+        super.onResume()
 
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.registerReceiver( mReceiver, mFilter );
+        val bm = LocalBroadcastManager.getInstance(requireActivity())
+        bm.registerReceiver(mReceiver!!, filter)
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
+    public override fun onPause() {
+        super.onPause()
 
-        LocalBroadcastManager bm = LocalBroadcastManager.getInstance( getActivity() );
-        bm.unregisterReceiver( mReceiver );
+        val bm = LocalBroadcastManager.getInstance(requireActivity())
+        bm.unregisterReceiver(mReceiver!!)
     }
 
-    protected void setupBroadcastFilter( String action ) {
-        mFilter = new IntentFilter();
-        mFilter.addAction( action );
+    protected fun setupBroadcastFilter(action: String) {
+        filter.addAction(action)
 
-        mReceiver = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive( Context context, Intent intent ) {
-                String action = intent.getAction();
-                if ( action.equals( mFilter.getAction( 0 ) ) ) {
-                    handleBroadcast( intent );
+        mReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent) {
+                if (filter.matchAction(intent.action)) {
+                    handleBroadcast(intent)
                 }
             }
-        };
+        }
     }
 
-    protected View addWxRow( LinearLayout layout, String label, String code ) {
-        View row = addProgressRow( layout, label );
-        row.setTag( code );
-        int background = UiUtils.getSelectableItemBackgroundResource( getActivity() );
-        row.setBackgroundResource( background );
-        return row;
+    protected fun addWxRow(layout: LinearLayout, label: String, code: String?): View {
+        val row = addProgressRow(layout, label)
+        row.tag = code
+        val background = UiUtils.getSelectableItemBackgroundResource(requireActivity())
+        row.setBackgroundResource(background)
+        return row
     }
 
-    protected AutoCompleteTextView getAutoCompleteTextView( TextInputLayout textInputLayout) {
-        return (AutoCompleteTextView) textInputLayout.getEditText();
+    protected fun getAutoCompleteTextView(textInputLayout: TextInputLayout): AutoCompleteTextView? {
+        return textInputLayout.getEditText() as AutoCompleteTextView?
     }
 
-    protected int getSelectedItemPos( TextInputLayout textInputLayout )
-    {
-        AutoCompleteTextView textView = getAutoCompleteTextView( textInputLayout );
-        if ( textView == null ) return -1;
+    protected fun getSelectedItemPos(textInputLayout: TextInputLayout): Int {
+        val textView = getAutoCompleteTextView(textInputLayout)
+        if (textView == null) return -1
 
-        ArrayAdapter<?> adapter = (ArrayAdapter<?>) textView.getAdapter();
-        if ( adapter == null ) return -1;
+        val adapter = textView.adapter as ArrayAdapter<*>?
+        if (adapter == null) return -1
 
-        String text = textView.getText().toString();
-        if ( text != null && !text.isEmpty() ) {
-            int count = adapter.getCount();
-            for ( int i = 0; i < count; ++i ) {
-                Object o = adapter.getItem( i );
-                if ( o.toString().equals( text ) ) return i;
+        val text = textView.getText().toString()
+        if (!text.isEmpty()) {
+            val count = adapter.count
+            for (i in 0..<count) {
+                val o: Any? = adapter.getItem(i)
+                if (o.toString() == text) return i
             }
         }
-        return -1;
+        return -1
     }
 
-    protected void handleBroadcast( Intent intent ) {
+    protected fun getSelectedItemText(textInputLayout: TextInputLayout): String {
+        val textView = getAutoCompleteTextView(textInputLayout)
+        return textView?.getText().toString()
     }
 
-    protected abstract String getProduct();
-
+    protected open fun handleBroadcast(intent: Intent) {
+    }
 }

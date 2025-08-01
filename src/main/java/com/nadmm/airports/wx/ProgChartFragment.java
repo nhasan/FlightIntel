@@ -21,7 +21,7 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
-public class ProgChartFragment extends WxMapFragmentBase {
+public class ProgChartFragment extends WxGraphicFragmentBase {
 
     private static final String[] sProgChartCodes = new String[] {
             "F000_wpc_sfc",

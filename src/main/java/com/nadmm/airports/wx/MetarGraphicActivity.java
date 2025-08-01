@@ -35,7 +35,7 @@ public class MetarGraphicActivity extends ActivityBase {
         setContentView( R.layout.fragment_activity_layout_no_toolbar );
 
         Bundle args = getIntent().getExtras();
-        addFragment( MetarMapFragment.class, args );
+        addFragment( MetarGraphicFragment.class, args );
     }
 
     @Override
@@ -43,9 +43,9 @@ public class MetarGraphicActivity extends ActivityBase {
         // Do not call the parent implementation
     }
 
-    public static class MetarMapFragment extends WxMapFragmentBase {
+    public static class MetarGraphicFragment extends WxGraphicFragmentBase {
 
-        public MetarMapFragment() {
+        public MetarGraphicFragment() {
             super( NoaaService.ACTION_GET_METAR, WxRegions.sWxRegionCodes,
                     WxRegions.sWxRegionNames );
             setLabel( "Select Region" );

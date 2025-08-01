@@ -22,7 +22,7 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
-public class SigWxFragment extends WxMapFragmentBase {
+public class SigWxFragment extends WxGraphicFragmentBase {
 
     private static final String[] sSigWxCodes = new String[] {
         "12_0",

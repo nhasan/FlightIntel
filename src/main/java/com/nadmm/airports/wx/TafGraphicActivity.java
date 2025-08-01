@@ -35,7 +35,7 @@ public class TafGraphicActivity extends ActivityBase {
         setContentView( R.layout.fragment_activity_layout_no_toolbar );
 
         Bundle args = getIntent().getExtras();
-        addFragment( TafMapFragment.class, args );
+        addFragment( TafGraphicFragment.class, args );
     }
 
     @Override
@@ -43,7 +43,7 @@ public class TafGraphicActivity extends ActivityBase {
         // Do not call the parent implementation
     }
 
-    public static class TafMapFragment extends WxMapFragmentBase {
+    public static class TafGraphicFragment extends WxGraphicFragmentBase {
 
         private static final String[] sTypeCodes = new String[]{
                 "F01",
@@ -97,7 +97,7 @@ public class TafGraphicActivity extends ActivityBase {
                 "23 Hours",
         };
 
-        public TafMapFragment() {
+        public TafGraphicFragment() {
             super( NoaaService.ACTION_GET_TAF,
                     WxRegions.sWxRegionCodes, WxRegions.sWxRegionNames,
                     sTypeCodes, sTypeNames );

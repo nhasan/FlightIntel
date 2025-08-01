@@ -69,7 +69,7 @@ public class PirepGrapahicActivity extends ActivityBase {
         setContentView( R.layout.fragment_activity_layout_no_toolbar );
 
         Bundle args = getIntent().getExtras();
-        addFragment( PirepMapFragment.class, args );
+        addFragment( PirepGraphicFragment.class, args );
     }
 
     @Override
@@ -77,9 +77,9 @@ public class PirepGrapahicActivity extends ActivityBase {
         // Do not call the parent implementation
     }
 
-    public static class PirepMapFragment extends WxMapFragmentBase {
+    public static class PirepGraphicFragment extends WxGraphicFragmentBase {
 
-        public PirepMapFragment() {
+        public PirepGraphicFragment() {
             super( NoaaService.ACTION_GET_PIREP,
                     sPirepCodes, sPirepNames, sTypeCodes, sTypeNames );
             setLabel( "Select Region" );

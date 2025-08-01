@@ -31,14 +31,19 @@ class AirSigmetGraphicActivity : ActivityBase() {
         setContentView(R.layout.fragment_activity_layout_no_toolbar)
 
         val args = intent.extras
-        addFragment(AirSigmetMapFragment::class.java, args)
+        addFragment(AirSigmetGraphicFragment::class.java, args)
     }
 
     override fun onFragmentStarted(fragment: FragmentBase) {
         // Do not call the parent implementation
     }
 
-    class AirSigmetMapFragment : WxMapFragmentBase(NoaaService.ACTION_GET_AIRSIGMET, sAirSigmetCodes, sAirSigmetNames) {
+    class AirSigmetGraphicFragment : WxGraphicFragmentBase(
+        NoaaService.ACTION_GET_AIRSIGMET, sAirSigmetCodes, sAirSigmetNames
+    ) {
+        override val product: String?
+            get() = "airsigmetgraphic"
+
         init {
             setLabel("Select Category")
         }
@@ -47,26 +52,23 @@ class AirSigmetGraphicActivity : ActivityBase() {
             return Intent(activity, AirSigmetService::class.java)
         }
 
-        override fun getProduct(): String {
-            return "airsigmetmap"
+
+        companion object {
+            private val sAirSigmetCodes: Array<String> = arrayOf(
+                "all",
+                "cb",
+                "ic",
+                "if",
+                "tb"
+            )
+
+            private val sAirSigmetNames: Array<String> = arrayOf(
+                "All active SIGMETs",
+                "Convective SIGMETs and Outlooks",
+                "Icing SIGMETs",
+                "IFR SIGMETs",
+                "Turbulence SIGMETs"
+            )
         }
-    }
-
-    companion object {
-        private val sAirSigmetCodes: Array<String> = arrayOf(
-            "all",
-            "cb",
-            "ic",
-            "if",
-            "tb"
-        )
-
-        private val sAirSigmetNames: Array<String> = arrayOf(
-            "All active SIGMETs",
-            "Convective SIGMETs and Outlooks",
-            "Icing SIGMETs",
-            "IFR SIGMETs",
-            "Turbulence SIGMETs"
-        )
     }
 }

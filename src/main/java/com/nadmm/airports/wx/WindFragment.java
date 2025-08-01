@@ -21,7 +21,7 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
-public class WindFragment extends WxMapFragmentBase {
+public class WindFragment extends WxGraphicFragmentBase {
 
     private static final String[] sTypeCodes = {
         "wind",

@@ -22,7 +22,7 @@ package com.nadmm.airports.wx;
 import android.content.Intent;
 
 
-public class CvaFragment extends WxMapFragmentBase {
+public class CvaFragment extends WxGraphicFragmentBase {
 
     private static final String[] sTypeCodes = {
         "fltcat",

@@ -21,57 +21,45 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+
 public class WindsAloftFragment extends WxTextFragmentBase {
 
-    private static final String[] mTypeCodes = {
-            "06",
-            "12",
-            "24"
-    };
+    private static final Map<String, String> mTypes = Map.of(
+            "06", "6 Hour",
+            "12", "12 Hour",
+            "24", "24 Hour"
+    );
 
-    private static final String[] mTypeNames = {
-            "6 Hour",
-            "12 Hour",
-            "24 Hour"
-    };
-
-    private static final String[] mAreaCodes = {
-            "us",
-            "alaska",
-            "bos",
-            "canada",
-            "chi",
-            "dfw",
-            "hawaii",
-            "mia",
-            "pacific",
-            "sfo",
-            "slc",
-    };
-
-    private static final String[] mAreaNames = {
-            "Continental US",
-            "Alaska",
-            "Boston",
-            "Canada",
-            "Chicago",
-            "Dallas/Fort Worth",
-            "Hawaii",
-            "Miami",
-            "Pacific",
-            "San Francisco",
-            "Salt Lake City",
-    };
+    private static final Map<String, String> mAreas = Map.ofEntries(
+            Map.entry("us", "Continental US"),
+            Map.entry("alaska", "Alaska"),
+            Map.entry("bos", "boston"),
+            Map.entry("canada", "Canada"),
+            Map.entry("chi", "Chicago"),
+            Map.entry("dfw", "Dallas/Fort Worth"),
+            Map.entry("hawaii", "Hawaii"),
+            Map.entry("mia", "Miami"),
+            Map.entry("pacific", "Pacific"),
+            Map.entry("sfo", "San Francisco"),
+            Map.entry("slc", "Salt Lake City")
+    );
 
     public WindsAloftFragment() {
-        super( NoaaService.ACTION_GET_FB, mAreaCodes, mAreaNames, mTypeCodes, mTypeNames );
+        super( NoaaService.ACTION_GET_FB, mAreas, mTypes );
     }
 
+    @NonNull
     @Override
     protected String getTitle() {
         return "Winds Aloft";
     }
 
+    @NonNull
     @Override
     protected Intent getServiceIntent() {
         return new Intent( getActivity(), WindsAloftService.class );
@@ -80,5 +68,10 @@ public class WindsAloftFragment extends WxTextFragmentBase {
     @Override
     protected String getProduct() {
         return "windsaloft";
+    }
+
+    @Override
+    protected @NotNull String getHelpText() {
+        return "";
     }
 }

@@ -21,7 +21,7 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
-public class SurfaceForecatFragment extends WxMapFragmentBase {
+public class SurfaceForecatFragment extends WxGraphicFragmentBase {
 
     private static final String[] sFcastCodes = new String[]{
             "F03_gfa_clouds",

@@ -60,12 +60,14 @@ import java.util.Locale
 
 class TafFragment : WxFragmentBase() {
     private val mAction = NoaaService.ACTION_GET_TAF
-
     private var mStationId: String? = null
     private var mLastForecast: Forecast? = null
 
     private var _binding: TafDetailViewBinding? = null
     private val binding get() = _binding!!
+
+    override val product: String?
+        get() = "airsigmetgraphic"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,10 +109,6 @@ class TafFragment : WxFragmentBase() {
             showTaf(intent)
             isRefreshing = false
         }
-    }
-
-    override fun getProduct(): String {
-        return "taf"
     }
 
     override fun isRefreshable(): Boolean {
