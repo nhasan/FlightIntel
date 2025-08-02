@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,44 +21,29 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
+import java.util.Map;
+
 public class ProgChartFragment extends WxGraphicFragmentBase {
 
-    private static final String[] sProgChartCodes = new String[] {
-            "F000_wpc_sfc",
-            "F006_wpc_prog",
-            "F012_wpc_prog",
-            "F018_wpc_prog",
-            "F024_wpc_prog",
-            "F030_wpc_prog",
-            "F036_wpc_prog",
-            "F048_wpc_prog",
-            "F060_wpc_prog",
-            "F072_wpc_prog",
-            "F096_wpc_prog",
-            "F120_wpc_prog",
-            "F144_wpc_prog",
-            "F168_wpc_prog"
-    };
-
-    private static final String[] sProgChartNames = new String[] {
-            "Current Surface Analysis",
-            "6 hr Surface Prognosis",
-            "12 hr Surface Prognosis",
-            "18 hr Surface Prognosis",
-            "24 hr Surface Prognosis",
-            "30 hr Surface Prognosis",
-            "36 hr Surface Prognosis",
-            "48 hr Surface Prognosis",
-            "60 hr Surface Prognosis",
-            "3 day Surface Prognosis",
-            "4 day Surface Prognosis",
-            "5 day Surface Prognosis",
-            "6 day Surface Prognosis",
-            "7 day Surface Prognosis"
-    };
+    private static final Map<String, String> ProgChartCodes = Map.ofEntries(
+            Map.entry("F000_wpc_sfc", "Current Surface Analysis"),
+            Map.entry("F006_wpc_prog", "6 hr Surface Prognosis"),
+            Map.entry("F012_wpc_prog", "12 hr Surface Prognosis"),
+            Map.entry("F018_wpc_prog", "18 hr Surface Prognosis"),
+            Map.entry("F024_wpc_prog", "24 hr Surface Prognosis"),
+            Map.entry("F030_wpc_prog", "30 hr Surface Prognosis"),
+            Map.entry("F036_wpc_prog", "36 hr Surface Prognosis"),
+            Map.entry("F048_wpc_prog", "48 hr Surface Prognosis"),
+            Map.entry("F060_wpc_prog", "60 hr Surface Prognosis"),
+            Map.entry("F072_wpc_prog", "3 day Surface Prognosis"),
+            Map.entry("F096_wpc_prog", "4 day Surface Prognosis"),
+            Map.entry("F120_wpc_prog", "5 day Surface Prognosis"),
+            Map.entry("F144_wpc_prog", "6 day Surface Prognosis"),
+            Map.entry("F168_wpc_prog", "7 day Surface Prognosis")
+    );
 
     public ProgChartFragment() {
-        super( NoaaService.ACTION_GET_PROGCHART, sProgChartCodes, sProgChartNames );
+        super( NoaaService.ACTION_GET_PROGCHART, ProgChartCodes );
         setTitle( "Prognosis Charts" );
         setLabel( "Select Prognosis Chart" );
     }

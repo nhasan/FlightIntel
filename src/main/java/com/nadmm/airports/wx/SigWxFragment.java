@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,34 +20,25 @@
 
 package com.nadmm.airports.wx;
 
+import java.util.Map;
+
 import android.content.Intent;
 
 public class SigWxFragment extends WxGraphicFragmentBase {
 
-    private static final String[] sSigWxCodes = new String[] {
-        "12_0",
-        "18_0",
-        "00_0",
-        "06_0",
-        "00_1",
-        "06_1",
-        "12_1",
-        "18_1"
-    };
-
-    private static final String[] sSigWxNames = new String[] {
-        "12 hr Prognosis (Vaild 0000 UTC)",
-        "12 hr Prognosis (Valid 0600 UTC)",
-        "12 hr Prognosis (Valid 1200 UTC)",
-        "12 hr Prognosis (Valid 1800 UTC)",
-        "24 hr Prognosis (Valid 0000 UTC)",
-        "24 hr Prognosis (Valid 0600 UTC)",
-        "24 hr Prognosis (Valid 1200 UTC)",
-        "24 hr Prognosis (Valid 1800 UTC)",
-    };
+    private static final Map<String, String> SigWxMap = Map.of(
+        "12_0", "12 hr Prognosis (Vaild 0000 UTC)",
+        "18_0", "12 hr Prognosis (Valid 0600 UTC)",
+        "00_0", "12 hr Prognosis (Valid 1200 UTC)",
+        "06_0", "12 hr Prognosis (Valid 1800 UTC)",
+        "00_1", "24 hr Prognosis (Valid 0000 UTC)",
+        "06_1", "24 hr Prognosis (Valid 0600 UTC)",
+        "12_1", "24 hr Prognosis (Valid 1200 UTC)",
+        "18_1", "24 hr Prognosis (Valid 1800 UTC)"
+    );
 
     public SigWxFragment() {
-        super( NoaaService.ACTION_GET_SIGWX, sSigWxCodes, sSigWxNames );
+        super( NoaaService.ACTION_GET_SIGWX, SigWxMap);
         setTitle( "Significant Wx");
         setLabel( "Select SigWx Image" );
     }

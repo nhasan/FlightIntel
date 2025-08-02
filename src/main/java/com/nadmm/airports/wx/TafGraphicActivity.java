@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@ import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 
+import java.util.Map;
+
 public class TafGraphicActivity extends ActivityBase {
 
     @Override
@@ -45,63 +47,26 @@ public class TafGraphicActivity extends ActivityBase {
 
     public static class TafGraphicFragment extends WxGraphicFragmentBase {
 
-        private static final String[] sTypeCodes = new String[]{
-                "F01",
-                "F02",
-                "F03",
-                "F04",
-                "F05",
-                "F06",
-                "F07",
-                "F08",
-                "F09",
-                "F10",
-                "F11",
-                "F12",
-                "F13",
-                "F14",
-                "F15",
-                "F16",
-                "F17",
-                "F18",
-                "F19",
-                "F20",
-                "F21",
-                "F22",
-                "F23",
-        };
+        private static final Map<String, String> Periods = Map.ofEntries(
+                Map.entry("F01", "1 Hour"), Map.entry("F02", "2 Hours"),
+                Map.entry("F03", "3 Hours"), Map.entry("F04", "4 Hours"),
+                Map.entry("F05", "5 Hours"), Map.entry("F06", "6 Hours"),
+                Map.entry("F07", "7 Hours"), Map.entry("F08", "8 Hours"),
+                Map.entry("F09", "9 Hours"), Map.entry("F10", "10 Hours"),
+                Map.entry("F11", "11 Hours"), Map.entry("F12", "12 Hours"),
+                Map.entry("F13", "13 Hours"), Map.entry("F14", "14 Hours"),
+                Map.entry("F15", "15 Hours"), Map.entry("F16", "16 Hours"),
+                Map.entry("F17", "17 Hours"), Map.entry("F18", "18 Hours"),
+                Map.entry("F19", "19 Hours"), Map.entry("F20", "20 Hours"),
+                Map.entry("F21", "21 Hours"), Map.entry("F22", "22 Hours"),
+                Map.entry("F23", "23 Hours")
+        );
 
-        private static final String[] sTypeNames = new String[]{
-                "1 Hour",
-                "2 Hours",
-                "3 Hours",
-                "4 Hours",
-                "5 Hours",
-                "6 Hours",
-                "7 Hours",
-                "8 Hours",
-                "9 Hours",
-                "10 Hours",
-                "11 Hours",
-                "12 Hours",
-                "13 Hours",
-                "14 Hours",
-                "15 Hours",
-                "16 Hours",
-                "17 Hours",
-                "18 Hours",
-                "19 Hours",
-                "20 Hours",
-                "21 Hours",
-                "22 Hours",
-                "23 Hours",
-        };
 
         public TafGraphicFragment() {
             super( NoaaService.ACTION_GET_TAF,
-                    WxRegions.sWxRegionCodes, WxRegions.sWxRegionNames,
-                    sTypeCodes, sTypeNames );
-            setMapTypeName( "Valid From" );
+                   WxRegions.INSTANCE.getRegionCodes(), Periods );
+            setGraphicTypeName( "Valid From" );
             setLabel( "Select Region" );
         }
 

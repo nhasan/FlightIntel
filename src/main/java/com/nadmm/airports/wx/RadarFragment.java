@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,24 +21,18 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
+import java.util.Map;
+
 public class RadarFragment extends WxGraphicFragmentBase {
 
-    private static final String[] sTypeCodes = new String[]{
-            "cref",
-            "rala",
-            "tops-18"
-    };
-
-    private static final String[] sTypeNames = new String[]{
-            "Composite Reference",
-            "Refl at Lowest Alt",
-            "Echo Tops"
-    };
+    private static final Map<String, String> TypeCodes = Map.of(
+            "cref", "Composite Reference",
+            "rala", "Refl at Lowest Alt",
+            "tops-18", "Echo Tops 18K"
+    );
 
     public RadarFragment() {
-        super( NoaaService.ACTION_GET_RADAR,
-                WxRegions.sWxRegionCodes, WxRegions.sWxRegionNames,
-                sTypeCodes, sTypeNames );
+        super( NoaaService.ACTION_GET_RADAR, WxRegions.INSTANCE.getRegionCodes(), TypeCodes );
         setLabel( "Select Region" );
     }
 

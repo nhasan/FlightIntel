@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,24 +21,18 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
+import java.util.Map;
+
 
 public class CvaFragment extends WxGraphicFragmentBase {
 
-    private static final String[] sTypeCodes = {
-        "fltcat",
-        "ceil",
-        "vis"
-    };
-
-    private static final String[] sTypeNames = {
-        "CVA - Flight Category",
-        "CVA - Ceiling",
-        "CVA - Visibility"
-    };
+    private static final Map<String, String> TypeCode = Map.of(
+            "fltcat", "CVA - Flight Category",
+            "ceil", "CVA - Ceiling",
+            "vis", "CVA - Visibility");
 
     public CvaFragment() {
-        super( NoaaService.ACTION_GET_CVA,
-                WxRegions.sWxRegionCodes, WxRegions.sWxRegionNames, sTypeCodes, sTypeNames );
+        super( NoaaService.ACTION_GET_CVA, WxRegions.INSTANCE.getRegionCodes(), TypeCode );
         setTitle( "Ceiling and Visibility");
         setLabel( "Select Region" );
         setHelpText( "By FAA policy, CVA is a Supplementary Weather Product for "
@@ -55,5 +49,4 @@ public class CvaFragment extends WxGraphicFragmentBase {
     protected Intent getServiceIntent() {
         return new Intent( getActivity(), CvaService.class );
     }
-
 }

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,7 @@ public class MetarGraphicActivity extends ActivityBase {
     public static class MetarGraphicFragment extends WxGraphicFragmentBase {
 
         public MetarGraphicFragment() {
-            super( NoaaService.ACTION_GET_METAR, WxRegions.sWxRegionCodes,
-                    WxRegions.sWxRegionNames );
+            super( NoaaService.ACTION_GET_METAR, WxRegions.INSTANCE.getRegionCodes() );
             setLabel( "Select Region" );
         }
 

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,53 +21,33 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
+import java.util.Map;
+
 public class WindFragment extends WxGraphicFragmentBase {
 
-    private static final String[] sTypeCodes = {
-        "wind",
-        "windstrm",
-        "temp",
-        "isa"
-    };
+    private static final Map<String, String> TypeMap = Map.of(
+        "wind", "Wind Speed",
+        "windstrm", "Wind Streamlines",
+        "temp", "Temperature",
+        "isa", "Temperature Difference"
+    );
 
-    private static final String[] sTypeNames = {
-        "Wind Speed",
-        "Wind Streamlines",
-        "Temperature",
-        "Temperature Difference"
-    };
-
-    private static final String[] sWindCodes = new String[] {
-        "sfc",
-        "900",
-        "800",
-        "725",
-        "650",
-        "500",
-        "400",
-        "300",
-        "225",
-        "175",
-        "125"
-    };
-
-    private static final String[] sWindNames = new String[] {
-        "Surface",
-        "3,000 feet (900 mb)",
-        "6,000 feet (800 mb)",
-        "9,000 feet (725 mb)",
-        "12,000 feet (650 mb)",
-        "18,000 feet (500 mb)",
-        "FL240 (400 mb)",
-        "FL300 (300 mb)",
-        "FL360 (225 mb)",
-        "FL420 (175 mb)",
-        "FL480 (125 mb)"
-    };
+    private static final Map<String, String> WindMap = Map.ofEntries(
+            Map.entry("sfc", "Surface"),
+            Map.entry("900", "3,000 feet (900 mb)"),
+            Map.entry("800", "6,000 feet (800 mb)"),
+            Map.entry("725", "9,000 feet (725 mb)"),
+            Map.entry("650", "12,000 feet (650 mb)"),
+            Map.entry("500", "18,000 feet (500 mb)"),
+            Map.entry("400", "FL240 (400 mb)"),
+            Map.entry("300", "FL300 (300 mb)"),
+            Map.entry("225", "FL360 (225 mb)"),
+            Map.entry("175", "FL420 (175 mb)"),
+            Map.entry("125", "FL480 (125 mb)")
+    );
 
     public WindFragment() {
-        super( NoaaService.ACTION_GET_WIND,
-                sWindCodes, sWindNames, sTypeCodes, sTypeNames );
+        super( NoaaService.ACTION_GET_WIND, WindMap, TypeMap );
         setTitle( "Wind Images" );
         setLabel( "Select Altitude" );
     }

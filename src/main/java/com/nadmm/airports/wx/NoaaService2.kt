@@ -168,7 +168,7 @@ abstract class NoaaService2(private val mName: String, private val mAge: Long) :
     }
 
     companion object {
-        val TAG: String = NoaaService2::class.java.simpleName
+        private val TAG: String = NoaaService2::class.java.simpleName
 
         const val METAR_HOURS_BEFORE: Int = 3
         const val TAF_HOURS_BEFORE: Int = 3

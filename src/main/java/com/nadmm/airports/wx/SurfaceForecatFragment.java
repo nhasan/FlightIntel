@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2017-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2017-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,73 +19,47 @@
 
 package com.nadmm.airports.wx;
 
+import static java.util.Map.entry;
+
 import android.content.Intent;
+import java.util.Map;
 
 public class SurfaceForecatFragment extends WxGraphicFragmentBase {
 
-    private static final String[] sFcastCodes = new String[]{
-            "F03_gfa_clouds",
-            "F03_gfa_sfc",
-            "F06_gfa_clouds",
-            "F06_gfa_sfc",
-            "F09_gfa_clouds",
-            "F09_gfa_sfc",
-            "F12_gfa_clouds",
-            "F12_gfa_sfc",
-            "F15_gfa_clouds",
-            "F15_gfa_sfc",
-            "F18_gfa_clouds",
-            "F18_gfa_sfc"
-    };
+    private static final Map<String, String> Forecasts = Map.ofEntries(
+            entry("F03_gfa_clouds", "3 Hour Clouds"),
+            entry("F03_gfa_sfc", "3 Hour Surface"),
+            entry("F06_gfa_clouds", "6 Hour Clouds"),
+            entry("F06_gfa_sfc", "6 Hour Surface"),
+            entry("F09_gfa_clouds", "9 Hour Clouds"),
+            entry("F09_gfa_sfc", "9 Hour Surface"),
+            entry("F12_gfa_clouds", "12 Hour Clouds"),
+            entry("F12_gfa_sfc", "12 Hour Surface"),
+            entry("F15_gfa_clouds", "15 Hour Clouds"),
+            entry("F15_gfa_sfc", "15 Hour Surface"),
+            entry("F18_gfa_clouds", "18 Hour Clouds"),
+            entry("F18_gfa_sfc", "18 Hour Surface")
+    );
 
-    private static final String[] sFcastNames = new String[]{
-            "3 Hour Clouds",
-            "3 Hour Surface",
-            "6 Hour Clouds",
-            "6 Hour Surface",
-            "9 Hour Clouds",
-            "9 Hour Surface",
-            "12 Hour Clouds",
-            "12 Hour Surface",
-            "15 Hour Clouds",
-            "15 Hour Surface",
-            "18 Hour Clouds",
-            "18 Hour Surface"
-    };
-
-    private static final String[] sRegionCodes = new String[]{
-            "us",
-            "ne",
-            "e",
-            "se",
-            "nc",
-            "c",
-            "sc",
-            "nw",
-            "w",
-            "sw"
-    };
-
-    private static final String[] sRegionNames = new String[]{
-            "Continental US",
-            "Northeast",
-            "East",
-            "Southeast",
-            "North Central",
-            "Central",
-            "South Central",
-            "Northwest",
-            "West",
-            "Southwest"
-    };
+    private static final Map<String, String> Regions = Map.of(
+            "us", "Continental US",
+            "ne", "Northeast",
+            "e", "East",
+            "se", "Southeast",
+            "nc", "North Central",
+            "c", "Central",
+            "sc", "South Central",
+            "nw", "Northwest",
+            "w", "West",
+            "sw", "Southwest"
+    );
 
     public SurfaceForecatFragment() {
-        super( NoaaService.ACTION_GET_GFA, sRegionCodes, sRegionNames,
-                sFcastCodes, sFcastNames );
+        super(NoaaService.ACTION_GET_GFA, Regions, Forecasts);
 
-        setTitle( "Graphical Forecast" );
-        setMapTypeName( "Select Forecast" );
-        setLabel( "Select Region" );
+        setTitle("Graphical Forecast");
+        setGraphicTypeName("Select Forecast");
+        setLabel("Select Region");
     }
 
     @Override

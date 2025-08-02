@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,74 +21,38 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
+import java.util.Map;
+
 public class IcingFragment extends WxGraphicFragmentBase {
 
-    private static final String[] sTypeCodes = {
-        "F00_cip",
-        "F01_fip",
-        "F02_fip",
-        "F03_fip",
-        "F06_fip",
-        "F09_fip",
-        "F12_fip",
-        "F15_fip",
-        "F18_fip"
-    };
+    private static final Map<String, String> Types = Map.of(
+            "F00_cip", "Current",
+            "F01_fip", "1 Hour",
+            "F02_fip", "2 hour",
+            "F03_fip", "3 Hour",
+            "F06_fip", "6 Hour",
+            "F09_fip", "9 Hour",
+            "F12_fip", "12 Hour",
+            "F15_fip", "15 Hour",
+            "F18_fip", "18 Hour"
+    );
 
-    private static final String[] sTypeNames = {
-        "Current",
-        "1 Hour",
-        "2 hour",
-        "3 Hour",
-        "6 Hour",
-        "9 Hour",
-        "12 Hour",
-        "15 Hour",
-        "18 Hour"
-    };
-
-    private static final String[] sMapCodes = new String[] {
-        "010",
-        "030",
-        "050",
-        "070",
-        "090",
-        "110",
-        "130",
-        "150",
-        "170",
-        "190",
-        "210",
-        "230",
-        "250",
-        "270",
-        "290",
-        "max"
-    };
-
-    private static final String[] sMapNames = new String[] {
-        "1,000 feet MSL",
-        "3,000 feet MSL",
-        "5,000 feet MSL",
-        "7,000 feet MSL",
-        "9,000 feet MSL",
-        "11,000 feet MSL",
-        "13,000 feet MSL",
-        "15,000 feet MSL",
-        "17,000 feet MSL",
-        "19,000 feet MSL",
-        "FL210",
-        "FL230",
-        "FL250",
-        "FL270",
-        "FL290",
-        "Max in Column"
-    };
+    private static final Map<String, String> Altitudes = Map.ofEntries(
+        Map.entry("010", "1,000 feet MSL"),
+        Map.entry("030", "3,000 feet MSL"),
+        Map.entry("060", "5,000 feet MSL"),
+        Map.entry("090", "9,000 feet MSL"),
+        Map.entry("120", "11,000 feet MSL"),
+        Map.entry("150", "15,000 feet MSL"),
+        Map.entry("180", "17,000 feet MSL"),
+        Map.entry("210", "FL210"),
+        Map.entry("240", "FL230"),
+        Map.entry("270", "FL270"),
+        Map.entry("max", "Max in Column")
+    );
 
     public IcingFragment() {
-        super( NoaaService.ACTION_GET_ICING,
-                sMapCodes, sMapNames, sTypeCodes, sTypeNames );
-        setTitle( "Icing (CIP/FIP)" );
+        super( NoaaService.ACTION_GET_ICING, Altitudes, Types);
         setLabel( "Select Altitude" );
     }
 

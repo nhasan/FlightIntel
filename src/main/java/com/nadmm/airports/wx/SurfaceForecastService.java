@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2021-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import com.nadmm.airports.utils.UiUtils;
 
@@ -30,6 +31,7 @@ import java.util.Locale;
 public class SurfaceForecastService extends NoaaService {
 
     private static final long CACHE_MAX_AGE = 30* DateUtils.MINUTE_IN_MILLIS;
+    private static final String TAG = SurfaceForecastService.class.getSimpleName();
 
     public SurfaceForecastService() {
         super( "gfa", CACHE_MAX_AGE );
@@ -43,6 +45,7 @@ public class SurfaceForecastService extends NoaaService {
             if ( type.equals(TYPE_GRAPHIC) ) {
                 String imgType = intent.getStringExtra( IMAGE_TYPE );
                 String code = intent.getStringExtra( IMAGE_CODE );
+                Log.d(TAG, "Fetching GFA image: " + imgType + ", code: " + code);
 
                 String imageName = String.format( Locale.US, "%s_%s.png", imgType, code );
                 File imageFile = getDataFile( imageName );

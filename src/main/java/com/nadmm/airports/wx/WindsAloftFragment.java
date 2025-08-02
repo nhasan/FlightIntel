@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ public class WindsAloftFragment extends WxTextFragmentBase {
     private static final Map<String, String> mAreas = Map.ofEntries(
             Map.entry("us", "Continental US"),
             Map.entry("alaska", "Alaska"),
-            Map.entry("bos", "boston"),
+            Map.entry("bos", "Boston"),
             Map.entry("canada", "Canada"),
             Map.entry("chi", "Chicago"),
             Map.entry("dfw", "Dallas/Fort Worth"),

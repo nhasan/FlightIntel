@@ -39,35 +39,23 @@ class AirSigmetGraphicActivity : ActivityBase() {
     }
 
     class AirSigmetGraphicFragment : WxGraphicFragmentBase(
-        NoaaService.ACTION_GET_AIRSIGMET, sAirSigmetCodes, sAirSigmetNames
-    ) {
-        override val product: String?
+        NoaaService.ACTION_GET_AIRSIGMET, AirSigmetCodes) {
+        override val product: String
             get() = "airsigmetgraphic"
+        override val serviceIntent: Intent
+            get() = Intent(activity, AirSigmetService::class.java)
 
         init {
             setLabel("Select Category")
         }
 
-        override fun getServiceIntent(): Intent {
-            return Intent(activity, AirSigmetService::class.java)
-        }
-
-
         companion object {
-            private val sAirSigmetCodes: Array<String> = arrayOf(
-                "all",
-                "cb",
-                "ic",
-                "if",
-                "tb"
-            )
-
-            private val sAirSigmetNames: Array<String> = arrayOf(
-                "All active SIGMETs",
-                "Convective SIGMETs and Outlooks",
-                "Icing SIGMETs",
-                "IFR SIGMETs",
-                "Turbulence SIGMETs"
+            private val AirSigmetCodes = mapOf(
+                "all" to "All active SIGMETs",
+                "cb" to "Convective SIGMETs and Outlooks",
+                "ic" to "Icing SIGMETs",
+                "if" to "IFR SIGMETs",
+                "tb" to "Turbulence SIGMETs"
             )
         }
     }

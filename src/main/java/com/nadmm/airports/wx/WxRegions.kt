@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,55 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
 
-
-public class WxRegions {
-
-    public static final String[] sWxRegionCodes = new String[] {
-        "US",
-        "ALB",
-        "ABQ",
-        "AUS",
-        "BWI",
-        "CLT",
-        "COD",
-        "DEN",
-        "DTW",
-        "EVV",
-        "LAS",
-        "LWS",
-        "LIT",
-        "MSP",
-        "MGM",
-        "PIR",
-        "TPA",
-        "ICT",
-        "WMC"
-    };
-
-    public static final String[] sWxRegionNames = new String[] {
-        "Continental USA",
-        "Albany, NY",
-        "Albuquerque, NM",
-        "Austin, TX",
-        "Baltimore, MD",
-        "Charlotte, NC",
-        "Cody, WY",
-        "Denver, CO",
-        "Detroit, MI",
-        "Evansville, IN",
-        "Las Vegas, NV",
-        "Lewiston, ID",
-        "Little Rock, AR",
-        "Minneapolis, MN",
-        "Montgomery, AL",
-        "Pierre, SD",
-        "Tampa, FL",
-        "Wichita, KS",
-        "Winnemucca, NV"
-    };
-
-    private WxRegions() {}
+object WxRegions {
+    val RegionCodes: Map<String, String> = mapOf(
+        "US" to "Continental USA",
+        "ALB" to "Albany, NY",
+        "ABQ" to "Albuquerque, NM",
+        "AUS" to "Austin, TX",
+        "BWI" to "Baltimore, MD",
+        "CLT" to "Charlotte, NC",
+        "COD" to "Cody, WY",
+        "DEN" to "Denver, CO",
+        "DTW" to "Detroit, MI",
+        "EVV" to "Evansville, IN",
+        "LAS" to "Las Vegas, NV",
+        "LWS" to "Lewiston, ID",
+        "LIT" to "Little Rock, AR",
+        "MSP" to "Minneapolis, MN",
+        "MGM" to "Montgomery, AL",
+        "PIR" to "Pierre, SD",
+        "TPA" to "Tampa, FL",
+        "ICT" to "Wichita, KS",
+        "WMC" to "Winnemucca, NV"
+    )
 }

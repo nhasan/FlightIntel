@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,41 +26,26 @@ import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
 
+import java.util.Map;
+
 public class PirepGrapahicActivity extends ActivityBase {
 
-    private static final String[] sTypeCodes = {
-        "ice",
-        "turb",
-        "wx"
-    };
+    private static final Map<String, String> PirepTypes = Map.of(
+        "ice", "Icing",
+        "turb", "Turbulence",
+        "wx", "Weather/Sky"
+    );
 
-    private static final String[] sTypeNames = {
-        "Icing",
-        "Turbulence",
-        "Weather/Sky"
-    };
-
-    private static final String[] sPirepCodes = {
-        "us",
-        "ak",
-        "nc",
-        "ne",
-        "nw",
-        "sc",
-        "se",
-        "sw",
-    };
-
-    private static final String[] sPirepNames = {
-        "Contiguous U.S.",
-        "Alaska",
-        "Northcentral",
-        "Northeast",
-        "Northwest",
-        "Southcentral",
-        "Southeast",
-        "Southwest",
-    };
+    private static final Map<String, String> PirepCodes = Map.of(
+        "us", "Contiguous U.S.",
+        "ak", "Alaska",
+        "nc", "Northcentral",
+        "ne", "Northeast",
+        "nw", "Northwest",
+        "sc", "Southcentral",
+        "se", "Southeast",
+        "sw", "Southwest"
+    );
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -80,8 +65,7 @@ public class PirepGrapahicActivity extends ActivityBase {
     public static class PirepGraphicFragment extends WxGraphicFragmentBase {
 
         public PirepGraphicFragment() {
-            super( NoaaService.ACTION_GET_PIREP,
-                    sPirepCodes, sPirepNames, sTypeCodes, sTypeNames );
+            super( NoaaService.ACTION_GET_PIREP, PirepCodes, PirepTypes );
             setLabel( "Select Region" );
         }
 
