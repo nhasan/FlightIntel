@@ -16,37 +16,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.content.Intent
+import com.nadmm.airports.wx.WxRegions.RegionCodes
 
-import android.content.Intent;
-
-import java.util.Map;
-
-
-public class CvaFragment extends WxGraphicFragmentBase {
-
-    private static final Map<String, String> TypeCode = Map.of(
-            "fltcat", "CVA - Flight Category",
-            "ceil", "CVA - Ceiling",
-            "vis", "CVA - Visibility");
-
-    public CvaFragment() {
-        super( NoaaService.ACTION_GET_CVA, WxRegions.INSTANCE.getRegionCodes(), TypeCode );
-        setTitle( "Ceiling and Visibility");
-        setLabel( "Select Region" );
-        setHelpText( "By FAA policy, CVA is a Supplementary Weather Product for "
-                + "enhanced situational awareness only. CVA must only be used with primary "
-                + "products such as METARs, TAFs and AIRMETs." );
+class CvaFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_CVA, RegionCodes, TypeCode) {
+    init {
+        setTitle("Ceiling and Visibility")
+        setLabel("Select Region")
+        setHelpText(
+            ("By FAA policy, CVA is a Supplementary Weather Product for "
+                    + "enhanced situational awareness only. CVA must only be used with primary "
+                    + "products such as METARs, TAFs and AIRMETs.")
+        )
     }
 
-    @Override
-    protected String getProduct() {
-        return "cva";
-    }
+    override val product: String
+        get() = "cva"
 
-    @Override
-    protected Intent getServiceIntent() {
-        return new Intent( getActivity(), CvaService.class );
+    override val serviceIntent: Intent
+        get() = Intent(activity, CvaService::class.java)
+
+    companion object {
+        private val TypeCode = mapOf(
+            "fltcat" to "CVA - Flight Category",
+            "ceil" to "CVA - Ceiling",
+            "vis" to "CVA - Visibility"
+        )
     }
 }
