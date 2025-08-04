@@ -4,14 +4,14 @@ import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 
 buildscript {
     dependencies {
-        classpath("com.android.tools.build:gradle:8.11.1")
+        classpath("com.android.tools.build:gradle:8.12.0")
         classpath("com.google.gms:google-services:4.4.3")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
     }
 }
 
 plugins {
-    id ("com.android.application") version "8.11.1"
+    id ("com.android.application") version "8.12.0"
     id ("org.jetbrains.kotlin.android") version "2.2.0"
     id ("org.jetbrains.kotlin.plugin.parcelize") version "2.2.0"
     id ("com.google.gms.google-services") version "4.4.3"
