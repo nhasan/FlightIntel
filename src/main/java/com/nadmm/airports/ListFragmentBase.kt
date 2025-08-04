@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,50 +28,54 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListAdapter
 import android.widget.ListView
-import android.widget.TextView
-
-import androidx.core.content.ContextCompat
+import androidx.core.os.BundleCompat
 import androidx.cursoradapter.widget.CursorAdapter
+import com.nadmm.airports.databinding.ListViewLayoutBinding
+import kotlinx.parcelize.Parcelize
 
 abstract class ListFragmentBase : FragmentBase() {
 
-    var listView: ListView? = null
-    private var mListViewState: Parcelable? = null
+    private var listViewState: ListViewState? = null
+    private var _binding: ListViewLayoutBinding? = null
+    private val binding get() = _binding!!
+    val listView: ListView
+        get() = binding.list
 
     val listAdapter: ListAdapter?
-        get() = listView?.adapter
+        get() = listView.adapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (savedInstanceState?.containsKey(LISTVIEW_STATE) == true) {
-            mListViewState = savedInstanceState.getParcelable(LISTVIEW_STATE)
+        listViewState = savedInstanceState?.run {
+            BundleCompat.getParcelable(this, LISTVIEW_STATE, ListViewState::class.java)
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val layout = inflater.inflate(R.layout.list_view_layout, container, false)
-        listView = layout.findViewById(android.R.id.list)
-        return listView?.run {
+        _binding = ListViewLayoutBinding.inflate(inflater, container, false)
+        return binding.list.run {
             setOnItemClickListener {
                     _, view, position, _ -> onListItemClick(this, view, position)
             }
 
-            createContentView(layout)
+            createContentView(binding.root)
         }
     }
 
     override fun onDestroy() {
-        listView?.apply {
+        super.onDestroy() // Don't forget to call super!
+        listView.adapter?.let { adapter ->
             if (adapter is CursorAdapter) {
-                (adapter as CursorAdapter).cursor.close()
+                // The CursorAdapter's swapCursor(null) method will close the old cursor.
+                // This is the recommended way to signal the adapter to release its cursor.
+                adapter.swapCursor(null)
             }
         }
-
-        super.onDestroy()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setFragmentContentShownNoAnimation(false)
@@ -79,46 +83,38 @@ abstract class ListFragmentBase : FragmentBase() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        listView?.apply {
-            mListViewState = onSaveInstanceState()
-            outState.putParcelable(LISTVIEW_STATE, mListViewState)
+        listView.run {
+            listViewState = ListViewState(onSaveInstanceState())
         }
     }
 
-    protected open fun setCursor(c: Cursor?) {
+    protected open fun setCursor(c: Cursor) {
         val adapter = newListAdapter(activity, c)
         setAdapter(adapter)
     }
 
     fun setAdapter(adapter: ListAdapter?) {
-        listView?.apply {
-            this.adapter = adapter
-
-            adapter?.apply {
-                if (mListViewState != null) {
-                    onRestoreInstanceState(mListViewState)
-                    mListViewState = null
-                }
+        listView.adapter = adapter
+        adapter?.run {
+            listViewState?.let { state ->
+                listView.onRestoreInstanceState(state.saveState)
             }
-
-            setListShown(adapter != null && adapter.count > 0)
+            setListShown(count > 0)
         }
         setFragmentContentShown(true)
     }
 
     fun setEmptyText(text: String) {
-        val tv = findViewById<TextView>(android.R.id.empty)
-        tv!!.text = text
+        binding.empty.text = text
     }
 
     protected fun setListShown(show: Boolean) {
-        val tv = findViewById<TextView>(android.R.id.empty)
         if (show) {
-            tv!!.visibility = View.GONE
-            listView?.visibility = View.VISIBLE
+            binding.empty.visibility = View.GONE
+            listView.visibility = View.VISIBLE
         } else {
-            tv!!.visibility = View.VISIBLE
-            listView?.visibility = View.GONE
+            binding.empty.visibility = View.VISIBLE
+            listView.visibility = View.GONE
         }
     }
 
@@ -128,8 +124,10 @@ abstract class ListFragmentBase : FragmentBase() {
 
     protected abstract fun onListItemClick(l: ListView, v: View, position: Int)
 
+    @Parcelize
+    data class ListViewState(val saveState: Parcelable?) : Parcelable
+
     companion object {
         private const val LISTVIEW_STATE = "LISTVIEW_STATE"
     }
-
 }

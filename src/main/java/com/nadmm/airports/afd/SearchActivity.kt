@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,15 +90,17 @@ class SearchActivity : FragmentActivityBase() {
 
         override fun onActivityCreated(savedInstanceState: Bundle?) {
             super.onActivityCreated(savedInstanceState)
-            if (mCursor != null) {
-                setCursor(mCursor)
+            mCursor?.let {
+                setCursor(it)
             }
         }
 
         fun setSearchCursor(c: Cursor) {
             mCursor = c
             if (activity != null && view != null) {
-                setCursor(mCursor)
+                mCursor?.let {
+                    setCursor(it)
+                }
             }
         }
     }

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2018-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2018-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ class NearbyObstaclesFragment : LocationListFragmentBase() {
 
     override fun onListItemClick(l: ListView, v: View, position: Int) {}
 
-    private fun doQuery(): Array<Cursor?> {
+    private fun doQuery(): Array<Cursor> {
         val db = getDatabase(DatabaseManager.DB_DOF)
         val c: Cursor = NearbyDofCursor(db, lastLocation!!, mRadius)
         return arrayOf(c)

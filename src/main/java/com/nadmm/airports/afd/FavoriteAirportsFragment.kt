@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,17 +26,26 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ListView
 import androidx.cursoradapter.widget.CursorAdapter
+import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.ListFragmentBase
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
 import com.nadmm.airports.utils.CursorAsyncTask
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FavoriteAirportsFragment : ListFragmentBase() {
 
     override fun onResume() {
         super.onResume()
 
-        setBackgroundTask(FavoriteAirportsTask(this)).execute()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                doQuery()
+            }
+            setCursor(result[0])
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -51,13 +60,13 @@ class FavoriteAirportsFragment : ListFragmentBase() {
 
     override fun onListItemClick(l: ListView, v: View, position: Int) {
         val c = l.getItemAtPosition(position) as Cursor
-        val siteNumber = c.getString(c.getColumnIndex(Airports.SITE_NUMBER))
+        val siteNumber = c.getString(c.getColumnIndexOrThrow(Airports.SITE_NUMBER))
         val intent = Intent(activity, AirportActivity::class.java)
         intent.putExtra(Airports.SITE_NUMBER, siteNumber)
         startActivity(intent)
     }
 
-    private fun doQuery(): Array<Cursor?> {
+    private fun doQuery(): Array<Cursor> {
         val siteNumbers = dbManager.aptFavorites.joinToString { "'${it}'"}
 
         val db = getDatabase(DatabaseManager.DB_FADDS)
@@ -67,20 +76,4 @@ class FavoriteAirportsFragment : ListFragmentBase() {
 
         return arrayOf(c)
     }
-
-    private class FavoriteAirportsTask(fragment: FavoriteAirportsFragment)
-        : CursorAsyncTask<FavoriteAirportsFragment>(fragment) {
-
-        override fun onExecute(fragment: FavoriteAirportsFragment, vararg params: String)
-                : Array<Cursor?> {
-            return fragment.doQuery()
-        }
-
-        override fun onResult(fragment: FavoriteAirportsFragment, result: Array<Cursor?>)
-                : Boolean {
-            fragment.setCursor(result[0])
-            return false
-        }
-    }
-
 }
