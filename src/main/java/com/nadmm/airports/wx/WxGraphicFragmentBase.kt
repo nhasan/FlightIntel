@@ -29,34 +29,34 @@ import com.nadmm.airports.R
 import com.nadmm.airports.databinding.WxMapDetailViewBinding
 
 abstract class WxGraphicFragmentBase : WxFragmentBase {
-    private val mAction: String
-    private val mWxGraphics: Map<String, String>
-    private val mWxTypes: Map<String, String>
-    private var mTypeName: String = ""
-    private var mLabel: String = ""
-    private var mTitle: String = ""
-    private var mHelpText: String = ""
-    private var mPendingRow: View? = null
+    private val action: String
+    private val wxGraphics: Map<String, String>
+    private val wxTypes: Map<String, String>
+    private var typeName: String = ""
+    private var label: String = ""
+    private var title: String = ""
+    private var helpText: String = ""
+    private var selectedRow: View? = null
 
     private var _binding: WxMapDetailViewBinding? = null
     private val binding get() = _binding!!
 
     constructor(action: String, graphics: Map<String, String>) {
-        mAction = action
-        mWxGraphics = graphics
-        mWxTypes = mapOf()
+        this@WxGraphicFragmentBase.action = action
+        wxGraphics = graphics
+        wxTypes = mapOf()
     }
 
     constructor(action: String, graphics: Map<String, String>, types: Map<String, String>) {
-        mAction = action
-        mWxGraphics = graphics
-        mWxTypes = types
+        this@WxGraphicFragmentBase.action = action
+        wxGraphics = graphics
+        wxTypes = types
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setupBroadcastFilter(mAction)
+        setupBroadcastFilter(action)
     }
 
     override fun onCreateView(
@@ -72,44 +72,47 @@ abstract class WxGraphicFragmentBase : WxFragmentBase {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            if (mLabel.isNotEmpty()) {
-                wxMapLabel.text = mLabel
+            if (label.isNotEmpty()) {
+                wxMapLabel.text = label
                 wxMapLabel.visibility = View.VISIBLE
             }
 
-            if (mHelpText.isNotEmpty()) {
-                wxHelpText.text = mHelpText
+            if (helpText.isNotEmpty()) {
+                wxHelpText.text = helpText
                 wxHelpText.visibility = View.VISIBLE
             }
 
             val listener = View.OnClickListener { v: View? ->
-                if (mPendingRow == null) {
-                    mPendingRow = v
-                    val code = getMapCode(v!!)
-                    requestWxMap(code)
+                if (selectedRow == null && v != null) {
+                    selectedRow = v
+                    val tag = v.tag as String?
+                    tag?.let { code ->
+                        requestWxMap(code)
+                    }
                 }
             }
 
-            val graphics = mWxGraphics.toSortedMap()
+            val graphics = wxGraphics.toSortedMap()
             for (graphic in graphics) {
                 val row = addWxRow(wxMapLayout, graphic.value, graphic.key)
                 row.setOnClickListener(listener)
             }
 
-            if (mWxTypes.isNotEmpty()) {
-                if (mTypeName.isNotEmpty()) {
+            if (wxTypes.isNotEmpty()) {
+                if (typeName.isNotEmpty()) {
                     wxMapTypeLabel.visibility = View.VISIBLE
-                    wxMapTypeLabel.text = mTypeName
+                    wxMapTypeLabel.text = typeName
                 }
                 wxMapTypeLayout.visibility = View.VISIBLE
-                val types = mWxTypes.toSortedMap().values.toList()
+                val types = wxTypes.toSortedMap().values.toList()
                 val adapter = ArrayAdapter(
                     requireActivity(),
                     R.layout.list_item, types
                 )
-                val textView = getAutoCompleteTextView(wxMapType)
-                textView!!.setAdapter(adapter)
-                textView.setText(types.first(), false)
+                getAutoCompleteTextView(wxMapType)?.let { textView ->
+                    textView.setAdapter(adapter)
+                    textView.setText(types.first(), false)
+                }
             }
         }
 
@@ -119,22 +122,21 @@ abstract class WxGraphicFragmentBase : WxFragmentBase {
     override fun onResume() {
         super.onResume()
 
-        mPendingRow = null
+        selectedRow = null
     }
 
     private fun requestWxMap(code: String) {
         setSpinnerVisible(true)
 
         val service = serviceIntent
-        service.setAction(mAction)
+        service.setAction(action)
         service.putExtra(NoaaService.TYPE, NoaaService.TYPE_GRAPHIC)
         service.putExtra(NoaaService.IMAGE_CODE, code)
-        if (mWxTypes.isNotEmpty()) {
+        if (wxTypes.isNotEmpty()) {
             val text = getSelectedItemText(binding.wxMapType)
-            val type = mWxTypes.entries.first { it.value == text }.key
+            val type = wxTypes.entries.first { it.value == text }.key
             service.putExtra(NoaaService.IMAGE_TYPE, type)
         }
-        setServiceParams(service)
         activity?.startService(service)
     }
 
@@ -145,45 +147,38 @@ abstract class WxGraphicFragmentBase : WxFragmentBase {
             if (!path.isNullOrEmpty()) {
                 val view = Intent(activity, WxImageViewActivity::class.java)
                 view.putExtra(ImageViewActivity.IMAGE_PATH, path)
-                val title = mTitle.ifEmpty { activity?.title }
-                view.putExtra(ImageViewActivity.IMAGE_TITLE, title)
-                val code = intent.getStringExtra(NoaaService.IMAGE_CODE)
-                mWxGraphics[code!!]?.let { name ->
-                    view.putExtra(ImageViewActivity.IMAGE_SUBTITLE, name)
+                view.putExtra(ImageViewActivity.IMAGE_TITLE, title.ifEmpty { activity?.title })
+                intent.getStringExtra(NoaaService.IMAGE_CODE)?.let { code ->
+                    wxGraphics[code]?.let { name ->
+                        view.putExtra(ImageViewActivity.IMAGE_SUBTITLE, name)
+                    }
                 }
                 startActivity(view)
             }
             setSpinnerVisible(false)
-            mPendingRow = null
+            selectedRow = null
         }
     }
 
-    protected fun setServiceParams(intent: Intent) {
+    protected fun setLabel(s: String) {
+        label = s
     }
 
-    private fun getMapCode(v: View): String {
-        return v.tag as String? ?: ""
+    protected fun setGraphicTypeName(s: String) {
+        typeName = s
     }
 
-    protected fun setLabel(label: String) {
-        mLabel = label
+    protected fun setTitle(s: String) {
+        title = s
     }
 
-    protected fun setGraphicTypeName(typeName: String) {
-        mTypeName = typeName
-    }
-
-    protected fun setTitle(title: String) {
-        mTitle = title
-    }
-
-    protected fun setHelpText(text: String) {
-        mHelpText = text
+    protected fun setHelpText(s: String) {
+        helpText = s
     }
 
     private fun setSpinnerVisible(visible: Boolean) {
-        if (mPendingRow != null) {
-            val view = mPendingRow!!.findViewById<View>(R.id.progress)
+        selectedRow?.let { selectedRow ->
+            val view = selectedRow.findViewById<View>(R.id.progress)
             view.visibility = if (visible) View.VISIBLE else View.INVISIBLE
         }
     }
