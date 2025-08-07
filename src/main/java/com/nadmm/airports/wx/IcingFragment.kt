@@ -16,54 +16,46 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.content.Intent
 
-import android.content.Intent;
-
-import java.util.Map;
-
-public class IcingFragment extends WxGraphicFragmentBase {
-
-    private static final Map<String, String> Types = Map.of(
-            "F00_cip", "Current",
-            "F01_fip", "1 Hour",
-            "F02_fip", "2 hour",
-            "F03_fip", "3 Hour",
-            "F06_fip", "6 Hour",
-            "F09_fip", "9 Hour",
-            "F12_fip", "12 Hour",
-            "F15_fip", "15 Hour",
-            "F18_fip", "18 Hour"
-    );
-
-    private static final Map<String, String> Altitudes = Map.ofEntries(
-        Map.entry("010", "1,000 feet MSL"),
-        Map.entry("030", "3,000 feet MSL"),
-        Map.entry("060", "5,000 feet MSL"),
-        Map.entry("090", "9,000 feet MSL"),
-        Map.entry("120", "11,000 feet MSL"),
-        Map.entry("150", "15,000 feet MSL"),
-        Map.entry("180", "17,000 feet MSL"),
-        Map.entry("210", "FL210"),
-        Map.entry("240", "FL230"),
-        Map.entry("270", "FL270"),
-        Map.entry("max", "Max in Column")
-    );
-
-    public IcingFragment() {
-        super( NoaaService.ACTION_GET_ICING, Altitudes, Types);
-        setLabel( "Select Altitude" );
+class IcingFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_ICING, Altitudes, Types) {
+    init {
+        setLabel("Select Altitude")
     }
 
-    @Override
-    protected String getProduct() {
-        return "icing";
-    }
+    override val product: String?
+        get() = "icing"
 
-    @Override
-    protected Intent getServiceIntent() {
-        return new Intent( getActivity(), IcingService.class );
-    }
+    override val serviceIntent: Intent
+        get() = Intent(activity, IcingService::class.java)
 
+    companion object {
+        private val Types = mapOf(
+            "F00_cip" to "Current",
+            "F01_fip" to "1 Hour",
+            "F02_fip" to "2 hour",
+            "F03_fip" to "3 Hour",
+            "F06_fip" to "6 Hour",
+            "F09_fip" to "9 Hour",
+            "F12_fip" to "12 Hour",
+            "F15_fip" to "15 Hour",
+            "F18_fip" to "18 Hour"
+        )
+
+        private val Altitudes = mapOf(
+            "010" to "1,000 feet MSL",
+            "030" to "3,000 feet MSL",
+            "060" to "6,000 feet MSL",
+            "090" to "9,000 feet MSL",
+            "120" to "12,000 feet MSL",
+            "150" to "15,000 feet MSL",
+            "180" to "18,000 feet MSL",
+            "210" to "FL210",
+            "240" to "FL240",
+            "270" to "FL270",
+            "max" to "Max in Column"
+        )
+    }
 }
