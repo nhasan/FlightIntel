@@ -16,49 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.content.Intent
+import android.os.Bundle
+import com.nadmm.airports.ActivityBase
+import com.nadmm.airports.FragmentBase
+import com.nadmm.airports.R
+import com.nadmm.airports.wx.WxRegions.RegionCodes
 
-import android.content.Intent;
-import android.os.Bundle;
+class MetarGraphicActivity : ActivityBase() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.R;
+        setContentView(R.layout.fragment_activity_layout_no_toolbar)
 
-public class MetarGraphicActivity extends ActivityBase {
-
-    @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        setContentView( R.layout.fragment_activity_layout_no_toolbar );
-
-        Bundle args = getIntent().getExtras();
-        addFragment( MetarGraphicFragment.class, args );
+        val args = intent.extras
+        addFragment(MetarGraphicFragment::class.java, args)
     }
 
-    @Override
-    public void onFragmentStarted( FragmentBase fragment ) {
+    override fun onFragmentStarted(fragment: FragmentBase) {
         // Do not call the parent implementation
     }
 
-    public static class MetarGraphicFragment extends WxGraphicFragmentBase {
-
-        public MetarGraphicFragment() {
-            super( NoaaService.ACTION_GET_METAR, WxRegions.INSTANCE.getRegionCodes() );
-            setLabel( "Select Region" );
+    class MetarGraphicFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_METAR, RegionCodes) {
+        init {
+            setLabel("Select Region")
         }
 
-        @Override
-        protected Intent getServiceIntent() {
-            return new Intent( getActivity(), MetarService.class );
-        }
+        override val serviceIntent: Intent
+            get() = Intent(activity, MetarService::class.java)
 
-        @Override
-        protected String getProduct() {
-            return "metarmap";
-        }
+        override val product: String?
+            get() = "metarmap"
     }
-
 }
