@@ -206,7 +206,7 @@ class MetarFragment : WxFragmentBase() {
                 }
             }
 
-            requestMetar(refresh)
+            startMetarService(refresh)
         } else {
             showToast(
                 requireActivity().applicationContext,
@@ -216,7 +216,7 @@ class MetarFragment : WxFragmentBase() {
         }
     }
 
-    private fun requestMetar(refresh: Boolean) {
+    private fun startMetarService(refresh: Boolean) {
         arguments?.let { args ->
             args.getString(NoaaService.STATION_ID)?.let { stationId ->
                 MetarService.startMetarService(requireActivity(), stationId, refresh)
