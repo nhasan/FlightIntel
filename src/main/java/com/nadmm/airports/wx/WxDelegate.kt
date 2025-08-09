@@ -35,27 +35,33 @@ import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager.Wxs
 import com.nadmm.airports.utils.NetworkUtils
 
-class WxDelegate(private val mFragment: ListFragmentBase) {
-    private val mStationWx = HashMap<String, Metar?>()
-    private val mReceiver: BroadcastReceiver
-    private val mFilter: IntentFilter
+class WxDelegate(private val fragment: ListFragmentBase) {
+    private val stationIds = ArrayList<String>()
+    private val stationMetars = HashMap<String, Metar>()
+    private val broadcastReceiver = WxReceiver()
+    private val metarServiceFilter = IntentFilter()
+
+    init {
+        metarServiceFilter.addAction(NoaaService.ACTION_GET_METAR)
+    }
+
     fun onPause() {
-        val bm = LocalBroadcastManager.getInstance(mFragment.requireContext())
-        bm.unregisterReceiver(mReceiver)
+        val bm = LocalBroadcastManager.getInstance(fragment.requireContext())
+        bm.unregisterReceiver(broadcastReceiver)
     }
 
     fun onResume() {
-        val bm = LocalBroadcastManager.getInstance(mFragment.requireContext())
-        bm.registerReceiver(mReceiver, mFilter)
+        val bm = LocalBroadcastManager.getInstance(fragment.requireContext())
+        bm.registerReceiver(broadcastReceiver, metarServiceFilter)
     }
 
     fun setCursor(c: Cursor) {
-        mStationWx.clear()
+        stationIds.clear()
         try {
             if (c.moveToFirst()) {
                 do {
                     val stationId = c.getString(c.getColumnIndexOrThrow(Wxs.STATION_ID))
-                    mStationWx[stationId] = null
+                    stationIds.add(stationId)
                 } while (c.moveToNext())
             }
         } catch (_: Exception) {
@@ -63,8 +69,8 @@ class WxDelegate(private val mFragment: ListFragmentBase) {
     }
 
     fun requestMetars(action: String, force: Boolean, showAnim: Boolean) {
-        val activity = mFragment.activityBase
-        if (mStationWx.isEmpty()) {
+        val activity = fragment.activityBase
+        if (stationIds.isEmpty()) {
             activity.isRefreshing = false
             return
         }
@@ -72,7 +78,6 @@ class WxDelegate(private val mFragment: ListFragmentBase) {
         if ((force || !cacheOnly) && showAnim) {
             activity.isRefreshing = true
         }
-        val stationIds = ArrayList(mStationWx.keys)
         val service = Intent(activity, MetarService::class.java)
         service.action = action
         service.putExtra(NoaaService.STATION_IDS, stationIds)
@@ -91,21 +96,19 @@ class WxDelegate(private val mFragment: ListFragmentBase) {
     }
 
     fun onListItemClick(l: ListView, v: View?, position: Int) =
-        // When getting wx for one station, get for all others too
         try {
-            requestMetars(NoaaService.ACTION_CACHE_METAR, force = false, showAnim = false)
             val c = l.getItemAtPosition(position) as Cursor
             val icaoCode = c.getString(c.getColumnIndexOrThrow(Wxs.STATION_ID))
-            val intent = Intent(mFragment.context, WxDetailActivity::class.java)
+            val intent = Intent(fragment.context, WxDetailActivity::class.java)
             val args = Bundle()
             args.putString(NoaaService.STATION_ID, icaoCode)
             intent.putExtras(args)
-            mFragment.startActivity(intent)
+            fragment.startActivity(intent)
         } catch (_: Exception) {
         }
 
     fun getMetar(stationId: String): Metar? {
-        return mStationWx[stationId]
+        return stationMetars.getOrDefault(stationId, null)
     }
 
     private inner class WxReceiver : BroadcastReceiver() {
@@ -113,14 +116,14 @@ class WxDelegate(private val mFragment: ListFragmentBase) {
             try {
                 val metar = IntentCompat.getParcelableExtra(intent, NoaaService.RESULT, Metar::class.java) ?: return
                 val stationId = metar.stationId ?: return
-                mStationWx[stationId] = metar
-                val l = mFragment.findViewById<ListView>(android.R.id.list) ?: return
+                stationMetars[stationId] = metar
+                val l = fragment.findViewById<ListView>(android.R.id.list) ?: return
                 val first = l.firstVisiblePosition
                 for (pos in 0 until l.childCount) {
                     val view = l.getChildAt(pos)
                     val icaoCode = view.getTag(R.id.TAG_STATION_ID) as? String ?: continue
                     if (icaoCode == stationId) {
-                        val adapter = mFragment.listAdapter as? WxCursorAdapter ?: continue
+                        val adapter = fragment.listAdapter as? WxCursorAdapter ?: continue
                         val c = adapter.getItem(pos + first) as Cursor
                         if (c.position >= 0) {
                             adapter.showMetarInfo(view, c, metar)
@@ -128,18 +131,10 @@ class WxDelegate(private val mFragment: ListFragmentBase) {
                         break
                     }
                 }
-                if (mFragment.isRefreshing) {
-                    mFragment.isRefreshing = false
-                }
+                fragment.isRefreshing = false
             } catch (e: Exception) {
                 Log.i("WxDelegate","Exception: ${e.message}")
             }
         }
-    }
-
-    init {
-        mReceiver = WxReceiver()
-        mFilter = IntentFilter()
-        mFilter.addAction(NoaaService.ACTION_GET_METAR)
     }
 }
