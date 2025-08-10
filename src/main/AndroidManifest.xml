@@ -289,11 +289,6 @@
         <service android:name=".wx.PirepService" />
         <service android:name=".wx.AirSigmetService" />
         <service android:name=".wx.ProgChartService" />
-        <service android:name=".wx.RadarService" />
-        <service android:name=".wx.SatelliteService" />
-        <service android:name=".wx.WindService" />
-        <service android:name=".wx.SigWxService" />
-        <service android:name=".wx.CvaService" />
         <service android:name=".wx.IcingService" />
         <service android:name=".wx.AreaForecastService" />
         <service android:name=".wx.WindsAloftService" />
