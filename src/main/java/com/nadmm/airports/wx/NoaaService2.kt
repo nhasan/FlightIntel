@@ -39,7 +39,7 @@ import java.io.Serializable
 import java.util.Date
 import java.util.zip.GZIPInputStream
 
-abstract class NoaaService2(private val serviceName: String, private val maxAgeMillis: Long) : Service() {
+abstract class NoaaService2(protected val serviceName: String, protected val maxAgeMillis: Long) : Service() {
     private var dataDirectory: File? = null
     private val serviceJob = SupervisorJob() // Use SupervisorJob for better error handling in children
     // Coroutine scope tied to Dispatchers.IO for background work
@@ -79,18 +79,15 @@ abstract class NoaaService2(private val serviceName: String, private val maxAgeM
         }
     }
 
-    @Throws(Exception::class)
-    protected fun fetchFromNoaa(query: String?, file: File?, compressed: Boolean): Boolean {
+    protected fun fetchFromNoaa(query: String?, file: File, compressed: Boolean): Boolean {
         return fetchFromNoaa(ADDS_DATASERVER_PATH, query, file, compressed)
     }
 
-    @Throws(Exception::class)
-    protected fun fetchFromNoaa(path: String?, query: String?, file: File?, compressed: Boolean): Boolean {
+    protected fun fetchFromNoaa(path: String, query: String?, file: File, compressed: Boolean): Boolean {
         return fetch(AWC_HOST, path, query, file, compressed)
     }
 
-    @Throws(Exception::class)
-    protected fun fetch(host: String?, path: String?, query: String?, file: File?, compressed: Boolean): Boolean {
+    protected fun fetch(host: String, path: String, query: String?, file: File, compressed: Boolean): Boolean {
         return doHttpsGet(
             this, host, path, query, file, null, null,
             if (compressed) GZIPInputStream::class.java else null
@@ -99,6 +96,16 @@ abstract class NoaaService2(private val serviceName: String, private val maxAgeM
 
     protected fun getDataFile(name: String): File {
         return File(dataDirectory, name)
+    }
+
+    protected fun getObjFile(stationId: String): File {
+        return getDataFile("${serviceName}_${stationId}.obj")
+    }
+
+    protected fun createTempFile(): File {
+        return File.createTempFile(serviceName, ".tmp", dataDirectory).apply {
+            deleteOnExit() // Ensure the temp file is deleted when the JVM exits
+        }
     }
 
     protected fun sendSerializableResultIntent(

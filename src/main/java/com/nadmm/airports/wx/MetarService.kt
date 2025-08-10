@@ -29,7 +29,7 @@ import java.io.File
 import java.io.IOException
 import javax.xml.parsers.ParserConfigurationException
 
-class MetarService : NoaaService2(name, METAR_CACHE_MAX_AGE) {
+class MetarService : NoaaService2("metar", METAR_CACHE_MAX_AGE) {
     private val mParser: MetarParser = MetarParser()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -53,47 +53,45 @@ class MetarService : NoaaService2(name, METAR_CACHE_MAX_AGE) {
 
     private fun getMetarText(intent: Intent) {
         // Get request parameters
-        intent.getStringArrayListExtra(STATION_IDS)?.let { stationIds ->
-            val action = intent.action
-            var cacheOnly = intent.getBooleanExtra(CACHE_ONLY, false)
-            if (action == ACTION_CACHE_METAR) {
-                // Do not try to use the cache. We are populating the cache.
-                cacheOnly = false
-            }
-            val forceRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
+        val stationIds = intent.getStringArrayListExtra(STATION_IDS) ?: return
 
-            Log.d(TAG, "getMetarText: action=$action, stationIds=$stationIds")
+        val action = intent.action
+        var cacheOnly = intent.getBooleanExtra(CACHE_ONLY, false)
+        if (action == ACTION_CACHE_METAR) {
+            // Do not try to use the cache. We are populating the cache.
+            cacheOnly = false
+        }
+        val forceRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
 
-            if (forceRefresh || !cacheOnly) {
-                val missing = stationIds.filter { forceRefresh || !getObjFile(it).exists() }
-                if (missing.isNotEmpty()) {
-                    val hours = intent.getIntExtra(HOURS_BEFORE, 3)
-                    var tmpFile: File? = null
-                    try {
-                        tmpFile = File.createTempFile(name, null)
-                        val query = ("datasource=metars&requesttype=retrieve"
-                                + "&hoursBeforeNow=${hours}&mostRecentForEachStation=constraint"
-                                + "&format=xml&stationString=${stationIds.joinToString()}")
-                        fetchFromNoaa(query, tmpFile, false)
-                        parseMetars(tmpFile, missing)
-                    } catch (e: Exception) {
-                        showToast(this, "Unable to fetch METAR: ${e.message}")
-                    } finally {
-                        tmpFile?.delete()
-                    }
+        Log.d(TAG, "getMetarText: action=$action, stationIds=$stationIds")
+
+        if (forceRefresh || !cacheOnly) {
+            val missing = stationIds.filter { forceRefresh || !getObjFile(it).exists() }
+            if (missing.isNotEmpty()) {
+                val hoursBeforeNow = intent.getIntExtra(HOURS_BEFORE, 3)
+                var xmlFile: File?
+                try {
+                    xmlFile = createTempFile()
+                    val query = ("datasource=metars&requesttype=retrieve"
+                            + "&hoursBeforeNow=${hoursBeforeNow}&mostRecentForEachStation=constraint"
+                            + "&format=xml&stationString=${missing.joinToString()}")
+                    fetchFromNoaa(query, xmlFile, false)
+                    parseMetars(xmlFile, missing)
+                } catch (e: Exception) {
+                    showToast(this, "Unable to fetch METAR: ${e.message}")
                 }
             }
-            if (action == ACTION_GET_METAR) {
-                for (stationId in stationIds) {
-                    val objFile = getObjFile(stationId)
-                    val metar: Metar = if (objFile.exists()) {
-                        readObject(objFile) as Metar? ?: Metar()
-                    } else {
-                        Metar()
-                    }
-                    // Broadcast the result
-                    sendSerializableResultIntent(action, stationId, metar)
+        }
+        if (action == ACTION_GET_METAR) {
+            for (stationId in stationIds) {
+                val objFile = getObjFile(stationId)
+                val metar: Metar = if (objFile.exists()) {
+                    readObject(objFile) as Metar? ?: Metar()
+                } else {
+                    Metar()
                 }
+                // Broadcast the result
+                sendSerializableResultIntent(action, stationId, metar)
             }
         }
     }
@@ -118,21 +116,16 @@ class MetarService : NoaaService2(name, METAR_CACHE_MAX_AGE) {
     }
 
     @Throws(ParserConfigurationException::class, SAXException::class, IOException::class)
-    private fun parseMetars(xmlFile: File?, stationIds: List<String?>) {
-        if (xmlFile?.exists() == true) {
+    private fun parseMetars(xmlFile: File, stationIds: List<String>) {
+        if (xmlFile.exists()) {
             mParser.parse(xmlFile, stationIds).forEach { metar ->
-                writeObject(metar, getObjFile(metar.stationId))
+                writeObject(metar, getObjFile(metar.stationId ?: ""))
             }
         }
     }
 
-    private fun getObjFile(stationId: String?): File {
-        return getDataFile("${name}_${stationId}.obj")
-    }
-
     companion object {
         private val TAG = MetarService::class.java.simpleName
-        private const val name = "metar"
         private const val METAR_CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
 
         // Helper function to start the service

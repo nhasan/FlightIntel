@@ -25,6 +25,7 @@ import androidx.core.content.IntentCompat
 import com.nadmm.airports.utils.GeoUtils
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
+import java.io.File
 
 class PirepService : NoaaService2("pirep", PIREP_CACHE_MAX_AGE) {
 
@@ -56,11 +57,9 @@ class PirepService : NoaaService2("pirep", PIREP_CACHE_MAX_AGE) {
         val cacheOnly = intent.getBooleanExtra(CACHE_ONLY, false)
         val forceRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
 
-        val xmlFile = getDataFile("PIREP_$stationId.xml")
-        val objFile = getDataFile("PIREP_$stationId.obj")
+        val objFile = getObjFile(stationId)
         if (forceRefresh) {
             // If force refresh is requested, delete the cached files
-            xmlFile.delete()
             objFile.delete()
         }
 
@@ -74,7 +73,6 @@ class PirepService : NoaaService2("pirep", PIREP_CACHE_MAX_AGE) {
                 return
             }
             // If the cached object is invalid, delete it
-            xmlFile.delete()
             objFile.delete()
         }
 
@@ -84,12 +82,14 @@ class PirepService : NoaaService2("pirep", PIREP_CACHE_MAX_AGE) {
             return
         }
 
+        var xmlFile: File?
         try {
             val query = ("dataSource=aircraftreports&requestType=retrieve&format=xml"
                     + "&hoursBeforeNow=%d&radialDistance=%.0f;%.2f,%.2f").format(hours,
                 radiusNM * GeoUtils.STATUTE_MILES_PER_NAUTICAL_MILES,
                 location.longitude, location.latitude
             )
+            xmlFile = createTempFile()
             fetchFromNoaa(query, xmlFile, false)
 
             if (!xmlFile.exists()) {
