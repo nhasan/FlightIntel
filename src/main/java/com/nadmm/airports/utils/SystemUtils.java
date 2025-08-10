@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Environment;
-import androidx.core.content.ContextCompat;
+
 import androidx.core.content.FileProvider;
 
 import java.io.File;
@@ -72,7 +72,7 @@ public class SystemUtils {
     }
 
     public static File getExternalDir( Context context, String dirName ) {
-        return ContextCompat.getExternalFilesDirs( context, dirName )[ 0 ];
+        return context.getExternalFilesDirs( dirName )[ 0 ];
     }
 
     public static File getExternalFile( Context context, String dirName, String fileName ) {
