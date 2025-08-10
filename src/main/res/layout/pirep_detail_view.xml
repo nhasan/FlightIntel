@@ -35,14 +35,6 @@
                 android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        <Button android:id="@+id/btnViewGraphic"
-                style="@style/FlatButton"
-                android:text="@string/view_graphic"
-                android:gravity="center"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/section_margin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
         <LinearLayout android:id="@+id/pirep_entries_layout"
                 android:orientation="vertical"
                 android:layout_marginTop="@dimen/section_margin"

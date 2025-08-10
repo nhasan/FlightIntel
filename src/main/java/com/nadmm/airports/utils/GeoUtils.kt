@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,8 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 object GeoUtils {
-    const val METERS_PER_STATUTE_MILE = 1609.344.toFloat()
     const val METERS_PER_NAUTICAL_MILE = 1852.0.toFloat()
     const val STATUTE_MILES_PER_NAUTICAL_MILES = 1.151.toFloat()
-    const val NAUTICAL_MILES_PER_STATUTE_MILES = 0.869.toFloat()
 
     // Earth's radius at major semi-axis in nautical miles
     private const val WGS84_a = 6378137.0 / METERS_PER_NAUTICAL_MILE
@@ -147,12 +145,12 @@ object GeoUtils {
     }
 
     @JvmStatic
-    fun applyDeclination(windDir: Double, declination: Double): Double {
-        return (windDir + declination + 360) % 360
+    fun applyDeclination(direction: Double, declination: Double): Double {
+        return (direction + declination + 360) % 360
     }
 
-    fun applyDeclination(heading: Long, declination: Float): Long {
-        return ((heading + declination + 360).roundToInt() % 360).toLong()
+    fun applyDeclination(direction: Int, declination: Float): Int {
+        return ((direction + declination + 360).roundToInt() % 360)
     }
 
     fun isBetterLocation(location: Location, currentBestLocation: Location?): Boolean {

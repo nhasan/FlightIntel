@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@ object WxUtils {
     fun getWindBarbDrawable(context: Context?, metar: Metar, declination: Float): Drawable? {
         var d: Drawable? = null
         if (isWindAvailable(metar)) {
-            val dir = GeoUtils.applyDeclination(metar.windDirDegrees.toLong(), declination)
+            val dir = GeoUtils.applyDeclination(metar.windDirDegrees, declination)
             val key = "Wind-${metar.flightCategory}-${metar.windSpeedKnots}-$dir"
             d = UiUtils.getDrawableFromCache(key)
             if (d == null) {
@@ -275,7 +275,7 @@ object WxUtils {
             // Ceiling is defined as the lowest cloud layer reported as broken or overcast;
             // or the vertical visibility into an indefinite ceiling
             layers.first { layer -> listOf("BKN", "OVC", "OVX").contains(layer.skyCover) }
-        } catch (e: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             SkyCondition.create("NSC", 12000)
         }
     }

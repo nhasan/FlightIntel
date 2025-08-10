@@ -21,6 +21,7 @@ package com.nadmm.airports.wx
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nadmm.airports.utils.NetworkUtils.doHttpsGet
@@ -170,9 +171,12 @@ abstract class NoaaService2(private val mName: String, private val mAge: Long) :
     companion object {
         private val TAG: String = NoaaService2::class.java.simpleName
 
-        const val METAR_HOURS_BEFORE: Int = 3
-        const val TAF_HOURS_BEFORE: Int = 3
-        const val TAF_RADIUS: Int = 25
+        const val METAR_HOURS_BEFORE = 3
+        const val TAF_HOURS_BEFORE = 3
+        const val TAF_RADIUS = 25
+        const val PIREP_RADIUS_NM = 50
+        const val PIREP_HOURS_BEFORE = 3
+        const val PIREP_CACHE_MAX_AGE = HOUR_IN_MILLIS // 1 hour
 
         const val STATION_ID: String = "STATION_ID"
         const val STATION_IDS: String = "STATION_IDS"

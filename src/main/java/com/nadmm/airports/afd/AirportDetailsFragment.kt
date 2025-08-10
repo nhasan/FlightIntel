@@ -74,7 +74,7 @@ class AirportDetailsFragment : FragmentBase() {
     private lateinit var mHome: String
     private lateinit var mSiteNumber: String
 
-    private var _binding: AirportDetailViewBinding? = null;
+    private var _binding: AirportDetailViewBinding? = null
     private val binding get() = _binding!!
 
     init {
@@ -712,7 +712,7 @@ class AirportDetailsFragment : FragmentBase() {
 
         var heading = c.getInt(c.getColumnIndexOrThrow(Runways.BASE_END_HEADING))
         heading = if (heading > 0) {
-            GeoUtils.applyDeclination(heading.toLong(), mDeclination).toInt()
+            GeoUtils.applyDeclination(heading, mDeclination)
         } else {
             // Actual heading is not available, try to deduce it from runway id
             DataUtils.getRunwayHeading(runwayId)
@@ -871,8 +871,8 @@ class AirportDetailsFragment : FragmentBase() {
         for (tv in mRunwayViews) {
             val tag = tv.tag as Bundle
             var id = tag.getString(Runways.BASE_END_ID)
-            var rwyHeading = tag.getInt(Runways.BASE_END_HEADING).toLong()
-            val windDir = GeoUtils.applyDeclination(metar.windDirDegrees.toLong(), mDeclination)
+            var rwyHeading = tag.getInt(Runways.BASE_END_HEADING)
+            val windDir = GeoUtils.applyDeclination(metar.windDirDegrees, mDeclination)
             val headWind = WxUtils.getHeadWindComponent(metar.windSpeedKnots.toDouble(),
                     windDir.toDouble(), rwyHeading.toDouble())
 

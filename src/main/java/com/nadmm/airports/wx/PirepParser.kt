@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,200 +16,142 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.location.Location
+import com.nadmm.airports.utils.GeoUtils
+import com.nadmm.airports.utils.GeoUtils.getMagneticDeclination
+import com.nadmm.airports.wx.Pirep.PirepEntry
+import org.xml.sax.Attributes
+import org.xml.sax.InputSource
+import org.xml.sax.helpers.DefaultHandler
+import java.io.File
+import java.io.FileReader
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import javax.xml.parsers.SAXParserFactory
+import kotlin.math.roundToInt
 
-import android.location.Location;
-import android.text.format.Time;
-import android.util.TimeFormatException;
+class PirepParser {
 
-import com.nadmm.airports.utils.GeoUtils;
-import com.nadmm.airports.wx.Pirep.Flags;
-import com.nadmm.airports.wx.Pirep.IcingCondition;
-import com.nadmm.airports.wx.Pirep.PirepEntry;
-import com.nadmm.airports.wx.Pirep.SkyCondition;
-import com.nadmm.airports.wx.Pirep.TurbulenceCondition;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-
-import java.io.File;
-import java.io.FileReader;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-public class PirepParser {
-
-    Location mLocation;
-    int mRadiusNM;
-    float mDeclination;
-
-    public void parse( File xml, Pirep pirep, Location location, int radiusNM ) {
-        try {
-            mLocation = location;
-            mRadiusNM = radiusNM;
-            mDeclination = GeoUtils.getMagneticDeclination( location );
-            pirep.fetchTime = xml.lastModified();
-            InputSource input = new InputSource( new FileReader( xml ) );
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parser = factory.newSAXParser();
-            PirepHandler handler = new PirepHandler( pirep );
-            XMLReader xmlReader = parser.getXMLReader();
-            xmlReader.setContentHandler( handler );
-            xmlReader.parse( input );
-        } catch ( Exception ignored ) {
+    companion object {
+        fun parse(xml: File, location: Location, radiusNM: Int): Pirep {
+            val pirep = Pirep()
+            pirep.fetchTime = xml.lastModified()
+            val input = InputSource(FileReader(xml))
+            val factory = SAXParserFactory.newInstance()
+            val parser = factory.newSAXParser()
+            val magneticDeclination = getMagneticDeclination(location)
+            val handler = PirepHandler(pirep, location, radiusNM, magneticDeclination)
+            val xmlReader = parser.xmlReader
+            xmlReader.contentHandler = handler
+            xmlReader.parse(input)
+            return pirep
         }
     }
 
-    protected final class PirepHandler extends DefaultHandler {
+    private class PirepHandler(
+        private val pirep: Pirep,
+        private val currentLocation: Location,
+        private val searchRadiusNM: Int,
+        private val magneticDeclination: Float
+    ) : DefaultHandler() {
+        private var entry: PirepEntry = PirepEntry()
+        private val sb = StringBuilder()
 
-        private Pirep pirep;
-        private PirepEntry entry;
-        private StringBuilder text = new StringBuilder();
-
-        public PirepHandler( Pirep pirep ) {
-            this.pirep = pirep;
+        override fun characters(ch: CharArray?, start: Int, length: Int) {
+            sb.append(ch, start, length)
         }
 
-        @Override
-        public void characters( char[] ch, int start, int length ) {
-            text.append( ch, start, length );
-        }
-
-        @Override
-        public void startElement( String uri, String localName, String qName,
-                Attributes attributes ) {
-            if ( qName.equalsIgnoreCase( "AircraftReport" ) ) {
-                entry = new PirepEntry();
-            } else if ( qName.equalsIgnoreCase( "sky_condition" ) ) {
-                String skyCover = attributes.getValue( "sky_cover" );
-                int cloudBaseMSL = Integer.MAX_VALUE;
-                String attr = attributes.getValue( "cloud_base_ft_msl" );
-                if ( attr != null ) {
-                    cloudBaseMSL = Integer.valueOf( attr );
-                }
-                int cloudTopMSL = Integer.MAX_VALUE;
-                attr = attributes.getValue( "cloud_top_ft_msl" );
-                if ( attr != null ) {
-                    cloudTopMSL = Integer.valueOf( attr );
-                }
-                SkyCondition sky = new SkyCondition( skyCover, cloudBaseMSL, cloudTopMSL );
-                entry.skyConditions.add( sky );
-            } else if ( qName.equalsIgnoreCase( "turbulence_condition" ) ) {
-                String type = attributes.getValue( "turbulence_type" );
-                String intensity = attributes.getValue( "turbulence_intensity" );
-                String frequency = attributes.getValue( "turbulence_freq" );
-                int turbulenceBaseMSL = Integer.MAX_VALUE;
-                String attr = attributes.getValue( "turbulence_base_ft_msl" );
-                if ( attr != null ) {
-                    turbulenceBaseMSL = Integer.valueOf( attr );
-                }
-                int turbulenceTopMSL = Integer.MAX_VALUE;
-                attr = attributes.getValue( "turbulence_top_ft_msl" );
-                if ( attr != null ) {
-                    turbulenceTopMSL = Integer.valueOf( attr );
-                }
-                entry.turbulenceConditions.add( new TurbulenceCondition( type, intensity,
-                        frequency, turbulenceBaseMSL, turbulenceTopMSL ) );
-            } else if ( qName.equalsIgnoreCase( "icing_condition" ) ) {
-                String type = attributes.getValue( "icing_type" );
-                String intensity = attributes.getValue( "icing_intensity" );
-                int icingBaseMSL = Integer.MAX_VALUE;
-                String attr = attributes.getValue( "icing_base_ft_msl" );
-                if ( attr != null ) {
-                    icingBaseMSL = Integer.valueOf( attr );
-                }
-                int icingTopMSL = Integer.MAX_VALUE;
-                attr = attributes.getValue( "icing_top_ft_msl" );
-                if ( attr != null ) {
-                    icingTopMSL = Integer.valueOf( attr );
-                }
-                entry.icingConditions.add( new IcingCondition( type, intensity,
-                        icingBaseMSL, icingTopMSL ) );
+        override fun startElement(uri: String?, localName: String?, qName: String, attributes: Attributes) {
+            if (qName.equals("AircraftReport", ignoreCase = true)) {
+                entry = PirepEntry()
+            } else if (qName.equals("sky_condition", ignoreCase = true)) {
+                val skyCondition = Pirep.SkyCondition.of(attributes)
+                entry.skyConditions.add(skyCondition)
+            } else if (qName.equals("turbulence_condition", ignoreCase = true)) {
+                val turbulenceCondition = Pirep.TurbulenceCondition.of(attributes)
+                entry.turbulenceConditions.add(turbulenceCondition)
+            } else if (qName.equals("icing_condition", ignoreCase = true)) {
+                val icingCondition = Pirep.IcingCondition.of(attributes)
+                entry.icingConditions.add(icingCondition)
             } else {
-                text.setLength( 0 );
+                sb.setLength(0)
             }
         }
 
-        @Override
-        public void endElement( String uri, String localName, String qName ) {
-            if ( qName.equalsIgnoreCase( "raw_text" ) ) {
-                entry.rawText = text.toString();
-            } else if ( qName.equalsIgnoreCase( "report_type" ) ) {
-                entry.reportType = text.toString();
-            } else if ( qName.equalsIgnoreCase( "receipt_time" ) ) {
-                try {
-                    Time time = new Time();
-                    time.parse3339( text.toString() );
-                    entry.receiptTime = time.toMillis( true );
-                } catch ( TimeFormatException ignored ) {
+        override fun endElement(uri: String?, localName: String?, qName: String) {
+            val text = sb.toString().trim()
+            if (qName.equals("raw_text", ignoreCase = true)) {
+                entry.rawText = text
+                val remarksStart = entry.rawText.indexOf("/RM ")
+                if (remarksStart != -1) {
+                    entry.remarks = entry.rawText.substring(remarksStart + 4).trim()
                 }
-            } else if ( qName.equalsIgnoreCase( "observation_time" ) ) {
-                try {
-                    Time time = new Time();
-                    time.parse3339( text.toString() );
-                    entry.observationTime = time.toMillis( true );
-                } catch ( TimeFormatException ignored ) {
+            } else if (qName.equals("report_type", ignoreCase = true)) {
+                entry.reportType = text
+            } else if (qName.equals("receipt_time", ignoreCase = true)) {
+                entry.receiptTime = parseDateTime(text)
+            } else if (qName.equals("observation_time", ignoreCase = true)) {
+                entry.observationTime = parseDateTime(text)
+            } else if (qName.equals("wx_string", ignoreCase = true)) {
+                WxSymbol.parseWxSymbols(entry.wxList, text)
+            } else if (qName.equals("aircraft_ref", ignoreCase = true)) {
+                entry.aircraftRef = if (text == "UNKN") "Unknown" else text
+            } else if (qName.equals("latitude", ignoreCase = true)) {
+                entry.latitude = text.toFloat()
+            } else if (qName.equals("longitude", ignoreCase = true)) {
+                entry.longitude = text.toFloat()
+            } else if (qName.equals("altitude_ft_msl", ignoreCase = true)) {
+                entry.altitudeFeetMsl = text.toInt()
+            } else if (qName.equals("visibility_statute_mi", ignoreCase = true)) {
+                entry.visibilitySM = text.toInt()
+            } else if (qName.equals("temp_c", ignoreCase = true)) {
+                entry.tempCelsius = text.toInt()
+            } else if (qName.equals("wind_dir_degrees", ignoreCase = true)) {
+                entry.windDirDegrees = text.toInt()
+            } else if (qName.equals("wind_speed_kt", ignoreCase = true)) {
+                entry.windSpeedKnots = text.toInt()
+            } else if (qName.equals("vert_gust_kt", ignoreCase = true)) {
+                entry.vertGustKnots = text.toInt()
+            } else if (qName.equals("no_time_stamp", ignoreCase = true)) {
+                if (text.equals("true", ignoreCase = true)) {
+                    entry.flags.add(Pirep.Flags.NoTimeStamp)
                 }
-            } else if ( qName.equalsIgnoreCase( "wx_string" ) ) {
-                WxSymbol.parseWxSymbols( entry.wxList, text.toString() );
-            } else if ( qName.equalsIgnoreCase( "aircraft_ref" ) ) {
-                entry.aircraftRef = text.toString();
-                if ( entry.aircraftRef.equals( "UNKN" ) ) {
-                    entry.aircraftRef = "Unknown";
+            } else if (qName.equals("above_ground_level_indicated", ignoreCase = true)) {
+                if (text.equals("true", ignoreCase = true)) {
+                    entry.flags.add(Pirep.Flags.AglIndicated)
                 }
-            } else if ( qName.equalsIgnoreCase( "latitude" ) ) {
-                entry.latitude = Float.valueOf( text.toString() );
-            } else if ( qName.equalsIgnoreCase( "longitude" ) ) {
-                entry.longitude = Float.valueOf( text.toString() );
-            } else if ( qName.equalsIgnoreCase( "altitude_ft_msl" ) ) {
-                entry.altitudeFeetMSL = Integer.valueOf( text.toString() );
-            } else if ( qName.equalsIgnoreCase( "visibiliy_statue_mi" ) ) {
-                entry.visibilitySM = Integer.valueOf( text.toString() );
-            } else if ( qName.equalsIgnoreCase( "temp_c" ) ) {
-                entry.tempCelsius = Integer.valueOf( text.toString() );
-            } else if ( qName.equalsIgnoreCase( "wind_dir_degrees" ) ) {
-                entry.windDirDegrees = Integer.valueOf( text.toString() );
-            } else if ( qName.equalsIgnoreCase( "wind_speed_kt" ) ) {
-                entry.windSpeedKnots = Integer.valueOf( text.toString() );
-            } else if ( qName.equalsIgnoreCase( "vert_gust_kt" ) ) {
-                entry.vertGustKnots = Integer.valueOf( text.toString() );
-            } else if ( qName.equalsIgnoreCase( "mid_point_assumed" ) ) {
-                if ( text.toString().equalsIgnoreCase( "true" ) ) {
-                    entry.flags.add( Flags.MidPointAssumed );
-                }
-            } else if ( qName.equalsIgnoreCase( "no_flt_lvl" ) ) {
-                if ( text.toString().equalsIgnoreCase( "true" ) ) {
-                    entry.flags.add( Flags.NoFlightLevel );
-                }
-            } else if ( qName.equalsIgnoreCase( "above_ground_level_indicated" ) ) {
-                if ( text.toString().equalsIgnoreCase( "true" ) ) {
-                    entry.flags.add( Flags.AglIndicated );
-                }
-            } else if ( qName.equalsIgnoreCase( "AircraftReport" ) ) {
-                if ( !entry.flags.contains( Flags.BadLocation ) ) {
-                    Location reportLocation = new Location( "" );
-                    reportLocation.setLatitude( entry.latitude );
-                    reportLocation.setLongitude( entry.longitude );
-
-                    float[] results = new float[ 2 ];
-                    Location.distanceBetween( mLocation.getLatitude(), mLocation.getLongitude(),
-                            reportLocation.getLatitude(), reportLocation.getLongitude(), results );
-
-                    entry.distanceNM = (long) (results[ 0 ]/GeoUtils.METERS_PER_NAUTICAL_MILE);
-                    if ( entry.distanceNM <= mRadiusNM ) {
-                        entry.bearing = ( results[ 1 ]+mDeclination+360 )%360;
-                        entry.isValid = true;
-                        pirep.entries.add( entry );
-                    }
+            } else if (qName.equals("AircraftReport", ignoreCase = true)) {
+                if (validateEntry(entry)) {
+                    pirep.entries.add(entry)
                 }
             }
         }
 
+        private fun parseDateTime(text: String): Long {
+            try {
+                val odt = OffsetDateTime.parse(text, DateTimeFormatter.ISO_DATE_TIME)
+                return odt.toInstant().toEpochMilli()
+            } catch (_: Exception) {
+            }
+            return Long.MAX_VALUE
+        }
+
+        private fun validateEntry(entry: PirepEntry): Boolean {
+            val results = FloatArray(2)
+            Location.distanceBetween(
+                currentLocation.latitude, currentLocation.longitude,
+                entry.latitude.toDouble(), entry.longitude.toDouble(),
+                results
+            )
+            val distanceNM = results[0] / GeoUtils.METERS_PER_NAUTICAL_MILE
+            if (distanceNM <= searchRadiusNM || entry.flags.contains(Pirep.Flags.BadLocation)) {
+                entry.distanceNM = distanceNM.roundToInt()
+                entry.bearing = GeoUtils.applyDeclination(results[1].roundToInt(),  magneticDeclination)
+                entry.isValid = true
+            }
+            return entry.isValid
+        }
     }
-
 }
