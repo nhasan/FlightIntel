@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,166 +16,132 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import com.nadmm.airports.R
+import com.nadmm.airports.utils.FormatUtils.formatFeetAgl
+import java.io.Serializable
 
-import com.nadmm.airports.R;
-import com.nadmm.airports.utils.FormatUtils;
+abstract class SkyCondition(val skyCover: String, val cloudBaseAGL: Int) : Serializable {
 
-import java.io.Serializable;
+    abstract val drawable: Int
 
-public abstract class SkyCondition implements Serializable {
+    companion object {
 
-    private static final long serialVersionUID = 1L;
-
-    protected String mSkyCover;
-    protected int mCloudBaseAGL;
-
-    private SkyCondition() {
-    }
-
-    private SkyCondition( String skyCover, int cloudBaseAGL ) {
-        mSkyCover = skyCover;
-        mCloudBaseAGL = cloudBaseAGL;
-    }
-
-    public abstract int getDrawable();
-
-    public String getSkyCover() {
-        return mSkyCover;
-    }
-
-    public int getCloudBaseAGL() {
-        return mCloudBaseAGL;
-    }
-
-    static public SkyCondition create( String skyCover, int cloudBaseAGL ) {
-        SkyCondition sky = null;
-
-        if ( skyCover.equalsIgnoreCase( "CLR" ) ) {
-            sky = new SkyCondition( skyCover, 0 ) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public String toString() {
-                    return "Sky clear below 12,000 ft AGL";
-                }
-
-                public int getDrawable() {
-                    return R.drawable.clr;
-                }
-            };
-        } else if ( skyCover.equalsIgnoreCase( "SKC" ) ) {
-            sky = new SkyCondition( skyCover, 0 ) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public String toString() {
-                    return "Sky clear";
-                }
-
-                public int getDrawable() {
-                    return R.drawable.skc;
-                }
-            };
-        } else if ( skyCover.equalsIgnoreCase( "FEW" ) ) {
-            sky = new SkyCondition( skyCover, cloudBaseAGL ) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public String toString() {
-                    return String.format( "Few clouds at %s",
-                            FormatUtils.formatFeetAgl( mCloudBaseAGL ) );
-                }
-
-                public int getDrawable() {
-                    return R.drawable.few;
-                }
-            };
-        } else if ( skyCover.equalsIgnoreCase( "SCT" ) ) {
-            sky = new SkyCondition( skyCover, cloudBaseAGL ) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public String toString() {
-                    return String.format( "Scattered clouds at %s",
-                            FormatUtils.formatFeetAgl( mCloudBaseAGL ) );
-                }
-
-                public int getDrawable() {
-                    return R.drawable.sct;
-                }
-            };
-        } else if ( skyCover.equalsIgnoreCase( "BKN" ) ) {
-            sky = new SkyCondition( skyCover, cloudBaseAGL ) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public String toString() {
-                    return String.format( "Broken clouds at %s",
-                            FormatUtils.formatFeetAgl( mCloudBaseAGL ) );
-                }
-
-                public int getDrawable() {
-                    return R.drawable.bkn;
-                }
-            };
-        } else if ( skyCover.equalsIgnoreCase( "OVC" ) ) {
-            sky = new SkyCondition( skyCover, cloudBaseAGL ) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public String toString() {
-                    return String.format( "Overcast clouds at %s",
-                            FormatUtils.formatFeetAgl( mCloudBaseAGL ) );
-                }
-
-                public int getDrawable() {
-                    return R.drawable.ovc;
-                }
-            };
-        } else if ( skyCover.equalsIgnoreCase( "OVX" ) ) {
-            sky = new SkyCondition( skyCover, 0 ) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public String toString() {
-                    return "Indefinite ceiling";
-                }
-
-                public int getDrawable() {
-                    return R.drawable.ovx;
-                }
-            };
-        } else if ( skyCover.equalsIgnoreCase( "SKM" ) ) {
-            sky = new SkyCondition( skyCover, 0 ) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public String toString() {
-                    return "Sky condition is missing";
-                }
-
-                public int getDrawable() {
-                    return R.drawable.skm;
-                }
-            };
-        } else if ( skyCover.equalsIgnoreCase( "NSC" ) ) {
-            sky = new SkyCondition( skyCover, cloudBaseAGL ) {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public String toString() {
-                    return "No significant clouds";
-                }
-
-                public int getDrawable() {
-                    return R.drawable.skm;
-                }
-            };
+        fun formatCloudBase(cloudBaseAGL: Int): String {
+            return if (cloudBaseAGL > 0) {
+                " at ${formatFeetAgl(cloudBaseAGL.toFloat())}"
+            } else {
+                ""
+            }
         }
 
-        return sky;
-    }
+        fun create(skyCover: String, cloudBaseAGL: Int = 0): SkyCondition {
+            var sky: SkyCondition?
 
+            when (skyCover) {
+                "CLR" -> {
+                    sky =  object : SkyCondition(skyCover, 0) {
+
+                        override fun toString(): String {
+                            return "Sky clear below 12,000 ft AGL"
+                        }
+
+                        override val drawable: Int
+                            get() = R.drawable.clr
+                    }
+                }
+                "SKC" -> {
+                    sky = object : SkyCondition(skyCover, 0) {
+
+                        override fun toString(): String {
+                            return "Sky clear"
+                        }
+
+                        override val drawable: Int
+                            get() = R.drawable.skc
+                    }
+                }
+                "FEW" -> {
+                    sky = object : SkyCondition(skyCover, cloudBaseAGL) {
+
+                        override fun toString(): String {
+                            return "Few clouds".plus(formatCloudBase(cloudBaseAGL))
+                        }
+
+                        override val drawable: Int
+                            get() = R.drawable.few
+                    }
+                }
+                "SCT" -> {
+                    sky = object : SkyCondition(skyCover, cloudBaseAGL) {
+
+                        override fun toString(): String {
+                            return "Scattered clouds".plus(formatCloudBase(cloudBaseAGL))
+                        }
+
+                        override val drawable: Int
+                            get() = R.drawable.sct
+                    }
+                }
+                "BKN" -> {
+                    sky = object : SkyCondition(skyCover, cloudBaseAGL) {
+
+                        override fun toString(): String {
+                            return "Broken clouds".plus(formatCloudBase(cloudBaseAGL))
+                        }
+
+                        override val drawable: Int
+                            get() = R.drawable.bkn
+                    }
+                }
+                "OVC" -> {
+                    sky = object : SkyCondition(skyCover, cloudBaseAGL) {
+
+                        override fun toString(): String {
+                            return "Overcast clouds".plus(formatCloudBase(cloudBaseAGL))
+                        }
+
+                        override val drawable: Int
+                            get() = R.drawable.ovc
+                    }
+                }
+                "OVX" -> {
+                    sky = object : SkyCondition(skyCover, 0) {
+
+                        override fun toString(): String {
+                            return "Indefinite ceiling"
+                        }
+
+                        override val drawable: Int
+                            get() = R.drawable.ovx
+                    }
+                }
+                "NSC" -> {
+                    sky = object : SkyCondition(skyCover, 0) {
+
+                        override fun toString(): String {
+                            return "No significant clouds"
+                        }
+
+                        override val drawable: Int
+                            get() = R.drawable.skm
+                    }
+                }
+                else -> {
+                    sky = object : SkyCondition(skyCover, 0) {
+
+                        override fun toString(): String {
+                            return "Sky condition is missing"
+                        }
+
+                        override val drawable: Int
+                            get() = R.drawable.skm
+                    }
+                }
+            }
+
+            return sky
+        }
+    }
 }
