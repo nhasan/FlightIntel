@@ -16,50 +16,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.content.Intent
 
-import android.content.Intent;
-
-import androidx.annotation.NonNull;
-
-import java.util.Map;
-
-public class ProgChartFragment extends WxGraphicFragmentBase {
-
-    private static final Map<String, String> ProgChartCodes = Map.ofEntries(
-            Map.entry("F000_wpc_sfc", "Current Surface Analysis"),
-            Map.entry("F006_wpc_prog", "6 hr Surface Prognosis"),
-            Map.entry("F012_wpc_prog", "12 hr Surface Prognosis"),
-            Map.entry("F018_wpc_prog", "18 hr Surface Prognosis"),
-            Map.entry("F024_wpc_prog", "24 hr Surface Prognosis"),
-            Map.entry("F030_wpc_prog", "30 hr Surface Prognosis"),
-            Map.entry("F036_wpc_prog", "36 hr Surface Prognosis"),
-            Map.entry("F048_wpc_prog", "48 hr Surface Prognosis"),
-            Map.entry("F060_wpc_prog", "60 hr Surface Prognosis"),
-            Map.entry("F072_wpc_prog", "3 day Surface Prognosis"),
-            Map.entry("F096_wpc_prog", "4 day Surface Prognosis"),
-            Map.entry("F120_wpc_prog", "5 day Surface Prognosis"),
-            Map.entry("F144_wpc_prog", "6 day Surface Prognosis"),
-            Map.entry("F168_wpc_prog", "7 day Surface Prognosis")
-    );
-
-    public ProgChartFragment() {
-        super( NoaaService.ACTION_GET_PROGCHART, ProgChartCodes );
-        setTitle( "Prognosis Charts" );
-        setGraphicLabel( "Select Prognosis Chart" );
-        setHelpText("Prognosis charts provide a visual representation of expected weather patterns, " +
-                "including temperature, precipitation, and other meteorological elements.");
+class ProgChartFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_PROGCHART, ProgChartCodes) {
+    init {
+        title = "Prognosis Charts"
+        graphicLabel = "Select Prognosis Chart"
+        helpText = "Prognosis charts provide a visual representation of expected weather patterns, " +
+                "including temperature, precipitation, and other meteorological elements."
     }
 
-    @NonNull
-    @Override
-    protected Intent getServiceIntent() {
-        return new Intent( getActivity(), ProgChartService.class );
-    }
+    override val serviceIntent: Intent
+        get() = Intent(activity, ProgChartService::class.java)
 
-    @Override
-    protected String getProduct() {
-        return "progchart";
+    override val product: String
+        get() = "progchart"
+
+    companion object {
+        private val ProgChartCodes = mapOf(
+            "F000_wpc_sfc" to "Current Surface Analysis",
+            "F006_wpc_prog" to "6 hr Surface Prognosis",
+            "F012_wpc_prog" to "12 hr Surface Prognosis",
+            "F018_wpc_prog" to "18 hr Surface Prognosis",
+            "F024_wpc_prog" to "24 hr Surface Prognosis",
+            "F030_wpc_prog" to "30 hr Surface Prognosis",
+            "F036_wpc_prog" to "36 hr Surface Prognosis",
+            "F048_wpc_prog" to "48 hr Surface Prognosis",
+            "F060_wpc_prog" to "60 hr Surface Prognosis",
+            "F072_wpc_prog" to "3 day Surface Prognosis",
+            "F096_wpc_prog" to "4 day Surface Prognosis",
+            "F120_wpc_prog" to "5 day Surface Prognosis",
+            "F144_wpc_prog" to "6 day Surface Prognosis",
+            "F168_wpc_prog" to "7 day Surface Prognosis"
+        )
     }
 }
