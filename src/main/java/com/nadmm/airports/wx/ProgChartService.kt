@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,50 +16,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.content.Intent
+import com.nadmm.airports.utils.UiUtils.showToast
+import kotlinx.coroutines.launch
 
-import android.content.Intent;
-import android.text.format.DateUtils;
+class ProgChartService : NoaaService2("progchart", PROGCHART_CACHE_MAX_AGE) {
 
-import com.nadmm.airports.utils.UiUtils;
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.let {
+            val action = intent.action
 
-import java.io.File;
-
-public class ProgChartService extends NoaaService {
-
-    private final String PROGCHART_IMAGE_NAME = "%s.gif";
-    private final String PROGCHART_IMAGE_PATH = "/data/products/progs/";
-    private static final long PROGCHART_CACHE_MAX_AGE = 240*DateUtils.MINUTE_IN_MILLIS;
-
-    public ProgChartService() {
-        super( "progchart", PROGCHART_CACHE_MAX_AGE );
-    }
-
-    @Override
-    protected void onHandleIntent( Intent intent ) {
-        String action = intent.getAction();
-        if ( action.equals( ACTION_GET_PROGCHART ) ) {
-            String type = intent.getStringExtra( TYPE );
-            if ( type.equals(TYPE_GRAPHIC) ) {
-                String code = intent.getStringExtra( IMAGE_CODE );
-                String imageName = String.format( PROGCHART_IMAGE_NAME, code );
-                File imageFile = getDataFile( imageName );
-                if ( !imageFile.exists() ) {
-                    try {
-                        StringBuilder path = new StringBuilder();
-                        path.append( PROGCHART_IMAGE_PATH ).append( imageName );
-                        fetchFromNoaa( path.toString(), null, imageFile, false );
-                    } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch PROGCHART image: "
-                                +e.getMessage() );
+            serviceScope.launch {
+                if (action == ACTION_GET_PROGCHART) {
+                    val type = intent.getStringExtra(TYPE)
+                    if (type == TYPE_GRAPHIC) {
+                        getProgChartImage(intent)
                     }
                 }
-
-                // Broadcast the result
-                sendImageResultIntent( action, code, imageFile );
             }
         }
+        return START_NOT_STICKY
     }
 
+    private fun getProgChartImage(intent: Intent) {
+        val action = intent.action
+        val code = intent.getStringExtra(IMAGE_CODE)
+        val imageName = "$code.gif"
+        val imageFile = getDataFile(imageName)
+        if (!imageFile.exists()) {
+            try {
+                val path = "/data/products/progs/$imageName"
+                fetchFromNoaa(path, null, imageFile, false)
+            } catch (e: Exception) {
+                showToast(this, "Unable to fetch PROGCHART image: ${e.message}")
+            }
+        }
+
+        // Broadcast the result
+        sendImageResultIntent(action, code, imageFile)
+    }
 }

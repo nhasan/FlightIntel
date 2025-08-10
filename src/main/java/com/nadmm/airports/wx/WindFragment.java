@@ -21,6 +21,8 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
+
 import java.util.Map;
 
 public class WindFragment extends WxGraphicFragmentBase {
@@ -49,9 +51,10 @@ public class WindFragment extends WxGraphicFragmentBase {
     public WindFragment() {
         super( NoaaService.ACTION_GET_WIND, WindMap, TypeMap );
         setTitle( "Wind Images" );
-        setLabel( "Select Altitude" );
+        setGraphicLabel( "Select Altitude" );
     }
 
+    @NonNull
     @Override
     protected Intent getServiceIntent() {
         return new Intent( getActivity(), WindService.class );

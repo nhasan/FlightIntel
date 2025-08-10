@@ -22,6 +22,9 @@ package com.nadmm.airports.wx;
 import static java.util.Map.entry;
 
 import android.content.Intent;
+
+import androidx.annotation.NonNull;
+
 import java.util.Map;
 
 public class SurfaceForecatFragment extends WxGraphicFragmentBase {
@@ -58,10 +61,11 @@ public class SurfaceForecatFragment extends WxGraphicFragmentBase {
         super(NoaaService.ACTION_GET_GFA, Regions, Forecasts);
 
         setTitle("Graphical Forecast");
-        setGraphicTypeName("Select Forecast");
-        setLabel("Select Region");
+        setGraphicTypeLabel("Select Forecast");
+        setGraphicLabel("Select Region");
     }
 
+    @NonNull
     @Override
     protected Intent getServiceIntent() {
         return new Intent( getActivity(), SurfaceForecastService.class );

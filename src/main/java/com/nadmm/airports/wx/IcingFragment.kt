@@ -22,7 +22,10 @@ import android.content.Intent
 
 class IcingFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_ICING, Altitudes, Types) {
     init {
-        setLabel("Select Altitude")
+        graphicTypeLabel = "Select Period"
+        title = "Icing Forecast"
+        helpText = "Select the forecast period and altitude for icing conditions."
+        graphicLabel = "Select Altitude"
     }
 
     override val product: String?

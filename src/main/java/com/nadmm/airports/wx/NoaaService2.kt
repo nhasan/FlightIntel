@@ -176,7 +176,8 @@ abstract class NoaaService2(private val mName: String, private val mAge: Long) :
         const val TAF_RADIUS = 25
         const val PIREP_RADIUS_NM = 50
         const val PIREP_HOURS_BEFORE = 3
-        const val PIREP_CACHE_MAX_AGE = HOUR_IN_MILLIS // 1 hour
+        const val PIREP_CACHE_MAX_AGE = HOUR_IN_MILLIS
+        const val PROGCHART_CACHE_MAX_AGE = 3 * HOUR_IN_MILLIS
 
         const val STATION_ID: String = "STATION_ID"
         const val STATION_IDS: String = "STATION_IDS"

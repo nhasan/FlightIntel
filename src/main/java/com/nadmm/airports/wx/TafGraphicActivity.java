@@ -22,6 +22,8 @@ package com.nadmm.airports.wx;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
 import com.nadmm.airports.ActivityBase;
 import com.nadmm.airports.FragmentBase;
 import com.nadmm.airports.R;
@@ -41,7 +43,7 @@ public class TafGraphicActivity extends ActivityBase {
     }
 
     @Override
-    public void onFragmentStarted( FragmentBase fragment ) {
+    public void onFragmentStarted(@NonNull FragmentBase fragment ) {
         // Do not call the parent implementation
     }
 
@@ -66,10 +68,11 @@ public class TafGraphicActivity extends ActivityBase {
         public TafGraphicFragment() {
             super( NoaaService.ACTION_GET_TAF,
                    WxRegions.INSTANCE.getRegionCodes(), Periods );
-            setGraphicTypeName( "Valid From" );
-            setLabel( "Select Region" );
+            setGraphicTypeLabel( "Valid From" );
+            setGraphicLabel( "Select Region" );
         }
 
+        @NonNull
         @Override
         protected Intent getServiceIntent() {
             return new Intent( getActivity(), TafService.class );

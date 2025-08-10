@@ -24,6 +24,8 @@ import java.util.Map;
 
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
+
 public class SigWxFragment extends WxGraphicFragmentBase {
 
     private static final Map<String, String> SigWxMap = Map.of(
@@ -40,9 +42,10 @@ public class SigWxFragment extends WxGraphicFragmentBase {
     public SigWxFragment() {
         super( NoaaService.ACTION_GET_SIGWX, SigWxMap);
         setTitle( "Significant Wx");
-        setLabel( "Select SigWx Image" );
+        setGraphicLabel( "Select SigWx Image" );
     }
 
+    @NonNull
     @Override
     protected Intent getServiceIntent() {
         return new Intent( getActivity(), SigWxService.class );

@@ -32,23 +32,23 @@ abstract class WxGraphicFragmentBase : WxFragmentBase {
     private val action: String
     private val wxGraphics: Map<String, String>
     private val wxTypes: Map<String, String>
-    private var typeName: String = ""
-    private var label: String = ""
-    private var title: String = ""
-    private var helpText: String = ""
     private var selectedRow: View? = null
+    var graphicTypeLabel = ""
+    var graphicLabel = ""
+    var title = ""
+    var helpText = ""
 
     private var _binding: WxMapDetailViewBinding? = null
     private val binding get() = _binding!!
 
     constructor(action: String, graphics: Map<String, String>) {
-        this@WxGraphicFragmentBase.action = action
+        this.action = action
         wxGraphics = graphics
         wxTypes = mapOf()
     }
 
     constructor(action: String, graphics: Map<String, String>, types: Map<String, String>) {
-        this@WxGraphicFragmentBase.action = action
+        this.action = action
         wxGraphics = graphics
         wxTypes = types
     }
@@ -72,8 +72,8 @@ abstract class WxGraphicFragmentBase : WxFragmentBase {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            if (label.isNotEmpty()) {
-                wxMapLabel.text = label
+            if (graphicLabel.isNotEmpty()) {
+                wxMapLabel.text = graphicLabel
                 wxMapLabel.visibility = View.VISIBLE
             }
 
@@ -99,9 +99,9 @@ abstract class WxGraphicFragmentBase : WxFragmentBase {
             }
 
             if (wxTypes.isNotEmpty()) {
-                if (typeName.isNotEmpty()) {
+                if (graphicTypeLabel.isNotEmpty()) {
                     wxMapTypeLabel.visibility = View.VISIBLE
-                    wxMapTypeLabel.text = typeName
+                    wxMapTypeLabel.text = graphicTypeLabel
                 }
                 wxMapTypeLayout.visibility = View.VISIBLE
                 val types = wxTypes.toSortedMap().values.toList()
@@ -158,22 +158,6 @@ abstract class WxGraphicFragmentBase : WxFragmentBase {
             setSpinnerVisible(false)
             selectedRow = null
         }
-    }
-
-    protected fun setLabel(s: String) {
-        label = s
-    }
-
-    protected fun setGraphicTypeName(s: String) {
-        typeName = s
-    }
-
-    protected fun setTitle(s: String) {
-        title = s
-    }
-
-    protected fun setHelpText(s: String) {
-        helpText = s
     }
 
     private fun setSpinnerVisible(visible: Boolean) {

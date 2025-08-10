@@ -40,7 +40,7 @@ class PirepGrapahicActivity : ActivityBase() {
 
     class PirepGraphicFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_PIREP, PirepCodes, PirepTypes) {
         init {
-            setLabel("Select Region")
+            graphicLabel = "Select Region"
         }
 
         override val serviceIntent: Intent

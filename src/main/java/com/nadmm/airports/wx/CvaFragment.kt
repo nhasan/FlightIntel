@@ -23,13 +23,12 @@ import com.nadmm.airports.wx.WxRegions.RegionCodes
 
 class CvaFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_CVA, RegionCodes, TypeCode) {
     init {
-        setTitle("Ceiling and Visibility")
-        setLabel("Select Region")
-        setHelpText(
+        title = "Ceiling and Visibility"
+        graphicLabel = "Select Region"
+        helpText =
             ("By FAA policy, CVA is a Supplementary Weather Product for "
                     + "enhanced situational awareness only. CVA must only be used with primary "
                     + "products such as METARs, TAFs and AIRMETs.")
-        )
     }
 
     override val product: String

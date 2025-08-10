@@ -22,6 +22,8 @@ package com.nadmm.airports.wx;
 import java.util.Map;
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
+
 public class SatelliteFragment extends WxGraphicFragmentBase {
 
     private static final Map<String, String> SatTypes = Map.of(
@@ -34,9 +36,10 @@ public class SatelliteFragment extends WxGraphicFragmentBase {
         super( NoaaService.ACTION_GET_SATELLITE, WxRegions.INSTANCE.getRegionCodes(), SatTypes );
 
         setTitle( "Satellite" );
-        setLabel( "Select Region" );
+        setGraphicLabel( "Select Region" );
     }
 
+    @NonNull
     @Override
     protected Intent getServiceIntent() {
         return new Intent( getActivity(), SatelliteService.class );

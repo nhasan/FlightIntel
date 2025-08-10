@@ -46,7 +46,7 @@ class AirSigmetGraphicActivity : ActivityBase() {
             get() = Intent(activity, AirSigmetService::class.java)
 
         init {
-            setLabel("Select Category")
+            graphicLabel = "Select Category"
         }
 
         companion object {

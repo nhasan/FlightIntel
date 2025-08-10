@@ -41,7 +41,7 @@ class MetarGraphicActivity : ActivityBase() {
 
     class MetarGraphicFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_METAR, RegionCodes) {
         init {
-            setLabel("Select Region")
+            graphicLabel = "Select Region"
         }
 
         override val serviceIntent: Intent

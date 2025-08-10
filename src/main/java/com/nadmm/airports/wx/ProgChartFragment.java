@@ -21,6 +21,8 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
+
 import java.util.Map;
 
 public class ProgChartFragment extends WxGraphicFragmentBase {
@@ -45,9 +47,12 @@ public class ProgChartFragment extends WxGraphicFragmentBase {
     public ProgChartFragment() {
         super( NoaaService.ACTION_GET_PROGCHART, ProgChartCodes );
         setTitle( "Prognosis Charts" );
-        setLabel( "Select Prognosis Chart" );
+        setGraphicLabel( "Select Prognosis Chart" );
+        setHelpText("Prognosis charts provide a visual representation of expected weather patterns, " +
+                "including temperature, precipitation, and other meteorological elements.");
     }
 
+    @NonNull
     @Override
     protected Intent getServiceIntent() {
         return new Intent( getActivity(), ProgChartService.class );

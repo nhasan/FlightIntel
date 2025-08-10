@@ -21,6 +21,8 @@ package com.nadmm.airports.wx;
 
 import android.content.Intent;
 
+import androidx.annotation.NonNull;
+
 import java.util.Map;
 
 public class RadarFragment extends WxGraphicFragmentBase {
@@ -33,9 +35,10 @@ public class RadarFragment extends WxGraphicFragmentBase {
 
     public RadarFragment() {
         super( NoaaService.ACTION_GET_RADAR, WxRegions.INSTANCE.getRegionCodes(), TypeCodes );
-        setLabel( "Select Region" );
+        setGraphicLabel( "Select Region" );
     }
 
+    @NonNull
     @Override
     protected Intent getServiceIntent() {
         return new Intent( getActivity(), RadarService.class );
