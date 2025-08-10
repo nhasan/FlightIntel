@@ -40,7 +40,7 @@ import java.util.Date
 import java.util.zip.GZIPInputStream
 
 abstract class NoaaService2(private val serviceName: String, private val maxAgeMillis: Long) : Service() {
-    private var dataDirectory: File = SystemUtils.getExternalDir(this, "wx/$serviceName")
+    private var dataDirectory: File? = null
     private val serviceJob = SupervisorJob() // Use SupervisorJob for better error handling in children
     // Coroutine scope tied to Dispatchers.IO for background work
     protected val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
@@ -48,9 +48,10 @@ abstract class NoaaService2(private val serviceName: String, private val maxAgeM
     override fun onCreate() {
         super.onCreate()
 
+        dataDirectory = SystemUtils.getExternalDir(this, "wx/$serviceName")
         // Remove any old files from cache first
         cleanupCache(dataDirectory, maxAgeMillis)
-        Log.d(TAG, "onCreate() called for $serviceName")
+        Log.d(TAG, "onCreate() called for $serviceName service")
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -60,18 +61,19 @@ abstract class NoaaService2(private val serviceName: String, private val maxAgeM
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy() called for $serviceName")
+        Log.d(TAG, "onDestroy() called for $serviceName service")
         // Cancel all coroutines when the service is destroyed
         serviceJob.cancel() // This will cancel all coroutines launched in serviceScope
     }
 
-    private fun cleanupCache(dir: File, maxAge: Long) {
+    private fun cleanupCache(dir: File?, maxAge: Long) {
         // Delete all files that are older
+        val files = dir?.listFiles() ?: return
         val now = Date()
-        val files = dir.listFiles()
-        for (file in files!!) {
+        for (file in files) {
             val age = now.time - file.lastModified()
             if (age > maxAge) {
+                Log.d(TAG, "Deleting old cache file: ${file.name}")
                 file.delete()
             }
         }
