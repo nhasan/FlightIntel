@@ -39,10 +39,8 @@ import java.io.Serializable
 import java.util.Date
 import java.util.zip.GZIPInputStream
 
-abstract class NoaaService2(private val mName: String, private val mAge: Long) : Service() {
-    protected val AWC_HOST: String = "aviationweather.gov"
-    protected val ADDS_DATASERVER_PATH: String = "/cgi-bin/data/dataserver.php"
-    private var mDataDir: File? = null
+abstract class NoaaService2(private val serviceName: String, private val maxAgeMillis: Long) : Service() {
+    private var dataDirectory: File = SystemUtils.getExternalDir(this, "wx/$serviceName")
     private val serviceJob = SupervisorJob() // Use SupervisorJob for better error handling in children
     // Coroutine scope tied to Dispatchers.IO for background work
     protected val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
@@ -50,10 +48,9 @@ abstract class NoaaService2(private val mName: String, private val mAge: Long) :
     override fun onCreate() {
         super.onCreate()
 
-        mDataDir = SystemUtils.getExternalDir(this, "wx/$mName")
         // Remove any old files from cache first
-        cleanupCache(mDataDir!!, mAge)
-        Log.d(TAG, "onCreate() called for $mName")
+        cleanupCache(dataDirectory, maxAgeMillis)
+        Log.d(TAG, "onCreate() called for $serviceName")
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -63,7 +60,7 @@ abstract class NoaaService2(private val mName: String, private val mAge: Long) :
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy() called for $mName")
+        Log.d(TAG, "onDestroy() called for $serviceName")
         // Cancel all coroutines when the service is destroyed
         serviceJob.cancel() // This will cancel all coroutines launched in serviceScope
     }
@@ -99,7 +96,7 @@ abstract class NoaaService2(private val mName: String, private val mAge: Long) :
     }
 
     protected fun getDataFile(name: String): File {
-        return File(mDataDir, name)
+        return File(dataDirectory, name)
     }
 
     protected fun sendSerializableResultIntent(
@@ -170,6 +167,9 @@ abstract class NoaaService2(private val mName: String, private val mAge: Long) :
 
     companion object {
         private val TAG: String = NoaaService2::class.java.simpleName
+
+        protected const val AWC_HOST: String = "aviationweather.gov"
+        protected const val ADDS_DATASERVER_PATH: String = "/cgi-bin/data/dataserver.php"
 
         const val METAR_HOURS_BEFORE = 3
         const val TAF_HOURS_BEFORE = 3
