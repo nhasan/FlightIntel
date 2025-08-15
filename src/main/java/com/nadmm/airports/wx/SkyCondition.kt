@@ -18,130 +18,47 @@
  */
 package com.nadmm.airports.wx
 
+import android.os.Parcelable
 import com.nadmm.airports.R
 import com.nadmm.airports.utils.FormatUtils.formatFeetAgl
-import java.io.Serializable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
-abstract class SkyCondition(val skyCover: String, val cloudBaseAGL: Int) : Serializable {
+@Parcelize
+@Serializable
+class SkyCondition(
+    val skyCover: String,
+    val cloudBaseAGL: Int,
+    val drawable: Int,
+    val description: String
+) : Parcelable {
 
-    abstract val drawable: Int
+    override fun toString(): String {
+        return description.plus(formatCloudBase())
+    }
+
+    protected fun formatCloudBase(): String {
+        return if (cloudBaseAGL > 0) {
+            " at ${formatFeetAgl(cloudBaseAGL.toFloat())}"
+        } else {
+            ""
+        }
+    }
 
     companion object {
 
-        fun formatCloudBase(cloudBaseAGL: Int): String {
-            return if (cloudBaseAGL > 0) {
-                " at ${formatFeetAgl(cloudBaseAGL.toFloat())}"
-            } else {
-                ""
+        fun of(skyCover: String, cloudBaseAGL: Int = 0): SkyCondition {
+            return when (skyCover) {
+                "CLR" -> SkyCondition(skyCover, 0, R.drawable.clr, "Sky clear below 12,000 ft AGL")
+                "SKC" -> SkyCondition(skyCover, 0, R.drawable.skc, "Sky clear")
+                "FEW" -> SkyCondition(skyCover, cloudBaseAGL, R.drawable.few, "Few clouds")
+                "SCT" -> SkyCondition(skyCover, cloudBaseAGL, R.drawable.sct, "Scattered clouds")
+                "BKN" -> SkyCondition(skyCover, cloudBaseAGL, R.drawable.bkn, "Broken clouds")
+                "OVC" -> SkyCondition(skyCover, cloudBaseAGL, R.drawable.ovc, "Overcast clouds")
+                "OVX" -> SkyCondition(skyCover, 0, R.drawable.ovx, "Indefinite ceiling")
+                "NSC" -> SkyCondition(skyCover, 0, R.drawable.skm, "No significant clouds")
+                else -> SkyCondition(skyCover, 0, R.drawable.skm, "Sky condition is missing")
             }
-        }
-
-        fun create(skyCover: String, cloudBaseAGL: Int = 0): SkyCondition {
-            var sky: SkyCondition?
-
-            when (skyCover) {
-                "CLR" -> {
-                    sky =  object : SkyCondition(skyCover, 0) {
-
-                        override fun toString(): String {
-                            return "Sky clear below 12,000 ft AGL"
-                        }
-
-                        override val drawable: Int
-                            get() = R.drawable.clr
-                    }
-                }
-                "SKC" -> {
-                    sky = object : SkyCondition(skyCover, 0) {
-
-                        override fun toString(): String {
-                            return "Sky clear"
-                        }
-
-                        override val drawable: Int
-                            get() = R.drawable.skc
-                    }
-                }
-                "FEW" -> {
-                    sky = object : SkyCondition(skyCover, cloudBaseAGL) {
-
-                        override fun toString(): String {
-                            return "Few clouds".plus(formatCloudBase(cloudBaseAGL))
-                        }
-
-                        override val drawable: Int
-                            get() = R.drawable.few
-                    }
-                }
-                "SCT" -> {
-                    sky = object : SkyCondition(skyCover, cloudBaseAGL) {
-
-                        override fun toString(): String {
-                            return "Scattered clouds".plus(formatCloudBase(cloudBaseAGL))
-                        }
-
-                        override val drawable: Int
-                            get() = R.drawable.sct
-                    }
-                }
-                "BKN" -> {
-                    sky = object : SkyCondition(skyCover, cloudBaseAGL) {
-
-                        override fun toString(): String {
-                            return "Broken clouds".plus(formatCloudBase(cloudBaseAGL))
-                        }
-
-                        override val drawable: Int
-                            get() = R.drawable.bkn
-                    }
-                }
-                "OVC" -> {
-                    sky = object : SkyCondition(skyCover, cloudBaseAGL) {
-
-                        override fun toString(): String {
-                            return "Overcast clouds".plus(formatCloudBase(cloudBaseAGL))
-                        }
-
-                        override val drawable: Int
-                            get() = R.drawable.ovc
-                    }
-                }
-                "OVX" -> {
-                    sky = object : SkyCondition(skyCover, 0) {
-
-                        override fun toString(): String {
-                            return "Indefinite ceiling"
-                        }
-
-                        override val drawable: Int
-                            get() = R.drawable.ovx
-                    }
-                }
-                "NSC" -> {
-                    sky = object : SkyCondition(skyCover, 0) {
-
-                        override fun toString(): String {
-                            return "No significant clouds"
-                        }
-
-                        override val drawable: Int
-                            get() = R.drawable.skm
-                    }
-                }
-                else -> {
-                    sky = object : SkyCondition(skyCover, 0) {
-
-                        override fun toString(): String {
-                            return "Sky condition is missing"
-                        }
-
-                        override val drawable: Int
-                            get() = R.drawable.skm
-                    }
-                }
-            }
-
-            return sky
         }
     }
 }

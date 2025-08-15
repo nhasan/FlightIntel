@@ -18,193 +18,152 @@
  */
 package com.nadmm.airports.wx
 
-import android.util.TimeFormatException
 import com.nadmm.airports.utils.WxUtils
 import com.nadmm.airports.utils.WxUtils.computeFlightCategory
 import org.xml.sax.Attributes
 import org.xml.sax.InputSource
-import org.xml.sax.SAXException
 import org.xml.sax.helpers.DefaultHandler
 import java.io.File
-import java.io.FileReader
-import java.io.IOException
+import java.io.FileInputStream
 import java.time.Instant
-import javax.xml.parsers.ParserConfigurationException
+import java.time.format.DateTimeParseException
 import javax.xml.parsers.SAXParserFactory
 
 class MetarParser {
-    private var mFetchTime: Long = 0
-    private val mMetars = HashMap<String?, Metar>()
-    @Throws(ParserConfigurationException::class, SAXException::class, IOException::class)
-    fun parse(xmlFile: File, stationIds: List<String?>): List<Metar> {
-        mFetchTime = xmlFile.lastModified()
-        val input = InputSource(FileReader(xmlFile))
-        val factory = SAXParserFactory.newInstance()
-        val parser = factory.newSAXParser()
-        val handler = MetarHandler()
-        val xmlReader = parser.xmlReader
-        xmlReader.contentHandler = handler
-        xmlReader.parse(input)
-        val metars = ArrayList(mMetars.values)
+
+    fun parse(xmlFile: File, stationIds: List<String>): List<Metar> {
+        val parsedMetars = mutableMapOf<String, Metar>()
+
+        FileInputStream(xmlFile).use { fileStream ->
+            val input = InputSource(fileStream)
+            val parser = SAXParserFactory.newInstance().newSAXParser()
+
+            // Assume MetarHandler now accepts the map directly to populate it
+            val handler = MetarHandler(xmlFile, parsedMetars)
+
+            parser.xmlReader.contentHandler = handler
+            parser.xmlReader.parse(input)
+        }
+
         // Now put the missing ones
-        for (stationId in stationIds) {
-            if (!mMetars.containsKey(stationId)) {
-                val metar = Metar()
-                metar.stationId = stationId
-                metar.fetchTime = mFetchTime
-                metars.add(metar)
+        stationIds.forEach { stationId ->
+            parsedMetars.getOrPut(stationId) {
+                Metar(stationId = stationId)
             }
         }
-        return metars
+
+        return parsedMetars.values.toList()
     }
 
-    private inner class MetarHandler : DefaultHandler() {
+    private inner class MetarHandler(
+        private val xmlFile: File,
+        private val parsedMetars: MutableMap<String, Metar>
+    ) : DefaultHandler() {
         private lateinit var metar: Metar
-        private val text = StringBuilder()
+        private val sb = StringBuilder()
+
         override fun characters(ch: CharArray, start: Int, length: Int) {
-            text.appendRange(ch, start, start + length)
+            sb.append(ch, start, length)
         }
 
         override fun startElement(
             uri: String, localName: String, qName: String,
             attributes: Attributes
         ) {
+            sb.clear()
             if (qName.equals("metar", ignoreCase = true)) {
-                metar = Metar()
-                metar.fetchTime = mFetchTime
+                metar = Metar(fetchTime = xmlFile.lastModified())
             } else if (qName.equals("sky_condition", ignoreCase = true)) {
                 val skyCover = attributes.getValue("sky_cover")
                 val cloudBaseAGL = attributes.getValue("cloud_base_ft_agl")?.toInt() ?: 0
-                val skyCondition = SkyCondition.create(skyCover, cloudBaseAGL)
+                val skyCondition = SkyCondition.of(skyCover, cloudBaseAGL)
                 metar.skyConditions.add(skyCondition)
-            } else {
-                text.clear()
             }
         }
 
+        // In endElement function
         override fun endElement(uri: String, localName: String, qName: String) {
-            if (qName.equals("metar", ignoreCase = true)) {
-                metar.isValid = metar.rawText != null
-                if (metar.isValid) {
-                    parseRemarks(metar)
-                    setMissingFields(metar)
+            val text = sb.trim().toString()
+
+            when (qName.lowercase()) {
+                "metar" -> {
+                    metar.isValid = metar.stationId != null && metar.rawText != null
+                    if (metar.isValid) {
+                        parseRemarks(metar)
+                        setMissingFields(metar)
+                    }
+                    metar.stationId?.let { parsedMetars[it] = metar }
                 }
-                mMetars[metar.stationId] = metar
-            } else if (qName.equals("raw_text", ignoreCase = true)) {
-                metar.rawText = text.toString()
-            } else if (qName.equals("observation_time", ignoreCase = true)) {
-                try {
-                    val time = Instant.parse(text.toString())
-                    metar.observationTime = time.toEpochMilli()
-                } catch (ignored: TimeFormatException) {
+                "raw_text" -> metar.rawText = text
+                "observation_time" -> {
+                    try {
+                        val time = Instant.parse(text)
+                        metar.observationTime = time.toEpochMilli()
+                    } catch (_: DateTimeParseException) { // Use a more specific exception
+                    }
                 }
-            } else if (qName.equals("station_id", ignoreCase = true)) {
-                metar.stationId = text.toString()
-            } else if (qName.equals("elevation_m", ignoreCase = true)) {
-                metar.stationElevationMeters = text.toString().toFloat()
-            } else if (qName.equals("temp_c", ignoreCase = true)) {
-                metar.tempCelsius = text.toString().toFloat()
-            } else if (qName.equals("dewpoint_c", ignoreCase = true)) {
-                metar.dewpointCelsius = text.toString().toFloat()
-            } else if (qName.equals("wind_dir_degrees", ignoreCase = true)) {
-                metar.windDirDegrees = text.toString().toIntOrNull() ?: 0
-            } else if (qName.equals("wind_speed_kt", ignoreCase = true)) {
-                metar.windSpeedKnots = text.toString().toInt()
-            } else if (qName.equals("wind_gust_kt", ignoreCase = true)) {
-                metar.windGustKnots = text.toString().toInt()
-            } else if (qName.equals("visibility_statute_mi", ignoreCase = true)) {
-                metar.visibilitySM = text.toString().toFloatOrNull() ?: 10.1F
-            } else if (qName.equals("altim_in_hg", ignoreCase = true)) {
-                metar.altimeterHg = text.toString().toFloat()
-            } else if (qName.equals("sea_level_pressure_mb", ignoreCase = true)) {
-                metar.seaLevelPressureMb = text.toString().toFloat()
-            } else if (qName.equals("corrected", ignoreCase = true)) {
-                if (text.toString().equals("true", ignoreCase = true)) {
-                    metar.flags.add(Metar.Flags.Corrected)
-                }
-            } else if (qName.equals("auto_station", ignoreCase = true)) {
-                if (text.toString().equals("true", ignoreCase = true)) {
-                    metar.flags.add(Metar.Flags.Auto)
-                }
-            } else if (qName.equals("auto", ignoreCase = true)) {
-                if (text.toString().equals("true", ignoreCase = true)) {
-                    metar.flags.add(Metar.Flags.Auto)
-                }
-            } else if (qName.equals("maintenance_indicator_on", ignoreCase = true)) {
-                if (text.toString().equals("true", ignoreCase = true)) {
-                    metar.flags.add(Metar.Flags.MaintenanceIndicatorOn)
-                }
-            } else if (qName.equals("present_weather_sensor_off", ignoreCase = true)) {
-                if (text.toString().equals("true", ignoreCase = true)) {
-                    metar.flags.add(Metar.Flags.PresentWeatherSensorOff)
-                }
-            } else if (qName.equals("lightning_sensor_off", ignoreCase = true)) {
-                if (text.toString().equals("true", ignoreCase = true)) {
-                    metar.flags.add(Metar.Flags.LightningSensorOff)
-                }
-            } else if (qName.equals("freezing_rain_sensor_off", ignoreCase = true)) {
-                if (text.toString().equals("true", ignoreCase = true)) {
-                    metar.flags.add(Metar.Flags.FreezingRainSensorOff)
-                }
-            } else if (qName.equals("no_signal", ignoreCase = true)) {
-                if (text.toString().equals("true", ignoreCase = true)) {
-                    metar.flags.add(Metar.Flags.NoSignal)
-                }
-            } else if (qName.equals("wx_string", ignoreCase = true)) {
-                WxSymbol.parseWxSymbols(metar.wxList, text.toString())
-            } else if (qName.equals("flight_category", ignoreCase = true)) {
-                metar.flightCategory = text.toString()
-            } else if (qName.equals("three_hr_pressure_tendency_mb", ignoreCase = true)) {
-                metar.pressureTend3HrMb = text.toString().toFloat()
-            } else if (qName.equals("maxt_c", ignoreCase = true)) {
-                metar.maxTemp6HrCentigrade = text.toString().toFloat()
-            } else if (qName.equals("mint_c", ignoreCase = true)) {
-                metar.minTemp6HrCentigrade = text.toString().toFloat()
-            } else if (qName.equals("maxt24hr_c", ignoreCase = true)) {
-                metar.maxTemp24HrCentigrade = text.toString().toFloat()
-            } else if (qName.equals("mint24hr_c", ignoreCase = true)) {
-                metar.minTemp24HrCentigrade = text.toString().toFloat()
-            } else if (qName.equals("precip_in", ignoreCase = true)) {
-                metar.precipInches = text.toString().toFloat()
-            } else if (qName.equals("pcp3hr_in", ignoreCase = true)) {
-                metar.precip3HrInches = text.toString().toFloat()
-            } else if (qName.equals("pcp6hr_in", ignoreCase = true)) {
-                metar.precip6HrInches = text.toString().toFloat()
-            } else if (qName.equals("pcp24hr_in", ignoreCase = true)) {
-                metar.precip24HrInches = text.toString().toFloat()
-            } else if (qName.equals("snow_in", ignoreCase = true)) {
-                metar.snowInches = text.toString().toFloat()
-            } else if (qName.equals("vert_vis_ft", ignoreCase = true)) {
-                metar.vertVisibilityFeet = text.toString().toInt()
-            } else if (qName.equals("metar_type", ignoreCase = true)) {
-                metar.metarType = text.toString()
+                "station_id" -> metar.stationId = text
+                "elevation_m" -> metar.stationElevationMeters = text.toFloatOrNull() ?: 0.0f
+                "temp_c" -> metar.tempCelsius = text.toFloatOrNull() ?: 0.0f
+                "dewpoint_c" -> metar.dewpointCelsius = text.toFloatOrNull() ?: 0.0f
+                "wind_dir_degrees" -> metar.windDirDegrees = text.toIntOrNull() ?: 0
+                "wind_speed_kt" -> metar.windSpeedKnots = text.toIntOrNull() ?: 0
+                "wind_gust_kt" -> metar.windGustKnots = text.toIntOrNull() ?: 0
+                "visibility_statute_mi" -> metar.visibilitySM = text.toFloatOrNull() ?: 10.1f
+                "altim_in_hg" -> metar.altimeterHg = text.toFloatOrNull() ?: 0.0f
+                "sea_level_pressure_mb" -> metar.seaLevelPressureMb = text.toFloatOrNull() ?: 0.0f
+                "wx_string" -> WxSymbol.parseWxSymbols(metar.wxList, text)
+                "flight_category" -> metar.flightCategory = text
+                "three_hr_pressure_tendency_mb" -> metar.pressureTend3HrMb = text.toFloatOrNull() ?: 0.0f
+                "maxt_c" -> metar.maxTempCelsiusLast6Hours = text.toFloatOrNull() ?: 0.0f
+                "mint_c" -> metar.minTempCelsiusLast6Hours = text.toFloatOrNull() ?: 0.0f
+                "maxt24hr_c" -> metar.maxTempCelsiusLast24Hours = text.toFloatOrNull() ?: 0.0f
+                "mint24hr_c" -> metar.minTempCelsiusLast24Hours = text.toFloatOrNull() ?: 0.0f
+                "precip_in" -> metar.precipInches = text.toFloatOrNull() ?: 0.0f
+                "pcp3hr_in" -> metar.precip3HrInches = text.toFloatOrNull() ?: 0.0f
+                "pcp6hr_in" -> metar.precip6HrInches = text.toFloatOrNull() ?: 0.0f
+                "pcp24hr_in" -> metar.precip24HrInches = text.toFloatOrNull() ?: 0.0f
+                "snow_in" -> metar.snowInches = text.toFloatOrNull() ?: 0.0f
+                "vert_vis_ft" -> metar.vertVisibilityFeet = text.toIntOrNull() ?: Int.MAX_VALUE
+                "metar_type" -> metar.metarType = text
+
+                // Flags
+                "auto", "auto_station" -> if (text.isTrue()) metar.flags.add(MetarFlag.AUTOMATED_STATION)
+                "corrected" -> if (text.isTrue()) metar.flags.add(MetarFlag.CORRECTED)
+                "maintenance_indicator_on" -> if (text.isTrue()) metar.flags.add(MetarFlag.MAINTENANCE_INDICATOR_ON)
+                "present_weather_sensor_off" -> if (text.isTrue()) metar.flags.add(MetarFlag.PRESENT_WEATHER_SENSOR_OFF)
+                "lightning_sensor_off" -> if (text.isTrue()) metar.flags.add(MetarFlag.LIGHTNING_SENSOR_OFF)
+                "freezing_rain_sensor_off" -> if (text.isTrue()) metar.flags.add(MetarFlag.FREEZING_RAIN_SENSOR_OFF)
+                "no_signal" -> if (text.isTrue()) metar.flags.add(MetarFlag.NO_SIGNAL)
             }
         }
     }
 
     private fun parseRemarks(metar: Metar) {
-        val index = metar.rawText?.indexOf("RMK") ?: -1
+        val rawText = metar.rawText ?: return
+        val index = rawText.indexOf("RMK")
         if (index == -1) {
             return
         }
-        val rmks =
-            metar.rawText!!.substring(index+4).split("\\s+".toRegex()).dropLastWhile { it.isEmpty() }
-        val it = rmks.iterator()
+        val remarks = rawText.substring(index+4)
+            .split("\\s+".toRegex())
+            .dropLastWhile { it.isEmpty() }
+        val it = remarks.iterator()
         while (it.hasNext()) {
             var rmk = it.next()
             when (rmk) {
-                "PRESRR" -> metar.presrr = true
-                "PRESFR" -> metar.presfr = true
-                "SNINCR" -> metar.snincr = true
-                "WSHFT" -> metar.wshft = true
-                "FROPA" -> metar.fropa = true
-                "LTG" -> metar.ltg = true
-                "PNO" -> metar.flags.add(Metar.Flags.RainSensorOff)
+                "PRESRR" -> metar.weatherPhenomena.add(WeatherPhenomenon.PRESSURE_RISING_RAPIDLY)
+                "PRESFR" -> metar.weatherPhenomena.add(WeatherPhenomenon.PRESSURE_FALLING_RAPIDLY)
+                "SNINCR" -> metar.weatherPhenomena.add(WeatherPhenomenon.SNOW_INCREASING_RAPIDLY)
+                "WSHFT" -> metar.weatherPhenomena.add(WeatherPhenomenon.WIND_SHIFT)
+                "FROPA" -> metar.weatherPhenomena.add(WeatherPhenomenon.FRONTAL_PASSAGE)
+                "LTG" -> metar.weatherPhenomena.add(WeatherPhenomenon.LIGHTNING)
+                "PNO" -> metar.flags.add(MetarFlag.RAIN_SENSOR_OFF)
                 "PK" -> {
                     rmk = if (it.hasNext()) it.next() else ""
                     if (rmk == "WND" && it.hasNext()) {
                         rmk = it.next()
-                        metar.windPeakKnots = rmk.substring(3, rmk.indexOf('/')).toInt()
+                        metar.windPeakKnots = rmk.substring(3, rmk.indexOf('/')).toIntOrNull() ?: 0
                     }
                 }
             }
@@ -219,11 +178,15 @@ class MetarParser {
         if (metar.vertVisibilityFeet < Int.MAX_VALUE) {
             // Check to see if we have an OVX layer, if not add it
             metar.skyConditions.find { sky -> sky.skyCover == "OVX" } ?:
-                metar.skyConditions.add(SkyCondition.create("OVX", 0))
+                metar.skyConditions.add(SkyCondition.of("OVX", 0))
         }
         if (metar.skyConditions.isEmpty()) {
             // Sky condition is not available in the METAR
-            metar.skyConditions.add(SkyCondition.create("SKM", 0))
+            metar.skyConditions.add(SkyCondition.of("SKM", 0))
         }
+    }
+
+    private fun CharSequence.isTrue(): Boolean {
+        return this.toString().equals("true", ignoreCase = true)
     }
 }

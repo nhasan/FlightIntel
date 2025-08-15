@@ -71,7 +71,7 @@ class TafParser {
                 if (attributes.getIndex("cloud_base_ft_agl") >= 0) {
                     cloudBase = attributes.getValue("cloud_base_ft_agl").toInt()
                 }
-                val skyCondition = SkyCondition.create(name, cloudBase)
+                val skyCondition = SkyCondition.of(name, cloudBase)
                 forecast?.skyConditions?.add(skyCondition)
             } else if (qName.equals("turbulence_condition", ignoreCase = true)) {
                 val turbulence = Taf.TurbulenceCondition()
@@ -118,12 +118,12 @@ class TafParser {
             } else if (qName.equals("remarks", ignoreCase = true)) {
                 taf.remarks = text.toString()
             } else if (qName.equals("forecast", ignoreCase = true)) {
-                forecast?.let {
-                    if (now.time < it.timeTo) {
-                        if (it.wxList.isEmpty()) {
-                            it.wxList.add(WxSymbol.get("NSW", ""))
+                forecast?.let { forecast ->
+                    if (now.time < forecast.timeTo) {
+                        if (forecast.wxList.isEmpty()) {
+                            WxSymbol.get("NSW", "")?.let { wx -> forecast.wxList.add(wx) }
                         }
-                        taf.forecasts.add(it)
+                        taf.forecasts.add(forecast)
                     }
                 }
             } else if (qName.equals("temperature", ignoreCase = true)) {

@@ -270,18 +270,18 @@ object WxUtils {
     }
 
     @JvmStatic
-    fun getCeiling(layers: ArrayList<SkyCondition>): SkyCondition {
+    fun getCeiling(layers: List<SkyCondition>): SkyCondition {
         return try {
             // Ceiling is defined as the lowest cloud layer reported as broken or overcast;
             // or the vertical visibility into an indefinite ceiling
             layers.first { layer -> listOf("BKN", "OVC", "OVX").contains(layer.skyCover) }
         } catch (_: NoSuchElementException) {
-            SkyCondition.create("NSC", 12000)
+            SkyCondition.of("NSC", 12000)
         }
     }
 
     @JvmStatic
-    fun computeFlightCategory(skyConditions: ArrayList<SkyCondition>, visibilitySM: Float): String {
+    fun computeFlightCategory(skyConditions: List<SkyCondition>, visibilitySM: Float): String {
         val ceiling = getCeiling(skyConditions).cloudBaseAGL
         return when {
             (ceiling < 500 || visibilitySM < 1.0) -> "LIFR"

@@ -4,18 +4,18 @@ import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 
 buildscript {
     dependencies {
-        classpath("com.android.tools.build:gradle:8.12.0")
-        classpath("com.google.gms:google-services:4.4.3")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
+        classpath ("com.android.tools.build:gradle:8.12.0")
+        classpath ("com.google.gms:google-services:4.4.3")
+        classpath ("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
     }
 }
 
 plugins {
     id ("com.android.application") version "8.12.0"
     id ("org.jetbrains.kotlin.android") version "2.2.0"
-    id ("org.jetbrains.kotlin.plugin.parcelize") version "2.2.0"
-    id ("org.jetbrains.kotlin.plugin.serialization") version "2.2.0"
     id ("com.google.gms.google-services") version "4.4.3"
+    kotlin ("plugin.parcelize") version "2.2.0"
+    kotlin ("plugin.serialization") version "2.2.10"
 }
 
 allprojects {
@@ -41,7 +41,7 @@ dependencies {
     implementation ("androidx.work:work-runtime-ktx:2.10.3")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation ("com.google.code.gson:gson:2.13.1")
     coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.1.5")
 }

@@ -67,8 +67,7 @@ class MetarFragment : WxFragmentBase() {
     private var _binding: MetarDetailViewBinding? = null
     private val binding get() = _binding!!
 
-    override val product: String?
-        get() = "metar"
+    override val product get() = "metar"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -226,7 +225,7 @@ class MetarFragment : WxFragmentBase() {
 
     @SuppressLint("SetTextI18n")
     private fun showMetar(intent: Intent) {
-        val metar = IntentCompat.getSerializableExtra(intent, NoaaService.RESULT, Metar::class.java) ?: return
+        val metar = IntentCompat.getParcelableExtra(intent, NoaaService.RESULT, Metar::class.java) ?: return
         binding.apply {
             wxStatusLayout.removeAllViews()
             if (!metar.isValid) {
@@ -261,7 +260,7 @@ class MetarFragment : WxFragmentBase() {
             // Visibility
             wxVisLayout.removeAllViews()
             if (metar.visibilitySM < Float.MAX_VALUE) {
-                if (metar.flags.contains(Metar.Flags.Auto) && metar.visibilitySM >= 10f) {
+                if (metar.flags.contains(MetarFlag.AUTOMATED_STATION) && metar.visibilitySM >= 10f) {
                     addRow(wxVisLayout, "10+ statute miles horizontal")
                 } else {
                     addRow(
@@ -288,8 +287,8 @@ class MetarFragment : WxFragmentBase() {
             for (wx in metar.wxList) {
                 addWeatherRow(wxWeatherLayout, wx, metar.flightCategory)
             }
-            if (metar.ltg) {
-                addRow(wxWeatherLayout, "Lightning in the vicinity")
+            if (metar.weatherPhenomena.contains(WeatherPhenomenon.LIGHTNING)) {
+                addRow(wxWeatherLayout, WeatherPhenomenon.LIGHTNING.toString())
             }
             wxWeatherLayout.visibility = if (wxWeatherLayout.isNotEmpty()) View.VISIBLE else View.GONE
             wxWeatherLabel.visibility = wxWeatherLayout.visibility
@@ -323,17 +322,17 @@ class MetarFragment : WxFragmentBase() {
                 } else {
                     addRow(wxTempLayout, "Dew point", "n/a")
                 }
-                if (metar.maxTemp6HrCentigrade < Float.MAX_VALUE) {
-                    addRow(wxTempLayout, "6-hr max", formatTemperature(metar.maxTemp6HrCentigrade))
+                if (metar.maxTempCelsiusLast6Hours < Float.MAX_VALUE) {
+                    addRow(wxTempLayout, "6-hr max", formatTemperature(metar.maxTempCelsiusLast6Hours))
                 }
-                if (metar.minTemp6HrCentigrade < Float.MAX_VALUE) {
-                    addRow(wxTempLayout, "6-hr min", formatTemperature(metar.minTemp6HrCentigrade))
+                if (metar.minTempCelsiusLast6Hours < Float.MAX_VALUE) {
+                    addRow(wxTempLayout, "6-hr min", formatTemperature(metar.minTempCelsiusLast6Hours))
                 }
-                if (metar.maxTemp24HrCentigrade < Float.MAX_VALUE) {
-                    addRow(wxTempLayout, "24-hr max", formatTemperature(metar.maxTemp24HrCentigrade))
+                if (metar.maxTempCelsiusLast24Hours < Float.MAX_VALUE) {
+                    addRow(wxTempLayout, "24-hr max", formatTemperature(metar.maxTempCelsiusLast24Hours))
                 }
-                if (metar.minTemp24HrCentigrade < Float.MAX_VALUE) {
-                    addRow(wxTempLayout, "24-hr min", formatTemperature(metar.minTemp24HrCentigrade))
+                if (metar.minTempCelsiusLast24Hours < Float.MAX_VALUE) {
+                    addRow(wxTempLayout, "24-hr min", formatTemperature(metar.minTempCelsiusLast24Hours))
                 }
             }
             wxTempLayout.visibility = if (wxTempLayout.isNotEmpty()) View.VISIBLE else View.GONE
@@ -355,11 +354,11 @@ class MetarFragment : WxFragmentBase() {
                         String.format(Locale.US, "%+.2f mb", metar.pressureTend3HrMb)
                     )
                 }
-                if (metar.presfr) {
-                    addRow(wxPressureLayout, "Pressure is falling rapidly")
+                if (metar.weatherPhenomena.contains(WeatherPhenomenon.PRESSURE_FALLING_RAPIDLY)) {
+                    addRow(wxPressureLayout, WeatherPhenomenon.PRESSURE_FALLING_RAPIDLY.toString())
                 }
-                if (metar.presrr) {
-                    addRow(wxPressureLayout, "Pressure is rising rapidly")
+                if (metar.weatherPhenomena.contains(WeatherPhenomenon.PRESSURE_RISING_RAPIDLY)) {
+                    addRow(wxPressureLayout, WeatherPhenomenon.PRESSURE_RISING_RAPIDLY.toString())
                 }
             }
             wxPressureLayout.visibility = if (wxPressureLayout.isNotEmpty()) View.VISIBLE else View.GONE
@@ -394,8 +393,8 @@ class MetarFragment : WxFragmentBase() {
             if (metar.snowInches < Float.MAX_VALUE) {
                 addRow(wxPrecipLayout, "Snow depth", String.format(Locale.US, "%.0f\"", metar.snowInches))
             }
-            if (metar.snincr) {
-                addRow(wxPrecipLayout, "Snow is increasing rapidly")
+            if (metar.weatherPhenomena.contains(WeatherPhenomenon.SNOW_INCREASING_RAPIDLY)) {
+                addRow(wxPrecipLayout, WeatherPhenomenon.SNOW_INCREASING_RAPIDLY.toString())
             }
             wxPrecipLayout.visibility = if (wxPrecipLayout.isNotEmpty()) View.VISIBLE else View.GONE
             wxPrecipLabel.visibility = wxPrecipLayout.visibility
@@ -447,10 +446,10 @@ class MetarFragment : WxFragmentBase() {
                 val gustFactor = (metar.windGustKnots - metar.windSpeedKnots).toDouble()
                 addRow(layout, "Add ${(gustFactor / 2).roundToInt()} kt to your normal approach speed")
             }
-            if (metar.wshft) {
+            if (metar.weatherPhenomena.contains(WeatherPhenomenon.WIND_SHIFT)) {
                 val sb = StringBuilder()
                 sb.append("Wind shift of 45\u00B0 or more detected during past hour")
-                if (metar.fropa) {
+                if (metar.weatherPhenomena.contains(WeatherPhenomenon.PRESSURE_FALLING_RAPIDLY)) {
                     sb.append(" due to frontal passage")
                 }
                 addRow(layout, sb.toString())

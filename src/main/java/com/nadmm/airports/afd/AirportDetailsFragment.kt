@@ -150,10 +150,11 @@ class AirportDetailsFragment : FragmentBase() {
     private fun handleBroadcast(intent: Intent) {
         when (intent.action) {
             NoaaService.ACTION_GET_METAR -> {
-                val metar = IntentCompat.getSerializableExtra(intent, NoaaService.RESULT, Metar::class.java)
-                if (metar?.isValid == true) {
-                    showWxInfo(metar)
-                    isRefreshing = false
+                IntentCompat.getParcelableExtra(intent, NoaaService.RESULT, Metar::class.java)?.let { metar ->
+                    if (metar.isValid) {
+                        showWxInfo(metar)
+                        isRefreshing = false
+                    }
                 }
             }
             AeroNavService.ACTION_GET_AFD -> {

@@ -271,7 +271,7 @@ class PirepFragment : WxFragmentBase() {
 
     private fun addSkyConditionRow(details: LinearLayout, sky: Pirep.SkyCondition) {
         val extra = formatFeetRangeMsl(sky.baseFeetMSL, sky.topFeetMSL)
-        val skyCondition = SkyCondition.create(sky.skyCover)
+        val skyCondition = SkyCondition.of(sky.skyCover)
         addRow(details, "Sky", skyCondition.toString(), extra)
     }
 

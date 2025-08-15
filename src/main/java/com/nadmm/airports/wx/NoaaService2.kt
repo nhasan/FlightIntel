@@ -21,6 +21,7 @@ package com.nadmm.airports.wx
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.os.Parcelable
 import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -29,10 +30,10 @@ import com.nadmm.airports.utils.SystemUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.io.Serializable
@@ -102,10 +103,24 @@ abstract class NoaaService2(protected val serviceName: String, protected val max
         return getDataFile("${serviceName}_${stationId}.obj")
     }
 
+    protected fun getJsonFile(stationId: String): File {
+        return getDataFile("${serviceName}_${stationId}.json")
+    }
+
     protected fun createTempFile(): File {
         return File.createTempFile(serviceName, ".tmp", dataDirectory).apply {
             deleteOnExit() // Ensure the temp file is deleted when the JVM exits
         }
+    }
+
+    protected fun sendParcelableResultIntent(
+        action: String?, stationId: String?,
+        result: Parcelable?
+    ) {
+        val intent = makeResultIntent(action, TYPE_TEXT)
+        intent.putExtra(STATION_ID, stationId)
+        intent.putExtra(RESULT, result)
+        sendResultIntent(intent)
     }
 
     protected fun sendSerializableResultIntent(
@@ -122,7 +137,7 @@ abstract class NoaaService2(protected val serviceName: String, protected val max
         val intent = makeResultIntent(action, TYPE_GRAPHIC)
         intent.putExtra(IMAGE_CODE, code)
         if (result.exists()) {
-            intent.putExtra(RESULT, result.getAbsolutePath())
+            intent.putExtra(RESULT, result.absolutePath)
         }
         sendResultIntent(intent)
     }
@@ -148,30 +163,38 @@ abstract class NoaaService2(protected val serviceName: String, protected val max
         bm.sendBroadcast(intent)
     }
 
-    protected fun writeObject(`object`: Any?, objFile: File?) {
-        try {
-            val out = ObjectOutputStream(FileOutputStream(objFile))
-            out.writeObject(`object`)
-            out.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
+    protected inline fun <reified T> serializeObject(obj: T, stationId: String) {
+        val jsonFile = getJsonFile(stationId)
+        jsonFile.bufferedWriter().use { writer ->
+            val json = Json.encodeToString(obj)
+            writer.write(json)
         }
     }
 
-    protected fun readObject(objFile: File): Any? {
-        var `object`: Any? = null
-        try {
-            val `in` = ObjectInputStream(FileInputStream(objFile))
-            `object` = `in`.readObject()
-            `in`.close()
-            return `object`
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } catch (e: ClassNotFoundException) {
-            objFile.delete()
-            e.printStackTrace()
+    protected inline fun <reified T> deserializeObject(stationId: String) : T? {
+        val jsonFile = getJsonFile(stationId)
+        return if (jsonFile.exists()) {
+            jsonFile.bufferedReader().use { reader ->
+                val json = reader.readText()
+                Json.decodeFromString<T>(json)
+            }
+        } else {
+            null
         }
-        return `object`
+    }
+
+    protected fun writeObject(obj: Any?, objFile: File?) {
+        FileOutputStream(objFile).use { fos ->
+            ObjectOutputStream(fos).use { oos ->
+                oos.writeObject(obj)
+            }
+        }
+    }
+
+    protected inline fun <reified T> readObject(objFile: File): T? {
+        ObjectInputStream(FileInputStream(objFile)).use { fis ->
+            return fis.readObject() as? T
+        }
     }
 
     companion object {

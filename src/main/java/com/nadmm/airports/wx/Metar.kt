@@ -18,166 +18,69 @@
  */
 package com.nadmm.airports.wx
 
+import android.os.Parcelable
 import com.nadmm.airports.utils.WxUtils
-import java.io.Serializable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import java.util.EnumSet
 
-class Metar : Serializable {
-    enum class Flags {
-        Corrected {
-            override fun toString(): String {
-                return "Corrected METAR"
-            }
-        },
-        Auto {
-            override fun toString(): String {
-                return "Automated station"
-            }
-        },
-        MaintenanceIndicatorOn {
-            override fun toString(): String {
-                return "Station needs maintenance"
-            }
-        },
-        PresentWeatherSensorOff {
-            override fun toString(): String {
-                return "Present weather sensor is not operating"
-            }
-        },
-        LightningSensorOff {
-            override fun toString(): String {
-                return "Lightning detection sensor is not operating"
-            }
-        },
-        RainSensorOff {
-            override fun toString(): String {
-                return "Rain sensor is not operating"
-            }
-        },
-        FreezingRainSensorOff {
-            override fun toString(): String {
-                return "Freezing rain sensor is not operating"
-            }
-        },
-        NoSignal {
-            override fun toString(): String {
-                return "No signal from station"
-            }
-        }
-    }
+enum class MetarFlag(var description: String) {
+    CORRECTED("Corrected METAR"),
+    AUTOMATED_STATION("Automated station"),
+    MAINTENANCE_INDICATOR_ON("Station needs maintenance"),
+    PRESENT_WEATHER_SENSOR_OFF("Present weather sensor is not operating"),
+    LIGHTNING_SENSOR_OFF("Lightning detection sensor is not operating"),
+    RAIN_SENSOR_OFF("Rain sensor is not operating"),
+    FREEZING_RAIN_SENSOR_OFF("Freezing rain sensor is not operating"),
+    NO_SIGNAL("No signal from station");
 
-    @JvmField
-    var isValid = false
-
-    @JvmField
-    var stationId: String? = null
-
-    @JvmField
-    var rawText: String? = null
-
-    @JvmField
-    var observationTime: Long = 0
-
-    @JvmField
-    var fetchTime: Long = 0
-
-    @JvmField
-    var tempCelsius: Float = Float.MAX_VALUE
-
-    @JvmField
-    var dewpointCelsius: Float = Float.MAX_VALUE
-
-    @JvmField
-    var windDirDegrees: Int = Int.MAX_VALUE
-
-    @JvmField
-    var windSpeedKnots: Int = Int.MAX_VALUE
-
-    @JvmField
-    var windGustKnots: Int = Int.MAX_VALUE
-
-    @JvmField
-    var windPeakKnots: Int = Int.MAX_VALUE
-
-    @JvmField
-    var visibilitySM: Float = Float.MAX_VALUE
-
-    @JvmField
-    var altimeterHg: Float = Float.MAX_VALUE
-
-    @JvmField
-    var seaLevelPressureMb: Float = Float.MAX_VALUE
-
-    @JvmField
-    var wxList: ArrayList<WxSymbol> = ArrayList()
-
-    @JvmField
-    var skyConditions: ArrayList<SkyCondition> = ArrayList()
-
-    @JvmField
-    var flightCategory: String = WxUtils.FLIGHT_CATEGORY_UNKN
-
-    @JvmField
-    var pressureTend3HrMb: Float = Float.MAX_VALUE
-
-    @JvmField
-    var maxTemp6HrCentigrade: Float = Float.MAX_VALUE
-
-    @JvmField
-    var minTemp6HrCentigrade: Float = Float.MAX_VALUE
-
-    @JvmField
-    var maxTemp24HrCentigrade: Float = Float.MAX_VALUE
-
-    @JvmField
-    var minTemp24HrCentigrade: Float = Float.MAX_VALUE
-
-    @JvmField
-    var precipInches: Float = Float.MAX_VALUE
-
-    @JvmField
-    var precip3HrInches: Float = Float.MAX_VALUE
-
-    @JvmField
-    var precip6HrInches: Float = Float.MAX_VALUE
-
-    @JvmField
-    var precip24HrInches: Float = Float.MAX_VALUE
-
-    @JvmField
-    var snowInches: Float = Float.MAX_VALUE
-
-    @JvmField
-    var vertVisibilityFeet: Int = Int.MAX_VALUE
-
-    @JvmField
-    var metarType: String? = null
-
-    @JvmField
-    var stationElevationMeters: Float = Float.MAX_VALUE
-
-    @JvmField
-    var flags: EnumSet<Flags> = EnumSet.noneOf(Flags::class.java)
-
-    @JvmField
-    var presrr: Boolean = false
-
-    @JvmField
-    var presfr: Boolean = false
-
-    @JvmField
-    var snincr: Boolean = false
-
-    @JvmField
-    var wshft: Boolean = false
-
-    @JvmField
-    var fropa: Boolean = false
-
-    @JvmField
-    var ltg: Boolean = false
-
-    companion object {
-        const val serialVersionUID = 3338578580544822881L
-    }
+    override fun toString(): String = description
 }
+
+enum class WeatherPhenomenon(var description: String) {
+    PRESSURE_RISING_RAPIDLY("Pressure rising rapidly"),
+    PRESSURE_FALLING_RAPIDLY("Pressure falling rapidly"),
+    SNOW_INCREASING_RAPIDLY("Snow increasing rapidly"),
+    WIND_SHIFT("Wind shift"),
+    FRONTAL_PASSAGE("Frontal passage"),
+    LIGHTNING("Lightning detected");
+
+    override fun toString(): String = description
+}
+
+@Parcelize
+@Serializable
+data class Metar(
+    var stationId: String? = null,
+    var fetchTime: Long = 0L,
+    var isValid: Boolean = false,
+    var rawText: String? = null,
+    var observationTime: Long = 0L,
+    var tempCelsius: Float = Float.MAX_VALUE,
+    var dewpointCelsius: Float = Float.MAX_VALUE,
+    var windDirDegrees: Int = Int.MAX_VALUE,
+    var windSpeedKnots: Int = Int.MAX_VALUE,
+    var windGustKnots: Int = Int.MAX_VALUE,
+    var windPeakKnots: Int = Int.MAX_VALUE,
+    var visibilitySM: Float = Float.MAX_VALUE,
+    var altimeterHg: Float = Float.MAX_VALUE,
+    var seaLevelPressureMb: Float = Float.MAX_VALUE,
+    var wxList: MutableList<WxSymbol> = mutableListOf(),
+    var skyConditions: MutableList<SkyCondition> = mutableListOf(),
+    var flightCategory: String = WxUtils.FLIGHT_CATEGORY_UNKN,
+    var pressureTend3HrMb: Float = Float.MAX_VALUE,
+    var maxTempCelsiusLast6Hours: Float = Float.MAX_VALUE,
+    var minTempCelsiusLast6Hours: Float = Float.MAX_VALUE,
+    var maxTempCelsiusLast24Hours: Float = Float.MAX_VALUE,
+    var minTempCelsiusLast24Hours: Float = Float.MAX_VALUE,
+    var precipInches: Float = Float.MAX_VALUE,
+    var precip3HrInches: Float = Float.MAX_VALUE,
+    var precip6HrInches: Float = Float.MAX_VALUE,
+    var precip24HrInches: Float = Float.MAX_VALUE,
+    var snowInches: Float = Float.MAX_VALUE,
+    var vertVisibilityFeet: Int = Int.MAX_VALUE,
+    var metarType: String? = null,
+    var stationElevationMeters: Float = Float.MAX_VALUE,
+    var flags: MutableSet<MetarFlag> = mutableSetOf(),
+    var weatherPhenomena: MutableSet<WeatherPhenomenon> = mutableSetOf()
+) : Parcelable
