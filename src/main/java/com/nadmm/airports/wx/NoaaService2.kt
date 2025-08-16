@@ -74,10 +74,24 @@ abstract class NoaaService2(protected val serviceName: String, protected val max
         for (file in files) {
             val age = now.time - file.lastModified()
             if (age > maxAge) {
-                Log.d(TAG, "Deleting old cache file: ${file.name}")
+                Log.d(TAG, "Deleting old cached file: ${file.name}")
                 file.delete()
             }
         }
+    }
+
+    protected fun cleanupCache(stationIds: List<String>) {
+        stationIds.forEach { stationId ->
+            val jsonFile = getJsonFile(stationId)
+            if (jsonFile.exists()) {
+                Log.d(TAG, "Deleting cached file: ${jsonFile.name}")
+                jsonFile.delete()
+            }
+        }
+    }
+
+    protected fun cacheFileExists(stationId: String): Boolean {
+        return getJsonFile(stationId).exists()
     }
 
     protected fun fetchFromNoaa(query: String?, file: File, compressed: Boolean): Boolean {

@@ -24,13 +24,9 @@ import android.text.format.DateUtils
 import android.util.Log
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
-import org.xml.sax.SAXException
 import java.io.File
-import java.io.IOException
-import javax.xml.parsers.ParserConfigurationException
 
 class MetarService : NoaaService2("metar", METAR_CACHE_MAX_AGE) {
-    private val mParser: MetarParser = MetarParser()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
@@ -63,21 +59,13 @@ class MetarService : NoaaService2("metar", METAR_CACHE_MAX_AGE) {
         }
         val forceRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
 
-        Log.d(TAG,
-            "getMetarText: action=$action, stationIds=$stationIds, cacheOnly=$cacheOnly, forceRefresh=$forceRefresh")
+        Log.d(TAG, "getMetarText: stationIds=$stationIds, cacheOnly=$cacheOnly, forceRefresh=$forceRefresh")
 
         if (forceRefresh) {
-            stationIds.forEach { stationId ->
-                // Delete the cached METAR file if it exists
-                val objFile = getObjFile(stationId)
-                if (objFile.exists()) {
-                    Log.d(TAG, "Deleting cached METAR file: ${objFile.name}")
-                    objFile.delete()
-                }
-            }
+            cleanupCache(stationIds)
         }
 
-        val missing = stationIds.filter { !cacheOnly && !getObjFile(it).exists() }
+        val missing = stationIds.filter { !cacheOnly && !cacheFileExists(it) }
         if (missing.isNotEmpty()) {
             val hoursBeforeNow = intent.getIntExtra(HOURS_BEFORE, 3)
             var xmlFile: File? =  null
@@ -107,12 +95,14 @@ class MetarService : NoaaService2("metar", METAR_CACHE_MAX_AGE) {
 
     private fun parseMetars(xmlFile: File, stationIds: List<String>) {
         if (xmlFile.exists()) {
-            mParser.parse(xmlFile, stationIds).forEach { metar ->
+            val parser = MetarParser()
+            parser.parse(xmlFile, stationIds).forEach { metar ->
                 serializeObject(metar, metar.stationId!!)
             }
         }
     }
 
+    // This is not used anymore as METAR images are not available from NOAA
     private fun getMetarImage(intent: Intent) {
         intent.getStringExtra(IMAGE_CODE)?.let { code ->
             val imageName = "metars_${code.lowercase()}.gif"

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,116 +18,71 @@
  */
 package com.nadmm.airports.wx
 
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
-class Taf : Serializable {
-    class TurbulenceCondition : Serializable {
-        @JvmField
-        var intensity: Int = Int.MAX_VALUE
+@Parcelize
+@Serializable
+class TurbulenceCondition(
+    var intensity: Int = Int.MAX_VALUE,
+    var minAltitudeFeetAGL: Int = Int.MAX_VALUE,
+    var maxAltitudeFeetAGL: Int = Int.MAX_VALUE
+) : Parcelable
 
-        @JvmField
-        var minAltitudeFeetAGL: Int = Int.MAX_VALUE
+@Parcelize
+@Serializable
+class IcingCondition(
+    var intensity: Int = Int.MAX_VALUE,
+    var minAltitudeFeetAGL: Int = Int.MAX_VALUE,
+    var maxAltitudeFeetAGL: Int = Int.MAX_VALUE
+) : Parcelable
 
-        @JvmField
-        var maxAltitudeFeetAGL: Int = Int.MAX_VALUE
+@Parcelize
+@Serializable
+class Temperature(
+    var validTime: Long = Long.MAX_VALUE,
+    var surfaceTempCentigrade: Float = Float.MAX_VALUE,
+    var maxTempCentigrade: Float = Float.MAX_VALUE,
+    var minTempCentigrade: Float = Float.MAX_VALUE
+) : Parcelable
 
-        companion object {
-            private const val serialVersionUID = 1L
-        }
-    }
+@Parcelize
+@Serializable
+class Forecast(
+    var changeIndicator: String? = null,
+    var timeFrom: Long = 0,
+    var timeTo: Long = 0,
+    var timeBecoming: Long = 0,
+    var probability: Int = Int.MAX_VALUE,
+    var windDirDegrees: Int = Int.MAX_VALUE,
+    var windSpeedKnots: Int = Int.MAX_VALUE,
+    var windGustKnots: Int = Int.MAX_VALUE,
+    var windShearDirDegrees: Int = Int.MAX_VALUE,
+    var windShearSpeedKnots: Int = Int.MAX_VALUE,
+    var windShearHeightFeetAGL: Int = Int.MAX_VALUE,
+    var visibilitySM: Float = Float.MAX_VALUE,
+    var altimeterHg: Float = Float.MAX_VALUE,
+    var vertVisibilityFeet: Int = Int.MAX_VALUE,
+    var wxList: ArrayList<WxSymbol> = ArrayList(),
+    var skyConditions: ArrayList<SkyCondition> = ArrayList(),
+    var turbulenceConditions: ArrayList<TurbulenceCondition> = ArrayList(),
+    var icingConditions: ArrayList<IcingCondition> = ArrayList(),
+    var temperatures: ArrayList<Temperature> = ArrayList()
+) : Parcelable
 
-    class IcingCondition : Serializable {
-        @JvmField
-        var intensity: Int = Int.MAX_VALUE
-
-        @JvmField
-        var minAltitudeFeetAGL: Int = Int.MAX_VALUE
-
-        @JvmField
-        var maxAltitudeFeetAGL: Int = Int.MAX_VALUE
-
-        companion object {
-            private const val serialVersionUID = 1L
-        }
-    }
-
-    class Temperature : Serializable {
-        var validTime: Long = Long.MAX_VALUE
-        var surfaceTempCentigrade: Float = Float.MAX_VALUE
-        var maxTempCentigrade: Float = Float.MAX_VALUE
-        var minTempCentigrade: Float = Float.MAX_VALUE
-
-        companion object {
-            private const val serialVersionUID = 1L
-        }
-    }
-
-    class Forecast : Serializable {
-        @JvmField
-        var changeIndicator: String? = null
-        @JvmField
-        var timeFrom: Long = 0
-        @JvmField
-        var timeTo: Long = 0
-        @JvmField
-        var timeBecoming: Long = 0
-        @JvmField
-        var probability: Int = Int.MAX_VALUE
-        @JvmField
-        var windDirDegrees: Int = Int.MAX_VALUE
-        @JvmField
-        var windSpeedKnots: Int = Int.MAX_VALUE
-        @JvmField
-        var windGustKnots: Int = Int.MAX_VALUE
-        @JvmField
-        var windShearDirDegrees: Int = Int.MAX_VALUE
-        @JvmField
-        var windShearSpeedKnots: Int = Int.MAX_VALUE
-        @JvmField
-        var windShearHeightFeetAGL: Int = Int.MAX_VALUE
-        @JvmField
-        var visibilitySM: Float = Float.MAX_VALUE
-        @JvmField
-        var altimeterHg: Float = Float.MAX_VALUE
-        @JvmField
-        var vertVisibilityFeet: Int = Int.MAX_VALUE
-        @JvmField
-        var wxList: ArrayList<WxSymbol> = ArrayList()
-        @JvmField
-        var skyConditions: ArrayList<SkyCondition> = ArrayList()
-        @JvmField
-        var turbulenceConditions: ArrayList<TurbulenceCondition> = ArrayList()
-        @JvmField
-        var icingConditions: ArrayList<IcingCondition> = ArrayList()
-        var temperatures: ArrayList<Temperature> = ArrayList()
-
-        companion object {
-            private const val serialVersionUID = 1L
-        }
-    }
-
-    @JvmField
-    var isValid = false
-    var stationId: String? = null
-    @JvmField
-    var rawText: String? = null
-    @JvmField
-    var fetchTime: Long = 0
-    @JvmField
-    var issueTime: Long = 0
-    var bulletinTime: Long = 0
-    @JvmField
-    var validTimeFrom: Long = 0
-    @JvmField
-    var validTimeTo: Long = 0
-    var stationElevationMeters: Float = Float.MAX_VALUE
-
-    @JvmField
-    var remarks: String? = null
-    @JvmField
+@Parcelize
+@Serializable
+class Taf (
+    var isValid: Boolean = false,
+    var stationId: String? = null,
+    var rawText: String? = null,
+    var fetchTime: Long = 0,
+    var issueTime: Long = 0,
+    var bulletinTime: Long = 0,
+    var validTimeFrom: Long = 0,
+    var validTimeTo: Long = 0,
+    var stationElevationMeters: Float = Float.MAX_VALUE,
+    var remarks: String? = null,
     var forecasts: ArrayList<Forecast> = ArrayList()
-
-    companion object {
-        private const val serialVersionUID = 1L
-    }
-}
+) : Parcelable

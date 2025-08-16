@@ -22,7 +22,6 @@ import android.os.Parcelable
 import com.nadmm.airports.utils.WxUtils
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
-import java.util.EnumSet
 
 enum class MetarFlag(var description: String) {
     CORRECTED("Corrected METAR"),

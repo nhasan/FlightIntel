@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,151 +19,121 @@
 package com.nadmm.airports.wx
 
 import com.nadmm.airports.utils.TimeUtils
-import com.nadmm.airports.wx.Taf.Forecast
 import org.xml.sax.Attributes
-import org.xml.sax.InputSource
-import org.xml.sax.SAXException
 import org.xml.sax.helpers.DefaultHandler
 import java.io.File
-import java.io.FileReader
-import java.io.IOException
+import java.text.ParseException
 import java.util.Date
-import javax.xml.parsers.ParserConfigurationException
 import javax.xml.parsers.SAXParserFactory
 
 class TafParser {
-    @Throws(ParserConfigurationException::class, SAXException::class, IOException::class)
-    fun parse(xml: File): Taf {
-        val taf = Taf()
-        taf.fetchTime = xml.lastModified()
-        val factory = SAXParserFactory.newInstance()
-        val parser = factory.newSAXParser()
-        val xmlReader = parser.xmlReader
+
+    fun parse(xmlFile: File): Taf {
+        val taf = Taf().apply {
+            fetchTime = xmlFile.lastModified()
+        }
         val handler = TafHandler(taf)
-        xmlReader.contentHandler = handler
-        val input = InputSource(FileReader(xml))
-        xmlReader.parse(input)
+        val factory = SAXParserFactory.newInstance()
+        factory.newSAXParser().parse(xmlFile, handler)
         return taf
     }
 
-    inner class TafHandler(private var taf: Taf) : DefaultHandler() {
+    class TafHandler(private var taf: Taf) : DefaultHandler() {
         private var forecast: Forecast? = null
-        private var temperature: Taf.Temperature? = null
-        private val text = StringBuilder()
+        private var temperature: Temperature? = null
+        private val sb = StringBuilder()
         private val now = Date()
+
         override fun characters(ch: CharArray, start: Int, length: Int) {
-            text.appendRange(ch, start, start + length)
+            sb.append(ch, start, length)
         }
 
         override fun startElement(
             uri: String, localName: String, qName: String,
             attributes: Attributes
         ) {
-            if (qName.equals("taf", ignoreCase = true)) {
-                taf.isValid = false
-            } else if (qName == "forecast") {
-                forecast = Forecast()
-            } else if (qName == "temperature") {
-                temperature = Taf.Temperature()
-            } else if (qName.equals("sky_condition", ignoreCase = true)) {
-                val name = attributes.getValue("sky_cover")
-                var cloudBase = 0
-                if (attributes.getIndex("cloud_base_ft_agl") >= 0) {
-                    cloudBase = attributes.getValue("cloud_base_ft_agl").toInt()
+            // Reset the string builder for elements that will contain character data.
+            // This is safer inside a when statement on a per-element basis.
+            sb.setLength(0)
+
+            when (qName.lowercase()) {
+                "taf" -> taf.isValid = false
+                "forecast" -> forecast = Forecast()
+                "temperature" -> temperature = Temperature()
+                "sky_condition" -> {
+                    val name = attributes.getValue("sky_cover")
+                    val cloudBase = attributes.getValue("cloud_base_ft_agl")?.toIntOrNull() ?: 0
+                    val skyCondition = SkyCondition.of(name, cloudBase)
+                    forecast?.skyConditions?.add(skyCondition)
                 }
-                val skyCondition = SkyCondition.of(name, cloudBase)
-                forecast?.skyConditions?.add(skyCondition)
-            } else if (qName.equals("turbulence_condition", ignoreCase = true)) {
-                val turbulence = Taf.TurbulenceCondition()
-                attributes.getValue("turbulence_intensity")?.let {
-                    turbulence.intensity = it.toInt()
+                "turbulence_condition" -> {
+                    val turbulence = TurbulenceCondition().apply {
+                        intensity = attributes.getValue("turbulence_intensity")?.toIntOrNull() ?: 0
+                        minAltitudeFeetAGL = attributes.getValue("turbulence_min_alt_ft_agl")?.toIntOrNull() ?: 0
+                        maxAltitudeFeetAGL = attributes.getValue("turbulence_max_alt_ft_agl")?.toIntOrNull() ?: 0
+                    }
+                    forecast?.turbulenceConditions?.add(turbulence)
                 }
-                attributes.getValue("turbulence_min_alt_ft_agl")?.let {
-                    turbulence.minAltitudeFeetAGL = it.toInt()
+                "icing_condition" -> {
+                    val icing = IcingCondition().apply {
+                        intensity = attributes.getValue("icing_intensity")?.toIntOrNull() ?: 0
+                        minAltitudeFeetAGL = attributes.getValue("icing_min_alt_ft_agl")?.toIntOrNull() ?: 0
+                        maxAltitudeFeetAGL = attributes.getValue("icing_max_alt_ft_agl")?.toIntOrNull() ?: 0
+                    }
+                    forecast?.icingConditions?.add(icing)
                 }
-                attributes.getValue("turbulence_max_alt_ft_agl")?.let {
-                    turbulence.maxAltitudeFeetAGL = it.toInt()
-                }
-                forecast?.turbulenceConditions?.add(turbulence)
-            } else if (qName.equals("icing_condition", ignoreCase = true)) {
-                val icing = Taf.IcingCondition()
-                attributes.getValue("icing_intensity")?.let {
-                    icing.intensity = it.toInt()
-                }
-                attributes.getValue("icing_min_alt_ft_agl")?.let {
-                    icing.minAltitudeFeetAGL = it.toInt()
-                }
-                attributes.getValue("icing_max_alt_ft_agl")?.let {
-                    icing.maxAltitudeFeetAGL = it.toInt()
-                }
-                forecast?.icingConditions?.add(icing)
-            } else {
-                text.setLength(0)
             }
         }
 
         override fun endElement(uri: String, localName: String, qName: String) {
-            if (qName.equals("raw_text", ignoreCase = true)) {
-                taf.rawText = text.toString()
-            } else if (qName.equals("issue_time", ignoreCase = true)) {
-                taf.issueTime = TimeUtils.parse3339(text.toString()).time
-            } else if (qName.equals("bulletin_time", ignoreCase = true)) {
-                taf.bulletinTime = TimeUtils.parse3339(text.toString()).time
-            } else if (qName.equals("valid_time_from", ignoreCase = true)) {
-                taf.validTimeFrom = TimeUtils.parse3339(text.toString()).time
-            } else if (qName.equals("valid_time_to", ignoreCase = true)) {
-                taf.validTimeTo = TimeUtils.parse3339(text.toString()).time
-            } else if (qName.equals("elevation_m", ignoreCase = true)) {
-                taf.stationElevationMeters = text.toString().toFloat()
-            } else if (qName.equals("remarks", ignoreCase = true)) {
-                taf.remarks = text.toString()
-            } else if (qName.equals("forecast", ignoreCase = true)) {
-                forecast?.let { forecast ->
-                    if (now.time < forecast.timeTo) {
-                        if (forecast.wxList.isEmpty()) {
-                            WxSymbol.get("NSW", "")?.let { wx -> forecast.wxList.add(wx) }
+            val text = sb.trim().toString()
+
+            when (qName.lowercase()) {
+                "raw_text" -> taf.rawText = text
+                "issue_time" -> taf.issueTime = safeParseTime(text)
+                "bulletin_time" -> taf.bulletinTime = safeParseTime(text)
+                "valid_time_from" -> taf.validTimeFrom = safeParseTime(text)
+                "valid_time_to" -> taf.validTimeTo = safeParseTime(text)
+                "elevation_m" -> taf.stationElevationMeters = text.toFloatOrNull() ?: 0f
+                "remarks" -> taf.remarks = text
+                "forecast" -> {
+                    forecast?.let { currentForecast ->
+                        // Only add forecasts that have not yet expired.
+                        if (now.time < currentForecast.timeTo) {
+                            if (currentForecast.wxList.isEmpty()) {
+                                WxSymbol.get("NSW", "")?.let { wx -> currentForecast.wxList.add(wx) }
+                            }
+                            taf.forecasts.add(currentForecast)
                         }
-                        taf.forecasts.add(forecast)
                     }
                 }
-            } else if (qName.equals("temperature", ignoreCase = true)) {
-                temperature?.let { forecast?.temperatures?.add(it) }
-            } else if (qName.equals("wx_string", ignoreCase = true)) {
-                WxSymbol.parseWxSymbols(forecast!!.wxList, text.toString())
-            } else if (qName.equals("fcst_time_from", ignoreCase = true)) {
-                forecast?.timeFrom = TimeUtils.parse3339(text.toString()).time
-            } else if (qName.equals("fcst_time_to", ignoreCase = true)) {
-                forecast?.timeTo = TimeUtils.parse3339(text.toString()).time
-            } else if (qName.equals("time_becoming", ignoreCase = true)) {
-                forecast?.timeBecoming = TimeUtils.parse3339(text.toString()).time
-            } else if (qName.equals("change_indicator", ignoreCase = true)) {
-                forecast?.changeIndicator = text.toString()
-            } else if (qName.equals("probability", ignoreCase = true)) {
-                forecast?.probability = text.toString().toInt()
-            } else if (qName.equals("wind_dir_degrees", ignoreCase = true)) {
-                forecast?.windDirDegrees = text.toString().toIntOrNull() ?: 0
-            } else if (qName.equals("wind_speed_kt", ignoreCase = true)) {
-                forecast?.windSpeedKnots = text.toString().toInt()
-            } else if (qName.equals("wind_gust_kt", ignoreCase = true)) {
-                forecast?.windGustKnots = text.toString().toInt()
-            } else if (qName.equals("wind_shear_dir_degrees", ignoreCase = true)) {
-                forecast?.windShearDirDegrees = text.toString().toInt()
-            } else if (qName.equals("wind_shear_speed_kt", ignoreCase = true)) {
-                forecast?.windShearSpeedKnots = text.toString().toInt()
-            } else if (qName.equals("wind_shear_hgt_ft_agl", ignoreCase = true)) {
-                forecast?.windShearHeightFeetAGL = text.toString().toInt()
-            } else if (qName.equals("visibility_statute_mi", ignoreCase = true)) {
-                forecast?.visibilitySM = text.toString().toFloatOrNull() ?: 6.1F
-            } else if (qName.equals("altim_in_hg", ignoreCase = true)) {
-                forecast?.altimeterHg = text.toString().toFloat()
-            } else if (qName.equals("vert_vis_ft", ignoreCase = true)) {
-                forecast?.vertVisibilityFeet = text.toString().toInt()
-            } else if (qName.equals("valid_time", ignoreCase = true)) {
-                temperature?.validTime = TimeUtils.parse3339(text.toString()).time
-            } else if (qName.equals("sfc_temp_c", ignoreCase = true)) {
-                temperature?.surfaceTempCentigrade = text.toString().toFloat()
-            } else if (qName.equals("taf", ignoreCase = true)) {
-                taf.isValid = true
+                "temperature" -> temperature?.let { forecast?.temperatures?.add(it) }
+                "wx_string" -> forecast?.let { WxSymbol.parseWxSymbols(it.wxList, text) }
+                "fcst_time_from" -> forecast?.timeFrom = safeParseTime(text)
+                "fcst_time_to" -> forecast?.timeTo = safeParseTime(text)
+                "time_becoming" -> forecast?.timeBecoming = safeParseTime(text)
+                "change_indicator" -> forecast?.changeIndicator = text
+                "probability" -> forecast?.probability = text.toIntOrNull() ?: 0
+                "wind_dir_degrees" -> forecast?.windDirDegrees = text.toIntOrNull() ?: 0
+                "wind_speed_kt" -> forecast?.windSpeedKnots = text.toIntOrNull() ?: 0
+                "wind_gust_kt" -> forecast?.windGustKnots = text.toIntOrNull() ?: 0
+                "wind_shear_dir_degrees" -> forecast?.windShearDirDegrees = text.toIntOrNull() ?: 0
+                "wind_shear_speed_kt" -> forecast?.windShearSpeedKnots = text.toIntOrNull() ?: 0
+                "wind_shear_hgt_ft_agl" -> forecast?.windShearHeightFeetAGL = text.toIntOrNull() ?: 0
+                "visibility_statute_mi" -> forecast?.visibilitySM = text.toFloatOrNull() ?: 6.1f
+                "altim_in_hg" -> forecast?.altimeterHg = text.toFloatOrNull() ?: 0f
+                "vert_vis_ft" -> forecast?.vertVisibilityFeet = text.toIntOrNull() ?: 0
+                "valid_time" -> temperature?.validTime = safeParseTime(text)
+                "sfc_temp_c" -> temperature?.surfaceTempCentigrade = text.toFloatOrNull() ?: Float.MAX_VALUE
+                "taf" -> taf.isValid = true
+            }
+        }
+
+        private fun safeParseTime(timeStr: String): Long {
+            return try {
+                TimeUtils.parse3339(timeStr).time
+            } catch (e: ParseException) {
+                0L // Return epoch on parsing failure
             }
         }
     }

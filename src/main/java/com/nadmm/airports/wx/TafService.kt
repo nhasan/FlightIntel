@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,93 +16,105 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.content.Context
+import android.content.Intent
+import android.text.format.DateUtils
+import android.util.Log
+import com.nadmm.airports.utils.UiUtils.showToast
+import kotlinx.coroutines.launch
+import java.io.File
+import java.util.Locale
 
-import android.content.Intent;
-import android.text.format.DateUtils;
+class TafService : NoaaService2("taf", TAF_CACHE_MAX_AGE) {
 
-import com.nadmm.airports.utils.UiUtils;
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.let {
+            val action = intent.action
 
-import java.io.File;
-import java.util.Locale;
-
-public class TafService extends NoaaService {
-
-    private static final long TAF_CACHE_MAX_AGE = 30*DateUtils.MINUTE_IN_MILLIS;
-
-    protected TafParser mParser;
-
-    public TafService() {
-        super( "taf", TAF_CACHE_MAX_AGE );
-        mParser = new TafParser();
-    }
-
-    @Override
-    protected void onHandleIntent( Intent intent ) {
-        String action = intent.getAction();
-        if ( action.equals( ACTION_GET_TAF ) ) {
-            String type = intent.getStringExtra( TYPE );
-            if ( type.equals( TYPE_TEXT ) ) {
-                // Get request parameters
-                String stationId = intent.getStringExtra( STATION_ID );
-                int hours = intent.getIntExtra( HOURS_BEFORE, 6 );
-                boolean cacheOnly = intent.getBooleanExtra( CACHE_ONLY, false );
-                boolean forceRefresh = intent.getBooleanExtra( FORCE_REFRESH, false );
-
-                Taf taf = null;
-                File objFile = getDataFile( "TAF_"+stationId+".obj" );
-
-                if ( forceRefresh || ( !cacheOnly && !objFile.exists() ) ) {
-                    File tmpFile = null;
-                    try {
-                        tmpFile = File.createTempFile( "taf", null );
-                        String TAF_TEXT_QUERY = "dataSource=tafs&requestType=retrieve"
-                                + "&format=xml&hoursBeforeNow=%d&mostRecent=true&stationString=%s";
-                        String query = String.format( Locale.US, TAF_TEXT_QUERY, hours, stationId );
-                        fetchFromNoaa( query, tmpFile, false );
-                        taf = mParser.parse( tmpFile );
-                        writeObject( taf, objFile );
-                    } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch TAF: "+e.getMessage() );
-                    } finally {
-                        if ( tmpFile != null ) {
-                            tmpFile.delete();
-                        }
+            serviceScope.launch {
+                if (action == ACTION_GET_TAF) {
+                    val type = intent.getStringExtra(TYPE)
+                    if (type == TYPE_TEXT) {
+                        getTafText(intent)
+                    } else if (type == TYPE_GRAPHIC) {
+                        getTafImage(intent)
                     }
                 }
-
-                if ( taf == null ) {
-                    if ( objFile.exists() ) {
-                        taf = (Taf) readObject( objFile );
-                    } else {
-                        taf = new Taf();
-                    }
-                }
-
-                // Broadcast the result
-                sendSerializableResultIntent( action, stationId, taf );
-            } else if ( type.equals(TYPE_GRAPHIC) ) {
-                String imgType = intent.getStringExtra( IMAGE_TYPE );
-                String code = intent.getStringExtra( IMAGE_CODE ).toLowerCase();
-                String imageName = String.format( "%s_taf_%s_prevail.gif", imgType, code );
-                File imageFile = getDataFile( imageName );
-                if ( !imageFile.exists() ) {
-                    String path = "/data/products/taf/";
-                    try {
-                        path += imageName;
-                        fetchFromNoaa( path, null, imageFile, false );
-                    } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch TAF image: "
-                                +path+" "
-                                +e.getMessage() );
-                    }
-                }
-
-                // Broadcast the result
-                sendImageResultIntent( action, code, imageFile );
             }
         }
+
+        return START_NOT_STICKY
     }
 
+    private fun getTafText(intent: Intent) {
+        // Get request parameters
+        val stationId = intent.getStringExtra(STATION_ID) ?: return
+        val forceRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
+
+        if (forceRefresh) {
+            cleanupCache(listOf(stationId))
+        }
+
+        Log.d(TAG, "getMetarText: stationId=$stationId, forceRefresh=$forceRefresh")
+
+        if (!cacheFileExists(stationId)) {
+            var xmlFile: File? = null
+            try {
+                xmlFile = createTempFile()
+                val hoursBeforeNow = intent.getIntExtra(HOURS_BEFORE, 6)
+                val query = ("dataSource=tafs&requestType=retrieve"
+                        + "&format=xml&hoursBeforeNow=${hoursBeforeNow}&mostRecent=true&stationString=${stationId}")
+                fetchFromNoaa(query, xmlFile, false)
+                val parser: TafParser = TafParser()
+                val taf = parser.parse(xmlFile)
+                serializeObject(taf, stationId)
+            } catch (e: Exception) {
+                showToast(this, "Unable to fetch TAF: " + e.message)
+            } finally {
+                xmlFile?.delete()
+            }
+        }
+
+        val taf = deserializeObject<Taf>(stationId) ?: Taf()
+        sendParcelableResultIntent(intent.action, stationId, taf)
+    }
+
+    // This is not used anymore as TAF images are not available from NOAA
+    private fun getTafImage(intent: Intent) {
+        val imgType = intent.getStringExtra(IMAGE_TYPE) ?: return
+        val code = intent.getStringExtra(IMAGE_CODE)?.lowercase(Locale.getDefault()) ?: return
+
+        val imageName = "${imgType}_taf_${code}_prevail.gif"
+        val imageFile = getDataFile(imageName)
+        if (!imageFile.exists()) {
+            val path = "/data/products/taf/${imageName}"
+            try {
+                fetchFromNoaa(path, null, imageFile, false)
+            } catch (e: Exception) {
+                showToast(this, ("Unable to fetch TAF image: ${e.message}")
+                )
+            }
+        }
+
+        sendImageResultIntent(intent.action, code, imageFile)
+    }
+
+    companion object {
+        private val TAG = TafService::class.java.simpleName
+        private const val TAF_CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
+
+        // Helper function to start the service
+        fun startTafService(context: Context, stationId: String, refresh: Boolean) {
+            val intent = Intent(context, TafService::class.java).apply {
+                action = ACTION_GET_TAF
+                putExtra(NoaaService.STATION_IDS, arrayListOf(stationId))
+                putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
+                putExtra(NoaaService.HOURS_BEFORE, NoaaService.METAR_HOURS_BEFORE)
+                putExtra(NoaaService.FORCE_REFRESH, refresh)
+            }
+            context.startService(intent)
+        }
+    }
 }

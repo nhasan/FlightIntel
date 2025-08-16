@@ -21,10 +21,8 @@ package com.nadmm.airports.wx
 import com.nadmm.airports.utils.WxUtils
 import com.nadmm.airports.utils.WxUtils.computeFlightCategory
 import org.xml.sax.Attributes
-import org.xml.sax.InputSource
 import org.xml.sax.helpers.DefaultHandler
 import java.io.File
-import java.io.FileInputStream
 import java.time.Instant
 import java.time.format.DateTimeParseException
 import javax.xml.parsers.SAXParserFactory
@@ -34,16 +32,9 @@ class MetarParser {
     fun parse(xmlFile: File, stationIds: List<String>): List<Metar> {
         val parsedMetars = mutableMapOf<String, Metar>()
 
-        FileInputStream(xmlFile).use { fileStream ->
-            val input = InputSource(fileStream)
-            val parser = SAXParserFactory.newInstance().newSAXParser()
-
-            // Assume MetarHandler now accepts the map directly to populate it
-            val handler = MetarHandler(xmlFile, parsedMetars)
-
-            parser.xmlReader.contentHandler = handler
-            parser.xmlReader.parse(input)
-        }
+        val handler = MetarHandler(xmlFile, parsedMetars)
+        val factory = SAXParserFactory.newInstance()
+        factory.newSAXParser().parse(xmlFile, handler)
 
         // Now put the missing ones
         stationIds.forEach { stationId ->
