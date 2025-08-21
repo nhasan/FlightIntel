@@ -92,16 +92,6 @@
         </activity>
 
         <activity
-            android:label="@string/metar_graphics"
-            android:name=".wx.MetarGraphicActivity"
-            android:theme="@style/Theme.DayNight.Dialog" />
-
-        <activity
-            android:label="@string/taf_graphics"
-            android:name=".wx.TafGraphicActivity"
-            android:theme="@style/Theme.DayNight.Dialog" />
-
-        <activity
             android:label="@string/pirep_graphics"
             android:name=".wx.PirepGrapahicActivity"
             android:theme="@style/Theme.DayNight.Dialog" />

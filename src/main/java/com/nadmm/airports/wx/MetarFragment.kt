@@ -71,11 +71,6 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
         savedInstanceState: Bundle?
     ): View? {
         _binding = MetarDetailViewBinding.inflate(inflater, container, false)
-        binding.btnViewGraphic.setOnClickListener { _: View? ->
-            val intent = Intent(activity, MetarGraphicActivity::class.java)
-            startActivity(intent)
-        }
-        binding.btnViewGraphic.visibility = View.GONE
         return createContentView(binding.root)
     }
 
