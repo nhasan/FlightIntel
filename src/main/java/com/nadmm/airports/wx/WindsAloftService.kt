@@ -24,7 +24,7 @@ import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
 
-class WindsAloftService : NoaaService2("fb", FB_CACHE_MAX_AGE) {
+class WindsAloftService : NoaaService("fb", FB_CACHE_MAX_AGE) {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {

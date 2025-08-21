@@ -24,7 +24,7 @@ import android.util.Log
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 
-class IcingService : NoaaService2("icing", ICING_CACHE_MAX_AGE) {
+class IcingService : NoaaService("icing", ICING_CACHE_MAX_AGE) {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {

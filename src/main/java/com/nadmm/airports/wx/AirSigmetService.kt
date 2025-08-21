@@ -28,7 +28,7 @@ import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
 
-class AirSigmetService : NoaaService2("airsigmet", AIRSIGMET_CACHE_MAX_AGE) {
+class AirSigmetService : NoaaService("airsigmet", AIRSIGMET_CACHE_MAX_AGE) {
     private val mParser: AirSigmetParser = AirSigmetParser()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -66,7 +66,7 @@ class AirSigmetService : NoaaService2("airsigmet", AIRSIGMET_CACHE_MAX_AGE) {
                         + "&requesttype=retrieve&format=xml"
                         + "&hoursBeforeNow=$hours&minLat=${box[0]}&maxLat=${box[1]}"
                         + "&minLon=${box[2]}&maxLon=${box[3]}")
-                fetchFromNoaa(query, xmlFile, false)
+                fetchFromNoaa(query, xmlFile)
             } catch (e: Exception) {
                 showToast(this@AirSigmetService, "Unable to fetch AirSigmet: ${e.message}")
             }
@@ -122,15 +122,15 @@ class AirSigmetService : NoaaService2("airsigmet", AIRSIGMET_CACHE_MAX_AGE) {
         const val AIRSIGMET_RADIUS_NM = 50
         const val AIRSIGMET_HOURS_BEFORE = 3
 
-        fun startAirSigmetService(context: Context, stationId: String, location: Location, refresh: Boolean) {
+        fun startService(context: Context, stationId: String, location: Location, refresh: Boolean) {
             val box = GeoUtils.getBoundingBoxDegrees(location, AIRSIGMET_RADIUS_NM)
             Intent(context, AirSigmetService::class.java).apply {
-                setAction(NoaaService.ACTION_GET_AIRSIGMET)
-                putExtra(NoaaService.STATION_ID, stationId)
-                putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
-                putExtra(NoaaService.COORDS_BOX, box)
-                putExtra(NoaaService.HOURS_BEFORE, AIRSIGMET_HOURS_BEFORE)
-                putExtra(NoaaService.FORCE_REFRESH, refresh)
+                setAction(ACTION_GET_AIRSIGMET)
+                putExtra(STATION_ID, stationId)
+                putExtra(TYPE, TYPE_TEXT)
+                putExtra(COORDS_BOX, box)
+                putExtra(HOURS_BEFORE, AIRSIGMET_HOURS_BEFORE)
+                putExtra(FORCE_REFRESH, refresh)
                 context.startService(this)
             }
         }

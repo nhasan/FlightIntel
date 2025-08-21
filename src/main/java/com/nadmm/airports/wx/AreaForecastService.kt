@@ -23,7 +23,7 @@ import android.text.format.DateUtils
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 
-class AreaForecastService : NoaaService2("fa", FA_CACHE_MAX_AGE) {
+class AreaForecastService : NoaaService("fa", FA_CACHE_MAX_AGE) {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {

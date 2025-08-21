@@ -27,7 +27,7 @@ import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
 
-class PirepService : NoaaService2("pirep", PIREP_CACHE_MAX_AGE) {
+class PirepService : NoaaService("pirep", PIREP_CACHE_MAX_AGE) {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
@@ -90,7 +90,7 @@ class PirepService : NoaaService2("pirep", PIREP_CACHE_MAX_AGE) {
                 location.longitude, location.latitude
             )
             xmlFile = createTempFile()
-            fetchFromNoaa(query, xmlFile, false)
+            fetchFromNoaa(query, xmlFile)
 
             if (!xmlFile.exists()) {
                 throw Exception("Unknown error")
@@ -130,13 +130,13 @@ class PirepService : NoaaService2("pirep", PIREP_CACHE_MAX_AGE) {
 
         fun startService(context: Context, stationId: String, location: Location, refresh: Boolean) {
             val intent = Intent(context, PirepService::class.java).apply {
-                setAction(NoaaService.ACTION_GET_PIREP)
-                putExtra(NoaaService.STATION_ID, stationId)
-                putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
-                putExtra(NoaaService.RADIUS_NM, PIREP_RADIUS_NM)
-                putExtra(NoaaService.HOURS_BEFORE, PIREP_HOURS_BEFORE)
-                putExtra(NoaaService.LOCATION, location)
-                putExtra(NoaaService.FORCE_REFRESH, refresh)
+                setAction(ACTION_GET_PIREP)
+                putExtra(STATION_ID, stationId)
+                putExtra(TYPE, TYPE_TEXT)
+                putExtra(RADIUS_NM, PIREP_RADIUS_NM)
+                putExtra(HOURS_BEFORE, PIREP_HOURS_BEFORE)
+                putExtra(LOCATION, location)
+                putExtra(FORCE_REFRESH, refresh)
             }
             context.startService(intent)
         }

@@ -26,7 +26,7 @@ import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
 
-class MetarService : NoaaService2("metar", METAR_CACHE_MAX_AGE) {
+class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
@@ -72,7 +72,7 @@ class MetarService : NoaaService2("metar", METAR_CACHE_MAX_AGE) {
                 val query = ("datasource=metars&requesttype=retrieve"
                         + "&hoursBeforeNow=${hoursBeforeNow}&mostRecentForEachStation=constraint"
                         + "&format=xml&stationString=${missing.joinToString()}")
-                fetchFromNoaa(query, xmlFile, false)
+                fetchFromNoaa(query, xmlFile)
                 parseMetars(xmlFile, missing)
             } catch (e: Exception) {
                 showToast(this, "Unable to fetch METAR: ${e.message}")
@@ -108,10 +108,10 @@ class MetarService : NoaaService2("metar", METAR_CACHE_MAX_AGE) {
         fun startService(context: Context, stationId: String, refresh: Boolean) {
             val intent = Intent(context, MetarService::class.java).apply {
                 action = ACTION_GET_METAR
-                putExtra(NoaaService.STATION_IDS, arrayListOf(stationId))
-                putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
-                putExtra(NoaaService.HOURS_BEFORE, NoaaService.METAR_HOURS_BEFORE)
-                putExtra(NoaaService.FORCE_REFRESH, refresh)
+                putExtra(STATION_IDS, arrayListOf(stationId))
+                putExtra(TYPE, TYPE_TEXT)
+                putExtra(HOURS_BEFORE, METAR_HOURS_BEFORE)
+                putExtra(FORCE_REFRESH, refresh)
             }
             context.startService(intent)
         }

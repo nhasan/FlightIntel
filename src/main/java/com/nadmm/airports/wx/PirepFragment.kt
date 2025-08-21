@@ -169,14 +169,14 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
 
             if (pirep.entries.isNotEmpty()) {
                 pirepTitleMsg.text = "%d PIREPs reported within %d NM of %s during last %d hours".format(
-                    pirep.entries.size, NoaaService2.PIREP_RADIUS_NM,
-                    pirep.stationId, NoaaService2.PIREP_HOURS_BEFORE)
+                    pirep.entries.size, NoaaService.PIREP_RADIUS_NM,
+                    pirep.stationId, NoaaService.PIREP_HOURS_BEFORE)
                 for (entry in pirep.entries) {
                     showPirepEntry(layout, entry)
                 }
             } else {
                 pirepTitleMsg.text = "No PIREPs reported within %d NM of %s in last %d hours".format(
-                    NoaaService2.PIREP_RADIUS_NM, pirep.stationId, NoaaService2.PIREP_HOURS_BEFORE
+                    NoaaService.PIREP_RADIUS_NM, pirep.stationId, NoaaService.PIREP_HOURS_BEFORE
                 )
             }
 

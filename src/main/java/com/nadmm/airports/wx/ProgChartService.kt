@@ -22,7 +22,7 @@ import android.content.Intent
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 
-class ProgChartService : NoaaService2("progchart", PROGCHART_CACHE_MAX_AGE) {
+class ProgChartService : NoaaService("progchart", PROGCHART_CACHE_MAX_AGE) {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {

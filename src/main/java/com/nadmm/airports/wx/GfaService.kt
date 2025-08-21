@@ -24,7 +24,7 @@ import android.util.Log
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 
-class GfaService : NoaaService2("gfa", CACHE_MAX_AGE) {
+class GfaService : NoaaService("gfa", CACHE_MAX_AGE) {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {

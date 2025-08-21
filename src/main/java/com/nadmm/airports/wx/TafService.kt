@@ -26,7 +26,7 @@ import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
 
-class TafService : NoaaService2("taf", TAF_CACHE_MAX_AGE) {
+class TafService : NoaaService("taf", TAF_CACHE_MAX_AGE) {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
@@ -63,7 +63,7 @@ class TafService : NoaaService2("taf", TAF_CACHE_MAX_AGE) {
                 val hoursBeforeNow = intent.getIntExtra(HOURS_BEFORE, 6)
                 val query = ("dataSource=tafs&requestType=retrieve"
                         + "&format=xml&hoursBeforeNow=${hoursBeforeNow}&mostRecent=true&stationString=${stationId}")
-                fetchFromNoaa(query, xmlFile, false)
+                fetchFromNoaa(query, xmlFile)
                 val parser = TafParser()
                 val taf = parser.parse(xmlFile)
                 serializeObject(taf, stationId)
@@ -86,10 +86,10 @@ class TafService : NoaaService2("taf", TAF_CACHE_MAX_AGE) {
         fun startService(context: Context, stationId: String, refresh: Boolean) {
             val intent = Intent(context, TafService::class.java).apply {
                 action = ACTION_GET_TAF
-                putExtra(NoaaService.STATION_ID, stationId)
-                putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
-                putExtra(NoaaService.HOURS_BEFORE, NoaaService.METAR_HOURS_BEFORE)
-                putExtra(NoaaService.FORCE_REFRESH, refresh)
+                putExtra(STATION_ID, stationId)
+                putExtra(TYPE, TYPE_TEXT)
+                putExtra(HOURS_BEFORE, TAF_HOURS_BEFORE)
+                putExtra(FORCE_REFRESH, refresh)
             }
             context.startService(intent)
         }
