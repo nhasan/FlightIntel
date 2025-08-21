@@ -86,7 +86,7 @@ class TafService : NoaaService2("taf", TAF_CACHE_MAX_AGE) {
         fun startService(context: Context, stationId: String, refresh: Boolean) {
             val intent = Intent(context, TafService::class.java).apply {
                 action = ACTION_GET_TAF
-                putExtra(NoaaService.STATION_IDS, arrayListOf(stationId))
+                putExtra(NoaaService.STATION_ID, stationId)
                 putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
                 putExtra(NoaaService.HOURS_BEFORE, NoaaService.METAR_HOURS_BEFORE)
                 putExtra(NoaaService.FORCE_REFRESH, refresh)
