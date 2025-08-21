@@ -32,7 +32,7 @@ import com.nadmm.airports.utils.GeoUtils
 import com.nadmm.airports.utils.GeoUtils.applyDeclination
 import com.nadmm.airports.utils.GeoUtils.getMagneticDeclination
 
-class NearbyWxCursor(db: SQLiteDatabase?, location: Location, radius: Int) : MatrixCursor(sColumns) {
+class NearbyWxCursor(db: SQLiteDatabase, location: Location, radius: Int) : MatrixCursor(sColumns) {
     init {
         val declination = getMagneticDeclination(location).toDouble()
 

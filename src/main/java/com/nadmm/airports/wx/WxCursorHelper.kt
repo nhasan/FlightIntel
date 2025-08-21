@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,50 +16,50 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteQueryBuilder
+import android.provider.BaseColumns
+import com.nadmm.airports.data.DatabaseManager.Airports
+import com.nadmm.airports.data.DatabaseManager.Awos1
+import com.nadmm.airports.data.DatabaseManager.Wxs
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
-import android.provider.BaseColumns;
+object WxCursorHelper {
+    private val sQueryColumns: Array<String> = arrayOf(
+        "x." + BaseColumns._ID,
+        Wxs.STATION_ID,
+        Wxs.STATION_NAME,
+        Wxs.STATION_ELEVATOIN_METER,
+        "x." + Wxs.STATION_LATITUDE_DEGREES,
+        "x." + Wxs.STATION_LONGITUDE_DEGREES,
+        Awos1.WX_SENSOR_IDENT,
+        Awos1.WX_SENSOR_TYPE,
+        Awos1.STATION_FREQUENCY,
+        Awos1.SECOND_STATION_FREQUENCY,
+        Awos1.STATION_PHONE_NUMBER,
+        Awos1.COMMISSIONING_STATUS,
+        Airports.ASSOC_CITY,
+        Airports.ASSOC_STATE,
+    )
 
-import com.nadmm.airports.data.DatabaseManager.Airports;
-import com.nadmm.airports.data.DatabaseManager.Awos1;
-import com.nadmm.airports.data.DatabaseManager.Wxs;
+    fun query(
+        db: SQLiteDatabase, selection: String, selectionArgs: Array<String>?,
+        groupBy: String?, having: String?, sortOrder: String?, limit: String?
+    ): Cursor {
+        val builder = SQLiteQueryBuilder()
+        builder.setTables(
+            (Wxs.TABLE_NAME + " x"
+                    + " LEFT JOIN " + Airports.TABLE_NAME + " a"
+                    + " ON substr(x." + Wxs.STATION_ID + ", 2) = a." + Airports.FAA_CODE
+                    + " LEFT JOIN " + Awos1.TABLE_NAME + " w"
+                    + " ON w." + Awos1.WX_SENSOR_IDENT + " = a." + Airports.FAA_CODE)
+        )
 
-public class WxCursorHelper {
-
-    private static final String[] sQueryColumns = new String[] {
-            "x."+BaseColumns._ID,
-            Wxs.STATION_ID,
-            Wxs.STATION_NAME,
-            Wxs.STATION_ELEVATOIN_METER,
-            "x."+Wxs.STATION_LATITUDE_DEGREES,
-            "x."+Wxs.STATION_LONGITUDE_DEGREES,
-            Awos1.WX_SENSOR_IDENT,
-            Awos1.WX_SENSOR_TYPE,
-            Awos1.STATION_FREQUENCY,
-            Awos1.SECOND_STATION_FREQUENCY,
-            Awos1.STATION_PHONE_NUMBER,
-            Awos1.COMMISSIONING_STATUS,
-            Airports.ASSOC_CITY,
-            Airports.ASSOC_STATE,
-    };
-
-    private WxCursorHelper() {}
-
-    public static Cursor query( SQLiteDatabase db, String selection, String[] selectionArgs,
-            String groupBy, String having, String sortOrder, String limit ) {
-        SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-        builder.setTables( Wxs.TABLE_NAME+" x"
-                +" LEFT JOIN "+Airports.TABLE_NAME+" a"
-                +" ON substr(x."+Wxs.STATION_ID+", 2) = a."+Airports.FAA_CODE
-                +" LEFT JOIN "+Awos1.TABLE_NAME+" w"
-                +" ON w."+Awos1.WX_SENSOR_IDENT+" = a."+Airports.FAA_CODE );
-
-        return builder.query( db, sQueryColumns, selection, selectionArgs,
-                groupBy, having, sortOrder, limit );
+        return builder.query(
+            db, sQueryColumns, selection, selectionArgs,
+            groupBy, having, sortOrder, limit
+        )
     }
-
 }
