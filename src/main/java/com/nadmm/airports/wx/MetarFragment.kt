@@ -201,6 +201,9 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
             )
             requireActivity().finish()
         }
+        for (c in result) {
+            c?.close()
+        }
     }
 
     @SuppressLint("SetTextI18n")
