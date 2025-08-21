@@ -28,7 +28,8 @@ class ProgChartFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_PROGCHART
                 "including temperature, precipitation, and other meteorological elements."
     }
 
-    override val serviceIntent = Intent(requireActivity(), ProgChartService::class.java)
+    override val serviceIntent: Intent
+        get() = Intent(requireActivity(), ProgChartService::class.java)
 
     companion object {
         private val progChartCodes = mapOf(

@@ -34,10 +34,10 @@ abstract class WxGraphicFragmentBase(
     private val wxTypes: Map<String, String> = mapOf()
 ) : WxFragmentBase(action) {
     private var selectedRow: View? = null
-    var graphicTypeLabel = ""
-    var graphicLabel = ""
-    var title = ""
-    var helpText = ""
+    protected var graphicTypeLabel = ""
+    protected var graphicLabel = ""
+    protected var title = ""
+    protected var helpText = ""
 
     private var _binding: WxMapDetailViewBinding? = null
     private val binding get() = _binding!!
