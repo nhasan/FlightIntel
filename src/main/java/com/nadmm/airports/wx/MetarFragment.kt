@@ -97,9 +97,7 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
         }
     }
 
-    override fun isRefreshable(): Boolean {
-        return true
-    }
+    override fun isRefreshable() = true
 
     override fun requestDataRefresh() = fetchMetar(true)
 
