@@ -111,15 +111,6 @@
         </activity>
 
         <activity
-            android:label=""
-            android:name=".wx.WxImageViewActivity"
-            android:parentActivityName=".FlightIntel">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FlightIntel" />
-        </activity>
-
-        <activity
             android:label="@string/instrument_procedures"
             android:name=".aeronav.DtppActivity"
             android:parentActivityName=".FlightIntel">

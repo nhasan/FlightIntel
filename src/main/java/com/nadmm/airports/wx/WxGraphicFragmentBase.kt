@@ -127,7 +127,7 @@ abstract class WxGraphicFragmentBase(
         if (type == NoaaService.TYPE_GRAPHIC) {
             val path = intent.getStringExtra(NoaaService.RESULT)
             if (!path.isNullOrEmpty()) {
-                val view = Intent(activity, WxImageViewActivity::class.java)
+                val view = Intent(activity, ImageViewActivity::class.java)
                 view.putExtra(ImageViewActivity.IMAGE_PATH, path)
                 view.putExtra(ImageViewActivity.IMAGE_TITLE, title.ifEmpty { activity?.title })
                 intent.getStringExtra(NoaaService.IMAGE_CODE)?.let { code ->

@@ -41,9 +41,6 @@
     <screenName name="com.nadmm.airports.wx.NearbyWxActivity" >
         Nearby Weather
     </screenName>
-    <screenName name="com.nadmm.airports.wx.WxImageViewActivity" >
-        Wx Graphics
-    </screenName>
     <screenName name="com.nadmm.airports.aeronav.DtppActivity" >
         d-TPP
     </screenName>
