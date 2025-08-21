@@ -24,8 +24,7 @@ class AreaForecastFragment()
     : WxTextFragmentBase(NoaaService.ACTION_GET_FA, areas) {
 
     override val title: String = "Area Forecast"
-    override val serviceIntent: Intent
-        get() = Intent(requireActivity(), AreaForecastService::class.java)
+    override val serviceIntent = Intent(requireActivity(), AreaForecastService::class.java)
     override val helpText: String = "Refer to GFA (Graphical Forecast for Aviation) tab for other regions."
 
     companion object {

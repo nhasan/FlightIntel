@@ -28,8 +28,7 @@ class IcingFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_ICING, altitu
         graphicLabel = "Select Altitude"
     }
 
-    override val serviceIntent: Intent
-        get() = Intent(requireActivity(), IcingService::class.java)
+    override val serviceIntent = Intent(requireActivity(), IcingService::class.java)
 
     companion object {
         private val types = mapOf(

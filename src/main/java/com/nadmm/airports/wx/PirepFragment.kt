@@ -64,7 +64,7 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
     override fun onResume() {
         super.onResume()
 
-        run()
+        fetchPirep()
     }
 
     override fun handleBroadcast(intent: Intent) {
@@ -75,15 +75,11 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
         }
     }
 
-    override fun isRefreshable(): Boolean {
-        return true
-    }
+    override fun isRefreshable() = true
 
-    override fun requestDataRefresh() {
-        run(true)
-    }
+    override fun requestDataRefresh() = fetchPirep(true)
 
-    private fun run(refresh: Boolean = false) {
+    private fun fetchPirep(refresh: Boolean = false) {
         arguments?.let { args ->
             val stationId = args.getString(NoaaService.STATION_ID) ?: return
             viewLifecycleOwner.lifecycleScope.launch {

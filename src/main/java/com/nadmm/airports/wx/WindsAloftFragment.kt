@@ -24,8 +24,7 @@ class WindsAloftFragment : WxTextFragmentBase(NoaaService.ACTION_GET_FB, areas, 
 
     override val title: String = "Winds Aloft"
 
-    override val serviceIntent: Intent
-        get() = Intent(requireActivity(), WindsAloftService::class.java)
+    override val serviceIntent = Intent(requireActivity(), WindsAloftService::class.java)
 
     override val helpText: String = "Winds Aloft forecasts provide wind and temperature information at " +
             "various altitudes, typically used for flight planning. " +
