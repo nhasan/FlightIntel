@@ -16,63 +16,49 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.content.Intent
 
-import static java.util.Map.entry;
-
-import android.content.Intent;
-
-import androidx.annotation.NonNull;
-
-import java.util.Map;
-
-public class SurfaceForecatFragment extends WxGraphicFragmentBase {
-
-    private static final Map<String, String> Forecasts = Map.ofEntries(
-            entry("F03_gfa_clouds", "3 Hour Clouds"),
-            entry("F03_gfa_sfc", "3 Hour Surface"),
-            entry("F06_gfa_clouds", "6 Hour Clouds"),
-            entry("F06_gfa_sfc", "6 Hour Surface"),
-            entry("F09_gfa_clouds", "9 Hour Clouds"),
-            entry("F09_gfa_sfc", "9 Hour Surface"),
-            entry("F12_gfa_clouds", "12 Hour Clouds"),
-            entry("F12_gfa_sfc", "12 Hour Surface"),
-            entry("F15_gfa_clouds", "15 Hour Clouds"),
-            entry("F15_gfa_sfc", "15 Hour Surface"),
-            entry("F18_gfa_clouds", "18 Hour Clouds"),
-            entry("F18_gfa_sfc", "18 Hour Surface")
-    );
-
-    private static final Map<String, String> Regions = Map.of(
-            "us", "Continental US",
-            "ne", "Northeast",
-            "e", "East",
-            "se", "Southeast",
-            "nc", "North Central",
-            "c", "Central",
-            "sc", "South Central",
-            "nw", "Northwest",
-            "w", "West",
-            "sw", "Southwest"
-    );
-
-    public SurfaceForecatFragment() {
-        super(NoaaService.ACTION_GET_GFA, Regions, Forecasts);
-
-        setTitle("Graphical Forecast");
-        setGraphicTypeLabel("Select Forecast");
-        setGraphicLabel("Select Region");
+class GfaFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_GFA, regions, forecasts) {
+    init {
+        title = "Graphical Forecast"
+        graphicTypeLabel = "Select Forecast"
+        graphicLabel = "Select Region"
     }
 
-    @NonNull
-    @Override
-    protected Intent getServiceIntent() {
-        return new Intent( getActivity(), SurfaceForecastService.class );
-    }
+    override val serviceIntent: Intent
+        get() = Intent(requireActivity(), GfaService::class.java)
 
-    @Override
-    protected String getProduct() {
-        return "gfa";
+    override val product: String = "gfa"
+
+    companion object {
+        private val forecasts: Map<String, String> = mapOf(
+            "F03_gfa_clouds" to "3 Hour Clouds",
+            "F03_gfa_sfc" to "3 Hour Surface",
+            "F06_gfa_clouds" to "6 Hour Clouds",
+            "F06_gfa_sfc" to "6 Hour Surface",
+            "F09_gfa_clouds" to "9 Hour Clouds",
+            "F09_gfa_sfc" to "9 Hour Surface",
+            "F12_gfa_clouds" to "12 Hour Clouds",
+            "F12_gfa_sfc" to  "12 Hour Surface",
+            "F15_gfa_clouds" to "15 Hour Clouds",
+            "F15_gfa_sfc" to "15 Hour Surface",
+            "F18_gfa_clouds" to "18 Hour Clouds",
+            "F18_gfa_sfc" to "18 Hour Surface"
+        )
+
+        private val regions: Map<String, String> = mapOf(
+            "us" to "Continental US",
+            "ne" to "Northeast",
+            "e" to "East",
+            "se" to "Southeast",
+            "nc" to "North Central",
+            "c" to "Central",
+            "sc" to "South Central",
+            "nw" to "Northwest",
+            "w" to "West",
+            "sw" to "Southwest"
+        )
     }
 }

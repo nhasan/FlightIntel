@@ -292,7 +292,7 @@
         <service android:name=".wx.IcingService" />
         <service android:name=".wx.AreaForecastService" />
         <service android:name=".wx.WindsAloftService" />
-        <service android:name=".wx.SurfaceForecastService" />
+        <service android:name=".wx.GfaService" />
         <service android:name=".library.LibraryService" />
         <service android:name=".aeronav.DtppService" />
         <service android:name=".aeronav.DafdService" />

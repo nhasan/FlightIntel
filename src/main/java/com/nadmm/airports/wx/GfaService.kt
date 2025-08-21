@@ -16,53 +16,56 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.content.Intent
+import android.text.format.DateUtils
+import android.util.Log
+import com.nadmm.airports.utils.UiUtils.showToast
+import kotlinx.coroutines.launch
 
-import android.content.Intent;
-import android.text.format.DateUtils;
-import android.util.Log;
+class GfaService : NoaaService2("gfa", CACHE_MAX_AGE) {
 
-import com.nadmm.airports.utils.UiUtils;
-
-import java.io.File;
-import java.util.Locale;
-
-public class SurfaceForecastService extends NoaaService {
-
-    private static final long CACHE_MAX_AGE = 30* DateUtils.MINUTE_IN_MILLIS;
-    private static final String TAG = SurfaceForecastService.class.getSimpleName();
-
-    public SurfaceForecastService() {
-        super( "gfa", CACHE_MAX_AGE );
-    }
-
-    @Override
-    protected void onHandleIntent( Intent intent ) {
-        String action = intent.getAction();
-        if ( action.equals( ACTION_GET_GFA ) ) {
-            String type = intent.getStringExtra( TYPE );
-            if ( type.equals(TYPE_GRAPHIC) ) {
-                String imgType = intent.getStringExtra( IMAGE_TYPE );
-                String code = intent.getStringExtra( IMAGE_CODE );
-                Log.d(TAG, "Fetching GFA image: " + imgType + ", code: " + code);
-
-                String imageName = String.format( Locale.US, "%s_%s.png", imgType, code );
-                File imageFile = getDataFile( imageName );
-                if ( !imageFile.exists() ) {
-                    try {
-                        String path = "/data/products/gfa/" +imageName;
-                        fetchFromNoaa( path, null, imageFile, false );
-                    } catch ( Exception e ) {
-                        UiUtils.showToast( this, "Unable to fetch gfa image: "
-                                + e.getMessage() );
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.let {
+            val action = intent.action
+            serviceScope.launch {
+                val type = intent.getStringExtra(TYPE)
+                if (action == ACTION_GET_GFA) {
+                    if (type == TYPE_GRAPHIC) {
+                        fetchAndSendGfaImage(intent)
                     }
                 }
-
-                // Broadcast the result
-                sendImageResultIntent( action, code, imageFile );
-
             }
         }
+
+        return START_NOT_STICKY
+    }
+
+    private fun fetchAndSendGfaImage(intent: Intent) {
+        // Get request parameters
+        val action = intent.action
+        val imgType = intent.getStringExtra(IMAGE_TYPE)
+        val code = intent.getStringExtra(IMAGE_CODE)
+        Log.d(TAG, "Fetching GFA image: $imgType, code: $code")
+
+        val imageName = "${imgType}_${code}.png"
+        val imageFile = getDataFile(imageName)
+        if (!imageFile.exists()) {
+            try {
+                val path = "/data/products/gfa/$imageName"
+                fetchFromNoaa(path, null, imageFile, false)
+            } catch (e: Exception) {
+                showToast(this, "Unable to fetch gfa image: ${e.message}")
+            }
+        }
+
+        // Broadcast the result
+        sendImageResultIntent(action, code, imageFile)
+    }
+
+    companion object {
+        private const val CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
+        private val TAG: String = GfaService::class.java.getSimpleName()
     }
 }

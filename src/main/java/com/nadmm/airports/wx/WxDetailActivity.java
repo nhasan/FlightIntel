@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2016 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ public class WxDetailActivity extends TabPagerActivityBase {
             MetarFragment.class,
             TafFragment.class,
             PirepFragment.class,
-            SurfaceForecatFragment.class,
+            GfaFragment.class,
             AreaForecastFragment.class,
             AirSigmetFragment.class,
             ProgChartFragment.class,
