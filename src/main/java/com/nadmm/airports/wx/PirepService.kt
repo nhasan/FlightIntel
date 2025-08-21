@@ -38,8 +38,6 @@ class PirepService : NoaaService("pirep", PIREP_CACHE_MAX_AGE) {
                     val type = intent.getStringExtra(TYPE)
                     if (type == TYPE_TEXT) {
                         handleTextPirepRequest(intent)
-                    } else if (type == TYPE_GRAPHIC) {
-                        handleGraphicPirepRequest(intent)
                     }
                 }
             }
@@ -105,25 +103,6 @@ class PirepService : NoaaService("pirep", PIREP_CACHE_MAX_AGE) {
         }
         // Send the Pirep
         sendSerializableResultIntent(action, stationId, pirep)
-    }
-
-    private fun handleGraphicPirepRequest(intent: Intent) {
-        val action = intent.action
-        val imgType = intent.getStringExtra(IMAGE_TYPE)
-        val code = intent.getStringExtra(IMAGE_CODE)
-        val imageName = String.format("pireps_%s_%s.gif", imgType, code)
-        val imageFile = getDataFile(imageName)
-        if (!imageFile.exists()) {
-            try {
-                var path = "/data/obs/pirep/"
-                path += imageName
-                fetchFromNoaa(path, null, imageFile, false)
-            } catch (e: Exception) {
-                showToast(this, "Unable to fetch PIREP image: " + e.message)
-            }
-        }
-        // Broadcast the result
-        sendImageResultIntent(action, code, imageFile)
     }
 
     companion object {
