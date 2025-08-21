@@ -37,8 +37,6 @@ class MetarService : NoaaService2("metar", METAR_CACHE_MAX_AGE) {
                     val type = intent.getStringExtra(TYPE)
                     if (type == TYPE_TEXT) {
                         getMetarText(intent)
-                    } else if (type == TYPE_GRAPHIC) {
-                        getMetarImage(intent)
                     }
                 }
             }
@@ -99,26 +97,6 @@ class MetarService : NoaaService2("metar", METAR_CACHE_MAX_AGE) {
             parser.parse(xmlFile, stationIds).forEach { metar ->
                 serializeObject(metar, metar.stationId!!)
             }
-        }
-    }
-
-    // This is not used anymore as METAR images are not available from NOAA
-    private fun getMetarImage(intent: Intent) {
-        intent.getStringExtra(IMAGE_CODE)?.let { code ->
-            val imageName = "metars_${code.lowercase()}.gif"
-            val imageFile = getDataFile(imageName)
-            val action = intent.action
-            Log.d(TAG, "getMetarImage: action=$action, code=$code, imageName=$imageName")
-            if (!imageFile.exists()) {
-                try {
-                    val path = "/data/obs/metar/$imageName"
-                    fetchFromNoaa(path, null, imageFile, false)
-                } catch (e: Exception) {
-                    showToast(this@MetarService, "Unable to fetch METAR image: " + e.message)
-                }
-            }
-            // Broadcast the result
-            sendImageResultIntent(action, code, imageFile)
         }
     }
 

@@ -25,7 +25,6 @@ import android.util.Log
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
-import java.util.Locale
 
 class TafService : NoaaService2("taf", TAF_CACHE_MAX_AGE) {
 
@@ -38,8 +37,6 @@ class TafService : NoaaService2("taf", TAF_CACHE_MAX_AGE) {
                     val type = intent.getStringExtra(TYPE)
                     if (type == TYPE_TEXT) {
                         getTafText(intent)
-                    } else if (type == TYPE_GRAPHIC) {
-                        getTafImage(intent)
                     }
                 }
             }
@@ -79,26 +76,6 @@ class TafService : NoaaService2("taf", TAF_CACHE_MAX_AGE) {
 
         val taf = deserializeObject<Taf>(stationId) ?: Taf()
         sendParcelableResultIntent(intent.action, stationId, taf)
-    }
-
-    // This is not used anymore as TAF images are not available from NOAA
-    private fun getTafImage(intent: Intent) {
-        val imgType = intent.getStringExtra(IMAGE_TYPE) ?: return
-        val code = intent.getStringExtra(IMAGE_CODE)?.lowercase(Locale.getDefault()) ?: return
-
-        val imageName = "${imgType}_taf_${code}_prevail.gif"
-        val imageFile = getDataFile(imageName)
-        if (!imageFile.exists()) {
-            val path = "/data/products/taf/${imageName}"
-            try {
-                fetchFromNoaa(path, null, imageFile, false)
-            } catch (e: Exception) {
-                showToast(this, ("Unable to fetch TAF image: ${e.message}")
-                )
-            }
-        }
-
-        sendImageResultIntent(intent.action, code, imageFile)
     }
 
     companion object {
