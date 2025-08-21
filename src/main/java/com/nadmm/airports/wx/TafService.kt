@@ -64,7 +64,7 @@ class TafService : NoaaService2("taf", TAF_CACHE_MAX_AGE) {
                 val query = ("dataSource=tafs&requestType=retrieve"
                         + "&format=xml&hoursBeforeNow=${hoursBeforeNow}&mostRecent=true&stationString=${stationId}")
                 fetchFromNoaa(query, xmlFile, false)
-                val parser: TafParser = TafParser()
+                val parser = TafParser()
                 val taf = parser.parse(xmlFile)
                 serializeObject(taf, stationId)
             } catch (e: Exception) {
@@ -83,7 +83,7 @@ class TafService : NoaaService2("taf", TAF_CACHE_MAX_AGE) {
         private const val TAF_CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
 
         // Helper function to start the service
-        fun startTafService(context: Context, stationId: String, refresh: Boolean) {
+        fun startService(context: Context, stationId: String, refresh: Boolean) {
             val intent = Intent(context, TafService::class.java).apply {
                 action = ACTION_GET_TAF
                 putExtra(NoaaService.STATION_IDS, arrayListOf(stationId))

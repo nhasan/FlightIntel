@@ -58,11 +58,16 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
-    private var mStationId: String? = null
+    private var mStationId: String = ""
     private var mLastForecast: Forecast? = null
 
     private var _binding: TafDetailViewBinding? = null
     private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mStationId = arguments?.getString(NoaaService.STATION_ID) ?: return
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,10 +82,9 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
         super.onResume()
 
         arguments?.let {
-            val stationId = it.getString(NoaaService.STATION_ID) ?: return
             viewLifecycleOwner.lifecycleScope.launch {
                 val result = withContext(Dispatchers.IO) {
-                    doQuery(stationId)
+                    doQuery(mStationId)
                 }
                 setCursor(result)
             }
@@ -201,8 +205,6 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
         if (wxs == null || !wxs.moveToFirst()) {
             arguments?.let {
                 // No station with TAF was found nearby
-                val stationId = it.getString(NoaaService.STATION_ID)
-
                 val detail = findViewById<View>(R.id.wx_detail_layout)
                 detail!!.visibility = View.GONE
                 val layout = findViewById<LinearLayout>(R.id.wx_status_layout)
@@ -213,7 +215,7 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
                 tv.text = String.format(
                     Locale.US,
                     "No wx station with TAF was found near %s within %dNM radius",
-                    stationId, NoaaService.TAF_RADIUS
+                    mStationId, NoaaService.TAF_RADIUS
                 )
                 val title = findViewById<View>(R.id.wx_title_layout)
                 title!!.visibility = View.GONE
@@ -224,27 +226,16 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
             // Show the weather station info
             showWxTitle(result)
             // Now request the weather
-            mStationId = wxs.getString(wxs.getColumnIndexOrThrow(Wxs.STATION_ID))
             requestTaf(mStationId, false)
         }
     }
 
-    private fun requestTaf(stationId: String?, refresh: Boolean) {
-        activity?.let {
-            val service = Intent(activity, TafService::class.java)
-            service.action = action
-            service.putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
-            service.putExtra(NoaaService.STATION_ID, stationId)
-            service.putExtra(NoaaService.HOURS_BEFORE, NoaaService.TAF_HOURS_BEFORE)
-            service.putExtra(NoaaService.FORCE_REFRESH, refresh)
-            it.startService(service)
-        }
+    private fun requestTaf(stationId: String, refresh: Boolean) {
+        TafService.startService(requireActivity(), stationId, refresh)
     }
 
     @SuppressLint("SetTextI18n")
     private fun showTaf(intent: Intent) {
-        activity ?: return
-
         with(binding) {
             val taf = IntentCompat.getParcelableExtra<Taf>(intent, NoaaService.RESULT, Taf::class.java)
             wxStatusLayout.removeAllViews()

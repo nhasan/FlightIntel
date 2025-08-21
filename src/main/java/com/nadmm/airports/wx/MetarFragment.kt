@@ -192,21 +192,14 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
                 }
             }
 
-            startMetarService(refresh)
+            val stationId = arguments?.getString(NoaaService.STATION_ID) ?: return
+            MetarService.startService(requireActivity(), stationId, refresh)
         } else {
             showToast(
                 requireActivity().applicationContext,
                 "Unable to get weather station info"
             )
             requireActivity().finish()
-        }
-    }
-
-    private fun startMetarService(refresh: Boolean) {
-        arguments?.let { args ->
-            args.getString(NoaaService.STATION_ID)?.let { stationId ->
-                MetarService.startMetarService(requireActivity(), stationId, refresh)
-            }
         }
     }
 

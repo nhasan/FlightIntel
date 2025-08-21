@@ -105,7 +105,7 @@ class MetarService : NoaaService2("metar", METAR_CACHE_MAX_AGE) {
         private const val METAR_CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
 
         // Helper function to start the service
-        fun startMetarService(context: Context, stationId: String, refresh: Boolean) {
+        fun startService(context: Context, stationId: String, refresh: Boolean) {
             val intent = Intent(context, MetarService::class.java).apply {
                 action = ACTION_GET_METAR
                 putExtra(NoaaService.STATION_IDS, arrayListOf(stationId))
