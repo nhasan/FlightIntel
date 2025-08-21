@@ -16,57 +16,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.os.Bundle
+import com.nadmm.airports.TabPagerActivityBase
 
-import android.os.Bundle;
+class WxDetailActivity : TabPagerActivityBase() {
+    private val tabNameFragmentMap: Map<String, Class<*>> = mapOf(
+        "METAR" to MetarFragment::class.java,
+        "TAF" to TafFragment::class.java,
+        "PIREP" to PirepFragment::class.java,
+        "GFA" to GfaFragment::class.java,
+        "AREA FORECAST" to AreaForecastFragment::class.java,
+        "AIRMET/SIGMET" to AirSigmetFragment::class.java,
+        "PROG CHARTS" to ProgChartFragment::class.java,
+        "WINDS ALOFT" to WindsAloftFragment::class.java,
+        "ICING" to IcingFragment::class.java
+    )
 
-import com.nadmm.airports.TabPagerActivityBase;
-import com.nadmm.airports.data.DatabaseManager.Airports;
-import com.nadmm.airports.notams.AirportNotamFragment;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-public class WxDetailActivity extends TabPagerActivityBase {
+        setActionBarTitle("Weather", null)
 
-    private final String[] mTabTitles = new String[] {
-            "METAR",
-            "TAF",
-            "PIREP",
-            "GFA",
-            "AREA FORECAST",
-            "AIRMET/SIGMET",
-            "PROG CHARTS",
-            "WINDS ALOFT",
-            "ICING"
-    };
-
-    private final Class<?>[] mClasses = new Class<?>[] {
-            MetarFragment.class,
-            TafFragment.class,
-            PirepFragment.class,
-            GfaFragment.class,
-            AreaForecastFragment.class,
-            AirSigmetFragment.class,
-            ProgChartFragment.class,
-            WindsAloftFragment.class,
-            IcingFragment.class
-    };
-
-    @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        setActionBarTitle( "Weather", null );
-
-        Bundle args = getIntent().getExtras();
-        for ( int i=0; i<mTabTitles.length; ++i ) {
-            if ( mClasses[ i ] == AirportNotamFragment.class
-                && !args.containsKey( Airports.SITE_NUMBER ) )
-            {
-                // Do not add NOTAM tab if not accessed from an airport screen
-                continue;
-            }
-            addTab( mTabTitles[ i ], mClasses[ i ], args );
+        val args = intent.extras
+        tabNameFragmentMap.forEach { name, fragment ->
+            addTab(name, fragment, args)
         }
     }
-
 }
