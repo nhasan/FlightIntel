@@ -30,25 +30,14 @@ import com.nadmm.airports.databinding.ListItemText1Binding
 import com.nadmm.airports.databinding.WxMapDetailViewBinding
 import com.nadmm.airports.utils.TextFileViewActivity
 
-abstract class WxTextFragmentBase : WxFragmentBase {
-    private val mAction: String
-    private val mWxAreas: Map<String, String>
-    private val mWxTypes: Map<String, String>
-    private var mPendingRow: View? = null
+abstract class WxTextFragmentBase(
+    action: String,
+    private val wxAreas: Map<String, String>,
+    private val wxTypes: Map<String, String> = mapOf()
+) : WxFragmentBase(action) {
+    private var selectedRow: View? = null
     private var _binding: WxMapDetailViewBinding? = null
     private val binding get() = _binding!!
-
-    constructor(action: String, areas: Map<String, String>, types: Map<String, String> = mapOf()) {
-        mAction = action
-        mWxAreas = areas
-        mWxTypes = types
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setupBroadcastFilter(mAction)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,18 +56,14 @@ abstract class WxTextFragmentBase : WxFragmentBase {
             wxMapLabel.visibility = View.VISIBLE
 
             val listener = View.OnClickListener { v: View? ->
-                if (mPendingRow == null && v != null) {
-                    mPendingRow = v
+                if (selectedRow == null && v != null) {
+                    selectedRow = v
                     val code = v.tag as String
                     requestWxText(code)
                 }
             }
 
-            val areas = mWxAreas
-                .toList()
-                .sortedBy { (_, value) -> value }
-                .toMap()
-            for (area in areas) {
+            for (area in wxAreas) {
                 val row = addWxRow(wxMapLayout, area.value, area.key)
                 row.setOnClickListener(listener)
             }
@@ -88,10 +73,10 @@ abstract class WxTextFragmentBase : WxFragmentBase {
                 wxHelpText.visibility = View.VISIBLE
             }
 
-            if (mWxTypes.isNotEmpty()) {
+            if (wxTypes.isNotEmpty()) {
                 wxMapTypeLabel.visibility = View.VISIBLE
                 wxMapTypeLayout.visibility = View.VISIBLE
-                val types = mWxTypes.toSortedMap().values.toList()
+                val types = wxTypes.toSortedMap().values.toList()
                 val adapter = ArrayAdapter(
                     requireActivity(),
                     R.layout.list_item, types)
@@ -107,13 +92,13 @@ abstract class WxTextFragmentBase : WxFragmentBase {
     override fun onResume() {
         super.onResume()
 
-        mPendingRow = null
+        selectedRow = null
     }
 
     override fun handleBroadcast(intent: Intent) {
         val path = intent.getStringExtra(NoaaService.RESULT)
         if (!path.isNullOrEmpty()) {
-            val item = ListItemText1Binding.bind(mPendingRow!!)
+            val item = ListItemText1Binding.bind(selectedRow!!)
             val label = item.text.text.toString()
             val viewer = Intent(activity, TextFileViewActivity::class.java)
             viewer.putExtra(TextFileViewActivity.FILE_PATH, path)
@@ -122,25 +107,25 @@ abstract class WxTextFragmentBase : WxFragmentBase {
             activity?.startActivity(viewer)
         }
         setSpinnerVisible(false)
-        mPendingRow = null
+        selectedRow = null
     }
 
     private fun requestWxText(code: String?) {
         setSpinnerVisible(true)
-        val service = this.serviceIntent
-        service.setAction(mAction)
+        val service = serviceIntent
+        service.setAction(action)
         service.putExtra(NoaaService.TEXT_CODE, code)
-        if (mWxTypes.isNotEmpty()) {
+        if (wxTypes.isNotEmpty()) {
             val text = getSelectedItemText(binding.wxMapType)
-            val type = mWxTypes.entries.first { it.value == text }.key
+            val type = wxTypes.entries.first { it.value == text }.key
             service.putExtra(NoaaService.TEXT_TYPE, type)
         }
         activity?.startService(service)
     }
 
     private fun setSpinnerVisible(visible: Boolean) {
-        if (mPendingRow != null) {
-            val view = mPendingRow!!.findViewById<View>(R.id.progress)
+        if (selectedRow != null) {
+            val view = selectedRow!!.findViewById<View>(R.id.progress)
             view.visibility = if (visible) View.VISIBLE else View.INVISIBLE
         }
     }

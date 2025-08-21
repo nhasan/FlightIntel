@@ -32,40 +32,39 @@ import com.google.android.material.textfield.TextInputLayout
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.utils.UiUtils
 
-abstract class WxFragmentBase : FragmentBase() {
-    private val filter = IntentFilter()
-    private var mReceiver: BroadcastReceiver? = null
-    protected abstract val product: String?
+abstract class WxFragmentBase(protected val action: String) : FragmentBase() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
+    private val filter: IntentFilter = IntentFilter().apply { addAction(action) }
+    private var broadcastReceiver: BroadcastReceiver = makeBroadcastReceiver()
 
-    public override fun onResume() {
-        super.onResume()
-
-        val bm = LocalBroadcastManager.getInstance(requireActivity())
-        bm.registerReceiver(mReceiver!!, filter)
-    }
-
-    public override fun onPause() {
-        super.onPause()
-
-        val bm = LocalBroadcastManager.getInstance(requireActivity())
-        bm.unregisterReceiver(mReceiver!!)
-    }
-
-    protected fun setupBroadcastFilter(action: String) {
-        filter.addAction(action)
-
-        mReceiver = object : BroadcastReceiver() {
+    private fun makeBroadcastReceiver(): BroadcastReceiver {
+        // Create a BroadcastReceiver that will handle the broadcast intents
+        return object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent) {
                 if (filter.matchAction(intent.action)) {
                     handleBroadcast(intent)
                 }
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val bm = LocalBroadcastManager.getInstance(requireActivity())
+        bm.registerReceiver(broadcastReceiver, filter)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        val bm = LocalBroadcastManager.getInstance(requireActivity())
+        bm.unregisterReceiver(broadcastReceiver)
     }
 
     protected fun addWxRow(layout: LinearLayout, label: String, code: String?): View {
@@ -78,24 +77,6 @@ abstract class WxFragmentBase : FragmentBase() {
 
     protected fun getAutoCompleteTextView(textInputLayout: TextInputLayout): AutoCompleteTextView? {
         return textInputLayout.getEditText() as AutoCompleteTextView?
-    }
-
-    protected fun getSelectedItemPos(textInputLayout: TextInputLayout): Int {
-        val textView = getAutoCompleteTextView(textInputLayout)
-        if (textView == null) return -1
-
-        val adapter = textView.adapter as ArrayAdapter<*>?
-        if (adapter == null) return -1
-
-        val text = textView.getText().toString()
-        if (!text.isEmpty()) {
-            val count = adapter.count
-            for (i in 0..<count) {
-                val o: Any? = adapter.getItem(i)
-                if (o.toString() == text) return i
-            }
-        }
-        return -1
     }
 
     protected fun getSelectedItemText(textInputLayout: TextInputLayout): String {

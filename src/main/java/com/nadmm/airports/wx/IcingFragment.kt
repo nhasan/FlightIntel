@@ -20,7 +20,7 @@ package com.nadmm.airports.wx
 
 import android.content.Intent
 
-class IcingFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_ICING, Altitudes, Types) {
+class IcingFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_ICING, altitudes, types) {
     init {
         graphicTypeLabel = "Select Period"
         title = "Icing Forecast"
@@ -28,14 +28,11 @@ class IcingFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_ICING, Altitu
         graphicLabel = "Select Altitude"
     }
 
-    override val product: String?
-        get() = "icing"
-
     override val serviceIntent: Intent
-        get() = Intent(activity, IcingService::class.java)
+        get() = Intent(requireActivity(), IcingService::class.java)
 
     companion object {
-        private val Types = mapOf(
+        private val types = mapOf(
             "F00_cip" to "Current",
             "F01_fip" to "1 Hour",
             "F02_fip" to "2 hour",
@@ -47,7 +44,7 @@ class IcingFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_ICING, Altitu
             "F18_fip" to "18 Hour"
         )
 
-        private val Altitudes = mapOf(
+        private val altitudes = mapOf(
             "010" to "1,000 feet MSL",
             "030" to "3,000 feet MSL",
             "060" to "6,000 feet MSL",

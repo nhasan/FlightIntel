@@ -46,8 +46,5 @@ class MetarGraphicActivity : ActivityBase() {
 
         override val serviceIntent: Intent
             get() = Intent(activity, MetarService::class.java)
-
-        override val product: String?
-            get() = "metarmap"
     }
 }

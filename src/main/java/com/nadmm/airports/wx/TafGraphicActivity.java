@@ -77,11 +77,6 @@ public class TafGraphicActivity extends ActivityBase {
         protected Intent getServiceIntent() {
             return new Intent( getActivity(), TafService.class );
         }
-
-        @Override
-        protected String getProduct() {
-            return "tafmap";
-        }
     }
 
 }

@@ -66,11 +66,6 @@ public class WindsAloftFragment extends WxTextFragmentBase {
     }
 
     @Override
-    protected String getProduct() {
-        return "windsaloft";
-    }
-
-    @Override
     protected @NotNull String getHelpText() {
         return "Winds Aloft forecasts provide wind and temperature information at various altitudes, typically used for flight planning. " +
                "The forecast is available for 6, 12, or 24 hours.";

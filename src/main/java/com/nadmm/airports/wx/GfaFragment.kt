@@ -30,8 +30,6 @@ class GfaFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_GFA, regions, f
     override val serviceIntent: Intent
         get() = Intent(requireActivity(), GfaService::class.java)
 
-    override val product: String = "gfa"
-
     companion object {
         private val forecasts: Map<String, String> = mapOf(
             "F03_gfa_clouds" to "3 Hour Clouds",

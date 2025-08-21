@@ -39,9 +39,9 @@ class AirSigmetGraphicActivity : ActivityBase() {
     }
 
     class AirSigmetGraphicFragment : WxGraphicFragmentBase(
-        NoaaService.ACTION_GET_AIRSIGMET, AirSigmetCodes) {
-        override val product: String
-            get() = "airsigmetgraphic"
+        NoaaService.ACTION_GET_AIRSIGMET,
+        AirSigmetCodes
+    ) {
         override val serviceIntent: Intent
             get() = Intent(activity, AirSigmetService::class.java)
 

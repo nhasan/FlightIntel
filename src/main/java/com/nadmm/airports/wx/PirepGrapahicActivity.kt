@@ -45,9 +45,6 @@ class PirepGrapahicActivity : ActivityBase() {
 
         override val serviceIntent: Intent
             get() = Intent(activity, PirepService::class.java)
-
-        override val product: String
-            get() = "pirepmap"
     }
 
     companion object {

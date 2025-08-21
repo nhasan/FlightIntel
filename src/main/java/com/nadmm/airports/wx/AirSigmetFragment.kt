@@ -39,7 +39,6 @@ import com.nadmm.airports.utils.FormatUtils.formatFeetRangeMsl
 import com.nadmm.airports.utils.GeoUtils.getCardinalDirection
 import com.nadmm.airports.utils.TimeUtils
 import com.nadmm.airports.wx.AirSigmet.AirSigmetEntry
-import com.nadmm.airports.wx.AirSigmetService.Companion.ACTION
 import com.nadmm.airports.wx.AirSigmetService.Companion.AIRSIGMET_HOURS_BEFORE
 import com.nadmm.airports.wx.AirSigmetService.Companion.AIRSIGMET_RADIUS_NM
 import com.nadmm.airports.wx.AirSigmetService.Companion.startAirSigmetService
@@ -48,21 +47,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
-class AirSigmetFragment : WxFragmentBase() {
+class AirSigmetFragment : WxFragmentBase(NoaaService.ACTION_GET_AIRSIGMET) {
     private var location: Location = Location("")
     private var stationId: String = ""
 
     private var _binding: AirsigmetDetailViewBinding? = null
     private val binding get() = _binding!!
-
-    override val product: String?
-        get() = "airsigmet"
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setupBroadcastFilter(ACTION)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -111,14 +101,12 @@ class AirSigmetFragment : WxFragmentBase() {
                 val result = withContext(Dispatchers.IO) {
                     doQuery(stationId)
                 }
-                result[0]?.let { c ->
-                    setCursor(c, refresh)
-                }
+                setCursor(result[0], refresh)
             }
         }
     }
 
-    private fun doQuery(stationId: String?): Array<Cursor?> {
+    private fun doQuery(stationId: String): Array<Cursor> {
         val db = dbManager.getDatabase(DatabaseManager.DB_FADDS)
 
         val builder = SQLiteQueryBuilder()

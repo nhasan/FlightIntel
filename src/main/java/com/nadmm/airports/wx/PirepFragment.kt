@@ -49,15 +49,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PirepFragment : WxFragmentBase() {
+class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
     private var _binding: PirepDetailViewBinding? = null
     private val binding get() = _binding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setupBroadcastFilter(NoaaService.ACTION_GET_PIREP)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -80,9 +74,6 @@ class PirepFragment : WxFragmentBase() {
             isRefreshing = false
         }
     }
-
-    override val product: String
-        get() = "pirep"
 
     override fun isRefreshable(): Boolean {
         return true

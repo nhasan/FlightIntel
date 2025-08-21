@@ -23,7 +23,6 @@ import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteQueryBuilder
 import android.location.Location
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -58,22 +57,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
-class TafFragment : WxFragmentBase() {
-    private val mAction = NoaaService.ACTION_GET_TAF
+class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
     private var mStationId: String? = null
     private var mLastForecast: Forecast? = null
 
     private var _binding: TafDetailViewBinding? = null
     private val binding get() = _binding!!
-
-    override val product: String?
-        get() = "airsigmetgraphic"
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setupBroadcastFilter(mAction)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -248,7 +237,7 @@ class TafFragment : WxFragmentBase() {
     private fun requestTaf(stationId: String?, refresh: Boolean) {
         activity?.let {
             val service = Intent(activity, TafService::class.java)
-            service.action = mAction
+            service.action = action
             service.putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
             service.putExtra(NoaaService.STATION_ID, stationId)
             service.putExtra(NoaaService.HOURS_BEFORE, NoaaService.TAF_HOURS_BEFORE)

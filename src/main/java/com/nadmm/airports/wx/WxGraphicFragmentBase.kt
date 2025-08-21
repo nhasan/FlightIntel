@@ -28,10 +28,11 @@ import com.nadmm.airports.ImageViewActivity
 import com.nadmm.airports.R
 import com.nadmm.airports.databinding.WxMapDetailViewBinding
 
-abstract class WxGraphicFragmentBase : WxFragmentBase {
-    private val action: String
-    private val wxGraphics: Map<String, String>
-    private val wxTypes: Map<String, String>
+abstract class WxGraphicFragmentBase(
+    action: String,
+    private val wxGraphics: Map<String, String>,
+    private val wxTypes: Map<String, String> = mapOf()
+) : WxFragmentBase(action) {
     private var selectedRow: View? = null
     var graphicTypeLabel = ""
     var graphicLabel = ""
@@ -40,24 +41,6 @@ abstract class WxGraphicFragmentBase : WxFragmentBase {
 
     private var _binding: WxMapDetailViewBinding? = null
     private val binding get() = _binding!!
-
-    constructor(action: String, graphics: Map<String, String>) {
-        this.action = action
-        wxGraphics = graphics
-        wxTypes = mapOf()
-    }
-
-    constructor(action: String, graphics: Map<String, String>, types: Map<String, String>) {
-        this.action = action
-        wxGraphics = graphics
-        wxTypes = types
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setupBroadcastFilter(action)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -92,8 +75,7 @@ abstract class WxGraphicFragmentBase : WxFragmentBase {
                 }
             }
 
-            val graphics = wxGraphics.toSortedMap()
-            for (graphic in graphics) {
+            for (graphic in wxGraphics) {
                 val row = addWxRow(wxMapLayout, graphic.value, graphic.key)
                 row.setOnClickListener(listener)
             }
@@ -104,12 +86,12 @@ abstract class WxGraphicFragmentBase : WxFragmentBase {
                     wxMapTypeLabel.text = graphicTypeLabel
                 }
                 wxMapTypeLayout.visibility = View.VISIBLE
-                val types = wxTypes.toSortedMap().values.toList()
-                val adapter = ArrayAdapter(
-                    requireActivity(),
-                    R.layout.list_item, types
-                )
                 getAutoCompleteTextView(wxMapType)?.let { textView ->
+                    val types = wxTypes.values.toList()
+                    val adapter = ArrayAdapter(
+                        requireActivity(),
+                        R.layout.list_item, types
+                    )
                     textView.setAdapter(adapter)
                     textView.setText(types.first(), false)
                 }

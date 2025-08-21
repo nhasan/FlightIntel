@@ -20,7 +20,7 @@ package com.nadmm.airports.wx
 
 import android.content.Intent
 
-class ProgChartFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_PROGCHART, ProgChartCodes) {
+class ProgChartFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_PROGCHART, progChartCodes) {
     init {
         title = "Prognosis Charts"
         graphicLabel = "Select Prognosis Chart"
@@ -29,13 +29,10 @@ class ProgChartFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_PROGCHART
     }
 
     override val serviceIntent: Intent
-        get() = Intent(activity, ProgChartService::class.java)
-
-    override val product: String
-        get() = "progchart"
+        get() = Intent(requireActivity(), ProgChartService::class.java)
 
     companion object {
-        private val ProgChartCodes = mapOf(
+        private val progChartCodes = mapOf(
             "F000_wpc_sfc" to "Current Surface Analysis",
             "F006_wpc_prog" to "6 hr Surface Prognosis",
             "F012_wpc_prog" to "12 hr Surface Prognosis",

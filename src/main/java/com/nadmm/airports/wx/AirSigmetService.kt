@@ -119,14 +119,13 @@ class AirSigmetService : NoaaService2("airsigmet", AIRSIGMET_CACHE_MAX_AGE) {
     companion object {
         private val TAG = AirSigmetService::class.java.simpleName
         private const val AIRSIGMET_CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
-        const val ACTION = NoaaService.ACTION_GET_AIRSIGMET
         const val AIRSIGMET_RADIUS_NM = 50
         const val AIRSIGMET_HOURS_BEFORE = 3
 
         fun startAirSigmetService(context: Context, stationId: String, location: Location, refresh: Boolean) {
             val box = GeoUtils.getBoundingBoxDegrees(location, AIRSIGMET_RADIUS_NM)
             Intent(context, AirSigmetService::class.java).apply {
-                setAction(ACTION)
+                setAction(NoaaService.ACTION_GET_AIRSIGMET)
                 putExtra(NoaaService.STATION_ID, stationId)
                 putExtra(NoaaService.TYPE, NoaaService.TYPE_TEXT)
                 putExtra(NoaaService.COORDS_BOX, box)

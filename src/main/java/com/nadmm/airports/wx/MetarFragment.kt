@@ -61,18 +61,10 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.math.roundToInt
 
-class MetarFragment : WxFragmentBase() {
-    private val action = NoaaService.ACTION_GET_METAR
+class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
     private var location: Location? = null
     private var _binding: MetarDetailViewBinding? = null
     private val binding get() = _binding!!
-
-    override val product get() = "metar"
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setupBroadcastFilter(action)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
