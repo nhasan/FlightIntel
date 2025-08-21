@@ -41,7 +41,7 @@ import com.nadmm.airports.utils.TimeUtils
 import com.nadmm.airports.wx.AirSigmet.AirSigmetEntry
 import com.nadmm.airports.wx.AirSigmetService.Companion.AIRSIGMET_HOURS_BEFORE
 import com.nadmm.airports.wx.AirSigmetService.Companion.AIRSIGMET_RADIUS_NM
-import com.nadmm.airports.wx.AirSigmetService.Companion.startAirSigmetService
+import com.nadmm.airports.wx.AirSigmetService.Companion.startService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -130,7 +130,7 @@ class AirSigmetFragment : WxFragmentBase(NoaaService.ACTION_GET_AIRSIGMET) {
             }
             // Now request the airmet/sigmet
             if (stationId.isNotEmpty() && location.latitude != 0.0 && location.longitude != 0.0) {
-                startAirSigmetService(requireActivity(), stationId, location, refresh)
+                startService(requireActivity(), stationId, location, refresh)
             }
         }
     }
