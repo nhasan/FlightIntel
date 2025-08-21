@@ -28,7 +28,7 @@ class WxDetailActivity : TabPagerActivityBase() {
         "PIREP" to PirepFragment::class.java,
         "GFA" to GfaFragment::class.java,
         "AREA FORECAST" to AreaForecastFragment::class.java,
-        "AIRMET/SIGMET" to AirSigmetFragment::class.java,
+        "AIRMET/SIGMET" to AirSigmetGraphicFragment::class.java,
         "PROG CHARTS" to ProgChartFragment::class.java,
         "WINDS ALOFT" to WindsAloftFragment::class.java,
         "ICING" to IcingFragment::class.java
