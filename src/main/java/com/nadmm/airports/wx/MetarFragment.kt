@@ -82,7 +82,7 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
     override fun onResume() {
         super.onResume()
 
-        run()
+        fetchMetar()
     }
 
     override fun handleBroadcast(intent: Intent) {
@@ -101,11 +101,9 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
         return true
     }
 
-    override fun requestDataRefresh() {
-        run(true)
-    }
+    override fun requestDataRefresh() = fetchMetar(true)
 
-    private fun run(refresh: Boolean = false) {
+    private fun fetchMetar(refresh: Boolean = false) {
         arguments?.let {
             val stationId = it.getString(NoaaService.STATION_ID) ?: return
             viewLifecycleOwner.lifecycleScope.launch {
@@ -114,6 +112,41 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
                 }
                 fetchMetar(result, refresh)
             }
+        }
+    }
+
+    private fun fetchMetar(result: Array<Cursor?>, refresh: Boolean) {
+        val wxs = result[0]
+        if (wxs?.moveToFirst() == true) {
+            location = Location("").apply {
+                latitude = wxs.getDouble(wxs.getColumnIndexOrThrow(Wxs.STATION_LATITUDE_DEGREES))
+                longitude = wxs.getDouble(wxs.getColumnIndexOrThrow(Wxs.STATION_LONGITUDE_DEGREES))
+            }
+
+            showWxTitle(binding.wxTitle, binding.wxSubtitle, result)
+
+            // Remarks
+            binding.wxRemarksLayout.removeAllViews()
+            result[2]?.let { rmk ->
+                if (rmk.moveToFirst()) {
+                    do {
+                        val remark = rmk.getString(rmk.getColumnIndexOrThrow(Awos2.WX_STATION_REMARKS))
+                        addBulletedRow(binding.wxRemarksLayout, remark)
+                    } while (rmk.moveToNext())
+                }
+            }
+
+            val stationId = arguments?.getString(NoaaService.STATION_ID) ?: return
+            MetarService.startService(requireActivity(), stationId, refresh)
+        } else {
+            showToast(
+                requireActivity().applicationContext,
+                "Unable to get weather station info"
+            )
+            requireActivity().finish()
+        }
+        for (c in result) {
+            c?.close()
         }
     }
 
@@ -169,41 +202,6 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
             cursors[2] = c
         }
         return cursors
-    }
-
-    private fun fetchMetar(result: Array<Cursor?>, refresh: Boolean) {
-        val wxs = result[0]
-        if (wxs?.moveToFirst() == true) {
-            location = Location("").apply {
-                latitude = wxs.getDouble(wxs.getColumnIndexOrThrow(Wxs.STATION_LATITUDE_DEGREES))
-                longitude = wxs.getDouble(wxs.getColumnIndexOrThrow(Wxs.STATION_LONGITUDE_DEGREES))
-            }
-
-            showWxTitle(result)
-
-            // Remarks
-            binding.wxRemarksLayout.removeAllViews()
-            result[2]?.let { rmk ->
-                if (rmk.moveToFirst()) {
-                    do {
-                        val remark = rmk.getString(rmk.getColumnIndexOrThrow(Awos2.WX_STATION_REMARKS))
-                        addBulletedRow(binding.wxRemarksLayout, remark)
-                    } while (rmk.moveToNext())
-                }
-            }
-
-            val stationId = arguments?.getString(NoaaService.STATION_ID) ?: return
-            MetarService.startService(requireActivity(), stationId, refresh)
-        } else {
-            showToast(
-                requireActivity().applicationContext,
-                "Unable to get weather station info"
-            )
-            requireActivity().finish()
-        }
-        for (c in result) {
-            c?.close()
-        }
     }
 
     @SuppressLint("SetTextI18n")

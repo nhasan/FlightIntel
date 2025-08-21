@@ -28,12 +28,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-        <include
-            android:id="@+id/title"
+        <include android:id="@+id/wx_title"
             layout="@layout/wx_title_layout" />
-
-        <include
-            android:id="@+id/subtitle"
+        <include android:id="@+id/wx_subtitle"
             layout="@layout/wx_subtitle_layout" />
         <TextView android:id="@+id/status_msg"
                 style="@style/TextLabel"

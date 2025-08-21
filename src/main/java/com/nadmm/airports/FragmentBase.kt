@@ -45,6 +45,8 @@ import com.nadmm.airports.data.DatabaseManager.Airports
 import com.nadmm.airports.data.DatabaseManager.Awos1
 import com.nadmm.airports.data.DatabaseManager.Wxs
 import com.nadmm.airports.databinding.AirportTitleLayoutBinding
+import com.nadmm.airports.databinding.WxSubtitleLayoutBinding
+import com.nadmm.airports.databinding.WxTitleLayoutBinding
 import com.nadmm.airports.utils.CursorAsyncTask
 import com.nadmm.airports.utils.DataUtils
 import com.nadmm.airports.utils.FormatUtils
@@ -183,63 +185,53 @@ abstract class FragmentBase : Fragment(), IRefreshable {
     }
 
     @SuppressLint("SetTextI18n")
-    fun showWxTitle(cursors: Array<Cursor?>) {
+    fun showWxTitle(title: WxTitleLayoutBinding, subtitle: WxSubtitleLayoutBinding, cursors: Array<Cursor?>) {
         val wxs = cursors[0] ?: return
         val awos = cursors[1] ?: return
 
-        val root = view ?: return
-
-        var tv = root.findViewById<TextView>(R.id.wx_station_name)
+        wxs.moveToFirst()
         val icaoCode = wxs.getString(wxs.getColumnIndex(Wxs.STATION_ID))
         val stationName = wxs.getString(wxs.getColumnIndex(Wxs.STATION_NAME))
-        tv.text = "$icaoCode - $stationName"
+        title.wxStationName.text = "$icaoCode - $stationName"
+        title.wxStationInfo.text = "ASOS/AWOS"
         if (awos.moveToFirst()) {
-            tv = root.findViewById(R.id.wx_station_info)
             var type = awos.getString(awos.getColumnIndex(Awos1.WX_SENSOR_TYPE))
             if (type.isNullOrBlank()) {
                 type = "ASOS/AWOS"
             }
             val city = awos.getString(awos.getColumnIndex(Airports.ASSOC_CITY))
             val state = awos.getString(awos.getColumnIndex(Airports.ASSOC_STATE))
-            tv.text = "$type, $city, $state"
+            title.wxStationInfo.text = "$type, $city, $state"
 
             val phone = awos.getString(awos.getColumnIndex(Awos1.STATION_PHONE_NUMBER))
             if (!phone.isNullOrBlank()) {
-                tv = root.findViewById(R.id.wx_station_phone)
-                tv.text = phone
-                makeClickToCall(tv)
-                tv.visibility = View.VISIBLE
+                subtitle.wxStationPhone.text = phone
+                makeClickToCall(subtitle.wxStationPhone)
+                subtitle.wxStationPhone.visibility = View.VISIBLE
             }
 
             var freq = awos.getString(awos.getColumnIndex(Awos1.STATION_FREQUENCY))
             if (!freq.isNullOrBlank()) {
-                tv = root.findViewById(R.id.wx_station_freq)
-                UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_antenna_16)
-                tv.text = freq
-                tv.visibility = View.VISIBLE
+                UiUtils.setTextViewDrawable(subtitle.wxStationFreq, R.drawable.ic_outline_antenna_16)
+                subtitle.wxStationFreq.text = freq
+                subtitle.wxStationFreq.visibility = View.VISIBLE
             }
 
             freq = awos.getString(awos.getColumnIndex(Awos1.SECOND_STATION_FREQUENCY))
             if (!freq.isNullOrBlank()) {
-                tv = root.findViewById(R.id.wx_station_freq2)
-                UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_antenna_16)
-                tv.text = freq
-                tv.visibility = View.VISIBLE
+                UiUtils.setTextViewDrawable(subtitle.wxStationFreq2, R.drawable.ic_outline_antenna_16)
+                subtitle.wxStationFreq2.text = freq
+                subtitle.wxStationFreq2.visibility = View.VISIBLE
             }
-        } else {
-            tv = root.findViewById(R.id.wx_station_info)
-            tv.text = "ASOS/AWOS"
         }
 
         val s = wxs.getInt(wxs.getColumnIndex(Wxs.STATION_ELEVATOIN_METER))
-        tv = root.findViewById(R.id.wx_station_info2)
         val elev = FormatUtils.formatFeet(DataUtils.metersToFeet(s).toFloat())
-        tv.text = "Located at $elev MSL elevation"
+        title.wxStationInfo2.text = "Located at $elev MSL elevation"
 
-        val cb = root.findViewById<CheckBox>(R.id.airport_star)
-        cb.isChecked = dbManager.isFavoriteWx(icaoCode)
-        cb.tag = icaoCode
-        cb.setOnClickListener { v ->
+        title.airportStar.isChecked = dbManager.isFavoriteWx(icaoCode)
+        title.airportStar.tag = icaoCode
+        title.airportStar.setOnClickListener { v ->
             val cb1 = v as CheckBox
             val icaoCode1 = cb1.tag as String
             if (cb1.isChecked) {

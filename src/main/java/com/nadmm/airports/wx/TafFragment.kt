@@ -76,7 +76,7 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
     override fun onResume() {
         super.onResume()
 
-        run()
+        fetchTaf()
     }
 
     override fun handleBroadcast(intent: Intent) {
@@ -91,11 +91,9 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
         return true
     }
 
-    override fun requestDataRefresh() {
-        run(true)
-    }
+    override fun requestDataRefresh() = fetchTaf(true)
 
-    private fun run(refresh: Boolean = false) {
+    private fun fetchTaf(refresh: Boolean = false) {
         arguments?.let {
             val stationId = arguments?.getString(NoaaService.STATION_ID) ?: return
             viewLifecycleOwner.lifecycleScope.launch {
@@ -104,6 +102,22 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
                 }
                 fetchTaf(result, refresh)
             }
+        }
+    }
+
+    private fun fetchTaf(result: Array<Cursor?>, refresh: Boolean) {
+        val wxs = result[0]
+        if (wxs?.moveToFirst() == true) {
+            // We have a station with TAF, get the station id
+            val stationId = wxs.getString(wxs.getColumnIndexOrThrow(Wxs.STATION_ID))
+            showWxTitle(binding.wxTitle, binding.wxSubtitle, result)
+            TafService.startService(requireActivity(), stationId, refresh)
+        } else {
+            // No station with TAF was found
+            showError()
+        }
+        for (c in result) {
+            c?.close()
         }
     }
 
@@ -207,22 +221,6 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
         return getStationDataCursors(db, tafStationId)
     }
 
-    private fun fetchTaf(result: Array<Cursor?>, refresh: Boolean) {
-        val wxs = result[0]
-        if (wxs?.moveToFirst() == true) {
-            // We have a station with TAF, get the station id
-            val stationId = wxs.getString(wxs.getColumnIndexOrThrow(Wxs.STATION_ID))
-            showWxTitle(result)
-            TafService.startService(requireActivity(), stationId, refresh)
-        } else {
-            // No station with TAF was found
-            showError()
-        }
-        for (c in result) {
-            c?.close()
-        }
-    }
-
     @SuppressLint("SetTextI18n")
     private fun showError() {
         arguments?.let {
@@ -235,7 +233,7 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
                 statusMsg.visibility = View.VISIBLE
                 statusMsg.text =
                     "No wx station with TAF was found near $stationId within ${NoaaService.TAF_RADIUS}NM radius"
-                title.wxTitleLayout.visibility = View.GONE
+                wxTitle.wxTitleLayout.visibility = View.GONE
             }
             isRefreshing = false
             setContentShown(true)
@@ -268,7 +266,7 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
                 wxDetailLayout.visibility = View.VISIBLE
             }
 
-            subtitle.wxAge.text = TimeUtils.formatElapsedTime(taf.issueTime)
+            wxSubtitle.wxAge.text = TimeUtils.formatElapsedTime(taf.issueTime)
             // Raw Text
             wxRawTaf.text = taf.rawText?.replace("(FM|BECMG|TEMPO)".toRegex(), "\n    $1")
 
