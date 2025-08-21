@@ -97,11 +97,6 @@
             android:theme="@style/Theme.DayNight.Dialog" />
 
         <activity
-            android:label="@string/airsigmet_graphics"
-            android:name=".wx.AirSigmetGraphicActivity"
-            android:theme="@style/Theme.DayNight.Dialog" />
-
-        <activity
             android:label="@string/nearby_wx"
             android:name=".wx.NearbyWxActivity"
             android:parentActivityName=".FlightIntel">
