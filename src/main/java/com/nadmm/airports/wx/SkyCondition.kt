@@ -57,7 +57,7 @@ class SkyCondition(
                 "OVC" -> SkyCondition(skyCover, cloudBaseAGL, R.drawable.ovc, "Overcast clouds")
                 "OVX" -> SkyCondition(skyCover, 0, R.drawable.ovx, "Indefinite ceiling")
                 "NSC" -> SkyCondition(skyCover, 0, R.drawable.skm, "No significant clouds")
-                else -> SkyCondition(skyCover, 0, R.drawable.skm, "Sky condition is missing")
+                else -> SkyCondition(skyCover, 0, R.drawable.skm, "Clouds")
             }
         }
     }
