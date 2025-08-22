@@ -50,23 +50,25 @@ class TafService : NoaaService("taf", TAF_CACHE_MAX_AGE) {
         val stationId = intent.getStringExtra(STATION_ID) ?: return
         val forceRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
 
+        val cachedFile = wxCache.getCachedFile(stationId)
         if (forceRefresh) {
-            cleanupCache(listOf(stationId))
+            // If force refresh is requested, delete the cached files
+            cachedFile.delete()
         }
 
-        Log.d(TAG, "getMetarText: stationId=$stationId, forceRefresh=$forceRefresh")
+        Log.d(TAG, "getTafText: stationId=$stationId, forceRefresh=$forceRefresh")
 
-        if (!cacheFileExists(stationId)) {
+        if (!cachedFile.exists()) {
             var xmlFile: File? = null
             try {
-                xmlFile = createTempFile()
+                xmlFile = wxCache.createTempFile()
                 val hoursBeforeNow = intent.getIntExtra(HOURS_BEFORE, 6)
                 val query = ("dataSource=tafs&requestType=retrieve"
                         + "&format=xml&hoursBeforeNow=${hoursBeforeNow}&mostRecent=true&stationString=${stationId}")
                 fetchFromNoaa(query, xmlFile)
                 val parser = TafParser()
                 val taf = parser.parse(xmlFile)
-                serializeObject(taf, stationId)
+                wxCache.serializeObject(taf, stationId)
             } catch (e: Exception) {
                 showToast(this, "Unable to fetch TAF: " + e.message)
             } finally {
@@ -74,7 +76,7 @@ class TafService : NoaaService("taf", TAF_CACHE_MAX_AGE) {
             }
         }
 
-        val taf = deserializeObject<Taf>(stationId) ?: Taf()
+        val taf = wxCache.deserializeObject<Taf>(stationId) ?: Taf()
         sendParcelableResultIntent(intent.action, stationId, taf)
     }
 

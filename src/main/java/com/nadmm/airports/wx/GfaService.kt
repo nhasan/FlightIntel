@@ -50,7 +50,7 @@ class GfaService : NoaaService("gfa", CACHE_MAX_AGE) {
         Log.d(TAG, "Fetching GFA image: $imgType, code: $code")
 
         val imageName = "${imgType}_${code}.png"
-        val imageFile = getDataFile(imageName)
+        val imageFile = wxCache.getFile(imageName)
         if (!imageFile.exists()) {
             try {
                 val path = "/data/products/gfa/$imageName"

@@ -60,15 +60,15 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
         Log.d(TAG, "getMetarText: stationIds=$stationIds, cacheOnly=$cacheOnly, forceRefresh=$forceRefresh")
 
         if (forceRefresh) {
-            cleanupCache(stationIds)
+            wxCache.cleanupCache(stationIds)
         }
 
-        val missing = stationIds.filter { !cacheOnly && !cacheFileExists(it) }
+        val missing = stationIds.filterNot { stationId -> cacheOnly || wxCache.fileExists(stationId) }
         if (missing.isNotEmpty()) {
             val hoursBeforeNow = intent.getIntExtra(HOURS_BEFORE, 3)
-            var xmlFile: File? =  null
+            var xmlFile: File? = null
             try {
-                xmlFile = createTempFile()
+                xmlFile =  wxCache.createTempFile()
                 val query = ("datasource=metars&requesttype=retrieve"
                         + "&hoursBeforeNow=${hoursBeforeNow}&mostRecentForEachStation=constraint"
                         + "&format=xml&stationString=${missing.joinToString()}")
@@ -85,7 +85,7 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
         // Now read the METAR objects from the cache
         if (action == ACTION_GET_METAR) {
             for (stationId in stationIds) {
-                val metar = deserializeObject<Metar>(stationId) ?: Metar()
+                val metar = wxCache.deserializeObject<Metar>(stationId) ?: Metar()
                 sendParcelableResultIntent(action, stationId, metar)
             }
         }
@@ -95,7 +95,7 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
         if (xmlFile.exists()) {
             val parser = MetarParser()
             parser.parse(xmlFile, stationIds).forEach { metar ->
-                serializeObject(metar, metar.stationId!!)
+                wxCache.serializeObject(metar, metar.stationId!!)
             }
         }
     }

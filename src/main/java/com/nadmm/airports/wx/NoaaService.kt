@@ -26,32 +26,25 @@ import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nadmm.airports.utils.NetworkUtils.doHttpsGet
-import com.nadmm.airports.utils.SystemUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.serialization.json.Json
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
-import java.io.Serializable
-import java.util.Date
 import java.util.zip.GZIPInputStream
 
 abstract class NoaaService(protected val serviceName: String, protected val maxAgeMillis: Long) : Service() {
-    private var dataDirectory: File? = null
     private val serviceJob = SupervisorJob() // Use SupervisorJob for better error handling in children
     // Coroutine scope tied to Dispatchers.IO for background work
     protected val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
 
+    private var _wxCache: WxCache? = null
+    protected val wxCache get() = _wxCache!!
+
     override fun onCreate() {
         super.onCreate()
 
-        dataDirectory = SystemUtils.getExternalDir(this, "wx/$serviceName")
-        // Remove any old files from cache first
-        cleanupCache(dataDirectory, maxAgeMillis)
+        _wxCache = WxCache(this, serviceName, maxAgeMillis)
+
         Log.d(TAG, "onCreate() called for $serviceName service")
     }
 
@@ -65,33 +58,6 @@ abstract class NoaaService(protected val serviceName: String, protected val maxA
         Log.d(TAG, "onDestroy() called for $serviceName service")
         // Cancel all coroutines when the service is destroyed
         serviceJob.cancel() // This will cancel all coroutines launched in serviceScope
-    }
-
-    private fun cleanupCache(dir: File?, maxAge: Long) {
-        // Delete all files that are older
-        val files = dir?.listFiles() ?: return
-        val now = Date()
-        for (file in files) {
-            val age = now.time - file.lastModified()
-            if (age > maxAge) {
-                Log.d(TAG, "Deleting old cached file: ${file.name}")
-                file.delete()
-            }
-        }
-    }
-
-    protected fun cleanupCache(stationIds: List<String>) {
-        stationIds.forEach { stationId ->
-            val jsonFile = getJsonFile(stationId)
-            if (jsonFile.exists()) {
-                Log.d(TAG, "Deleting cached file: ${jsonFile.name}")
-                jsonFile.delete()
-            }
-        }
-    }
-
-    protected fun cacheFileExists(stationId: String): Boolean {
-        return getJsonFile(stationId).exists()
     }
 
     protected fun fetchFromNoaa(query: String?, file: File, compressed: Boolean = false): Boolean {
@@ -109,37 +75,9 @@ abstract class NoaaService(protected val serviceName: String, protected val maxA
         )
     }
 
-    protected fun getDataFile(name: String): File {
-        return File(dataDirectory, name)
-    }
-
-    protected fun getObjFile(stationId: String): File {
-        return getDataFile("${serviceName}_${stationId}.obj")
-    }
-
-    protected fun getJsonFile(stationId: String): File {
-        return getDataFile("${serviceName}_${stationId}.json")
-    }
-
-    protected fun createTempFile(): File {
-        return File.createTempFile(serviceName, ".tmp", dataDirectory).apply {
-            deleteOnExit() // Ensure the temp file is deleted when the JVM exits
-        }
-    }
-
     protected fun sendParcelableResultIntent(
         action: String?, stationId: String?,
         result: Parcelable?
-    ) {
-        val intent = makeResultIntent(action, TYPE_TEXT)
-        intent.putExtra(STATION_ID, stationId)
-        intent.putExtra(RESULT, result)
-        sendResultIntent(intent)
-    }
-
-    protected fun sendSerializableResultIntent(
-        action: String?, stationId: String?,
-        result: Serializable?
     ) {
         val intent = makeResultIntent(action, TYPE_TEXT)
         intent.putExtra(STATION_ID, stationId)
@@ -177,40 +115,6 @@ abstract class NoaaService(protected val serviceName: String, protected val maxA
         bm.sendBroadcast(intent)
     }
 
-    protected inline fun <reified T> serializeObject(obj: T, stationId: String) {
-        val jsonFile = getJsonFile(stationId)
-        jsonFile.bufferedWriter().use { writer ->
-            val json = Json.encodeToString(obj)
-            writer.write(json)
-        }
-    }
-
-    protected inline fun <reified T> deserializeObject(stationId: String) : T? {
-        val jsonFile = getJsonFile(stationId)
-        return if (jsonFile.exists()) {
-            jsonFile.bufferedReader().use { reader ->
-                val json = reader.readText()
-                Json.decodeFromString<T>(json)
-            }
-        } else {
-            null
-        }
-    }
-
-    protected fun writeObject(obj: Any?, objFile: File?) {
-        FileOutputStream(objFile).use { fos ->
-            ObjectOutputStream(fos).use { oos ->
-                oos.writeObject(obj)
-            }
-        }
-    }
-
-    protected inline fun <reified T> readObject(objFile: File): T? {
-        ObjectInputStream(FileInputStream(objFile)).use { fis ->
-            return fis.readObject() as? T
-        }
-    }
-
     companion object {
         private val TAG: String = NoaaService::class.java.simpleName
 
@@ -222,7 +126,6 @@ abstract class NoaaService(protected val serviceName: String, protected val maxA
         const val TAF_RADIUS = 25
         const val PIREP_RADIUS_NM = 50
         const val PIREP_HOURS_BEFORE = 3
-        const val PIREP_CACHE_MAX_AGE = HOUR_IN_MILLIS
         const val PROGCHART_CACHE_MAX_AGE = 3 * HOUR_IN_MILLIS
 
         const val STATION_ID: String = "STATION_ID"
@@ -232,7 +135,6 @@ abstract class NoaaService(protected val serviceName: String, protected val maxA
         const val RADIUS_NM: String = "RADIUS_NM"
         const val LOCATION: String = "LOCATION"
         const val HOURS_BEFORE: String = "HOURS_BEFORE"
-        const val COORDS_BOX: String = "COORDS_BOX"
         const val IMAGE_TYPE: String = "IMAGE_TYPE"
         const val IMAGE_CODE: String = "IMAGE_CODE"
         const val TEXT_TYPE: String = "TEXT_TYPE"

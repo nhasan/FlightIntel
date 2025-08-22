@@ -24,7 +24,7 @@ import android.util.Log
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 
-class IcingService : NoaaService("icing", ICING_CACHE_MAX_AGE) {
+class IcingService : NoaaService("icing", CACHE_MAX_AGE) {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
@@ -48,7 +48,7 @@ class IcingService : NoaaService("icing", ICING_CACHE_MAX_AGE) {
             val code = intent.getStringExtra(IMAGE_CODE)
             val fileName = "${imgType}_${code}_sev.gif"
             Log.d(TAG, "getIcing: action=${action}, type=$type, fileName=$fileName")
-            val imageFile = getDataFile(fileName)
+            val imageFile = wxCache.getFile(fileName)
             if (!imageFile.exists()) {
                 try {
                     val path = "/data/products/icing/${fileName}"
@@ -65,6 +65,6 @@ class IcingService : NoaaService("icing", ICING_CACHE_MAX_AGE) {
 
     companion object {
         private val TAG = IcingService::class.java.simpleName
-        private const val ICING_CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
+        private const val CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
     }
 }

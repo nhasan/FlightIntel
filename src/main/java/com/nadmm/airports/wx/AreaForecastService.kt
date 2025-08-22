@@ -42,7 +42,7 @@ class AreaForecastService : NoaaService("fa", FA_CACHE_MAX_AGE) {
     }
 
     private fun getFaText(code: String) {
-        val file = getDataFile(code)
+        val file = wxCache.getFile(code)
         if (!file.exists()) {
             try {
                 val path = "/data/products/fa/$code"

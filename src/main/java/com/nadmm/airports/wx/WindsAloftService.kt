@@ -45,7 +45,7 @@ class WindsAloftService : NoaaService("fb", FB_CACHE_MAX_AGE) {
 
     private fun fetchWindsAloftText(code: String?, type: String?): File {
         val filename = "F${type}_fbwind_low_${code}.txt"
-        val file = getDataFile(filename)
+        val file = wxCache.getFile(filename)
         if (!file.exists()) {
             try {
                 val path = "/data/products/fbwind/$filename"

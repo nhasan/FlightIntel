@@ -44,7 +44,6 @@ import com.nadmm.airports.utils.FormatUtils.formatStatuteMiles
 import com.nadmm.airports.utils.FormatUtils.formatTemperature
 import com.nadmm.airports.utils.GeoUtils.getCardinalDirection
 import com.nadmm.airports.utils.TimeUtils
-import com.nadmm.airports.wx.Pirep.PirepEntry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -157,7 +156,7 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
 
     @SuppressLint("SetTextI18n")
     private fun showPirep(intent: Intent) {
-        val pirep = IntentCompat.getSerializableExtra(intent, NoaaService.RESULT, Pirep::class.java) ?: return
+        val pirep = IntentCompat.getParcelableExtra(intent, NoaaService.RESULT, Pirep::class.java) ?: return
 
         binding.apply {
             val layout = binding.pirepEntriesLayout
@@ -200,15 +199,15 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
             addRow(pirepDetails, "Type", entry.reportType)
             addRow(pirepDetails, "Aircraft", entry.aircraftRef)
 
-            val time = if (!entry.flags.contains(Pirep.Flags.NoTimeStamp)) TimeUtils.formatDateTime(
+            val time = if (!entry.flags.contains(PirepFlags.NoTimeStamp)) TimeUtils.formatDateTime(
                 activityBase,
                 entry.observationTime
-            ) else Pirep.Flags.NoTimeStamp.toString()
+            ) else PirepFlags.NoTimeStamp.toString()
             addRow(pirepDetails, "Time", time)
 
             if (entry.altitudeFeetMsl < Int.MAX_VALUE) {
                 val altitude =
-                    if (entry.flags.contains(Pirep.Flags.AglIndicated)) {
+                    if (entry.flags.contains(PirepFlags.AglIndicated)) {
                         formatFeetAgl(entry.altitudeFeetMsl.toFloat())
                     } else {
                         formatFeetMsl(entry.altitudeFeetMsl.toFloat())
@@ -256,19 +255,19 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
         }
     }
 
-    private fun addSkyConditionRow(details: LinearLayout, sky: Pirep.SkyCondition) {
+    private fun addSkyConditionRow(details: LinearLayout, sky: PirepSkyCondition) {
         val extra = formatFeetRangeMsl(sky.baseFeetMSL, sky.topFeetMSL)
         val skyCondition = SkyCondition.of(sky.skyCover)
         addRow(details, "Sky", skyCondition.toString(), extra)
     }
 
-    private fun addTurbulenceRow(details: LinearLayout, turbulence: Pirep.TurbulenceCondition) {
+    private fun addTurbulenceRow(details: LinearLayout, turbulence: PirepTurbulenceCondition) {
         val value = listOf(turbulence.frequency, turbulence.intensity, turbulence.type).joinToString(" ")
         val extra = formatFeetRangeMsl(turbulence.baseFeetMSL, turbulence.topFeetMSL)
         addRow(details, "Turbulence", value, extra)
     }
 
-    private fun addIcingRow(details: LinearLayout, icing: Pirep.IcingCondition) {
+    private fun addIcingRow(details: LinearLayout, icing: PirepIcingCondition) {
         val value = listOf(icing.intensity, icing.type).joinToString(" ")
         val extra = formatFeetRangeMsl(icing.baseFeetMSL, icing.topFeetMSL)
         addRow(details, "Icing", value, extra)

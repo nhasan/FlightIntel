@@ -44,7 +44,7 @@ class ProgChartService : NoaaService("progchart", PROGCHART_CACHE_MAX_AGE) {
         val action = intent.action
         val code = intent.getStringExtra(IMAGE_CODE)
         val imageName = "$code.gif"
-        val imageFile = getDataFile(imageName)
+        val imageFile = wxCache.getFile(imageName)
         if (!imageFile.exists()) {
             try {
                 val path = "/data/products/progs/$imageName"

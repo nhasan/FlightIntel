@@ -21,7 +21,6 @@ package com.nadmm.airports.wx
 import android.location.Location
 import com.nadmm.airports.utils.GeoUtils
 import com.nadmm.airports.utils.GeoUtils.getMagneticDeclination
-import com.nadmm.airports.wx.Pirep.PirepEntry
 import org.xml.sax.Attributes
 import org.xml.sax.InputSource
 import org.xml.sax.helpers.DefaultHandler
@@ -67,13 +66,13 @@ class PirepParser {
             if (qName.equals("AircraftReport", ignoreCase = true)) {
                 entry = PirepEntry()
             } else if (qName.equals("sky_condition", ignoreCase = true)) {
-                val skyCondition = Pirep.SkyCondition.of(attributes)
+                val skyCondition = PirepSkyCondition.of(attributes)
                 entry.skyConditions.add(skyCondition)
             } else if (qName.equals("turbulence_condition", ignoreCase = true)) {
-                val turbulenceCondition = Pirep.TurbulenceCondition.of(attributes)
+                val turbulenceCondition = PirepTurbulenceCondition.of(attributes)
                 entry.turbulenceConditions.add(turbulenceCondition)
             } else if (qName.equals("icing_condition", ignoreCase = true)) {
-                val icingCondition = Pirep.IcingCondition.of(attributes)
+                val icingCondition = PirepIcingCondition.of(attributes)
                 entry.icingConditions.add(icingCondition)
             } else {
                 sb.setLength(0)
@@ -116,11 +115,11 @@ class PirepParser {
                 entry.vertGustKnots = text.toInt()
             } else if (qName.equals("no_time_stamp", ignoreCase = true)) {
                 if (text.equals("true", ignoreCase = true)) {
-                    entry.flags.add(Pirep.Flags.NoTimeStamp)
+                    entry.flags.add(PirepFlags.NoTimeStamp)
                 }
             } else if (qName.equals("above_ground_level_indicated", ignoreCase = true)) {
                 if (text.equals("true", ignoreCase = true)) {
-                    entry.flags.add(Pirep.Flags.AglIndicated)
+                    entry.flags.add(PirepFlags.AglIndicated)
                 }
             } else if (qName.equals("AircraftReport", ignoreCase = true)) {
                 if (validateEntry(entry)) {
@@ -146,7 +145,7 @@ class PirepParser {
                 results
             )
             val distanceNM = results[0] / GeoUtils.METERS_PER_NAUTICAL_MILE
-            if (distanceNM <= searchRadiusNM || entry.flags.contains(Pirep.Flags.BadLocation)) {
+            if (distanceNM <= searchRadiusNM || entry.flags.contains(PirepFlags.BadLocation)) {
                 entry.distanceNM = distanceNM.roundToInt()
                 entry.bearing = GeoUtils.applyDeclination(results[1].roundToInt(),  magneticDeclination)
                 entry.isValid = true

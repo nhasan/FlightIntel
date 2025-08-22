@@ -18,105 +18,107 @@
  */
 package com.nadmm.airports.wx
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import org.xml.sax.Attributes
-import java.io.Serializable
 
-class Pirep : Serializable {
-    class SkyCondition(
-        @JvmField var skyCover: String,
-        @JvmField var baseFeetMSL: Int,
-        @JvmField var topFeetMSL: Int
-    ) : Serializable {
-        companion object {
-            fun of(attributes: Attributes): SkyCondition {
-                val skyCover = attributes.getValue("sky_cover") ?: "SKM"
-                val baseFeetMSL = attributes.getValue("cloud_base_ft_msl")?.toInt() ?: Int.MAX_VALUE
-                val topFeetMSL = attributes.getValue("cloud_top_ft_msl")?.toInt() ?: Int.MAX_VALUE
-                return SkyCondition(skyCover, baseFeetMSL, topFeetMSL)
-            }
+@Parcelize
+@Serializable
+class PirepSkyCondition(
+    var skyCover: String,
+    var baseFeetMSL: Int,
+    var topFeetMSL: Int
+) : Parcelable {
+    companion object {
+        fun of(attributes: Attributes): PirepSkyCondition {
+            val skyCover = attributes.getValue("sky_cover") ?: "SKM"
+            val baseFeetMSL = attributes.getValue("cloud_base_ft_msl")?.toInt() ?: Int.MAX_VALUE
+            val topFeetMSL = attributes.getValue("cloud_top_ft_msl")?.toInt() ?: Int.MAX_VALUE
+            return PirepSkyCondition(skyCover, baseFeetMSL, topFeetMSL)
         }
     }
-
-    class TurbulenceCondition(
-        @JvmField var type: String,
-        @JvmField var intensity: String,
-        @JvmField var frequency: String,
-        @JvmField var baseFeetMSL: Int,
-        @JvmField var topFeetMSL: Int
-    ) : Serializable {
-        companion object {
-            fun of(attributes: Attributes): TurbulenceCondition {
-                val type = attributes.getValue("turbulence_type") ?: ""
-                val intensity = attributes.getValue("turbulence_intensity") ?: ""
-                val frequency = attributes.getValue("turbulence_freq") ?: ""
-                val baseFeetMSL = attributes.getValue("turbulence_base_ft_msl")?.toInt() ?: Int.MAX_VALUE
-                val topFeetMSL = attributes.getValue("turbulence_top_ft_msl")?.toInt() ?: Int.MAX_VALUE
-                return TurbulenceCondition(type, intensity, frequency, baseFeetMSL, topFeetMSL)
-            }
-        }
-    }
-
-    class IcingCondition(
-        @JvmField var type: String,
-        @JvmField var intensity: String,
-        @JvmField var baseFeetMSL: Int,
-        @JvmField var topFeetMSL: Int
-    ) : Serializable {
-        companion object {
-            fun of(attributes: Attributes): IcingCondition {
-                val type = attributes.getValue("icing_type") ?: ""
-                val intensity = attributes.getValue("icing_intensity") ?: ""
-                val baseFeetMSL = attributes.getValue("icing_base_ft_msl")?.toInt() ?: Int.MAX_VALUE
-                val topFeetMSL = attributes.getValue("icing_top_ft_msl")?.toInt() ?: Int.MAX_VALUE
-                return IcingCondition(type, intensity, baseFeetMSL, topFeetMSL)
-            }
-        }
-    }
-
-    enum class Flags {
-        NoTimeStamp {
-            override fun toString(): String {
-                return "No timestamp"
-            }
-        },
-        AglIndicated {
-            override fun toString(): String {
-                return "AGL indicated"
-            }
-        },
-        BadLocation {
-            override fun toString(): String {
-                return "Bad location"
-            }
-        }
-    }
-
-    class PirepEntry : Serializable {
-        @JvmField var isValid = false
-        @JvmField var receiptTime = Long.MAX_VALUE
-        @JvmField var observationTime = Long.MAX_VALUE
-        @JvmField var reportType = ""
-        @JvmField var rawText = ""
-        @JvmField var aircraftRef = ""
-        @JvmField var latitude = 0f
-        @JvmField var longitude = 0f
-        @JvmField var distanceNM = 0
-        @JvmField var bearing = 0
-        @JvmField var altitudeFeetMsl = Int.MAX_VALUE
-        @JvmField var visibilitySM = Int.MAX_VALUE
-        @JvmField var tempCelsius = Int.MAX_VALUE
-        @JvmField var windDirDegrees = Int.MAX_VALUE
-        @JvmField var windSpeedKnots = Int.MAX_VALUE
-        @JvmField var vertGustKnots = Int.MAX_VALUE
-        @JvmField var flags = ArrayList<Flags>()
-        @JvmField var skyConditions = ArrayList<SkyCondition>()
-        @JvmField var wxList = ArrayList<WxSymbol>()
-        @JvmField var turbulenceConditions = ArrayList<TurbulenceCondition>()
-        @JvmField var icingConditions = ArrayList<IcingCondition>()
-        @JvmField var remarks = ""
-    }
-
-    @JvmField var fetchTime = 0L
-    @JvmField var stationId = ""
-    @JvmField var entries = ArrayList<PirepEntry>()
 }
+
+@Parcelize
+@Serializable
+class PirepTurbulenceCondition(
+    var type: String,
+    var intensity: String,
+    var frequency: String,
+    var baseFeetMSL: Int,
+    var topFeetMSL: Int
+) : Parcelable {
+    companion object {
+        fun of(attributes: Attributes): PirepTurbulenceCondition {
+            val type = attributes.getValue("turbulence_type") ?: ""
+            val intensity = attributes.getValue("turbulence_intensity") ?: ""
+            val frequency = attributes.getValue("turbulence_freq") ?: ""
+            val baseFeetMSL = attributes.getValue("turbulence_base_ft_msl")?.toInt() ?: Int.MAX_VALUE
+            val topFeetMSL = attributes.getValue("turbulence_top_ft_msl")?.toInt() ?: Int.MAX_VALUE
+            return PirepTurbulenceCondition(type, intensity, frequency, baseFeetMSL, topFeetMSL)
+        }
+    }
+}
+
+@Parcelize
+@Serializable
+class PirepIcingCondition(
+    var type: String,
+    var intensity: String,
+    var baseFeetMSL: Int,
+    var topFeetMSL: Int
+) : Parcelable {
+    companion object {
+        fun of(attributes: Attributes): PirepIcingCondition {
+            val type = attributes.getValue("icing_type") ?: ""
+            val intensity = attributes.getValue("icing_intensity") ?: ""
+            val baseFeetMSL = attributes.getValue("icing_base_ft_msl")?.toInt() ?: Int.MAX_VALUE
+            val topFeetMSL = attributes.getValue("icing_top_ft_msl")?.toInt() ?: Int.MAX_VALUE
+            return PirepIcingCondition(type, intensity, baseFeetMSL, topFeetMSL)
+        }
+    }
+}
+
+enum class PirepFlags(var description: String) {
+    NoTimeStamp("No timestamp"),
+    AglIndicated("AGL indicated"),
+    BadLocation("Bad location");
+
+    override fun toString(): String = description
+}
+
+@Parcelize
+@Serializable
+class PirepEntry(
+    var isValid: Boolean = false,
+    var receiptTime: Long = Long.MAX_VALUE,
+    var observationTime: Long = Long.MAX_VALUE,
+    var reportType: String = "",
+    var rawText: String = "",
+    var aircraftRef: String = "",
+    var latitude: Float = 0f,
+    var longitude: Float = 0f,
+    var distanceNM: Int = 0,
+    var bearing: Int = 0,
+    var altitudeFeetMsl: Int = Int.MAX_VALUE,
+    var visibilitySM: Int = Int.MAX_VALUE,
+    var tempCelsius: Int = Int.MAX_VALUE,
+    var windDirDegrees: Int = Int.MAX_VALUE,
+    var windSpeedKnots: Int = Int.MAX_VALUE,
+    var vertGustKnots: Int = Int.MAX_VALUE,
+    var flags: MutableList<PirepFlags> = mutableListOf(),
+    var skyConditions: MutableList<PirepSkyCondition> = mutableListOf(),
+    var wxList: MutableList<WxSymbol> = mutableListOf(),
+    var turbulenceConditions: MutableList<PirepTurbulenceCondition> = mutableListOf(),
+    var icingConditions: MutableList<PirepIcingCondition> = mutableListOf(),
+    var remarks: String = ""
+) : Parcelable
+
+@Parcelize
+@Serializable
+class Pirep(
+    var fetchTime: Long = 0L,
+    var stationId: String = "",
+    var entries: MutableList<PirepEntry> = mutableListOf()
+) : Parcelable
