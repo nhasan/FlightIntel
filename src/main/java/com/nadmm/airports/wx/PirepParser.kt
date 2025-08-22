@@ -83,10 +83,8 @@ class PirepParser {
             val text = sb.toString().trim()
             if (qName.equals("raw_text", ignoreCase = true)) {
                 entry.rawText = text
-                val remarksStart = entry.rawText.indexOf("/RM ")
-                if (remarksStart != -1) {
-                    entry.remarks = entry.rawText.substring(remarksStart + 4).trim()
-                }
+                entry.stationId = text.take(3)
+                addRemarks()
             } else if (qName.equals("report_type", ignoreCase = true)) {
                 entry.reportType = text
             } else if (qName.equals("receipt_time", ignoreCase = true)) {
@@ -124,6 +122,26 @@ class PirepParser {
             } else if (qName.equals("AircraftReport", ignoreCase = true)) {
                 if (validateEntry(entry)) {
                     pirep.entries.add(entry)
+                }
+            }
+        }
+
+        private fun addRemarks() {
+            val remarksStart = entry.rawText.indexOf("/RM ")
+            if (remarksStart == -1) return
+
+            val remark = entry.rawText.substring(remarksStart + 4).trim()
+            when (remark) {
+                "DURC" -> entry.remarks.add("During climb")
+                "DURD" -> entry.remarks.add("During descent")
+                else -> {
+                    entry.remarks.add(remark)
+                    if (entry.rawText.contains(" DURC ")) {
+                        entry.remarks.add("During climb")
+                    }
+                    if (entry.rawText.contains(" DURD ")) {
+                        entry.remarks.add("During descent")
+                    }
                 }
             }
         }

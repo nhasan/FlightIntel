@@ -92,6 +92,7 @@ enum class PirepFlags(var description: String) {
 @Serializable
 class PirepEntry(
     var isValid: Boolean = false,
+    var stationId: String = "",
     var receiptTime: Long = Long.MAX_VALUE,
     var observationTime: Long = Long.MAX_VALUE,
     var reportType: String = "",
@@ -112,7 +113,7 @@ class PirepEntry(
     var wxList: MutableList<WxSymbol> = mutableListOf(),
     var turbulenceConditions: MutableList<PirepTurbulenceCondition> = mutableListOf(),
     var icingConditions: MutableList<PirepIcingCondition> = mutableListOf(),
-    var remarks: String = ""
+    var remarks: MutableList<String> = mutableListOf()
 ) : Parcelable
 
 @Parcelize

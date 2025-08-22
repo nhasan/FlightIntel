@@ -30,12 +30,14 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.content.IntentCompat
 import androidx.lifecycle.lifecycleScope
+import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
 import com.nadmm.airports.data.DatabaseManager.Awos1
 import com.nadmm.airports.data.DatabaseManager.Wxs
 import com.nadmm.airports.databinding.PirepDetailItemBinding
 import com.nadmm.airports.databinding.PirepDetailViewBinding
+import com.nadmm.airports.utils.AircraftTypeDesginators
 import com.nadmm.airports.utils.FormatUtils.formatDegrees
 import com.nadmm.airports.utils.FormatUtils.formatFeetAgl
 import com.nadmm.airports.utils.FormatUtils.formatFeetMsl
@@ -197,7 +199,13 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
             wxRawPirep.text = entry.rawText
 
             addRow(pirepDetails, "Type", entry.reportType)
-            addRow(pirepDetails, "Aircraft", entry.aircraftRef)
+            addRow(pirepDetails, "Facility", entry.stationId)
+            val aircraft = AircraftTypeDesginators.getAircraftName(entry.aircraftRef)
+            if (aircraft.isNotEmpty()) {
+                addRow(pirepDetails, "Aircraft", entry.aircraftRef, aircraft)
+            } else {
+                addRow(pirepDetails, "Aircraft", entry.aircraftRef)
+            }
 
             val time = if (!entry.flags.contains(PirepFlags.NoTimeStamp)) TimeUtils.formatDateTime(
                 activityBase,
@@ -247,8 +255,12 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
                 addIcingRow(pirepDetails, icing)
             }
 
-            if (!entry.remarks.isEmpty()) {
-                addRow(pirepDetails, "Remarks", entry.remarks)
+            if (entry.remarks.isNotEmpty()) {
+                val layout = inflate<LinearLayout>(R.layout.detail_row_empty)
+                addRow(pirepDetails, layout)
+                entry.remarks.forEach { remark ->
+                    addBulletedRow(layout, remark)
+                }
             }
 
             layout.addView(root, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
