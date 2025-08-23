@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ class NearbyAirportsCursor(db: SQLiteDatabase, location: Location, radius: Int,
             for ( airport: AirportData in sortedAirports) {
                 if (airport.distance.toInt() in 0..radius) {
                     val row = newRow()
-                    row.add(position)
+                    row.add(airport.id)
                             .add(airport.siteNumber)
                             .add(airport.icaoCode)
                             .add(airport.faaCode)
@@ -85,6 +85,7 @@ class NearbyAirportsCursor(db: SQLiteDatabase, location: Location, radius: Int,
     // This data class allows us to sort the airport list based in distance
     private inner class AirportData {
 
+        var id: Long = -1
         var siteNumber: String? = null
         var icaoCode: String? = null
         var faaCode: String? = null
@@ -104,21 +105,22 @@ class NearbyAirportsCursor(db: SQLiteDatabase, location: Location, radius: Int,
         var bearing: Float = 0.toFloat()
 
         fun setFromCursor(c: Cursor, location: Location, declination: Float) {
-            siteNumber = c.getString(c.getColumnIndex(Airports.SITE_NUMBER))
-            facilityNAme = c.getString(c.getColumnIndex(Airports.FACILITY_NAME))
-            icaoCode = c.getString(c.getColumnIndex(Airports.ICAO_CODE))
-            faaCode = c.getString(c.getColumnIndex(Airports.FAA_CODE))
-            assocCity = c.getString(c.getColumnIndex(Airports.ASSOC_CITY))
-            assocState = c.getString(c.getColumnIndex(Airports.ASSOC_STATE))
-            fuelTypes = c.getString(c.getColumnIndex(Airports.FUEL_TYPES))
-            elevationMSL = c.getString(c.getColumnIndex(Airports.ELEVATION_MSL))
-            unicomFreq = c.getString(c.getColumnIndex(Airports.UNICOM_FREQS))
-            ctafFreq = c.getString(c.getColumnIndex(Airports.CTAF_FREQ))
-            statusCode = c.getString(c.getColumnIndex(Airports.STATUS_CODE))
-            facilityUse = c.getString(c.getColumnIndex(Airports.FACILITY_USE))
-            stateNAme = c.getString(c.getColumnIndex(States.STATE_NAME))
-            lattitude = c.getDouble(c.getColumnIndex(Airports.REF_LATTITUDE_DEGREES))
-            longitude = c.getDouble(c.getColumnIndex(Airports.REF_LONGITUDE_DEGREES))
+            id = c.getLong(c.getColumnIndexOrThrow(BaseColumns._ID))
+            siteNumber = c.getString(c.getColumnIndexOrThrow(Airports.SITE_NUMBER))
+            facilityNAme = c.getString(c.getColumnIndexOrThrow(Airports.FACILITY_NAME))
+            icaoCode = c.getString(c.getColumnIndexOrThrow(Airports.ICAO_CODE))
+            faaCode = c.getString(c.getColumnIndexOrThrow(Airports.FAA_CODE))
+            assocCity = c.getString(c.getColumnIndexOrThrow(Airports.ASSOC_CITY))
+            assocState = c.getString(c.getColumnIndexOrThrow(Airports.ASSOC_STATE))
+            fuelTypes = c.getString(c.getColumnIndexOrThrow(Airports.FUEL_TYPES))
+            elevationMSL = c.getString(c.getColumnIndexOrThrow(Airports.ELEVATION_MSL))
+            unicomFreq = c.getString(c.getColumnIndexOrThrow(Airports.UNICOM_FREQS))
+            ctafFreq = c.getString(c.getColumnIndexOrThrow(Airports.CTAF_FREQ))
+            statusCode = c.getString(c.getColumnIndexOrThrow(Airports.STATUS_CODE))
+            facilityUse = c.getString(c.getColumnIndexOrThrow(Airports.FACILITY_USE))
+            stateNAme = c.getString(c.getColumnIndexOrThrow(States.STATE_NAME))
+            lattitude = c.getDouble(c.getColumnIndexOrThrow(Airports.REF_LATTITUDE_DEGREES))
+            longitude = c.getDouble(c.getColumnIndexOrThrow(Airports.REF_LONGITUDE_DEGREES))
 
             // Now calculate the distance to this airport
             val results = FloatArray(2)
