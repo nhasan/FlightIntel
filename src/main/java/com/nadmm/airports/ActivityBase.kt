@@ -54,6 +54,7 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
+import androidx.core.view.WindowCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -170,6 +171,8 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     override fun onCreate(savedInstanceState: Bundle?) {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val theme = mPreferences.getString(PreferencesActivity.KEY_THEME, null)
             ?: resources.getString(R.string.theme_default)

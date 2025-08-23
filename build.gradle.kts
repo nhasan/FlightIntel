@@ -55,7 +55,7 @@ android {
 
     defaultConfig {
         applicationId = "com.nadmm.airports"
-        minSdk = 28
+        minSdk = 29
         targetSdk = 36
         compileSdk = 36
         versionName = "6.4"
