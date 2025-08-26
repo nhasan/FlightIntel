@@ -57,7 +57,7 @@ class NearbyWxCursor(db: SQLiteDatabase, location: Location, radius: Int) : Matr
                     continue
                 }
                 val row = newRow()
-                row.add(position)
+                row.add(awos.id)
                     .add(awos.icaoCode)
                     .add(awos.sensorIdent)
                     .add(awos.sensorType)
@@ -78,6 +78,7 @@ class NearbyWxCursor(db: SQLiteDatabase, location: Location, radius: Int) : Matr
     }
 
     private inner class AwosData(c: Cursor, location: Location, declination: Double) : Comparable<AwosData?> {
+        var id: Long = -1
         var icaoCode: String
         var stationName: String
         var stationStatus: String
@@ -95,6 +96,7 @@ class NearbyWxCursor(db: SQLiteDatabase, location: Location, radius: Int) : Matr
         var BEARING: Double
 
         init {
+            id = c.getLong(c.getColumnIndexOrThrow(BaseColumns._ID))
             icaoCode = c.getString(c.getColumnIndexOrThrow(Wxs.STATION_ID)) ?: ""
             stationName = c.getString(c.getColumnIndexOrThrow(Wxs.STATION_NAME)) ?: ""
             stationStatus = c.getString(c.getColumnIndexOrThrow(Awos1.COMMISSIONING_STATUS)) ?: "N"

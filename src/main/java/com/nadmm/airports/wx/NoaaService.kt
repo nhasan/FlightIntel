@@ -121,7 +121,6 @@ abstract class NoaaService(protected val serviceName: String, protected val maxA
         protected const val AWC_HOST: String = "aviationweather.gov"
         protected const val ADDS_DATASERVER_PATH: String = "/cgi-bin/data/dataserver.php"
 
-        const val METAR_HOURS_BEFORE = 3
         const val TAF_HOURS_BEFORE = 3
         const val TAF_RADIUS = 25
         const val PIREP_RADIUS_NM = 50

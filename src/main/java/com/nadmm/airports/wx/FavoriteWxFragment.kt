@@ -18,21 +18,18 @@
  */
 package com.nadmm.airports.wx
 
-import android.content.Context
 import android.database.Cursor
 import android.os.Bundle
-import android.view.View
-import android.widget.ListView
-import androidx.cursoradapter.widget.CursorAdapter
 import androidx.lifecycle.lifecycleScope
-import com.nadmm.airports.ListFragmentBase
+import androidx.recyclerview.widget.RecyclerView
+import com.nadmm.airports.RecyclerViewFragment
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Wxs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FavoriteWxFragment : ListFragmentBase() {
+class FavoriteWxFragment : RecyclerViewFragment() {
     private val mDelegate = WxDelegate(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,27 +63,19 @@ class FavoriteWxFragment : ListFragmentBase() {
         setEmptyText("No favorite wx stations selected.")
     }
 
-    override fun isRefreshable(): Boolean {
-        return listAdapter != null && !listAdapter!!.isEmpty()
-    }
-
     override fun requestDataRefresh() {
-        mDelegate.requestMetars(NoaaService.ACTION_GET_METAR, true, true)
+        mDelegate.requestMetars(true)
     }
 
-    public override fun setCursor(c: Cursor) {
-        mDelegate.setCursor(c)
-        super.setCursor(c)
-        mDelegate.requestMetars(NoaaService.ACTION_GET_METAR, false, true)
+    public override fun setCursor(cursor: Cursor) {
+        mDelegate.setCursor(cursor)
+        super.setCursor(cursor)
+        mDelegate.requestMetars(false)
         activityBase.enableDisableSwipeRefresh(isRefreshable)
     }
 
-    override fun newListAdapter(context: Context?, c: Cursor?): CursorAdapter? {
-        return mDelegate.newListAdapter(context, c)
-    }
-
-    override fun onListItemClick(l: ListView, v: View, position: Int) {
-        mDelegate.onListItemClick(l, v, position)
+    override fun newListAdapter(cursor: Cursor?): RecyclerView.Adapter<*>? {
+        return mDelegate.newListAdapter(cursor)
     }
 
     private fun doQuery(): Array<Cursor> {

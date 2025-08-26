@@ -19,23 +19,18 @@
 
 package com.nadmm.airports.afd
 
-import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
-import android.view.View
-import android.widget.ListView
-import androidx.cursoradapter.widget.CursorAdapter
 import androidx.lifecycle.lifecycleScope
-import com.nadmm.airports.LocationListFragmentBase
+import com.nadmm.airports.LocationListFragment2
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
-import com.nadmm.airports.utils.makeAirportBundle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class NearbyAirportsFragment : LocationListFragmentBase() {
+class NearbyAirportsFragment : LocationListFragment2() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -57,14 +52,17 @@ class NearbyAirportsFragment : LocationListFragmentBase() {
         }
     }
 
-    override fun newListAdapter(context: Context?, c: Cursor?): CursorAdapter? {
-        return AirportsCursorAdapter(context, c)
+    override fun newListAdapter(cursor: Cursor?): AirportsRecyclerAdapter? {
+        return if (cursor != null) {
+            AirportsRecyclerAdapter(cursor, ::onRecyclerItemClick)
+        } else {
+            null
+        }
     }
 
-    override fun onListItemClick(l: ListView, v: View, position: Int) {
+    private fun onRecyclerItemClick(model: AirportListDataModel) {
         Intent(activity, AirportActivity::class.java).apply {
-            val c = l.getItemAtPosition(position) as Cursor
-            putExtras(c.makeAirportBundle())
+            putExtras(model.makeBundle())
             startActivity(this)
         }
     }

@@ -18,20 +18,17 @@
  */
 package com.nadmm.airports.wx
 
-import android.content.Context
 import android.database.Cursor
 import android.os.Bundle
-import android.view.View
-import android.widget.ListView
-import androidx.cursoradapter.widget.CursorAdapter
 import androidx.lifecycle.lifecycleScope
-import com.nadmm.airports.LocationListFragmentBase
+import androidx.recyclerview.widget.RecyclerView
+import com.nadmm.airports.LocationListFragment2
 import com.nadmm.airports.data.DatabaseManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class NearbyWxFragment : LocationListFragmentBase() {
+class NearbyWxFragment : LocationListFragment2() {
     private var mDelegate: WxDelegate? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,28 +56,25 @@ class NearbyWxFragment : LocationListFragmentBase() {
     }
 
     override fun isRefreshable(): Boolean {
-        return listAdapter != null && listAdapter!!.count > 0
+        val adapter = recyclerView.adapter as? WxRecyclerAdapter
+        return adapter != null && adapter.itemCount > 0
     }
 
     override fun requestDataRefresh() {
-        mDelegate?.requestMetars(NoaaService.ACTION_GET_METAR, true, true)
+        mDelegate?.requestMetars(true)
     }
 
-    override fun newListAdapter(context: Context?, c: Cursor?): CursorAdapter? {
-        return mDelegate?.newListAdapter(context, c)
+    override fun newListAdapter(cursor: Cursor?): RecyclerView.Adapter<*>? {
+        return mDelegate?.newListAdapter(cursor)
     }
 
-    override fun setCursor(c: Cursor) {
+    override fun setCursor(cursor: Cursor) {
         mDelegate?.let { delegate ->
-            delegate.setCursor(c)
-            super.setCursor(c)
+            delegate.setCursor(cursor)
+            super.setCursor(cursor)
             activityBase.enableDisableSwipeRefresh(isRefreshable)
-            delegate.requestMetars(NoaaService.ACTION_GET_METAR, false, true)
+            delegate.requestMetars(false)
         }
-    }
-
-    override fun onListItemClick(l: ListView, v: View, position: Int) {
-        mDelegate?.onListItemClick(l, v, position)
     }
 
     private fun doQuery(): Array<Cursor> {
