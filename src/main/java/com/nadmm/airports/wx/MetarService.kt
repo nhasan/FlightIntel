@@ -65,12 +65,11 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
 
         val missing = stationIds.filterNot { stationId -> cacheOnly || wxCache.fileExists(stationId) }
         if (missing.isNotEmpty()) {
-            val hoursBeforeNow = intent.getIntExtra(HOURS_BEFORE, 3)
             var xmlFile: File? = null
             try {
                 xmlFile =  wxCache.createTempFile()
                 val query = ("datasource=metars&requesttype=retrieve"
-                        + "&hoursBeforeNow=${hoursBeforeNow}&mostRecentForEachStation=constraint"
+                        + "&hoursBeforeNow=${METAR_HOURS_BEFORE}&mostRecentForEachStation=constraint"
                         + "&format=xml&stationString=${missing.joinToString()}")
                 fetchFromNoaa(query, xmlFile)
                 parseMetars(xmlFile, missing)
@@ -103,15 +102,16 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
     companion object {
         private val TAG = MetarService::class.java.simpleName
         private const val METAR_CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
+        private const val METAR_HOURS_BEFORE = 3
 
         // Helper function to start the service
-        fun startService(context: Context, stationId: String, refresh: Boolean) {
+        fun startService(context: Context, stationId: String, force: Boolean, cacheOnly: Boolean = false) {
             val intent = Intent(context, MetarService::class.java).apply {
                 action = ACTION_GET_METAR
                 putExtra(STATION_IDS, arrayListOf(stationId))
                 putExtra(TYPE, TYPE_TEXT)
-                putExtra(HOURS_BEFORE, METAR_HOURS_BEFORE)
-                putExtra(FORCE_REFRESH, refresh)
+                putExtra(FORCE_REFRESH, force)
+                putExtra(CACHE_ONLY, cacheOnly)
             }
             context.startService(intent)
         }
