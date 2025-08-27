@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-202 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,9 +148,6 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     val prefShowExtraRunwayData: Boolean
         get() = mPreferences.getBoolean(PreferencesActivity.KEY_SHOW_EXTRA_RUNWAY_DATA, false)
 
-    val prefShowGpsNotam: Boolean
-        get() = mPreferences.getBoolean(PreferencesActivity.KEY_SHOW_GPS_NOTAMS, false)
-
     val prefAutoDownoadOnMeteredNetwork: Boolean
         get() = mPreferences.getBoolean(PreferencesActivity.KEY_AUTO_DOWNLOAD_ON_3G, false)
 
@@ -174,10 +171,8 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
         enableEdgeToEdge()
 
-        val theme = mPreferences.getString(PreferencesActivity.KEY_THEME, null)
-            ?: resources.getString(R.string.theme_default)
-        val mode = PreferencesActivity.getNighMode(theme)
-        AppCompatDelegate.setDefaultNightMode(mode)
+        // Follow system night mode setting
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 
         super.onCreate(savedInstanceState)
 

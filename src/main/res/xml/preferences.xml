@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,14 +21,6 @@
  -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="Display">
-        <ListPreference
-            android:key="theme"
-            android:title="Theme"
-            android:entries="@array/themes"
-            android:entryValues="@array/themes_values"
-            android:defaultValue="@string/theme_default" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="Startup settings">
         <ListPreference
             android:key="home_screen"
@@ -71,19 +63,13 @@
             android:summaryOn="Showing extended runway information"
             android:summaryOff="Showing basic runway information"
             android:defaultValue="false" />
-        <SwitchPreferenceCompat
-            android:key="show_gps_notams"
-            android:title="Show GPS NOTAMs"
-            android:summaryOn="GPS NOTAMs will also be shown"
-            android:summaryOff="GPS NOTAMs will not be shown"
-            android:defaultValue="false" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Miscellaneous">
         <SwitchPreferenceCompat
             android:key="fcm_enable"
-            android:title="Enable alerts"
-            android:summaryOn="Display alerts from application"
-            android:summaryOff="Suppress alerts from application"
+            android:title="Enable app messages"
+            android:summaryOn="Display messages from application"
+            android:summaryOff="Suppress messages from application"
             android:defaultValue="true" />
         <SwitchPreferenceCompat
             android:key="auto_download_on_3G"

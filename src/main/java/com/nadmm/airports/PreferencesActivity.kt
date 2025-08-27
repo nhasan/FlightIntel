@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2019 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,205 +16,166 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports
 
-package com.nadmm.airports;
+import android.content.SharedPreferences
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.os.Bundle
+import android.text.InputType
+import android.text.TextUtils
+import android.view.MenuItem
+import android.view.View
+import android.widget.EditText
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.Preference.SummaryProvider
+import androidx.preference.PreferenceFragmentCompat
+import com.google.firebase.messaging.FirebaseMessaging
 
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.Bundle;
-import android.text.InputType;
-import android.text.TextUtils;
-import android.view.MenuItem;
+class PreferencesActivity : FragmentActivityBase() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.preference.EditTextPreference;
-import androidx.preference.ListPreference;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
+        val toolbar = findViewById<Toolbar?>(R.id.toolbar_actionbar)
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.nadmm.airports.utils.UiUtils;
-
-public class PreferencesActivity extends FragmentActivityBase {
-
-    public static final String KEY_HOME_AIRPORT = "home_airport";
-    public static final String KEY_LOCATION_USE_GPS = "location_use_gps";
-    public static final String KEY_LOCATION_NEARBY_RADIUS = "location_nearby_radius";
-    public static final String KEY_SHOW_EXTRA_RUNWAY_DATA = "extra_runway_data";
-    public static final String KEY_SHOW_GPS_NOTAMS = "show_gps_notams";
-    public static final String KEY_AUTO_DOWNLOAD_ON_3G = "auto_download_on_3G";
-    public static final String KEY_DISCLAIMER_AGREED = "disclaimer_agreed";
-    public static final String KEY_SHOW_LOCAL_TIME = "show_local_time";
-    public static final String KEY_HOME_SCREEN = "home_screen";
-    public static final String KEY_ALWAYS_SHOW_NEARBY = "always_show_nearby";
-    public static final String KEY_THEME = "theme";
-    public static final String KEY_FCM_ENABLE = "fcm_enable";
-
-    @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        Toolbar toolbar = findViewById( R.id.toolbar_actionbar );
-
-        setSupportActionBar( toolbar );
-        ActionBar actionBar = getSupportActionBar();
-        if ( actionBar != null ) {
-            actionBar.setDisplayHomeAsUpEnabled( true );
-            actionBar.setDisplayShowHomeEnabled( true );
+        setSupportActionBar(toolbar)
+        val actionBar = supportActionBar
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true)
+            actionBar.setDisplayShowHomeEnabled(true)
         }
 
-        addPreferencesFragment();
+        addPreferencesFragment()
     }
 
-    @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
-        if ( item.getItemId() == android.R.id.home ) {
-            onBackPressed();
-            return true;
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed()
+            return true
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return R.id.navdrawer_settings;
-    }
+    override val selfNavDrawerItem: Int
+        get() = R.id.navdrawer_settings
 
-    protected void addPreferencesFragment() {
-        Class clss = PreferencesFragment.class;
-        String tag = clss.getSimpleName();
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment f = fm.findFragmentByTag( tag );
-        if ( f == null ) {
-            f = fm.getFragmentFactory().instantiate(getClassLoader(), clss.getName() );
-            f.setArguments(getIntent().getExtras());
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.add( R.id.fragment_container, f, tag );
-            ft.commit();
+    fun addPreferencesFragment() {
+        val clss = PreferencesFragment::class.java
+        val tag = clss.getSimpleName()
+        val fm = supportFragmentManager
+        var f = fm.findFragmentByTag(tag)
+        if (f == null) {
+            f = fm.getFragmentFactory().instantiate(getClassLoader(), clss.getName())
+            f.setArguments(getIntent().getExtras())
+            val ft = fm.beginTransaction()
+            ft.add(R.id.fragment_container, f, tag)
+            ft.commit()
         }
     }
 
-    public static int getNighMode( String theme ) {
-        int mode = AppCompatDelegate.MODE_NIGHT_YES;
-        switch ( theme ) {
-            case "Light":
-                mode = AppCompatDelegate.MODE_NIGHT_NO;
-                break;
-            case "Dark":
-                mode = AppCompatDelegate.MODE_NIGHT_YES;
-                break;
-            case "BatterySaver":
-                mode = AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY;
-                break;
-            case "SystemDefault":
-                mode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
-                break;
-        }
-        return mode;
-    }
+    class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
+        private var mSharedPrefs: SharedPreferences? = null
 
-    public static class PreferencesFragment extends PreferenceFragmentCompat
-            implements OnSharedPreferenceChangeListener {
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
 
-        private SharedPreferences mSharedPrefs;
-
-        @Override
-        public void onCreate( Bundle savedInstanceState ) {
-            super.onCreate( savedInstanceState );
-
-            EditTextPreference homeAirport = findPreference( KEY_HOME_AIRPORT );
-            if ( homeAirport != null ) {
+            val homeAirport = findPreference<EditTextPreference?>(KEY_HOME_AIRPORT)
+            if (homeAirport != null) {
                 homeAirport.setSummaryProvider(
-                        (Preference.SummaryProvider<EditTextPreference>) preference -> {
-                    String value = preference.getText();
-                    if ( TextUtils.isEmpty( value ) ) {
-                        return "Home airport is not set";
-                    }else {
-                        return "Home airport set to: " + value;
-                    }
-                } );
+                    SummaryProvider { preference: EditTextPreference? ->
+                        val value = preference!!.text
+                        if (TextUtils.isEmpty(value)) {
+                            return@SummaryProvider "Home airport is not set"
+                        } else {
+                            return@SummaryProvider "Home airport set to: $value"
+                        }
+                    })
 
-                homeAirport.setOnBindEditTextListener( editText -> editText.setInputType(
-                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS ) );
+                homeAirport.setOnBindEditTextListener { editText: EditText? ->
+                    editText!!.setInputType(
+                        InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
+                    )
+                }
             }
 
-            ListPreference radius = findPreference( KEY_LOCATION_NEARBY_RADIUS );
-            if ( radius != null ) {
-                radius.setSummaryProvider( preference ->
-                        "Show locations within " + radius.getValue() + " NM radius" );
-            }
+            val radius = findPreference<ListPreference?>(KEY_LOCATION_NEARBY_RADIUS)
+            radius?.setSummaryProvider(SummaryProvider { preference: Preference? -> "Show locations within " + radius.getValue() + " NM radius" })
 
-            ListPreference homeScreen = findPreference( KEY_HOME_SCREEN );
-            if ( homeScreen != null ) {
-                homeScreen.setSummaryProvider( preference ->
-                        "Show " + homeScreen.getValue() + " screen on startup");
-            }
-
-            ListPreference theme = findPreference( KEY_THEME );
-            if ( theme != null ) {
-                theme.setSummaryProvider( preference ->
-                        "Theme set to: "+getThemeDescription( theme.getValue() ) );
-            }
+            val homeScreen = findPreference<ListPreference?>(KEY_HOME_SCREEN)
+            homeScreen?.setSummaryProvider(SummaryProvider { preference: Preference? -> "Show " + homeScreen.getValue() + " screen on startup" })
         }
 
-        @Override
-        public void onCreatePreferences( Bundle bundle, String s ) {
-            addPreferencesFromResource( R.xml.preferences );
-            mSharedPrefs = getPreferenceScreen().getSharedPreferences();
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+
+            setupWindowInsetsListener()
         }
 
-        @Override
-        public void onResume() {
-            super.onResume();
+        override fun onCreatePreferences(bundle: Bundle?, s: String?) {
+            addPreferencesFromResource(R.xml.preferences)
+            mSharedPrefs = preferenceScreen.getSharedPreferences()
+        }
+
+        override fun onResume() {
+            super.onResume()
+
             // Initialize the preference screen
-            onSharedPreferenceChanged( mSharedPrefs, KEY_THEME );
-            onSharedPreferenceChanged( mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS );
-            onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_AIRPORT );
-            onSharedPreferenceChanged( mSharedPrefs, KEY_HOME_SCREEN );
+            onSharedPreferenceChanged(mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS)
+            onSharedPreferenceChanged(mSharedPrefs, KEY_HOME_AIRPORT)
+            onSharedPreferenceChanged(mSharedPrefs, KEY_HOME_SCREEN)
 
             // Set up a listener whenever a key changes
-            mSharedPrefs.registerOnSharedPreferenceChangeListener( this );
+            mSharedPrefs!!.registerOnSharedPreferenceChangeListener(this)
         }
 
-        @Override
-        public void onPause() {
-            super.onPause();
+        override fun onPause() {
+            super.onPause()
             // Unregister the listener whenever a key changes
-            mSharedPrefs.unregisterOnSharedPreferenceChangeListener( this );
+            mSharedPrefs!!.unregisterOnSharedPreferenceChangeListener(this)
         }
 
-        @Override
-        public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
-            if ( KEY_THEME.equals( key ) ) {
-                UiUtils.clearDrawableCache();
-                String theme = mSharedPrefs.getString( KEY_THEME,
-                        getResources().getString( R.string.theme_default ) );
-                int mode = PreferencesActivity.getNighMode( theme );
-                AppCompatDelegate.setDefaultNightMode( mode );
-            } else if ( KEY_FCM_ENABLE.equals( key ) ) {
-                boolean enabled = mSharedPrefs.getBoolean( KEY_FCM_ENABLE, true  );
-                if ( enabled ) {
-                    FirebaseMessaging.getInstance().subscribeToTopic( "all" );
+        override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
+            if (KEY_FCM_ENABLE == key) {
+                val enabled = mSharedPrefs!!.getBoolean(KEY_FCM_ENABLE, true)
+                if (enabled) {
+                    FirebaseMessaging.getInstance().subscribeToTopic("all")
                 } else {
-                    FirebaseMessaging.getInstance().unsubscribeFromTopic( "all" );
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic("all")
                 }
             }
         }
 
-        private String getThemeDescription( String theme ) {
-            switch ( theme ) {
-                case "SystemDefault":
-                    return "System Default";
-                case "BatterySaver":
-                    return "Set by Battery Saver";
-                default:
-                    return theme+" mode";
+        private fun setupWindowInsetsListener() {
+            ViewCompat.setOnApplyWindowInsetsListener(listView) { v, insets ->
+                val innerPadding = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            or WindowInsetsCompat.Type.displayCutout()
+                )
+                v.setPadding(
+                    innerPadding.left,
+                    0,
+                    innerPadding.right,
+                    innerPadding.bottom)
+                insets
             }
         }
+
+    }
+
+    companion object {
+        const val KEY_HOME_AIRPORT: String = "home_airport"
+        const val KEY_LOCATION_USE_GPS: String = "location_use_gps"
+        const val KEY_LOCATION_NEARBY_RADIUS: String = "location_nearby_radius"
+        const val KEY_SHOW_EXTRA_RUNWAY_DATA: String = "extra_runway_data"
+        const val KEY_AUTO_DOWNLOAD_ON_3G: String = "auto_download_on_3G"
+        const val KEY_DISCLAIMER_AGREED: String = "disclaimer_agreed"
+        const val KEY_SHOW_LOCAL_TIME: String = "show_local_time"
+        const val KEY_HOME_SCREEN: String = "home_screen"
+        const val KEY_ALWAYS_SHOW_NEARBY: String = "always_show_nearby"
+        const val KEY_FCM_ENABLE: String = "fcm_enable"
     }
 }
