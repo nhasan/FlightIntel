@@ -63,14 +63,6 @@ class WxDelegate(private val fragment: RecyclerViewFragment) {
         }
     }
 
-    fun requestMetar(stationId: String, force: Boolean=false) {
-        val activity = fragment.activityBase
-        val cacheOnly = !NetworkUtils.canDownloadData(activity)
-        activity.isRefreshing = force
-
-        MetarService.startService(activity, stationId, force, cacheOnly)
-    }
-
     fun requestMetars(force: Boolean) {
         val activity = fragment.activityBase
         if (stationIds.isEmpty()) {
@@ -94,11 +86,7 @@ class WxDelegate(private val fragment: RecyclerViewFragment) {
     }
 
     fun newListAdapter(cursor: Cursor?): WxRecyclerAdapter? {
-        return if (cursor != null) {
-            WxRecyclerAdapter(cursor, this, ::onRecyclerItemClick)
-        } else {
-            null
-        }
+        return cursor?.let { WxRecyclerAdapter(it, ::onRecyclerItemClick) }
     }
 
     fun onRecyclerItemClick(model: WxListDataModel) {

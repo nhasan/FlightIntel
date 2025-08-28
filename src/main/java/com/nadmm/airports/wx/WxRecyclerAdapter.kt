@@ -3,6 +3,7 @@ package com.nadmm.airports.wx
 import android.annotation.SuppressLint
 import android.database.Cursor
 import android.provider.BaseColumns
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,6 @@ import java.util.Locale
 
 class WxRecyclerAdapter(
     val cursor: Cursor,
-    private val delegate: WxDelegate,
     private val onRecyclerItemClick: (WxListDataModel) -> Unit
 ): RecyclerView.Adapter<WxRecyclerAdapter.ViewHolder>()
 {
@@ -66,11 +66,8 @@ class WxRecyclerAdapter(
         val model = WxListDataModel.fromCursor(cursor)
         holder.bind(model)
         stationIdToPositionMap.put(model.stationId, position)
-        val metar = getMetar(model.stationId)
-        if (metar != null) {
+        getMetar(model.stationId)?.let { metar ->
             showMetarInfo(holder, model, metar)
-        } else {
-            delegate.requestMetar(model.stationId)
         }
     }
 
@@ -85,8 +82,11 @@ class WxRecyclerAdapter(
 
     fun onMetarFetched(metar: Metar) {
         metar.stationId?.let { stationId ->
+            Log.d("WxRecyclerAdapter", "metar fetched for $stationId")
             stationMetars[stationId] = metar
-            notifyItemChanged(stationIdToPositionMap.getValue(stationId))
+            stationIdToPositionMap[stationId]?.let { position ->
+                notifyItemChanged(position)
+            }
         }
     }
 
