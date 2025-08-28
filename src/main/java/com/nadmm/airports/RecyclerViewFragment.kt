@@ -23,12 +23,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nadmm.airports.afd.AirportsRecyclerAdapter
 import com.nadmm.airports.databinding.RecyclerViewLayoutBinding
+import com.nadmm.airports.utils.UiUtils
 
 abstract class RecyclerViewFragment: FragmentBase() {
 
@@ -45,7 +44,7 @@ abstract class RecyclerViewFragment: FragmentBase() {
         _binding = RecyclerViewLayoutBinding.inflate(inflater, container, false)
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        setupWindowInsetsListener()
+        UiUtils.setupWindowInsetsListener(recyclerView)
 
         return binding.root
     }
@@ -75,21 +74,6 @@ abstract class RecyclerViewFragment: FragmentBase() {
         } else {
             binding.empty.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
-        }
-    }
-
-    private fun setupWindowInsetsListener() {
-        ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
-            val innerPadding = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars()
-                        or WindowInsetsCompat.Type.displayCutout()
-            )
-            v.setPadding(
-                innerPadding.left,
-                0,
-                innerPadding.right,
-                innerPadding.bottom)
-            insets
         }
     }
 }

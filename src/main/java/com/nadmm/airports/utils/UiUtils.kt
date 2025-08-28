@@ -22,23 +22,26 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.RotateDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.collection.LruCache
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.nadmm.airports.R
-import java.util.*
+import java.util.Locale
 
 object UiUtils {
     private val sDrawableCache = LruCache<String, Drawable>(100)
@@ -90,10 +93,7 @@ object UiUtils {
         val w = d1.intrinsicWidth
         val h = d1.intrinsicHeight
         val paddingPx = convertDpToPx(context, paddingDp.toFloat())
-        val result = Bitmap.createBitmap(
-            w + if (d2 != null) w + paddingPx else 0, h,
-            Bitmap.Config.ARGB_8888
-        )
+        val result = createBitmap(w + if (d2 != null) w + paddingPx else 0, h)
         val canvas = Canvas(result)
         canvas.density = Bitmap.DENSITY_NONE
         d1.setBounds(0, 0, w - 1, h - 1)
@@ -103,7 +103,7 @@ object UiUtils {
             d2.setBounds(0, 0, w - 1, h - 1)
             d2.draw(canvas)
         }
-        return BitmapDrawable(context.resources, result)
+        return result.toDrawable(context.resources)
     }
 
     @JvmStatic
@@ -120,9 +120,7 @@ object UiUtils {
 
     fun getBitmap(drawable: VectorDrawable): Bitmap {
         drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-        val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight,
-            Bitmap.Config.ARGB_8888
-        )
+        val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
         val canvas = Canvas(bitmap)
         drawable.draw(canvas)
         return bitmap
@@ -256,6 +254,22 @@ object UiUtils {
         val res = typedArray.getResourceId(0, 0)
         typedArray.recycle()
         return res
+    }
+
+
+    fun setupWindowInsetsListener(view: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val innerPadding = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.setPadding(
+                innerPadding.left,
+                0,
+                innerPadding.right,
+                innerPadding.bottom)
+            insets
+        }
     }
 
     init {

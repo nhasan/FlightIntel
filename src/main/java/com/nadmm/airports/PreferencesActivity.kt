@@ -27,14 +27,13 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.Preference.SummaryProvider
 import androidx.preference.PreferenceFragmentCompat
 import com.google.firebase.messaging.FirebaseMessaging
+import com.nadmm.airports.utils.UiUtils
 
 class PreferencesActivity : FragmentActivityBase() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,7 +111,7 @@ class PreferencesActivity : FragmentActivityBase() {
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
-            setupWindowInsetsListener()
+            UiUtils.setupWindowInsetsListener(listView)
         }
 
         override fun onCreatePreferences(bundle: Bundle?, s: String?) {
@@ -148,22 +147,6 @@ class PreferencesActivity : FragmentActivityBase() {
                 }
             }
         }
-
-        private fun setupWindowInsetsListener() {
-            ViewCompat.setOnApplyWindowInsetsListener(listView) { v, insets ->
-                val innerPadding = insets.getInsets(
-                    WindowInsetsCompat.Type.systemBars()
-                            or WindowInsetsCompat.Type.displayCutout()
-                )
-                v.setPadding(
-                    innerPadding.left,
-                    0,
-                    innerPadding.right,
-                    innerPadding.bottom)
-                insets
-            }
-        }
-
     }
 
     companion object {
