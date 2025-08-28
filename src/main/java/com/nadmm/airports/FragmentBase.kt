@@ -129,6 +129,14 @@ abstract class FragmentBase : Fragment(), IRefreshable {
         return activityBase.createContentView(view)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        view.findViewById<ViewGroup>(R.id.main_content)?.let {
+            UiUtils.setupWindowInsetsListener(it)
+        }
+    }
+
     protected fun setContentShown(shown: Boolean) {
         activityBase.setContentShown(shown)
     }
