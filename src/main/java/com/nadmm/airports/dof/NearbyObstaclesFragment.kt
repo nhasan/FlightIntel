@@ -18,21 +18,18 @@
  */
 package com.nadmm.airports.dof
 
-import android.content.Context
 import android.database.Cursor
 import android.os.Bundle
-import android.view.View
-import android.widget.ListView
-import androidx.cursoradapter.widget.CursorAdapter
 import androidx.lifecycle.lifecycleScope
-import com.nadmm.airports.LocationListFragmentBase
+import androidx.recyclerview.widget.RecyclerView
+import com.nadmm.airports.LocationListFragment2
 import com.nadmm.airports.data.DatabaseManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.Locale
 
-class NearbyObstaclesFragment : LocationListFragmentBase() {
+class NearbyObstaclesFragment : LocationListFragment2() {
     private val mRadius = 5
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -51,11 +48,9 @@ class NearbyObstaclesFragment : LocationListFragmentBase() {
         }
     }
 
-    override fun newListAdapter(context: Context?, c: Cursor?): CursorAdapter {
-        return DofCursorAdapter(context, c)
+    override fun newListAdapter(cursor: Cursor?): RecyclerView.Adapter<*>? {
+        return cursor?.let { DofRecyclerAdapter(it) }
     }
-
-    override fun onListItemClick(l: ListView, v: View, position: Int) {}
 
     private fun doQuery(): Array<Cursor> {
         val db = getDatabase(DatabaseManager.DB_DOF)

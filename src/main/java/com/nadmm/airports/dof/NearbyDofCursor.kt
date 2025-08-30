@@ -45,20 +45,20 @@ class NearbyDofCursor(db: SQLiteDatabase?, location: Location, radius: Int) : Ma
         var distance = 0f
 
         fun setFromCursor(c: Cursor, location: Location, declination: Float) {
-            oasCode = c.getString(c.getColumnIndex(DOF.OAS_CODE))
-            verificationStatus = c.getString(c.getColumnIndex(DOF.VERIFICATION_STATUS))
-            obstacleType = c.getString(c.getColumnIndex(DOF.OBSTACLE_TYPE))
-            count = c.getInt(c.getColumnIndex(DOF.COUNT))
-            heightAgl = c.getInt(c.getColumnIndex(DOF.HEIGHT_AGL))
-            heightMsl = c.getInt(c.getColumnIndex(DOF.HEIGHT_MSL))
-            lightingType = c.getString(c.getColumnIndex(DOF.LIGHTING_TYPE))
-            markingType = c.getString(c.getColumnIndex(DOF.MARKING_TYPE))
+            oasCode = c.getString(c.getColumnIndexOrThrow(DOF.OAS_CODE))
+            verificationStatus = c.getString(c.getColumnIndexOrThrow(DOF.VERIFICATION_STATUS))
+            obstacleType = c.getString(c.getColumnIndexOrThrow(DOF.OBSTACLE_TYPE))
+            count = c.getInt(c.getColumnIndexOrThrow(DOF.COUNT))
+            heightAgl = c.getInt(c.getColumnIndexOrThrow(DOF.HEIGHT_AGL))
+            heightMsl = c.getInt(c.getColumnIndexOrThrow(DOF.HEIGHT_MSL))
+            lightingType = c.getString(c.getColumnIndexOrThrow(DOF.LIGHTING_TYPE))
+            markingType = c.getString(c.getColumnIndexOrThrow(DOF.MARKING_TYPE))
             val results = FloatArray(2)
             Location.distanceBetween(
                 location.latitude,
                 location.longitude,
-                c.getDouble(c.getColumnIndex(DOF.LATITUDE_DEGREES)),
-                c.getDouble(c.getColumnIndex(DOF.LONGITUDE_DEGREES)),
+                c.getDouble(c.getColumnIndexOrThrow(DOF.LATITUDE_DEGREES)),
+                c.getDouble(c.getColumnIndexOrThrow(DOF.LONGITUDE_DEGREES)),
                 results
             )
             distance = results[0] / GeoUtils.METERS_PER_NAUTICAL_MILE
@@ -66,9 +66,9 @@ class NearbyDofCursor(db: SQLiteDatabase?, location: Location, radius: Int) : Ma
         }
 
         override fun compareTo(other: DOFData): Int {
-            if (heightMsl > other.heightMsl) {
+            if (distance < other.distance) {
                 return -1
-            } else if (heightMsl < other.heightMsl) {
+            } else if (distance > other.distance) {
                 return 1
             }
             return 0
