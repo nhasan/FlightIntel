@@ -29,11 +29,6 @@ class WxRecyclerAdapter(
         idColumnIndex = cursor.getColumnIndexOrThrow(BaseColumns._ID)
     }
 
-    override fun getItemId(position: Int): Long {
-        cursor.moveToPosition(position)
-        return cursor.getLong(idColumnIndex)
-    }
-
     inner class ViewHolder(val binding: WxListItemBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
@@ -55,9 +50,16 @@ class WxRecyclerAdapter(
         }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
+    override fun getItemId(position: Int): Long {
+        cursor.moveToPosition(position)
+        return cursor.getLong(idColumnIndex)
+    }
+
+    override fun getItemCount() = cursor.count
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = WxListItemBinding.inflate(
-            LayoutInflater.from(viewGroup.context), viewGroup, false)
+            LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
@@ -74,10 +76,6 @@ class WxRecyclerAdapter(
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         cursor.close()
-    }
-
-    override fun getItemCount(): Int {
-        return cursor.count
     }
 
     fun onMetarFetched(metar: Metar) {
