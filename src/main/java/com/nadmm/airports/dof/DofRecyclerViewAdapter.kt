@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nadmm.airports.databinding.DofListItemBinding
 import com.nadmm.airports.utils.FormatUtils
 
-class DofRecyclerAdapter(
+class DofRecyclerViewAdapter(
     val cursor: Cursor
-): RecyclerView.Adapter<DofRecyclerAdapter.ViewHolder>()
+): RecyclerView.Adapter<DofRecyclerViewAdapter.ViewHolder>()
 {
     private val idColumnIndex: Int
 

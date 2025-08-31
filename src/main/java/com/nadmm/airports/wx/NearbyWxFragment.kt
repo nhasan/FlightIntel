@@ -56,7 +56,7 @@ class NearbyWxFragment : LocationListFragment2() {
     }
 
     override fun isRefreshable(): Boolean {
-        val adapter = recyclerView.adapter as? WxRecyclerAdapter
+        val adapter = recyclerView.adapter as? WxRecyclerViewAdapter
         return adapter != null && adapter.itemCount > 0
     }
 

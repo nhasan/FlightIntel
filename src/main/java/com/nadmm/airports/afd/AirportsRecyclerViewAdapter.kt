@@ -27,10 +27,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.nadmm.airports.databinding.AirportListItemBinding
 
-class AirportsRecyclerAdapter(
+class AirportsRecyclerViewAdapter(
     val cursor: Cursor,
     private val onRecyclerItemClick: (AirportListDataModel) -> Unit
-): RecyclerView.Adapter<AirportsRecyclerAdapter.ViewHolder>()
+): RecyclerView.Adapter<AirportsRecyclerViewAdapter.ViewHolder>()
 {
     private val idColumnIndex: Int
 

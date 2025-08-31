@@ -25,7 +25,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.nadmm.airports.afd.AirportsRecyclerAdapter
+import com.nadmm.airports.afd.AirportsRecyclerViewAdapter
 import com.nadmm.airports.databinding.RecyclerViewLayoutBinding
 import com.nadmm.airports.utils.UiUtils
 
@@ -35,7 +35,7 @@ abstract class RecyclerViewFragment: FragmentBase() {
     private val binding get() = _binding!!
     val recyclerView get() = binding.recyclerView
 
-    val adapter get() = recyclerView.adapter as? AirportsRecyclerAdapter
+    val adapter get() = recyclerView.adapter as? AirportsRecyclerViewAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {

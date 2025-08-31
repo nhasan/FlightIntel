@@ -85,8 +85,8 @@ class WxDelegate(private val fragment: RecyclerViewFragment) {
         }
     }
 
-    fun newListAdapter(cursor: Cursor?): WxRecyclerAdapter? {
-        return cursor?.let { WxRecyclerAdapter(it, ::onRecyclerItemClick) }
+    fun newListAdapter(cursor: Cursor?): WxRecyclerViewAdapter? {
+        return cursor?.let { WxRecyclerViewAdapter(it, ::onRecyclerItemClick) }
     }
 
     fun onRecyclerItemClick(model: WxListDataModel) {
@@ -99,7 +99,7 @@ class WxDelegate(private val fragment: RecyclerViewFragment) {
     private inner class WxReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val metar = IntentCompat.getParcelableExtra(intent, NoaaService.RESULT, Metar::class.java) ?: return
-            val adapter = fragment.recyclerView.adapter as? WxRecyclerAdapter ?: return
+            val adapter = fragment.recyclerView.adapter as? WxRecyclerViewAdapter ?: return
             adapter.onMetarFetched(metar)
             fragment.isRefreshing = false
         }

@@ -49,7 +49,7 @@ class NearbyObstaclesFragment : LocationListFragment2() {
     }
 
     override fun newListAdapter(cursor: Cursor?): RecyclerView.Adapter<*>? {
-        return cursor?.let { DofRecyclerAdapter(it) }
+        return cursor?.let { DofRecyclerViewAdapter(it) }
     }
 
     private fun doQuery(): Array<Cursor> {

@@ -49,9 +49,9 @@ class FavoriteAirportsFragment : RecyclerViewFragment() {
         setEmptyText("No favorite airports selected.")
     }
 
-    override fun newListAdapter(cursor: Cursor?): AirportsRecyclerAdapter? {
+    override fun newListAdapter(cursor: Cursor?): AirportsRecyclerViewAdapter? {
         return if (cursor != null) {
-            AirportsRecyclerAdapter(cursor, ::onRecyclerItemClick)
+            AirportsRecyclerViewAdapter(cursor, ::onRecyclerItemClick)
         } else {
             null
         }

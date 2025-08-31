@@ -15,10 +15,10 @@ import com.nadmm.airports.utils.WxUtils.getCeiling
 import com.nadmm.airports.utils.WxUtils.setColorizedWxDrawable
 import java.util.Locale
 
-class WxRecyclerAdapter(
+class WxRecyclerViewAdapter(
     val cursor: Cursor,
     private val onRecyclerItemClick: (WxListDataModel) -> Unit
-): RecyclerView.Adapter<WxRecyclerAdapter.ViewHolder>()
+): RecyclerView.Adapter<WxRecyclerViewAdapter.ViewHolder>()
 {
     private val idColumnIndex: Int
     private val stationIdToPositionMap: MutableMap<String, Int> = mutableMapOf()
@@ -80,7 +80,7 @@ class WxRecyclerAdapter(
 
     fun onMetarFetched(metar: Metar) {
         metar.stationId?.let { stationId ->
-            Log.d("WxRecyclerAdapter", "metar fetched for $stationId")
+            Log.d("WxRecyclerViewAdapter", "metar fetched for $stationId")
             stationMetars[stationId] = metar
             stationIdToPositionMap[stationId]?.let { position ->
                 notifyItemChanged(position)
