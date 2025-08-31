@@ -22,13 +22,13 @@ import android.database.Cursor
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.nadmm.airports.LocationListFragment2
+import com.nadmm.airports.LocationListFragmentBase
 import com.nadmm.airports.data.DatabaseManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class NearbyWxFragment : LocationListFragment2() {
+class NearbyWxFragment : LocationListFragmentBase() {
     private var mDelegate: WxDelegate? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

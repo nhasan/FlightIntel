@@ -22,14 +22,14 @@ import android.database.Cursor
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.nadmm.airports.LocationListFragment2
+import com.nadmm.airports.LocationListFragmentBase
 import com.nadmm.airports.data.DatabaseManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
-class NearbyObstaclesFragment : LocationListFragment2() {
+class NearbyObstaclesFragment : LocationListFragmentBase() {
     private val mRadius = 5
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

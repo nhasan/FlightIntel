@@ -31,12 +31,19 @@ import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.os.BundleCompat
 import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.material.snackbar.Snackbar
 import com.nadmm.airports.data.DatabaseManager.LocationColumns
+import com.nadmm.airports.utils.GeoUtils
 
-abstract class LocationListFragmentBase : ListFragmentBase() {
+abstract class LocationListFragmentBase : RecyclerViewFragment() {
 
     protected var isLocationUpdateEnabled = false
         private set
@@ -56,7 +63,11 @@ abstract class LocationListFragmentBase : ListFragmentBase() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lastLocation = arguments?.getParcelable(LocationColumns.LOCATION)
+        lastLocation = BundleCompat.getParcelable(
+            requireArguments(),
+            LocationColumns.LOCATION,
+            Location::class.java
+        )
 
         isLocationUpdateEnabled = lastLocation == null
 
@@ -117,16 +128,7 @@ abstract class LocationListFragmentBase : ListFragmentBase() {
 
     private fun setupFusedLocationProvider() {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-
-        mLocationRequest = LocationRequest.create().apply {
-            interval = 9000
-            fastestInterval = 5000
-            priority = if (activityBase.prefUseGps)
-                Priority.PRIORITY_HIGH_ACCURACY
-            else
-                Priority.PRIORITY_BALANCED_POWER_ACCURACY
-        }
-
+        mLocationRequest = GeoUtils.buildLocationRequest(5_000, activityBase.prefUseGps)
         mLocationCallback = object : LocationCallback() {
             override fun onLocationResult(p0: LocationResult) {
                 updateLocation(p0.locations.lastOrNull())
@@ -170,7 +172,7 @@ abstract class LocationListFragmentBase : ListFragmentBase() {
                         mLocationCallback, Looper.getMainLooper()
                     )
                     mRequestingLocationUpdates = true
-                } catch (e: SecurityException) {
+                } catch (_: SecurityException) {
                     // Ignore exception
                 }
             }
@@ -209,7 +211,7 @@ abstract class LocationListFragmentBase : ListFragmentBase() {
     }
 
     private fun showSnackbar(text: String, listener: View.OnClickListener) {
-        listView?.apply {
+        view?.apply {
             Snackbar.make(this, text, Snackbar.LENGTH_INDEFINITE)
                 .setAction(android.R.string.ok, listener)
                 .show()

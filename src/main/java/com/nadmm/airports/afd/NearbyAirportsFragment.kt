@@ -23,14 +23,14 @@ import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
-import com.nadmm.airports.LocationListFragment2
+import com.nadmm.airports.LocationListFragmentBase
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class NearbyAirportsFragment : LocationListFragment2() {
+class NearbyAirportsFragment : LocationListFragmentBase() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
