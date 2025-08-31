@@ -264,9 +264,9 @@ object UiUtils {
                         or WindowInsetsCompat.Type.displayCutout()
             )
             v.setPadding(
-                innerPadding.left,
+                innerPadding.left+view.paddingLeft,
                 0,
-                innerPadding.right,
+                innerPadding.right+view.paddingRight,
                 innerPadding.bottom)
             insets
         }
