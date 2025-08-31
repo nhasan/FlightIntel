@@ -54,7 +54,8 @@ class AfdMainActivity : TabPagerActivityBase() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setActionBarSubtitle("Airports")
+        setActionBarTitle("Airports")
+        setActionBarSubtitle("")
 
         val args = Bundle()
         for (i in mTabTitles.indices) {
