@@ -21,6 +21,8 @@ package com.nadmm.airports.utils
 
 import android.hardware.GeomagneticField
 import android.location.Location
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.Priority
 import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -151,6 +153,17 @@ object GeoUtils {
 
     fun applyDeclination(direction: Int, declination: Float): Int {
         return ((direction + declination + 360).roundToInt() % 360)
+    }
+
+    fun buildLocationRequest(interval: Long, useGPS: Boolean): LocationRequest {
+        val priority = if (useGPS)
+            Priority.PRIORITY_HIGH_ACCURACY
+        else
+            Priority.PRIORITY_BALANCED_POWER_ACCURACY
+        return LocationRequest.Builder(priority, interval)
+            .setMinUpdateIntervalMillis(interval / 2)
+            .setMaxUpdateDelayMillis(interval * 2)
+            .build()
     }
 
     fun isBetterLocation(location: Location, currentBestLocation: Location?): Boolean {

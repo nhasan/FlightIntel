@@ -42,6 +42,7 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.material.snackbar.Snackbar
 import com.nadmm.airports.data.DatabaseManager.LocationColumns
+import com.nadmm.airports.utils.GeoUtils
 
 abstract class LocationListFragment2 : RecyclerViewFragment() {
 
@@ -128,16 +129,7 @@ abstract class LocationListFragment2 : RecyclerViewFragment() {
 
     private fun setupFusedLocationProvider() {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-
-        mLocationRequest = LocationRequest.create().apply {
-            interval = 9000
-            fastestInterval = 5000
-            priority = if (activityBase.prefUseGps)
-                Priority.PRIORITY_HIGH_ACCURACY
-            else
-                Priority.PRIORITY_BALANCED_POWER_ACCURACY
-        }
-
+        mLocationRequest = GeoUtils.buildLocationRequest(5_000, activityBase.prefUseGps)
         mLocationCallback = object : LocationCallback() {
             override fun onLocationResult(p0: LocationResult) {
                 updateLocation(p0.locations.lastOrNull())
