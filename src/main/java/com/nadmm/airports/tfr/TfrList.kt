@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,57 +24,36 @@ import com.nadmm.airports.utils.FormatUtils.formatFeetAgl
 import com.nadmm.airports.utils.FormatUtils.formatFeetMsl
 import com.nadmm.airports.utils.TimeUtils
 import java.io.Serializable
-import java.util.*
+import java.util.Date
 
 class TfrList : Serializable {
     var isValid = false
-    @JvmField
     var fetchTime: Long = Long.MAX_VALUE
-
-    @JvmField
     var entries: ArrayList<Tfr> = ArrayList()
 
-    enum class AltitudeType {
-        AGL {
-            override fun toString(): String {
-                return "AGL"
-            }
-        },
-        MSL {
-            override fun toString(): String {
-                return "MSL"
-            }
-        },
-        Unknown {
-            override fun toString(): String {
-                return "???"
-            }
-        }
+    enum class AltitudeType(val description: String) {
+        AGL("AGL"),
+        MSL("MSL"),
+        Unknown("???");
+
+        override fun toString() = description
     }
 
     class Tfr : Serializable, Comparable<Tfr> {
-        @JvmField
         var notamId: String? = null
-        @JvmField
         var name: String? = null
         var city: String? = null
         var state: String? = null
-        @JvmField
         var facility: String? = null
-        @JvmField
         var facilityType: String? = null
-        @JvmField
         var type: String? = null
-        @JvmField
         var text: String? = null
         var minAltitudeFeet: Int = Int.MAX_VALUE
         var minAltitudeType: AltitudeType = AltitudeType.Unknown
         var maxAltitudeFeet: Int = Int.MAX_VALUE
         var maxAltitudeType: AltitudeType = AltitudeType.Unknown
         var location: Location? = null
-        @JvmField
         var createTime: Long = Long.MAX_VALUE
-        @JvmField
         var modifyTime: Long = Long.MAX_VALUE
         var activeTime: Long = Long.MAX_VALUE
         var expireTime: Long = Long.MAX_VALUE
@@ -166,15 +145,5 @@ class TfrList : Serializable {
         override fun compareTo(other: Tfr): Int {
             return other.modifyTime.compareTo(modifyTime)
         }
-
-        companion object {
-            private const val serialVersionUID = 1L
-        }
-
     }
-
-    companion object {
-        private const val serialVersionUID = 1L
-    }
-
 }

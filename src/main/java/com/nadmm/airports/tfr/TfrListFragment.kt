@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  */
 package com.nadmm.airports.tfr
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -26,55 +27,42 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
-import android.widget.AbsListView
-import android.widget.ListView
-import android.widget.TextView
+import androidx.core.content.IntentCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.nadmm.airports.ListFragmentBase
-import com.nadmm.airports.R
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.nadmm.airports.FragmentBase
+import com.nadmm.airports.databinding.RecyclerViewLayoutBinding
 import com.nadmm.airports.tfr.TfrList.Tfr
-import com.nadmm.airports.utils.TimeUtils
-import java.util.*
+import com.nadmm.airports.utils.UiUtils
 
-class TfrListFragment : ListFragmentBase() {
-    private var mReceiver: BroadcastReceiver? = null
-    private var mFilter: IntentFilter? = null
+class TfrListFragment : FragmentBase() {
+
+    private val mReceiver: BroadcastReceiver
+    private val mFilter: IntentFilter
+    private var _binding: RecyclerViewLayoutBinding? = null
+    private val binding get() = _binding!!
+    val recyclerView get() = binding.recyclerView
+
+    init {
+        mReceiver = TfrReceiver()
+        mFilter = IntentFilter()
+        mFilter.addAction(TfrService.ACTION_GET_TFR_LIST)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        mReceiver = TfrReceiver()
-        mFilter = IntentFilter()
-        mFilter!!.addAction(TfrService.ACTION_GET_TFR_LIST)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = super.onCreateView(inflater, container, savedInstanceState)
-        val listView = listView!!
-        val footer = inflater.inflate(R.layout.tfr_list_footer_view, listView, false)
-        footer.layoutParams = AbsListView.LayoutParams(
-            LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        val tv = footer.findViewById<TextView>(R.id.tfr_warning_text)
-        tv.text = ("Depicted TFR data may not be a complete listing. Pilots should not use "
-                + "the information for flight planning purposes. For the latest information, "
-                + "call your local Flight Service Station at 1-800-WX-BRIEF.")
-        listView.addFooterView(footer, null, false)
-        listView.setFooterDividersEnabled(true)
-        return view
     }
 
     override fun onResume() {
-        val bm = LocalBroadcastManager.getInstance(activity!!)
-        bm.registerReceiver(mReceiver!!, mFilter!!)
+        val bm = LocalBroadcastManager.getInstance(requireActivity())
+        bm.registerReceiver(mReceiver, mFilter)
         super.onResume()
     }
 
     override fun onPause() {
-        val bm = LocalBroadcastManager.getInstance(activity!!)
-        bm.unregisterReceiver(mReceiver!!)
+        val bm = LocalBroadcastManager.getInstance(requireActivity())
+        bm.unregisterReceiver(mReceiver)
         super.onPause()
     }
 
@@ -85,6 +73,24 @@ class TfrListFragment : ListFragmentBase() {
         requestTfrList(false)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        recyclerView.adapter = null
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
+
+        _binding = RecyclerViewLayoutBinding.inflate(inflater, container, false)
+
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        UiUtils.setupWindowInsetsListener(recyclerView)
+
+        return binding.root
+    }
+
     override fun isRefreshable(): Boolean {
         return true
     }
@@ -93,14 +99,10 @@ class TfrListFragment : ListFragmentBase() {
         requestTfrList(true)
     }
 
-    override fun onListItemClick(l: ListView, v: View, position: Int) {
-        val adapter = listView!!.adapter
-        val tfr = adapter.getItem(position) as Tfr?
-        if (tfr != null) {
-            val activity = Intent(activity, TfrDetailActivity::class.java)
-            activity.putExtra(TfrListActivity.EXTRA_TFR, tfr)
-            startActivity(activity)
-        }
+    fun onRecyclerItemClick(tfr: Tfr) {
+        val activity = Intent(activity, TfrDetailActivity::class.java)
+        activity.putExtra(TfrListActivity.EXTRA_TFR, tfr)
+        startActivity(activity)
     }
 
     private fun requestTfrList(force: Boolean) {
@@ -110,22 +112,45 @@ class TfrListFragment : ListFragmentBase() {
         requireActivity().startService(service)
     }
 
+    @SuppressLint("SetTextI18n")
+    private fun setEmptyText() {
+        binding.empty.text = "No TFRs found"
+    }
+
+    private fun setListShown(show: Boolean) {
+        if (show) {
+            binding.empty.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
+        } else {
+            binding.empty.visibility = View.VISIBLE
+            binding.recyclerView.visibility = View.GONE
+        }
+    }
+
     private inner class TfrReceiver : BroadcastReceiver() {
+        @SuppressLint("SetTextI18n")
         override fun onReceive(context: Context, intent: Intent) {
-            val tfrList = intent.getSerializableExtra(TfrService.TFR_LIST) as TfrList?
-            val count = tfrList!!.entries.size
+            val tfrList = IntentCompat.getSerializableExtra(
+                intent,
+                TfrService.TFR_LIST,
+                TfrList::class.java
+            ) ?: return
+
+            tfrList.entries.removeIf { it.isExpired }
+            val count = tfrList.entries.size
             if (count > 0) {
-                val tv = findViewById<TextView>(R.id.tfr_fetch_time)
-                tv!!.text = "Fetched " + TimeUtils.formatElapsedTime(
-                    tfrList.fetchTime
-                )
-                setActionBarSubtitle(String.format(Locale.US, "%d TFRs found", count))
+                setActionBarSubtitle("$count TFRs found")
+                setListShown(true)
             } else {
-                setEmptyText("Unable to fetch TFR list. Please try again later")
+                setEmptyText()
                 setActionBarSubtitle("")
+                setListShown(false)
             }
-            val adapter = TfrListAdapter(activityBase, tfrList)
-            setAdapter(adapter)
+            val adapter = TfrRecyclerViewAdapter(
+                activityBase,
+                tfrList.entries,
+                ::onRecyclerItemClick)
+            recyclerView.adapter = adapter
             isRefreshing = false
         }
     }
