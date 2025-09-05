@@ -35,6 +35,7 @@ dependencies {
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation ("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
     implementation ("androidx.drawerlayout:drawerlayout:1.2.0")
+    implementation ("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
     implementation ("com.google.android.gms:play-services-location:21.3.0")
     implementation ("com.google.firebase:firebase-messaging-ktx:24.1.2")
     implementation ("androidx.core:core-ktx:1.17.0")
