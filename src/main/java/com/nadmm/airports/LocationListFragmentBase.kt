@@ -147,8 +147,7 @@ abstract class LocationListFragmentBase : RecyclerViewFragment() {
                         startLocationUpdates()
                     } else -> {
                         mPermissionDenied = true
-                        setEmptyText("Unable to show nearby facilities.\n"
-                                + "FlightIntel needs location permission.")
+                        setEmptyText(message)
                         setListShown(false)
                         setFragmentContentShown(true)
                     }
@@ -186,8 +185,7 @@ abstract class LocationListFragmentBase : RecyclerViewFragment() {
 
     private fun resolvePermission(func: () -> Unit) {
         mPermissionDenied = true
-        setEmptyText("Unable to show nearby facilities.\n"
-                + "FlightIntel needs location permission.")
+        setEmptyText(message)
         setListShown(false)
         setFragmentContentShown(true)
         showSnackbar(
@@ -235,4 +233,9 @@ abstract class LocationListFragmentBase : RecyclerViewFragment() {
 
     protected abstract fun startLocationTask()
 
+    companion object {
+        const val message = "Unable to show nearby facilities.\n" +
+                "FlightIntel needs location permission.\n" +
+                "Your location remains private and is not shared with anyone."
+    }
 }
