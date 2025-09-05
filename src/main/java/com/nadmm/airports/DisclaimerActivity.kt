@@ -25,11 +25,17 @@ import android.view.View
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
+import com.nadmm.airports.utils.UiUtils
+import androidx.core.content.edit
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 
 class DisclaimerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.disclaimer_view)
+        val root = findViewById<View>(R.id.root)
+        setupWindowInsetsListener(root)
         val webView = findViewById<WebView>(R.id.disclaimer_content)
         webView.loadUrl("file:///android_asset/disclaimer.html")
         val btnAgree = findViewById<Button>(R.id.btn_agree)
@@ -46,10 +52,25 @@ class DisclaimerActivity : AppCompatActivity() {
         }
     }
 
+    fun setupWindowInsetsListener(view: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            val innerPadding = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.setPadding(
+                innerPadding.left,
+                innerPadding.top,
+                innerPadding.right,
+                innerPadding.bottom)
+            insets
+        }
+    }
+
     private fun markDisclaimerAgreed(agreed: Boolean) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        val editor = prefs.edit()
-        editor.putBoolean(PreferencesActivity.KEY_DISCLAIMER_AGREED, agreed)
-        editor.apply()
+        prefs.edit {
+            putBoolean(PreferencesActivity.KEY_DISCLAIMER_AGREED, agreed)
+        }
     }
 }
