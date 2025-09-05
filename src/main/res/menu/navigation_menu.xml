@@ -32,6 +32,7 @@
               android:icon="@drawable/ic_outline_cell_tower_24"
               android:title="@string/title_navdrawer_dof" />
         <item android:id="@+id/navdrawer_tfr"
+              android:visible="false"
               android:icon="@drawable/ic_outline_report_24"
               android:title="@string/title_navdrawer_tfr" />
         <item android:id="@+id/navdrawer_library"
