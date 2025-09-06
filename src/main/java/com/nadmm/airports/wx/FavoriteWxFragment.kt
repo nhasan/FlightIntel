@@ -20,7 +20,10 @@ package com.nadmm.airports.wx
 
 import android.database.Cursor
 import android.os.Bundle
+import android.view.View
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.nadmm.airports.RecyclerViewFragment
 import com.nadmm.airports.data.DatabaseManager
@@ -41,8 +44,6 @@ class FavoriteWxFragment : RecyclerViewFragment() {
     override fun onResume() {
         super.onResume()
 
-        mDelegate.onResume()
-
         viewLifecycleOwner.lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
                 doQuery()
@@ -51,16 +52,20 @@ class FavoriteWxFragment : RecyclerViewFragment() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        mDelegate.onPause()
-    }
+        setEmptyText("No wx stations found nearby.")
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        setEmptyText("No favorite wx stations selected.")
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                MetarService.Events.events.collect { metar ->
+                    val adapter = recyclerView.adapter as? WxRecyclerViewAdapter
+                    adapter?.onMetarFetched(metar)
+                    isRefreshing = false
+                }
+            }
+        }
     }
 
     override fun requestDataRefresh() {

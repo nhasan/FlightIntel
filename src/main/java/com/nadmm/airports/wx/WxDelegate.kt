@@ -18,36 +18,21 @@
  */
 package com.nadmm.airports.wx
 
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.database.Cursor
 import android.os.Bundle
 import android.util.Log
-import androidx.core.content.IntentCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nadmm.airports.RecyclerViewFragment
 import com.nadmm.airports.data.DatabaseManager.Wxs
 import com.nadmm.airports.utils.NetworkUtils
 
 class WxDelegate(private val fragment: RecyclerViewFragment) {
     private val stationIds = ArrayList<String>()
-    private val broadcastReceiver = WxReceiver()
     private val metarServiceFilter = IntentFilter()
 
     init {
         metarServiceFilter.addAction(NoaaService.ACTION_GET_METAR)
-    }
-
-    fun onPause() {
-        val bm = LocalBroadcastManager.getInstance(fragment.requireContext())
-        bm.unregisterReceiver(broadcastReceiver)
-    }
-
-    fun onResume() {
-        val bm = LocalBroadcastManager.getInstance(fragment.requireContext())
-        bm.registerReceiver(broadcastReceiver, metarServiceFilter)
     }
 
     fun setCursor(c: Cursor) {
@@ -94,14 +79,5 @@ class WxDelegate(private val fragment: RecyclerViewFragment) {
             putExtras(Bundle().apply { putString(NoaaService.STATION_ID, model.stationId) })
         }
         fragment.startActivity(intent)
-    }
-
-    private inner class WxReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val metar = IntentCompat.getParcelableExtra(intent, NoaaService.RESULT, Metar::class.java) ?: return
-            val adapter = fragment.recyclerView.adapter as? WxRecyclerViewAdapter ?: return
-            adapter.onMetarFetched(metar)
-            fragment.isRefreshing = false
-        }
     }
 }

@@ -19,7 +19,6 @@
 package com.nadmm.airports.wx
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteQueryBuilder
 import android.location.Location
@@ -28,9 +27,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.core.content.IntentCompat
 import androidx.core.view.isNotEmpty
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
 import com.nadmm.airports.data.DatabaseManager.Awos1
@@ -74,6 +74,17 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
         return createContentView(binding.root)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                MetarService.Events.events.collect { metar ->
+                    showMetar(metar)
+                }
+            }
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -83,18 +94,6 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
         super.onResume()
 
         fetchMetar()
-    }
-
-    override fun handleBroadcast(intent: Intent) {
-        if (location == null) {
-            // This was probably intended for wx list view
-            return
-        }
-        val type = intent.getStringExtra(NoaaService.TYPE)
-        if (NoaaService.TYPE_TEXT == type) {
-            showMetar(intent)
-            isRefreshing = false
-        }
     }
 
     override fun isRefreshable() = true
@@ -203,8 +202,7 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showMetar(intent: Intent) {
-        val metar = IntentCompat.getParcelableExtra(intent, NoaaService.RESULT, Metar::class.java) ?: return
+    private fun showMetar(metar: Metar) {
         binding.apply {
             wxStatusLayout.removeAllViews()
             if (!metar.isValid) {

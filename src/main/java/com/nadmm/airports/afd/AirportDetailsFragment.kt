@@ -34,9 +34,10 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.core.content.IntentCompat
 import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.PreferencesActivity
@@ -45,13 +46,45 @@ import com.nadmm.airports.aeronav.AeroNavService
 import com.nadmm.airports.aeronav.ClassBService
 import com.nadmm.airports.aeronav.DafdService
 import com.nadmm.airports.aeronav.DtppActivity
-import com.nadmm.airports.data.DatabaseManager.*
+import com.nadmm.airports.data.DatabaseManager.Aff3
+import com.nadmm.airports.data.DatabaseManager.Airports
+import com.nadmm.airports.data.DatabaseManager.Attendance
+import com.nadmm.airports.data.DatabaseManager.Awos1
+import com.nadmm.airports.data.DatabaseManager.DB_DAFD
+import com.nadmm.airports.data.DatabaseManager.DB_DTPP
+import com.nadmm.airports.data.DatabaseManager.DB_FADDS
+import com.nadmm.airports.data.DatabaseManager.Dafd
+import com.nadmm.airports.data.DatabaseManager.DafdCycle
+import com.nadmm.airports.data.DatabaseManager.Dtpp
+import com.nadmm.airports.data.DatabaseManager.LocationColumns
+import com.nadmm.airports.data.DatabaseManager.Remarks
+import com.nadmm.airports.data.DatabaseManager.Runways
+import com.nadmm.airports.data.DatabaseManager.Tower1
+import com.nadmm.airports.data.DatabaseManager.Tower3
+import com.nadmm.airports.data.DatabaseManager.Tower5
+import com.nadmm.airports.data.DatabaseManager.Tower6
+import com.nadmm.airports.data.DatabaseManager.Tower7
+import com.nadmm.airports.data.DatabaseManager.Tower8
+import com.nadmm.airports.data.DatabaseManager.Wxs
 import com.nadmm.airports.databinding.AirportDetailViewBinding
 import com.nadmm.airports.dof.NearbyObstaclesFragment
 import com.nadmm.airports.notams.AirportNotamActivity
 import com.nadmm.airports.tfr.TfrListActivity
-import com.nadmm.airports.utils.*
-import com.nadmm.airports.wx.*
+import com.nadmm.airports.utils.ClassBUtils
+import com.nadmm.airports.utils.DataUtils
+import com.nadmm.airports.utils.FormatUtils
+import com.nadmm.airports.utils.GeoUtils
+import com.nadmm.airports.utils.NetworkUtils
+import com.nadmm.airports.utils.SystemUtils
+import com.nadmm.airports.utils.TimeUtils
+import com.nadmm.airports.utils.UiUtils
+import com.nadmm.airports.utils.WxUtils
+import com.nadmm.airports.wx.Metar
+import com.nadmm.airports.wx.MetarService
+import com.nadmm.airports.wx.NearbyWxActivity
+import com.nadmm.airports.wx.NearbyWxCursor
+import com.nadmm.airports.wx.NoaaService
+import com.nadmm.airports.wx.WxDetailActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -113,6 +146,17 @@ class AirportDetailsFragment : FragmentBase() {
                 }
                 showDetails(result)
             }
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    MetarService.Events.events.collect { metar ->
+                        if (metar.isValid) {
+                            showWxInfo(metar)
+                            isRefreshing = false
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -149,14 +193,6 @@ class AirportDetailsFragment : FragmentBase() {
 
     private fun handleBroadcast(intent: Intent) {
         when (intent.action) {
-            NoaaService.ACTION_GET_METAR -> {
-                IntentCompat.getParcelableExtra(intent, NoaaService.RESULT, Metar::class.java)?.let { metar ->
-                    if (metar.isValid) {
-                        showWxInfo(metar)
-                        isRefreshing = false
-                    }
-                }
-            }
             AeroNavService.ACTION_GET_AFD -> {
                 intent.getStringExtra(AeroNavService.PDF_PATH)?.let { path ->
                     SystemUtils.startPDFViewer(activity, path)

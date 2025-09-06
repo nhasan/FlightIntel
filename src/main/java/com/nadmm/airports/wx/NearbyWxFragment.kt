@@ -20,7 +20,10 @@ package com.nadmm.airports.wx
 
 import android.database.Cursor
 import android.os.Bundle
+import android.view.View
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.nadmm.airports.LocationListFragmentBase
 import com.nadmm.airports.data.DatabaseManager
@@ -37,22 +40,20 @@ class NearbyWxFragment : LocationListFragmentBase() {
         mDelegate = WxDelegate(this)
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        mDelegate?.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        mDelegate?.onPause()
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setEmptyText("No wx stations found nearby.")
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                MetarService.Events.events.collect { metar ->
+                    val adapter = recyclerView.adapter as? WxRecyclerViewAdapter
+                    adapter?.onMetarFetched(metar)
+                    isRefreshing = false
+                }
+            }
+        }
     }
 
     override fun isRefreshable(): Boolean {

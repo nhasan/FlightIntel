@@ -23,6 +23,8 @@ import android.content.Intent
 import android.text.format.DateUtils
 import android.util.Log
 import com.nadmm.airports.utils.UiUtils.showToast
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -45,7 +47,7 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
         return START_NOT_STICKY
     }
 
-    private fun getMetarText(intent: Intent) {
+    private suspend fun getMetarText(intent: Intent) {
         // Get request parameters
         val stationIds = intent.getStringArrayListExtra(STATION_IDS) ?: return
 
@@ -84,8 +86,8 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
         // Now read the METAR objects from the cache
         if (action == ACTION_GET_METAR) {
             for (stationId in stationIds) {
-                val metar = wxCache.deserializeObject<Metar>(stationId) ?: Metar()
-                sendParcelableResultIntent(action, stationId, metar)
+                val metar = wxCache.deserializeObject<Metar>(stationId) ?: Metar(stationId = stationId)
+                Events.post(metar)
             }
         }
     }
@@ -96,6 +98,15 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
             parser.parse(xmlFile, stationIds).forEach { metar ->
                 wxCache.serializeObject(metar, metar.stationId!!)
             }
+        }
+    }
+
+    object Events {
+        private val _events = MutableSharedFlow<Metar>()
+        val events = _events.asSharedFlow()
+
+        suspend fun post(metar: Metar) {
+            _events.emit(metar)
         }
     }
 
