@@ -123,14 +123,14 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-            <TextView android:id="@+id/detail_notam_faa_label"
+            <TextView android:id="@+id/detail_airport_info_label"
                     style="@style/TextLabel"
                     android:paddingBottom="@dimen/label_padding"
                     android:layout_marginTop="@dimen/section_margin"
-                    android:text="@string/notam_tfr"
+                    android:text="@string/airport_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-            <LinearLayout android:id="@+id/detail_notam_faa_layout"
+            <LinearLayout android:id="@+id/detail_airport_info_layout"
                     style="@style/DetailPanel"
                     android:orientation="vertical"
                     android:layout_width="match_parent"

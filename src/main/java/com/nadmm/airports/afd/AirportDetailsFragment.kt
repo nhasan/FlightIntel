@@ -63,9 +63,9 @@ import com.nadmm.airports.data.DatabaseManager.Tower7
 import com.nadmm.airports.data.DatabaseManager.Tower8
 import com.nadmm.airports.data.DatabaseManager.Wxs
 import com.nadmm.airports.databinding.AirportDetailViewBinding
+import com.nadmm.airports.datis.DatisFragment
 import com.nadmm.airports.dof.NearbyObstaclesFragment
 import com.nadmm.airports.notams.AirportNotamActivity
-import com.nadmm.airports.tfr.TfrListActivity
 import com.nadmm.airports.utils.ClassBUtils
 import com.nadmm.airports.utils.DataUtils
 import com.nadmm.airports.utils.FormatUtils
@@ -198,7 +198,7 @@ class AirportDetailsFragment : FragmentBase() {
         showAwosDetails(result)
         showHomeDistance(result)
         showNearbyFacilities()
-        showNotamAndTfr()
+        showAirportInfo()
         showCharts(result)
         showOperationsDetails(result)
         showAeroNavDetails(result)
@@ -446,13 +446,14 @@ class AirportDetailsFragment : FragmentBase() {
         addClickableRow(layout, "Obstacles", NearbyObstaclesFragment::class.java, arguments)
     }
 
-    private fun showNotamAndTfr() {
-        val layout = findViewById<LinearLayout>(R.id.detail_notam_faa_layout) ?: return
-        var intent = Intent(activity, AirportNotamActivity::class.java)
+    private fun showAirportInfo() {
+        val layout = findViewById<LinearLayout>(R.id.detail_airport_info_layout) ?: return
+        val intent = Intent(activity, AirportNotamActivity::class.java)
         intent.putExtra(Airports.SITE_NUMBER, mSiteNumber)
         addClickableRow(layout, "View NOTAMs", intent)
-        intent = Intent(activity, TfrListActivity::class.java)
-        addClickableRow(layout, "View TFRs", intent)
+        if (mIcaoCode.isNotBlank() && DataUtils.isDatisAvailable(mIcaoCode)) {
+            addClickableRow(layout, "View D-ATIS", DatisFragment::class.java, arguments)
+        }
     }
 
     private fun showCharts(result: Array<Cursor?>) {

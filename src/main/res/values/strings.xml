@@ -116,7 +116,7 @@
     <string name="view_graphic">View Graphic</string>
     <string name="charts_download">Charts Download</string>
     <string name="tfr_list">TFR List</string>
-    <string name="notam_tfr">NOTAM &amp; TFR</string>
+    <string name="airport_info">Airport Info</string>
     <string name="tfr_text">TFR Text</string>
     <string name="tfr_details">TFR Details</string>
     <string name="tfrs">TFRs</string>

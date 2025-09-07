@@ -41,7 +41,6 @@ import com.nadmm.airports.data.DatabaseManager.Tower4
 import com.nadmm.airports.data.DatabaseManager.Tower6
 import com.nadmm.airports.data.DatabaseManager.Tower7
 import com.nadmm.airports.data.DatabaseManager.Tower9
-import com.nadmm.airports.datis.DatisFragment
 import com.nadmm.airports.utils.DataUtils
 import com.nadmm.airports.utils.FormatUtils
 import kotlinx.coroutines.Dispatchers
@@ -76,7 +75,7 @@ class CommunicationsFragment : FragmentBase() {
         showAirportFrequencies(result)
         showAtcHours(result)
         showAtcPhones(result)
-        showAirportPhones(apt);
+        showAirportPhones(apt)
         showFssServices(apt)
         showRemarks(result)
         setFragmentContentShown(true)
@@ -89,10 +88,6 @@ class CommunicationsFragment : FragmentBase() {
         var apchRadioCall = ""
         var depRadioCall = ""
         val map: MutableMap<String, ArrayList<Pair<String, String>>> = TreeMap()
-        val icaoCode = apt.getString(apt.getColumnIndexOrThrow(Airports.ICAO_CODE))
-        if (!icaoCode.isNullOrBlank() && DataUtils.isDatisAvailable(icaoCode)) {
-            addClickableRow(layout, "View D-ATIS", DatisFragment::class.java, arguments)
-        }
         val ctaf = apt.getString(apt.getColumnIndexOrThrow(Airports.CTAF_FREQ))
         if (ctaf.isNotEmpty()) {
             addFrequencyToMap(map, "CTAF", ctaf, "")
@@ -106,12 +101,12 @@ class CommunicationsFragment : FragmentBase() {
             towerRadioCall = twr1.getString(twr1.getColumnIndexOrThrow(Tower1.RADIO_CALL_TOWER))
             apchRadioCall = try {
                 twr1.getString(twr1.getColumnIndexOrThrow(Tower1.RADIO_CALL_APCH_PRIMARY))
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 twr1.getString(twr1.getColumnIndexOrThrow(Tower1.RADIO_CALL_APCH))
             }
             depRadioCall = try {
                 twr1.getString(twr1.getColumnIndexOrThrow(Tower1.RADIO_CALL_DEP_PRIMARY))
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 twr1.getString(twr1.getColumnIndexOrThrow(Tower1.RADIO_CALL_DEP))
             }
         }
@@ -149,7 +144,7 @@ class CommunicationsFragment : FragmentBase() {
         if (map.isNotEmpty()) {
             val tv = findViewById<TextView>(R.id.airport_comm_label)
             tv!!.visibility = View.VISIBLE
-            layout!!.visibility = View.VISIBLE
+            layout.visibility = View.VISIBLE
             var lastKey: String? = null
             for (key in map.keys) {
                 for (pair in map[key]!!) {
