@@ -22,6 +22,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.os.ResultReceiver
 import com.nadmm.airports.ActivityBase
@@ -51,26 +52,23 @@ object NetworkUtils {
 
     @JvmStatic
     fun isNetworkAvailable(context: Context): Boolean {
-        return isNetworkAvailable(context, true)
-    }
-
-    private fun isNetworkAvailable(context: Context, showMsg: Boolean): Boolean {
-        val connMan = context.getSystemService(
+        val cm = context.getSystemService(
             Context.CONNECTIVITY_SERVICE
         ) as ConnectivityManager
-        val network = connMan.activeNetworkInfo
-        if (showMsg && (network == null || !network.isConnected)) {
+        val hasInternet = cm.getNetworkCapabilities(cm.activeNetwork)
+            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        if (!hasInternet) {
             showToast(context, "Please check your internet connection")
-            return false
         }
-        return true
+        return hasInternet
     }
 
     private fun isConnectedToMeteredNetwork(context: Context): Boolean {
         val cm = context.getSystemService(
             Context.CONNECTIVITY_SERVICE
         ) as ConnectivityManager
-        return cm.isActiveNetworkMetered
+        return cm.getNetworkCapabilities(cm.activeNetwork)
+            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED) == false
     }
 
     @JvmStatic
