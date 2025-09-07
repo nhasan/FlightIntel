@@ -20,10 +20,7 @@
 package com.nadmm.airports.afd
 
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.database.Cursor
 import android.database.sqlite.SQLiteQueryBuilder
 import android.location.Location
@@ -38,7 +35,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.PreferencesActivity
 import com.nadmm.airports.R
@@ -86,6 +82,7 @@ import com.nadmm.airports.wx.NearbyWxCursor
 import com.nadmm.airports.wx.NoaaService
 import com.nadmm.airports.wx.WxDetailActivity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -97,8 +94,6 @@ import kotlin.math.roundToInt
 class AirportDetailsFragment : FragmentBase() {
     private val mAwosViews = HashSet<LinearLayout>()
     private val mRunwayViews = HashSet<TextView>()
-    private val mBcastReceiver: BroadcastReceiver
-    private val mBcastFilter: IntentFilter = IntentFilter()
     private lateinit var mLocation: Location
     private var mDeclination: Float = 0.toFloat()
     private lateinit var mIcaoCode: String
@@ -109,20 +104,6 @@ class AirportDetailsFragment : FragmentBase() {
 
     private var _binding: AirportDetailViewBinding? = null
     private val binding get() = _binding!!
-
-    init {
-        mBcastFilter.run {
-            addAction(NoaaService.ACTION_GET_METAR)
-            addAction(AeroNavService.ACTION_GET_AFD)
-            addAction(ClassBService.ACTION_GET_CLASSB_GRAPHIC)
-        }
-        mBcastReceiver = object : BroadcastReceiver() {
-
-            override fun onReceive(context: Context, intent: Intent) {
-                handleBroadcast(intent)
-            }
-        }
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -157,6 +138,24 @@ class AirportDetailsFragment : FragmentBase() {
                     }
                 }
             }
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    DafdService.Events.events.filter { it.isNotEmpty() }.collect { path ->
+                        SystemUtils.startPDFViewer(activity, path)
+                    }
+                }
+            }
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    ClassBService.Events.events.filter { it.isNotEmpty() }.collect { path ->
+                        if (path.isNotEmpty()) {
+                            SystemUtils.startPDFViewer(activity, path)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -165,45 +164,12 @@ class AirportDetailsFragment : FragmentBase() {
         mAwosViews.clear()
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        activity?.let {
-            val bm = LocalBroadcastManager.getInstance(it)
-            bm.registerReceiver(mBcastReceiver, mBcastFilter)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        activity?.let {
-            val bm = LocalBroadcastManager.getInstance(it)
-            bm.unregisterReceiver(mBcastReceiver)
-        }
-    }
-
     override fun isRefreshable(): Boolean {
         return true
     }
 
     override fun requestDataRefresh() {
         requestMetars(true)
-    }
-
-    private fun handleBroadcast(intent: Intent) {
-        when (intent.action) {
-            AeroNavService.ACTION_GET_AFD -> {
-                intent.getStringExtra(AeroNavService.PDF_PATH)?.let { path ->
-                    SystemUtils.startPDFViewer(activity, path)
-                }
-            }
-            ClassBService.ACTION_GET_CLASSB_GRAPHIC -> {
-                intent.getStringExtra(ClassBService.PDF_PATH)?.let { path ->
-                    SystemUtils.startPDFViewer(activity, path)
-                }
-            }
-        }
     }
 
     private fun getAfdPage(afdCycle: String, pdfName: String) {
@@ -514,22 +480,24 @@ class AirportDetailsFragment : FragmentBase() {
             addRow(layout, "Sectional chart", sectional)
         }
 
-        val classb = result[15]
-        if (classb != null && classb.moveToFirst()) {
-            val seen = HashSet<String>()
-            do {
-                val faaCode = classb.getString(classb.getColumnIndexOrThrow(Airports.FAA_CODE))
-                val classBName = ClassBUtils.getClassBName(faaCode)
-                if (!seen.contains(classBName)) {
-                    val row = addClickableRow(layout, "$classBName Class B airspace", "")
-                    row.tag = faaCode
-                    row.setOnClickListener { v ->
-                        val faaCode1 = v.tag as String
-                        getClassBGraphic(faaCode1)
+        result[15]?.let { classb ->
+            if (classb.moveToFirst()) {
+                val seen = HashSet<String>()
+                do {
+                    val faaCode = classb.getString(classb.getColumnIndexOrThrow(Airports.FAA_CODE))
+                    ClassBUtils.getClassBName(faaCode)?.let { classBName ->
+                        if (!seen.contains(classBName)) {
+                            val row = addClickableRow(layout, "$classBName Class B airspace", "")
+                            row.tag = faaCode
+                            row.setOnClickListener { v ->
+                                val faaCode1 = v.tag as String
+                                getClassBGraphic(faaCode1)
+                            }
+                            seen.add(classBName)
+                        }
                     }
-                    seen.add(classBName)
-                }
-            } while (classb.moveToNext())
+                } while (classb.moveToNext())
+            }
         }
     }
 
@@ -631,33 +599,38 @@ class AirportDetailsFragment : FragmentBase() {
         val layout = findViewById<LinearLayout>(R.id.detail_aeronav_layout) ?: return
         val apt = result[0] ?: return
         val siteNumber = apt.getString(apt.getColumnIndexOrThrow(Airports.SITE_NUMBER))
-        val cycle = result[12]
-        if (cycle != null && cycle.moveToFirst()) {
-            val afdCycle = cycle.getString(cycle.getColumnIndexOrThrow(DafdCycle.AFD_CYCLE))
-            val dafd = result[13]
-            if (dafd != null && dafd.moveToFirst()) {
-                val pdfName = dafd.getString(dafd.getColumnIndexOrThrow(Dafd.PDF_NAME))
-                val row = addClickableRow(layout, "d-CS page", "")
-                row.setTag(R.id.DAFD_CYCLE, afdCycle)
-                row.setTag(R.id.DAFD_PDF_NAME, pdfName)
-                row.setOnClickListener { v ->
-                    val afdCycle1 = v.getTag(R.id.DAFD_CYCLE) as String
-                    val pdfName1 = v.getTag(R.id.DAFD_PDF_NAME) as String
-                    getAfdPage(afdCycle1, pdfName1)
+
+        result[12]?.let { cycle ->
+            if (cycle.moveToFirst()) {
+                val afdCycle = cycle.getString(cycle.getColumnIndexOrThrow(DafdCycle.AFD_CYCLE))
+                result[13]?.let { dafd ->
+                    if (dafd.moveToFirst()) {
+                        val pdfName = dafd.getString(dafd.getColumnIndexOrThrow(Dafd.PDF_NAME))
+                        val row = addClickableRow(layout, "d-CS page", "")
+                        row.setTag(R.id.DAFD_CYCLE, afdCycle)
+                        row.setTag(R.id.DAFD_PDF_NAME, pdfName)
+                        row.setOnClickListener { v ->
+                            val afdCycle1 = v.getTag(R.id.DAFD_CYCLE) as String
+                            val pdfName1 = v.getTag(R.id.DAFD_PDF_NAME) as String
+                            getAfdPage(afdCycle1, pdfName1)
+                        }
+                    } else {
+                        addRow(layout, "d-CS page is not available for this airport")
+                    }
                 }
             } else {
-                addRow(layout, "d-CS page is not available for this airport")
+                addRow(layout, "d-CS data not found")
             }
-        } else {
-            addRow(layout, "d-CS data not found")
         }
-        val dtpp: Cursor? = result[11]
-        if (dtpp != null && dtpp.moveToFirst()) {
-            val intent = Intent(activity, DtppActivity::class.java)
-            intent.putExtra(Airports.SITE_NUMBER, siteNumber)
-            addClickableRow(layout, "Instrument procedures", intent)
-        } else {
-            addRow(layout, "No instrument procedures available")
+
+        result[11]?.let { dtpp ->
+            if (dtpp.moveToFirst()) {
+                val intent = Intent(activity, DtppActivity::class.java)
+                intent.putExtra(Airports.SITE_NUMBER, siteNumber)
+                addClickableRow(layout, "Instrument procedures", intent)
+            } else {
+                addRow(layout, "No instrument procedures available")
+            }
         }
     }
 
@@ -1048,7 +1021,7 @@ class AirportDetailsFragment : FragmentBase() {
         }
 
         // Get nearby Class B airports
-        val selection = " AND ${Airports.FAA_CODE} IN (${ClassBUtils.getClassBFacilityList()})"
+        val selection = " AND ${Airports.FAA_CODE} IN (${ClassBUtils.classBFacilityList})"
         cursors[15] = NearbyAirportsCursor(db, mLocation, 50, selection)
 
         builder.tables = Tower5.TABLE_NAME

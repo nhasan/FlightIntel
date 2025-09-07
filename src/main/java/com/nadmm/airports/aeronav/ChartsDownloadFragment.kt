@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,8 @@
 package com.nadmm.airports.aeronav
 
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.DialogInterface
+import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteQueryBuilder
 import android.os.Bundle
@@ -31,8 +32,10 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isNotEmpty
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.lifecycle.repeatOnLifecycle
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
@@ -47,14 +50,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class ChartsDownloadFragment : FragmentBase() {
     private var mTppCycle: String? = null
     private var mTppVolume: String? = null
     private var mCursor: Cursor? = null
-    private lateinit var mFilter: IntentFilter
-    private lateinit var mReceiver: BroadcastReceiver
     private var mSelectedRow: View? = null
     private var mProgressBar: ProgressBar? = null
     private lateinit var mOnClickListener: View.OnClickListener
@@ -64,21 +67,7 @@ class ChartsDownloadFragment : FragmentBase() {
     private val mVolumeRowMap = HashMap<String?, View>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mFilter = IntentFilter()
-        mFilter.addAction(AeroNavService.ACTION_GET_CHARTS)
-        mFilter.addAction(AeroNavService.ACTION_CHECK_CHARTS)
-        mFilter.addAction(AeroNavService.ACTION_COUNT_CHARTS)
-        mReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                intent.action?.let { action ->
-                    when (action) {
-                        AeroNavService.ACTION_GET_CHARTS -> onChartDownload()
-                        AeroNavService.ACTION_CHECK_CHARTS -> onChartDelete()
-                        AeroNavService.ACTION_COUNT_CHARTS -> onChartCount(intent)
-                    }
-                }
-            }
-        }
+
         mOnClickListener = View.OnClickListener { v: View ->
             if (mSelectedRow == null) {
                 mStop = false
@@ -116,23 +105,24 @@ class ChartsDownloadFragment : FragmentBase() {
             }
             showChartInfo(result)
         }
-    }
 
-    override fun onResume() {
-        activity?.let { activity ->
-            val bm = LocalBroadcastManager.getInstance(activity)
-            bm.registerReceiver(mReceiver, mFilter)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                DtppService.Events.events.collect { result ->
+                    when (result.action) {
+                        AeroNavService.ACTION_GET_CHARTS -> onChartDownload()
+                        AeroNavService.ACTION_CHECK_CHARTS -> onChartDelete()
+                        AeroNavService.ACTION_COUNT_CHARTS -> onChartCount(result)
+                    }
+                }
+            }
         }
-        super.onResume()
     }
 
     override fun onPause() {
-        activity?.let { activity ->
-            val bm = LocalBroadcastManager.getInstance(activity)
-            bm.unregisterReceiver(mReceiver)
-            finishOperation()
-        }
         super.onPause()
+
+        finishOperation()
     }
 
     private fun confirmStartDownload(v: View) {
@@ -237,16 +227,16 @@ class ChartsDownloadFragment : FragmentBase() {
     @SuppressLint("SetTextI18n")
     private fun showChartInfo(result: Array<Cursor>) {
         result[0].forEach { c ->
-            mTppCycle = c.getString(c.getColumnIndex(DtppCycle.TPP_CYCLE))
+            mTppCycle = c.getString(c.getColumnIndexOrThrow(DtppCycle.TPP_CYCLE))
             supportActionBar?.let { actionbar ->
                 actionbar.subtitle = String.format("AeroNav Cycle %s", mTppCycle)
             }
-            val expiry = c.getString(c.getColumnIndex(DtppCycle.TO_DATE))
+            val expiry = c.getString(c.getColumnIndexOrThrow(DtppCycle.TO_DATE))
             val df = SimpleDateFormat("HHmm'Z' MM/dd/yy", Locale.US)
             df.timeZone = TimeZone.getTimeZone("UTC")
             val endDate: Date = try {
                 df.parse(expiry) ?: Date()
-            } catch (ignored: ParseException) {
+            } catch (_: ParseException) {
                 Date()
             }
 
@@ -310,8 +300,8 @@ class ChartsDownloadFragment : FragmentBase() {
 
         findViewById<LinearLayout>(R.id.vol_chart_details)?.let { layout ->
             result[1].forEach { c ->
-                val tppVolume = c.getString(c.getColumnIndex(Dtpp.TPP_VOLUME))
-                val total = c.getInt(c.getColumnIndex("total"))
+                val tppVolume = c.getString(c.getColumnIndexOrThrow(Dtpp.TPP_VOLUME))
+                val total = c.getInt(c.getColumnIndexOrThrow("total"))
                 addTppVolumeRow(layout, tppVolume, total)
             }
         }
@@ -356,7 +346,7 @@ class ChartsDownloadFragment : FragmentBase() {
 
     private fun nextChart() {
         activity?.let { activity ->
-            val pdfName = mCursor!!.getString(mCursor!!.getColumnIndex(Dtpp.PDF_NAME))
+            val pdfName = mCursor!!.getString(mCursor!!.getColumnIndexOrThrow(Dtpp.PDF_NAME))
             val pdfNames = ArrayList<String>()
             pdfNames.add(pdfName)
             val service = Intent(activity, DtppService::class.java)
@@ -405,7 +395,7 @@ class ChartsDownloadFragment : FragmentBase() {
 
     private fun deleteNextChart() {
         activity?.let { activity ->
-            val pdfName = mCursor!!.getString(mCursor!!.getColumnIndex(Dtpp.PDF_NAME))
+            val pdfName = mCursor!!.getString(mCursor!!.getColumnIndexOrThrow(Dtpp.PDF_NAME))
             val pdfNames = ArrayList<String>()
             pdfNames.add(pdfName)
             val service = Intent(activity, DtppService::class.java)
@@ -441,7 +431,7 @@ class ChartsDownloadFragment : FragmentBase() {
     }
 
     private fun addTppVolumeRow(layout: LinearLayout, tppVolume: String, total: Int) {
-        if (layout.childCount > 0) {
+        if (layout.isNotEmpty()) {
             addSeparator(layout)
         }
         val row = inflate<RelativeLayout>(R.layout.list_item_with_progressbar)
@@ -461,18 +451,16 @@ class ChartsDownloadFragment : FragmentBase() {
         getChartCount(mTppCycle, tppVolume)
     }
 
-    private fun onChartCount(intent: Intent) {
-        val tppVolume = intent.getStringExtra(AeroNavService.TPP_VOLUME)
-        val avail = intent.getIntExtra(AeroNavService.PDF_COUNT, 0)
-        val row = mVolumeRowMap[tppVolume]
+    private fun onChartCount(result: DtppService.Result) {
+        val row = mVolumeRowMap[result.volume]
         if (row != null) {
             activity?.let {
                 row.setOnClickListener(mOnClickListener)
                 val background = UiUtils.getSelectableItemBackgroundResource(it)
                 row.setBackgroundResource(background)
-                row.setTag(R.id.DTPP_CHART_AVAIL, avail)
+                row.setTag(R.id.DTPP_CHART_AVAIL, result.count)
                 val total = row.getTag(R.id.DTPP_CHART_TOTAL) as Int
-                showStatus(row, avail, total)
+                showStatus(row, result.count, total)
             }
         }
     }
