@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,18 +19,27 @@
 package com.nadmm.airports.library
 
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.database.sqlite.SQLiteQueryBuilder
 import android.os.Bundle
 import android.text.format.Formatter
-import android.view.*
+import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
-import android.widget.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.RelativeLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.core.view.isNotEmpty
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
@@ -42,11 +51,9 @@ import com.nadmm.airports.utils.forEach
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
 
 class LibraryPageFragment : FragmentBase() {
     private var mIsOk = false
-    private lateinit var mReceiver: BroadcastReceiver
     private lateinit var mCategory: String
     private var mOnClickListener: View.OnClickListener? = null
     private var mContextMenuRow: View? = null
@@ -61,17 +68,8 @@ class LibraryPageFragment : FragmentBase() {
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        mCategory = arguments?.getString(Library.CATEGORY_CODE).toString()
-        mReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                val action = intent.action ?: ""
-                if (action == LibraryService.ACTION_DOWNLOAD_PROGRESS) {
-                    handleProgress(intent)
-                } else {
-                    handleBook(intent)
-                }
-            }
-        }
+        mCategory = arguments?.getString(Library.CATEGORY_CODE)
+            ?: throw IllegalArgumentException("Category code is required")
         mOnClickListener = View.OnClickListener { v: View ->
             val activity = requireActivity() as LibraryActivity
             if (!activity.isPending) {
@@ -99,18 +97,6 @@ class LibraryPageFragment : FragmentBase() {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onResume() {
-        val activity = requireActivity() as LibraryActivity
-        activity.registerReceiver(mCategory, mReceiver)
-        super.onResume()
-    }
-
-    override fun onPause() {
-        val activity = requireActivity() as LibraryActivity
-        activity.unregisterReceiver(mCategory)
-        super.onPause()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -127,6 +113,19 @@ class LibraryPageFragment : FragmentBase() {
                 doQuery(mCategory)
             }
             showBooks(result)
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                LibraryService.Events.events.collect { result ->
+                    val action = result.getString(LibraryService.ACTION) ?: ""
+                    if (action == LibraryService.ACTION_DOWNLOAD_PROGRESS) {
+                        handleProgress(result)
+                    } else {
+                        handleBook(result)
+                    }
+                }
+            }
         }
     }
 
@@ -217,7 +216,7 @@ class LibraryPageFragment : FragmentBase() {
         layout: LinearLayout, name: String, desc: String, edition: String,
         author: String, flag: String?, size: Long
     ) {
-        if (layout.childCount > 0) {
+        if (layout.isNotEmpty()) {
             addSeparator(layout)
         }
         val row = inflate<RelativeLayout>(R.layout.library_row_item)
@@ -246,10 +245,10 @@ class LibraryPageFragment : FragmentBase() {
         )
     }
 
-    private fun handleBook(intent: Intent) {
-        val pdfName = intent.getStringExtra(LibraryService.BOOK_NAME)
+    private fun handleBook(result: Bundle) {
+        val pdfName = result.getString(LibraryService.BOOK_NAME)
         mBookRowMap[pdfName]?.let {
-            val path = intent.getStringExtra(LibraryService.PDF_PATH)
+            val path = result.getString(LibraryService.PDF_PATH)
             showStatus(it, path != null)
             it.setTag(R.id.LIBRARY_PDF_PATH, path)
             if (path != null) {
@@ -257,26 +256,28 @@ class LibraryPageFragment : FragmentBase() {
             } else {
                 unregisterForContextMenu(it)
             }
-            // Hide the progressbar
-            val progressBar = it.findViewById<ProgressBar>(R.id.progress)
-            progressBar.visibility = View.GONE
+            val action = result.getString(LibraryService.ACTION)
+            if (action == LibraryService.ACTION_GET_BOOK) {
+                SystemUtils.startPDFViewer(activity, path)
+            }
         }
     }
 
-    private fun handleProgress(intent: Intent) {
-        val name = intent.getStringExtra(NetworkUtils.CONTENT_NAME)
+    private fun handleProgress(result: Bundle) {
+        val name = result.getString(NetworkUtils.CONTENT_NAME)
         mBookRowMap[name]?.let {
             val progressBar = it.findViewById<ProgressBar>(R.id.progress)
-            val length = intent.getLongExtra(NetworkUtils.CONTENT_LENGTH, 0)
-            if (!progressBar.isShown) {
-                progressBar.visibility = View.VISIBLE
+            val length = result.getInt(NetworkUtils.CONTENT_LENGTH, 0)
+            progressBar.isIndeterminate = (length == 0)
+            if (progressBar.max != length) {
+                progressBar.max = length
             }
-            progressBar.isIndeterminate = (length == 0L)
-            if (progressBar.max.toLong() != length) {
-                progressBar.max = length.toInt()
+            val progress = result.getInt(NetworkUtils.CONTENT_PROGRESS, 0)
+            progressBar.progress = progress
+            if (progress == length) {
+                progressBar.visibility = View.GONE
+                (activity as LibraryActivity).isPending = false
             }
-            val progress = intent.getLongExtra(NetworkUtils.CONTENT_PROGRESS, 0)
-            progressBar.progress = progress.toInt()
         }
     }
 

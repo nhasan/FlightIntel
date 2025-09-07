@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,16 @@ import android.content.DialogInterface
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.ResultReceiver
-import androidx.core.net.ConnectivityManagerCompat
 import com.nadmm.airports.ActivityBase
 import com.nadmm.airports.Application
 import com.nadmm.airports.utils.UiUtils.showToast
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.FilterInputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.lang.reflect.Constructor
 import java.net.HttpURLConnection
 import java.net.URI
@@ -65,7 +70,7 @@ object NetworkUtils {
         val cm = context.getSystemService(
             Context.CONNECTIVITY_SERVICE
         ) as ConnectivityManager
-        return ConnectivityManagerCompat.isActiveNetworkMetered(cm)
+        return cm.isActiveNetworkMetered
     }
 
     @JvmStatic
@@ -203,7 +208,114 @@ object NetworkUtils {
             try {
                 f?.close()
                 out?.close()
-            } catch (ignored: IOException) {
+            } catch (_: IOException) {
+            }
+        }
+        return true
+    }
+
+    @JvmStatic
+    fun doHttpsGet1(
+        context: Context,
+        host: String,
+        path: String,
+        query: String?,
+        file: File?,
+        filter: Class<out FilterInputStream?>? = null,
+        progress: ((Bundle) -> Unit)? = null,
+        result: Bundle? = null
+    ): Boolean {
+        val uri = URI("https", null, host, 443, path, query, null)
+        return doHttpGet1(context, uri.toURL(), file, filter, progress, result)
+    }
+
+    @JvmStatic
+    fun doHttpGet1(
+        context: Context,
+        url: URL,
+        file: File?,
+        filter: Class<out FilterInputStream?>?,
+        progress: ((Bundle) -> Unit)?,
+        result: Bundle? = null
+    ): Boolean {
+        if (!isNetworkAvailable(context)) {
+            return false
+        }
+        if (progress != null && result == null) {
+            throw Exception("Result cannot be null when progress callback is passed")
+        }
+
+        var f: InputStream? = null
+        val `in`: CountingInputStream
+        var out: OutputStream? = null
+        try {
+            val hostnameVerifier =
+                HostnameVerifier { _: String?, _: SSLSession? -> true }
+            val conn = url.openConnection() as HttpURLConnection
+            if (conn is HttpsURLConnection) {
+                conn.hostnameVerifier = hostnameVerifier
+            }
+            if (!url.host.contains("faa.gov")) {
+                // Do not override for FAA websites
+                conn.setRequestProperty(
+                    "User-Agent", String.format(
+                        "FlightIntel/%s (Android; nhasan@nadmm.com)",
+                        Application.version
+                    )
+                )
+            }
+            val status = conn.responseCode
+            if (status != HttpURLConnection.HTTP_OK) {
+                progress?.let { progress ->
+                    result?.apply {
+                        putInt(CONTENT_LENGTH, 0)
+                        putInt(CONTENT_PROGRESS, 0)
+                        progress(this)
+                    }
+                }
+                throw Exception(conn.responseMessage)
+            }
+            val length = conn.contentLength
+            result?.putInt(CONTENT_LENGTH, length)
+            out = FileOutputStream(file)
+            `in` = CountingInputStream(conn.inputStream)
+            f = if (filter != null) {
+                val ctor = filter.getConstructor(
+                    InputStream::class.java
+                ) as Constructor<FilterInputStream?>
+                ctor.newInstance(`in`)
+            } else {
+                `in`
+            }
+            val chunk = max(length / 50, sBuffer.size)
+            var last = 0
+            var count = 0
+            while (f!!.read(sBuffer).also { count = it } != -1) {
+                out.write(sBuffer, 0, count)
+                progress?.let { progress ->
+                    val current = `in`.byteCount
+                    val delta = current - last
+                    if (delta >= chunk) {
+                        result?.apply {
+                            putInt(CONTENT_PROGRESS, current)
+                            progress(this)
+                        }
+                        last = current
+                    }
+                }
+            }
+            progress?.let { progress ->
+                // If compressed, the filter stream may not read the entire source stream
+                result?.apply {
+                    putInt(CONTENT_PROGRESS, length)
+                    progress(this)
+                }
+            }
+        } finally {
+            try {
+                f?.close()
+                out?.close()
+            } catch (_: IOException) {
             }
         }
         return true
