@@ -18,53 +18,39 @@
  */
 package com.nadmm.airports.wx
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.core.os.BundleCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.textfield.TextInputLayout
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.utils.UiUtils
+import kotlinx.coroutines.launch
 
 abstract class WxFragmentBase(protected val action: String) : FragmentBase() {
-
-    private val filter: IntentFilter = IntentFilter().apply { addAction(action) }
-    private var broadcastReceiver: BroadcastReceiver = makeBroadcastReceiver()
-
-    private fun makeBroadcastReceiver(): BroadcastReceiver {
-        // Create a BroadcastReceiver that will handle the broadcast intents
-        return object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent) {
-                if (filter.matchAction(intent.action)) {
-                    handleBroadcast(intent)
-                }
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        val bm = LocalBroadcastManager.getInstance(requireActivity())
-        bm.registerReceiver(broadcastReceiver, filter)
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-        val bm = LocalBroadcastManager.getInstance(requireActivity())
-        bm.unregisterReceiver(broadcastReceiver)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                NoaaService.Events.events.collect { result ->
+                    val resultAction = result.getString(NoaaService.ACTION)
+                    if (resultAction == action) {
+                        processResult(result)
+                    }
+                }
+            }
+        }
     }
 
     protected fun addWxRow(layout: LinearLayout, label: String, code: String?): View {
@@ -84,6 +70,12 @@ abstract class WxFragmentBase(protected val action: String) : FragmentBase() {
         return textView?.getText().toString()
     }
 
-    protected open fun handleBroadcast(intent: Intent) {
+    protected open fun processResult(result: Bundle) {
     }
+
+    protected fun <T> getResultObject(result: Bundle, clazz: Class<T>): T {
+        return BundleCompat.getParcelable(result, NoaaService.RESULT, clazz)
+            ?: clazz.getDeclaredConstructor().newInstance()
+    }
+
 }

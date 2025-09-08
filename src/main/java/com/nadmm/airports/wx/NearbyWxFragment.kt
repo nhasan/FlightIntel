@@ -21,6 +21,7 @@ package com.nadmm.airports.wx
 import android.database.Cursor
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.BundleCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -47,10 +48,15 @@ class NearbyWxFragment : LocationListFragmentBase() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                MetarService.Events.events.collect { metar ->
-                    val adapter = recyclerView.adapter as? WxRecyclerViewAdapter
-                    adapter?.onMetarFetched(metar)
-                    isRefreshing = false
+                NoaaService.Events.events.collect { result ->
+                    val resultAction = result.getString(NoaaService.ACTION)
+                    if (resultAction == NoaaService.ACTION_GET_METAR) {
+                        val metar = BundleCompat.getParcelable(result, NoaaService.RESULT, Metar::class.java)
+                            ?: Metar()
+                        val adapter = recyclerView.adapter as? WxRecyclerViewAdapter
+                        adapter?.onMetarFetched(metar)
+                        isRefreshing = false
+                    }
                 }
             }
         }

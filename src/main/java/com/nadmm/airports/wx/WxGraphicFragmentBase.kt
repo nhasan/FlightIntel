@@ -122,15 +122,15 @@ abstract class WxGraphicFragmentBase(
         activity?.startService(service)
     }
 
-    override fun handleBroadcast(intent: Intent) {
-        val type = intent.getStringExtra(NoaaService.TYPE)
+    override fun processResult(result: Bundle) {
+        val type = result.getString(NoaaService.TYPE)
         if (type == NoaaService.TYPE_GRAPHIC) {
-            val path = intent.getStringExtra(NoaaService.RESULT)
+            val path = result.getString(NoaaService.RESULT)
             if (!path.isNullOrEmpty()) {
                 val view = Intent(activity, ImageViewActivity::class.java)
                 view.putExtra(ImageViewActivity.IMAGE_PATH, path)
                 view.putExtra(ImageViewActivity.IMAGE_TITLE, title.ifEmpty { activity?.title })
-                intent.getStringExtra(NoaaService.IMAGE_CODE)?.let { code ->
+                result.getString(NoaaService.IMAGE_CODE)?.let { code ->
                     wxGraphics[code]?.let { name ->
                         view.putExtra(ImageViewActivity.IMAGE_SUBTITLE, name)
                     }

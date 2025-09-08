@@ -32,6 +32,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.net.toUri
+import androidx.core.os.BundleCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -130,9 +131,14 @@ class AirportDetailsFragment : FragmentBase() {
 
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    MetarService.Events.events.collect { metar ->
-                        if (metar.isValid) {
-                            showWxInfo(metar)
+                    NoaaService.Events.events.collect { result ->
+                        val resultAction = result.getString(NoaaService.ACTION)
+                        if (resultAction == NoaaService.ACTION_GET_METAR) {
+                            val metar = BundleCompat.getParcelable(result, NoaaService.RESULT, Metar::class.java)
+                                ?: Metar()
+                            if (metar.isValid) {
+                                showWxInfo(metar)
+                            }
                             isRefreshing = false
                         }
                     }

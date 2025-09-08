@@ -22,6 +22,7 @@ import android.content.Context
 import android.content.Intent
 import android.text.format.DateUtils
 import android.util.Log
+import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
@@ -45,7 +46,7 @@ class TafService : NoaaService("taf", TAF_CACHE_MAX_AGE) {
         return START_NOT_STICKY
     }
 
-    private fun getTafText(intent: Intent) {
+    private suspend fun getTafText(intent: Intent) {
         // Get request parameters
         val stationId = intent.getStringExtra(STATION_ID) ?: return
         val forceRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
@@ -77,7 +78,12 @@ class TafService : NoaaService("taf", TAF_CACHE_MAX_AGE) {
         }
 
         val taf = wxCache.deserializeObject<Taf>(stationId) ?: Taf()
-        sendParcelableResultIntent(intent.action, stationId, taf)
+        val result = bundleOf(
+            ACTION to ACTION_GET_TAF,
+            TYPE to TYPE_TEXT,
+            RESULT to taf
+        )
+        Events.post(result)
     }
 
     companion object {

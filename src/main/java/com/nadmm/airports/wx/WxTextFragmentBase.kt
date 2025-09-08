@@ -95,15 +95,17 @@ abstract class WxTextFragmentBase(
         selectedRow = null
     }
 
-    override fun handleBroadcast(intent: Intent) {
-        val path = intent.getStringExtra(NoaaService.RESULT)
+    override fun processResult(result: Bundle) {
+        val path = result.getString(NoaaService.RESULT)
         if (!path.isNullOrEmpty()) {
             val item = ListItemText1Binding.bind(selectedRow!!)
             val label = item.text.text.toString()
             val viewer = Intent(activity, TextFileViewActivity::class.java)
-            viewer.putExtra(TextFileViewActivity.FILE_PATH, path)
-            viewer.putExtra(TextFileViewActivity.TITLE_TEXT, title)
-            viewer.putExtra(TextFileViewActivity.LABEL_TEXT, label)
+                .apply {
+                    putExtra(TextFileViewActivity.FILE_PATH, path)
+                    putExtra(TextFileViewActivity.TITLE_TEXT, title)
+                    putExtra(TextFileViewActivity.LABEL_TEXT, label)
+                }
             activity?.startActivity(viewer)
         }
         setSpinnerVisible(false)

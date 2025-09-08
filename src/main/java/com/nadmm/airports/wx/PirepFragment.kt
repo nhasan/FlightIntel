@@ -19,7 +19,6 @@
 package com.nadmm.airports.wx
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteQueryBuilder
 import android.location.Location
@@ -28,7 +27,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.core.content.IntentCompat
 import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
@@ -68,10 +66,11 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
         fetchPirep()
     }
 
-    override fun handleBroadcast(intent: Intent) {
-        val type = intent.getStringExtra(NoaaService.TYPE)
+    override fun processResult(result: Bundle) {
+        val type = result.getString(NoaaService.TYPE)
         if (NoaaService.TYPE_TEXT == type) {
-            showPirep(intent)
+            val pirep = getResultObject(result, Pirep::class.java)
+            showPirep(pirep)
             isRefreshing = false
         }
     }
@@ -157,8 +156,7 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showPirep(intent: Intent) {
-        val pirep = IntentCompat.getParcelableExtra(intent, NoaaService.RESULT, Pirep::class.java) ?: return
+    private fun showPirep(pirep: Pirep) {
 
         binding.apply {
             val layout = binding.pirepEntriesLayout

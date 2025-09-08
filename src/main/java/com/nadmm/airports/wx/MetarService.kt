@@ -22,9 +22,8 @@ import android.content.Context
 import android.content.Intent
 import android.text.format.DateUtils
 import android.util.Log
+import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -87,7 +86,12 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
         if (action == ACTION_GET_METAR) {
             for (stationId in stationIds) {
                 val metar = wxCache.deserializeObject<Metar>(stationId) ?: Metar(stationId = stationId)
-                Events.post(metar)
+                val result = bundleOf(
+                    ACTION to action,
+                    TYPE to TYPE_TEXT,
+                    RESULT to metar
+                )
+                Events.post(result)
             }
         }
     }
@@ -98,15 +102,6 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
             parser.parse(xmlFile, stationIds).forEach { metar ->
                 wxCache.serializeObject(metar, metar.stationId!!)
             }
-        }
-    }
-
-    object Events {
-        private val _events = MutableSharedFlow<Metar>()
-        val events = _events.asSharedFlow()
-
-        suspend fun post(metar: Metar) {
-            _events.emit(metar)
         }
     }
 

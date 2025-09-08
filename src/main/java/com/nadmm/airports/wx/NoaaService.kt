@@ -20,15 +20,16 @@ package com.nadmm.airports.wx
 
 import android.app.Service
 import android.content.Intent
+import android.os.Bundle
 import android.os.IBinder
-import android.os.Parcelable
 import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.util.Log
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.nadmm.airports.utils.NetworkUtils.doHttpsGet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import java.io.File
 import java.util.zip.GZIPInputStream
 
@@ -75,44 +76,13 @@ abstract class NoaaService(protected val serviceName: String, protected val maxA
         )
     }
 
-    protected fun sendParcelableResultIntent(
-        action: String?, stationId: String?,
-        result: Parcelable?
-    ) {
-        val intent = makeResultIntent(action, TYPE_TEXT)
-        intent.putExtra(STATION_ID, stationId)
-        intent.putExtra(RESULT, result)
-        sendResultIntent(intent)
-    }
+    object Events {
+        private val _events = MutableSharedFlow<Bundle>()
+        val events = _events.asSharedFlow()
 
-    protected fun sendImageResultIntent(action: String?, code: String?, result: File) {
-        val intent = makeResultIntent(action, TYPE_GRAPHIC)
-        intent.putExtra(IMAGE_CODE, code)
-        if (result.exists()) {
-            intent.putExtra(RESULT, result.absolutePath)
+        suspend fun post(result: Bundle) {
+            _events.emit(result)
         }
-        sendResultIntent(intent)
-    }
-
-    protected fun sendFileResultIntent(action: String?, stationId: String?, result: File) {
-        val intent = makeResultIntent(action, TYPE_TEXT)
-        intent.putExtra(STATION_ID, stationId)
-        if (result.exists()) {
-            intent.putExtra(RESULT, result.getAbsolutePath())
-        }
-        sendResultIntent(intent)
-    }
-
-    private fun makeResultIntent(action: String?, type: String?): Intent {
-        val intent = Intent()
-        intent.setAction(action)
-        intent.putExtra(TYPE, type)
-        return intent
-    }
-
-    private fun sendResultIntent(intent: Intent) {
-        val bm = LocalBroadcastManager.getInstance(this)
-        bm.sendBroadcast(intent)
     }
 
     companion object {
@@ -143,7 +113,7 @@ abstract class NoaaService(protected val serviceName: String, protected val maxA
         const val TYPE: String = "TYPE"
         const val TYPE_TEXT: String = "TYPE_TEXT"
         const val TYPE_GRAPHIC: String = "TYPE_GRAPHIC"
-
+        const val ACTION: String = "ACTION"
         const val ACTION_GET_METAR: String = "flightintel.intent.wx.action.GET_METAR"
         const val ACTION_CACHE_METAR: String = "flightintel.intent.wx.action.CACHE_METAR"
         const val ACTION_GET_TAF: String = "flightintel.intent.wx.action.GET_TAF"

@@ -24,6 +24,7 @@ import android.location.Location
 import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.util.Log
 import androidx.core.content.IntentCompat
+import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
@@ -46,9 +47,8 @@ class PirepService : NoaaService("pirep", CACHE_MAX_AGE) {
         return START_NOT_STICKY
     }
 
-    private fun getPirepText(intent: Intent) {
+    private suspend fun getPirepText(intent: Intent) {
         // Get request parameters
-        val action = intent.action
         val location = IntentCompat.getParcelableExtra(intent, LOCATION, Location::class.java) ?: return
         val stationId = intent.getStringExtra(STATION_ID) ?: return
         val radiusNM = intent.getIntExtra(RADIUS_NM, 50)
@@ -86,7 +86,13 @@ class PirepService : NoaaService("pirep", CACHE_MAX_AGE) {
         }
         // Send the Pirep
         val pirep = wxCache.deserializeObject<Pirep>(stationId) ?: Pirep()
-        sendParcelableResultIntent(action, stationId, pirep)
+
+        val result = bundleOf(
+            ACTION to ACTION_GET_PIREP,
+            TYPE to TYPE_TEXT,
+            RESULT to pirep
+        )
+        Events.post(result)
     }
 
     companion object {

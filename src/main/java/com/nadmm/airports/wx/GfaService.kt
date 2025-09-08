@@ -21,6 +21,7 @@ package com.nadmm.airports.wx
 import android.content.Intent
 import android.text.format.DateUtils
 import android.util.Log
+import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 
@@ -42,7 +43,7 @@ class GfaService : NoaaService("gfa", CACHE_MAX_AGE) {
         return START_NOT_STICKY
     }
 
-    private fun fetchAndSendGfaImage(intent: Intent) {
+    private suspend fun fetchAndSendGfaImage(intent: Intent) {
         // Get request parameters
         val action = intent.action
         val imgType = intent.getStringExtra(IMAGE_TYPE)
@@ -60,8 +61,13 @@ class GfaService : NoaaService("gfa", CACHE_MAX_AGE) {
             }
         }
 
-        // Broadcast the result
-        sendImageResultIntent(action, code, imageFile)
+        val result = bundleOf(
+            ACTION to action,
+            TYPE to TYPE_GRAPHIC,
+            IMAGE_CODE to code,
+            RESULT to if (imageFile.exists()) imageFile.absolutePath else ""
+        )
+        Events.post(result)
     }
 
     companion object {

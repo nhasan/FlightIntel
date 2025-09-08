@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,65 +16,61 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.utils
 
-package com.nadmm.airports.utils;
+import android.annotation.SuppressLint
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import com.nadmm.airports.FragmentActivityBase
+import com.nadmm.airports.FragmentBase
+import com.nadmm.airports.R
+import java.io.IOException
 
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+class TextFileViewActivity : FragmentActivityBase() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-import com.nadmm.airports.FragmentActivityBase;
-import com.nadmm.airports.FragmentBase;
-import com.nadmm.airports.R;
-
-import java.io.IOException;
-
-public class TextFileViewActivity extends FragmentActivityBase {
-
-    public static final String FILE_PATH = "FILE_PATH";
-    public static final String LABEL_TEXT = "LABEL_TEXT";
-    public static final String TITLE_TEXT = "TITLE_TEXT";
-
-    @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        Bundle args = getIntent().getExtras();
-        if ( args != null ) {
-            String title = args.getString( TITLE_TEXT );
-            setActionBarTitle( title );
+        val args = intent.extras
+        if (args != null) {
+            val title = args.getString(TITLE_TEXT)
+            setActionBarTitle(title!!)
         }
 
-        addFragment( TextViewFragment.class, args );
+        addFragment(TextViewFragment::class.java, args)
     }
 
-    public static class TextViewFragment extends FragmentBase {
+    class TextViewFragment : FragmentBase() {
+        @SuppressLint("SetTextI18n")
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+            var view: View? = null
+            val args = arguments
+            if (args != null) {
+                val label = args.getString(LABEL_TEXT)
+                val path = args.getString(FILE_PATH)
 
-        @Override
-        public View onCreateView( LayoutInflater inflater, ViewGroup container,
-                                  Bundle savedInstanceState ) {
-            View view = null;
-            Bundle args = getArguments();
-            if ( args != null ) {
-                String label = args.getString( LABEL_TEXT );
-                String path = args.getString( FILE_PATH );
-
-                view = inflate( R.layout.text_view );
-                TextView tv = view.findViewById( R.id.text_label );
-                tv.setText( label );
-                tv = view.findViewById( R.id.text_content );
+                view = inflate(R.layout.text_view)
+                var tv = view.findViewById<TextView>(R.id.text_label)
+                tv.text = label
+                tv = view.findViewById<TextView>(R.id.text_content)
                 try {
-                    String text = FileUtils.readFile( path );
-                    tv.setText( text );
-                } catch ( IOException e ) {
-                    tv.setText( "Unable to read FA file: " + e.getMessage() );
+                    val text = FileUtils.readFile(path)
+                    tv.text = text
+                } catch (e: IOException) {
+                    tv.text = "Unable to read FA file: " + e.message
                 }
+                UiUtils.setupWindowInsetsListener(view)
             }
 
-            return view;
+            return view
         }
     }
 
+    companion object {
+        const val FILE_PATH: String = "FILE_PATH"
+        const val LABEL_TEXT: String = "LABEL_TEXT"
+        const val TITLE_TEXT: String = "TITLE_TEXT"
+    }
 }

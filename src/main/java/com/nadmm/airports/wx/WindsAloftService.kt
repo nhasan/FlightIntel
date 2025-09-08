@@ -20,9 +20,9 @@ package com.nadmm.airports.wx
 
 import android.content.Intent
 import android.text.format.DateUtils
+import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
-import java.io.File
 
 class WindsAloftService : NoaaService("fb", FB_CACHE_MAX_AGE) {
 
@@ -32,10 +32,7 @@ class WindsAloftService : NoaaService("fb", FB_CACHE_MAX_AGE) {
 
             serviceScope.launch {
                 if (action == ACTION_GET_FB) {
-                    val code = intent.getStringExtra(TEXT_CODE)
-                    val type = intent.getStringExtra(TEXT_TYPE)
-                    val file = fetchWindsAloftText(code, type)
-                    sendFileResultIntent(action, code, file)
+                    fetchWindsAloftText(intent)
                 }
             }
         }
@@ -43,7 +40,10 @@ class WindsAloftService : NoaaService("fb", FB_CACHE_MAX_AGE) {
         return START_NOT_STICKY
     }
 
-    private fun fetchWindsAloftText(code: String?, type: String?): File {
+    private suspend fun fetchWindsAloftText(intent: Intent) {
+        val action = intent.action
+        val code = intent.getStringExtra(TEXT_CODE)
+        val type = intent.getStringExtra(TEXT_TYPE)
         val filename = "F${type}_fbwind_low_${code}.txt"
         val file = wxCache.getFile(filename)
         if (!file.exists()) {
@@ -54,7 +54,13 @@ class WindsAloftService : NoaaService("fb", FB_CACHE_MAX_AGE) {
                 showToast(this, "Unable to fetch FB text: ${e.message}")
             }
         }
-        return file
+
+        val result = bundleOf(
+            ACTION to action,
+            TYPE to TYPE_TEXT,
+            RESULT to if (file.exists()) file.absolutePath else ""
+        )
+        Events.post(result)
     }
 
     companion object {

@@ -28,9 +28,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.view.isNotEmpty
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
 import com.nadmm.airports.data.DatabaseManager.Awos1
@@ -74,17 +72,6 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
         return createContentView(binding.root)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                MetarService.Events.events.collect { metar ->
-                    showMetar(metar)
-                }
-            }
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -99,6 +86,15 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
     override fun isRefreshable() = true
 
     override fun requestDataRefresh() = fetchMetar(true)
+
+    override fun processResult(result: Bundle) {
+        val type = result.getString(NoaaService.TYPE)
+        if (NoaaService.TYPE_TEXT == type) {
+            val metar = getResultObject(result, Metar::class.java)
+            showMetar(metar)
+            isRefreshing = false
+        }
+    }
 
     private fun fetchMetar(refresh: Boolean = false) {
         arguments?.let {

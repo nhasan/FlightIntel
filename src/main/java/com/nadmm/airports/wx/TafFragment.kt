@@ -19,7 +19,6 @@
 package com.nadmm.airports.wx
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteQueryBuilder
@@ -29,7 +28,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-import androidx.core.content.IntentCompat
 import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
@@ -79,10 +77,11 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
         fetchTaf()
     }
 
-    override fun handleBroadcast(intent: Intent) {
-        val type = intent.getStringExtra(NoaaService.TYPE)
+    override fun processResult(result: Bundle) {
+        val type = result.getString(NoaaService.TYPE)
         if (NoaaService.TYPE_TEXT == type) {
-            showTaf(intent)
+            val taf = getResultObject(result, Taf::class.java)
+            showTaf(taf)
             isRefreshing = false
         }
     }
@@ -239,11 +238,10 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun showTaf(intent: Intent) {
+    private fun showTaf(taf: Taf) {
         with(binding) {
-            val taf = IntentCompat.getParcelableExtra<Taf>(intent, NoaaService.RESULT, Taf::class.java)
             wxStatusLayout.removeAllViews()
-            if (taf?.isValid != true) {
+            if (!taf.isValid) {
                 statusMsg.text = "Unable to get TAF for this location."
                 with(wxStatusLayout) {
                     addRow(this, "This could be due to the following reasons:")

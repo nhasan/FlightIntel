@@ -20,6 +20,7 @@ package com.nadmm.airports.wx
 
 import android.content.Intent
 import android.text.format.DateUtils
+import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 
@@ -31,9 +32,7 @@ class AreaForecastService : NoaaService("fa", FA_CACHE_MAX_AGE) {
 
             serviceScope.launch {
                 if (action == ACTION_GET_FA) {
-                    intent.getStringExtra(TEXT_CODE)?.let { code ->
-                        getFaText(code)
-                    }
+                    getFaText(intent)
                 }
             }
         }
@@ -41,7 +40,9 @@ class AreaForecastService : NoaaService("fa", FA_CACHE_MAX_AGE) {
         return START_NOT_STICKY
     }
 
-    private fun getFaText(code: String) {
+    private suspend fun getFaText(intent: Intent) {
+        val action = intent.action
+        val code = intent.getStringExtra(TEXT_CODE) ?: return
         val file = wxCache.getFile(code)
         if (!file.exists()) {
             try {
@@ -52,8 +53,12 @@ class AreaForecastService : NoaaService("fa", FA_CACHE_MAX_AGE) {
             }
         }
 
-        // Broadcast the result
-        sendFileResultIntent(ACTION_GET_FA, code, file)
+        val result = bundleOf(
+            ACTION to action,
+            TYPE to TYPE_TEXT,
+            RESULT to if (file.exists()) file.absolutePath else ""
+        )
+        Events.post(result)
     }
 
     companion object {

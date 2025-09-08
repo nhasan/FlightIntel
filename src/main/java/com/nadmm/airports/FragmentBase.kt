@@ -132,7 +132,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<ViewGroup>(R.id.main_content)?.let {
+        view.findViewById<View>(R.id.main_content)?.let {
             UiUtils.setupWindowInsetsListener(it)
         }
     }
