@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2017 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,27 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.scratchpad
 
-package com.nadmm.airports.scratchpad;
+import android.os.Bundle
+import com.nadmm.airports.FragmentActivityBase
+import com.nadmm.airports.R
 
-import android.os.Bundle;
+class ScratchPadActivity : FragmentActivityBase() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-import com.nadmm.airports.FragmentActivityBase;
-import com.nadmm.airports.R;
-
-public class ScratchPadActivity extends FragmentActivityBase {
-
-    @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        Bundle args = getIntent().getExtras();
-        addFragment( ScratchPadFragment.class, args );
+        addFragment(ScratchPadFragment::class.java, intent.extras)
     }
 
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return R.id.navdrawer_scratchpad;
-    }
-
+    override val selfNavDrawerItem: Int
+        get() = R.id.navdrawer_scratchpad
 }
