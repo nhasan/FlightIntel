@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@ package com.nadmm.airports.wx
 
 import com.nadmm.airports.utils.WxUtils
 import com.nadmm.airports.utils.WxUtils.computeFlightCategory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.xml.sax.Attributes
 import org.xml.sax.helpers.DefaultHandler
 import java.io.File
@@ -29,17 +31,18 @@ import javax.xml.parsers.SAXParserFactory
 
 class MetarParser {
 
-    fun parse(xmlFile: File, stationIds: List<String>): List<Metar> {
+    suspend fun parse(xmlFile: File, stationIds: List<String>): List<Metar> {
         val parsedMetars = mutableMapOf<String, Metar>()
-
         val handler = MetarHandler(xmlFile, parsedMetars)
-        val factory = SAXParserFactory.newInstance()
-        factory.newSAXParser().parse(xmlFile, handler)
 
-        // Now put the missing ones
-        stationIds.forEach { stationId ->
-            parsedMetars.getOrPut(stationId) {
-                Metar(stationId = stationId)
+        withContext(Dispatchers.Default) {
+            val factory = SAXParserFactory.newInstance()
+            factory.newSAXParser().parse(xmlFile, handler)
+            // Now put the missing ones
+            stationIds.forEach { stationId ->
+                parsedMetars.getOrPut(stationId) {
+                    Metar(stationId = stationId)
+                }
             }
         }
 

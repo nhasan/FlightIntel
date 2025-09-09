@@ -25,6 +25,7 @@ import android.os.IBinder
 import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.util.Log
 import com.nadmm.airports.utils.NetworkUtils.doHttpsGet
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -33,10 +34,10 @@ import kotlinx.coroutines.flow.asSharedFlow
 import java.io.File
 import java.util.zip.GZIPInputStream
 
-abstract class NoaaService(protected val serviceName: String, protected val maxAgeMillis: Long) : Service() {
+abstract class NoaaService(protected val name: String, protected val maxAgeMillis: Long) : Service() {
     private val serviceJob = SupervisorJob() // Use SupervisorJob for better error handling in children
     // Coroutine scope tied to Dispatchers.IO for background work
-    protected val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
+    protected val serviceScope = CoroutineScope(serviceJob + Dispatchers.IO + CoroutineName(name))
 
     private var _wxCache: WxCache? = null
     protected val wxCache get() = _wxCache!!
@@ -44,9 +45,9 @@ abstract class NoaaService(protected val serviceName: String, protected val maxA
     override fun onCreate() {
         super.onCreate()
 
-        _wxCache = WxCache(this, serviceName, maxAgeMillis)
+        _wxCache = WxCache(this, name, maxAgeMillis)
 
-        Log.d(TAG, "onCreate() called for $serviceName service")
+        Log.d(TAG, "onCreate() called for $name service")
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -56,7 +57,7 @@ abstract class NoaaService(protected val serviceName: String, protected val maxA
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy() called for $serviceName service")
+        Log.d(TAG, "onDestroy() called for $name service")
         // Cancel all coroutines when the service is destroyed
         serviceJob.cancel() // This will cancel all coroutines launched in serviceScope
     }

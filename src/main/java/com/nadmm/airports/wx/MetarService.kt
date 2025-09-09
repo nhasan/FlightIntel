@@ -96,7 +96,7 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
         }
     }
 
-    private fun parseMetars(xmlFile: File, stationIds: List<String>) {
+    private suspend fun parseMetars(xmlFile: File, stationIds: List<String>) {
         if (xmlFile.exists()) {
             val parser = MetarParser()
             parser.parse(xmlFile, stationIds).forEach { metar ->
