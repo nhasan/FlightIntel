@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,82 +16,70 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.utils
 
-package com.nadmm.airports.utils;
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.graphics.Color
+import android.os.Bundle
+import android.view.Menu
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
+import com.nadmm.airports.ActivityBase
+import com.nadmm.airports.FlightIntel
+import com.nadmm.airports.R
 
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
+class ExternalStorageActivity : ActivityBase() {
+    @SuppressLint("SetTextI18n")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-import com.nadmm.airports.ActivityBase;
-import com.nadmm.airports.FlightIntel;
-import com.nadmm.airports.R;
+        setContentView(R.layout.external_storage_view)
 
-public class ExternalStorageActivity extends ActivityBase {
-
-    @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        setContentView( R.layout.external_storage_view );
-
-        TextView tv = findViewById( R.id.storage_desc_text );
-        tv.setText( "This application uses external SD card for storing it's databases. " +
+        val tv = findViewById<TextView>(R.id.storage_desc_text)
+        tv.text = "This application uses external SD card for storing it's databases. " +
                 "As a result, it will not function if the external SD card is not available." +
                 "\n\n" +
                 "The SD card is normally unavailable if the device is connected via USB to a " +
-                "computer and mounted as a storage device." );
-        Button btnTryNow = findViewById( R.id.btn_trynow );
-        btnTryNow.setOnClickListener( new OnClickListener() {
-
-            @Override
-            public void onClick( View v ) {
-                tryAgain();
-            }
-        } );
+                "computer and mounted as a storage device."
+        val btnTryNow = findViewById<Button>(R.id.btn_trynow)
+        btnTryNow.setOnClickListener { tryAgain() }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        externalStorageStatusChanged();
+    override fun onResume() {
+        super.onResume()
+        externalStorageStatusChanged()
     }
 
-    @Override
-    protected void externalStorageStatusChanged() {
-        if ( SystemUtils.isExternalStorageAvailable() ) {
-            TextView tv = findViewById( R.id.storage_status_text );
-            tv.setText( "External SD card is available for use" );
-            tv = findViewById( R.id.storage_desc_text2 );
-            tv.setText( "You should be able to use the application at this time." );
-            tv.setTextColor( Color.GREEN );
-            Button btnTryNow = findViewById( R.id.btn_trynow );
-            btnTryNow.setVisibility( View.VISIBLE );
+    @SuppressLint("SetTextI18n")
+    override fun externalStorageStatusChanged() {
+        if (SystemUtils.isExternalStorageAvailable()) {
+            var tv = findViewById<TextView>(R.id.storage_status_text)
+            tv.text = "External SD card is available for use"
+            tv = findViewById(R.id.storage_desc_text2)
+            tv.text = "You should be able to use the application at this time."
+            tv.setTextColor(Color.GREEN)
+            val btnTryNow = findViewById<Button>(R.id.btn_trynow)
+            btnTryNow.visibility = View.VISIBLE
         } else {
-            TextView tv = findViewById( R.id.storage_status_text );
-            tv.setText( "External SD card is not available for use" );
-            tv = findViewById( R.id.storage_desc_text2 );
-            tv.setText( "Please disconnect or unmount the device from the computer." );
-            tv.setTextColor( Color.RED );
-            Button btnTryNow = findViewById( R.id.btn_trynow );
-            btnTryNow.setVisibility( View.GONE );
+            var tv = findViewById<TextView>(R.id.storage_status_text)
+            tv.text = "External SD card is not available for use"
+            tv = findViewById(R.id.storage_desc_text2)
+            tv.text = "Please disconnect or unmount the device from the computer."
+            tv.setTextColor(Color.RED)
+            val btnTryNow = findViewById<Button>(R.id.btn_trynow)
+            btnTryNow.visibility = View.GONE
         }
     }
 
-    protected void tryAgain() {
-        Intent intent = new Intent( this, FlightIntel.class );
-        startActivity( intent );
-        finish();
+    private fun tryAgain() {
+        val intent = Intent(this, FlightIntel::class.java)
+        startActivity(intent)
+        finish()
     }
 
-    @Override
-    public boolean onCreateOptionsMenu( Menu menu ) {
-        return false;
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        return false
     }
-
 }

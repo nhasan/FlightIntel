@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2012 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,52 +16,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.utils
 
-package com.nadmm.airports.utils;
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.io.Reader
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-
-@SuppressWarnings( "TryFinallyCanBeTryWithResources" )
-public class FileUtils {
-
-    private FileUtils() {}
-
-    public static void removeDir( File dir ) {
-        File[] files = dir.listFiles();
-        if ( files != null ) {
-            for ( File file : files ) {
-                if ( file.isDirectory() ) {
-                    removeDir( file );
+object FileUtils {
+    fun removeDir(dir: File) {
+        val files = dir.listFiles()
+        if (files != null) {
+            for (file in files) {
+                if (file.isDirectory()) {
+                    removeDir(file)
                 } else {
-                    file.delete();
+                    file.delete()
                 }
             }
         }
-        dir.delete();
+        dir.delete()
     }
 
-    public static String readFile( String path ) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        FileInputStream is = null;
+    fun readFile(path: String?): String {
+        val sb = StringBuilder()
+        var `is`: FileInputStream? = null
         try {
-            is = new FileInputStream( path );
-            Reader reader = new BufferedReader( new InputStreamReader( is ) );
-            char[] buffer = new char[8192];
-            int read;
-            while ( ( read = reader.read( buffer ) ) > 0 ) {
-                sb.append( buffer, 0, read );
+            `is` = FileInputStream(path)
+            val reader: Reader = BufferedReader(InputStreamReader(`is`))
+            val buffer = CharArray(8192)
+            var read: Int
+            while ((reader.read(buffer).also { read = it }) > 0) {
+                sb.append(buffer, 0, read)
             }
         } finally {
-            if ( is != null ) {
-                is.close();
-            }
+            `is`?.close()
         }
-        return sb.toString();
+        return sb.toString()
     }
-
 }
