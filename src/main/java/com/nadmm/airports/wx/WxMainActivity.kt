@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,60 +16,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.wx
 
-package com.nadmm.airports.wx;
+import android.os.Bundle
+import com.nadmm.airports.R
+import com.nadmm.airports.TabPagerActivityBase
 
-import android.os.Bundle;
+class WxMainActivity : TabPagerActivityBase() {
 
-import com.nadmm.airports.R;
-import com.nadmm.airports.TabPagerActivityBase;
+    override val initialTabIndex: Int
+        get() = getIndex()
 
-import java.util.ArrayList;
+    private val tabEntries = arrayOf(
+        R.string.favorites to FavoriteWxFragment::class.java,
+        R.string.nearby to NearbyWxFragment::class.java,
+    )
 
-public final class WxMainActivity extends TabPagerActivityBase {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    private final String[] mTabTitles = new String[] {
-            "Favorites",
-            "Nearby",
-    };
+        setActionBarTitle("Weather", null)
 
-    private final Class<?>[] mClasses = new Class<?>[] {
-            FavoriteWxFragment.class,
-            NearbyWxFragment.class
-    };
-
-    private final int ID_FAVORITES = 0;
-    private final int ID_NEARBY = 1;
-
-    @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-
-        setActionBarTitle( "Weather", null );
-
-        Bundle args = new Bundle();
-        for ( int i=0; i<mTabTitles.length; ++i ) {
-            addTab( mTabTitles[ i ], mClasses[ i ], args );
+        for (entry in tabEntries) {
+            addTab(resources.getString(entry.first), entry.second)
         }
     }
 
-    @Override
-    protected int getInitialTabIndex() {
-        if ( getPrefAlwaysShowNearby() ) {
-            return ID_NEARBY;
+    private fun getIndex() : Int {
+        if (prefAlwaysShowNearby) {
+            return tabEntries.indexOfFirst { it.first == R.string.nearby }
         }
 
-        ArrayList<String> fav = getDbManager().getWxFavorites();
-        if ( !fav.isEmpty() ) {
-            return ID_FAVORITES;
-        } else {
-            return ID_NEARBY;
-        }
+        val fav = dbManager.wxFavorites
+        return if (fav.isNotEmpty())
+            tabEntries.indexOfFirst { it.first == R.string.favorites }
+        else
+            tabEntries.indexOfFirst { it.first == R.string.nearby }
     }
 
-    @Override
-    protected int getSelfNavDrawerItem() {
-        return R.id.navdrawer_wx;
-    }
-
+    override val selfNavDrawerItem = R.id.navdrawer_wx
 }
