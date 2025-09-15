@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2018-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2018-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import com.nadmm.airports.utils.DbUtils
 import com.nadmm.airports.utils.GeoUtils
 import java.util.*
 
-class NearbyDofCursor(db: SQLiteDatabase?, location: Location, radius: Int) : MatrixCursor(
+class NearbyDofCursor(db: SQLiteDatabase, location: Location, radius: Int) : MatrixCursor(
     sColumns
 ) {
     private inner class DOFData : Comparable<DOFData> {
