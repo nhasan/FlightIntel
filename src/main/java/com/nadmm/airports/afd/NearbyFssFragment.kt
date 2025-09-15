@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ class NearbyFssFragment : FragmentBase() {
     private var mRadius = 0
 
     private class ComData(c: Cursor, declination: Float, location: Location) : Comparable<ComData> {
-        val mColumnValues: Array<String?>
+        val mColumnValues = arrayOfNulls<String>(c.columnCount + 2)
         override fun compareTo(other: ComData): Int {
             // Last element in the value array is the distance
             val indexOfDistance = mColumnValues.size - 1
@@ -60,7 +60,6 @@ class NearbyFssFragment : FragmentBase() {
         }
 
         init {
-            mColumnValues = arrayOfNulls(c.columnCount + 2)
             var i = 0
             while (i < c.columnCount) {
                 mColumnValues[i] = c.getString(i)
