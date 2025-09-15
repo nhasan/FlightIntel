@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2015-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2015-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,89 +11,80 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
+ * GNU General Public License for more details *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.nadmm.airports
 
-import androidx.viewpager.widget.ViewPager
-import com.google.android.material.tabs.TabLayout
 import android.os.Bundle
-import androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener
-import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import androidx.fragment.app.Fragment
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.nadmm.airports.utils.PagerAdapter
 
 abstract class TabPagerActivityBase : ActivityBase() {
-    private var mCurrentTabIndex = -1
-    private lateinit var mViewPager: ViewPager
-    private lateinit var mPagerAdapter: PagerAdapter
-    private lateinit var mTabLayout: TabLayout
+    private var activeTabIndex = -1
+    private lateinit var fragmentPager: ViewPager2
+    private lateinit var pagerAdapter: PagerAdapter
+    private lateinit var tabs: TabLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_tab_pager)
-        mViewPager = findViewById(R.id.view_pager)
-        mPagerAdapter = PagerAdapter(this, supportFragmentManager, mViewPager)
-        mViewPager.addOnPageChangeListener(object : SimpleOnPageChangeListener() {
-            override fun onPageScrollStateChanged(state: Int) {
-                // Disable the swipe refresh while moving between pages
-                if (currentFragment.isRefreshable) {
-                    enableDisableSwipeRefresh(state == ViewPager.SCROLL_STATE_IDLE)
-                }
-            }
-        })
-        mTabLayout = findViewById(R.id.sliding_tabs)
+        fragmentPager = findViewById(R.id.view_pager)
+        pagerAdapter = PagerAdapter(this)
+        fragmentPager.adapter = pagerAdapter
+        tabs = findViewById(R.id.sliding_tabs)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        mTabLayout.setupWithViewPager(mViewPager)
-        mTabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                mCurrentTabIndex = tab.position
-                mViewPager.currentItem = mCurrentTabIndex
-                enableDisableSwipeRefresh(currentFragment.isRefreshable)
-                showAppBar(true)
-            }
 
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {
-                if (mCurrentTabIndex != tab.position) {
-                    onTabSelected(tab)
+        TabLayoutMediator(tabs, fragmentPager) { tab, position ->
+            tab.text = pagerAdapter.getPageTitle(position)
+        }.attach()
+
+        fragmentPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageScrollStateChanged(state: Int) {
+                // Disable the swipe refresh while moving between pages
+                currentFragment?.let { fragment ->
+                    if (fragment.isRefreshable) {
+                        enableDisableSwipeRefresh(state == ViewPager2.SCROLL_STATE_IDLE)
+                    }
                 }
             }
         })
-        mCurrentTabIndex = savedInstanceState?.getInt(SAVED_TAB) ?: initialTabIndex
-        postRunnable({
-            if (mCurrentTabIndex >= 0 && mCurrentTabIndex < mTabLayout.tabCount) {
-                mTabLayout.getTabAt(mCurrentTabIndex)!!.select()
-                enableDisableSwipeRefresh(currentFragment.isRefreshable)
-            }
-        }, 0)
+
+        fragmentPager.post {
+            activeTabIndex = savedInstanceState?.getInt(SAVED_TAB) ?: initialTabIndex
+            fragmentPager.setCurrentItem(activeTabIndex, false)
+        }
     }
 
     public override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(SAVED_TAB, mViewPager.currentItem)
+        outState.putInt(SAVED_TAB, fragmentPager.currentItem)
     }
 
     override fun requestDataRefresh() {
-        val fragment = currentFragment
-        if (fragment.isRefreshable) {
-            fragment.requestDataRefresh()
+        currentFragment?.let { fragment ->
+            if (fragment.isRefreshable) {
+                fragment.requestDataRefresh()
+            }
         }
     }
 
-    protected fun addTab(label: String?, clss: Class<*>?, args: Bundle?) {
-        mPagerAdapter.addTab(label, clss, args)
+    protected fun addTab(label: String, clss: Class<out Fragment>, args: Bundle?=null) {
+        pagerAdapter.addTab(label, clss, args)
     }
 
-    private val currentFragment: FragmentBase
-        get() = mPagerAdapter.getItem(mCurrentTabIndex) as FragmentBase
+    private val currentFragment: FragmentBase?
+        get() = pagerAdapter.getItem(fragmentPager.currentItem)
 
-    protected open val initialTabIndex: Int
-        get() = 0
+    protected open val initialTabIndex: Int = 0
 
     companion object {
         private const val SAVED_TAB = "saved_tab"

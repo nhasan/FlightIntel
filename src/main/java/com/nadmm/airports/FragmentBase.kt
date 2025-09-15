@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,12 +103,14 @@ abstract class FragmentBase : Fragment(), IRefreshable {
             mTask!!.cancel(true)
         }
         super.onPause()
+        activityBase.enableDisableSwipeRefresh(false)
     }
 
     override fun onResume() {
         super.onResume()
 
         activityBase.onFragmentStarted(this)
+        activityBase.enableDisableSwipeRefresh(isRefreshable)
     }
 
     override fun isRefreshable(): Boolean {

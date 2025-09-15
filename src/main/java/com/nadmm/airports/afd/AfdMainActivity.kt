@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,31 +25,14 @@ import com.nadmm.airports.TabPagerActivityBase
 
 class AfdMainActivity : TabPagerActivityBase() {
 
-    private val mTabTitles = arrayOf(
-            R.string.favorites,
-            R.string.nearby,
-            R.string.browse
+    override val initialTabIndex: Int
+        get() = getIndex()
+
+    private val tabEntries = arrayOf(
+        R.string.favorites to FavoriteAirportsFragment::class.java,
+        R.string.nearby to NearbyAirportsFragment::class.java,
+        R.string.browse to BrowseAirportsFragment::class.java
     )
-
-    private val mClasses = arrayOf<Class<*>>(
-            FavoriteAirportsFragment::class.java,
-            NearbyAirportsFragment::class.java,
-            BrowseAirportsFragment::class.java
-    )
-
-    private fun getIndex() : Int {
-        if (prefAlwaysShowNearby) {
-            return mTabTitles.indexOf(R.string.nearby)
-        }
-
-        val fav = dbManager.aptFavorites
-        return if (fav.isNotEmpty())
-            mTabTitles.indexOf(R.string.favorites)
-        else
-            mTabTitles.indexOf(R.string.nearby)
-    }
-
-    override val selfNavDrawerItem = R.id.navdrawer_afd
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,14 +40,22 @@ class AfdMainActivity : TabPagerActivityBase() {
         setActionBarTitle("Airports")
         setActionBarSubtitle("")
 
-        val args = Bundle()
-        for (i in mTabTitles.indices) {
-            addTab(resources.getString(mTabTitles[i]), mClasses[i], args)
+        for (entry in tabEntries) {
+            addTab(resources.getString(entry.first), entry.second)
         }
     }
 
-    override val initialTabIndex: Int
-        get() = getIndex()
+    private fun getIndex() : Int {
+        if (prefAlwaysShowNearby) {
+            return tabEntries.indexOfFirst { it.first == R.string.nearby }
+        }
 
+        val fav = dbManager.aptFavorites
+        return if (fav.isNotEmpty())
+            tabEntries.indexOfFirst { it.first == R.string.favorites }
+        else
+            tabEntries.indexOfFirst { it.first == R.string.nearby }
+    }
 
+    override val selfNavDrawerItem = R.id.navdrawer_afd
 }

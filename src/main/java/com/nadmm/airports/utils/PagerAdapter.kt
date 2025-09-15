@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,93 +16,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.utils
 
-package com.nadmm.airports.utils;
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.nadmm.airports.FragmentBase
 
-import android.content.Context;
-import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-import android.view.ViewGroup;
+class PagerAdapter(
+    private val activity: FragmentActivity,
+) : FragmentStateAdapter(activity) {
+    private val tabs = ArrayList<TabInfo>()
 
-import java.util.ArrayList;
+    inner class TabInfo internal constructor(
+        val label: String,
+        val clazz: Class<out Fragment>,
+        val args: Bundle?,
+    )
 
-public class PagerAdapter extends FragmentPagerAdapter  {
-
-    private Context mContext;
-    private ArrayList<TabInfo> mTabs = new ArrayList<>();
-
-    public final class TabInfo {
-        private Class<?> clss;
-        private Bundle args;
-        private String label;
-        private Fragment fragment;
-
-        TabInfo( String _label, Class<?> _class, Bundle _args ) {
-            clss = _class;
-            args = _args;
-            label = _label;
-            fragment = null;
-        }
+    fun addTab(label: String, clazz: Class<out Fragment>, args: Bundle?) {
+        val info = TabInfo(label, clazz, args)
+        tabs.add(info)
+        notifyItemInserted(tabs.size-1)
     }
 
-    public PagerAdapter( Context context, FragmentManager fm, ViewPager pager ) {
-        super( fm );
-        mContext = context;
-        pager.setAdapter( this );
+    override fun getItemCount() = tabs.size
+
+    override fun createFragment(position: Int): Fragment {
+        val info = tabs[position]
+        val fragment = info.clazz.getDeclaredConstructor().newInstance()
+        fragment.arguments = info.args
+        return fragment
     }
 
-    public void addTab( String label, Class<?> clss, Bundle args ) {
-        TabInfo info = new TabInfo( label, clss, args );
-        mTabs.add( info );
-        notifyDataSetChanged();
+    fun getItem(position: Int): FragmentBase? {
+        val fragment = activity.supportFragmentManager.findFragmentByTag("f$position")
+        return if (fragment != null) fragment as FragmentBase else null
     }
 
-    @Override
-    public int getCount() {
-        return mTabs.size();
-    }
-
-    @Override
-    public Object instantiateItem( ViewGroup container, int position ) {
-        TabInfo info = mTabs.get( position );
-        info.fragment = (Fragment) super.instantiateItem( container, position );
-        return info.fragment;
-    }
-
-    @Override
-    public Fragment getItem( int position ) {
-        if ( position < 0 || position >= getCount() ) {
-            throw new IllegalArgumentException();
-        }
-
-        TabInfo info = mTabs.get( position );
-        if ( info.fragment != null ) {
-            return info.fragment;
-        }
-        return Fragment.instantiate( mContext, info.clss.getName(), info.args );
-    }
-
-    @Override
-    public CharSequence getPageTitle( int position ) {
-        if ( position < 0 || position >= getCount() ) {
-            throw new IllegalArgumentException();
-        }
-
-        return mTabs.get( position ).label;
-    }
-
-    public String[] getPageTitles() {
-        // Build the data model for the spinner adapter
-        String[] titles = new String[ getCount() ];
-        int pos = 0;
-        while ( pos < getCount() ) {
-            titles[ pos ] = getPageTitle( pos ).toString();
-            ++pos;
-        }
-        return titles;
-    }
-
+    fun getPageTitle(position: Int) = tabs[position].label
 }
