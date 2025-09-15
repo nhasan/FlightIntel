@@ -22,7 +22,7 @@ import android.os.Bundle
 import com.nadmm.airports.TabPagerActivityBase
 
 class WxDetailActivity : TabPagerActivityBase() {
-    private val tabNameFragmentMap: Map<String, Class<*>> = mapOf(
+    private val tabNameFragmentMap = mapOf(
         "METAR" to MetarFragment::class.java,
         "TAF" to TafFragment::class.java,
         "PIREP" to PirepFragment::class.java,
