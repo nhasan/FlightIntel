@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2015-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2015-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,11 +63,13 @@ abstract class LocationListFragmentBase : RecyclerViewFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lastLocation = BundleCompat.getParcelable(
-            requireArguments(),
-            LocationColumns.LOCATION,
-            Location::class.java
-        )
+        arguments?.let {
+            lastLocation = BundleCompat.getParcelable(
+                it,
+                LocationColumns.LOCATION,
+                Location::class.java
+            )
+        }
 
         isLocationUpdateEnabled = lastLocation == null
 
