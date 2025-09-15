@@ -72,15 +72,15 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
         return createContentView(binding.root)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        fetchMetar()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        fetchMetar()
     }
 
     override fun isRefreshable() = true

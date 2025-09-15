@@ -71,11 +71,20 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
         return createContentView(view)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         fetchTaf()
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun isRefreshable()  = true
+
+    override fun requestDataRefresh() = fetchTaf(true)
 
     override fun processResult(result: Bundle) {
         val type = result.getString(NoaaService.TYPE)
@@ -85,10 +94,6 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
             isRefreshing = false
         }
     }
-
-    override fun isRefreshable()  = true
-
-    override fun requestDataRefresh() = fetchTaf(true)
 
     private fun fetchTaf(refresh: Boolean = false) {
         arguments?.let {
