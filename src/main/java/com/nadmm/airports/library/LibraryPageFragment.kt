@@ -32,9 +32,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isNotEmpty
 import androidx.lifecycle.Lifecycle
@@ -44,6 +41,9 @@ import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Library
+import com.nadmm.airports.databinding.LibraryDetailSectionBinding
+import com.nadmm.airports.databinding.LibraryDetailViewBinding
+import com.nadmm.airports.databinding.LibraryRowItemBinding
 import com.nadmm.airports.utils.NetworkUtils
 import com.nadmm.airports.utils.SystemUtils
 import com.nadmm.airports.utils.UiUtils
@@ -66,6 +66,8 @@ class LibraryPageFragment : FragmentBase() {
         Library.DOWNLOAD_SIZE,
         Library.FLAG
     )
+    private var _binding: LibraryDetailViewBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         mCategory = arguments?.getString(Library.CATEGORY_CODE)
@@ -77,8 +79,8 @@ class LibraryPageFragment : FragmentBase() {
                 if (path == null) {
                     if (mIsOk) {
                         activity.isPending = true
-                        val progressBar = v.findViewById<ProgressBar>(R.id.progress)
-                        progressBar.visibility = View.VISIBLE
+                        val row = LibraryRowItemBinding.bind(v)
+                        row.progress.visibility = View.VISIBLE
                         val name = v.getTag(R.id.LIBRARY_PDF_NAME) as String
                         getBook(name)
                     } else {
@@ -101,8 +103,8 @@ class LibraryPageFragment : FragmentBase() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflate<View>(R.layout.library_detail_view, container!!)
-        return createContentView(view)
+        _binding = LibraryDetailViewBinding.inflate(inflater, container, false)
+        return createContentView(binding.root)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -178,22 +180,17 @@ class LibraryPageFragment : FragmentBase() {
             }
         }
 
-        findViewById<TextView>(R.id.msg_txt)?.let {
-            it.text = msg
-            UiUtils.setTextViewDrawable(
-                it,
-                if (mIsOk) R.drawable.ic_outline_check_circle_24 else R.drawable.ic_outline_cancel_24
-            )
-        }
-        val topLayout = findViewById<LinearLayout>(R.id.main_content)
+        binding.msgTxt.text = msg
+        UiUtils.setTextViewDrawable(
+            binding.msgTxt,
+            if (mIsOk) R.drawable.ic_outline_check_circle_24 else R.drawable.ic_outline_cancel_24
+        )
+        val topLayout = binding.mainContent
         for (c in result) {
             c?.let {
                 if (c.moveToFirst()) {
-                    val layout = inflate<LinearLayout>(
-                        R.layout.library_detail_section,
-                        topLayout!!
-                    )
-                    topLayout.addView(layout)
+                    val section = LibraryDetailSectionBinding.inflate(layoutInflater, topLayout, false)
+                    topLayout.addView(section.root)
                     do {
                         val name = c.getString(mColumns.indexOf(Library.BOOK_NAME))
                         val desc = c.getString(mColumns.indexOf(Library.BOOK_DESC))
@@ -201,7 +198,7 @@ class LibraryPageFragment : FragmentBase() {
                         val author = c.getString(mColumns.indexOf(Library.AUTHOR))
                         val size = c.getLong(mColumns.indexOf(Library.DOWNLOAD_SIZE))
                         val flag = c.getString(mColumns.indexOf(Library.FLAG))
-                        addLibraryRow(layout, name, desc, edition, author, flag, size)
+                        addLibraryRow(section.root, name, desc, edition, author, flag, size)
                     } while (c.moveToNext())
                 }
                 c.close()
@@ -219,30 +216,28 @@ class LibraryPageFragment : FragmentBase() {
         if (layout.isNotEmpty()) {
             addSeparator(layout)
         }
-        val row = inflate<RelativeLayout>(R.layout.library_row_item)
-        var tv = row.findViewById<TextView>(R.id.book_desc)
-        tv.text = desc
-        tv = row.findViewById(R.id.book_edition)
-        tv.text = edition
-        if (flag != null && flag == "N") {
-            UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_new_releases_24)
-        }
-        tv = row.findViewById(R.id.book_author)
-        tv.text = author
-        tv = row.findViewById(R.id.book_size)
-        tv.text = Formatter.formatShortFileSize(activity, size)
-        row.setTag(R.id.LIBRARY_PDF_NAME, name)
-        row.setOnClickListener(mOnClickListener)
-        activity?.let {
-            row.setBackgroundResource(UiUtils.getSelectableItemBackgroundResource(it))
-        }
-        showStatus(row, false)
-        mBookRowMap[name] = row
-        layout.addView(
-            row, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+        val row = LibraryRowItemBinding.inflate(layoutInflater)
+        with (row) {
+            bookDesc.text = desc
+            bookEdition.text = edition
+            if (flag != null && flag == "N") {
+                UiUtils.setTextViewDrawable(bookEdition, R.drawable.ic_outline_new_releases_24)
+            }
+            bookAuthor.text = author
+            bookSize.text = Formatter.formatShortFileSize(activity, size)
+            root.setTag(R.id.LIBRARY_PDF_NAME, name)
+            root.setOnClickListener(mOnClickListener)
+            activity?.let {
+                root.setBackgroundResource(UiUtils.getSelectableItemBackgroundResource(it))
+            }
+            showStatus(root, false)
+            mBookRowMap[name] = root
+            layout.addView(
+                root, LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                )
             )
-        )
+        }
     }
 
     private fun handleBook(result: Bundle) {
@@ -266,27 +261,30 @@ class LibraryPageFragment : FragmentBase() {
     private fun handleProgress(result: Bundle) {
         val name = result.getString(NetworkUtils.CONTENT_NAME)
         mBookRowMap[name]?.let {
-            val progressBar = it.findViewById<ProgressBar>(R.id.progress)
-            val length = result.getInt(NetworkUtils.CONTENT_LENGTH, 0)
-            progressBar.isIndeterminate = (length == 0)
-            if (progressBar.max != length) {
-                progressBar.max = length
-            }
-            val progress = result.getInt(NetworkUtils.CONTENT_PROGRESS, 0)
-            progressBar.progress = progress
-            if (progress == length) {
-                progressBar.visibility = View.GONE
-                (activity as LibraryActivity).isPending = false
+            with(LibraryRowItemBinding.bind(it)) {
+                progress.visibility = View.VISIBLE
+                val length = result.getInt(NetworkUtils.CONTENT_LENGTH, 0)
+                progress.isIndeterminate = (length == 0)
+                if (progress.max != length) {
+                    progress.max = length
+                }
+                val current = result.getInt(NetworkUtils.CONTENT_PROGRESS, 0)
+                progress.progress = current
+                if (current == length) {
+                    progress.visibility = View.GONE
+                    (activity as LibraryActivity).isPending = false
+                }
             }
         }
     }
 
     private fun showStatus(row: View, isAvailable: Boolean) {
-        val tv = row.findViewById<TextView>(R.id.book_desc)
-        if (isAvailable) {
-            UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_check_box_24)
-        } else {
-            UiUtils.setTextViewDrawable(tv, R.drawable.ic_outline_check_box_outline_blank_24)
+        with (LibraryRowItemBinding.bind(row)) {
+            if (isAvailable) {
+                UiUtils.setTextViewDrawable(bookDesc, R.drawable.ic_outline_check_box_24)
+            } else {
+                UiUtils.setTextViewDrawable(bookDesc, R.drawable.ic_outline_check_box_outline_blank_24)
+            }
         }
     }
 
