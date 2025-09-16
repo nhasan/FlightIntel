@@ -47,7 +47,6 @@ import com.nadmm.airports.data.DatabaseManager.Wxs
 import com.nadmm.airports.databinding.AirportTitleLayoutBinding
 import com.nadmm.airports.databinding.WxSubtitleLayoutBinding
 import com.nadmm.airports.databinding.WxTitleLayoutBinding
-import com.nadmm.airports.utils.CursorAsyncTask
 import com.nadmm.airports.utils.DataUtils
 import com.nadmm.airports.utils.FormatUtils
 import com.nadmm.airports.utils.UiUtils
@@ -58,7 +57,6 @@ abstract class FragmentBase : Fragment(), IRefreshable {
 
     lateinit var activityBase: ActivityBase
         private set
-    private var mTask: CursorAsyncTask<*>? = null
 
     private val mOnRowClickListener = { v : View ->
         val tag = v.tag
@@ -99,9 +97,6 @@ abstract class FragmentBase : Fragment(), IRefreshable {
 
     override fun onPause() {
         isRefreshing = false
-        if (mTask != null) {
-            mTask!!.cancel(true)
-        }
         super.onPause()
         activityBase.enableDisableSwipeRefresh(false)
     }
@@ -153,11 +148,6 @@ abstract class FragmentBase : Fragment(), IRefreshable {
 
     protected fun setFragmentContentShownNoAnimation(shown: Boolean) {
         activityBase.setContentShownNoAnimation(view, shown)
-    }
-
-    protected fun <T : FragmentBase> setBackgroundTask(task: CursorAsyncTask<T>): CursorAsyncTask<T> {
-        mTask = task
-        return task
     }
 
     protected fun setActionBarTitle(c: Cursor, subtitle: String) {
@@ -287,7 +277,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
     }
 
     protected fun addClickableRow(
-        layout: LinearLayout, label: String, value: String?,
+        layout: LinearLayout, label: String, value: String,
         clss: Class<*>, args: Bundle,
     ): View {
         val row = addRow(layout, label, value)
