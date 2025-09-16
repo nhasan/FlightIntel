@@ -29,9 +29,8 @@ class AfdMainActivity : TabPagerActivityBase() {
         get() = getIndex()
 
     private val tabEntries = arrayOf(
-        R.string.favorites to FavoriteAirportsFragment::class.java,
         R.string.nearby to NearbyAirportsFragment::class.java,
-        R.string.browse to BrowseAirportsFragment::class.java
+        R.string.favorites to FavoriteAirportsFragment::class.java,
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

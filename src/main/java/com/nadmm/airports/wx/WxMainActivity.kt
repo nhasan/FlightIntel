@@ -28,8 +28,8 @@ class WxMainActivity : TabPagerActivityBase() {
         get() = getIndex()
 
     private val tabEntries = arrayOf(
-        R.string.favorites to FavoriteWxFragment::class.java,
         R.string.nearby to NearbyWxFragment::class.java,
+        R.string.favorites to FavoriteWxFragment::class.java,
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
