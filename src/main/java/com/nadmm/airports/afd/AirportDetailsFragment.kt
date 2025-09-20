@@ -315,7 +315,7 @@ class AirportDetailsFragment : FragmentBase() {
         if (rmk != null && rmk.moveToFirst()) {
             do {
                 val remark = rmk.getString(rmk.getColumnIndexOrThrow(Remarks.REMARK_TEXT))
-                addBulletedRow(layout!!, remark)
+                addBulletedRow(layout, remark)
                 ++row
             } while (rmk.moveToNext())
         }
@@ -330,7 +330,7 @@ class AirportDetailsFragment : FragmentBase() {
                 if (twr6 != null && twr6.moveToFirst()) {
                     do {
                         val remark = twr6.getString(twr6.getColumnIndexOrThrow(Tower6.REMARK_TEXT))
-                        addBulletedRow(layout!!, remark)
+                        addBulletedRow(layout, remark)
                         ++row
                     } while (twr6.moveToNext())
                 }
@@ -338,8 +338,8 @@ class AirportDetailsFragment : FragmentBase() {
         }
 
         if (row == 0) {
-            label?.visibility = View.GONE
-            layout?.visibility = View.GONE
+            label.visibility = View.GONE
+            layout.visibility = View.GONE
         }
     }
 
@@ -506,7 +506,7 @@ class AirportDetailsFragment : FragmentBase() {
         val apt = result[0] ?: return
         val layout = binding.detailOperationsLayout
         val use = apt.getString(apt.getColumnIndexOrThrow(Airports.FACILITY_USE))
-        addRow(layout!!, "Operation", DataUtils.decodeFacilityUse(use))
+        addRow(layout, "Operation", DataUtils.decodeFacilityUse(use))
         val faaCode = apt.getString(apt.getColumnIndexOrThrow(Airports.FAA_CODE))
         addRow(layout, "FAA code", faaCode)
         val timezoneId = apt.getString(apt.getColumnIndexOrThrow(Airports.TIMEZONE_ID))
