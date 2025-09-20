@@ -90,7 +90,7 @@ abstract class NoaaService(protected val name: String, protected val maxAgeMilli
         private val TAG: String = NoaaService::class.java.simpleName
 
         protected const val AWC_HOST: String = "aviationweather.gov"
-        protected const val ADDS_DATASERVER_PATH: String = "/cgi-bin/data/dataserver.php"
+        protected const val ADDS_DATASERVER_PATH: String = "/api/data/dataserver"
 
         const val TAF_HOURS_BEFORE = 3
         const val TAF_RADIUS = 25

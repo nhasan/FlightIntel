@@ -69,7 +69,7 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
             var xmlFile: File? = null
             try {
                 xmlFile =  wxCache.createTempFile()
-                val query = ("datasource=metars&requesttype=retrieve"
+                val query = ("dataSource=metars&requestType=retrieve"
                         + "&hoursBeforeNow=${METAR_HOURS_BEFORE}&mostRecentForEachStation=constraint"
                         + "&format=xml&stationString=${missing.joinToString()}")
                 fetchFromNoaa(query, xmlFile)
