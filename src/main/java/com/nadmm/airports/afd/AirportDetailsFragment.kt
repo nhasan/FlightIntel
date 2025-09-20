@@ -29,7 +29,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.core.os.BundleCompat
@@ -64,6 +63,7 @@ import com.nadmm.airports.data.DatabaseManager.Tower7
 import com.nadmm.airports.data.DatabaseManager.Tower8
 import com.nadmm.airports.data.DatabaseManager.Wxs
 import com.nadmm.airports.databinding.AirportDetailViewBinding
+import com.nadmm.airports.databinding.RunwayDetailItemBinding
 import com.nadmm.airports.datis.DatisFragment
 import com.nadmm.airports.dof.NearbyObstaclesFragment
 import com.nadmm.airports.notams.AirportNotamActivity
@@ -134,8 +134,8 @@ class AirportDetailsFragment : FragmentBase() {
                     NoaaService.Events.events.collect { result ->
                         val resultAction = result.getString(NoaaService.ACTION)
                         if (resultAction == NoaaService.ACTION_GET_METAR) {
-                            val metar = BundleCompat.getParcelable(result, NoaaService.RESULT, Metar::class.java)
-                                ?: Metar()
+                            val metar = BundleCompat.getParcelable(
+                                result, NoaaService.RESULT, Metar::class.java) ?: Metar()
                             if (metar.isValid) {
                                 showWxInfo(metar)
                             }
@@ -170,13 +170,9 @@ class AirportDetailsFragment : FragmentBase() {
         mAwosViews.clear()
     }
 
-    override fun isRefreshable(): Boolean {
-        return true
-    }
+    override fun isRefreshable() = true
 
-    override fun requestDataRefresh() {
-        requestMetars(true)
-    }
+    override fun requestDataRefresh() = requestMetars(true)
 
     private fun getAfdPage(afdCycle: String, pdfName: String) {
         val service = Intent(activity, DafdService::class.java)
@@ -221,7 +217,7 @@ class AirportDetailsFragment : FragmentBase() {
     private fun showCommunicationsDetails(result: Array<Cursor?>) {
         val apt = result[0] ?: return
 
-        val layout = findViewById<LinearLayout>(R.id.detail_comm_layout) ?: return
+        val layout = binding.detailCommLayout
 
         val ctaf = apt.getString(apt.getColumnIndexOrThrow(Airports.CTAF_FREQ))
         addRow(layout, "CTAF", ctaf.ifEmpty { "None" })
@@ -278,8 +274,8 @@ class AirportDetailsFragment : FragmentBase() {
     }
 
     private fun showRunwayDetails(result: Array<Cursor?>) {
-        val rwyLayout = findViewById<LinearLayout>(R.id.detail_rwy_layout) ?: return
-        val heliLayout = findViewById<LinearLayout>(R.id.detail_heli_layout) ?: return
+        val rwyLayout = binding.detailRwyLayout
+        val heliLayout = binding.detailHeliLayout
         var rwyNum = 0
         var heliNum = 0
 
@@ -301,22 +297,20 @@ class AirportDetailsFragment : FragmentBase() {
 
         if (rwyNum == 0) {
             // No runways so remove the section
-            val tv: TextView? = findViewById(R.id.detail_rwy_label)
-            tv?.visibility = View.GONE
+            binding.detailRwyLabel.visibility = View.GONE
             rwyLayout.visibility = View.GONE
         }
         if (heliNum == 0) {
             // No helipads so remove the section
-            val tv: TextView? = findViewById(R.id.detail_heli_label)
-            tv?.visibility = View.GONE
+            binding.detailHeliLabel.visibility = View.GONE
             heliLayout.visibility = View.GONE
         }
     }
 
     private fun showRemarks(result: Array<Cursor?>) {
         var row = 0
-        val label = findViewById<TextView>(R.id.detail_remarks_label)
-        val layout = findViewById<LinearLayout>(R.id.detail_remarks_layout)
+        val label = binding.detailRemarksLabel
+        val layout = binding.detailRemarksLayout
         val rmk = result[2]
         if (rmk != null && rmk.moveToFirst()) {
             do {
@@ -350,7 +344,7 @@ class AirportDetailsFragment : FragmentBase() {
     }
 
     private fun showAwosDetails(result: Array<Cursor?>) {
-        val layout = findViewById<LinearLayout>(R.id.detail_awos_layout) ?: return
+        val layout = binding.detailAwosLayout
         val awos1 = result[7]
         if (awos1?.moveToFirst() == true) {
             do {
@@ -400,7 +394,7 @@ class AirportDetailsFragment : FragmentBase() {
     }
 
     private fun showHomeDistance(result: Array<Cursor?>) {
-        val layout = findViewById<LinearLayout>(R.id.detail_home_layout) ?: return
+        val layout = binding.detailHomeLayout
         val home: Cursor? = result[14]
         if (home == null) {
             val runnable = Runnable {
@@ -443,7 +437,7 @@ class AirportDetailsFragment : FragmentBase() {
     }
 
     private fun showNearbyFacilities() {
-        val layout = findViewById<LinearLayout>(R.id.detail_nearby_layout) ?: return
+        val layout = binding.detailNearbyLayout
 
         arguments?.putParcelable(LocationColumns.LOCATION, mLocation)
         addClickableRow(layout, "Airports", NearbyAirportsFragment::class.java, arguments)
@@ -453,7 +447,7 @@ class AirportDetailsFragment : FragmentBase() {
     }
 
     private fun showAirportInfo() {
-        val layout = findViewById<LinearLayout>(R.id.detail_airport_info_layout) ?: return
+        val layout = binding.detailAirportInfoLayout
         val intent = Intent(activity, AirportNotamActivity::class.java)
         intent.putExtra(Airports.SITE_NUMBER, mSiteNumber)
         addClickableRow(layout, "View NOTAMs", intent)
@@ -465,7 +459,7 @@ class AirportDetailsFragment : FragmentBase() {
     private fun showCharts(result: Array<Cursor?>) {
         val apt = result[0] ?: return
 
-        val layout = findViewById<LinearLayout>(R.id.detail_charts_layout) ?: return
+        val layout = binding.detailChartsLayout
         var sectional: String? = apt.getString(apt.getColumnIndexOrThrow(Airports.SECTIONAL_CHART))
         if (sectional.isNullOrEmpty()) {
             sectional = "N/A"
@@ -510,7 +504,7 @@ class AirportDetailsFragment : FragmentBase() {
 
     private fun showOperationsDetails(result: Array<Cursor?>) {
         val apt = result[0] ?: return
-        val layout = findViewById<LinearLayout>(R.id.detail_operations_layout)
+        val layout = binding.detailOperationsLayout
         val use = apt.getString(apt.getColumnIndexOrThrow(Airports.FACILITY_USE))
         addRow(layout!!, "Operation", DataUtils.decodeFacilityUse(use))
         val faaCode = apt.getString(apt.getColumnIndexOrThrow(Airports.FAA_CODE))
@@ -603,7 +597,7 @@ class AirportDetailsFragment : FragmentBase() {
     }
 
     private fun showAeroNavDetails(result: Array<Cursor?>) {
-        val layout = findViewById<LinearLayout>(R.id.detail_aeronav_layout) ?: return
+        val layout = binding.detailAeronavLayout
         val apt = result[0] ?: return
         val siteNumber = apt.getString(apt.getColumnIndexOrThrow(Airports.SITE_NUMBER))
 
@@ -643,13 +637,13 @@ class AirportDetailsFragment : FragmentBase() {
 
     private fun showServicesDetails(result: Array<Cursor?>) {
         val apt = result[0] ?: return
-        val layout = findViewById<LinearLayout>(R.id.detail_services_layout)
+        val layout = binding.detailServicesLayout
         var fuelTypes = DataUtils.decodeFuelTypes(
                 apt.getString(apt.getColumnIndexOrThrow(Airports.FUEL_TYPES)))
         if (fuelTypes.isBlank()) {
             fuelTypes = "No"
         }
-        addRow(layout!!, "Fuel available", fuelTypes)
+        addRow(layout, "Fuel available", fuelTypes)
         var repair = apt.getString(apt.getColumnIndexOrThrow(Airports.AIRFRAME_REPAIR_SERVICE)) ?: ""
         if (repair.isBlank()) {
             repair = "No"
@@ -664,7 +658,7 @@ class AirportDetailsFragment : FragmentBase() {
     }
 
     private fun showOtherDetails() {
-        val layout = findViewById<LinearLayout>(R.id.detail_other_layout) ?: return
+        val layout = binding.detailOtherLayout
         addClickableRow(layout, "Ownership and contact", OwnershipFragment::class.java, arguments)
         addClickableRow(layout, "Aircraft operations", AircraftOpsFragment::class.java, arguments)
         addClickableRow(layout, "Additional remarks", RemarksFragment::class.java, arguments)
@@ -708,7 +702,7 @@ class AirportDetailsFragment : FragmentBase() {
     @SuppressLint("SetTextI18n")
     private fun addRunwayRow(layout: LinearLayout, c: Cursor) {
         val siteNumber = c.getString(c.getColumnIndexOrThrow(Runways.SITE_NUMBER))
-        val runwayId = c.getString(c.getColumnIndexOrThrow(Runways.RUNWAY_ID))
+        val rwyId = c.getString(c.getColumnIndexOrThrow(Runways.RUNWAY_ID))
         val length = c.getInt(c.getColumnIndexOrThrow(Runways.RUNWAY_LENGTH))
         val width = c.getInt(c.getColumnIndexOrThrow(Runways.RUNWAY_WIDTH))
         val surfaceType = c.getString(c.getColumnIndexOrThrow(Runways.SURFACE_TYPE))
@@ -732,44 +726,38 @@ class AirportDetailsFragment : FragmentBase() {
             GeoUtils.applyDeclination(heading, mDeclination)
         } else {
             // Actual heading is not available, try to deduce it from runway id
-            DataUtils.getRunwayHeading(runwayId)
+            DataUtils.getRunwayHeading(rwyId)
         }
 
-        val row = inflate<RelativeLayout>(R.layout.runway_detail_item)
+        RunwayDetailItemBinding.inflate(layoutInflater).apply {
+            runwayId.text = rwyId
+            UiUtils.setRunwayDrawable(requireContext(), runwayId, rwyId, length, heading)
 
-        var tv = row.findViewById<TextView>(R.id.runway_id)
-        tv?.text = runwayId
-        activity?.let { UiUtils.setRunwayDrawable(it, tv, runwayId, length, heading) }
+            if (rp != null) {
+                runwayRp.text = rp
+                runwayRp.visibility = View.VISIBLE
+            }
 
-        if (rp != null) {
-            tv = row.findViewById(R.id.runway_rp)
-            tv?.text = rp
-            tv?.visibility = View.VISIBLE
+            val runwayLength = FormatUtils.formatFeet(length.toFloat())
+            val runwayWidth = FormatUtils.formatFeet(width.toFloat())
+            runwaySize.text = "$runwayLength x $runwayWidth"
+            runwaySurface.text = DataUtils.decodeSurfaceType(surfaceType)
+
+            if (!rwyId.startsWith("H")) {
+                // Save the textview and runway info for later use
+                val tag = Bundle()
+                tag.putString(Runways.BASE_END_ID, baseId)
+                tag.putString(Runways.RECIPROCAL_END_ID, reciprocalId)
+                tag.putInt(Runways.BASE_END_HEADING, heading)
+                runwayWindInfo.tag = tag
+                mRunwayViews.add(runwayWindInfo)
+            }
+
+            val args = Bundle()
+            args.putString(Runways.SITE_NUMBER, siteNumber)
+            args.putString(Runways.RUNWAY_ID, rwyId)
+            addClickableRow(layout, root, RunwaysFragment::class.java, args)
         }
-
-        val runwayLength = FormatUtils.formatFeet(length.toFloat())
-        val runwayWidth = FormatUtils.formatFeet(width.toFloat())
-        tv = row.findViewById(R.id.runway_size)
-        tv?.text = "$runwayLength x $runwayWidth"
-
-        tv = row.findViewById(R.id.runway_surface)
-        tv?.text = DataUtils.decodeSurfaceType(surfaceType)
-
-        if (!runwayId.startsWith("H")) {
-            // Save the textview and runway info for later use
-            tv = row.findViewById(R.id.runway_wind_info)
-            val tag = Bundle()
-            tag.putString(Runways.BASE_END_ID, baseId)
-            tag.putString(Runways.RECIPROCAL_END_ID, reciprocalId)
-            tag.putInt(Runways.BASE_END_HEADING, heading)
-            tv?.tag = tag
-            mRunwayViews.add(tv!!)
-        }
-
-        val args = Bundle()
-        args.putString(Runways.SITE_NUMBER, siteNumber)
-        args.putString(Runways.RUNWAY_ID, runwayId)
-        addClickableRow(layout, row, RunwaysFragment::class.java, args)
     }
 
     private fun cacheMetars() {
