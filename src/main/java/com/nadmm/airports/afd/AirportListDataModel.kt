@@ -81,10 +81,11 @@ data class AirportListDataModel(
             val otherInfo = other.joinToString()
 
             var position: String? = null
-            if ( cursor.getColumnIndexOrThrow( LocationColumns.DISTANCE ) >= 0
-                && cursor.getColumnIndexOrThrow( LocationColumns.BEARING ) >= 0 ) {
-                val distance = cursor.getFloat(cursor.getColumnIndexOrThrow(LocationColumns.DISTANCE))
-                val bearing = cursor.getFloat(cursor.getColumnIndexOrThrow(LocationColumns.BEARING))
+            val distanceColIndex = cursor.getColumnIndex(LocationColumns.DISTANCE)
+            val bearingColIndex = cursor.getColumnIndex(LocationColumns.BEARING)
+            if ( distanceColIndex >= 0 && bearingColIndex >= 0 ) {
+                val distance = cursor.getFloat(distanceColIndex)
+                val bearing = cursor.getFloat(bearingColIndex)
                 // Check if we have distance information
                 position = "%.1f NM %s, initial course %.0f\u00B0 M"
                     .format(distance, GeoUtils.getCardinalDirection(bearing), bearing)
