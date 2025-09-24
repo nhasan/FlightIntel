@@ -19,6 +19,7 @@
 package com.nadmm.airports.wx
 
 import android.content.Intent
+import android.text.format.DateUtils.HOUR_IN_MILLIS
 import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
@@ -62,5 +63,9 @@ class ProgChartService : NoaaService("progchart", PROGCHART_CACHE_MAX_AGE) {
             RESULT to if (imageFile.exists()) imageFile.absolutePath else ""
         )
         Events.post(result)
+    }
+
+    companion object {
+        private const val PROGCHART_CACHE_MAX_AGE = 3 * HOUR_IN_MILLIS
     }
 }

@@ -45,7 +45,7 @@ import javax.net.ssl.SSLSession
 import kotlin.math.max
 
 object NetworkUtils {
-    private val sBuffer = ByteArray(32 * 1024)
+    private val sBuffer = ByteArray(8 * 1024)
     const val CONTENT_PROGRESS = "CONTENT_PROGRESS"
     const val CONTENT_LENGTH = "CONTENT_LENGTH"
     const val CONTENT_NAME = "CONTENT_NAME"
@@ -140,7 +140,6 @@ object NetworkUtils {
             throw Exception("Result cannot be null when receiver is passed")
         }
         var f: InputStream? = null
-        val `in`: CountingInputStream
         var out: OutputStream? = null
         try {
             val hostnameVerifier =
@@ -159,6 +158,9 @@ object NetworkUtils {
                 )
             }
             val status = conn.responseCode
+            if (status == HttpURLConnection.HTTP_NO_CONTENT) {
+                return false
+            }
             if (status != HttpURLConnection.HTTP_OK) {
                 if (receiver != null) {
                     // Signal the receiver that download is aborted
@@ -173,7 +175,7 @@ object NetworkUtils {
                 result!!.putLong(CONTENT_LENGTH, length)
             }
             out = FileOutputStream(file)
-            `in` = CountingInputStream(conn.inputStream)
+            val `in` = CountingInputStream(conn.inputStream)
             f = if (filter != null) {
                 val ctor = filter.getConstructor(
                     InputStream::class.java

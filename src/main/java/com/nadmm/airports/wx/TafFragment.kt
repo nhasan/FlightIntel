@@ -150,7 +150,7 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
             c = DbUtils.getBoundingBoxCursor(
                 db, Wxs.TABLE_NAME,
                 Wxs.STATION_LATITUDE_DEGREES, Wxs.STATION_LONGITUDE_DEGREES,
-                location, NoaaService.TAF_RADIUS
+                location, TafService.TAF_RADIUS
             )
             if (c.moveToFirst()) {
                 var distance = Float.MAX_VALUE
@@ -169,7 +169,7 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
                         results
                     )
                     results[0] /= GeoUtils.METERS_PER_NAUTICAL_MILE
-                    if (results[0] <= NoaaService.TAF_RADIUS && results[0] < distance) {
+                    if (results[0] <= TafService.TAF_RADIUS && results[0] < distance) {
                         tafStationId = c.getString(c.getColumnIndexOrThrow(Wxs.STATION_ID))
                         distance = results[0]
                     }
@@ -233,8 +233,7 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
                 wxStatusLayout.removeAllViews()
                 wxStatusLayout.visibility = View.GONE
                 statusMsg.visibility = View.VISIBLE
-                statusMsg.text =
-                    "No wx station with TAF was found near $stationId within ${NoaaService.TAF_RADIUS}NM radius"
+                statusMsg.text = "No wx station with TAF was found in the vicinity of $stationId"
                 wxTitle.wxTitleLayout.visibility = View.GONE
             }
             isRefreshing = false

@@ -168,21 +168,15 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
             layout.removeAllViews()
 
             if (pirep.entries.isNotEmpty()) {
-                pirepTitleMsg.text = "%d PIREPs reported within %d NM of %s during last %d hours".format(
-                    pirep.entries.size, NoaaService.PIREP_RADIUS_NM,
-                    pirep.stationId, NoaaService.PIREP_HOURS_BEFORE)
+                pirepTitleMsg.text = "${pirep.entries.size} PIREPs reported in the vicinity"
                 for (entry in pirep.entries) {
                     showPirepEntry(layout, entry)
                 }
             } else {
-                pirepTitleMsg.text = "No PIREPs reported within %d NM of %s in last %d hours".format(
-                    NoaaService.PIREP_RADIUS_NM, pirep.stationId, NoaaService.PIREP_HOURS_BEFORE
-                )
+                pirepTitleMsg.text = "No PIREPs reported in the vicinity"
             }
 
-            wxFetchTime.text = "Fetched on %s".format(
-                TimeUtils.formatDateTime(activityBase, pirep.fetchTime)
-            )
+            wxFetchTime.text = "Fetched on ${TimeUtils.formatDateTime(activityBase, pirep.fetchTime)}"
             wxFetchTime.visibility = View.VISIBLE
         }
 

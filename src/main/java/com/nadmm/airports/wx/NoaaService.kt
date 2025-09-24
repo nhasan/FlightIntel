@@ -22,7 +22,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.Bundle
 import android.os.IBinder
-import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.util.Log
 import com.nadmm.airports.utils.NetworkUtils.doHttpsGet
 import kotlinx.coroutines.CoroutineName
@@ -66,11 +65,11 @@ abstract class NoaaService(protected val name: String, protected val maxAgeMilli
         return fetchFromNoaa(ADDS_DATASERVER_PATH, query, file, compressed)
     }
 
-    protected fun fetchFromNoaa(path: String, query: String?, file: File, compressed: Boolean): Boolean {
+    protected fun fetchFromNoaa(path: String, query: String?, file: File, compressed: Boolean=false): Boolean {
         return fetch(AWC_HOST, path, query, file, compressed)
     }
 
-    protected fun fetch(host: String, path: String, query: String?, file: File, compressed: Boolean): Boolean {
+    protected fun fetch(host: String, path: String, query: String?, file: File, compressed: Boolean=false): Boolean {
         return doHttpsGet(
             this, host, path, query, file, null, null,
             if (compressed) GZIPInputStream::class.java else null
@@ -92,19 +91,12 @@ abstract class NoaaService(protected val name: String, protected val maxAgeMilli
         protected const val AWC_HOST: String = "aviationweather.gov"
         protected const val ADDS_DATASERVER_PATH: String = "/api/data/dataserver"
 
-        const val TAF_HOURS_BEFORE = 3
-        const val TAF_RADIUS = 25
-        const val PIREP_RADIUS_NM = 50
-        const val PIREP_HOURS_BEFORE = 3
-        const val PROGCHART_CACHE_MAX_AGE = 3 * HOUR_IN_MILLIS
-
         const val STATION_ID: String = "STATION_ID"
         const val STATION_IDS: String = "STATION_IDS"
         const val CACHE_ONLY: String = "CACHE_ONLY"
         const val FORCE_REFRESH: String = "FORCE_REFRESH"
         const val RADIUS_NM: String = "RADIUS_NM"
         const val LOCATION: String = "LOCATION"
-        const val HOURS_BEFORE: String = "HOURS_BEFORE"
         const val IMAGE_TYPE: String = "IMAGE_TYPE"
         const val IMAGE_CODE: String = "IMAGE_CODE"
         const val TEXT_TYPE: String = "TEXT_TYPE"

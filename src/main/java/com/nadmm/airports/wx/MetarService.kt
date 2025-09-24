@@ -27,7 +27,7 @@ import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
 
-class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
+class MetarService : NoaaService("metar", CACHE_MAX_AGE) {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
@@ -70,7 +70,7 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
             try {
                 xmlFile =  wxCache.createTempFile()
                 val query = ("dataSource=metars&requestType=retrieve"
-                        + "&hoursBeforeNow=${METAR_HOURS_BEFORE}&mostRecentForEachStation=constraint"
+                        + "&hoursBeforeNow=${HOURS_BEFORE}&mostRecentForEachStation=constraint"
                         + "&format=xml&stationString=${missing.joinToString()}")
                 fetchFromNoaa(query, xmlFile)
                 parseMetars(xmlFile, missing)
@@ -107,8 +107,8 @@ class MetarService : NoaaService("metar", METAR_CACHE_MAX_AGE) {
 
     companion object {
         private val TAG = MetarService::class.java.simpleName
-        private const val METAR_CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
-        private const val METAR_HOURS_BEFORE = 3
+        private const val CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
+        private const val HOURS_BEFORE = 3
 
         // Helper function to start the service
         fun startService(context: Context, stationId: String, force: Boolean, cacheOnly: Boolean = false) {

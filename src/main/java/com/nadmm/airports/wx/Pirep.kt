@@ -119,7 +119,7 @@ class PirepEntry(
 @Parcelize
 @Serializable
 class Pirep(
-    var fetchTime: Long = 0L,
+    var fetchTime: Long = System.currentTimeMillis(),
     var stationId: String = "",
     var entries: MutableList<PirepEntry> = mutableListOf()
 ) : Parcelable
