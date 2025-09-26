@@ -31,13 +31,12 @@ class AreaForecastFragment()
 
     companion object {
         private val areas: Map<String, String> = mapOf(
-            "fa_alaska_n1.txt" to "Alaska North Part 1",
-            "fa_alaska_n2.txt" to "Alaska North Part 2",
-            "fa_alaska_sc1.txt" to "Alaska Southcentral Part 1",
-            "fa_alaska_sc2.txt" to "Alaska Southcentral Part 2",
-            "fa_alaska_se1.txt" to "Alaska Southeast Part 1",
-            "fa_alaska_se2.txt" to "Alaska Southeast Part 2",
-            "fa_alaska_bswa.txt" to "Alaska Southwest",
+            "aknorth" to "Northern half of Alaska",
+            "akcentral" to "Interior Alaska",
+            "aksouth" to "Southcentral Alaska",
+            "aksouthwest" to "Alaska Penninsula",
+            "aksoutheast" to "Eastern Gulf of Alaska",
+            "akpanhandle" to "Alaska Panhandle"
         )
     }
 }

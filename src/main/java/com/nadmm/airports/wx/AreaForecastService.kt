@@ -46,10 +46,10 @@ class AreaForecastService : NoaaService("fa", FA_CACHE_MAX_AGE) {
         val file = wxCache.getFile(code)
         if (!file.exists()) {
             try {
-                val path = "/data/products/fa/$code"
-                fetch(AWC_HOST, path, null, file, false)
+                val query = "region=$code"
+                fetchFromNoaa("/api/data/areafcst", query, file)
             } catch (e: Exception) {
-                showToast(this, "Unable to fetch FA text: ${e.message}")
+                showToast(this, e.message)
             }
         }
 
