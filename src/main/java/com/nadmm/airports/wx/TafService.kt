@@ -63,13 +63,13 @@ class TafService : NoaaService("taf", CACHE_MAX_AGE) {
             var xmlFile: File? = null
             try {
                 xmlFile = wxCache.createTempFile()
-                val query = ("dataSource=tafs&requestType=retrieve"
-                        + "&hoursBeforeNow=${HOURS_BEFORE}&mostRecentForEachStation=constraint"
-                        + "&format=xml&stationString=${stationId}")
-                fetchFromNoaa(query, xmlFile)
-                val parser = TafParser()
-                val taf = parser.parse(xmlFile)
-                wxCache.serializeObject(taf, stationId)
+                val query = "ids=${stationId}&format=xml"
+                val success = fetchFromNoaa("/api/data/taf", query, xmlFile)
+                if (success) {
+                    val parser = TafParser()
+                    val taf = parser.parse(xmlFile)
+                    wxCache.serializeObject(taf, stationId)
+                }
             } catch (e: Exception) {
                 showToast(this, "Unable to fetch TAF: " + e.message)
             } finally {
@@ -89,7 +89,6 @@ class TafService : NoaaService("taf", CACHE_MAX_AGE) {
     companion object {
         private val TAG = TafService::class.java.simpleName
         private const val CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
-        private const val HOURS_BEFORE = 6
 
         const val TAF_RADIUS = 25
 

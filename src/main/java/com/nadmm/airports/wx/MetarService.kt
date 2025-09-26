@@ -69,11 +69,11 @@ class MetarService : NoaaService("metar", CACHE_MAX_AGE) {
             var xmlFile: File? = null
             try {
                 xmlFile =  wxCache.createTempFile()
-                val query = ("dataSource=metars&requestType=retrieve"
-                        + "&hoursBeforeNow=${HOURS_BEFORE}&mostRecentForEachStation=constraint"
-                        + "&format=xml&stationString=${missing.joinToString()}")
-                fetchFromNoaa(query, xmlFile)
-                parseMetars(xmlFile, missing)
+                val query = ("ids=${missing.joinToString(",")}&format=xml")
+                val success = fetchFromNoaa("/api/data/metar", query, xmlFile)
+                if (success) {
+                    parseMetars(xmlFile, missing)
+                }
             } catch (e: Exception) {
                 showToast(this, "Unable to fetch METAR: ${e.message}")
             } finally {
@@ -108,7 +108,6 @@ class MetarService : NoaaService("metar", CACHE_MAX_AGE) {
     companion object {
         private val TAG = MetarService::class.java.simpleName
         private const val CACHE_MAX_AGE = 30 * DateUtils.MINUTE_IN_MILLIS
-        private const val HOURS_BEFORE = 3
 
         // Helper function to start the service
         fun startService(context: Context, stationId: String, force: Boolean, cacheOnly: Boolean = false) {
