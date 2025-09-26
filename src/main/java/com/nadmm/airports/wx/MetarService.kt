@@ -69,7 +69,7 @@ class MetarService : NoaaService("metar", CACHE_MAX_AGE) {
             var xmlFile: File? = null
             try {
                 xmlFile =  wxCache.createTempFile()
-                val query = ("ids=${missing.joinToString(",")}&format=xml")
+                val query = "ids=${missing.joinToString(",")}&format=xml"
                 val success = fetchFromNoaa("/api/data/metar", query, xmlFile)
                 if (success) {
                     parseMetars(xmlFile, missing)
