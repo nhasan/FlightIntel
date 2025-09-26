@@ -48,8 +48,8 @@ class WindsAloftService : NoaaService("fb", FB_CACHE_MAX_AGE) {
         val file = wxCache.getFile(filename)
         if (!file.exists()) {
             try {
-                val path = "/data/products/fbwind/$filename"
-                fetch(AWC_HOST, path, null, file, false)
+                val query = "region=${code}&level=low&fcst=${type}"
+                fetchFromNoaa("/api/data/windtemp", query, file)
             } catch (e: Exception) {
                 showToast(this, "Unable to fetch FB text: ${e.message}")
             }
@@ -64,6 +64,6 @@ class WindsAloftService : NoaaService("fb", FB_CACHE_MAX_AGE) {
     }
 
     companion object {
-        private const val FB_CACHE_MAX_AGE = DateUtils.HOUR_IN_MILLIS / 2
+        private const val FB_CACHE_MAX_AGE = DateUtils.MINUTE_IN_MILLIS * 30
     }
 }

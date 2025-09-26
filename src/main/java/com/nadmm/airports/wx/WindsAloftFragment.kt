@@ -39,16 +39,15 @@ class WindsAloftFragment : WxTextFragmentBase(NoaaService.ACTION_GET_FB, areas, 
 
         private val areas = mapOf<String, String>(
             "us" to "Continental US",
+            "bos" to "Northeast",
+            "mia" to "Southeast",
+            "chi" to "North central",
+            "dfw" to "South central",
+            "slc" to "Rocky Mountain",
+            "sfo" to "Pacific Coast",
             "alaska" to "Alaska",
-            "bos" to "Boston",
-            "canada" to "Canada",
-            "chi" to "Chicago",
-            "dfw" to "Dallas/Fort Worth",
             "hawaii" to "Hawaii",
-            "mia" to "Miami",
-            "pacific" to "Pacific",
-            "sfo" to "San Francisco",
-            "slc" to "Salt Lake City"
+            "other_pac" to "Western Pacific"
         )
     }
 }
