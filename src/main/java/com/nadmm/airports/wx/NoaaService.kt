@@ -61,10 +61,6 @@ abstract class NoaaService(protected val name: String, protected val maxAgeMilli
         serviceJob.cancel() // This will cancel all coroutines launched in serviceScope
     }
 
-    protected fun fetchFromNoaa(query: String?, file: File, compressed: Boolean = false): Boolean {
-        return fetchFromNoaa(ADDS_DATASERVER_PATH, query, file, compressed)
-    }
-
     protected fun fetchFromNoaa(path: String, query: String?, file: File, compressed: Boolean=false): Boolean {
         return fetch(AWC_HOST, path, query, file, compressed)
     }
@@ -89,13 +85,12 @@ abstract class NoaaService(protected val name: String, protected val maxAgeMilli
         private val TAG: String = NoaaService::class.java.simpleName
 
         protected const val AWC_HOST: String = "aviationweather.gov"
-        protected const val ADDS_DATASERVER_PATH: String = "/api/data/dataserver"
 
         const val STATION_ID: String = "STATION_ID"
         const val STATION_IDS: String = "STATION_IDS"
         const val CACHE_ONLY: String = "CACHE_ONLY"
         const val FORCE_REFRESH: String = "FORCE_REFRESH"
-        const val RADIUS_NM: String = "RADIUS_NM"
+        const val RADIUS_SM: String = "RADIUS_SM"
         const val LOCATION: String = "LOCATION"
         const val IMAGE_TYPE: String = "IMAGE_TYPE"
         const val IMAGE_CODE: String = "IMAGE_CODE"
