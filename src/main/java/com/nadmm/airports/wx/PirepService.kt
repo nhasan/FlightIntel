@@ -25,7 +25,6 @@ import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.util.Log
 import androidx.core.content.IntentCompat
 import androidx.core.os.bundleOf
-import com.nadmm.airports.utils.GeoUtils
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
@@ -52,7 +51,7 @@ class PirepService : NoaaService("pirep", CACHE_MAX_AGE) {
         // Get request parameters
         val location = IntentCompat.getParcelableExtra(intent, LOCATION, Location::class.java) ?: return
         val stationId = intent.getStringExtra(STATION_ID) ?: return
-        val radiusNM = intent.getIntExtra(RADIUS_NM, 50)
+        val radiusSM = intent.getIntExtra(RADIUS_SM, 50)
         val forceRefresh = intent.getBooleanExtra(FORCE_REFRESH, false)
 
         val cachedFile = wxCache.getCachedFile(stationId)
@@ -67,11 +66,11 @@ class PirepService : NoaaService("pirep", CACHE_MAX_AGE) {
             var xmlFile: File? = null
             try {
                 xmlFile = wxCache.createTempFile()
-                val query = "id=$stationId&distance=$radiusNM&format=xml"
+                val query = "id=$stationId&distance=$radiusSM&format=xml"
                 Log.d(TAG, "getPirepText: query=$query")
                 val success = fetchFromNoaa("/api/data/pirep", query, xmlFile)
                 if (success) {
-                    val pirep = PirepParser.parse(xmlFile, location, radiusNM)
+                    val pirep = PirepParser.parse(xmlFile, location, radiusSM)
                     pirep.stationId = stationId
                     wxCache.serializeObject(pirep, stationId)
                 }
@@ -96,14 +95,14 @@ class PirepService : NoaaService("pirep", CACHE_MAX_AGE) {
     companion object {
         private val TAG = PirepService::class.java.simpleName
         private const val CACHE_MAX_AGE = HOUR_IN_MILLIS
-        private const val PIREP_RADIUS_NM = (50 * GeoUtils.STATUTE_MILES_PER_NAUTICAL_MILES).toInt()
+        private const val PIREP_RADIUS_SM = 50
 
         fun startService(context: Context, stationId: String, location: Location, refresh: Boolean) {
             val intent = Intent(context, PirepService::class.java).apply {
                 setAction(ACTION_GET_PIREP)
                 putExtra(STATION_ID, stationId)
                 putExtra(TYPE, TYPE_TEXT)
-                putExtra(RADIUS_NM, PIREP_RADIUS_NM)
+                putExtra(RADIUS_SM, PIREP_RADIUS_SM)
                 putExtra(LOCATION, location)
                 putExtra(FORCE_REFRESH, refresh)
             }
