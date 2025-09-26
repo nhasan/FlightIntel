@@ -159,7 +159,7 @@ object NetworkUtils {
             }
             val status = conn.responseCode
             if (status == HttpURLConnection.HTTP_NO_CONTENT) {
-                return false
+                throw Exception("Data not available")
             }
             if (status != HttpURLConnection.HTTP_OK) {
                 if (receiver != null) {
