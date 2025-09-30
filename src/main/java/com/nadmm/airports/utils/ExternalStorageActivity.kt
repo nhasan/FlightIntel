@@ -54,7 +54,7 @@ class ExternalStorageActivity : ActivityBase() {
 
     @SuppressLint("SetTextI18n")
     override fun externalStorageStatusChanged() {
-        if (SystemUtils.isExternalStorageAvailable()) {
+        if (SystemUtils.isExternalStorageAvailable) {
             var tv = findViewById<TextView>(R.id.storage_status_text)
             tv.text = "External SD card is available for use"
             tv = findViewById(R.id.storage_desc_text2)

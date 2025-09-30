@@ -48,7 +48,7 @@ class ScratchPadFragment : FragmentBase(), FreeHandDrawView.EventListener {
         super.onCreate(savedInstanceState)
         mFadeIn = AnimationUtils.loadAnimation(activity, R.anim.fade_in)
         mFadeOut = AnimationUtils.loadAnimation(activity, R.anim.fade_out)
-        mImgFile = SystemUtils.getExternalFile(activity, DIR_NAME, FILE_NAME)
+        mImgFile = SystemUtils.getExternalFile(requireContext(), DIR_NAME, FILE_NAME)
     }
 
     override fun onCreateView(
@@ -120,7 +120,7 @@ class ScratchPadFragment : FragmentBase(), FreeHandDrawView.EventListener {
             val stream = FileOutputStream(mImgFile)
             val bitmap = mDrawView!!.bitmap
             bitmap!!.compress(CompressFormat.PNG, 0, stream)
-        } catch (e: FileNotFoundException) {
+        } catch (_: FileNotFoundException) {
             showToast(requireActivity(), "Unable to save scratchpad data")
         }
     }
@@ -132,7 +132,7 @@ class ScratchPadFragment : FragmentBase(), FreeHandDrawView.EventListener {
                 val bitmap = BitmapFactory.decodeStream(stream)
                 mDrawView!!.bitmap = bitmap
                 bitmap.recycle()
-            } catch (e: FileNotFoundException) {
+            } catch (_: FileNotFoundException) {
                 mImgFile.delete()
                 showToast(requireActivity(), "Unable to restore scratchpad data")
             }

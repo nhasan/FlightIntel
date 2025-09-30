@@ -52,7 +52,7 @@ class PreferencesActivity : FragmentActivityBase() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.getItemId() == android.R.id.home) {
+        if (item.itemId == android.R.id.home) {
             onBackPressed()
             return true
         }
@@ -68,8 +68,8 @@ class PreferencesActivity : FragmentActivityBase() {
         val fm = supportFragmentManager
         var f = fm.findFragmentByTag(tag)
         if (f == null) {
-            f = fm.getFragmentFactory().instantiate(getClassLoader(), clss.getName())
-            f.setArguments(getIntent().getExtras())
+            f = fm.getFragmentFactory().instantiate(classLoader, clss.getName())
+            f.setArguments(intent.extras)
             val ft = fm.beginTransaction()
             ft.add(R.id.fragment_container, f, tag)
             ft.commit()

@@ -252,8 +252,8 @@ class LibraryPageFragment : FragmentBase() {
                 unregisterForContextMenu(it)
             }
             val action = result.getString(LibraryService.ACTION)
-            if (action == LibraryService.ACTION_GET_BOOK) {
-                SystemUtils.startPDFViewer(activity, path)
+            if (action == LibraryService.ACTION_GET_BOOK && path != null) {
+                SystemUtils.startPDFViewer(requireContext(), path)
             }
         }
     }

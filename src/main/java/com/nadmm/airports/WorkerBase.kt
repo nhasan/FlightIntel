@@ -38,15 +38,11 @@ abstract class WorkerBase(appContext: Context, workerParams: WorkerParameters,
                           name: String, age: Long):
     CoroutineWorker(appContext, workerParams) {
 
-    private val dataDir: File
-    private val maxAge: Long
-    private val workerName: String
+    private val dataDir: File = SystemUtils.getExternalDir(appContext, name)
+    private val maxAge: Long = age
+    private val workerName: String = name
 
     init {
-        dataDir = SystemUtils.getExternalDir(appContext, name)
-        maxAge = age
-        workerName = name
-
         cleanupCache()
     }
 

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2021 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ import kotlinx.coroutines.withContext
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.let
 
 class AlmanacFragment : FragmentBase() {
 
@@ -73,10 +74,10 @@ class AlmanacFragment : FragmentBase() {
 
     @SuppressLint("SetTextI18n")
     private fun showSolarInfo(apt: Cursor) {
-        val timezoneId = apt.getString(apt.getColumnIndex(Airports.TIMEZONE_ID))
+        val timezoneId = apt.getString(apt.getColumnIndexOrThrow(Airports.TIMEZONE_ID))
         val tz = TimeZone.getTimeZone(timezoneId)
-        val lat = apt.getDouble(apt.getColumnIndex(Airports.REF_LATTITUDE_DEGREES))
-        val lon = apt.getDouble(apt.getColumnIndex(Airports.REF_LONGITUDE_DEGREES))
+        val lat = apt.getDouble(apt.getColumnIndexOrThrow(Airports.REF_LATTITUDE_DEGREES))
+        val lon = apt.getDouble(apt.getColumnIndexOrThrow(Airports.REF_LONGITUDE_DEGREES))
         val location = Location("")
         location.latitude = lat
         location.longitude = lon
@@ -99,9 +100,11 @@ class AlmanacFragment : FragmentBase() {
 
         findViewById<LinearLayout>(R.id.morning_info_layout)?.apply {
             format.timeZone = local
-            addRow(this, "Morning civil twilight (Local)", format.format(morningTwilight.time))
+            addRow(this, "Morning civil twilight (Local)",
+                if (morningTwilight != null) format.format(morningTwilight.time) else "Sun does not rise")
             format.timeZone = utc
-            addRow(this, "Morning civil twilight (UTC)", format.format(morningTwilight.time))
+            addRow(this, "Morning civil twilight (UTC)",
+                if (morningTwilight != null) format.format(morningTwilight.time) else "Sun does not rise")
         }
 
         findViewById<LinearLayout>(R.id.sunrise_info_layout)?.let {
@@ -130,9 +133,11 @@ class AlmanacFragment : FragmentBase() {
 
         findViewById<LinearLayout>(R.id.evening_info_layout)?.let {
             format.timeZone = local
-            addRow(it, "Evening civil twilight (Local)", format.format(eveningTwilight.time))
+            addRow(it, "Evening civil twilight (Local)",
+                if (eveningTwilight != null) format.format(eveningTwilight.time) else "Sun does not set")
             format.timeZone = utc
-            addRow(it, "Evening civil twilight (UTC)", format.format(eveningTwilight.time))
+            addRow(it, "Evening civil twilight (UTC)",
+                if (eveningTwilight != null) format.format(eveningTwilight.time) else "Sun does not set")
         }
 
         findViewById<LinearLayout>(R.id.current_time_layout)?.let {
@@ -142,6 +147,11 @@ class AlmanacFragment : FragmentBase() {
             format.timeZone = utc
             addRow(it, "Current time (UTC)", format.format(now.time))
             // Determine FAR 1.1 definition of day/night for logging flight time
+            if (morningTwilight == null || eveningTwilight == null) {
+                // Sun does not rise or set, so it is either always day or always night
+                addRow(it, "FAR 1.1 day/night", if (sunrise == null) "Night" else "Day")
+                return@let
+            }
             var day = now in morningTwilight..eveningTwilight
             addRow(it, "FAR 1.1 day/night", if (day) "Day" else "Night")
             // Determine FAR 61.75(b) definition of day/night for carrying passengers

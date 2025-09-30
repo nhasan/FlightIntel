@@ -155,7 +155,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         get() = mPreferences.getBoolean(PreferencesActivity.KEY_DISCLAIMER_AGREED, false)
 
     val prefShowLocalTime: Boolean
-        get() = mPreferences.getBoolean(PreferencesActivity.KEY_SHOW_LOCAL_TIME, false)
+        get() = mPreferences.getBoolean(PreferencesActivity.KEY_SHOW_LOCAL_TIME, true)
 
     val prefHomeScreen: String
         get() = mPreferences.getString(PreferencesActivity.KEY_HOME_SCREEN, "A/FD") ?: ""
@@ -460,7 +460,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     protected fun onNavDrawerStateChanged() {}
 
     protected open fun externalStorageStatusChanged() {
-        if (!SystemUtils.isExternalStorageAvailable()) {
+        if (!SystemUtils.isExternalStorageAvailable) {
             val intent = Intent(this, ExternalStorageActivity::class.java)
             startActivity(intent)
         }

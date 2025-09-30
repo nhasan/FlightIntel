@@ -40,7 +40,7 @@ class LibraryService : Service() {
     // Coroutine scope tied to Dispatchers.IO for background work
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
 
-    private lateinit var mDataDir: File
+    private var mDataDir: File? = null
 
     override fun onCreate() {
         super.onCreate()

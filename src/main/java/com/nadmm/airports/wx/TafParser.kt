@@ -131,8 +131,8 @@ class TafParser {
 
         private fun safeParseTime(timeStr: String): Long {
             return try {
-                TimeUtils.parse3339(timeStr).time
-            } catch (e: ParseException) {
+                TimeUtils.parse3339(timeStr)?.time ?: 0L
+            } catch (_: ParseException) {
                 0L // Return epoch on parsing failure
             }
         }

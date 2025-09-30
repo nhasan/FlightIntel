@@ -370,7 +370,7 @@ class DtppFragment : FragmentBase() {
         if (expired) {
             showToast(requireActivity(), "WARNING: This chart has expired!", Toast.LENGTH_LONG)
         }
-        SystemUtils.startPDFViewer(activity, path)
+        SystemUtils.startPDFViewer(requireContext(), path)
     }
 
     private fun checkDelete() {

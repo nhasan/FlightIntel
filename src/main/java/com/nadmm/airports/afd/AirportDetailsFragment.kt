@@ -148,7 +148,7 @@ class AirportDetailsFragment : FragmentBase() {
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     DafdService.Events.events.filter { it.isNotEmpty() }.collect { path ->
-                        SystemUtils.startPDFViewer(activity, path)
+                        SystemUtils.startPDFViewer(requireContext(), path)
                     }
                 }
             }
@@ -157,7 +157,7 @@ class AirportDetailsFragment : FragmentBase() {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     ClassBService.Events.events.filter { it.isNotEmpty() }.collect { path ->
                         if (path.isNotEmpty()) {
-                            SystemUtils.startPDFViewer(activity, path)
+                            SystemUtils.startPDFViewer(requireContext(), path)
                         }
                     }
                 }

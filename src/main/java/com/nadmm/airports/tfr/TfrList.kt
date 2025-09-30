@@ -100,7 +100,7 @@ class TfrList : Serializable {
             }
         }
 
-        fun formatTimeRange(context: ActivityBase?): String {
+        fun formatTimeRange(context: ActivityBase): String {
             val sb = StringBuilder()
             if (activeTime < Long.MAX_VALUE && expireTime < Long.MAX_VALUE) {
                 sb.append(TimeUtils.formatDateRange(context, activeTime, expireTime))
