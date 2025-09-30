@@ -108,18 +108,19 @@ abstract class WxGraphicFragmentBase(
     }
 
     private fun requestWxMap(code: String) {
-        setSpinnerVisible(true)
-
-        val service = serviceIntent
-        service.setAction(action)
-        service.putExtra(NoaaService.TYPE, NoaaService.TYPE_GRAPHIC)
-        service.putExtra(NoaaService.IMAGE_CODE, code)
-        if (wxTypes.isNotEmpty()) {
-            val text = getSelectedItemText(binding.wxMapType)
-            val type = wxTypes.entries.first { it.value == text }.key
-            service.putExtra(NoaaService.IMAGE_TYPE, type)
+        activity?.let { activity ->
+            setSpinnerVisible(true)
+            val service = serviceIntent.apply {
+                putExtra(NoaaService.TYPE, NoaaService.TYPE_GRAPHIC)
+                putExtra(NoaaService.IMAGE_CODE, code)
+                if (wxTypes.isNotEmpty()) {
+                    val text = getSelectedItemText(binding.wxMapType)
+                    val type = wxTypes.entries.first { it.value == text }.key
+                    putExtra(NoaaService.IMAGE_TYPE, type)
+                }
+            }
+            activity.startService(service)
         }
-        activity?.startService(service)
     }
 
     override fun processResult(result: Bundle) {

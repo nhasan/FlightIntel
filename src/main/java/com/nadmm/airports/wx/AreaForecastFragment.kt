@@ -21,15 +21,18 @@ package com.nadmm.airports.wx
 import android.content.Intent
 
 class AreaForecastFragment()
-    : WxTextFragmentBase(NoaaService.ACTION_GET_FA, areas) {
-
+    : WxTextFragmentBase(ACTION, areas)
+{
     override val title: String = "Area Forecast"
     override val helpText: String = "Refer to GFA (Graphical Forecast for Aviation) tab for other regions."
 
     override val serviceIntent: Intent
         get() = Intent(requireActivity(), AreaForecastService::class.java)
+            .setAction(ACTION)
 
     companion object {
+        private const val ACTION = NoaaService.ACTION_GET_FA
+
         private val areas: Map<String, String> = mapOf(
             "aknorth" to "Northern half of Alaska",
             "akcentral" to "Interior Alaska",

@@ -20,7 +20,9 @@ package com.nadmm.airports.wx
 
 import android.content.Intent
 
-class GfaFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_GFA, regions, forecasts) {
+class GfaFragment
+    : WxGraphicFragmentBase(ACTION, regions, forecasts)
+{
     init {
         title = "Graphical Forecast"
         graphicTypeLabel = "Select Forecast"
@@ -29,8 +31,11 @@ class GfaFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_GFA, regions, f
 
     override val serviceIntent: Intent
         get() = Intent(requireActivity(), GfaService::class.java)
+            .setAction(ACTION)
 
     companion object {
+        private const val ACTION = NoaaService.ACTION_GET_GFA
+
         private val forecasts: Map<String, String> = mapOf(
             "F03_gfa_clouds" to "3 Hour Clouds",
             "F03_gfa_sfc" to "3 Hour Surface",

@@ -31,7 +31,7 @@ import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.utils.UiUtils
 import kotlinx.coroutines.launch
 
-abstract class WxFragmentBase(protected val action: String) : FragmentBase() {
+abstract class WxFragmentBase(private val action: String) : FragmentBase() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

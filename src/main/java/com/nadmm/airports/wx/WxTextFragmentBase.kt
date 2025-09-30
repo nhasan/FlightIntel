@@ -113,17 +113,18 @@ abstract class WxTextFragmentBase(
     }
 
     private fun requestWxText(code: String?) {
-        setSpinnerVisible(true)
-        val service = serviceIntent.apply {
-            setAction(this@WxTextFragmentBase.action)
-            putExtra(NoaaService.TEXT_CODE, code)
-            if (wxTypes.isNotEmpty()) {
-                val text = getSelectedItemText(binding.wxMapType)
-                val type = wxTypes.entries.first { it.value == text }.key
-                putExtra(NoaaService.TEXT_TYPE, type)
+        activity?.let { activity ->
+            setSpinnerVisible(true)
+            val service = serviceIntent.apply {
+                putExtra(NoaaService.TEXT_CODE, code)
+                if (wxTypes.isNotEmpty()) {
+                    val text = getSelectedItemText(binding.wxMapType)
+                    val type = wxTypes.entries.first { it.value == text }.key
+                    putExtra(NoaaService.TEXT_TYPE, type)
+                }
             }
+            activity.startService(service)
         }
-        activity?.startService(service)
     }
 
     private fun setSpinnerVisible(visible: Boolean) {

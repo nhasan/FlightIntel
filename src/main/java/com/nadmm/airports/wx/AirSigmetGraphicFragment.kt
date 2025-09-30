@@ -20,10 +20,9 @@ package com.nadmm.airports.wx
 
 import android.content.Intent
 
-class AirSigmetGraphicFragment : WxGraphicFragmentBase(
-    NoaaService.ACTION_GET_AIRSIGMET,
-    AirSigmetCodes
-) {
+class AirSigmetGraphicFragment
+    : WxGraphicFragmentBase(ACTION, AirSigmetCodes)
+{
     init {
         title = "AIRMET/SIGMET Graphics"
         graphicLabel = "Select Category"
@@ -31,8 +30,11 @@ class AirSigmetGraphicFragment : WxGraphicFragmentBase(
 
     override val serviceIntent: Intent
         get() = Intent(requireActivity(), AirSigmetService::class.java)
+            .setAction(ACTION)
 
     companion object {
+        private const val ACTION = NoaaService.ACTION_GET_AIRSIGMET
+
         private val AirSigmetCodes = mapOf(
             "all" to "All active SIGMETs",
             "cb" to "Convective SIGMETs and Outlooks",

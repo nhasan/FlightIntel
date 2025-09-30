@@ -20,8 +20,9 @@ package com.nadmm.airports.wx
 
 import android.content.Intent
 
-class WindsAloftFragment : WxTextFragmentBase(NoaaService.ACTION_GET_FB, areas, types) {
-
+class WindsAloftFragment
+    : WxTextFragmentBase(ACTION, areas, types)
+{
     override val title: String = "Winds Aloft"
     override val helpText: String = "Winds Aloft forecasts provide wind and temperature information at " +
             "various altitudes, typically used for flight planning. " +
@@ -29,8 +30,11 @@ class WindsAloftFragment : WxTextFragmentBase(NoaaService.ACTION_GET_FB, areas, 
 
     override val serviceIntent: Intent
         get() = Intent(requireActivity(), WindsAloftService::class.java)
+            .setAction(ACTION)
 
     companion object {
+        private const val ACTION = NoaaService.ACTION_GET_FB
+
         private val types = mapOf<String, String>(
             "06" to "6 Hour",
             "12" to "12 Hour",

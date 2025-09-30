@@ -20,7 +20,9 @@ package com.nadmm.airports.wx
 
 import android.content.Intent
 
-class IcingFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_ICING, altitudes, types) {
+class IcingFragment
+    : WxGraphicFragmentBase(ACTION, altitudes, types)
+{
     init {
         title = "Icing Forecast"
         graphicTypeLabel = "Select Period"
@@ -30,8 +32,11 @@ class IcingFragment : WxGraphicFragmentBase(NoaaService.ACTION_GET_ICING, altitu
 
     override val serviceIntent: Intent
         get() = Intent(requireActivity(), IcingService::class.java)
+            .setAction(ACTION)
 
     companion object {
+        private const val ACTION = NoaaService.ACTION_GET_ICING
+
         private val types = mapOf(
             "F00_cip" to "Current",
             "F01_fip" to "1 Hour",
