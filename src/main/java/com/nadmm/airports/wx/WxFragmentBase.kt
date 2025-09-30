@@ -33,11 +33,6 @@ import kotlinx.coroutines.launch
 
 abstract class WxFragmentBase(private val action: String) : FragmentBase() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -77,5 +72,4 @@ abstract class WxFragmentBase(private val action: String) : FragmentBase() {
         return BundleCompat.getParcelable(result, NoaaService.RESULT, clazz)
             ?: clazz.getDeclaredConstructor().newInstance()
     }
-
 }
