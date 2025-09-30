@@ -57,6 +57,7 @@ import java.util.Locale
 class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
     private var _binding: TafDetailViewBinding? = null
     private val binding get() = _binding!!
+    private var lastTaf = Taf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,8 +72,8 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
         return createContentView(view)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onResume() {
+        super.onResume()
 
         fetchTaf()
     }
@@ -90,7 +91,10 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
         val type = result.getString(NoaaService.TYPE)
         if (NoaaService.TYPE_TEXT == type) {
             val taf = getResultObject(result, Taf::class.java)
-            showTaf(taf)
+            if (taf.issueTime > lastTaf.issueTime) {
+                lastTaf = taf
+                showTaf(taf)
+            }
             isRefreshing = false
         }
     }

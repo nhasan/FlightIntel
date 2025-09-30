@@ -63,6 +63,7 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
     private var location: Location? = null
     private var _binding: MetarDetailViewBinding? = null
     private val binding get() = _binding!!
+    private var lastMetar = Metar()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,8 +73,8 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
         return createContentView(binding.root)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onResume() {
+        super.onResume()
 
         fetchMetar()
     }
@@ -91,7 +92,10 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
         val type = result.getString(NoaaService.TYPE)
         if (NoaaService.TYPE_TEXT == type) {
             val metar = getResultObject(result, Metar::class.java)
-            showMetar(metar)
+            if (metar.observationTime > lastMetar.observationTime) {
+                lastMetar = metar
+                showMetar(metar)
+            }
             isRefreshing = false
         }
     }
