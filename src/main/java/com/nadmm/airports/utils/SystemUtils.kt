@@ -16,68 +16,67 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.utils
 
-package com.nadmm.airports.utils;
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Environment
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
+import com.nadmm.airports.utils.UiUtils.showToast
+import java.io.File
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
-import android.os.Environment;
+object SystemUtils {
+    private const val MIME_TYPE_PDF = "application/pdf"
 
-import androidx.core.content.FileProvider;
-
-import java.io.File;
-import java.util.List;
-
-public class SystemUtils {
-
-    private final static String MIME_TYPE_PDF = "application/pdf";
-
-    private SystemUtils() {}
-
-    public static boolean canDisplayMimeType( Context context, String mimeType ) {
-        PackageManager pm = context.getPackageManager();
-        Intent intent = new Intent( Intent.ACTION_VIEW );
-        intent.setType( mimeType );
-        List<ResolveInfo> list = pm.queryIntentActivities( intent,
-                PackageManager.MATCH_DEFAULT_ONLY );
-        return !list.isEmpty();
+    fun canDisplayMimeType(context: Context, mimeType: String?): Boolean {
+        val pm = context.packageManager
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setType(mimeType)
+        val list = pm.queryIntentActivities(
+            intent,
+            PackageManager.MATCH_DEFAULT_ONLY
+        )
+        return !list.isEmpty()
     }
 
-    public static boolean isExternalStorageAvailable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals( state );
-    }
+    @JvmStatic
+    val isExternalStorageAvailable: Boolean
+        get() {
+            val state = Environment.getExternalStorageState()
+            return Environment.MEDIA_MOUNTED == state
+        }
 
-    public static void startPDFViewer( Context context, String path ) {
-        if ( SystemUtils.canDisplayMimeType( context, MIME_TYPE_PDF ) ) {
+    fun startPDFViewer(context: Context, path: String) {
+        if (canDisplayMimeType(context, MIME_TYPE_PDF)) {
             // Fire an intent to view the PDF chart
-            File pdfFile = new File( path );
-            Uri pdfUri = FileProvider.getUriForFile( context,
-                    "com.nadmm.airports.fileprovider", pdfFile );
-            Intent intent = new Intent( Intent.ACTION_VIEW );
-            intent.setDataAndType( pdfUri, MIME_TYPE_PDF );
-            intent.setFlags( Intent.FLAG_GRANT_READ_URI_PERMISSION );
-            context.startActivity( intent );
+            val pdfFile = File(path)
+            val pdfUri = FileProvider.getUriForFile(
+                context,
+                "com.nadmm.airports.fileprovider", pdfFile
+            )
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setDataAndType(pdfUri, MIME_TYPE_PDF)
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            context.startActivity(intent)
         } else {
             // No PDF viewer is installed, send user to Play Store
-            UiUtils.showToast( context, "Please install a PDF viewer app first" );
-            Intent market = new Intent( Intent.ACTION_VIEW );
-            Uri uri = Uri.parse( "market://details?id=com.google.android.apps.pdfviewer" );
-            market.setData( uri );
-            context.startActivity( market );
+            showToast(context, "Please install a PDF viewer app first")
+            val market = Intent(Intent.ACTION_VIEW)
+            val uri = "market://details?id=com.google.android.apps.pdfviewer".toUri()
+            market.setData(uri)
+            context.startActivity(market)
         }
     }
 
-    public static File getExternalDir( Context context, String dirName ) {
-        return context.getExternalFilesDirs( dirName )[ 0 ];
+    fun getExternalDir(context: Context, dirName: String?): File {
+        return context.getExternalFilesDirs(dirName)[0]
     }
 
-    public static File getExternalFile( Context context, String dirName, String fileName ) {
-        File dir = SystemUtils.getExternalDir( context, dirName );
-        return new File( dir, fileName );
+    @JvmStatic
+    fun getExternalFile(context: Context, dirName: String?, fileName: String): File {
+        val dir = getExternalDir(context, dirName)
+        return File(dir, fileName)
     }
-
 }

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  * Copyright 2012 Google Inc
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,152 +17,127 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.utils
 
-package com.nadmm.airports.utils;
+import android.content.Context
+import android.database.Cursor
+import android.util.SparseArray
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ListView
+import android.widget.TextView
+import androidx.cursoradapter.widget.ResourceCursorAdapter
+import androidx.core.util.size
 
-import android.content.Context;
-import android.database.Cursor;
-import android.util.SparseArray;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.TextView;
+abstract class SectionedCursorAdapter(context: Context, layout: Int, c: Cursor?, private val mSectionResourceId: Int) :
+    ResourceCursorAdapter(context, layout, c, 0) {
+    private val mLayoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    private val mSections = SparseArray<Section?>()
 
-import androidx.cursoradapter.widget.ResourceCursorAdapter;
-
-
-public abstract class SectionedCursorAdapter extends ResourceCursorAdapter {
-
-    private int mSectionResourceId;
-    private LayoutInflater mLayoutInflater;
-    private SparseArray<Section> mSections = new SparseArray<Section>();
-
-    public static class Section {
-        int firstPosition;
-        int sectionedPosition;
-        CharSequence title;
-
-        public Section(int firstPosition, CharSequence title) {
-            this.firstPosition = firstPosition;
-            this.title = title;
-        }
-
-        public CharSequence getTitle() {
-            return title;
-        }
+    class Section(var firstPosition: Int, var title: CharSequence?) {
+        var sectionedPosition: Int = 0
     }
 
-    public SectionedCursorAdapter( Context context, int layout, Cursor c, int sectionResourceId ) {
-        super( context, layout, c, 0 );
-        mSectionResourceId = sectionResourceId;
-        mLayoutInflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        setSections();
+    init {
+        setSections()
     }
 
-    private void setSections() {
-        Cursor c = getCursor();
-        if ( c.moveToFirst() ) {
-            String last = "";
-            int offset = 0; // offset positions for the headers we're adding
+    private fun setSections() {
+        val c = cursor
+        if (c.moveToFirst()) {
+            var last = ""
+            var offset = 0 // offset positions for the headers we're adding
             do {
-                String cur = getSectionName();
-                if ( !cur.contentEquals( last ) ) {
-                    Section section = new Section( c.getPosition(), cur );
-                    section.sectionedPosition = section.firstPosition + offset;
-                    mSections.append( section.sectionedPosition, section );
-                    ++offset;
-                    last = cur;
+                val cur = this.sectionName
+                if (!cur.contentEquals(last)) {
+                    val section = Section(c.getPosition(), cur)
+                    section.sectionedPosition = section.firstPosition + offset
+                    mSections.append(section.sectionedPosition, section)
+                    ++offset
+                    last = cur
                 }
-            } while ( c.moveToNext() );
+            } while (c.moveToNext())
         }
     }
 
-    public abstract String getSectionName();
+    abstract val sectionName: String
 
-    public int sectionedPositionToPosition( int sectionedPosition ) {
-        if ( isSectionHeaderPosition( sectionedPosition ) ) {
-            return ListView.INVALID_POSITION;
+    fun sectionedPositionToPosition(sectionedPosition: Int): Int {
+        if (isSectionHeaderPosition(sectionedPosition)) {
+            return ListView.INVALID_POSITION
         }
 
-        int offset = 0;
-        for ( int i = 0; i < mSections.size(); i++ ) {
-            if ( mSections.valueAt( i ).sectionedPosition > sectionedPosition ) {
-                break;
+        var offset = 0
+        for (i in 0..<mSections.size) {
+            if (mSections.valueAt(i)!!.sectionedPosition > sectionedPosition) {
+                break
             }
-            --offset;
+            --offset
         }
-        return sectionedPosition + offset;
+        return sectionedPosition + offset
     }
 
-    private boolean isSectionHeaderPosition( int position ) {
-        return mSections.get( position ) != null;
+    private fun isSectionHeaderPosition(position: Int): Boolean {
+        return mSections.get(position) != null
     }
 
-    @Override
-    public int getCount() {
-        return ( getCursor().getCount() > 0? getCursor().getCount() + mSections.size() : 0 );
+    override fun getCount(): Int {
+        return (if (cursor.count > 0) cursor.count + mSections.size else 0)
     }
 
-    @Override
-    public Object getItem( int position ) {
-        return isSectionHeaderPosition( position )
-                ? mSections.get( position )
-                : super.getItem( sectionedPositionToPosition( position ) );
+    override fun getItem(position: Int): Any? {
+        return if (isSectionHeaderPosition(position))
+            mSections.get(position)
+        else
+            super.getItem(sectionedPositionToPosition(position))
     }
 
-    @Override
-    public long getItemId( int position ) {
-        return isSectionHeaderPosition( position )
-                ? Integer.MAX_VALUE - mSections.indexOfKey( position )
-                : sectionedPositionToPosition(position);
+    override fun getItemId(position: Int): Long {
+        return (if (isSectionHeaderPosition(position))
+            Int.Companion.MAX_VALUE - mSections.indexOfKey(position)
+        else
+            sectionedPositionToPosition(position)).toLong()
     }
 
-    @Override
-    public int getItemViewType( int position ) {
-        return isSectionHeaderPosition( position )? 0 : 1;
+    override fun getItemViewType(position: Int): Int {
+        return if (isSectionHeaderPosition(position)) 0 else 1
     }
 
-    @Override
-    public boolean isEnabled( int position ) {
-        return !isSectionHeaderPosition( position );
+    override fun isEnabled(position: Int): Boolean {
+        return !isSectionHeaderPosition(position)
     }
 
-    @Override
-    public int getViewTypeCount() {
-        return 2;
+    override fun getViewTypeCount(): Int {
+        return 2
     }
 
-    @Override
-    public boolean areAllItemsEnabled() {
-        return false;
+    override fun areAllItemsEnabled(): Boolean {
+        return false
     }
 
-    @Override
-    public View getView( int position, View convertView, ViewGroup parent ) {
-        if ( isSectionHeaderPosition( position ) ) {
-            if ( convertView == null ) {
-                convertView = mLayoutInflater.inflate( mSectionResourceId, parent, false );
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
+        var convertView = convertView
+        if (isSectionHeaderPosition(position)) {
+            if (convertView == null) {
+                convertView = mLayoutInflater.inflate(mSectionResourceId, parent, false)
             }
-            TextView tv = (TextView) convertView;
-            tv.setText( mSections.get( position ).title );
+            val tv = convertView as TextView
+            tv.text = mSections.get(position)!!.title
         } else {
-            convertView = super.getView( sectionedPositionToPosition( position ), convertView, parent );
+            convertView = super.getView(sectionedPositionToPosition(position), convertView, parent)
         }
 
-        return convertView;
+        return convertView
     }
 
-    @Override
-    public void changeCursor( Cursor c ) {
-        super.changeCursor(c);
-        setSections();
+    override fun changeCursor(c: Cursor?) {
+        super.changeCursor(c)
+        setSections()
     }
 
-    @Override
-    protected void onContentChanged() {
-        super.onContentChanged();
-        setSections();
+    override fun onContentChanged() {
+        super.onContentChanged()
+        setSections()
     }
-
 }

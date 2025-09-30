@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2015 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,200 +16,206 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.nadmm.airports.utils
 
-package com.nadmm.airports.utils;
+import android.content.Context
+import android.text.format.DateUtils
+import com.nadmm.airports.ActivityBase
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
-import android.content.Context;
-import android.text.format.DateFormat;
-import android.text.format.DateUtils;
+object TimeUtils {
+    private val ISO3339_FORMAT_UTC = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
+    private val ISO3339_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.US)
+    private val ISO3339_MILLIS_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ", Locale.US)
+    private val FAA_FORMAT = SimpleDateFormat("MM/dd/yyyy", Locale.US)
 
-import com.nadmm.airports.ActivityBase;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
-public class TimeUtils {
-
-    private static final SimpleDateFormat ISO3339_FORMAT_UTC =
-            new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss", Locale.US );
-    private static final SimpleDateFormat ISO3339_FORMAT =
-            new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssZZZZZ", Locale.US );
-    private static final SimpleDateFormat ISO3339_MILLIS_FORMAT =
-            new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ", Locale.US );
-    private static final SimpleDateFormat FAA_FORMAT =
-            new SimpleDateFormat( "MM/dd/yyyy", Locale.US );
-
-    private TimeUtils() {}
-
-    public static CharSequence formatLongDateTime( long time ) {
-        return DateFormat.format( "MMM dd, yyyy h:mmaa", new Date( time ) );
+    init {
+        ISO3339_FORMAT_UTC.timeZone = TimeZone.getTimeZone("UTC")
+        FAA_FORMAT.timeZone = TimeZone.getTimeZone("UTC")
     }
 
-    static {
-        ISO3339_FORMAT_UTC.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
-        FAA_FORMAT.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
-    }
-
-    public static String formatDateTime( ActivityBase activity, long millis ) {
-        if ( activity.getPrefShowLocalTime() ) {
-            return formatDateTimeLocal( activity, millis );
+    fun formatDateTime(activity: ActivityBase, millis: Long): String {
+        if (activity.prefShowLocalTime) {
+            return formatDateTimeLocal(activity, millis)
         } else {
-            return formatDateTimeUTC( activity, millis );
+            return formatDateTimeUTC(activity, millis)
         }
     }
 
-    public static String formatDateTimeYear( ActivityBase activity, long millis ) {
-        if ( activity.getPrefShowLocalTime() ) {
-            return formatDateTimeYearLocal( activity, millis );
+    fun formatDateTimeYear(activity: ActivityBase, millis: Long): String {
+        if (activity.prefShowLocalTime) {
+            return formatDateTimeYearLocal(activity, millis)
         } else {
-            return formatDateTimeYearUTC( activity, millis );
+            return formatDateTimeYearUTC(activity, millis)
         }
     }
 
-    public static String formatDateRange( ActivityBase activity, Calendar start, Calendar end ) {
-        return formatDateRange( activity, start.getTimeInMillis(), end.getTimeInMillis() );
+    fun formatDateRange(activity: ActivityBase, start: Calendar, end: Calendar): String {
+        return formatDateRange(activity, start.getTimeInMillis(), end.getTimeInMillis())
     }
 
-    public static String formatDateRange( ActivityBase activity, long startMillis, long endMillis ) {
-        if ( activity.getPrefShowLocalTime() ) {
-            return formatDateRangeLocal( activity, startMillis, endMillis );
+    fun formatDateRange(activity: ActivityBase, startMillis: Long, endMillis: Long): String {
+        if (activity.prefShowLocalTime) {
+            return formatDateRangeLocal(activity, startMillis, endMillis)
         } else {
-            return formatDateRangeUTC( activity, startMillis, endMillis );
+            return formatDateRangeUTC(activity, startMillis, endMillis)
         }
     }
 
-    @SuppressWarnings("deprecation")
-    public static String formatDateTimeUTC( Context context, long millis ) {
-        String s = DateUtils.formatDateRange( context, millis, millis,
-                DateUtils.FORMAT_24HOUR
-                        | DateUtils.FORMAT_SHOW_DATE
-                        | DateUtils.FORMAT_SHOW_TIME
-                        | DateUtils.FORMAT_NO_YEAR
-                        | DateUtils.FORMAT_ABBREV_ALL
-                        | DateUtils.FORMAT_UTC );
-        return String.format( "%s UTC", s );
+    @Suppress("deprecation")
+    fun formatDateTimeUTC(context: Context?, millis: Long): String {
+        val s = DateUtils.formatDateRange(
+            context, millis, millis,
+            (DateUtils.FORMAT_24HOUR
+                    or DateUtils.FORMAT_SHOW_DATE
+                    or DateUtils.FORMAT_SHOW_TIME
+                    or DateUtils.FORMAT_NO_YEAR
+                    or DateUtils.FORMAT_ABBREV_ALL
+                    or DateUtils.FORMAT_UTC)
+        )
+        return "$s UTC"
     }
 
-    @SuppressWarnings("deprecation")
-    public static String formatDateTimeYearUTC( Context context, long millis ) {
-        String s = DateUtils.formatDateRange( context, millis, millis,
-                DateUtils.FORMAT_24HOUR
-                | DateUtils.FORMAT_SHOW_DATE
-                | DateUtils.FORMAT_SHOW_TIME
-                | DateUtils.FORMAT_ABBREV_ALL
-                | DateUtils.FORMAT_UTC );
-        return String.format( "%s UTC", s );
+    @Suppress("deprecation")
+    fun formatDateTimeYearUTC(context: Context?, millis: Long): String {
+        val s = DateUtils.formatDateRange(
+            context, millis, millis,
+            (DateUtils.FORMAT_24HOUR
+                    or DateUtils.FORMAT_SHOW_DATE
+                    or DateUtils.FORMAT_SHOW_TIME
+                    or DateUtils.FORMAT_ABBREV_ALL
+                    or DateUtils.FORMAT_UTC)
+        )
+        return String.format("%s UTC", s)
     }
 
-    @SuppressWarnings("deprecation")
-    public static String formatDateTimeLocal( Context context, long millis ) {
-        String s = DateUtils.formatDateRange( context, millis, millis,
-                DateUtils.FORMAT_24HOUR
-                | DateUtils.FORMAT_SHOW_DATE
-                | DateUtils.FORMAT_SHOW_TIME
-                | DateUtils.FORMAT_NO_YEAR
-                | DateUtils.FORMAT_ABBREV_ALL );
-        return String.format( "%s %s", s, getLocalTimeZoneName() );
+    @Suppress("deprecation")
+    fun formatDateTimeLocal(context: Context?, millis: Long): String {
+        val s = DateUtils.formatDateRange(
+            context, millis, millis,
+            (DateUtils.FORMAT_24HOUR
+                    or DateUtils.FORMAT_SHOW_DATE
+                    or DateUtils.FORMAT_SHOW_TIME
+                    or DateUtils.FORMAT_NO_YEAR
+                    or DateUtils.FORMAT_ABBREV_ALL)
+        )
+        return String.format("%s %s", s, localTimeZoneName)
     }
 
-    @SuppressWarnings("deprecation")
-    public static String formatDateTimeYearLocal( Context context, long millis ) {
-        String s = DateUtils.formatDateRange( context, millis, millis,
-                DateUtils.FORMAT_24HOUR
-                | DateUtils.FORMAT_SHOW_DATE
-                | DateUtils.FORMAT_SHOW_TIME
-                | DateUtils.FORMAT_ABBREV_ALL );
-        return String.format( "%s %s", s, getLocalTimeZoneName() );
+    @Suppress("deprecation")
+    fun formatDateTimeYearLocal(context: Context?, millis: Long): String {
+        val s = DateUtils.formatDateRange(
+            context, millis, millis,
+            (DateUtils.FORMAT_24HOUR
+                    or DateUtils.FORMAT_SHOW_DATE
+                    or DateUtils.FORMAT_SHOW_TIME
+                    or DateUtils.FORMAT_ABBREV_ALL)
+        )
+        return String.format("%s %s", s, localTimeZoneName)
     }
 
-    @SuppressWarnings("deprecation")
-    public static String formatDateRangeUTC( Context context,
-            long startMillis, long endMillis ) {
-        String s = DateUtils.formatDateRange( context, startMillis, endMillis,
-                DateUtils.FORMAT_24HOUR
-                | DateUtils.FORMAT_SHOW_DATE
-                | DateUtils.FORMAT_SHOW_TIME
-                | DateUtils.FORMAT_NO_YEAR
-                | DateUtils.FORMAT_ABBREV_ALL
-                | DateUtils.FORMAT_UTC );
-        return String.format( "%s UTC", s );
+    @Suppress("deprecation")
+    fun formatDateRangeUTC(
+        context: Context?,
+        startMillis: Long, endMillis: Long
+    ): String {
+        val s = DateUtils.formatDateRange(
+            context, startMillis, endMillis,
+            (DateUtils.FORMAT_24HOUR
+                    or DateUtils.FORMAT_SHOW_DATE
+                    or DateUtils.FORMAT_SHOW_TIME
+                    or DateUtils.FORMAT_NO_YEAR
+                    or DateUtils.FORMAT_ABBREV_ALL
+                    or DateUtils.FORMAT_UTC)
+        )
+        return String.format("%s UTC", s)
     }
 
-    @SuppressWarnings("deprecation")
-    public static String formatDateRangeLocal( Context context,
-            long startMillis, long endMillis ) {
-        String s = DateUtils.formatDateRange( context, startMillis, endMillis,
-                DateUtils.FORMAT_24HOUR
-                | DateUtils.FORMAT_SHOW_DATE
-                | DateUtils.FORMAT_SHOW_TIME
-                | DateUtils.FORMAT_NO_YEAR
-                | DateUtils.FORMAT_ABBREV_ALL );
-        return String.format( "%s %s", s, getLocalTimeZoneName() );
+    @Suppress("deprecation")
+    fun formatDateRangeLocal(
+        context: Context?,
+        startMillis: Long, endMillis: Long
+    ): String {
+        val s = DateUtils.formatDateRange(
+            context, startMillis, endMillis,
+            (DateUtils.FORMAT_24HOUR
+                    or DateUtils.FORMAT_SHOW_DATE
+                    or DateUtils.FORMAT_SHOW_TIME
+                    or DateUtils.FORMAT_NO_YEAR
+                    or DateUtils.FORMAT_ABBREV_ALL)
+        )
+        return String.format("%s %s", s, localTimeZoneName)
     }
 
-    public static String getLocalTimeZoneName() {
-        TimeZone tz = TimeZone.getDefault();
-        return tz.getDisplayName( tz.inDaylightTime( new Date() ), TimeZone.SHORT );
-    }
-
-    public static CharSequence formatElapsedTime( long time ) {
-        Date now = new Date();
-        return formatElapsedTime( now.getTime(), time );
-    }
-
-    public static CharSequence formatElapsedTime( long time1, long time2 ) {
-        if ( (time1-time2) < DateUtils.MINUTE_IN_MILLIS ) {
-            return "just now";
+    val localTimeZoneName: String
+        get() {
+            val tz = TimeZone.getDefault()
+            return tz.getDisplayName(tz.inDaylightTime(Date()), TimeZone.SHORT)
         }
-        return DateUtils.getRelativeTimeSpanString( time2, time1,
-                DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE );
+
+    fun formatElapsedTime(time: Long): CharSequence? {
+        val now = Date()
+        return formatElapsedTime(now.getTime(), time)
     }
 
-    public static String getTimeZoneAsString( TimeZone tz ) {
-        Date now = new Date();
-        String tzName = tz.getDisplayName( tz.inDaylightTime( now ), TimeZone.SHORT );
-        SimpleDateFormat tzFormat = new SimpleDateFormat( "'(UTC'Z')'", Locale.US );
-        tzFormat.setTimeZone( tz );
-        return String.format( "%s %s", tzName, tzFormat.format( now ) );
+    fun formatElapsedTime(time1: Long, time2: Long): CharSequence? {
+        if ((time1 - time2) < DateUtils.MINUTE_IN_MILLIS) {
+            return "just now"
+        }
+        return DateUtils.getRelativeTimeSpanString(
+            time2, time1,
+            DateUtils.MINUTE_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE
+        )
     }
 
-    public static String format3339( Date date ) {
-        return ISO3339_FORMAT_UTC.format( date )+"Z";
+    fun getTimeZoneAsString(tz: TimeZone): String {
+        val now = Date()
+        val tzName = tz.getDisplayName(tz.inDaylightTime(now), TimeZone.SHORT)
+        val tzFormat = SimpleDateFormat("'(UTC'Z')'", Locale.US)
+        tzFormat.timeZone = tz
+        return String.format("%s %s", tzName, tzFormat.format(now))
     }
 
-    public static Date parse3339( String s ) {
+    @JvmStatic
+    fun format3339(date: Date): String {
+        return ISO3339_FORMAT_UTC.format(date) + "Z"
+    }
+
+    @JvmStatic
+    fun parse3339(s: String): Date? {
         // This is needed as SimpleDateFormat does not parse RFC3339 "Z" for UTC.
         // Convert to ISO8601 format first if using "Z"
-        String iso8601 = s.replaceAll( "Z$", "+00:00" );
-        Date date;
+        val iso8601 = s.replace("Z$".toRegex(), "+00:00")
+        var date: Date?
         try {
-            date = ISO3339_FORMAT.parse( iso8601 );
-        } catch ( ParseException e ) {
-            date = null;
+            date = ISO3339_FORMAT.parse(iso8601)
+        } catch (_: ParseException) {
+            date = null
         }
 
-        if ( date == null ) {
+        if (date == null) {
             try {
-                date = ISO3339_MILLIS_FORMAT.parse( iso8601 );
-            } catch ( ParseException e ) {
+                date = ISO3339_MILLIS_FORMAT.parse(iso8601)
+            } catch (_: ParseException) {
             }
         }
 
-        return date;
+        return date
     }
 
-    public static Date parseFaaDate( String s ) {
-        Date date;
+    fun parseFaaDate(s: String): Date? {
+        var date: Date?
         try {
-            date = FAA_FORMAT.parse( s );
-        } catch ( ParseException e ) {
-            date = null;
+            date = FAA_FORMAT.parse(s)
+        } catch (_: ParseException) {
+            date = null
         }
 
-        return date;
+        return date
     }
 }
