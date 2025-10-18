@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2023-2025 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import com.nadmm.airports.data.DatabaseManager.Airports
+import androidx.core.view.isNotEmpty
 
 fun Cursor?.forEach(runForEachRow: (Cursor) -> Unit) {
     this?.let {
@@ -58,7 +59,7 @@ fun LinearLayout.addSeparator(context: Context) {
 }
 
 fun LinearLayout.addRow(context: Context, row: View) : View {
-    if (childCount > 0) {
+    if (isNotEmpty()) {
         addSeparator(context)
     }
     addView(row, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
