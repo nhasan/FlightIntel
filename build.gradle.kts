@@ -4,15 +4,15 @@ import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 
 buildscript {
     dependencies {
-        classpath ("com.android.tools.build:gradle:8.13.0")
+        classpath ("com.android.tools.build:gradle:8.13.2")
         classpath ("com.google.gms:google-services:4.4.4")
         classpath ("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
     }
 }
 
 plugins {
-    id ("com.android.application") version "8.13.0"
-    id ("org.jetbrains.kotlin.android") version "2.2.20"
+    id ("com.android.application") version "8.13.2"
+    id ("org.jetbrains.kotlin.android") version "2.3.0"
     id ("com.google.gms.google-services") version "4.4.4"
     kotlin ("plugin.parcelize") version "2.2.0"
     kotlin ("plugin.serialization") version "2.2.10"
@@ -29,18 +29,18 @@ allprojects {
 dependencies {
     implementation (fileTree(mapOf("include" to "*.jar", "dir" to "libs")))
     implementation ("androidx.preference:preference-ktx:1.2.1")
-    implementation ("androidx.activity:activity-ktx:1.11.0")
+    implementation ("androidx.activity:activity-ktx:1.12.2")
     implementation ("androidx.fragment:fragment-ktx:1.8.9")
     implementation ("androidx.viewpager2:viewpager2:1.1.0")
     implementation ("com.google.android.material:material:1.13.0")
-    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0")
     implementation ("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
     implementation ("androidx.drawerlayout:drawerlayout:1.2.0")
     implementation ("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
     implementation ("com.google.android.gms:play-services-location:21.3.0")
     implementation ("com.google.firebase:firebase-messaging-ktx:24.1.2")
     implementation ("androidx.core:core-ktx:1.17.0")
-    implementation ("androidx.work:work-runtime-ktx:2.10.5")
+    implementation ("androidx.work:work-runtime-ktx:2.11.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
