@@ -82,7 +82,7 @@ class FavoriteWxFragment : RecyclerViewFragment() {
         mDelegate.setCursor(cursor)
         super.setCursor(cursor)
         mDelegate.requestMetars(false)
-        activityBase.enableDisableSwipeRefresh(isRefreshable)
+        activityBase.enableDisableSwipeRefresh(isRefreshable())
     }
 
     override fun newListAdapter(cursor: Cursor?): RecyclerView.Adapter<*>? {

@@ -60,8 +60,8 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
         return createContentView(binding.root)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onResume() {
+        super.onResume()
 
         fetchPirep()
     }
@@ -189,7 +189,7 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
             val dir = getCardinalDirection(entry.bearing.toFloat())
             pirepTitle.text = "${entry.distanceNM} NM $dir"
 
-            if (entry.observationTime < Long.Companion.MAX_VALUE) {
+            if (entry.observationTime < Long.MAX_VALUE) {
                 pirepTitleExtra.text = TimeUtils.formatElapsedTime(entry.observationTime)
             }
 

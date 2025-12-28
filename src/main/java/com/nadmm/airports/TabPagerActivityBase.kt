@@ -51,7 +51,7 @@ abstract class TabPagerActivityBase : ActivityBase() {
             override fun onPageScrollStateChanged(state: Int) {
                 // Disable the swipe refresh while moving between pages
                 currentFragment?.let { fragment ->
-                    if (fragment.isRefreshable) {
+                    if (fragment.isRefreshable()) {
                         enableDisableSwipeRefresh(state == ViewPager2.SCROLL_STATE_IDLE)
                     }
                 }
@@ -71,7 +71,7 @@ abstract class TabPagerActivityBase : ActivityBase() {
 
     override fun requestDataRefresh() {
         currentFragment?.let { fragment ->
-            if (fragment.isRefreshable) {
+            if (fragment.isRefreshable()) {
                 fragment.requestDataRefresh()
             }
         }

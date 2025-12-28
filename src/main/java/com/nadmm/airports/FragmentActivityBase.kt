@@ -35,7 +35,7 @@ abstract class FragmentActivityBase : ActivityBase() {
         super.onFragmentStarted(fragment)
 
         mCurFragment = fragment
-        enableDisableSwipeRefresh(mCurFragment?.isRefreshable == true)
+        enableDisableSwipeRefresh(mCurFragment?.isRefreshable() == true)
     }
 
     override fun requestDataRefresh() {

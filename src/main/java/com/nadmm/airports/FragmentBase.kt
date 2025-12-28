@@ -105,7 +105,7 @@ abstract class FragmentBase : Fragment(), IRefreshable {
         super.onResume()
 
         activityBase.onFragmentStarted(this)
-        activityBase.enableDisableSwipeRefresh(isRefreshable)
+        activityBase.enableDisableSwipeRefresh(isRefreshable())
     }
 
     override fun isRefreshable(): Boolean {

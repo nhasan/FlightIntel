@@ -83,7 +83,7 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
         _binding = null
     }
 
-    override fun isRefreshable()  = true
+    override fun isRefreshable() = true
 
     override fun requestDataRefresh() = fetchTaf(true)
 

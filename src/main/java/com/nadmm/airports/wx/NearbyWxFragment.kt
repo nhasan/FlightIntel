@@ -79,7 +79,7 @@ class NearbyWxFragment : LocationListFragmentBase() {
         mDelegate?.let { delegate ->
             delegate.setCursor(cursor)
             super.setCursor(cursor)
-            activityBase.enableDisableSwipeRefresh(isRefreshable)
+            activityBase.enableDisableSwipeRefresh(isRefreshable())
             delegate.requestMetars(false)
         }
     }

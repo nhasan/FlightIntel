@@ -872,6 +872,7 @@ class AircraftTypeDesginators {
             "E135" to "Embraer, EMB-135ER",
             "E145" to "Embraer, C-99",
             "E170" to "Embraer, 170",
+            "E175" to "Embraer, 175",
             "E190" to "Embraer, 190",
             "E195" to "Embraer, 195",
             "E2" to "Grumman, E-2 Daya",

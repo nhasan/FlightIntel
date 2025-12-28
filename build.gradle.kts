@@ -59,9 +59,13 @@ android {
         applicationId = "com.nadmm.airports"
         minSdk = 30
         targetSdk = 36
-        compileSdk = 36
-        versionName = "25.09.04"
-        versionCode = 250904
+        compileSdk {
+            version = release(36) {
+                minorApiLevel = 1
+            }
+        }
+        versionName = "25.12.01"
+        versionCode = 251201
         buildToolsVersion = "36.1.0"
         vectorDrawables.useSupportLibrary = true
     }
