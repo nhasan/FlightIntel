@@ -1,21 +1,11 @@
 import java.util.Properties
 import java.io.FileInputStream
-import com.android.build.gradle.internal.api.BaseVariantOutputImpl
-
-buildscript {
-    dependencies {
-        classpath ("com.android.tools.build:gradle:8.13.2")
-        classpath ("com.google.gms:google-services:4.4.4")
-        classpath ("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0")
-    }
-}
 
 plugins {
-    id ("com.android.application") version "8.13.2"
-    id ("org.jetbrains.kotlin.android") version "2.3.0"
-    id ("com.google.gms.google-services") version "4.4.4"
-    kotlin ("plugin.parcelize") version "2.2.0"
-    kotlin ("plugin.serialization") version "2.2.10"
+    id("com.android.application") version "9.1.0"
+    id("com.google.gms.google-services") version "4.4.4"
+    id("org.jetbrains.kotlin.plugin.parcelize") version "2.3.10"
+    kotlin("plugin.serialization") version "2.2.10"
 }
 
 allprojects {
@@ -28,27 +18,27 @@ allprojects {
 
 dependencies {
     implementation (fileTree(mapOf("include" to "*.jar", "dir" to "libs")))
-    implementation ("androidx.preference:preference-ktx:1.2.1")
-    implementation ("androidx.activity:activity-ktx:1.12.2")
-    implementation ("androidx.fragment:fragment-ktx:1.8.9")
-    implementation ("androidx.viewpager2:viewpager2:1.1.0")
-    implementation ("com.google.android.material:material:1.13.0")
-    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0")
-    implementation ("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
-    implementation ("androidx.drawerlayout:drawerlayout:1.2.0")
-    implementation ("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
-    implementation ("com.google.android.gms:play-services-location:21.3.0")
-    implementation ("com.google.firebase:firebase-messaging-ktx:24.1.2")
-    implementation ("androidx.core:core-ktx:1.17.0")
-    implementation ("androidx.work:work-runtime-ktx:2.11.0")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
-    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-    implementation ("com.google.code.gson:gson:2.13.2")
-    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.1.5")
+    implementation (libs.androidx.preference.ktx)
+    implementation (libs.androidx.activity.ktx)
+    implementation (libs.androidx.fragment.ktx)
+    implementation (libs.androidx.viewpager2)
+    implementation (libs.material)
+    implementation (libs.androidx.swiperefreshlayout)
+    implementation (libs.androidx.coordinatorlayout)
+    implementation (libs.androidx.drawerlayout)
+    implementation (libs.androidx.localbroadcastmanager)
+    implementation (libs.play.services.location)
+    implementation (libs.firebase.messaging.ktx)
+    implementation (libs.androidx.core.ktx)
+    implementation (libs.androidx.work.runtime.ktx)
+    implementation (libs.kotlinx.coroutines.core)
+    implementation (libs.kotlinx.coroutines.android)
+    implementation (libs.kotlinx.serialization.json)
+    implementation (libs.gson)
+    coreLibraryDesugaring (libs.desugar.jdk.libs)
 }
 
-val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystorePropertiesFile: File = rootProject.file("keystore.properties")
 val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
@@ -91,14 +81,7 @@ android {
 
     buildFeatures {
         viewBinding = true
-    }
-
-    applicationVariants.all {
-        val variant = this
-        variant.outputs.all {
-            val output = this as BaseVariantOutputImpl
-            output.outputFileName = "flightintel-${variant.name}-${variant.versionName}.apk"
-        }
+        resValues = true
     }
 
     compileOptions {
@@ -108,8 +91,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-
-    kotlin {
-        jvmToolchain(21)
-    }
 }
+
+kotlin {
+    jvmToolchain(21)
+}
+
+// In AGP 9.0 applicationVariants is removed. A simpler way to rename outputs is to change the archivesName
+base.archivesName.set("flightintel-${android.defaultConfig.versionName}")
