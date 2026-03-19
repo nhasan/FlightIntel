@@ -3,7 +3,7 @@
 #/*
 # * FlightIntel for Pilots
 # *
-# * Copyright 2019-2025 Nadeem Hasan <nhasan@nadmm.com>
+# * Copyright 2019-2026 Nadeem Hasan <nhasan@nadmm.com>
 # *
 # * This program is free software: you can redistribute it and/or modify
 # * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,9 @@
 # Ubuntu package dependencies:
 #   sudo apt install libdbi-perl libdbd-sqlite3-perl libtext-autoformat-perl libtext-csv-perl libjson-perl
 #   sudo apt install python3 pyenv
- 
+#
+# Install Google Cloud CLI: https://docs.cloud.google.com/sdk/docs/install-sdk#deb
+
 bold=$(tput bold; tput setaf 39)
 error=$(tput bold; tput setaf 125)
 normal=$(tput sgr0)
@@ -34,9 +36,6 @@ function error {
 function bold {
     echo "${bold}$1${normal}"
 }
-
-bold "Checking for updates to gcloud tool:";
-gcloud components update
 
 source build_data.conf
 
