@@ -1,0 +1,207 @@
+#!/bin/bash
+
+#/*
+# * FlightIntel for Pilots
+# *
+# * Copyright 2019-2026 Nadeem Hasan <nhasan@nadmm.com>
+# *
+# * This program is free software: you can redistribute it and/or modify
+# * it under the terms of the GNU General Public License as published by
+# * the Free Software Foundation, either version 3 of the License, or
+# * (at your option) any later version.
+# *
+# * This program is distributed in the hope that it will be useful,
+# * but WITHOUT ANY WARRANTY; without even the implied warranty of
+# * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# * GNU General Public License for more details.
+# *
+# * You should have received a copy of the GNU General Public License
+# * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# */
+
+# Ubuntu package dependencies:
+#   sudo apt install libdbi-perl libdbd-sqlite3-perl libtext-autoformat-perl libtext-csv-perl libjson-perl
+#   sudo apt install python3 pyenv
+#
+# Install Google Cloud CLI: https://docs.cloud.google.com/sdk/docs/install-sdk#deb
+
+bold=$(tput bold; tput setaf 39)
+error=$(tput bold; tput setaf 125)
+normal=$(tput sgr0)
+
+function error {
+    echo "${error}$1${normal}"
+}
+
+function bold {
+    echo "${bold}$1${normal}"
+}
+
+source build_data.conf
+
+echo
+bold "Using config:"
+echo "DATA_CYCLE=${DATA_CYCLE}"
+echo "FADDS_CYCLE=${FADDS_CYCLE}"
+echo "DTPP_CYCLE=${DTPP_CYCLE}"
+echo "DCS_CYCLE=${DCS_CYCLE}"
+echo
+
+DATA_DIR="data";
+if [ ! -d "${DATA_DIR}" ]; then
+    mkdir -p ${DATA_DIR};
+fi
+
+OUT_DIR="${DATA_DIR}/database";
+if [ ! -d "${OUT_DIR}" ]; then
+    mkdir -p ${OUT_DIR};
+fi
+GS_DATA_URL="gs://flightintel/database";
+
+LIBRARY_DIR="${DATA_DIR}/library";
+GS_LIBRARY_URL="gs://flightintel/library";
+
+OUT_FILE="${OUT_DIR}/fadds_${DATA_CYCLE}.db";
+if [ ! -f "${OUT_FILE}.gz" ]; then
+    BASE_DIR="${DATA_DIR}/FADDS/${DATA_CYCLE}";
+    if [ ! -d "${BASE_DIR}" ]; then
+        mkdir -p ${BASE_DIR};
+    fi
+    FADDS_FILE="${BASE_DIR}/28DaySubscription_Effective_${FADDS_CYCLE}.zip";
+    if [ ! -f "${FADDS_FILE}" ]; then
+        FADDS_URL="https://nfdc.faa.gov/webContent/28DaySub/28DaySubscription_Effective_${FADDS_CYCLE}.zip";
+        bold "Downloading FADDS ${FADDS_CYCLE} file:";
+        wget -O ${FADDS_FILE} ${FADDS_URL};
+        unzip -o -d ${BASE_DIR} ${FADDS_FILE};
+    fi
+    if [ -d ${BASE_DIR} ]; then
+        bold "Running: load_fadds.pl ${BASE_DIR} ${OUT_FILE}";
+        ./load_fadds.pl ${BASE_DIR} ${OUT_FILE}
+        bold "Running: load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}";
+        ./load_wx_stations.pl ${BASE_DIR} ${OUT_FILE}
+        bold "Running: load_atc_phones.pl ${OUT_FILE}";
+        ./load_atc_phones.pl ${OUT_FILE}
+        bold "Running: cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db";
+        ./cached_tz_lookup.pl ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
+        bold "Running: geonames_tz_lookup.pl ${OUT_FILE}";
+        ./geonames_tz_lookup.pl ${OUT_FILE}
+        bold "Making a copy of FADDS file:";
+        cp ${OUT_FILE} ${OUT_DIR}/fadds_prev.db;
+        bold "Zipping ${OUT_FILE}"
+        gzip ${OUT_FILE};
+    else
+        error "Unable to download FADDS file";
+    fi
+    echo "--"
+else
+    bold "FADDS file ${OUT_FILE}.gz found.";
+fi
+
+OUT_FILE="${OUT_DIR}/dtpp_${DATA_CYCLE}.db";
+if [ ! -f "${OUT_FILE}.gz" ]; then
+    BASE_DIR="${DATA_DIR}/d-TPP/${DTPP_CYCLE}";
+    if [ ! -d "${BASE_DIR}" ]; then
+        mkdir -p ${BASE_DIR};
+    fi
+    DTPP_PATH="${BASE_DIR}/d-TPP_Metafile.xml";
+    if [ ! -s "${DTPP_PATH}" ]; then
+        DTPP_URL="https://aeronav.faa.gov/d-tpp/${DTPP_CYCLE}/xml_data/d-TPP_Metafile.xml";
+        bold "Downloading d-TPP ${DTPP_CYCLE} file:";
+        wget -O ${DTPP_PATH} ${DTPP_URL};
+    fi
+    if [ -s ${DTPP_PATH} ]; then
+        bold "Running: load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE}";
+        ./load_dtpp_metadata.pl ${BASE_DIR} ${OUT_FILE};
+        bold "Zipping ${OUT_FILE}"
+        gzip ${OUT_FILE};
+    else
+        error "Unable to download d-TPP file ${DCS_FILE}";
+    fi
+    echo "--";
+else
+    bold "d-TPP file ${OUT_FILE}.gz found.";
+fi
+
+OUT_FILE="${OUT_DIR}/dcs_${DATA_CYCLE}.db";
+if [ ! -f "${OUT_FILE}.gz" ]; then
+    BASE_DIR="${DATA_DIR}/d-CS/${DCS_CYCLE}";
+    if [ ! -d "${BASE_DIR}" ]; then
+        mkdir -p ${BASE_DIR};
+    fi
+    DCS_FILE="afd_${DCS_CYCLE}.xml";
+    DCS_PATH="${BASE_DIR}/${DCS_FILE}";
+    if [ ! -s "${DCS_PATH}" ]; then
+	    DCS_URL="https://aeronav.faa.gov/afd/${DCS_CYCLE}/${DCS_FILE}";
+        bold "Downloading d-CS ${DCS_CYCLE} file:";
+        wget -O ${DCS_PATH} ${DCS_URL};
+    fi
+    if [ -s ${DCS_PATH} ]; then
+        bold "Running: load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE}";
+        ./load_dafd_metadata.pl ${DCS_CYCLE} ${BASE_DIR} ${OUT_FILE};
+        bold "Zipping ${OUT_FILE}"
+        gzip ${OUT_FILE};
+    else
+        error "Unable to download d-CS file ${DCS_FILE}";
+    fi
+    echo "--";
+else
+    bold "d-CS file ${OUT_FILE}.gz found.";
+fi
+
+OUT_FILE="${OUT_DIR}/dof_${DATA_CYCLE}.db";
+if [ ! -f "${OUT_FILE}.gz" ]; then
+    BASE_DIR="${DATA_DIR}/DOF/${DATA_CYCLE}";
+    if [ ! -d "${BASE_DIR}" ]; then
+        mkdir -p ${BASE_DIR};
+    fi
+    DOF_FILE="DAILY_DOF_DAT.ZIP";
+    DOF_PATH="${BASE_DIR}/${DOF_FILE}";
+    if [ ! -f "${DOF_PATH}" ]; then
+        DOF_URL="https://aeronav.faa.gov/Obst_Data/${DOF_FILE}"
+        bold "Downloading DDOF file:";
+        wget -O ${DOF_PATH} ${DOF_URL};
+        unzip -o -d ${BASE_DIR} ${DOF_PATH};
+    fi
+    bold "Running: load_dof.pl ${BASE_DIR} ${OUT_FILE}";
+    ./load_dof.pl ${BASE_DIR} ${OUT_FILE};
+    bold "Zipping ${OUT_FILE}"
+    gzip ${OUT_FILE};
+    echo "--";
+else
+    bold "DOF file ${OUT_FILE}.gz found.";
+fi
+
+BASE_DIR="${DATA_DIR}/library";
+bold "Zipping library files:"
+find ${BASE_DIR} -name *.pdf -print -exec gzip {} \;
+echo "--";
+
+OUT_FILE="${OUT_DIR}/library_${DATA_CYCLE}.db";
+OUT_FILE_GZIP="${OUT_FILE}.gz"
+LIBRARY_CONFIG=library_data.csv
+# If library config is newer, delete the data file
+if [ ${LIBRARY_CONFIG} -nt ${OUT_FILE_GZIP} ]; then
+    bold "Removing stale library data file ${OUT_FILE_GZIP}"
+    rm -f ${OUT_FILE_GZIP}
+fi
+if [ ! -f ${OUT_FILE_GZIP} ]; then
+    bold "Running: load_library.pl ${BASE_DIR} ${OUT_FILE}"
+    ./load_library.pl ${BASE_DIR} ${OUT_FILE};
+    bold "Zipping ${OUT_FILE}"
+    gzip ${OUT_FILE};
+    echo "--";
+else
+    bold "Library file ${OUT_FILE_GZIP} found.";
+fi
+
+bold "Syncing data files with Google Storage:"
+gcloud storage rsync ${OUT_DIR} ${GS_DATA_URL} --recursive --delete-unmatched-destination-objects --exclude "fadds_prev.db"
+gcloud storage objects update "${GS_DATA_URL}/**" --add-acl-grant=entity=AllUsers,role=READER
+echo "--";
+
+bold "Syncing library files with Google Storage:"
+gcloud storage rsync ${LIBRARY_DIR} ${GS_LIBRARY_URL} --recursive --delete-unmatched-destination-objects
+gcloud storage objects update "${GS_LIBRARY_URL}/**" --add-acl-grant=entity=AllUsers,role=READER
+echo "--";
+
+bold "Done!"
