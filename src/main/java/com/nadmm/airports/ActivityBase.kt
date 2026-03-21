@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -176,6 +177,23 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
         super.onCreate(savedInstanceState)
 
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // If the drawer is open, back will close it
+                if (mDrawerLayout?.isDrawerOpen(GravityCompat.START) == true) {
+                    mDrawerLayout?.closeDrawers()
+                } else if (supportFragmentManager.backStackEntryCount > 0) {
+                    // Otherwise, it may return to the previous fragment stack
+                    supportFragmentManager.popBackStack()
+                } else {
+                    // Lastly, it will rely on the system behavior for back
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                    isEnabled = true
+                }
+            }
+        })
+
         dbManager = instance(this)
         mInflater = layoutInflater
 
@@ -206,7 +224,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
                 return when (menuItem.itemId) {
                     android.R.id.home -> {
-                        onBackPressed()
+                        onBackPressedDispatcher.onBackPressed()
                         true
                     }
                     R.id.menu_search -> true
@@ -255,27 +273,11 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
         return when (item.itemId) {
             android.R.id.home -> {
-                onBackPressed()
+                onBackPressedDispatcher.onBackPressed()
                 true
             }
             R.id.menu_search -> true
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onBackPressed() {
-        // If the drawer is open, back will close it
-        if (mDrawerLayout?.isDrawerOpen(GravityCompat.START) == true) {
-            mDrawerLayout?.closeDrawers()
-            return
-        }
-        // Otherwise, it may return to the previous fragment stack
-        val fragmentManager = supportFragmentManager
-        if (fragmentManager.backStackEntryCount > 0) {
-            fragmentManager.popBackStack()
-        } else {
-            // Lastly, it will rely on the system behavior for back
-            super.onBackPressed()
         }
     }
 
@@ -308,7 +310,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         }
 
         mDrawerToggle?.apply {
-            setToolbarNavigationClickListener { onBackPressed() }
+            setToolbarNavigationClickListener { onBackPressedDispatcher.onBackPressed() }
             isDrawerSlideAnimationEnabled = false
             mDrawerLayout?.addDrawerListener(this)
         }
@@ -448,12 +450,12 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     protected open fun requestDataRefresh() {}
 
-    protected fun showAppBar(show: Boolean) {
-        mAppBar?.setExpanded(show, true)
+    protected fun showAppBar() {
+        mAppBar?.setExpanded(true, true)
     }
 
     open fun onFragmentStarted(fragment: FragmentBase) {
-        showAppBar(true)
+        showAppBar()
     }
 
     // Subclasses can override this for custom behavior
@@ -678,7 +680,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
             }
 
             airportStar.isChecked = dbManager.isFavoriteAirport(siteNumber)
-            airportStar.setOnClickListener { v ->
+            airportStar.setOnClickListener { _ ->
                 if (airportStar.isChecked) {
                     dbManager.addToFavoriteAirports(siteNumber)
                 } else {
