@@ -22,7 +22,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.Bundle
 import android.os.IBinder
-import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.NetworkUtils
 import com.nadmm.airports.utils.SystemUtils
 import com.nadmm.airports.utils.UiUtils
@@ -112,10 +111,10 @@ class LibraryService : Service() {
 
     private fun fetch(category: String, pdfFile: File): Boolean {
         try {
-            val result = bundleOf(
-                ACTION to ACTION_DOWNLOAD_PROGRESS,
-                NetworkUtils.CONTENT_NAME to pdfFile.name,
-            )
+            val result = Bundle().apply {
+                putString(ACTION, ACTION_DOWNLOAD_PROGRESS)
+                putString(NetworkUtils.CONTENT_NAME, pdfFile.name)
+            }
             val path = LIBRARY_PATH + "/" + category + "/" + pdfFile.name + ".gz"
             return NetworkUtils.doHttpsGet1(
                 this, LIBRARY_HOST, path, null,
@@ -134,11 +133,11 @@ class LibraryService : Service() {
     }
 
     private suspend fun sendResult(action: String, category: String, pdfFile: File) {
-        val result = bundleOf(
-            ACTION to action,
-            CATEGORY to category,
-            BOOK_NAME to pdfFile.name
-        )
+        val result = Bundle().apply {
+            putString(ACTION, action)
+            putString(CATEGORY, category)
+            putString(BOOK_NAME, pdfFile.name)
+        }
         if (pdfFile.exists()) {
             result.putString(PDF_PATH, pdfFile.absolutePath)
         }

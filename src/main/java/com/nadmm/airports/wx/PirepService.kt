@@ -21,10 +21,10 @@ package com.nadmm.airports.wx
 import android.content.Context
 import android.content.Intent
 import android.location.Location
+import android.os.Bundle
 import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.util.Log
 import androidx.core.content.IntentCompat
-import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
@@ -84,11 +84,11 @@ class PirepService : NoaaService("pirep", CACHE_MAX_AGE) {
         // Send the Pirep
         val pirep = wxCache.deserializeObject<Pirep>(stationId) ?: Pirep()
 
-        val result = bundleOf(
-            ACTION to ACTION_GET_PIREP,
-            TYPE to TYPE_TEXT,
-            RESULT to pirep
-        )
+        val result = Bundle().apply {
+            putString(ACTION, ACTION_GET_PIREP)
+            putString(TYPE, TYPE_TEXT)
+            putParcelable(RESULT, pirep)
+        }
         Events.post(result)
     }
 

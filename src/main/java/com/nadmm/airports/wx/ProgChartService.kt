@@ -19,8 +19,8 @@
 package com.nadmm.airports.wx
 
 import android.content.Intent
+import android.os.Bundle
 import android.text.format.DateUtils.HOUR_IN_MILLIS
-import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 
@@ -56,12 +56,12 @@ class ProgChartService : NoaaService("progchart", PROGCHART_CACHE_MAX_AGE) {
             }
         }
 
-        val result = bundleOf(
-            ACTION to action,
-            TYPE to TYPE_GRAPHIC,
-            IMAGE_CODE to code,
-            RESULT to if (imageFile.exists()) imageFile.absolutePath else ""
-        )
+        val result = Bundle().apply {
+            putString(ACTION, action)
+            putString(TYPE, TYPE_GRAPHIC)
+            putString(IMAGE_CODE, code)
+            putString(RESULT, if (imageFile.exists()) imageFile.absolutePath else "")
+        }
         Events.post(result)
     }
 

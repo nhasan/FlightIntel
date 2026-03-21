@@ -20,9 +20,9 @@ package com.nadmm.airports.wx
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
-import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
@@ -78,11 +78,11 @@ class TafService : NoaaService("taf", CACHE_MAX_AGE) {
         }
 
         val taf = wxCache.deserializeObject<Taf>(stationId) ?: Taf()
-        val result = bundleOf(
-            ACTION to ACTION_GET_TAF,
-            TYPE to TYPE_TEXT,
-            RESULT to taf
-        )
+        val result = Bundle().apply {
+            putString(ACTION, ACTION_GET_TAF)
+            putString(TYPE, TYPE_TEXT)
+            putParcelable(RESULT, taf)
+        }
         Events.post(result)
     }
 

@@ -20,9 +20,9 @@ package com.nadmm.airports.wx
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
-import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 import java.io.File
@@ -86,11 +86,11 @@ class MetarService : NoaaService("metar", CACHE_MAX_AGE) {
         if (action == ACTION_GET_METAR) {
             for (stationId in stationIds) {
                 val metar = wxCache.deserializeObject<Metar>(stationId) ?: Metar(stationId = stationId)
-                val result = bundleOf(
-                    ACTION to action,
-                    TYPE to TYPE_TEXT,
-                    RESULT to metar
-                )
+                val result = Bundle().apply {
+                    putString(ACTION, action)
+                    putString(TYPE, TYPE_TEXT)
+                    putParcelable(RESULT, metar)
+                }
                 Events.post(result)
             }
         }

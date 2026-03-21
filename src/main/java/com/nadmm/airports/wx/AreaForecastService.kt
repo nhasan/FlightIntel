@@ -19,8 +19,8 @@
 package com.nadmm.airports.wx
 
 import android.content.Intent
+import android.os.Bundle
 import android.text.format.DateUtils
-import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.launch
 
@@ -53,11 +53,11 @@ class AreaForecastService : NoaaService("fa", FA_CACHE_MAX_AGE) {
             }
         }
 
-        val result = bundleOf(
-            ACTION to action,
-            TYPE to TYPE_TEXT,
-            RESULT to if (file.exists()) file.absolutePath else ""
-        )
+        val result = Bundle().apply {
+            putString(ACTION, action)
+            putString(TYPE, TYPE_TEXT)
+            putString(RESULT, if (file.exists()) file.absolutePath else "")
+        }
         Events.post(result)
     }
 
