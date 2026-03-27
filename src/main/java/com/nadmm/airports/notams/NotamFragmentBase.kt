@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,71 +18,58 @@
  */
 package com.nadmm.airports.notams
 
-import com.nadmm.airports.FragmentBase
-import android.content.IntentFilter
-import android.content.BroadcastReceiver
-import java.util.ArrayList
-import android.os.Bundle
-import android.content.Context
-import android.content.Intent
-import java.io.File
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import android.annotation.SuppressLint
-import com.nadmm.airports.R
-import android.widget.TextView
-import java.util.Locale
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
 import android.widget.LinearLayout
-import java.time.format.DateTimeFormatter
-import java.lang.StringBuilder
-import java.io.FileInputStream
+import android.widget.TextView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.gson.GsonBuilder
-import java.time.OffsetDateTime
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
-import java.io.IOException
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
+import com.nadmm.airports.FragmentBase
+import com.nadmm.airports.R
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.TimeUtils
-import kotlin.Throws
-import java.lang.NumberFormatException
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.Locale
 
 open class NotamFragmentBase : FragmentBase() {
-    private lateinit var mFilter: IntentFilter
-    private lateinit var mReceiver: BroadcastReceiver
     private val mCategories = ArrayList<String>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mFilter = IntentFilter(NotamService.ACTION_GET_NOTAM)
-        mReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                val action = intent.action
-                if (NotamService.ACTION_GET_NOTAM == action) {
-                    val path = intent.getStringExtra(NotamService.NOTAM_PATH)
-                    if (path != null) {
-                        val location = intent.getStringExtra(NotamService.LOCATION)
-                        val notamFile = File(path)
-                        showNotams(location, notamFile)
-                        isRefreshing = false
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                CoroutineIntentService.Events.events.filterIsInstance<Intent>().collect { intent ->
+                    val action = intent.action
+                    if (NotamService.ACTION_GET_NOTAM == action) {
+                        val path = intent.getStringExtra(NotamService.NOTAM_PATH)
+                        if (path != null) {
+                            val location = intent.getStringExtra(NotamService.LOCATION)
+                            val notamFile = File(path)
+                            showNotams(location, notamFile)
+                            isRefreshing = false
+                        }
                     }
                 }
             }
         }
-    }
-
-    override fun onResume() {
-        val bm = LocalBroadcastManager.getInstance(requireActivity())
-        bm.registerReceiver(mReceiver, mFilter)
-        super.onResume()
-    }
-
-    override fun onPause() {
-        val bm = LocalBroadcastManager.getInstance(requireActivity())
-        bm.unregisterReceiver(mReceiver)
-        super.onPause()
     }
 
     protected fun getNotams(location: String?, force: Boolean) {
@@ -186,7 +173,7 @@ open class NotamFragmentBase : FragmentBase() {
         } finally {
             try {
                 input?.close()
-            } catch (ignored: IOException) {
+            } catch (_: IOException) {
             }
         }
         return notams
@@ -203,7 +190,7 @@ open class NotamFragmentBase : FragmentBase() {
             val stringValue = reader.nextString()
             return try {
                 stringValue.toInt()
-            } catch (e: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 0
             }
         }
@@ -222,7 +209,7 @@ open class NotamFragmentBase : FragmentBase() {
             val stringValue = reader.nextString()
             return try {
                 OffsetDateTime.parse(stringValue)
-            } catch (e: DateTimeParseException) {
+            } catch (_: DateTimeParseException) {
                 null
             }
         }

@@ -7,11 +7,10 @@ material = "1.13.0"
 swiperefreshlayout = "1.2.0"
 coordinatorlayout = "1.3.0"
 drawerlayout = "1.2.0"
-localbroadcastmanager = "1.1.0"
 playServicesLocation = "21.3.0"
 firebaseMessagingKtx = "24.1.2"
 coreKtx = "1.18.0"
-workRuntimeKtx = "2.11.1"
+workRuntimeKtx = "2.11.2"
 kotlinxCoroutines = "1.10.2"
 kotlinxSerializationJson = "1.10.0"
 gson = "2.13.2"
@@ -26,7 +25,6 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-coordinatorlayout = { module = "androidx.coordinatorlayout:coordinatorlayout", version.ref = "coordinatorlayout" }
 androidx-drawerlayout = { module = "androidx.drawerlayout:drawerlayout", version.ref = "drawerlayout" }
-androidx-localbroadcastmanager = { module = "androidx.localbroadcastmanager:localbroadcastmanager", version.ref = "localbroadcastmanager" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }

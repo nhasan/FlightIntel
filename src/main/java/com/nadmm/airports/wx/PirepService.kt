@@ -26,25 +26,21 @@ import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.util.Log
 import androidx.core.content.IntentCompat
 import com.nadmm.airports.utils.UiUtils.showToast
-import kotlinx.coroutines.launch
 import java.io.File
 
 class PirepService : NoaaService("pirep", CACHE_MAX_AGE) {
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override suspend fun onHandleIntent(intent: Intent?) {
         intent?.let {
             val action = intent.action
 
-            serviceScope.launch {
-                if (action == ACTION_GET_PIREP) {
-                    val type = intent.getStringExtra(TYPE)
-                    if (type == TYPE_TEXT) {
-                        getPirepText(intent)
-                    }
+            if (action == ACTION_GET_PIREP) {
+                val type = intent.getStringExtra(TYPE)
+                if (type == TYPE_TEXT) {
+                    getPirepText(intent)
                 }
             }
         }
-        return START_NOT_STICKY
     }
 
     private suspend fun getPirepText(intent: Intent) {

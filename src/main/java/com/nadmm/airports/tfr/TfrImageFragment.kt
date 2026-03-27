@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.core.content.ContextCompat
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.tfr.TfrList.Tfr
@@ -55,14 +55,17 @@ class TfrImageFragment : FragmentBase() {
     }
 
     override fun onResume() {
-        val bm = LocalBroadcastManager.getInstance(requireActivity())
-        bm.registerReceiver(mReceiver!!, mFilter!!)
         super.onResume()
+        ContextCompat.registerReceiver(
+            requireActivity(),
+            mReceiver!!,
+            mFilter!!,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     override fun onPause() {
-        val bm = LocalBroadcastManager.getInstance(requireActivity())
-        bm.unregisterReceiver(mReceiver!!)
+        requireActivity().unregisterReceiver(mReceiver!!)
         super.onPause()
     }
 
@@ -79,8 +82,8 @@ class TfrImageFragment : FragmentBase() {
         return createContentView(mImageView!!)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setActionBarTitle(mTfr!!.name!!)
         setActionBarSubtitle("TFR Graphic")
     }

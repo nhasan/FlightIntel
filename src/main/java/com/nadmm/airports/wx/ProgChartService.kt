@@ -22,24 +22,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateUtils.HOUR_IN_MILLIS
 import com.nadmm.airports.utils.UiUtils.showToast
-import kotlinx.coroutines.launch
 
 class ProgChartService : NoaaService("progchart", PROGCHART_CACHE_MAX_AGE) {
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override suspend fun onHandleIntent(intent: Intent?) {
         intent?.let {
             val action = intent.action
 
-            serviceScope.launch {
-                if (action == ACTION_GET_PROGCHART) {
-                    val type = intent.getStringExtra(TYPE)
-                    if (type == TYPE_GRAPHIC) {
-                        getProgChartImage(intent)
-                    }
+            if (action == ACTION_GET_PROGCHART) {
+                val type = intent.getStringExtra(TYPE)
+                if (type == TYPE_GRAPHIC) {
+                    getProgChartImage(intent)
                 }
             }
         }
-        return START_NOT_STICKY
     }
 
     private suspend fun getProgChartImage(intent: Intent) {

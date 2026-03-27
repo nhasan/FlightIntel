@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,37 +20,30 @@ package com.nadmm.airports.aeronav
 
 import android.content.Intent
 import android.os.IBinder
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
 import java.io.File
 
 class DtppService : AeroNavService("dtpp") {
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        serviceScope.launch {
-            intent?.action?.let { action ->
-                when (action) {
-                    ACTION_GET_CHARTS -> {
-                        getCharts(intent)
-                    }
+    override suspend fun onHandleIntent(intent: Intent?) {
+        intent?.action?.let { action ->
+            when (action) {
+                ACTION_GET_CHARTS -> {
+                    getCharts(intent)
+                }
 
-                    ACTION_CHECK_CHARTS -> {
-                        getCharts(intent)
-                    }
+                ACTION_CHECK_CHARTS -> {
+                    getCharts(intent)
+                }
 
-                    ACTION_DELETE_CHARTS -> {
-                        deleteCharts(intent)
-                    }
+                ACTION_DELETE_CHARTS -> {
+                    deleteCharts(intent)
+                }
 
-                    ACTION_COUNT_CHARTS -> {
-                        countCharts(intent)
-                    }
+                ACTION_COUNT_CHARTS -> {
+                    countCharts(intent)
                 }
             }
         }
-
-        return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -142,13 +135,4 @@ class DtppService : AeroNavService("dtpp") {
         val pdfPath: String = "",
         val count: Int = 0
     )
-
-    object Events {
-        private val _events = MutableSharedFlow<Result>()
-        val events = _events.asSharedFlow()
-
-        suspend fun post(result: Result)  {
-            _events.emit(result)
-        }
-    }
 }

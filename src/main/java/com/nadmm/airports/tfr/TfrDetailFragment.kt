@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,10 +90,7 @@ class TfrDetailFragment : FragmentBase() {
         tv.text = ("Depicted TFR data may not be a complete listing. Pilots should not use "
                 + "the information for flight planning purposes. For the latest information, "
                 + "call your local Flight Service Station at 1-800-WX-BRIEF.")
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
         setActionBarTitle("TFR Details")
         setActionBarSubtitle(mTfr!!.name!!)
         setFragmentContentShown(true)

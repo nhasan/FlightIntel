@@ -24,26 +24,21 @@ import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
 import com.nadmm.airports.utils.UiUtils.showToast
-import kotlinx.coroutines.launch
 import java.io.File
 
 class MetarService : NoaaService("metar", CACHE_MAX_AGE) {
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override suspend fun onHandleIntent(intent: Intent?) {
         intent?.let {
             val action = intent.action
 
-            serviceScope.launch {
-                if (action == ACTION_GET_METAR || action == ACTION_CACHE_METAR) {
-                    val type = intent.getStringExtra(TYPE)
-                    if (type == TYPE_TEXT) {
-                        getMetarText(intent)
-                    }
+            if (action == ACTION_GET_METAR || action == ACTION_CACHE_METAR) {
+                val type = intent.getStringExtra(TYPE)
+                if (type == TYPE_TEXT) {
+                    getMetarText(intent)
                 }
             }
         }
-
-        return START_NOT_STICKY
     }
 
     private suspend fun getMetarText(intent: Intent) {

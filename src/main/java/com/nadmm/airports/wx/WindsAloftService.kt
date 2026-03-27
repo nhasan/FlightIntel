@@ -22,22 +22,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateUtils
 import com.nadmm.airports.utils.UiUtils.showToast
-import kotlinx.coroutines.launch
 
 class WindsAloftService : NoaaService("fb", FB_CACHE_MAX_AGE) {
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override suspend fun onHandleIntent(intent: Intent?) {
         intent?.let {
             val action = intent.action
 
-            serviceScope.launch {
-                if (action == ACTION_GET_FB) {
-                    fetchWindsAloftText(intent)
-                }
+            if (action == ACTION_GET_FB) {
+                fetchWindsAloftText(intent)
             }
         }
-
-        return START_NOT_STICKY
     }
 
     private suspend fun fetchWindsAloftText(intent: Intent) {

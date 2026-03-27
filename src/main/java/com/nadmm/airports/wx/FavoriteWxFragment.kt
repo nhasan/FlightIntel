@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nadmm.airports.RecyclerViewFragment
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Wxs
+import com.nadmm.airports.utils.CoroutineIntentService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -60,7 +62,7 @@ class FavoriteWxFragment : RecyclerViewFragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                NoaaService.Events.events.collect { result ->
+                CoroutineIntentService.Events.events.filterIsInstance<Bundle>().collect { result ->
                     val resultAction = result.getString(NoaaService.ACTION)
                     if (resultAction == NoaaService.ACTION_GET_METAR) {
                         val metar = BundleCompat.getParcelable(result, NoaaService.RESULT, Metar::class.java)

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.IntentCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.databinding.RecyclerViewLayoutBinding
@@ -55,19 +55,22 @@ class TfrListFragment : FragmentBase() {
     }
 
     override fun onResume() {
-        val bm = LocalBroadcastManager.getInstance(requireActivity())
-        bm.registerReceiver(mReceiver, mFilter)
         super.onResume()
+        ContextCompat.registerReceiver(
+            requireActivity(),
+            mReceiver,
+            mFilter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     override fun onPause() {
-        val bm = LocalBroadcastManager.getInstance(requireActivity())
-        bm.unregisterReceiver(mReceiver)
+        requireActivity().unregisterReceiver(mReceiver)
         super.onPause()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setActionBarTitle("TFR List")
         setActionBarSubtitle("Loading...")
         requestTfrList(false)
@@ -80,7 +83,7 @@ class TfrListFragment : FragmentBase() {
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
 
         _binding = RecyclerViewLayoutBinding.inflate(inflater, container, false)

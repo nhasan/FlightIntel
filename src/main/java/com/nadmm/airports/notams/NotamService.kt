@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,30 +18,27 @@
  */
 package com.nadmm.airports.notams
 
-import android.app.IntentService
 import android.content.Intent
 import android.text.format.DateUtils
 import android.widget.Toast
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.NetworkUtils.doHttpGet
-import com.nadmm.airports.utils.SystemUtils
 import com.nadmm.airports.utils.UiUtils.showToast
 import java.io.File
 import java.net.URL
-import java.util.*
+import java.util.Date
 
-class NotamService : IntentService(SERVICE_NAME) {
-    private var mDataDir: File? = null
+class NotamService : CoroutineIntentService(SERVICE_NAME) {
+
     override fun onCreate() {
         super.onCreate()
-        mDataDir = SystemUtils.getExternalDir(this, SERVICE_NAME)
         cleanupCache()
     }
 
-    override fun onHandleIntent(intent: Intent?) {
+    override suspend fun onHandleIntent(intent: Intent?) {
         val location = intent!!.getStringExtra(LOCATION)
         val force = intent.getBooleanExtra(FORCE_REFRESH, false)
-        val notamFile = File(mDataDir, "NOTAM_$location.json")
+        val notamFile = File(localDataDir, "NOTAM_$location.json")
         if (force || !notamFile.exists()) {
             try {
                 fetchNotams(location, notamFile)
@@ -52,7 +49,7 @@ class NotamService : IntentService(SERVICE_NAME) {
         sendResult(location, notamFile)
     }
 
-    private fun fetchNotams(location: String?, notamFile: File) {
+    private suspend fun fetchNotams(location: String?, notamFile: File) {
         val notamUrl = "https://api.flightintel.com/notams/%s"
         val url = URL(String.format(notamUrl, location))
         val ok = doHttpGet(this, url, notamFile, null, null, null)
@@ -61,20 +58,19 @@ class NotamService : IntentService(SERVICE_NAME) {
         }
     }
 
-    private fun sendResult(location: String?, notamFile: File) {
+    private suspend fun sendResult(location: String?, notamFile: File) {
         val result = Intent()
         result.action = ACTION_GET_NOTAM
         if (notamFile.exists()) {
             result.putExtra(NOTAM_PATH, notamFile.absolutePath)
         }
         result.putExtra(LOCATION, location)
-        val bm = LocalBroadcastManager.getInstance(this)
-        bm.sendBroadcast(result)
+        Events.post(result)
     }
 
     private fun cleanupCache() {
         val now = Date()
-        val files = mDataDir!!.listFiles()
+        val files = localDataDir!!.listFiles()
         if (files != null) {
             for (file in files) {
                 val age = now.time - file.lastModified()

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,11 +44,13 @@ import com.nadmm.airports.data.DatabaseManager.Library
 import com.nadmm.airports.databinding.LibraryDetailSectionBinding
 import com.nadmm.airports.databinding.LibraryDetailViewBinding
 import com.nadmm.airports.databinding.LibraryRowItemBinding
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.NetworkUtils
 import com.nadmm.airports.utils.SystemUtils
 import com.nadmm.airports.utils.UiUtils
 import com.nadmm.airports.utils.forEach
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -119,12 +121,12 @@ class LibraryPageFragment : FragmentBase() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                LibraryService.Events.events.collect { result ->
-                    val action = result.getString(LibraryService.ACTION) ?: ""
+                CoroutineIntentService.Events.events.filterIsInstance<Intent>().collect { intent ->
+                    val action = intent.action ?: ""
                     if (action == LibraryService.ACTION_DOWNLOAD_PROGRESS) {
-                        handleProgress(result)
+                        handleProgress(intent.extras!!)
                     } else {
-                        handleBook(result)
+                        handleBook(intent.extras!!)
                     }
                 }
             }

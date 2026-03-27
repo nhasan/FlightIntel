@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.textfield.TextInputLayout
 import com.nadmm.airports.FragmentBase
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.UiUtils
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
 abstract class WxFragmentBase(private val action: String) : FragmentBase() {
@@ -38,7 +40,7 @@ abstract class WxFragmentBase(private val action: String) : FragmentBase() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                NoaaService.Events.events.collect { result ->
+                CoroutineIntentService.Events.events.filterIsInstance<Bundle>().collect { result ->
                     val resultAction = result.getString(NoaaService.ACTION)
                     if (resultAction == action) {
                         processResult(result)

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import com.nadmm.airports.utils.UiUtils.showToast
 class TfrService : TfrServiceBase() {
     private val mParser: TfrParser = TfrParser()
 
-    override fun onHandleIntent(intent: Intent?) {
+    override suspend fun onHandleIntent(intent: Intent?) {
         intent?.let {
             val action = it.action
             if (action == ACTION_GET_TFR_LIST) {

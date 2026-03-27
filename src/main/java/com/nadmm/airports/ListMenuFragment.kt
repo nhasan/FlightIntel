@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2023 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,8 @@ import androidx.cursoradapter.widget.ResourceCursorAdapter
 import com.nadmm.airports.utils.UiUtils
 
 abstract class ListMenuFragment : ListFragmentBase() {
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         arguments?.apply {
             supportActionBar?.subtitle = this.getString(SUBTITLE_TEXT)
             val id = this.getInt(MENU_ID)

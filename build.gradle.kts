@@ -26,7 +26,6 @@ dependencies {
     implementation (libs.androidx.swiperefreshlayout)
     implementation (libs.androidx.coordinatorlayout)
     implementation (libs.androidx.drawerlayout)
-    implementation (libs.androidx.localbroadcastmanager)
     implementation (libs.play.services.location)
     implementation (libs.firebase.messaging.ktx)
     implementation (libs.androidx.core.ktx)

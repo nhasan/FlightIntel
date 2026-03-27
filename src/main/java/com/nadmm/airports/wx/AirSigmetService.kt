@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,24 +23,19 @@ import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
 import com.nadmm.airports.utils.UiUtils.showToast
-import kotlinx.coroutines.launch
 
 class AirSigmetService : NoaaService("airsigmet", CACHE_MAX_AGE) {
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override suspend fun onHandleIntent(intent: Intent?) {
         if (intent != null) {
             val action = intent.action
-            serviceScope.launch {
-                if (action == ACTION_GET_AIRSIGMET) {
-                    val type = intent.getStringExtra(TYPE)
-                    if (type == TYPE_GRAPHIC) {
-                        getAirSigmetImage(intent)
-                    }
+            if (action == ACTION_GET_AIRSIGMET) {
+                val type = intent.getStringExtra(TYPE)
+                if (type == TYPE_GRAPHIC) {
+                    getAirSigmetImage(intent)
                 }
             }
         }
-
-        return START_NOT_STICKY
     }
 
     private suspend fun getAirSigmetImage(intent: Intent) {
