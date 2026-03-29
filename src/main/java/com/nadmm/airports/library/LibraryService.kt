@@ -109,6 +109,7 @@ class LibraryService : CoroutineIntentService("library") {
     private fun progress(result: Bundle) {
         val intent = Intent(result.getString(ACTION) ?: "").apply { putExtras(result) }
         runBlocking { Events.post(intent) }
+runBlocking { Events.post(result) }
     }
 
     private suspend fun sendResult(action: String, category: String, pdfFile: File) {
@@ -120,7 +121,7 @@ class LibraryService : CoroutineIntentService("library") {
         if (pdfFile.exists()) {
             result.putString(PDF_PATH, pdfFile.absolutePath)
         }
-        val intent = Intent(action).apply { putExtras(result) }
+        Events.post(resul        val intent = Intent(action).apply { putExtras(result) }
         Events.post(intent)
     }
 

@@ -47,9 +47,9 @@ class TfrService : TfrServiceBase() {
         val tfrList = TfrList()
         mParser.parse(tfrFile, tfrList)
         tfrList.entries.sort()
-        val result = makeResultIntent(intent.action)
-        result.putExtra(TFR_LIST, tfrList)
-        sendResultIntent(result)
+        val result = makeResultBundle(intent.action)
+        result.putSerializable(TFR_LIST, tfrList)
+        sendResultBundle(result)
     }
 
     companion object {

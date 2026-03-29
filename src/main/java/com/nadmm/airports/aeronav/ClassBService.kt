@@ -19,6 +19,7 @@
 package com.nadmm.airports.aeronav
 
 import android.content.Intent
+Bundle
 import android.os.IBinder
 import android.text.format.DateUtils
 import com.nadmm.airports.data.DatabaseManager.Airports
@@ -77,7 +78,10 @@ class ClassBService : AeroNavService("classb") {
         }
 
         if (pdfFile.exists()) {
-            Events.post(Intent(intent.action).apply {
+            Events.post(Bundle().apply {
+                putString("ACTION", intent.action)
+                putString("PATH", pdfFile.absolutePath)
+                putString            Events.post(Intent(intent.action).apply {
                 putExtra("PATH", pdfFile.absolutePath)
                 putExtra(Airports.FAA_CODE, faaCode)
             })

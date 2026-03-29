@@ -49,10 +49,11 @@ class TfrImageService : TfrServiceBase() {
             }
         }
         val result = makeResultIntent(intent.action)
+Bundle(intent.action)
         if (imageFile.exists()) {
-            result.putExtra(TFR_IMAGE_PATH, imageFile.absolutePath)
+            result.putString(TFR_IMAGE_PATH, imageFile.absolutePath)
         }
-        sendResultIntent(result)
+        sendResultBundle        sendResultIntent(result)
     }
 
     companion object {
