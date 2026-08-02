@@ -195,13 +195,15 @@ else
 fi
 
 bold "Syncing data files with Google Storage:"
-gcloud storage rsync ${OUT_DIR} ${GS_DATA_URL} --recursive --delete-unmatched-destination-objects --exclude "fadds_prev.db"
-gcloud storage objects update "${GS_DATA_URL}/**" --add-acl-grant=entity=AllUsers,role=READER
+gcloud storage rsync ${OUT_DIR} ${GS_DATA_URL} --recursive \
+        --delete-unmatched-destination-objects --exclude 'fadds_prev.db' \
+        --predefined-acl publicRead
 echo "--";
 
 bold "Syncing library files with Google Storage:"
-gcloud storage rsync ${LIBRARY_DIR} ${GS_LIBRARY_URL} --recursive --delete-unmatched-destination-objects
-gcloud storage objects update "${GS_LIBRARY_URL}/**" --add-acl-grant=entity=AllUsers,role=READER
+gcloud storage rsync ${LIBRARY_DIR} ${GS_LIBRARY_URL} --recursive \
+        --delete-unmatched-destination-objects --exclude '.*\.pdf' \
+        --predefined-acl publicRead
 echo "--";
 
 bold "Done!"
