@@ -39,9 +39,6 @@ import java.lang.reflect.Constructor
 import java.net.HttpURLConnection
 import java.net.URI
 import java.net.URL
-import javax.net.ssl.HostnameVerifier
-import javax.net.ssl.HttpsURLConnection
-import javax.net.ssl.SSLSession
 import kotlin.math.max
 
 object NetworkUtils {
@@ -142,12 +139,7 @@ object NetworkUtils {
         var f: InputStream? = null
         var out: OutputStream? = null
         try {
-            val hostnameVerifier =
-                HostnameVerifier { _: String?, _: SSLSession? -> true }
             val conn = url.openConnection() as HttpURLConnection
-            if (conn is HttpsURLConnection) {
-                conn.hostnameVerifier = hostnameVerifier
-            }
             if (!url.host.contains("faa.gov")) {
                 // Do not override for FAA websites
                 conn.setRequestProperty(
@@ -249,12 +241,7 @@ object NetworkUtils {
         val `in`: CountingInputStream
         var out: OutputStream? = null
         try {
-            val hostnameVerifier =
-                HostnameVerifier { _: String?, _: SSLSession? -> true }
             val conn = url.openConnection() as HttpURLConnection
-            if (conn is HttpsURLConnection) {
-                conn.hostnameVerifier = hostnameVerifier
-            }
             if (!url.host.contains("faa.gov")) {
                 // Do not override for FAA websites
                 conn.setRequestProperty(
