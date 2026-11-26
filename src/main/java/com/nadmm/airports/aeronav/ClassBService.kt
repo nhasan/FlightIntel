@@ -19,7 +19,6 @@
 package com.nadmm.airports.aeronav
 
 import android.content.Intent
-Bundle
 import android.os.IBinder
 import android.text.format.DateUtils
 import com.nadmm.airports.data.DatabaseManager.Airports
@@ -78,15 +77,19 @@ class ClassBService : AeroNavService("classb") {
         }
 
         if (pdfFile.exists()) {
-            Events.post(Bundle().apply {
-                putString("ACTION", intent.action)
-                putString("PATH", pdfFile.absolutePath)
-                putString            Events.post(Intent(intent.action).apply {
-                putExtra("PATH", pdfFile.absolutePath)
-                putExtra(Airports.FAA_CODE, faaCode)
-            })
+            Events.post(Result(
+                action = intent.action!!,
+                path = pdfFile.absolutePath,
+                faaCode = faaCode
+            ))
         }
     }
+
+    data class Result(
+        val action: String,
+        val path: String?,
+        val faaCode: String?
+    )
 
     companion object {
         const val ACTION_GET_CLASSB_GRAPHIC = "flightintel.intent.action.ACTION_GET_CLASSB_GRAPHIC"

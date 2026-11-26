@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,8 +88,8 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
 
     override fun requestDataRefresh() = fetchMetar(true)
 
-    override fun processResult(result: Bundle) {
-        val type = result.getString(NoaaService.TYPE)
+    override fun processResult(result: NoaaService.Result) {
+        val type = result.type
         if (NoaaService.TYPE_TEXT == type) {
             val metar = getResultObject(result, Metar::class.java)
             if (metar.observationTime > lastMetar.observationTime) {

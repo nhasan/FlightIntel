@@ -107,22 +107,23 @@ class LibraryService : CoroutineIntentService("library") {
     }
 
     private fun progress(result: Bundle) {
-        val intent = Intent(result.getString(ACTION) ?: "").apply { putExtras(result) }
-        runBlocking { Events.post(intent) }
-runBlocking { Events.post(result) }
+        val progressResult = Result(
+            action = result.getString(ACTION) ?: "",
+            contentName = result.getString(NetworkUtils.CONTENT_NAME),
+            contentLength = result.getInt(NetworkUtils.CONTENT_LENGTH, 0),
+            contentProgress = result.getInt(NetworkUtils.CONTENT_PROGRESS, 0)
+        )
+        runBlocking { Events.post(progressResult) }
     }
 
     private suspend fun sendResult(action: String, category: String, pdfFile: File) {
-        val result = Bundle().apply {
-            putString(ACTION, action)
-            putString(CATEGORY, category)
-            putString(BOOK_NAME, pdfFile.name)
-        }
-        if (pdfFile.exists()) {
-            result.putString(PDF_PATH, pdfFile.absolutePath)
-        }
-        Events.post(resul        val intent = Intent(action).apply { putExtras(result) }
-        Events.post(intent)
+        val result = Result(
+            action = action,
+            category = category,
+            bookName = pdfFile.name,
+            pdfPath = if (pdfFile.exists()) pdfFile.absolutePath else null
+        )
+        Events.post(result)
     }
 
     private fun cleanupBooks(category: String, books: ArrayList<String>) {
@@ -145,6 +146,16 @@ runBlocking { Events.post(result) }
         }
         return categoryDir
     }
+
+    data class Result(
+        val action: String,
+        val category: String? = null,
+        val bookName: String? = null,
+        val pdfPath: String? = null,
+        val contentName: String? = null,
+        val contentLength: Int = 0,
+        val contentProgress: Int = 0
+    )
 
     companion object {
         const val LIBRARY_HOST = "commondatastorage.googleapis.com"

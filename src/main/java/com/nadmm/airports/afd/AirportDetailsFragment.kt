@@ -31,7 +31,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.net.toUri
-import androidx.core.os.BundleCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -133,11 +132,10 @@ class AirportDetailsFragment : FragmentBase() {
 
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    CoroutineIntentService.Events.events.filterIsInstance<Bundle>().collect { result ->
-                        val resultAction = result.getString(NoaaService.ACTION)
+                    CoroutineIntentService.Events.events.filterIsInstance<NoaaService.Result>().collect { result ->
+                        val resultAction = result.action
                         if (resultAction == NoaaService.ACTION_GET_METAR) {
-                            val metar = BundleCompat.getParcelable(
-                                result, NoaaService.RESULT, Metar::class.java) ?: Metar()
+                            val metar = result.result as? Metar ?: Metar()
                             if (metar.isValid) {
                                 showWxInfo(metar)
                             }
@@ -149,9 +147,9 @@ class AirportDetailsFragment : FragmentBase() {
 
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    CoroutineIntentService.Events.events.filterIsInstance<Intent>().filter { it.action == AeroNavService.ACTION_GET_AFD }.collect { intent ->
-                        val path = intent.getStringExtra("PATH")
-                        if (!path.isNullOrEmpty()) {
+                    CoroutineIntentService.Events.events.filterIsInstance<DafdService.Result>().filter { it.action == AeroNavService.ACTION_GET_AFD }.collect { result ->
+                        val path = result.path
+                        if (path.isNotEmpty()) {
                             SystemUtils.startPDFViewer(requireContext(), path)
                         }
                     }
@@ -160,8 +158,8 @@ class AirportDetailsFragment : FragmentBase() {
 
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    CoroutineIntentService.Events.events.filterIsInstance<Intent>().filter { it.action == ClassBService.ACTION_GET_CLASSB_GRAPHIC }.collect { intent ->
-                        val path = intent.getStringExtra("PATH")
+                    CoroutineIntentService.Events.events.filterIsInstance<ClassBService.Result>().filter { it.action == ClassBService.ACTION_GET_CLASSB_GRAPHIC }.collect { result ->
+                        val path = result.path
                         if (!path.isNullOrEmpty()) {
                             SystemUtils.startPDFViewer(requireContext(), path)
                         }

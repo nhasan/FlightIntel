@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@ package com.nadmm.airports.wx
 import android.content.Context
 import android.content.Intent
 import android.location.Location
-import android.os.Bundle
 import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.util.Log
 import androidx.core.content.IntentCompat
@@ -80,11 +79,11 @@ class PirepService : NoaaService("pirep", CACHE_MAX_AGE) {
         // Send the Pirep
         val pirep = wxCache.deserializeObject<Pirep>(stationId) ?: Pirep()
 
-        val result = Bundle().apply {
-            putString(ACTION, ACTION_GET_PIREP)
-            putString(TYPE, TYPE_TEXT)
-            putParcelable(RESULT, pirep)
-        }
+        val result = Result(
+            action = ACTION_GET_PIREP,
+            type = TYPE_TEXT,
+            result = pirep
+        )
         Events.post(result)
     }
 

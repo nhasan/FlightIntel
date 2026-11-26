@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ package com.nadmm.airports.wx
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
 import com.nadmm.airports.utils.UiUtils.showToast
@@ -45,7 +44,7 @@ class MetarService : NoaaService("metar", CACHE_MAX_AGE) {
         // Get request parameters
         val stationIds = intent.getStringArrayListExtra(STATION_IDS) ?: return
 
-        val action = intent.action
+        val action = intent.action ?: return
         var cacheOnly = intent.getBooleanExtra(CACHE_ONLY, false)
         if (action == ACTION_CACHE_METAR) {
             // Do not try to use the cache. We are populating the cache.
@@ -81,11 +80,11 @@ class MetarService : NoaaService("metar", CACHE_MAX_AGE) {
         if (action == ACTION_GET_METAR) {
             for (stationId in stationIds) {
                 val metar = wxCache.deserializeObject<Metar>(stationId) ?: Metar(stationId = stationId)
-                val result = Bundle().apply {
-                    putString(ACTION, action)
-                    putString(TYPE, TYPE_TEXT)
-                    putParcelable(RESULT, metar)
-                }
+                val result = Result(
+                    action = action,
+                    type = TYPE_TEXT,
+                    result = metar
+                )
                 Events.post(result)
             }
         }

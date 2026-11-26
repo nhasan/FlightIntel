@@ -19,7 +19,6 @@
 package com.nadmm.airports.wx
 
 import android.content.Intent
-import android.os.Bundle
 import android.text.format.DateUtils
 import com.nadmm.airports.utils.UiUtils.showToast
 
@@ -36,7 +35,7 @@ class WindsAloftService : NoaaService("fb", FB_CACHE_MAX_AGE) {
     }
 
     private suspend fun fetchWindsAloftText(intent: Intent) {
-        val action = intent.action
+        val action = intent.action ?: return
         val code = intent.getStringExtra(TEXT_CODE)
         val type = intent.getStringExtra(TEXT_TYPE)
         val filename = "F${type}_fbwind_low_${code}.txt"
@@ -50,11 +49,11 @@ class WindsAloftService : NoaaService("fb", FB_CACHE_MAX_AGE) {
             }
         }
 
-        val result = Bundle().apply {
-            putString(ACTION, action)
-            putString(TYPE, TYPE_TEXT)
-            putString(RESULT, if (file.exists()) file.absolutePath else "")
-        }
+        val result = Result(
+            action = action,
+            type = TYPE_TEXT,
+            result = if (file.exists()) file.absolutePath else ""
+        )
         Events.post(result)
     }
 

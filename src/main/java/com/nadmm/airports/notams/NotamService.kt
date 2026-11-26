@@ -19,7 +19,6 @@
 package com.nadmm.airports.notams
 
 import android.content.Intent
-os.Bundle
 import android.text.format.DateUtils
 import android.widget.Toast
 import com.nadmm.airports.utils.CoroutineIntentService
@@ -60,14 +59,11 @@ class NotamService : CoroutineIntentService(SERVICE_NAME) {
     }
 
     private suspend fun sendResult(location: String?, notamFile: File) {
-        val result = Bundle().apply {
-            putString("ACTION", ACTION_GET_NOTAM)
-            if (notamFile.exists()) {
-                putString(NOTAM_PATH, notamFile.absolutePath)
-            }
-            putString(LOCATION, location)
-        }
-        result.putExtra(LOCATION, location)
+        val result = Result(
+            action = ACTION_GET_NOTAM,
+            location = location,
+            notamPath = if (notamFile.exists()) notamFile.absolutePath else null
+        )
         Events.post(result)
     }
 
@@ -83,6 +79,12 @@ class NotamService : CoroutineIntentService(SERVICE_NAME) {
             }
         }
     }
+
+    data class Result(
+        val action: String,
+        val location: String?,
+        val notamPath: String?
+    )
 
     companion object {
         const val ACTION_GET_NOTAM = "flightintel.intent.action.GET_NOTAM"

@@ -22,7 +22,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
-import androidx.core.os.BundleCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -40,8 +39,8 @@ abstract class WxFragmentBase(private val action: String) : FragmentBase() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                CoroutineIntentService.Events.events.filterIsInstance<Bundle>().collect { result ->
-                    val resultAction = result.getString(NoaaService.ACTION)
+                CoroutineIntentService.Events.events.filterIsInstance<NoaaService.Result>().collect { result ->
+                    val resultAction = result.action
                     if (resultAction == action) {
                         processResult(result)
                     }
@@ -67,11 +66,11 @@ abstract class WxFragmentBase(private val action: String) : FragmentBase() {
         return textView?.getText().toString()
     }
 
-    protected open fun processResult(result: Bundle) {
+    protected open fun processResult(result: NoaaService.Result) {
     }
 
-    protected fun <T> getResultObject(result: Bundle, clazz: Class<T>): T {
-        return BundleCompat.getParcelable(result, NoaaService.RESULT, clazz)
-            ?: clazz.getDeclaredConstructor().newInstance()
+    @Suppress("UNCHECKED_CAST")
+    protected fun <T> getResultObject(result: NoaaService.Result, clazz: Class<T>): T {
+        return (result.result as? T) ?: clazz.getDeclaredConstructor().newInstance()
     }
 }

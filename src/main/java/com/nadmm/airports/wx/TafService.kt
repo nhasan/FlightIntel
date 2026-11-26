@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ package com.nadmm.airports.wx
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
 import com.nadmm.airports.utils.UiUtils.showToast
@@ -73,11 +72,11 @@ class TafService : NoaaService("taf", CACHE_MAX_AGE) {
         }
 
         val taf = wxCache.deserializeObject<Taf>(stationId) ?: Taf()
-        val result = Bundle().apply {
-            putString(ACTION, ACTION_GET_TAF)
-            putString(TYPE, TYPE_TEXT)
-            putParcelable(RESULT, taf)
-        }
+        val result = Result(
+            action = ACTION_GET_TAF,
+            type = TYPE_TEXT,
+            result = taf
+        )
         Events.post(result)
     }
 

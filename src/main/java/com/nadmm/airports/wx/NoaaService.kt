@@ -18,12 +18,10 @@
  */
 package com.nadmm.airports.wx
 
-import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.NetworkUtils.doHttpsGet
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import java.io.File
 import java.util.zip.GZIPInputStream
 
@@ -56,14 +54,15 @@ abstract class NoaaService(name: String, protected val maxAgeMillis: Long) : Cor
         )
     }
 
-    object Events {
-        private val _events = MutableSharedFlow<Bundle>()
-        val events = _events.asSharedFlow()
-
-        suspend fun post(result: Bundle) {
-            _events.emit(result)
-        }
-    }
+    data class Result(
+        val action: String,
+        val type: String,
+        val result: Any? = null,
+        val imageCode: String? = null,
+        val imageType: String? = null,
+        val textCode: String? = null,
+        val textType: String? = null
+    )
 
     companion object {
         private val TAG: String = NoaaService::class.java.simpleName
@@ -80,7 +79,6 @@ abstract class NoaaService(name: String, protected val maxAgeMillis: Long) : Cor
         const val IMAGE_CODE: String = "IMAGE_CODE"
         const val TEXT_TYPE: String = "TEXT_TYPE"
         const val TEXT_CODE: String = "TEXT_CODE"
-        const val RESULT: String = "RESULT"
 
         const val TYPE: String = "TYPE"
         const val TYPE_TEXT: String = "TYPE_TEXT"

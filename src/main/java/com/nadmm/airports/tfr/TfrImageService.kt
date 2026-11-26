@@ -48,12 +48,11 @@ class TfrImageService : TfrServiceBase() {
                 showToast(this, "TFR: " + e.message)
             }
         }
-        val result = makeResultIntent(intent.action)
-Bundle(intent.action)
+        val result = makeResultBundle(intent.action)
         if (imageFile.exists()) {
             result.putString(TFR_IMAGE_PATH, imageFile.absolutePath)
         }
-        sendResultBundle        sendResultIntent(result)
+        sendResultBundle(result)
     }
 
     companion object {

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2021-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2021-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 package com.nadmm.airports.wx
 
 import android.content.Intent
-import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
 import com.nadmm.airports.utils.UiUtils.showToast
@@ -40,7 +39,7 @@ class GfaService : NoaaService("gfa", CACHE_MAX_AGE) {
 
     private suspend fun fetchAndSendGfaImage(intent: Intent) {
         // Get request parameters
-        val action = intent.action
+        val action = intent.action ?: return
         val imgType = intent.getStringExtra(IMAGE_TYPE)
         val code = intent.getStringExtra(IMAGE_CODE)
         Log.d(TAG, "Fetching GFA image: $imgType, code: $code")
@@ -56,12 +55,12 @@ class GfaService : NoaaService("gfa", CACHE_MAX_AGE) {
             }
         }
 
-        val result = Bundle().apply {
-            putString(ACTION, action)
-            putString(TYPE, TYPE_GRAPHIC)
-            putString(IMAGE_CODE, code)
-            putString(RESULT, if (imageFile.exists()) imageFile.absolutePath else "")
-        }
+        val result = Result(
+            action = action,
+            type = TYPE_GRAPHIC,
+            imageCode = code,
+            result = if (imageFile.exists()) imageFile.absolutePath else ""
+        )
         Events.post(result)
     }
 

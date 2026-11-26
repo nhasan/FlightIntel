@@ -21,7 +21,6 @@ package com.nadmm.airports.wx
 import android.database.Cursor
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.BundleCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -62,11 +61,10 @@ class FavoriteWxFragment : RecyclerViewFragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                CoroutineIntentService.Events.events.filterIsInstance<Bundle>().collect { result ->
-                    val resultAction = result.getString(NoaaService.ACTION)
+                CoroutineIntentService.Events.events.filterIsInstance<NoaaService.Result>().collect { result ->
+                    val resultAction = result.action
                     if (resultAction == NoaaService.ACTION_GET_METAR) {
-                        val metar = BundleCompat.getParcelable(result, NoaaService.RESULT, Metar::class.java)
-                            ?: Metar()
+                        val metar = result.result as? Metar ?: Metar()
                         val adapter = recyclerView.adapter as? WxRecyclerViewAdapter
                         adapter?.onMetarFetched(metar)
                         isRefreshing = false

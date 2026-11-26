@@ -56,14 +56,12 @@ open class NotamFragmentBase : FragmentBase() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                CoroutineIntentService.Events.events.filterIsInstance<Intent>().collect { intent ->
-                    val action = intent.action
-Bundle>().collect { bundle ->
-                    val action = bundle.getString("ACTION")
+                CoroutineIntentService.Events.events.filterIsInstance<NotamService.Result>().collect { result ->
+                    val action = result.action
                     if (NotamService.ACTION_GET_NOTAM == action) {
-                        val path = bundle.getString(NotamService.NOTAM_PATH)
+                        val path = result.notamPath
                         if (path != null) {
-                            val location = bundle.getString                            val location = intent.getStringExtra(NotamService.LOCATION)
+                            val location = result.location
                             val notamFile = File(path)
                             showNotams(location, notamFile)
                             isRefreshing = false

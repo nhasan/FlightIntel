@@ -19,7 +19,6 @@
 package com.nadmm.airports.aeronav
 
 import android.content.Intent
-Bundle
 import android.os.IBinder
 import java.io.File
 
@@ -47,10 +46,10 @@ class DafdService : AeroNavService("dafd") {
             fetch(path, pdfFile)
         }
 
-        Events.post(Bundle().apply {
-            putString("ACTION", intent.action)
-            putString("PATH", pdfFile.absolutePath)
-        })
+        Events.post(Result(
+            action = intent.action!!,
+            path = pdfFile.absolutePath
+        ))
     }
 
     private suspend fun checkAfd(intent: Intent) {
@@ -59,10 +58,14 @@ class DafdService : AeroNavService("dafd") {
         val cycleDir = getCycleDir(afdCycle)
         val pdfFile = File(cycleDir, pdfName)
 
-        Events.post(Bundle().apply {
-            putString("ACTION", intent.action)
-            putString        Events.post(Intent(intent.action).apply {
-            putExtra("PATH", if (pdfFile.exists()) pdfFile.absolutePath else "")
-        })
+        Events.post(Result(
+            action = intent.action!!,
+            path = if (pdfFile.exists()) pdfFile.absolutePath else ""
+        ))
     }
+
+    data class Result(
+        val action: String,
+        val path: String
+    )
 }

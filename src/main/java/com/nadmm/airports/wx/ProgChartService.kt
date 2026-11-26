@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 package com.nadmm.airports.wx
 
 import android.content.Intent
-import android.os.Bundle
 import android.text.format.DateUtils.HOUR_IN_MILLIS
 import com.nadmm.airports.utils.UiUtils.showToast
 
@@ -39,7 +38,7 @@ class ProgChartService : NoaaService("progchart", PROGCHART_CACHE_MAX_AGE) {
     }
 
     private suspend fun getProgChartImage(intent: Intent) {
-        val action = intent.action
+        val action = intent.action ?: return
         val code = intent.getStringExtra(IMAGE_CODE)
         val imageName = "$code.gif"
         val imageFile = wxCache.getFile(imageName)
@@ -52,12 +51,12 @@ class ProgChartService : NoaaService("progchart", PROGCHART_CACHE_MAX_AGE) {
             }
         }
 
-        val result = Bundle().apply {
-            putString(ACTION, action)
-            putString(TYPE, TYPE_GRAPHIC)
-            putString(IMAGE_CODE, code)
-            putString(RESULT, if (imageFile.exists()) imageFile.absolutePath else "")
-        }
+        val result = Result(
+            action = action,
+            type = TYPE_GRAPHIC,
+            imageCode = code,
+            result = if (imageFile.exists()) imageFile.absolutePath else ""
+        )
         Events.post(result)
     }
 

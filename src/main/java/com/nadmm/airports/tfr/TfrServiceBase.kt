@@ -18,8 +18,7 @@
  */
 package com.nadmm.airports.tfr
 
-import android.content.Intent
-os.Bundle
+import android.os.Bundle
 import android.text.format.DateUtils
 import com.nadmm.airports.utils.CoroutineIntentService
 import kotlinx.coroutines.runBlocking
@@ -58,8 +57,7 @@ abstract class TfrServiceBase : CoroutineIntentService(SERVICE_NAME) {
     }
 
     protected fun sendResultBundle(bundle: Bundle?) {
-        bundle    protected fun sendResultIntent(intent: Intent?) {
-        intent?.let { runBlocking { Events.post(it) } }
+        bundle?.let { runBlocking { Events.post(it) } }
     }
 
     companion object {

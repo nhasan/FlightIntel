@@ -87,8 +87,8 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
 
     override fun requestDataRefresh() = fetchTaf(true)
 
-    override fun processResult(result: Bundle) {
-        val type = result.getString(NoaaService.TYPE)
+    override fun processResult(result: NoaaService.Result) {
+        val type = result.type
         if (NoaaService.TYPE_TEXT == type) {
             val taf = getResultObject(result, Taf::class.java)
             if (taf.issueTime > lastTaf.issueTime) {

@@ -121,12 +121,12 @@ class LibraryPageFragment : FragmentBase() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                CoroutineIntentService.Events.events.filterIsInstance<Intent>().collect { intent ->
-                    val action = intent.action ?: ""
+                CoroutineIntentService.Events.events.filterIsInstance<LibraryService.Result>().collect { result ->
+                    val action = result.action
                     if (action == LibraryService.ACTION_DOWNLOAD_PROGRESS) {
-                        handleProgress(intent.extras!!)
+                        handleProgress(result)
                     } else {
-                        handleBook(intent.extras!!)
+                        handleBook(result)
                     }
                 }
             }
@@ -242,10 +242,10 @@ class LibraryPageFragment : FragmentBase() {
         }
     }
 
-    private fun handleBook(result: Bundle) {
-        val pdfName = result.getString(LibraryService.BOOK_NAME)
+    private fun handleBook(result: LibraryService.Result) {
+        val pdfName = result.bookName
         mBookRowMap[pdfName]?.let {
-            val path = result.getString(LibraryService.PDF_PATH)
+            val path = result.pdfPath
             showStatus(it, path != null)
             it.setTag(R.id.LIBRARY_PDF_PATH, path)
             if (path != null) {
@@ -253,24 +253,24 @@ class LibraryPageFragment : FragmentBase() {
             } else {
                 unregisterForContextMenu(it)
             }
-            val action = result.getString(LibraryService.ACTION)
+            val action = result.action
             if (action == LibraryService.ACTION_GET_BOOK && path != null) {
                 SystemUtils.startPDFViewer(requireContext(), path)
             }
         }
     }
 
-    private fun handleProgress(result: Bundle) {
-        val name = result.getString(NetworkUtils.CONTENT_NAME)
+    private fun handleProgress(result: LibraryService.Result) {
+        val name = result.contentName
         mBookRowMap[name]?.let {
             with(LibraryRowItemBinding.bind(it)) {
                 progress.visibility = View.VISIBLE
-                val length = result.getInt(NetworkUtils.CONTENT_LENGTH, 0)
+                val length = result.contentLength
                 progress.isIndeterminate = (length == 0)
                 if (progress.max != length) {
                     progress.max = length
                 }
-                val current = result.getInt(NetworkUtils.CONTENT_PROGRESS, 0)
+                val current = result.contentProgress
                 progress.progress = current
                 if (current == length) {
                     progress.visibility = View.GONE

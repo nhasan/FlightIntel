@@ -95,8 +95,8 @@ abstract class WxTextFragmentBase(
         selectedRow = null
     }
 
-    override fun processResult(result: Bundle) {
-        val path = result.getString(NoaaService.RESULT)
+    override fun processResult(result: NoaaService.Result) {
+        val path = result.result as? String
         if (!path.isNullOrEmpty()) {
             val item = ListItemText1Binding.bind(selectedRow!!)
             val label = item.text.text.toString()

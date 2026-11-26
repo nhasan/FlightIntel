@@ -19,7 +19,6 @@
 package com.nadmm.airports.wx
 
 import android.content.Intent
-import android.os.Bundle
 import android.text.format.DateUtils
 import com.nadmm.airports.utils.UiUtils.showToast
 
@@ -36,7 +35,7 @@ class AreaForecastService : NoaaService("fa", FA_CACHE_MAX_AGE) {
     }
 
     private suspend fun getFaText(intent: Intent) {
-        val action = intent.action
+        val action = intent.action ?: return
         val code = intent.getStringExtra(TEXT_CODE) ?: return
         val file = wxCache.getFile(code)
         if (!file.exists()) {
@@ -48,11 +47,11 @@ class AreaForecastService : NoaaService("fa", FA_CACHE_MAX_AGE) {
             }
         }
 
-        val result = Bundle().apply {
-            putString(ACTION, action)
-            putString(TYPE, TYPE_TEXT)
-            putString(RESULT, if (file.exists()) file.absolutePath else "")
-        }
+        val result = Result(
+            action = action,
+            type = TYPE_TEXT,
+            result = if (file.exists()) file.absolutePath else ""
+        )
         Events.post(result)
     }
 
