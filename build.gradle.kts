@@ -2,10 +2,10 @@ import java.util.Properties
 import java.io.FileInputStream
 
 plugins {
-    id("com.android.application") version "9.1.0"
-    id("com.google.gms.google-services") version "4.4.4"
-    id("org.jetbrains.kotlin.plugin.parcelize") version "2.3.20"
-    kotlin("plugin.serialization") version "2.3.10"
+    id("com.android.application") version "9.5.3"
+    id("com.google.gms.google-services") version "4.5.0"
+    id("org.jetbrains.kotlin.plugin.parcelize") version "2.4.10"
+    kotlin("plugin.serialization") version "2.4.10"
 }
 
 allprojects {
@@ -47,15 +47,15 @@ android {
     defaultConfig {
         applicationId = "com.nadmm.airports"
         minSdk = 30
-        targetSdk = 36
+        targetSdk = 37
         compileSdk {
-            version = release(36) {
-                minorApiLevel = 1
+            version = release(37) {
+                minorApiLevel = 2
             }
         }
         versionName = "25.12.01"
         versionCode = 251201
-        buildToolsVersion = "36.1.0"
+        buildToolsVersion = "37.0.0"
         vectorDrawables.useSupportLibrary = true
     }
 
