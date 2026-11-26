@@ -47,6 +47,21 @@ object WxUtils {
     const val HG_TO_MBAR = ISA_PRESSURE_MBAR/ISA_PRESSURE_HG
     const val TROPOPAUSE_FT = 36089
 
+    /**
+     * ISA pressure in inches of mercury for a geometric altitude in feet.
+     * Below the tropopause the temperature lapses; above it the layer is isothermal
+     * and pressure decays as exp(-4.806346e-5 per foot).
+     */
+    @JvmStatic
+    fun isaPressureInHg(altitudeFt: Double): Double {
+        return if (altitudeFt < TROPOPAUSE_FT) {
+            ISA_PRESSURE_HG * (1 - 6.8755856e-6 * altitudeFt).pow(5.2558797)
+        } else {
+            val heightAboveTropopauseFt = altitudeFt - TROPOPAUSE_FT
+            ISA_PRESSURE_HG * 0.2233609 * exp(-4.806346e-5 * heightAboveTropopauseFt)
+        }
+    }
+
     private fun getFlightCategoryColor(flightCategory: String): Int {
         return when (flightCategory) {
             FLIGHT_CATEGORY_VFR -> Color.argb(255, 0, 160, 32)

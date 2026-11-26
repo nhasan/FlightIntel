@@ -35,6 +35,7 @@ dependencies {
     implementation (libs.kotlinx.serialization.json)
     implementation (libs.gson)
     coreLibraryDesugaring (libs.desugar.jdk.libs)
+    testImplementation (libs.junit)
 }
 
 val keystorePropertiesFile: File = rootProject.file("keystore.properties")
