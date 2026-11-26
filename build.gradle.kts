@@ -54,8 +54,8 @@ android {
                 minorApiLevel = 2
             }
         }
-        versionName = "25.12.01"
-        versionCode = 251201
+        versionName = "26.12.01"
+        versionCode = 261201
         buildToolsVersion = "37.0.0"
         vectorDrawables.useSupportLibrary = true
     }
