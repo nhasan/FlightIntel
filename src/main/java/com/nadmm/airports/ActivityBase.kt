@@ -132,6 +132,9 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     protected open val selfNavDrawerItem: Int = NAVDRAWER_ITEM_INVALID
 
+    /** False for screens where search has no place, such as Downloads. */
+    protected open val showsSearch: Boolean = true
+
     var isRefreshing: Boolean
         get() = mSwipeRefreshLayout?.isRefreshing ?: false
         set(refreshing) {
@@ -209,7 +212,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
+                if (!showsSearch) return
                 menuInflater.inflate(R.menu.mainmenu, menu)
 
                 val searchManager = getSystemService(SEARCH_SERVICE) as SearchManager

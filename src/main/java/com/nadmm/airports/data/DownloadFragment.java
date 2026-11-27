@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2020 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@ import android.util.Log;
 import android.util.TimeFormatException;
 import android.util.Xml;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -171,16 +170,6 @@ public class DownloadFragment extends FragmentBase {
         super.onActivityCreated( savedInstanceState );
 
         checkData();
-    }
-
-    @Override
-    public void onPrepareOptionsMenu( @NonNull Menu menu ) {
-        super.onPrepareOptionsMenu( menu );
-
-        Cursor c = mDbManager.getCurrentFromCatalog();
-        boolean visible = c.moveToFirst();
-        c.close();
-        menu.findItem( R.id.menu_search ).setVisible( visible );
     }
 
     private void checkNetworkAndDownload() {

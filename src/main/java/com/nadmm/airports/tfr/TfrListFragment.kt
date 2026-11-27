@@ -43,11 +43,6 @@ class TfrListFragment : FragmentBase() {
     private val binding get() = _binding!!
     val recyclerView get() = binding.recyclerView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setActionBarTitle("TFR List")
