@@ -50,9 +50,6 @@
     <screenName name="com.nadmm.airports.tfr.TfrDetailActivity" >
         TFR Details
     </screenName>
-    <screenName name="com.nadmm.airports.tfr.TfrImageViewActivity" >
-        TFR Graphics
-    </screenName>
     <screenName name="com.nadmm.airports.clocks.ClocksActivity" >
         Clocks
     </screenName>
