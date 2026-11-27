@@ -18,55 +18,39 @@
  */
 package com.nadmm.airports.tfr
 
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
-import androidx.core.content.ContextCompat
+import androidx.core.os.BundleCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.tfr.TfrList.Tfr
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.UiUtils.showToast
 import com.nadmm.airports.views.ImageZoomView
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.onSubscription
+import kotlinx.coroutines.launch
 
 class TfrImageFragment : FragmentBase() {
     private var mTfr: Tfr? = null
-    private var mReceiver: BroadcastReceiver? = null
-    private var mFilter: IntentFilter? = null
     private var mImageView: ImageZoomView? = null
+    private var mImageShown = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mReceiver = TfrReceiver()
-        mFilter = IntentFilter()
-        mFilter!!.addAction(TfrImageService.ACTION_GET_TFR_IMAGE)
-        val args = arguments
-        mTfr = args!!.getSerializable(TfrListActivity.EXTRA_TFR) as Tfr?
-        val service = Intent(activity, TfrImageService::class.java)
-        service.action = TfrImageService.ACTION_GET_TFR_IMAGE
-        service.putExtra(TfrImageService.TFR_ENTRY, mTfr)
-        requireActivity().startService(service)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        ContextCompat.registerReceiver(
-            requireActivity(),
-            mReceiver!!,
-            mFilter!!,
-            ContextCompat.RECEIVER_NOT_EXPORTED
+        mTfr = BundleCompat.getSerializable(
+            requireArguments(),
+            TfrListActivity.EXTRA_TFR,
+            Tfr::class.java
         )
-    }
-
-    override fun onPause() {
-        requireActivity().unregisterReceiver(mReceiver!!)
-        super.onPause()
     }
 
     override fun onCreateView(
@@ -86,21 +70,38 @@ class TfrImageFragment : FragmentBase() {
         super.onViewCreated(view, savedInstanceState)
         setActionBarTitle(mTfr!!.name!!)
         setActionBarSubtitle("TFR Graphic")
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // Events has no replay, so request the image only once subscribed,
+                // or a cached image could be posted before anyone is listening.
+                CoroutineIntentService.Events.events
+                    .onSubscription { if (!mImageShown) requestTfrImage() }
+                    .filterIsInstance<Bundle>()
+                    .collect { bundle ->
+                        if (bundle.getString("ACTION") == TfrImageService.ACTION_GET_TFR_IMAGE) {
+                            showTfrImage(bundle.getString(TfrImageService.TFR_IMAGE_PATH))
+                        }
+                    }
+            }
+        }
     }
 
-    private inner class TfrReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val path = intent.getSerializableExtra(TfrImageService.TFR_IMAGE_PATH) as String?
-            var bitmap: Bitmap? = null
-            if (path != null) {
-                bitmap = BitmapFactory.decodeFile(path)
-            }
-            if (bitmap != null) {
-                mImageView!!.setImage(bitmap)
-                setFragmentContentShown(true)
-            } else {
-                showToast(activity!!, "Unable to show image")
-            }
+    private fun requestTfrImage() {
+        val service = Intent(activity, TfrImageService::class.java)
+        service.action = TfrImageService.ACTION_GET_TFR_IMAGE
+        service.putExtra(TfrImageService.TFR_ENTRY, mTfr)
+        requireActivity().startService(service)
+    }
+
+    private fun showTfrImage(path: String?) {
+        val bitmap = path?.let { BitmapFactory.decodeFile(it) }
+        if (bitmap != null) {
+            mImageView!!.setImage(bitmap)
+            mImageShown = true
+            setFragmentContentShown(true)
+        } else {
+            showToast(requireActivity(), "Unable to show image")
         }
     }
 }
