@@ -61,7 +61,7 @@ class TfrDetailFragment : FragmentBase() {
             "Status",
             if (tfr.isExpired) "Expired" else if (tfr.isActive) "Active" else "Inactive"
         )
-        addRow(layout, "Location", tfr.formatLocation())
+        addRow(layout, "Location", null, tfr.formatLocation())
         addValueRow(layout, "Time", tfr.formatTimeRange(activityBase))
         addValueRow(layout, "Altitude", tfr.formatAltitudeRange())
         if (!tfr.replacedNotamId.isNullOrEmpty()) {
@@ -107,6 +107,12 @@ class TfrDetailFragment : FragmentBase() {
                 + "call your local Flight Service Station at 1-800-WX-BRIEF.")
 
         setFragmentContentShown(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // The Map tab shows the location instead; show the name again here
+        mTfr?.name?.let { setActionBarSubtitle(it) }
     }
 
     /**
