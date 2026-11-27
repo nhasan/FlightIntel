@@ -38,8 +38,8 @@ class WxDetailActivity : TabPagerActivityBase() {
     private val tabNameFragmentMap = mapOf(
         "METAR" to MetarFragment::class.java,
         "TAF" to TafFragment::class.java,
-        "WINDS ALOFT" to WindsAloftFragment::class.java,
         "PIREP" to PirepFragment::class.java,
+        "WINDS ALOFT" to WindsAloftFragment::class.java,
         "GFA" to GfaFragment::class.java,
         "AREA FORECAST" to AreaForecastFragment::class.java,
         "AIRMET/SIGMET" to AirSigmetGraphicFragment::class.java,
