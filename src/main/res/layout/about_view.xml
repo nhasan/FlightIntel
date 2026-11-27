@@ -31,7 +31,7 @@
             android:layout_height="wrap_content">
         <Button
                 android:id="@+id/btn_rate"
-                style="@style/Widget.AppCompat.ActionButton"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:text="@string/rate_it"
                 android:layout_gravity="center"
                 android:layout_weight="1"
@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content" />
         <Button
                 android:id="@+id/btn_close"
-                style="@style/Widget.AppCompat.ActionButton"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:text="@string/close"
                 android:layout_gravity="center"
                 android:layout_weight="1"

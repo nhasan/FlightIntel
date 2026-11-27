@@ -1,62 +1,89 @@
+<!DOCTYPE html>
 <html lang="en-US">
 <head>
-    <style type="text/css">
-    .title-text {
-        color: #333333;
-        font-size: 1.8em;
-        font-weight: bold;
-    }
-    .secondary-text {
-        font-size: 1.0em;
-        color: #666666;
-    }
-    .body-text {
-        font-size: 1.0em;
-        color: #333333;
-    }
-    .float-left {
-        float: left;
-        margin-right: 8px;
-    }
-    .align-middle {
-        vertical-align: middle;
-    }
-    p {
-        font-size: 1.0em;
-    }
-    p.code {
-        font-family: monospace;
-        font-size: 1.1em;
-    }
-    .hilite {
-        font-weight: bold;
-    }
-    p.subtitle {
-        font-size: 1.1em;
-        font-weight: bold;
-    }
+    <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
+    <style>
+        /* The screen behind the page gives the background */
+        html, body {
+            background: transparent;
+        }
+        body {
+            color: #333333;
+        }
+        .title-text {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        .secondary-text {
+            color: #666666;
+        }
+        .float-left {
+            float: left;
+            margin-right: 8px;
+        }
+        .header {
+            margin-bottom: 1.5em;
+        }
+        .hilite {
+            font-weight: bold;
+        }
+        p.code {
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+        p.subtitle {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        /* The app's dark theme colors when the system is in dark mode */
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #E3E2E6;
+            }
+            .secondary-text {
+                color: #C3C6CF;
+            }
+            a {
+                color: #64B5F6;
+            }
+        }
     </style>
     <title>About FlightIntel</title>
 </head>
 <body>
-    <div><span class="title-text">FlightIntel</span><br>
-    <span class="secondary-text">Nadeem Hasan &lt;nhasan@nadmm.com&gt;
-    </span></div>
-    <p>This application makes use of the data from following sources:</p>
-    <p><span class="hilite">A/FD</span> &mdash; Airport/Facility data is provided by FADDS -
-    Facility Aeronautical Data Distribution System, part of the NFDC - National Flight Data Center.
-    This data is updated on a 56-day cycle.</p>
-    <p>Timezone information is populated in the data file using <a href="http://www.geonames.org"
-    >GeoNames</a>.
-    <p>FlightIntel is not in any way affiliated with FAA or any other government agency.</p>
+    <img src="file:///android_asset/icon.png" class="float-left" alt="FlightIntel icon">
+    <div class="header"><span class="title-text">FlightIntel</span><br>
+    <span class="secondary-text">Nadeem Hasan &lt;nhasan@nadmm.com&gt;</span>
+    </div>
+
+    <p class="subtitle">Data Sources</p>
+    <p><span class="hilite">Airports and facilities</span> &mdash; FAA National Flight Data
+    Center (NFDC), from its 28-day NASR subscription.</p>
+    <p><span class="hilite">Charts and procedures</span> &mdash; FAA Aeronautical Information
+    Services: the Chart Supplement, Terminal Procedures (d-TPP) and the Digital Obstacle
+    File.</p>
+    <p><span class="hilite">Weather</span> &mdash; National Weather Service Aviation Weather
+    Center (aviationweather.gov).</p>
+    <p><span class="hilite">TFRs</span> &mdash; FAA (tfr.faa.gov).</p>
+    <p><span class="hilite">Maps</span> &mdash; &copy; <a
+    href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors.</p>
+    <p><span class="hilite">Time zones</span> &mdash; <a
+    href="https://www.geonames.org">GeoNames</a>.</p>
+    <p>FlightIntel is not affiliated with the FAA or any other government agency. Always check
+    official sources before flight.</p>
+
     <p class="subtitle">Privacy</p>
-    <p>FlightIntel requires access to your device's location to provide information about
-    nearby airports and weather facilities. Your privacy is important to me. Therefore, I
-    want to assure you that the location information is processed locally on your device and
-    is not transmitted to any external server. This app does not collect or store any personal
-    identity data, ensuring that your location cannot be associated with a specific user.</p>
+    <p>FlightIntel uses your device's location to find nearby airports and weather stations. Your
+    location is processed on your device, and your coordinates are not sent anywhere.</p>
+    <p>To show weather, charts, TFRs and maps, the app downloads data from the sources above and
+    from api.flightintel.com. As with any download, these servers see your IP address and what
+    you request, such as a nearby weather station. If you turn on alerts, Google's Firebase Cloud
+    Messaging gives your device a token so alerts can reach it.</p>
+    <p>FlightIntel has no accounts, ads or analytics, and does not collect personal
+    information.</p>
+
     <p class="subtitle">License</p>
-    <p>This application is made available to you under the following license terms:</p>
     <p class="code">This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -65,9 +92,11 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.</p>
-    <p>The source code for this application can be downloaded from the <a
-    href="http://www.github.com/nhasan/Airports">GitHub</a> repository. Please report any bugs,
-    or comments to the <a href="http://www.github.com/nhasan/Airports/issues">Issue Tracker</a>.
-    </p>
+    <p class="code">You should have received a copy of the GNU General Public License
+    along with this program.  If not, see
+    <a href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>.</p>
+    <p>The source code is available on <a href="https://github.com/nhasan/FlightIntel">GitHub</a>.
+    Please report bugs or send comments through the
+    <a href="https://github.com/nhasan/FlightIntel/issues">issue tracker</a>.</p>
 </body>
 </html>
