@@ -3,9 +3,9 @@ import java.io.FileInputStream
 
 plugins {
     id("com.android.application") version "9.5.3"
-    id("com.google.gms.google-services") version "4.5.0"
-    id("org.jetbrains.kotlin.plugin.parcelize") version "2.4.10"
-    kotlin("plugin.serialization") version "2.4.10"
+    id("com.google.gms.google-services") version "4.6.0"
+    id("org.jetbrains.kotlin.plugin.parcelize") version "2.4.21"
+    kotlin("plugin.serialization") version "2.4.21"
 }
 
 allprojects {
@@ -27,7 +27,7 @@ dependencies {
     implementation (libs.androidx.coordinatorlayout)
     implementation (libs.androidx.drawerlayout)
     implementation (libs.play.services.location)
-    implementation (libs.firebase.messaging.ktx)
+    implementation (libs.firebase.messaging)
     implementation (libs.androidx.core.ktx)
     implementation (libs.androidx.work.runtime.ktx)
     implementation (libs.kotlinx.coroutines.core)
