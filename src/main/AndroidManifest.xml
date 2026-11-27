@@ -176,6 +176,10 @@
         </activity>
 
         <activity
+            android:label=""
+            android:name=".WebViewActivity" />
+
+        <activity
             android:label="@string/about"
             android:name=".AboutActivity"
             android:parentActivityName=".FlightIntel">
