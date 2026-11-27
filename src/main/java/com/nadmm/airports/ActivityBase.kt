@@ -230,7 +230,9 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
                         true
                     }
                     R.id.menu_search -> true
-                    else -> true
+                    // Not ours: leave it to the menu providers that screens
+                    // and fragments add, which never see it if this claims it
+                    else -> false
                 }
             }
         })
