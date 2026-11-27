@@ -69,14 +69,9 @@ class NearbyDofCursor(db: SQLiteDatabase, location: Location, radius: Int) : Mat
             bearing = (results[1] + declination + 360) % 360
         }
 
-        override fun compareTo(other: DOFData): Int {
-            if (distance < other.distance) {
-                return -1
-            } else if (distance > other.distance) {
-                return 1
-            }
-            return 0
-        }
+        // Tallest above ground first, then the closest
+        override fun compareTo(other: DOFData): Int =
+            compareValuesBy(this, other, { -it.heightAgl }, { it.distance })
     }
 
     companion object {
@@ -111,7 +106,7 @@ class NearbyDofCursor(db: SQLiteDatabase, location: Location, radius: Int) : Mat
                 dofList[c.position] = obst
             } while (c.moveToNext())
 
-            // Sort the list based on distance from current location
+            // Sort the list by height above ground, tallest first
             Arrays.sort(dofList)
             for (dof in dofList) {
                 if (dof!!.distance <= radius) {

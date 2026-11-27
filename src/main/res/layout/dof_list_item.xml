@@ -3,7 +3,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2018 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2018-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,9 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:paddingLeft="@dimen/padding_left"
+              android:paddingStart="@dimen/padding_left"
               android:paddingTop="@dimen/padding_top"
-              android:paddingRight="@dimen/padding_right"
+              android:paddingEnd="@dimen/padding_right"
               android:paddingBottom="@dimen/padding_bottom"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
@@ -39,10 +39,10 @@
                   android:layout_weight="1"
                   android:layout_width="0dp"
                   android:layout_height="wrap_content" />
-        <TextView android:id="@+id/height_msl"
+        <TextView android:id="@+id/height_agl"
                   style="@style/TextSmall"
-                  android:gravity="right"
-                  android:layout_marginLeft="@dimen/item_spacing"
+                  android:gravity="end"
+                  android:layout_marginStart="@dimen/item_spacing"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content" />
     </LinearLayout>
@@ -55,10 +55,10 @@
                   android:layout_weight="1"
                   android:layout_width="0dp"
                   android:layout_height="wrap_content" />
-        <TextView android:id="@+id/height_agl"
+        <TextView android:id="@+id/height_msl"
                   style="@style/TextSmaller.Light"
-                  android:gravity="right"
-                  android:layout_marginLeft="@dimen/item_spacing"
+                  android:gravity="end"
+                  android:layout_marginStart="@dimen/item_spacing"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content" />
     </LinearLayout>
