@@ -123,7 +123,8 @@ class TfrMapFragment : FragmentBase() {
                     text, metrics, LABEL_COLOR, GeoPoint(label.latitude, label.longitude)))
             }
         }
-        val title = tfr?.let { titleText(it) }?.let { TfrLabelOverlay(it, metrics, TITLE_COLOR) }
+        val title = tfr?.let { titleText(it, it.formatTimeRange(activityBase)) }
+            ?.let { TfrLabelOverlay(it, metrics, TITLE_COLOR) }
         title?.let { map.overlays.add(it) }
         // Bottom right, as the attribution takes the bottom left
         map.overlays.add(ScaleBarOverlay(map).apply {
@@ -180,7 +181,7 @@ class TfrMapFragment : FragmentBase() {
         // Name and altitudes, smaller than the NOTAM id
         private const val SMALL_SCALE = 0.8f
 
-        private fun titleText(tfr: Tfr): CharSequence? {
+        private fun titleText(tfr: Tfr, time: String): CharSequence? {
             val id = tfr.notamId.orEmpty().trim()
             val name = tfr.name.orEmpty().trim()
             val text = SpannableStringBuilder()
@@ -188,6 +189,7 @@ class TfrMapFragment : FragmentBase() {
             if (name.isNotEmpty() && !name.equals(id, ignoreCase = true)) {
                 text.appendLine(name, RelativeSizeSpan(SMALL_SCALE))
             }
+            if (time.isNotEmpty()) text.appendLine(time, RelativeSizeSpan(SMALL_SCALE))
             return text.takeIf { it.isNotEmpty() }
         }
 
