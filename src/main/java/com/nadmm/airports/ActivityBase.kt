@@ -107,6 +107,8 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     private lateinit var mInflater: LayoutInflater
     private lateinit var mHandler: Handler
     private lateinit var mPreferences: SharedPreferences
+    // Registered for every screen; the home screens ask with it
+    protected val notificationPermission = NotificationPermission(this)
 
     private val mBackStackChangedListener =
             FragmentManager.OnBackStackChangedListener { this.updateDrawerToggle() }

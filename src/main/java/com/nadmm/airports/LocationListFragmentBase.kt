@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2015-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2015-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,18 +20,21 @@
 package com.nadmm.airports
 
 import android.Manifest.permission
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
-import android.view.View
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.core.os.BundleCompat
+import androidx.preference.PreferenceManager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -43,6 +46,15 @@ import com.google.android.material.snackbar.Snackbar
 import com.nadmm.airports.data.DatabaseManager.LocationColumns
 import com.nadmm.airports.utils.GeoUtils
 
+/**
+ * A list of facilities near the device's location, or near a location passed
+ * in the arguments.
+ *
+ * Asks for location permission the first time the list needs it. After one
+ * denial it explains why and offers to ask again; once Android stops showing
+ * the request, it offers the app's settings instead. When location is turned
+ * off it shows the system dialog to turn it on.
+ */
 abstract class LocationListFragmentBase : RecyclerViewFragment() {
 
     protected var isLocationUpdateEnabled = false
@@ -51,11 +63,16 @@ abstract class LocationListFragmentBase : RecyclerViewFragment() {
         private set
 
     private var mRequestingLocationUpdates = false
-    private var mPermissionDenied = false
+    // Set once this fragment has shown the request, so onResume does not
+    // show it again by itself
+    private var mPermissionAsked = false
+    private var mSettingsAsked = false
+    private var mSnackbar: Snackbar? = null
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private lateinit var mLocationRequest: LocationRequest
     private lateinit var mLocationCallback: LocationCallback
-    private lateinit var mRequestPermissionLauncher : ActivityResultLauncher<Array<String>>
+    private lateinit var mRequestPermissionLauncher: ActivityResultLauncher<Array<String>>
+    private lateinit var mLocationSettingsLauncher: ActivityResultLauncher<IntentSenderRequest>
 
     protected val nearbyRadius: Int
         get() = activityBase.prefNearbyRadius
@@ -81,31 +98,25 @@ abstract class LocationListFragmentBase : RecyclerViewFragment() {
     override fun onResume() {
         super.onResume()
 
-        if (isLocationUpdateEnabled) {
-            when {
-                isLocationPermissionGranted() -> {
-                    activityBase.postRunnable( { startLocationUpdates() }, 0)
-                }
-                ActivityCompat.shouldShowRequestPermissionRationale(
-                    requireActivity(),
-                    permission.ACCESS_FINE_LOCATION) -> {
-                    showSnackbar("FlightIntel needs access to this device's location to " +
-                            "show nearby facilities."
-                    ) {
-                        mRequestPermissionLauncher.launch(
-                            arrayOf(
-                                permission.ACCESS_FINE_LOCATION,
-                                permission.ACCESS_COARSE_LOCATION
-                            )
-                        )
-                    }
-                } else -> {
-                    resolvePermission { showApplicationSettings() }
-                }
-            }
-        } else {
+        if (!isLocationUpdateEnabled) {
             // Location was passed to us, so just run the task
             startLocationTask()
+            return
+        }
+
+        when {
+            isLocationPermissionGranted() -> {
+                activityBase.postRunnable({ startLocationUpdates() }, 0)
+            }
+            !mPermissionAsked && !wasPermissionRequested() -> {
+                // First time: the list makes the reason clear, so ask right away
+                requestPermission()
+            }
+            else -> {
+                // Answered before: explain, with an action to ask again or
+                // open Settings, so the user is never left without a way on
+                showPermissionNeeded()
+            }
         }
     }
 
@@ -118,14 +129,11 @@ abstract class LocationListFragmentBase : RecyclerViewFragment() {
     }
 
     private fun isLocationPermissionGranted(): Boolean {
-        return (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED ||
-            ActivityCompat.checkSelfPermission(
-                requireContext(),
-                permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED)
+        val context = requireContext()
+        return ActivityCompat.checkSelfPermission(context, permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(context, permission.ACCESS_COARSE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED
     }
 
     private fun setupFusedLocationProvider() {
@@ -137,27 +145,65 @@ abstract class LocationListFragmentBase : RecyclerViewFragment() {
             }
         }
 
-        mRequestPermissionLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.RequestMultiplePermissions()
-            ) { permissions ->
-                when {
-                    permissions.getOrDefault(permission.ACCESS_FINE_LOCATION, false) -> {
-                        startLocationUpdates()
-                    }
-                    permissions.getOrDefault(permission.ACCESS_COARSE_LOCATION, false) -> {
-                        startLocationUpdates()
-                    } else -> {
-                        mPermissionDenied = true
-                        setEmptyText(message)
-                        setListShown(false)
-                        setFragmentContentShown(true)
-                    }
-                }
+        mRequestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            isRequestingPermission = false
+            // Approximate location is enough for a nearby list
+            if (permissions.values.any { it }) {
+                startLocationUpdates()
+            } else {
+                showPermissionNeeded()
             }
+        }
+
+        mLocationSettingsLauncher = registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                startLocationUpdates()
+            } else {
+                showLocationOff(null)
+            }
+        }
+    }
+
+    private fun requestPermission() {
+        mPermissionAsked = true
+        isRequestingPermission = true
+        PreferenceManager.getDefaultSharedPreferences(requireContext()).edit {
+            putBoolean(KEY_LOCATION_PERMISSION_REQUESTED, true)
+        }
+        mRequestPermissionLauncher.launch(
+            arrayOf(permission.ACCESS_FINE_LOCATION, permission.ACCESS_COARSE_LOCATION)
+        )
+    }
+
+    private fun wasPermissionRequested() =
+        PreferenceManager.getDefaultSharedPreferences(requireContext())
+            .getBoolean(KEY_LOCATION_PERMISSION_REQUESTED, false)
+
+    /**
+     * Explains why the list is empty. While Android still shows the request,
+     * the action asks again; after that, it opens the app's settings.
+     */
+    private fun showPermissionNeeded() {
+        showEmpty(PERMISSION_MESSAGE)
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                requireActivity(), permission.ACCESS_FINE_LOCATION)
+        ) {
+            showSnackbar("Allow location access to see nearby facilities.", "Allow") {
+                requestPermission()
+            }
+        } else {
+            showSnackbar("Turn on location permission in Settings.", "Settings") {
+                showApplicationSettings()
+            }
+        }
     }
 
     private fun startLocationUpdates() {
+        mSnackbar?.dismiss()
         // First check if location is enabled in the settings
         val builder = LocationSettingsRequest.Builder()
             .addLocationRequest(mLocationRequest)
@@ -177,22 +223,39 @@ abstract class LocationListFragmentBase : RecyclerViewFragment() {
                     // Ignore exception
                 }
             }
-            // If location is not enabled then prompt the user to enable by showing system dialog
+            // Location is off: show the system dialog to turn it on, once
             .addOnFailureListener(requireActivity()) { exception ->
-                if (exception is ResolvableApiException) {
-                    resolvePermission { showLocationSettings() }
+                if (exception is ResolvableApiException && !mSettingsAsked) {
+                    mSettingsAsked = true
+                    launchLocationSettings(exception)
+                } else {
+                    showLocationOff(exception as? ResolvableApiException)
                 }
             }
     }
 
-    private fun resolvePermission(func: () -> Unit) {
-        mPermissionDenied = true
+    private fun launchLocationSettings(exception: ResolvableApiException) {
+        try {
+            mLocationSettingsLauncher.launch(
+                IntentSenderRequest.Builder(exception.resolution).build()
+            )
+        } catch (_: Exception) {
+            showLocationOff(null)
+        }
+    }
+
+    private fun showLocationOff(exception: ResolvableApiException?) {
+        showEmpty(LOCATION_OFF_MESSAGE)
+        showSnackbar("Location is turned off.", "Turn on") {
+            if (exception != null) launchLocationSettings(exception)
+            else showLocationSettings()
+        }
+    }
+
+    private fun showEmpty(message: String) {
         setEmptyText(message)
         setListShown(false)
         setFragmentContentShown(true)
-        showSnackbar(
-            "Please enable location in Settings to see nearby facilities."
-        ) { func() }
     }
 
     private fun stopLocationUpdates() {
@@ -210,34 +273,40 @@ abstract class LocationListFragmentBase : RecyclerViewFragment() {
         }
     }
 
-    private fun showSnackbar(text: String, listener: View.OnClickListener) {
-        view?.apply {
-            Snackbar.make(this, text, Snackbar.LENGTH_INDEFINITE)
-                .setAction(android.R.string.ok, listener)
-                .show()
+    private fun showSnackbar(text: String, action: String, listener: () -> Unit) {
+        mSnackbar?.dismiss()
+        mSnackbar = view?.let {
+            Snackbar.make(it, text, Snackbar.LENGTH_INDEFINITE)
+                .setAction(action) { listener() }
+                .apply { show() }
         }
     }
 
     private fun showLocationSettings() {
-        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
+        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
     }
 
     private fun showApplicationSettings() {
-        val intent = Intent()
-        intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-        val uri = Uri.fromParts("package", activity?.packageName, null)
-        intent.data = uri
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.data = "package:${requireContext().packageName}".toUri()
         startActivity(intent)
     }
 
     protected abstract fun startLocationTask()
 
     companion object {
-        const val message = "Unable to show nearby facilities.\n" +
-                "FlightIntel needs location permission.\n" +
-                "Your location remains private and is not shared with anyone."
+        private const val KEY_LOCATION_PERMISSION_REQUESTED = "location_permission_requested"
+
+        /**
+         * True while the location permission request is showing, so other
+         * prompts can wait for it.
+         */
+        var isRequestingPermission = false
+            private set
+
+        private const val PERMISSION_MESSAGE = "FlightIntel needs location permission to " +
+                "show nearby facilities.\n" +
+                "Your location stays on this device and is not shared with anyone."
+        private const val LOCATION_OFF_MESSAGE = "Turn on location to see nearby facilities."
     }
 }

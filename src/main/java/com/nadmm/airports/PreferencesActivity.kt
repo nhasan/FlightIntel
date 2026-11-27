@@ -18,6 +18,7 @@
  */
 package com.nadmm.airports
 
+import android.Manifest
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
@@ -26,12 +27,14 @@ import android.text.TextUtils
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.Preference.SummaryProvider
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.nadmm.airports.utils.UiUtils
 
@@ -78,6 +81,16 @@ class PreferencesActivity : FragmentActivityBase() {
 
     class PreferencesFragment : PreferenceFragmentCompat(), OnSharedPreferenceChangeListener {
         private var mSharedPrefs: SharedPreferences? = null
+        // Set while the system notification settings are open from here
+        private var mOpenedNotificationSettings = false
+        private val mNotificationPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { granted ->
+            if (granted) appMessages?.isChecked = true
+        }
+
+        private val appMessages: SwitchPreferenceCompat?
+            get() = findPreference(KEY_FCM_ENABLE)
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -106,6 +119,26 @@ class PreferencesActivity : FragmentActivityBase() {
 
             val homeScreen = findPreference<ListPreference?>(KEY_HOME_SCREEN)
             homeScreen?.setSummaryProvider(SummaryProvider { _ : Preference? -> "Show " + homeScreen.getValue() + " screen on startup" })
+
+            // App messages need notification permission on Android 13 and
+            // later: turning them on asks for it, or opens the system
+            // settings once Android no longer shows the request
+            appMessages?.setOnPreferenceChangeListener { _, newValue ->
+                val context = requireContext()
+                if (newValue != true || NotificationPermission.isGranted(context)) {
+                    return@setOnPreferenceChangeListener true
+                }
+                if (NotificationPermission.wasRequested(context) &&
+                    !shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+                ) {
+                    mOpenedNotificationSettings = true
+                    NotificationPermission.openSettings(context)
+                } else {
+                    NotificationPermission.markRequested(context)
+                    mNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                false
+            }
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -126,6 +159,16 @@ class PreferencesActivity : FragmentActivityBase() {
             onSharedPreferenceChanged(mSharedPrefs, KEY_LOCATION_NEARBY_RADIUS)
             onSharedPreferenceChanged(mSharedPrefs, KEY_HOME_AIRPORT)
             onSharedPreferenceChanged(mSharedPrefs, KEY_HOME_SCREEN)
+
+            // Back from the system settings with notifications allowed
+            val granted = NotificationPermission.isGranted(requireContext())
+            if (mOpenedNotificationSettings && granted) {
+                appMessages?.isChecked = true
+            }
+            mOpenedNotificationSettings = false
+            // Notifications blocked in the system settings stop app messages
+            appMessages?.summaryOn = if (granted) "Display messages from application"
+                else "Notifications are off for FlightIntel in system settings"
 
             // Set up a listener whenever a key changes
             mSharedPrefs!!.registerOnSharedPreferenceChangeListener(this)
